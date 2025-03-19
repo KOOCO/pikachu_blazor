@@ -386,6 +386,40 @@
                                                             </Select>
                                                         </div>
                                                     </div>
+                                                    <div class="row">
+                                                        <div class="col-3">
+                                                            <label for="hualien-and-taitung" class="form-label">@L["HualienAndTaitungShippingFee"]<span class="text-danger"> *</span></label>
+                                                        </div>
+                                                        <div class="col-8">
+                                                            <InputNumber id="hualien-and-taitung" class="form-control" @bind-Value="BNormal.HualienAndTaitungShippingFee" min="0"></InputNumber>
+                                                            <ValidationMessage For="@(() => BNormal.HualienAndTaitungShippingFee)" />
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-3">
+                                                            <label for="holiday-surcharge" class="form-label">@L["HolidaySurcharge"]<span class="text-danger"> *</span></label>
+                                                        </div>
+                                                        <div class="col-8">
+                                                            <InputNumber id="holiday-surcharge" class="form-control" @bind-Value="BNormal.HolidaySurcharge" min="0"></InputNumber>
+                                                            <ValidationMessage For="@(() => BNormal.HolidaySurcharge)" />
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-3">
+                                                            <label for="" class="form-label">@L["HolidaySurchargeTimeRange"]</label>
+                                                        </div>
+                                                        <div class="col-8">
+                                                            <div class="d-flex align-items-center justify-content-center gap-1">
+                                                                <div class="flex-grow-1">
+                                                                    <DatePicker TValue="DateTime?" @bind-Date="@BNormal.HolidaySurchargeStartTime" />
+                                                                </div>
+                                                                <Span>~</Span>
+                                                                <div class="flex-grow-1">
+                                                                    <DatePicker TValue="DateTime?" @bind-Date="@BNormal.HolidaySurchargeEndTime" />
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                     @if (IsBNormalNotExists)
                                                     {
                                                         <div class="row mt-3">
@@ -454,6 +488,40 @@
                                                             </Select>
                                                         </div>
                                                     </div>
+                                                    <div class="row">
+                                                        <div class="col-3">
+                                                            <label for="hualien-and-taitung" class="form-label">@L["HualienAndTaitungShippingFee"]<span class="text-danger"> *</span></label>
+                                                        </div>
+                                                        <div class="col-8">
+                                                            <InputNumber id="hualien-and-taitung" class="form-control" @bind-Value="BFreeze.HualienAndTaitungShippingFee" min="0"></InputNumber>
+                                                            <ValidationMessage For="@(() => BFreeze.HualienAndTaitungShippingFee)" />
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-3">
+                                                            <label for="holiday-surcharge" class="form-label">@L["HolidaySurcharge"]<span class="text-danger"> *</span></label>
+                                                        </div>
+                                                        <div class="col-8">
+                                                            <InputNumber id="holiday-surcharge" class="form-control" @bind-Value="BFreeze.HolidaySurcharge" min="0"></InputNumber>
+                                                            <ValidationMessage For="@(() => BFreeze.HolidaySurcharge)" />
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-3">
+                                                            <label for="" class="form-label">@L["HolidaySurchargeTimeRange"]</label>
+                                                        </div>
+                                                        <div class="col-8">
+                                                            <div class="d-flex align-items-center justify-content-center gap-1">
+                                                                <div class="flex-grow-1">
+                                                                    <DatePicker TValue="DateTime?" @bind-Date="@BFreeze.HolidaySurchargeStartTime" />
+                                                                </div>
+                                                                <Span>~</Span>
+                                                                <div class="flex-grow-1">
+                                                                    <DatePicker TValue="DateTime?" @bind-Date="@BFreeze.HolidaySurchargeEndTime" />
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                     @if (IsBFreezeNotExists)
                                                     {
                                                         <div class="row mt-3">
@@ -520,6 +588,40 @@
                                                                     <SelectItem Value="@item">@L[item.ToString()]</SelectItem>
                                                                 }
                                                             </Select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-3">
+                                                            <label for="hualien-and-taitung" class="form-label">@L["HualienAndTaitungShippingFee"]<span class="text-danger"> *</span></label>
+                                                        </div>
+                                                        <div class="col-8">
+                                                            <InputNumber id="hualien-and-taitung" class="form-control" @bind-Value="BFrozen.HualienAndTaitungShippingFee" min="0"></InputNumber>
+                                                            <ValidationMessage For="@(() => BFrozen.HualienAndTaitungShippingFee)" />
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-3">
+                                                            <label for="holiday-surcharge" class="form-label">@L["HolidaySurcharge"]<span class="text-danger"> *</span></label>
+                                                        </div>
+                                                        <div class="col-8">
+                                                            <InputNumber id="holiday-surcharge" class="form-control" @bind-Value="BFrozen.HolidaySurcharge" min="0"></InputNumber>
+                                                            <ValidationMessage For="@(() => BFrozen.HolidaySurcharge)" />
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-3">
+                                                            <label for="" class="form-label">@L["HolidaySurchargeTimeRange"]</label>
+                                                        </div>
+                                                        <div class="col-8">
+                                                            <div class="d-flex align-items-center justify-content-center gap-1">
+                                                                <div class="flex-grow-1">
+                                                                    <DatePicker TValue="DateTime?" @bind-Date="@BFrozen.HolidaySurchargeStartTime" />
+                                                                </div>
+                                                                <Span>~</Span>
+                                                                <div class="flex-grow-1">
+                                                                    <DatePicker TValue="DateTime?" @bind-Date="@BFrozen.HolidaySurchargeEndTime" />
+                                                                </div>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                     @if (IsBFrozenNotExists)
@@ -1398,6 +1500,40 @@
                                                             </Select>
                                                         </div>
                                                     </div>
+                                                    <div class="row">
+                                                        <div class="col-3">
+                                                            <label for="hualien-and-taitung" class="form-label">@L["HualienAndTaitungShippingFee"]<span class="text-danger"> *</span></label>
+                                                        </div>
+                                                        <div class="col-8">
+                                                            <InputNumber id="hualien-and-taitung" class="form-control" @bind-Value="TCatNormal.HualienAndTaitungShippingFee" min="0"></InputNumber>
+                                                            <ValidationMessage For="@(() => TCatNormal.HualienAndTaitungShippingFee)" />
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-3">
+                                                            <label for="holiday-surcharge" class="form-label">@L["HolidaySurcharge"]<span class="text-danger"> *</span></label>
+                                                        </div>
+                                                        <div class="col-8">
+                                                            <InputNumber id="holiday-surcharge" class="form-control" @bind-Value="TCatNormal.HolidaySurcharge" min="0"></InputNumber>
+                                                            <ValidationMessage For="@(() => TCatNormal.HolidaySurcharge)" />
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-3">
+                                                            <label for="" class="form-label">@L["HolidaySurchargeTimeRange"]</label>
+                                                        </div>
+                                                        <div class="col-8">
+                                                            <div class="d-flex align-items-center justify-content-center gap-1">
+                                                                <div class="flex-grow-1">
+                                                                    <DatePicker TValue="DateTime?" @bind-Date="@TCatNormal.HolidaySurchargeStartTime" />
+                                                                </div>
+                                                                <Span>~</Span>
+                                                                <div class="flex-grow-1">
+                                                                    <DatePicker TValue="DateTime?" @bind-Date="@TCatNormal.HolidaySurchargeEndTime" />
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                     @if (IsTCatNormalNotExists)
                                                     {
                                                         <div class="row mt-3">
@@ -1491,6 +1627,40 @@
                                                             </Select>
                                                         </div>
                                                     </div>
+                                                    <div class="row">
+                                                        <div class="col-3">
+                                                            <label for="hualien-and-taitung" class="form-label">@L["HualienAndTaitungShippingFee"]<span class="text-danger"> *</span></label>
+                                                        </div>
+                                                        <div class="col-8">
+                                                            <InputNumber id="hualien-and-taitung" class="form-control" @bind-Value="TCatFreeze.HualienAndTaitungShippingFee" min="0"></InputNumber>
+                                                            <ValidationMessage For="@(() => TCatFreeze.HualienAndTaitungShippingFee)" />
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-3">
+                                                            <label for="holiday-surcharge" class="form-label">@L["HolidaySurcharge"]<span class="text-danger"> *</span></label>
+                                                        </div>
+                                                        <div class="col-8">
+                                                            <InputNumber id="holiday-surcharge" class="form-control" @bind-Value="TCatFreeze.HolidaySurcharge" min="0"></InputNumber>
+                                                            <ValidationMessage For="@(() => TCatFreeze.HolidaySurcharge)" />
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-3">
+                                                            <label for="" class="form-label">@L["HolidaySurchargeTimeRange"]</label>
+                                                        </div>
+                                                        <div class="col-8">
+                                                            <div class="d-flex align-items-center justify-content-center gap-1">
+                                                                <div class="flex-grow-1">
+                                                                    <DatePicker TValue="DateTime?" @bind-Date="@TCatFreeze.HolidaySurchargeStartTime" />
+                                                                </div>
+                                                                <Span>~</Span>
+                                                                <div class="flex-grow-1">
+                                                                    <DatePicker TValue="DateTime?" @bind-Date="@TCatFreeze.HolidaySurchargeEndTime" />
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                     @if (IsTCatFreezeNotExists)
                                                     {
                                                         <div class="row mt-3">
@@ -1582,6 +1752,40 @@
                                                                     <SelectItem Value="@item">@L[item.ToString()]</SelectItem>
                                                                 }
                                                             </Select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-3">
+                                                            <label for="hualien-and-taitung" class="form-label">@L["HualienAndTaitungShippingFee"]<span class="text-danger"> *</span></label>
+                                                        </div>
+                                                        <div class="col-8">
+                                                            <InputNumber id="hualien-and-taitung" class="form-control" @bind-Value="TCatFrozen.HualienAndTaitungShippingFee" min="0"></InputNumber>
+                                                            <ValidationMessage For="@(() => TCatFrozen.HualienAndTaitungShippingFee)" />
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-3">
+                                                            <label for="holiday-surcharge" class="form-label">@L["HolidaySurcharge"]<span class="text-danger"> *</span></label>
+                                                        </div>
+                                                        <div class="col-8">
+                                                            <InputNumber id="holiday-surcharge" class="form-control" @bind-Value="TCatFrozen.HolidaySurcharge" min="0"></InputNumber>
+                                                            <ValidationMessage For="@(() => TCatFrozen.HolidaySurcharge)" />
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-3">
+                                                            <label for="" class="form-label">@L["HolidaySurchargeTimeRange"]</label>
+                                                        </div>
+                                                        <div class="col-8">
+                                                            <div class="d-flex align-items-center justify-content-center gap-1">
+                                                                <div class="flex-grow-1">
+                                                                    <DatePicker TValue="DateTime?" @bind-Date="@TCatFrozen.HolidaySurchargeStartTime" />
+                                                                </div>
+                                                                <Span>~</Span>
+                                                                <div class="flex-grow-1">
+                                                                    <DatePicker TValue="DateTime?" @bind-Date="@TCatFrozen.HolidaySurchargeEndTime" />
+                                                                </div>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                     @if (IsTCatFrozenNotExists)

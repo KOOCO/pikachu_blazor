@@ -1401,6 +1401,9 @@
     "ECPay|SevenToElevenFrozen": "綠界 | 7-11 冷凍",
     "ECPay|SevenToElevenC2C": "綠界 | 7-11 C2C",
     "ECPay|FamilyMart1": "綠界 | 全家",
-    "ECPay|FamilyMartC2C": "綠界 | 全家 C2C"
+    "ECPay|FamilyMartC2C": "綠界 | 全家 C2C",
+    "HualienAndTaitungShippingFee": "花東地區運費",
+    "HolidaySurcharge": "繁盛期加給",
+    "HolidaySurchargeTimeRange": "假日附加費時間範圍"
   }
 }

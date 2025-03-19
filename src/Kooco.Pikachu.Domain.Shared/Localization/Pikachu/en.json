@@ -440,7 +440,7 @@
     "LogisticsType": "Logistics Type",
     "LogisticsSubType": "Logistics Sub Type",
     "FreeShippingThreshold": "Free Shipping Threshold",
-    "Freight": "Freight",
+    "Freight": "Shipping Fee",
     "StoreCode": "Store Code",
     "SaveSettings": "Save Settings",
     "CustomTitle": "Custom Title",
@@ -1330,6 +1330,9 @@
     "ECPay|SevenToElevenFrozen": "ECPay | 7-11 Frozen",
     "ECPay|SevenToElevenC2C": "ECPay | 7-11 C2C",
     "ECPay|FamilyMart1": "ECPay | Family Mart",
-    "ECPay|FamilyMartC2C": "ECPay | Family Mart C2C"
+    "ECPay|FamilyMartC2C": "ECPay | Family Mart C2C",
+    "HualienAndTaitungShippingFee": "Hualien and Taitung Shipping Fee",
+    "HolidaySurcharge": "Holiday Surcharge",
+    "HolidaySurchargeTimeRange": "Holiday Surcharge Time Range"
   }
 }

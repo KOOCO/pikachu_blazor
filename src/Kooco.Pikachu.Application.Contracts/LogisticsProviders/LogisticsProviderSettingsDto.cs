@@ -1,6 +1,7 @@
 ﻿using Kooco.Pikachu.EnumValues;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace Kooco.Pikachu.LogisticsProviders
 {
@@ -63,5 +64,10 @@ namespace Kooco.Pikachu.LogisticsProviders
         public ReverseLogisticShippingFee? ReverseLogisticShippingFee { get; set; }
 
         public TCatPaymentMethod? TCatPaymentMethod { get; set; }
+
+        public int HualienAndTaitungShippingFee { get; set; }
+        public int HolidaySurcharge { get; set; }
+        public DateTime? HolidaySurchargeStartTime { get; set; }
+        public DateTime? HolidaySurchargeEndTime { get; set; }
     }
 }

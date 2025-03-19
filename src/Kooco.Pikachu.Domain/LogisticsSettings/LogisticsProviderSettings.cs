@@ -77,5 +77,11 @@ namespace Kooco.Pikachu.LogisticsProviders
         public TCatShippingLabelForm711? TCatShippingLabelForm711 { get; set; }
         public bool DeclaredValue { get; set; }
         public ReverseLogisticShippingFee? ReverseLogisticShippingFee { get; set; }
+
+
+        public int HualienAndTaitungShippingFee { get; set; }
+        public int HolidaySurcharge { get; set; }
+        public DateTime? HolidaySurchargeStartTime { get; set; }
+        public DateTime? HolidaySurchargeEndTime { get; set; }
     }
 }

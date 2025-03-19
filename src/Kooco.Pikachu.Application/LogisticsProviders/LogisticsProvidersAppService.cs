@@ -499,6 +499,10 @@ public class LogisticsProvidersAppService : ApplicationService, ILogisticsProvid
             bNormal.Freight = input.Freight;
             bNormal.OuterIslandFreight = input.OuterIslandFreight;
             bNormal.Size = input.Size;
+            bNormal.HualienAndTaitungShippingFee = input.HualienAndTaitungShippingFee;
+            bNormal.HolidaySurcharge = input.HolidaySurcharge;
+            bNormal.HolidaySurchargeStartTime = input.HolidaySurchargeStartTime;
+            bNormal.HolidaySurchargeEndTime = input.HolidaySurchargeEndTime;
 
             await _logisticsProviderRepository.UpdateAsync(bNormal);
         }
@@ -510,7 +514,11 @@ public class LogisticsProvidersAppService : ApplicationService, ILogisticsProvid
                 Freight = input.Freight,
                 OuterIslandFreight = input.OuterIslandFreight,
                 Size = input.Size,
-                LogisticProvider = LogisticProviders.BNormal
+                LogisticProvider = LogisticProviders.BNormal,
+                HualienAndTaitungShippingFee = input.HualienAndTaitungShippingFee,
+                HolidaySurcharge = input.HolidaySurcharge,
+                HolidaySurchargeStartTime = input.HolidaySurchargeStartTime,
+                HolidaySurchargeEndTime = input.HolidaySurchargeEndTime
             };
 
             await _logisticsProviderRepository.InsertAsync(bNormal);
@@ -529,6 +537,10 @@ public class LogisticsProvidersAppService : ApplicationService, ILogisticsProvid
             tCatNormal.Size = input.Size;
             tCatNormal.Payment = input.Payment;
             tCatNormal.TCatPaymentMethod = input.TCatPaymentMethod;
+            tCatNormal.HualienAndTaitungShippingFee = input.HualienAndTaitungShippingFee;
+            tCatNormal.HolidaySurcharge = input.HolidaySurcharge;
+            tCatNormal.HolidaySurchargeStartTime = input.HolidaySurchargeStartTime;
+            tCatNormal.HolidaySurchargeEndTime = input.HolidaySurchargeEndTime;
 
             await _logisticsProviderRepository.UpdateAsync(tCatNormal);
         }
@@ -543,7 +555,11 @@ public class LogisticsProvidersAppService : ApplicationService, ILogisticsProvid
                 Size = input.Size,
                 Payment = input.Payment,
                 TCatPaymentMethod = input.TCatPaymentMethod,
-                LogisticProvider = LogisticProviders.TCatNormal
+                LogisticProvider = LogisticProviders.TCatNormal,
+                HualienAndTaitungShippingFee = input.HualienAndTaitungShippingFee,
+                HolidaySurcharge = input.HolidaySurcharge,
+                HolidaySurchargeStartTime = input.HolidaySurchargeStartTime,
+                HolidaySurchargeEndTime = input.HolidaySurchargeEndTime
             };
 
             await _logisticsProviderRepository.InsertAsync(tCatNormal);
@@ -561,6 +577,10 @@ public class LogisticsProvidersAppService : ApplicationService, ILogisticsProvid
             tCatFreeze.Size = input.Size;
             tCatFreeze.Payment = input.Payment;
             tCatFreeze.TCatPaymentMethod = input.TCatPaymentMethod;
+            tCatFreeze.HualienAndTaitungShippingFee = input.HualienAndTaitungShippingFee;
+            tCatFreeze.HolidaySurcharge = input.HolidaySurcharge;
+            tCatFreeze.HolidaySurchargeStartTime = input.HolidaySurchargeStartTime;
+            tCatFreeze.HolidaySurchargeEndTime = input.HolidaySurchargeEndTime;
 
             await _logisticsProviderRepository.UpdateAsync(tCatFreeze);
         }
@@ -575,7 +595,11 @@ public class LogisticsProvidersAppService : ApplicationService, ILogisticsProvid
                 Size = input.Size,
                 Payment = input.Payment,
                 TCatPaymentMethod = input.TCatPaymentMethod,
-                LogisticProvider = LogisticProviders.TCatFreeze
+                LogisticProvider = LogisticProviders.TCatFreeze,
+                HualienAndTaitungShippingFee = input.HualienAndTaitungShippingFee,
+                HolidaySurcharge = input.HolidaySurcharge,
+                HolidaySurchargeStartTime = input.HolidaySurchargeStartTime,
+                HolidaySurchargeEndTime = input.HolidaySurchargeEndTime
             };
 
             await _logisticsProviderRepository.InsertAsync(tCatFreeze);
@@ -593,6 +617,10 @@ public class LogisticsProvidersAppService : ApplicationService, ILogisticsProvid
             tCatFrozen.Size = input.Size;
             tCatFrozen.Payment = input.Payment;
             tCatFrozen.TCatPaymentMethod = input.TCatPaymentMethod;
+            tCatFrozen.HualienAndTaitungShippingFee = input.HualienAndTaitungShippingFee;
+            tCatFrozen.HolidaySurcharge = input.HolidaySurcharge;
+            tCatFrozen.HolidaySurchargeStartTime = input.HolidaySurchargeStartTime;
+            tCatFrozen.HolidaySurchargeEndTime = input.HolidaySurchargeEndTime;
 
             await _logisticsProviderRepository.UpdateAsync(tCatFrozen);
         }
@@ -607,7 +635,11 @@ public class LogisticsProvidersAppService : ApplicationService, ILogisticsProvid
                 Size = input.Size,
                 Payment = input.Payment,
                 TCatPaymentMethod = input.TCatPaymentMethod,
-                LogisticProvider = LogisticProviders.TCatFrozen
+                LogisticProvider = LogisticProviders.TCatFrozen,
+                HualienAndTaitungShippingFee = input.HualienAndTaitungShippingFee,
+                HolidaySurcharge = input.HolidaySurcharge,
+                HolidaySurchargeStartTime = input.HolidaySurchargeStartTime,
+                HolidaySurchargeEndTime = input.HolidaySurchargeEndTime
             };
 
             await _logisticsProviderRepository.InsertAsync(tCatFrozen);
@@ -622,6 +654,10 @@ public class LogisticsProvidersAppService : ApplicationService, ILogisticsProvid
             bFreeze.Freight = input.Freight;
             bFreeze.OuterIslandFreight = input.OuterIslandFreight;
             bFreeze.Size = input.Size;
+            bFreeze.HualienAndTaitungShippingFee = input.HualienAndTaitungShippingFee;
+            bFreeze.HolidaySurcharge = input.HolidaySurcharge;
+            bFreeze.HolidaySurchargeStartTime = input.HolidaySurchargeStartTime;
+            bFreeze.HolidaySurchargeEndTime = input.HolidaySurchargeEndTime;
 
             await _logisticsProviderRepository.UpdateAsync(bFreeze);
         }
@@ -633,7 +669,11 @@ public class LogisticsProvidersAppService : ApplicationService, ILogisticsProvid
                 Freight = input.Freight,
                 OuterIslandFreight = input.OuterIslandFreight,
                 Size = input.Size,
-                LogisticProvider = LogisticProviders.BFreeze
+                LogisticProvider = LogisticProviders.BFreeze,
+                HualienAndTaitungShippingFee = input.HualienAndTaitungShippingFee,
+                HolidaySurcharge = input.HolidaySurcharge,
+                HolidaySurchargeStartTime = input.HolidaySurchargeStartTime,
+                HolidaySurchargeEndTime = input.HolidaySurchargeEndTime
             };
 
             await _logisticsProviderRepository.InsertAsync(bFreeze);
@@ -648,6 +688,10 @@ public class LogisticsProvidersAppService : ApplicationService, ILogisticsProvid
             bFrozen.Freight = input.Freight;
             bFrozen.OuterIslandFreight = input.OuterIslandFreight;
             bFrozen.Size = input.Size;
+            bFrozen.HualienAndTaitungShippingFee = input.HualienAndTaitungShippingFee;
+            bFrozen.HolidaySurcharge = input.HolidaySurcharge;
+            bFrozen.HolidaySurchargeStartTime = input.HolidaySurchargeStartTime;
+            bFrozen.HolidaySurchargeEndTime = input.HolidaySurchargeEndTime;
 
             await _logisticsProviderRepository.UpdateAsync(bFrozen);
         }
@@ -659,7 +703,11 @@ public class LogisticsProvidersAppService : ApplicationService, ILogisticsProvid
                 Freight = input.Freight,
                 OuterIslandFreight = input.OuterIslandFreight,
                 Size = input.Size,
-                LogisticProvider = LogisticProviders.BFrozen
+                LogisticProvider = LogisticProviders.BFrozen,
+                HualienAndTaitungShippingFee = input.HualienAndTaitungShippingFee,
+                HolidaySurcharge = input.HolidaySurcharge,
+                HolidaySurchargeStartTime = input.HolidaySurchargeStartTime,
+                HolidaySurchargeEndTime = input.HolidaySurchargeEndTime
             };
 
             await _logisticsProviderRepository.InsertAsync(bFrozen);
