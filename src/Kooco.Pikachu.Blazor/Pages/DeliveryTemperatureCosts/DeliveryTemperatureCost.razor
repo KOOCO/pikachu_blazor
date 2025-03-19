@@ -14,6 +14,7 @@
 @using Blazorise.LoadingIndicator;
 @using Kooco.Pikachu.Items.Dtos;
 
+@inherits PikachuComponentBase
 @inject IStringLocalizer<PikachuResource> L
 @inject NavigationManager NavigationManager
 @attribute [Authorize]
@@ -118,12 +119,7 @@
         }
         <Div Class="row">
             <Div Class="col-12 text-lg-end">
-                <Button Type="@ButtonType.Button"
-                        Class="btn btn-primary"
-                        Clicked="UpdateCostAsync">
-                    <i class="fa fa-check"></i>
-                    @L["Save"]
-                </Button>
+                <PikachuButton Class="pk-btn-primary" Loading="IsLoading" Clicked="UpdateCostAsync" IconClass="fa fa-check">@L["Save"]</PikachuButton>
             </Div>
         </Div>
     </CardBody>

@@ -42,6 +42,7 @@ public partial class DeliveryTemperatureCost
     private bool IsAllowOffshoreIslands = false;
 
     private bool IsLogisticProviderActivated = false;
+    private bool IsLoading { get; set; } = false;
 
     private readonly Dictionary<LogisticProviders, List<LogisticProviders>> LogisticProvidersMap = new()
     {
@@ -118,14 +119,24 @@ public partial class DeliveryTemperatureCost
 
     protected virtual async Task UpdateCostAsync()
     {
-        List<UpdateDeliveryTemperatureCostDto> costs =
-            _objectMapper.Map<List<DeliveryTemperatureCostDto>, List<UpdateDeliveryTemperatureCostDto>>(temperatureCosts);
+        try
+        {
+            IsLoading = true;
+            List<UpdateDeliveryTemperatureCostDto> costs =
+                _objectMapper.Map<List<DeliveryTemperatureCostDto>, List<UpdateDeliveryTemperatureCostDto>>(temperatureCosts);
 
-        await _appService.UpdateCostAsync(costs);
+            await _appService.UpdateCostAsync(costs);
 
-        StateHasChanged();
+            StateHasChanged();
 
-        await _uiMessageService.Success(L["CostUpdateSuccessfully"]);
+            await _uiMessageService.Success(L["CostUpdateSuccessfully"]);
+            IsLoading = false;
+        }
+        catch (Exception ex)
+        {
+            await HandleErrorAsync(ex);
+            IsLoading = false;
+        }
     }
 
     public List<LogisticProviders> GetLogisticsProviders(ItemStorageTemperature temperature)

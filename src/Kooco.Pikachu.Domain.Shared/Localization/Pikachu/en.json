@@ -1333,6 +1333,7 @@
     "ECPay|FamilyMartC2C": "ECPay | Family Mart C2C",
     "HualienAndTaitungShippingFee": "Hualien and Taitung Shipping Fee",
     "HolidaySurcharge": "Holiday Surcharge",
-    "HolidaySurchargeTimeRange": "Holiday Surcharge Time Range"
+    "HolidaySurchargeTimeRange": "Holiday Surcharge Time Range",
+    "CostUpdateSuccessfully": "Cost Updated Successfully"
   }
 }

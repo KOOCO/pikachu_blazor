@@ -3,6 +3,10 @@
     {
         <div class="spinner-border" style="margin-right: 3px" role="status"></div>
     }
+    @if(!Loading && !string.IsNullOrWhiteSpace(IconClass))
+    {
+        <i class="@IconClass" style="margin-right: 3px;"></i>
+    }
     @ChildContent
 </button>
 
@@ -25,12 +29,13 @@
     [Parameter]
     public string Type { get; set; } = "button";
 
+    [Parameter]
+    public string IconClass { get; set; } = "";
+
     private async Task ClickedHandler()
     {
-        
         if (!Disabled && !Loading)
         {
-             
             await Clicked.InvokeAsync();
         }
     }
