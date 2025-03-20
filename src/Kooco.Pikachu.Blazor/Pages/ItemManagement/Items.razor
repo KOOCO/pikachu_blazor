@@ -15,8 +15,61 @@
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JSRuntime;
 @attribute [Authorize]
+@if(Loading)
+{ <Skeleton Animation="SkeletonAnimation.Pulse">
+    <div class="row">
+        <div class="col-4">
+                <SkeletonItem ColumnSize="ColumnSize.Is12" Class="mb-2" />
+        </div>
+        <div class="col-8 text-lg-end">
+            <Div Class="d-inline-block">
+                    <SkeletonItem ColumnSize="ColumnSize.Is2" Class="mb-2" />
+            </Div>
+            <div class="custom-check-group me-1">
+                    <SkeletonItem ColumnSize="ColumnSize.Is2" Class="mb-2" />
+            </div>
+                <SkeletonItem ColumnSize="ColumnSize.Is2" Class="mb-2" />
+             <SkeletonItem ColumnSize="ColumnSize.Is2" Class="mb-2" />
+        </div>
+    </div>
+    <Card>
+        <CardBody>
+            <Div Class="form-group">
+                    <SkeletonItem ColumnSize="ColumnSize.Is12" Class="mb-2" />
+            </Div>
+            <Div Class="row">
+                <Div Class="col-3">
+                        <SkeletonItem ColumnSize="ColumnSize.Is12" Class="mb-2" />
+                </Div>
+                <Div Class="col-3">
+                        <SkeletonItem ColumnSize="ColumnSize.Is12" Class="mb-2" />
+                </Div>
+                <Div Class="col-2">
+                        <SkeletonItem ColumnSize="ColumnSize.Is12" Class="mb-2" />
+                </Div>
+                <Div Class="col-2">
+                        <SkeletonItem ColumnSize="ColumnSize.Is12" Class="mb-2" />
+                </Div>
+                <Div Class="col-2 d-flex align-items-end">
+                        <SkeletonItem ColumnSize="ColumnSize.Is6" Class="mb-2" />
+                        <SkeletonItem ColumnSize="ColumnSize.Is6" Class="mb-2" />
+                </Div>
+            </Div>
+        </CardBody>
+    </Card>
+    </Skeleton>
+    <Card>
+        <CardBody>
+            <Skeleton Animation="SkeletonAnimation.Pulse">
+                <!-- For example, 5 horizontal bars to represent the table rows -->
+                <SkeletonTable Rows="10" Columns="7" />
+            </Skeleton>
+        </CardBody>
+    </Card>
+ 
 
-<LoadingIndicator @ref="Loading" FullScreen></LoadingIndicator>
+}
+<div style="@($"display: {(Loading ? "none" : "block")};" )">
 <div class="row">
     <div class="col-4">
         <h3>@L["Items"]</h3>
@@ -178,6 +231,7 @@
         </DataGrid>
     </CardBody>
 </Card>
+</div>
 @code {
 
 }

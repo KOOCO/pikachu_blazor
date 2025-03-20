@@ -23,7 +23,7 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
         public GetItemListDto Filters { get; set; } = new();
         public List<ItemListDto> ItemList { get; set; } = [];
         public List<KeyValueDto> ItemLookup { get; set; } = [];
-        LoadingIndicator Loading { get; set; }
+        bool Loading { get; set; } = true;
         Autocomplete<KeyValueDto, Guid?> Autocomplete { get; set; }
 
         public bool IsAllSelected = false;
@@ -52,7 +52,7 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
         {
             try
             {
-                await Loading.Show();
+               Loading=true;
                 Filters.SkipCount = PageIndex * Filters.MaxResultCount;
                 var result = await _itemAppService.GetItemsListAsync(Filters);
                 ItemList = result.Items.ToList();
@@ -65,7 +65,7 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
             }
             finally
             {
-                await Loading.Hide();
+                Loading=false;
             }
         }
 
@@ -101,7 +101,7 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
         {
             try
             {
-                await Loading.Show();
+               Loading=true;
                 var item = ItemList.Where(x => x.Id == id).First();
                 item.IsItemAvaliable = !item.IsItemAvaliable;
                 await _itemAppService.ChangeItemAvailability(id);
@@ -120,7 +120,7 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
             }
             finally
             {
-                await Loading.Hide();
+                Loading=false;
             }
         }
         private void HandleSelectAllChange(ChangeEventArgs e)
@@ -142,7 +142,7 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
                     var confirmed = await _uiMessageService.Confirm(L["AreYouSureToDeleteSelectedItem"]);
                     if (confirmed)
                     {
-                        await Loading.Show();
+                       Loading=true;
                         await _itemAppService.DeleteManyItemsAsync(itemIds);
                         await UpdateItemList();
                         IsAllSelected = false;
@@ -156,7 +156,7 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
             }
             finally
             {
-                await Loading.Hide();
+                Loading=false;
             }
         }
         public void CreateNewItem()
