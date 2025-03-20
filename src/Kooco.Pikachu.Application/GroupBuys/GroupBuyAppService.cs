@@ -263,7 +263,8 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
                             await _GroupBuyItemGroupDetailsRepository.DeleteAsync(d => d.GroupBuyItemGroupId == itemGroup.Id);
 
                         ProcessItemDetails(itemGroup, group.ItemDetails);
-
+                        
+                        itemGroup.ItemGroupDetails ??= [];
                         foreach (GroupBuyItemGroupDetails itemGroupDetails in itemGroup.ItemGroupDetails)
                         {
                             await _GroupBuyItemGroupDetailsRepository.UpdateAsync(itemGroupDetails);

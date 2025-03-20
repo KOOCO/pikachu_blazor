@@ -2569,11 +2569,10 @@ public partial class EditGroupBuy
             await Loading.Hide();
             NavigationManager.NavigateTo("GroupBuyManagement/GroupBuyList");
         }
-        catch (BusinessException ex)
+        catch (Exception ex)
         {
             await Loading.Hide();
-            Console.WriteLine(ex.ToString());
-            await _uiMessageService.Error(L[ex.Code]);
+            await HandleErrorAsync(ex);
         }
     }
 
