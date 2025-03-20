@@ -11,6 +11,33 @@
 @inject NavigationManager NavigationManager;
 @inject IStringLocalizer<PikachuResource> L;
 @attribute [Authorize]
+@if (Loading == true)
+{
+    <Skeleton Animation="SkeletonAnimation.Pulse">
+        <div class="row">
+            <!-- Left column for the OrdersList heading -->
+            <div class="col-3">
+                <!-- This skeleton item is ~7/12 wide, you can adjust ColumnSize -->
+                <SkeletonItem ColumnSize="ColumnSize.Is12" Class="mb-2" />
+            </div>
+
+            <!-- Right column for multiple button placeholders -->
+            <div class="col-9 text-lg-end d-flex gap-2 justify-content-end">
+                <!-- Make each skeleton item narrower or wider to mimic small buttons -->
+                <!-- Add more SkeletonItem lines if needed -->
+            </div>
+        </div>
+    </Skeleton>
+    <Card>
+        <CardBody>
+            <Skeleton Animation="SkeletonAnimation.Pulse">
+                <!-- For example, 5 horizontal bars to represent the table rows -->
+                <SkeletonTable Rows="10" Columns="5" />
+            </Skeleton>
+        </CardBody>
+    </Card>
+}
+<div style="@($"display: {(Loading ? "none" : "block")};" )">
 <Div Class="row">
     <Div Class="col-md-6 col-sm-12">
         <h3>@L["AutomaticEmailing"]</h3>
@@ -23,7 +50,7 @@
     </Div>
 </Div>
 
-<LoadingIndicator @ref="Loading" FullScreen></LoadingIndicator>
+
 
 <Card>
     <CardBody>
@@ -65,3 +92,4 @@
         </DataGrid>
     </CardBody>
 </Card>
+</div>

@@ -18,7 +18,7 @@ namespace Kooco.Pikachu.Blazor.Pages.TenantEmailing
         int _pageSize = 10;
         int Total = 0;
         private string Sorting = nameof(AutomaticEmail.StartDate);
-        private LoadingIndicator Loading { get; set; } = new();
+        private bool Loading { get; set; } = true;
 
         public AutomaticEmailing()
         {
@@ -29,7 +29,7 @@ namespace Kooco.Pikachu.Blazor.Pages.TenantEmailing
         {
             try
             {
-                await Loading.Show();
+                Loading=true;
                 int skipCount = _pageIndex * _pageSize;
                 var result = await _automaticEmailAppService.GetListAsync(new GetAutomaticEmailListDto
                 {
@@ -47,7 +47,7 @@ namespace Kooco.Pikachu.Blazor.Pages.TenantEmailing
             }
             finally
             {
-                await Loading.Hide();
+               Loading=false;
             }
         }
 
@@ -59,7 +59,7 @@ namespace Kooco.Pikachu.Blazor.Pages.TenantEmailing
                 _pageIndex = e.Page - 1;
                 await UpdateGroupBuyList();
                 await InvokeAsync(StateHasChanged);
-                await Loading.Hide();
+               Loading=false;
             }
             catch (Exception ex)
             {
