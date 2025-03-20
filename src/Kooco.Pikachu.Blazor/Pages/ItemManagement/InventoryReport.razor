@@ -14,7 +14,36 @@
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JSRuntime
 @attribute [Authorize]
+@if(Loading)
+{
+<Skeleton Animation="SkeletonAnimation.Pulse">
+<div class="row">
+    <div class="col-6">
+                <SkeletonItem ColumnSize="ColumnSize.Is12" Class="mb-2" />
+    </div>
+    <div class="col-6 text-lg-end">
+        <div class="d-inline-block me-1">
+            <div class="input-group">
+                        <SkeletonItem ColumnSize="ColumnSize.Is4" Class="mb-2" />
+            </div>
+        </div>
+        
+                    <SkeletonItem ColumnSize="ColumnSize.Is2" Class="mb-2" />
+     
 
+    </div>
+</div>
+</Skeleton>
+<Card>
+    <CardBody>
+            <Skeleton Animation="SkeletonAnimation.Pulse">
+                <!-- For example, 5 horizontal bars to represent the table rows -->
+                <SkeletonTable Rows="10" Columns="7" />
+            </Skeleton>
+    </CardBody>
+</Card>
+}
+<div style="@($"display: {(Loading ? "none" : "block")};" )">
 <div class="row">
     <div class="col-6">
         <h3>@L["庫存報表"]</h3>
@@ -80,6 +109,7 @@
         </DataGrid>
     </CardBody>
 </Card>
+</div>
 @code {
 
 }

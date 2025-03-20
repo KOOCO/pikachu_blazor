@@ -22,7 +22,7 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
         int Total = 0;
         string? FilterText = null;
         string Sorting = nameof(ItemDetailsDto.ItemName);
-
+        bool Loading { get; set; } = true;
         private readonly IUiMessageService _uiMessageService;
         private readonly IItemDetailsAppService _itemDetailAppService;
 
@@ -47,6 +47,7 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
         {
             try
             {
+                Loading = true;
                 int skipCount = PageIndex * PageSize;
                 var result = await _itemDetailAppService.GetInventroyReport(new GetInventroyInputDto
                 {
@@ -57,11 +58,13 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
                 });
                 InventroyList = result.Items.ToList();
                 Total = (int)result.TotalCount;
+                Loading = false;
             }
             catch (Exception ex)
             {
                 await _uiMessageService.Error(ex.GetType().ToString());
                 Console.WriteLine(ex.ToString());
+                Loading = false;
             }
         }
         async void OnSortChange(DataGridSortChangedEventArgs e)

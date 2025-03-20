@@ -21,7 +21,89 @@
 @inject IGroupBuyAppService _groupBuyAppService;
 @using Microsoft.JSInterop;
 @inject IJSRuntime JSRuntime;
-<LoadingIndicator @ref="loading" FullScreen FadeIn>
+  @if(loading)
+    {
+     <Skeleton Animation="SkeletonAnimation.Pulse">
+        <div class="row">
+            <!-- Left column for the OrdersList heading -->
+            <div class="col-3">
+                <!-- This skeleton item is ~7/12 wide, you can adjust ColumnSize -->
+                <SkeletonItem ColumnSize="ColumnSize.Is7" Class="mb-2" />
+            </div>
+
+            <!-- Right column for multiple button placeholders -->
+            <div class="col-9 text-lg-end d-flex gap-2 justify-content-end">
+                <!-- Make each skeleton item narrower or wider to mimic small buttons -->
+                <SkeletonItem ColumnSize="ColumnSize.Is2" />
+                <SkeletonItem ColumnSize="ColumnSize.Is2" />
+                <SkeletonItem ColumnSize="ColumnSize.Is2" />
+                <!-- Add more SkeletonItem lines if needed -->
+            </div>
+        </div>
+
+        <!-- If the selected tab is ToBeShipped, you’d normally show counts. 
+             We add a second row with a single skeleton line. 
+        -->
+        <div class="row mt-3">
+            <div class="col-12 text-lg-end">
+                <SkeletonItem ColumnSize="ColumnSize.Is4" />
+            </div>
+        </div>
+         </Skeleton>
+         <Card>
+        <CardBody>
+            <!-- A skeleton with pulse animation -->
+            <Skeleton Animation="SkeletonAnimation.Pulse">
+                <!-- Row with main search textbox and the "Filters" button -->
+                <Row>
+                    <Column ColumnSize="ColumnSize.Is10">
+                        <!-- Mimic the textbox + search button shape -->
+                        <!-- E.g. a single wide bar for the text field -->
+                        <SkeletonItem ColumnSize="ColumnSize.Is9" Class="mb-2" />
+                    </Column>
+                    <Column ColumnSize="ColumnSize.Is2">
+                        <!-- Mimic the button shape (full width) -->
+                        <SkeletonItem ColumnSize="ColumnSize.Is12" Class="mb-2" />
+                    </Column>
+                </Row>
+
+                <!-- If your filters are open, we can show placeholders for them too -->
+                <!-- (You may decide to show them or not, depending on your app's logic.) -->
+                <Row Class="mt-2">
+                    <Column ColumnSize="ColumnSize.Is3">
+                        <SkeletonItem ColumnSize="ColumnSize.Is12" Class="mb-2" />
+                    </Column>
+                    <Column ColumnSize="ColumnSize.Is3">
+                        <SkeletonItem ColumnSize="ColumnSize.Is12" Class="mb-2" />
+                    </Column>
+                    <Column ColumnSize="ColumnSize.Is6">
+                        <!-- Could represent date pickers, etc. -->
+                        <SkeletonItem ColumnSize="ColumnSize.Is8" Class="mb-2" />
+                    </Column>
+                </Row>
+            </Skeleton>
+        </CardBody>
+    </Card>
+     <div class="mb-3">
+        <Skeleton Animation="SkeletonAnimation.Pulse">
+            <div class="d-flex gap-3">
+                <SkeletonItem ColumnSize="ColumnSize.Is2" Class="mb-2" />
+                <SkeletonItem ColumnSize="ColumnSize.Is2" Class="mb-2" />
+                <SkeletonItem ColumnSize="ColumnSize.Is2" Class="mb-2" />
+                <SkeletonItem ColumnSize="ColumnSize.Is2" Class="mb-2" />
+                <!-- Repeat for as many tabs as you have -->
+            </div>
+        </Skeleton>
+    </div>
+
+    <!-- Also show a skeleton for the data grid area in the default tab (e.g., "All") -->
+    <Skeleton Animation="SkeletonAnimation.Pulse">
+        <!-- For example, 5 horizontal bars to represent the table rows -->
+      <SkeletonTable Rows="5" Columns="8" />
+    </Skeleton>
+   
+    }
+    <div style="@($"display: {(loading ? "none" : "block")};" )">
     <div class="row">
         <div class="col-3">
             <h3>@L["EnterpricePurchase"]</h3>
@@ -461,4 +543,4 @@
             </Column>
         }
     </Row>
-</LoadingIndicator>
+    </div>

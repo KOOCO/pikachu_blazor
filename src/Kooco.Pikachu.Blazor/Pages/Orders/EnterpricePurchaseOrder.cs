@@ -40,7 +40,7 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders
         private string? Filter { get; set; }
         private bool isOrderCombine { get; set; } = false;
         private readonly HashSet<Guid> ExpandedRows = new();
-        private LoadingIndicator loading { get; set; }
+        private bool loading { get; set; } = true;
         private List<KeyValueDto> GroupBuyList { get; set; } = new();
         private List<ShippingStatus> ShippingStatuses { get; set; } = [];
         private List<DeliveryMethod> DeliveryMethods { get; set; } = [];
@@ -115,9 +115,9 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders
 
         private async Task GetGroupBuyList()
         {
-            await loading.Show();
+            loading=true;
             GroupBuyList = await _groupBuyAppService.GetGroupBuyLookupAsync();
-            await loading.Hide();
+            loading=false;
 
         }
 
@@ -125,7 +125,7 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders
         {
             try
             {
-                await loading.Show();
+                loading=true;
                 int skipCount = PageIndex * PageSize;
                 var result = await _orderAppService.GetListAsync(new GetOrderListDto
                 {
@@ -141,11 +141,11 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders
                 Orders = result?.Items.ToList() ?? new List<OrderDto>();
                 TotalCount = (int?)result?.TotalCount ?? 0;
 
-                await loading.Hide();
+                loading=false;
             }
             catch (Exception ex)
             {
-                await loading.Hide();
+                loading=false;
                 await _uiMessageService.Error(ex.GetType().ToString());
                 Console.WriteLine(ex.ToString());
             }
@@ -166,7 +166,7 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders
         {
             try
             {
-                await loading.Show();
+                loading=true;
 
                 int skipCount = PageIndex * PageSize;
 
@@ -189,11 +189,11 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders
 
                 TotalCount = (int?)result?.TotalCount ?? 0;
 
-                await loading.Hide();
+                loading=false;
             }
             catch (Exception ex)
             {
-                await loading.Hide();
+                loading=false;
 
                 await _uiMessageService.Error(ex.GetType().ToString());
             }
@@ -257,12 +257,12 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders
 
         public async void NavigateToOrderDetails(OrderDto e)
         {
-            await loading.Show();
+            loading=true;
 
             var id = e.OrderId;
             NavigationManager.NavigateTo($"Orders/OrderDetails/{id}");
 
-            await loading.Hide();
+            loading=false;
         }
 
         bool ShowCombineButton()
@@ -354,10 +354,10 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders
         {
             try
             {
-                await loading.Show();
+                loading=true;
                 var selectedOrder = Orders.SingleOrDefault(x => x.IsSelected);
                 await _electronicInvoiceAppService.CreateInvoiceAsync(selectedOrder.Id);
-                await loading.Hide();
+                loading=false;
                 await _uiMessageService.Success(L["InvoiceIssueSuccessfully"]);
                 await UpdateItemList();
 
@@ -365,7 +365,7 @@ namespace Kooco.Pikachu.Blazor.Pages.Orders
             }
             catch (Exception ex)
             {
-                await loading.Hide();
+                loading=false;
                 await _uiMessageService.Error(ex.Message.ToString());
 
 
