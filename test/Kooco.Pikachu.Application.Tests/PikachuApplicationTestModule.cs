@@ -1,5 +1,6 @@
 ﻿using Kooco.Pikachu.AzureStorage;
 using Kooco.Pikachu.AzureStorage.Image;
+using Kooco.Pikachu.Emails;
 using Kooco.Pikachu.Images;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -26,6 +27,7 @@ public class PikachuApplicationTestModule : AbpModule
 
         // Create and register mocks
         var imageAppServiceMock = new Mock<IImageAppService>();
+        var emailAppServiceMock = new Mock<IEmailAppService>(); 
 
         // Setup mock behavior if necessary
         imageAppServiceMock.Setup(x => x.UploadImageAsync(It.IsAny<string>(), It.IsAny<byte[]>(), true))
@@ -34,5 +36,6 @@ public class PikachuApplicationTestModule : AbpModule
         // Register mocks
         services.AddSingleton(imageAppServiceMock.Object);
         services.AddSingleton(imageContainerManagerMock.Object);
+        services.AddSingleton(emailAppServiceMock.Object);
     }
 }

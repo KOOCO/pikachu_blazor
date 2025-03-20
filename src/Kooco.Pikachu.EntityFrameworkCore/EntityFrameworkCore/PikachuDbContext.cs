@@ -278,7 +278,11 @@ public class PikachuDbContext :
             b.Property(o => o.TotalAmount).HasColumnType("money");
             b.Property(p => p.RefundAmount).HasColumnType("decimal(18,2)");
             b.Property(p => p.cashback_amount).HasColumnType("decimal(18,2)");
-            b.Property(o => o.RowVersion).IsRowVersion();
+
+            if (Database.IsSqlServer())
+            {
+                b.Property(o => o.RowVersion).IsRowVersion();
+            }
 
             b.HasMany(x => x.OrderTransactions).WithOne(x => x.Order).HasForeignKey(x => x.OrderId);
         });

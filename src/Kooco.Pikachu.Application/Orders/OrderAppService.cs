@@ -244,6 +244,11 @@ public class OrderAppService : ApplicationService, IOrderAppService
             order.DeliveryCostForFrozen = input.DeliveryCostForFrozen;
             order.DeliveryCost = input.DeliveryCost;
 
+            if (input.IsTest)
+            {
+                order.RowVersion = new byte[8];
+            }
+
             if (input.OrderItems is { Count: > 0 })
             {
                 List<string> insufficientItems = new List<string>();

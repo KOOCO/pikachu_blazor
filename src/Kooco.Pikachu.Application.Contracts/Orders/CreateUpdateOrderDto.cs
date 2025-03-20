@@ -77,4 +77,5 @@ public class CreateUpdateOrderDto
     public ReceivingTime? ReceivingTimeFrozen { get; set; }
     public decimal? DeliveryCost { get; set; }
     public List<CreateUpdateOrderItemDto> OrderItems { get; set; }
+    public bool IsTest { get; set; }
 }

@@ -238,6 +238,8 @@ public class GroupBuy : FullAuditedAggregateRoot<Guid>, IMultiTenant
 
     }
 
+    public GroupBuy(Guid id) : base(id) { }
+
     public GroupBuy(Guid id, int groupNo, string status,
         string groupBuyName,
         string entryURL,
