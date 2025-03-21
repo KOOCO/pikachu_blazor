@@ -287,7 +287,7 @@
     "Menu:TenantBillingReport": "租戶帳單報表",
     "Menu:VoidInvoice": "作廢/折讓票據",
     "MerchantId": "Merchant ID",
-    "MerchantID": "特店編號",
+    "MerchantID": "商店代號",
     "MerchantNotes": "商家須知",
     "MerchantRemark": "備註",
     "MerchantRemarks": "商家備註",
@@ -1404,6 +1404,10 @@
     "ECPay|FamilyMartC2C": "綠界 | 全家 C2C",
     "HualienAndTaitungShippingFee": "花東地區運費",
     "HolidaySurcharge": "繁盛期加給",
-    "HolidaySurchargeTimeRange": "假日附加費時間範圍"
+    "HolidaySurchargeTimeRange": "假日附加費時間範圍",
+    "FamilyMartB2C": "全家 B2C",
+    "7-11B2C": "7-11 B2C",
+    "7-11 frozen B2C": "7-11 冷凍 B2C",
+    "Logistics:COD": "是否代收款"
   }
 }

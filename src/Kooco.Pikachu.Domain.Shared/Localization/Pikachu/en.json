@@ -1334,6 +1334,10 @@
     "HualienAndTaitungShippingFee": "Hualien and Taitung Shipping Fee",
     "HolidaySurcharge": "Holiday Surcharge",
     "HolidaySurchargeTimeRange": "Holiday Surcharge Time Range",
-    "CostUpdateSuccessfully": "Cost Updated Successfully"
+    "CostUpdateSuccessfully": "Cost Updated Successfully",
+    "FamilyMartB2C": "Family Mart B2C",
+    "7-11B2C": "7-11 B2C",
+    "7-11 frozen B2C": "7-11 Frozen B2C",
+    "Logistics:COD": "Cash On Delivery"
   }
 }

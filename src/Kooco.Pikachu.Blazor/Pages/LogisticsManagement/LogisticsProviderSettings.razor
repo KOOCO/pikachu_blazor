@@ -821,15 +821,15 @@
                         <CardBody>
                             <Tabs SelectedTab="@selectedTab" SelectedTabChanged="@OnSelectedTabChanged">
                                 <Items>
-                                    <Tab Name="familymart">@L["FamilyMart"]</Tab>
-                                    <Tab Name="7-11">@L["7-11"]</Tab>
-                                    <Tab Name="7-11frozen">@L["7-11 frozen"]</Tab>
+                                    <Tab Name="familymart">@L["FamilyMartB2C"]</Tab>
+                                    <Tab Name="7-11">@L["7-11B2C"]</Tab>
+                                    <Tab Name="7-11frozen">@L["7-11 frozen B2C"]</Tab>
                                 </Items>
                                 <Content>
                                     <TabPanel Name="familymart">
                                         <Card>
                                             <CardHeader>
-                                                <h4>@L["FamilyMart"]</h4>
+                                                <h4>@L["FamilyMartB2C"]</h4>
                                             </CardHeader>
                                             <CardBody>
                                                 <EditForm Model="@FamilyMart" OnValidSubmit="UpdateFamilyMartAsync">
@@ -862,7 +862,7 @@
                                                     </div>
                                                     <div class="row">
                                                         <div class="col-3">
-                                                            <label for="h-freight" class="form-label">@L["Payment"]<span class="text-danger"> *</span></label>
+                                                            <label for="h-freight" class="form-label">@L["Logistics:COD"]<span class="text-danger"> *</span></label>
                                                         </div>
                                                         <div class="col-8">
                                                             <Select @bind-SelectedValue="FamilyMart.Payment">
@@ -894,7 +894,7 @@
                                     <TabPanel Name="7-11">
                                         <Card>
                                             <CardHeader>
-                                                <h4>@L["7-11"]</h4>
+                                                <h4>@L["7-11B2C"]</h4>
                                             </CardHeader>
                                             <CardBody>
                                                 <EditForm Model="@SevenToEleven" OnValidSubmit="UpdateSevenToElevenAsync">
@@ -927,12 +927,12 @@
                                                     </div>
                                                     <div class="row">
                                                         <div class="col-3">
-                                                            <label for="h-freight" class="form-label">@L["Payment"]<span class="text-danger"> *</span></label>
+                                                            <label for="h-freight" class="form-label">@L["Logistics:COD"]<span class="text-danger"> *</span></label>
                                                         </div>
                                                         <div class="col-8">
                                                             <Select @bind-SelectedValue="SevenToEleven.Payment">
-                                                                <SelectItem Value="true">Yes</SelectItem>
-                                                                <SelectItem Value="false">No</SelectItem>
+                                                                <SelectItem Value="true">@L["Yes"]</SelectItem>
+                                                                <SelectItem Value="false">@L["No"]</SelectItem>
                                                             </Select>
                                                         </div>
                                                     </div>
@@ -959,7 +959,7 @@
                                     <TabPanel Name="7-11frozen">
                                         <Card>
                                             <CardHeader>
-                                                <h4>@L["7-11 frozen"]</h4>
+                                                <h4>@L["7-11 frozen B2C"]</h4>
                                             </CardHeader>
                                             <CardBody>
                                                 <EditForm Model="@SevenToElevenFrozen" OnValidSubmit="UpdateSevenToElevenFrozenAsync">
@@ -992,12 +992,12 @@
                                                     </div>
                                                     <div class="row">
                                                         <div class="col-3">
-                                                            <label for="h-freight" class="form-label">@L["Payment"]<span class="text-danger"> *</span></label>
+                                                            <label for="h-freight" class="form-label">@L["Logistics:COD"]<span class="text-danger"> *</span></label>
                                                         </div>
                                                         <div class="col-8">
                                                             <Select @bind-SelectedValue="SevenToElevenFrozen.Payment">
-                                                                <SelectItem Value="true">Yes</SelectItem>
-                                                                <SelectItem Value="false">No</SelectItem>
+                                                                <SelectItem Value="true">@L["Yes"]</SelectItem>
+                                                                <SelectItem Value="false">@L["No"]</SelectItem>
                                                             </Select>
                                                         </div>
                                                     </div>
@@ -1151,7 +1151,7 @@
                                                     </div>
                                                     <div class="row">
                                                         <div class="col-3">
-                                                            <label for="h-freight" class="form-label">@L["Payment"]<span class="text-danger"> *</span></label>
+                                                            <label for="h-freight" class="form-label">@L["Logistics:COD"]<span class="text-danger"> *</span></label>
                                                         </div>
                                                         <div class="col-8">
                                                             <Select @bind-SelectedValue="FamilyMartC2C.Payment">
@@ -1216,12 +1216,12 @@
                                                     </div>
                                                     <div class="row">
                                                         <div class="col-3">
-                                                            <label for="h-freight" class="form-label">@L["Payment"]<span class="text-danger"> *</span></label>
+                                                            <label for="h-freight" class="form-label">@L["Logistics:COD"]<span class="text-danger"> *</span></label>
                                                         </div>
                                                         <div class="col-8">
                                                             <Select @bind-SelectedValue="SevenToElevenC2C.Payment">
-                                                                <SelectItem Value="true">Yes</SelectItem>
-                                                                <SelectItem Value="false">No</SelectItem>
+                                                                <SelectItem Value="true">@L["Yes"]</SelectItem>
+                                                                <SelectItem Value="false">@L["No"]</SelectItem>
                                                             </Select>
                                                         </div>
                                                     </div>
@@ -1477,12 +1477,12 @@
                                                     </div>
                                                     <div class="row">
                                                         <div class="col-3">
-                                                            <label for="h-freight" class="form-label">@L["Payment"]<span class="text-danger"> *</span></label>
+                                                            <label for="h-freight" class="form-label">@L["Logistics:COD"]<span class="text-danger"> *</span></label>
                                                         </div>
                                                         <div class="col-8">
                                                             <Select @bind-SelectedValue="TCatNormal.Payment">
-                                                                <SelectItem Value="true">Yes</SelectItem>
-                                                                <SelectItem Value="false">No</SelectItem>
+                                                                <SelectItem Value="true">@L["Yes"]</SelectItem>
+                                                                <SelectItem Value="false">@L["No"]</SelectItem>
                                                             </Select>
                                                         </div>
                                                     </div>
@@ -1604,12 +1604,12 @@
                                                     </div>
                                                     <div class="row">
                                                         <div class="col-3">
-                                                            <label for="h-freight" class="form-label">@L["Payment"]<span class="text-danger"> *</span></label>
+                                                            <label for="h-freight" class="form-label">@L["Logistics:COD"]<span class="text-danger"> *</span></label>
                                                         </div>
                                                         <div class="col-8">
                                                             <Select @bind-SelectedValue="TCatFreeze.Payment">
-                                                                <SelectItem Value="true">Yes</SelectItem>
-                                                                <SelectItem Value="false">No</SelectItem>
+                                                                <SelectItem Value="true">@L["Yes"]</SelectItem>
+                                                                <SelectItem Value="false">@L["No"]</SelectItem>
                                                             </Select>
                                                         </div>
                                                     </div>
@@ -1731,12 +1731,12 @@
                                                     </div>
                                                     <div class="row">
                                                         <div class="col-3">
-                                                            <label for="h-freight" class="form-label">@L["Payment"]<span class="text-danger"> *</span></label>
+                                                            <label for="h-freight" class="form-label">@L["Logistics:COD"]<span class="text-danger"> *</span></label>
                                                         </div>
                                                         <div class="col-8">
                                                             <Select @bind-SelectedValue="TCatFrozen.Payment">
-                                                                <SelectItem Value="true">Yes</SelectItem>
-                                                                <SelectItem Value="false">No</SelectItem>
+                                                                <SelectItem Value="true">@L["Yes"]</SelectItem>
+                                                                <SelectItem Value="false">@L["No"]</SelectItem>
                                                             </Select>
                                                         </div>
                                                     </div>
@@ -1835,12 +1835,12 @@
                                                     </div>
                                                     <div class="row">
                                                         <div class="col-3">
-                                                            <label for="h-freight" class="form-label">@L["Payment"]<span class="text-danger"> *</span></label>
+                                                            <label for="h-freight" class="form-label">@L["Logistics:COD"]<span class="text-danger"> *</span></label>
                                                         </div>
                                                         <div class="col-8">
                                                             <Select @bind-SelectedValue="TCat711Normal.Payment">
-                                                                <SelectItem Value="true">Yes</SelectItem>
-                                                                <SelectItem Value="false">No</SelectItem>
+                                                                <SelectItem Value="true">@L["Yes"]</SelectItem>
+                                                                <SelectItem Value="false">@L["No"]</SelectItem>
                                                             </Select>
                                                         </div>
                                                     </div>
@@ -1891,12 +1891,12 @@
                                                     </div>
                                                     <div class="row">
                                                         <div class="col-3">
-                                                            <label for="h-freight" class="form-label">@L["Payment"]<span class="text-danger"> *</span></label>
+                                                            <label for="h-freight" class="form-label">@L["Logistics:COD"]<span class="text-danger"> *</span></label>
                                                         </div>
                                                         <div class="col-8">
                                                             <Select @bind-SelectedValue="TCat711Freeze.Payment">
-                                                                <SelectItem Value="true">Yes</SelectItem>
-                                                                <SelectItem Value="false">No</SelectItem>
+                                                                <SelectItem Value="true">@L["Yes"]</SelectItem>
+                                                                <SelectItem Value="false">@L["No"]</SelectItem>
                                                             </Select>
                                                         </div>
                                                     </div>
@@ -1947,12 +1947,12 @@
                                                     </div>
                                                     <div class="row">
                                                         <div class="col-3">
-                                                            <label for="h-freight" class="form-label">@L["Payment"]<span class="text-danger"> *</span></label>
+                                                            <label for="h-freight" class="form-label">@L["Logistics:COD"]<span class="text-danger"> *</span></label>
                                                         </div>
                                                         <div class="col-8">
                                                             <Select @bind-SelectedValue="TCat711Frozen.Payment">
-                                                                <SelectItem Value="true">Yes</SelectItem>
-                                                                <SelectItem Value="false">No</SelectItem>
+                                                                <SelectItem Value="true">@L["Yes"]</SelectItem>
+                                                                <SelectItem Value="false">@L["No"]</SelectItem>
                                                             </Select>
                                                         </div>
                                                     </div>
