@@ -12,6 +12,33 @@
 @inject IStringLocalizer<PikachuResource> L
 @inject NavigationManager NavigationManager
 @attribute [Authorize]
+@if (Loading == true)
+{
+    <Skeleton Animation="SkeletonAnimation.Pulse">
+        <div class="row">
+            <!-- Left column for the OrdersList heading -->
+            <div class="col-3">
+                <!-- This skeleton item is ~7/12 wide, you can adjust ColumnSize -->
+                <SkeletonItem ColumnSize="ColumnSize.Is12" Class="mb-2" />
+            </div>
+
+            <!-- Right column for multiple button placeholders -->
+            <div class="col-9 text-lg-end d-flex gap-2 justify-content-end">
+                <SkeletonItem ColumnSize="ColumnSize.Is6" Class="mb-2" />
+                <SkeletonItem ColumnSize="ColumnSize.Is6" Class="mb-2" />
+            </div>
+        </div>
+    </Skeleton>
+    <Card>
+        <CardBody>
+            <Skeleton Animation="SkeletonAnimation.Pulse">
+                <!-- For example, 5 horizontal bars to represent the table rows -->
+                <SkeletonTable Rows="10" Columns="5" />
+            </Skeleton>
+        </CardBody>
+    </Card>
+}
+<div style="@($"display: {(Loading ? "none" : "block")};" )">
 <div class="row">
     <div class="col-6">
         <h3>@L["FreebiesList"]</h3>
@@ -80,6 +107,7 @@
         </DataGrid>
     </CardBody>
 </Card>
+</div>
 
 @code {
     }

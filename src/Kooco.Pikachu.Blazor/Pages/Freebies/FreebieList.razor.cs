@@ -18,6 +18,7 @@ namespace Kooco.Pikachu.Blazor.Pages.Freebies
         public List<FreebieDto> FreebieListItems { get; set; }
         private readonly IFreebieAppService _freebieAppService;
         private readonly IUiMessageService _uiMessageService;
+        bool Loading { get; set; } = true;
         public bool IsAllSelected = false;
         int PageIndex = 1;
         int PageSize = 10;
@@ -45,6 +46,7 @@ namespace Kooco.Pikachu.Blazor.Pages.Freebies
         {
             try
             {
+                Loading = true;
                 int skipCount = PageIndex * PageSize;
                 var result = await _freebieAppService.GetListAsync(new PagedAndSortedResultRequestDto
                 {
@@ -54,9 +56,11 @@ namespace Kooco.Pikachu.Blazor.Pages.Freebies
                 });
                 FreebieListItems = result.Items.ToList();
                 Total = (int)result.TotalCount;
+                Loading = false;
             }
             catch (Exception ex)
             {
+                Loading = false;
                 await _uiMessageService.Error(ex.GetType().ToString());
                 Console.WriteLine(ex.ToString());
             }
