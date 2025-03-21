@@ -765,7 +765,7 @@ public class LogisticsProvidersAppService : ApplicationService, ILogisticsProvid
                     JsonObject keyValuePairs = new JsonObject
                     {
                         { "Provider", result.LogisticProviderName },
-                        { "IsEnable", result.IsEnabled },
+                       
                         { "Cost", result.Freight },
                         { "MainIslands", result.MainIslands },
                         { "IsOuterIslands", result.IsOuterIslands },
@@ -783,7 +783,8 @@ public class LogisticsProvidersAppService : ApplicationService, ILogisticsProvid
                         { "Provider", result.LogisticProviderName },
                         { "Freight", result.Freight },
                         { "Weight", result.Weight },
-                         {"MerchantID",grrenB2C.StoreCode }
+                         {"MerchantID",grrenB2C.StoreCode },
+                          {"IsEnable",result.IsEnabled },
                     };
                     DBSkeyValuePairs.Add(keyValuePairs);
 
@@ -797,7 +798,8 @@ public class LogisticsProvidersAppService : ApplicationService, ILogisticsProvid
                         { "Provider", result.LogisticProviderName },
                         { "COST", result.Freight },
                         { "Payment", result.Payment },
-                         {"MerchantID",grrenB2C.StoreCode }
+                         {"MerchantID",grrenB2C.StoreCode },
+                          {"IsEnable",result.IsEnabled },
                     };
                     DBSkeyValuePairs.Add(keyValuePairs);
 
@@ -811,7 +813,8 @@ public class LogisticsProvidersAppService : ApplicationService, ILogisticsProvid
                         { "Provider", result.LogisticProviderName },
                         { "COST", result.Freight },
                         { "Payment", result.Payment },
-                         {"MerchantID",grrenB2C.StoreCode }
+                         {"MerchantID",grrenB2C.StoreCode },
+                          {"IsEnable",result.IsEnabled },
                     };
                     DBSkeyValuePairs.Add(keyValuePairs);
 
@@ -825,7 +828,8 @@ public class LogisticsProvidersAppService : ApplicationService, ILogisticsProvid
                         { "Provider", result.LogisticProviderName },
                         { "COST", result.Freight },
                         { "Payment", result.Payment },
-                         {"MerchantID",grrenB2C.StoreCode }
+                         {"MerchantID",grrenB2C.StoreCode },
+                          {"IsEnable",result.IsEnabled },
                     };
                     DBSkeyValuePairs.Add(keyValuePairs);
 
@@ -839,7 +843,8 @@ public class LogisticsProvidersAppService : ApplicationService, ILogisticsProvid
                         { "Provider", result.LogisticProviderName },
                         { "COST", result.Freight },
                         { "Payment", result.Payment },
-                         {"MerchantID",grrenB2C.StoreCode }
+                         {"MerchantID",grrenB2C.StoreCode },
+                          {"IsEnable",result.IsEnabled },
                     };
                     DBSkeyValuePairs.Add(keyValuePairs);
 
@@ -854,7 +859,16 @@ public class LogisticsProvidersAppService : ApplicationService, ILogisticsProvid
                         { "Freight", result.Freight },
                         { "OuterIslandFreight", result.OuterIslandFreight },
                         { "Size", result.Size.ToString() },
-                         {"MerchantID",grrenB2C.StoreCode }
+                         {"MerchantID",grrenB2C.StoreCode },
+                          {"IsEnable",result.IsEnabled },
+             {"HualienandTaitungShippingFee ",result.HualienAndTaitungShippingFee },
+                {"HolidaySurcharge",result.HolidaySurcharge },
+               { "HolidaySurchargeTimeRange", new JsonObject
+        {
+            { "StartTime", result.HolidaySurchargeStartTime },
+            { "EndTime", result.HolidaySurchargeEndTime }
+        }
+    }
                     };
                     DBSkeyValuePairs.Add(keyValuePairs);
 
@@ -869,7 +883,16 @@ public class LogisticsProvidersAppService : ApplicationService, ILogisticsProvid
                         { "Freight", result.Freight },
                         { "OuterIslandFreight", result.OuterIslandFreight },
                         { "Size", result.Size.ToString() },
-                         {"MerchantID",grrenB2C.StoreCode }
+                         {"MerchantID",grrenB2C.StoreCode },
+                          {"IsEnable",result.IsEnabled },
+             {"HualienandTaitungShippingFee ",result.HualienAndTaitungShippingFee },
+                {"HolidaySurcharge",result.HolidaySurcharge },
+               { "HolidaySurchargeTimeRange", new JsonObject
+        {
+            { "StartTime", result.HolidaySurchargeStartTime },
+            { "EndTime", result.HolidaySurchargeEndTime }
+        }
+    }
                     };
                     DBSkeyValuePairs.Add(keyValuePairs);
 
@@ -884,7 +907,16 @@ public class LogisticsProvidersAppService : ApplicationService, ILogisticsProvid
                         { "Freight", result.Freight },
                         { "OuterIslandFreight", result.OuterIslandFreight },
                         { "Size", result.Size.ToString() },
-                         {"MerchantID",grrenB2C.StoreCode }
+                         {"MerchantID",grrenB2C.StoreCode },
+                          {"IsEnable",result.IsEnabled },
+             {"HualienandTaitungShippingFee ",result.HualienAndTaitungShippingFee },
+                {"HolidaySurcharge",result.HolidaySurcharge },
+               { "HolidaySurchargeTimeRange", new JsonObject
+        {
+            { "StartTime", result.HolidaySurchargeStartTime },
+            { "EndTime", result.HolidaySurchargeEndTime }
+        }
+    }
                     };
                     DBSkeyValuePairs.Add(keyValuePairs);
 
@@ -898,7 +930,8 @@ public class LogisticsProvidersAppService : ApplicationService, ILogisticsProvid
                         { "Provider", result.LogisticProviderName },
                         { "COST", result.Freight },
                         { "Payment", result.Payment },
-                         {"MerchantID",grrenC2C.StoreCode }
+                         {"MerchantID",grrenC2C.StoreCode },
+                         {"IsEnable",result.IsEnabled },
                     };
                     DBSkeyValuePairs.Add(keyValuePairs);
 
@@ -912,7 +945,8 @@ public class LogisticsProvidersAppService : ApplicationService, ILogisticsProvid
                         { "Provider", result.LogisticProviderName },
                         { "COST", result.Freight },
                         { "Payment", result.Payment },
-                         {"MerchantID",grrenC2C.StoreCode }
+                         {"MerchantID",grrenC2C.StoreCode },
+                         {"IsEnable",result.IsEnabled },
                     };
                     DBSkeyValuePairs.Add(keyValuePairs);
 
@@ -929,7 +963,16 @@ public class LogisticsProvidersAppService : ApplicationService, ILogisticsProvid
                         { "Size", result.Size.ToString() },
                         { "Payment", result.Payment },
                         { "PaymentMethod", result.TCatPaymentMethod.ToString() },
-                         {"CustomerID",tcat.CustomerId }
+                         {"CustomerID",tcat.CustomerId },
+                          {"IsEnable",result.IsEnabled },
+             {"HualienandTaitungShippingFee ",result.HualienAndTaitungShippingFee },
+                {"HolidaySurcharge",result.HolidaySurcharge },
+               { "HolidaySurchargeTimeRange", new JsonObject
+        {
+            { "StartTime", result.HolidaySurchargeStartTime },
+            { "EndTime", result.HolidaySurchargeEndTime }
+        }
+    }
                     };
                     DBSkeyValuePairs.Add(keyValuePairs);
 
@@ -946,7 +989,16 @@ public class LogisticsProvidersAppService : ApplicationService, ILogisticsProvid
                         { "Size", result.Size.ToString() },
                         { "Payment", result.Payment },
                         { "PaymentMethod", result.TCatPaymentMethod.ToString() },
-                         {"CustomerID",tcat.CustomerId }
+                         {"CustomerID",tcat.CustomerId },
+                          {"IsEnable",result.IsEnabled },
+             {"HualienandTaitungShippingFee ",result.HualienAndTaitungShippingFee },
+                {"HolidaySurcharge",result.HolidaySurcharge },
+               { "HolidaySurchargeTimeRange", new JsonObject
+        {
+            { "StartTime", result.HolidaySurchargeStartTime },
+            { "EndTime", result.HolidaySurchargeEndTime }
+        }
+    }
                     };
                     DBSkeyValuePairs.Add(keyValuePairs);
 
@@ -963,7 +1015,16 @@ public class LogisticsProvidersAppService : ApplicationService, ILogisticsProvid
                         { "Size", result.Size.ToString() },
                         { "Payment", result.Payment },
                         { "PaymentMethod", result.TCatPaymentMethod.ToString() },
-                         {"CustomerID",tcat.CustomerId }
+                         {"CustomerID",tcat.CustomerId },
+                          {"IsEnable",result.IsEnabled },
+             {"HualienandTaitungShippingFee ",result.HualienAndTaitungShippingFee },
+                {"HolidaySurcharge",result.HolidaySurcharge },
+               { "HolidaySurchargeTimeRange", new JsonObject
+        {
+            { "StartTime", result.HolidaySurchargeStartTime },
+            { "EndTime", result.HolidaySurchargeEndTime }
+        }
+    }
                     };
                     DBSkeyValuePairs.Add(keyValuePairs);
 
@@ -977,7 +1038,8 @@ public class LogisticsProvidersAppService : ApplicationService, ILogisticsProvid
                         { "Provider", result.LogisticProviderName },
                         { "COST", result.Freight },
                         { "Payment", result.Payment },
-                         {"CustomerID",tcat.CustomerId }
+                         {"CustomerID",tcat.CustomerId },
+                         {"IsEnable",result.IsEnabled },
                     };
                     DBSkeyValuePairs.Add(keyValuePairs);
 
@@ -991,7 +1053,8 @@ public class LogisticsProvidersAppService : ApplicationService, ILogisticsProvid
                         { "Provider", result.LogisticProviderName },
                         { "COST", result.Freight },
                         { "Payment", result.Payment },
-                         {"CustomerID",tcat.CustomerId }
+                         {"CustomerID",tcat.CustomerId },
+                         {"IsEnable",result.IsEnabled },
                     };
                     DBSkeyValuePairs.Add(keyValuePairs);
 
@@ -1005,7 +1068,8 @@ public class LogisticsProvidersAppService : ApplicationService, ILogisticsProvid
                         { "Provider", result.LogisticProviderName },
                         { "COST", result.Freight },
                         { "Payment", result.Payment },
-                        {"CustomerID",tcat.CustomerId }
+                        {"CustomerID",tcat.CustomerId },
+                        {"IsEnable",result.IsEnabled },
                     };
                     DBSkeyValuePairs.Add(keyValuePairs);
 
@@ -1030,7 +1094,8 @@ public class LogisticsProvidersAppService : ApplicationService, ILogisticsProvid
                 { "Cost", result.Freight },
                 { "MainIslands", result.MainIslands },
                 { "IsOuterIslands", result.IsOuterIslands },
-                { "OuterIslands", result.OuterIslands }
+                { "OuterIslands", result.OuterIslands },
+                 {"IsEnable",result.IsEnabled },
             };
 
             return keyValuePairs;
@@ -1043,7 +1108,8 @@ public class LogisticsProvidersAppService : ApplicationService, ILogisticsProvid
             { "Provider", result.LogisticProviderName },
             { "Freight", result.Freight },
             { "Weight", result.Weight },
-             {"MerchantID",grrenB2C.StoreCode }
+             {"MerchantID",grrenB2C.StoreCode },
+              {"IsEnable",result.IsEnabled },
         };
 
             return keyValuePairs;
@@ -1056,7 +1122,8 @@ public class LogisticsProvidersAppService : ApplicationService, ILogisticsProvid
             { "Provider", result.LogisticProviderName },
             { "COST", result.Freight },
             { "Payment", result.Payment },
-             {"MerchantID",grrenB2C.StoreCode }
+             {"MerchantID",grrenB2C.StoreCode },
+                 {"IsEnable",result.IsEnabled },
         };
 
             return keyValuePairs;
@@ -1069,7 +1136,8 @@ public class LogisticsProvidersAppService : ApplicationService, ILogisticsProvid
             { "Provider", result.LogisticProviderName },
             { "COST", result.Freight },
             { "Payment", result.Payment },
-             {"MerchantID",grrenB2C.StoreCode }
+             {"MerchantID",grrenB2C.StoreCode },
+              {"IsEnable",result.IsEnabled },
         };
 
             return keyValuePairs;
@@ -1082,7 +1150,8 @@ public class LogisticsProvidersAppService : ApplicationService, ILogisticsProvid
             { "Provider", result.LogisticProviderName },
             { "COST", result.Freight },
             { "Payment", result.Payment },
-             {"MerchantID",grrenB2C.StoreCode }
+             {"MerchantID",grrenB2C.StoreCode },
+              {"IsEnable",result.IsEnabled },
         };
 
             return keyValuePairs;
@@ -1095,7 +1164,8 @@ public class LogisticsProvidersAppService : ApplicationService, ILogisticsProvid
             { "Provider", result.LogisticProviderName },
             { "COST", result.Freight },
             { "Payment", result.Payment },
-             {"MerchantID",grrenB2C.StoreCode }
+             {"MerchantID",grrenB2C.StoreCode },
+              {"IsEnable",result.IsEnabled },
         };
 
             return keyValuePairs;
@@ -1109,7 +1179,16 @@ public class LogisticsProvidersAppService : ApplicationService, ILogisticsProvid
             { "Freight", result.Freight },
             { "OuterIslandFreight", result.OuterIslandFreight },
             { "Size", result.Size.ToString() },
-             {"MerchantID",grrenB2C.StoreCode }
+             {"MerchantID",grrenB2C.StoreCode },
+                   {"IsEnable",result.IsEnabled },
+             {"HualienandTaitungShippingFee ",result.HualienAndTaitungShippingFee },
+                {"HolidaySurcharge",result.HolidaySurcharge },
+               { "HolidaySurchargeTimeRange", new JsonObject
+        {
+            { "StartTime", result.HolidaySurchargeStartTime },
+            { "EndTime", result.HolidaySurchargeEndTime }
+        }
+    }
         };
 
             return keyValuePairs;
@@ -1123,7 +1202,16 @@ public class LogisticsProvidersAppService : ApplicationService, ILogisticsProvid
             { "Freight", result.Freight },
             { "OuterIslandFreight", result.OuterIslandFreight },
             { "Size", result.Size.ToString() },
-             {"MerchantID",grrenB2C.StoreCode }
+             {"MerchantID",grrenB2C.StoreCode },
+                   {"IsEnable",result.IsEnabled },
+             {"HualienandTaitungShippingFee ",result.HualienAndTaitungShippingFee },
+                {"HolidaySurcharge",result.HolidaySurcharge },
+               { "HolidaySurchargeTimeRange", new JsonObject
+        {
+            { "StartTime", result.HolidaySurchargeStartTime },
+            { "EndTime", result.HolidaySurchargeEndTime }
+        }
+    }
         };
 
             return keyValuePairs;
@@ -1137,7 +1225,16 @@ public class LogisticsProvidersAppService : ApplicationService, ILogisticsProvid
             { "Freight", result.Freight },
             { "OuterIslandFreight", result.OuterIslandFreight },
             { "Size", result.Size.ToString() },
-             {"MerchantID",grrenB2C.StoreCode }
+             {"MerchantID",grrenB2C.StoreCode },
+                   {"IsEnable",result.IsEnabled },
+             {"HualienandTaitungShippingFee ",result.HualienAndTaitungShippingFee },
+                {"HolidaySurcharge",result.HolidaySurcharge },
+               { "HolidaySurchargeTimeRange", new JsonObject
+        {
+            { "StartTime", result.HolidaySurchargeStartTime },
+            { "EndTime", result.HolidaySurchargeEndTime }
+        }
+    }
         };
 
             return keyValuePairs;
@@ -1150,7 +1247,8 @@ public class LogisticsProvidersAppService : ApplicationService, ILogisticsProvid
             { "Provider", result.LogisticProviderName },
             { "COST", result.Freight },
             { "Payment", result.Payment },
-             {"MerchantID",grrenC2C.StoreCode }
+             {"MerchantID",grrenC2C.StoreCode },
+              {"IsEnable",result.IsEnabled },
         };
 
             return keyValuePairs;
@@ -1163,7 +1261,8 @@ public class LogisticsProvidersAppService : ApplicationService, ILogisticsProvid
             { "Provider", result.LogisticProviderName },
             { "COST", result.Freight },
             { "Payment", result.Payment },
-             {"MerchantID",grrenC2C.StoreCode }
+             {"MerchantID",grrenC2C.StoreCode },
+              {"IsEnable",result.IsEnabled },
         };
 
             return keyValuePairs;
@@ -1179,7 +1278,16 @@ public class LogisticsProvidersAppService : ApplicationService, ILogisticsProvid
             { "Size", result.Size.ToString() },
             { "Payment", result.Payment },
             { "PaymentMethod", result.TCatPaymentMethod.ToString() },
-             {"CustomerID",tcat.CustomerId }
+             {"CustomerID",tcat.CustomerId },
+                 {"IsEnable",result.IsEnabled },
+             {"HualienandTaitungShippingFee ",result.HualienAndTaitungShippingFee },
+                {"HolidaySurcharge",result.HolidaySurcharge },
+               { "HolidaySurchargeTimeRange", new JsonObject
+        {
+            { "StartTime", result.HolidaySurchargeStartTime },
+            { "EndTime", result.HolidaySurchargeEndTime }
+        }
+    }
         };
 
             return keyValuePairs;
@@ -1195,7 +1303,16 @@ public class LogisticsProvidersAppService : ApplicationService, ILogisticsProvid
             { "Size", result.Size.ToString() },
             { "Payment", result.Payment },
             { "PaymentMethod", result.TCatPaymentMethod.ToString() },
-             {"CustomerID",tcat.CustomerId }
+             {"CustomerID",tcat.CustomerId },
+              {"IsEnable",result.IsEnabled },
+             {"HualienandTaitungShippingFee ",result.HualienAndTaitungShippingFee },
+                {"HolidaySurcharge",result.HolidaySurcharge },
+               { "HolidaySurchargeTimeRange", new JsonObject
+        {
+            { "StartTime", result.HolidaySurchargeStartTime },
+            { "EndTime", result.HolidaySurchargeEndTime }
+        }
+    }
         };
 
             return keyValuePairs;
@@ -1211,7 +1328,16 @@ public class LogisticsProvidersAppService : ApplicationService, ILogisticsProvid
             { "Size", result.Size.ToString() },
             { "Payment", result.Payment },
             { "PaymentMethod", result.TCatPaymentMethod.ToString() },
-             {"CustomerID",tcat.CustomerId }
+             {"CustomerID",result.CustomerId },
+                {"IsEnable",result.IsEnabled },
+             {"HualienandTaitungShippingFee ",result.HualienAndTaitungShippingFee },
+                {"HolidaySurcharge",result.HolidaySurcharge },
+               { "HolidaySurchargeTimeRange", new JsonObject
+        {
+            { "StartTime", result.HolidaySurchargeStartTime },
+            { "EndTime", result.HolidaySurchargeEndTime }
+        }
+    }
         };
 
             return keyValuePairs;
@@ -1224,7 +1350,8 @@ public class LogisticsProvidersAppService : ApplicationService, ILogisticsProvid
             { "Provider", result.LogisticProviderName },
             { "COST", result.Freight },
             { "Payment", result.Payment },
-             {"CustomerID",tcat.CustomerId }
+             {"CustomerID",tcat.CustomerId },
+              {"IsEnable",result.IsEnabled },
         };
 
             return keyValuePairs;
@@ -1237,7 +1364,8 @@ public class LogisticsProvidersAppService : ApplicationService, ILogisticsProvid
             { "Provider", result.LogisticProviderName },
             { "COST", result.Freight },
             { "Payment", result.Payment },
-             {"CustomerID",tcat.CustomerId }
+             {"CustomerID",tcat.CustomerId },
+              {"IsEnable",result.IsEnabled },
         };
 
             return keyValuePairs;
@@ -1250,7 +1378,8 @@ public class LogisticsProvidersAppService : ApplicationService, ILogisticsProvid
             { "Provider", result.LogisticProviderName },
             { "COST", result.Freight },
             { "Payment", result.Payment },
-            {"CustomerID",tcat.CustomerId }
+            {"CustomerID",tcat.CustomerId },
+             {"IsEnable",result.IsEnabled },
         };
 
             return keyValuePairs;
