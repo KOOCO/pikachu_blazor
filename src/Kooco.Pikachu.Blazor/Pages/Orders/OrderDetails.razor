@@ -1702,6 +1702,18 @@
                     }
                 </div>
                 <div class="col-md-6 col-sm-12 text-lg-end">
+                     @if (Order.ShippingStatus == ShippingStatus.ToBeShipped) 
+    
+                {
+                    
+                    <Dropdown>
+                        <Button Size="Size.ExtraSmall" class="btn btn-sm btn-primary" Clicked="OnPrintShippedLabel">@L["StandardPrinting"]</Button>
+                        <DropdownToggle Size="Size.ExtraSmall" Class="btn-sm" Color="Color.Primary" Split />
+                        <DropdownMenu>
+                            <DropdownItem Clicked="OnPrintShippedLabel10Cm">@L["ThermalPrinting"]</DropdownItem>
+                        </DropdownMenu>
+                    </Dropdown>
+                }
                     @if (Order.Id != Guid.Empty)
                     {
                         @if (Order.OrderType is not OrderType.MargeToNew && Order.OrderStatus is not OrderStatus.Refund)

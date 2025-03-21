@@ -15,16 +15,20 @@ using Kooco.Pikachu.Response;
 using Kooco.Pikachu.StoreLogisticOrders;
 using Kooco.Pikachu.TestLables;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Html;
 using Microsoft.Extensions.Configuration;
 using Microsoft.JSInterop;
 using Newtonsoft.Json;
+using PdfSharp.Pdf.IO;
+using PdfSharp.Pdf;
 using Polly;
 using RestSharp;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel.DataAnnotations;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -39,6 +43,11 @@ using Volo.Abp.Http.Modeling;
 using Volo.Abp.ObjectMapping;
 using static Kooco.Pikachu.Permissions.PikachuPermissions;
 using static Volo.Abp.UI.Navigation.DefaultMenuNames.Application;
+using PdfSharp.Pdf;
+using PdfSharp.Pdf.IO;
+using Kooco.Pikachu.Assembly;
+using DinkToPdf;
+using HtmlAgilityPack;
 
 
 namespace Kooco.Pikachu.Blazor.Pages.Orders;
@@ -48,6 +57,7 @@ public partial class OrderDetails
     #region Inject
     [Parameter]
     public string id { get; set; }
+    private static readonly SynchronizedConverter Converter = new SynchronizedConverter(new PdfTools());
     private Guid OrderId { get; set; }
     private CreateUpdateOrderMessageDto StoreCustomerService { get; set; } = new();
     private OrderDto Order { get; set; }
@@ -2038,7 +2048,820 @@ public partial class OrderDetails
             loading=false;
         }
     }
+    public async Task OnPrintShippedLabel(MouseEventArgs e)
+    {
+        loading = true;
 
+        List<Guid> orderIds = new List<Guid>();
+        orderIds.Add(Order.Id);
+
+        Dictionary<string, string> AllPayLogisticsIds = new()
+        {
+            { "BlackCat1", string.Empty },
+            { "BlackCatFrozen", string.Empty },
+            { "BlackCatFreeze", string.Empty },
+            { "SevenToElevenFrozen", string.Empty },
+            { "PostOffice", string.Empty },
+            { "FamilyMart1", string.Empty },
+            { "SevenToEleven1", string.Empty },
+            { "SevenToElevenC2C", string.Empty },
+            { "FamilyMartC2C", string.Empty },
+            { "TCatDeliveryNormal", string.Empty },
+            { "TCatDeliveryFreeze", string.Empty },
+            { "TCatDeliveryFrozen", string.Empty },
+            { "TCatDeliverySevenElevenNormal", string.Empty },
+            { "TCatDeliverySevenElevenFreeze", string.Empty },
+            { "TCatDeliverySevenElevenFrozen", string.Empty },
+        };
+
+        Dictionary<string, string> allPayLogistic = new()
+        {
+            { "TCatDeliverySevenElevenNormal", string.Empty },
+            { "TCatDeliverySevenElevenFreeze", string.Empty },
+            { "TCatDeliverySevenElevenFrozen", string.Empty }
+        };
+
+        Dictionary<string, string> DeliveryNumbers = new()
+        {
+            { "SevenToElevenC2C", string.Empty },
+            { "FamilyMartC2C", string.Empty },
+            { "TCatDeliveryNormal", string.Empty },
+            { "TCatDeliveryFreeze", string.Empty },
+            { "TCatDeliveryFrozen", string.Empty },
+        };
+
+        foreach (Guid orderId in orderIds)
+        {
+            OrderDto order = await _orderAppService.GetAsync(orderId);
+
+            List<OrderDeliveryDto> orderDeliveries = await _orderDeliveryAppService.GetListByOrderAsync(orderId);
+
+            foreach (OrderDeliveryDto? delivery in orderDeliveries)
+            {
+                if (!string.IsNullOrWhiteSpace(delivery.AllPayLogisticsID) &&
+                    (!(delivery.DeliveryMethod is EnumValues.DeliveryMethod.SelfPickup ||
+                     delivery.DeliveryMethod is EnumValues.DeliveryMethod.HomeDelivery ||
+                     delivery.DeliveryMethod is EnumValues.DeliveryMethod.DeliveredByStore)))
+                {
+                    string? AllPayLogisticsIdsValue = AllPayLogisticsIds.GetValueOrDefault(delivery.DeliveryMethod.ToString()) ?? string.Empty;
+
+                    List<string> AllPayLogisticId = AllPayLogisticsIdsValue.IsNullOrEmpty() ? [] : [.. AllPayLogisticsIdsValue.Split(',')];
+
+                    if (delivery.DeliveryMethod is EnumValues.DeliveryMethod.TCatDeliveryNormal ||
+                        delivery.DeliveryMethod is EnumValues.DeliveryMethod.TCatDeliveryFreeze ||
+                        delivery.DeliveryMethod is EnumValues.DeliveryMethod.TCatDeliveryFrozen ||
+                        delivery.DeliveryMethod is EnumValues.DeliveryMethod.TCatDeliverySevenElevenNormal ||
+                        delivery.DeliveryMethod is EnumValues.DeliveryMethod.TCatDeliverySevenElevenFreeze ||
+                        delivery.DeliveryMethod is EnumValues.DeliveryMethod.TCatDeliverySevenElevenFrozen)
+                    {
+                        AllPayLogisticId.Add(delivery.FileNo);
+
+                        AllPayLogisticsIds.Remove(delivery.DeliveryMethod.ToString());
+
+                        AllPayLogisticsIds.Add(delivery.DeliveryMethod.ToString(), string.Join(",", AllPayLogisticId));
+
+                        if (delivery.DeliveryMethod is EnumValues.DeliveryMethod.TCatDeliverySevenElevenNormal ||
+                            delivery.DeliveryMethod is EnumValues.DeliveryMethod.TCatDeliverySevenElevenFreeze ||
+                            delivery.DeliveryMethod is EnumValues.DeliveryMethod.TCatDeliverySevenElevenFrozen)
+                        {
+                            string? aplValues = allPayLogistic.GetValueOrDefault(delivery.DeliveryMethod.ToString()) ?? string.Empty;
+
+                            List<string> aPL = aplValues.IsNullOrEmpty() ? [] : [.. aplValues.Split(',')];
+
+                            aPL.Add(delivery.AllPayLogisticsID);
+
+                            allPayLogistic.Remove(delivery.DeliveryMethod.ToString());
+
+                            allPayLogistic.Add(delivery.DeliveryMethod.ToString(), string.Join(",", aPL));
+                        }
+                    }
+
+                    else
+                    {
+                        AllPayLogisticId.Add(delivery.AllPayLogisticsID);
+
+                        AllPayLogisticsIds.Remove(delivery.DeliveryMethod.ToString());
+
+                        AllPayLogisticsIds.Add(delivery.DeliveryMethod.ToString(), string.Join(",", AllPayLogisticId));
+                    }
+
+                    if (delivery.DeliveryMethod is EnumValues.DeliveryMethod.FamilyMartC2C ||
+                        delivery.DeliveryMethod is EnumValues.DeliveryMethod.SevenToElevenC2C ||
+                        delivery.DeliveryMethod is EnumValues.DeliveryMethod.TCatDeliveryNormal ||
+                        delivery.DeliveryMethod is EnumValues.DeliveryMethod.TCatDeliveryFreeze ||
+                        delivery.DeliveryMethod is EnumValues.DeliveryMethod.TCatDeliveryFrozen)
+                    {
+                        string? DeliveryNumberValue = DeliveryNumbers.GetValueOrDefault(delivery.DeliveryMethod.ToString()) ?? string.Empty;
+
+                        List<string> DeliveryNumber = DeliveryNumberValue.IsNullOrEmpty() ? [] : [.. DeliveryNumberValue.Split(',')];
+
+                        DeliveryNumber.Add(delivery.DeliveryNo);
+
+                        DeliveryNumbers.Remove(delivery.DeliveryMethod.ToString());
+
+                        DeliveryNumbers.Add(delivery.DeliveryMethod.ToString(), string.Join(",", DeliveryNumber));
+                    }
+                }
+            }
+        }
+
+        string MergeTempFolder = Path.Combine(Path.GetTempPath(), "MergeTemp");
+
+        Directory.CreateDirectory(MergeTempFolder);
+
+        Tuple<List<string>, List<string>, List<string>> tuple = await _storeLogisticsOrderAppService.OnBatchPrintingShippingLabel(AllPayLogisticsIds, DeliveryNumbers, allPayLogistic);
+
+        string errors = string.Join('\n', tuple.Item3);
+
+        if (!errors.IsNullOrWhiteSpace()) await _uiMessageService.Warn(errors);
+
+        List<string> outputPdfPaths = GeneratePdf(tuple.Item1);
+
+        if (tuple.Item2 is { Count: > 0 }) outputPdfPaths.AddRange(tuple.Item2);
+
+        if (outputPdfPaths is { Count: > 0 })
+        {
+            MemoryStream combinedPdfStream = CombinePdf(outputPdfPaths);
+
+            await JSRuntime.InvokeVoidAsync("downloadFile", new
+            {
+                ByteArray = combinedPdfStream.ToArray(),
+                FileName = "ShippingLabels.pdf",
+                ContentType = "application/pdf"
+            });
+        }
+
+        Directory.Delete(Path.Combine(Path.GetTempPath(), "MergeTemp"), true);
+
+        loading = false;
+    }
+    public async Task OnPrintShippedLabel10Cm()
+    {
+        loading = true;
+        List<Guid> orderIds = new List<Guid>();
+        orderIds.Add(Order.Id);
+
+        Dictionary<string, string> AllPayLogisticsIds = new()
+        {
+            { "BlackCat1", string.Empty },
+            { "BlackCatFrozen", string.Empty },
+            { "BlackCatFreeze", string.Empty },
+            { "SevenToElevenFrozen", string.Empty },
+            { "PostOffice", string.Empty },
+            { "FamilyMart1", string.Empty },
+            { "SevenToEleven1", string.Empty },
+            { "SevenToElevenC2C", string.Empty },
+            { "FamilyMartC2C", string.Empty },
+            { "TCatDeliveryNormal", string.Empty },
+            { "TCatDeliveryFreeze", string.Empty },
+            { "TCatDeliveryFrozen", string.Empty },
+            { "TCatDeliverySevenElevenNormal", string.Empty },
+            { "TCatDeliverySevenElevenFreeze", string.Empty },
+            { "TCatDeliverySevenElevenFrozen", string.Empty },
+        };
+
+        Dictionary<string, string> allPayLogistic = new()
+        {
+            { "TCatDeliverySevenElevenNormal", string.Empty },
+            { "TCatDeliverySevenElevenFreeze", string.Empty },
+            { "TCatDeliverySevenElevenFrozen", string.Empty }
+        };
+
+        Dictionary<string, string> DeliveryNumbers = new()
+        {
+            { "SevenToElevenC2C", string.Empty },
+            { "FamilyMartC2C", string.Empty },
+            { "TCatDeliveryNormal", string.Empty },
+            { "TCatDeliveryFreeze", string.Empty },
+            { "TCatDeliveryFrozen", string.Empty },
+        };
+
+        foreach (Guid orderId in orderIds)
+        {
+            OrderDto order = await _orderAppService.GetAsync(orderId);
+
+            List<OrderDeliveryDto> orderDeliveries = await _orderDeliveryAppService.GetListByOrderAsync(orderId);
+
+            foreach (OrderDeliveryDto? delivery in orderDeliveries)
+            {
+                if (!string.IsNullOrWhiteSpace(delivery.AllPayLogisticsID) &&
+                    (!(delivery.DeliveryMethod is EnumValues.DeliveryMethod.SelfPickup ||
+                     delivery.DeliveryMethod is EnumValues.DeliveryMethod.HomeDelivery ||
+                     delivery.DeliveryMethod is EnumValues.DeliveryMethod.DeliveredByStore)))
+                {
+                    string? AllPayLogisticsIdsValue = AllPayLogisticsIds.GetValueOrDefault(delivery.DeliveryMethod.ToString()) ?? string.Empty;
+
+                    List<string> AllPayLogisticId = AllPayLogisticsIdsValue.IsNullOrEmpty() ? [] : [.. AllPayLogisticsIdsValue.Split(',')];
+
+                    if (delivery.DeliveryMethod is EnumValues.DeliveryMethod.TCatDeliveryNormal ||
+                        delivery.DeliveryMethod is EnumValues.DeliveryMethod.TCatDeliveryFreeze ||
+                        delivery.DeliveryMethod is EnumValues.DeliveryMethod.TCatDeliveryFrozen ||
+                        delivery.DeliveryMethod is EnumValues.DeliveryMethod.TCatDeliverySevenElevenNormal ||
+                        delivery.DeliveryMethod is EnumValues.DeliveryMethod.TCatDeliverySevenElevenFreeze ||
+                        delivery.DeliveryMethod is EnumValues.DeliveryMethod.TCatDeliverySevenElevenFrozen)
+                    {
+                        AllPayLogisticId.Add(delivery.FileNo);
+
+                        AllPayLogisticsIds.Remove(delivery.DeliveryMethod.ToString());
+
+                        AllPayLogisticsIds.Add(delivery.DeliveryMethod.ToString(), string.Join(",", AllPayLogisticId));
+
+                        if (delivery.DeliveryMethod is EnumValues.DeliveryMethod.TCatDeliverySevenElevenNormal ||
+                            delivery.DeliveryMethod is EnumValues.DeliveryMethod.TCatDeliverySevenElevenFreeze ||
+                            delivery.DeliveryMethod is EnumValues.DeliveryMethod.TCatDeliverySevenElevenFrozen)
+                        {
+                            string? aplValues = allPayLogistic.GetValueOrDefault(delivery.DeliveryMethod.ToString()) ?? string.Empty;
+
+                            List<string> aPL = aplValues.IsNullOrEmpty() ? [] : [.. aplValues.Split(',')];
+
+                            aPL.Add(delivery.AllPayLogisticsID);
+
+                            allPayLogistic.Remove(delivery.DeliveryMethod.ToString());
+
+                            allPayLogistic.Add(delivery.DeliveryMethod.ToString(), string.Join(",", aPL));
+                        }
+                    }
+
+                    else
+                    {
+                        AllPayLogisticId.Add(delivery.AllPayLogisticsID);
+
+                        AllPayLogisticsIds.Remove(delivery.DeliveryMethod.ToString());
+
+                        AllPayLogisticsIds.Add(delivery.DeliveryMethod.ToString(), string.Join(",", AllPayLogisticId));
+                    }
+
+                    if (delivery.DeliveryMethod is EnumValues.DeliveryMethod.FamilyMartC2C ||
+                        delivery.DeliveryMethod is EnumValues.DeliveryMethod.SevenToElevenC2C ||
+                        delivery.DeliveryMethod is EnumValues.DeliveryMethod.TCatDeliveryNormal ||
+                        delivery.DeliveryMethod is EnumValues.DeliveryMethod.TCatDeliveryFreeze ||
+                        delivery.DeliveryMethod is EnumValues.DeliveryMethod.TCatDeliveryFrozen)
+                    {
+                        string? DeliveryNumberValue = DeliveryNumbers.GetValueOrDefault(delivery.DeliveryMethod.ToString()) ?? string.Empty;
+
+                        List<string> DeliveryNumber = DeliveryNumberValue.IsNullOrEmpty() ? [] : [.. DeliveryNumberValue.Split(',')];
+
+                        DeliveryNumber.Add(delivery.DeliveryNo);
+
+                        DeliveryNumbers.Remove(delivery.DeliveryMethod.ToString());
+
+                        DeliveryNumbers.Add(delivery.DeliveryMethod.ToString(), string.Join(",", DeliveryNumber));
+                    }
+                }
+            }
+        }
+
+        string MergeTempFolder = Path.Combine(Path.GetTempPath(), "MergeTemp");
+
+        Directory.CreateDirectory(MergeTempFolder);
+
+        Tuple<List<string>, List<string>, List<string>> tuple = await _storeLogisticsOrderAppService.OnBatchPrintingShippingLabel(AllPayLogisticsIds, DeliveryNumbers, allPayLogistic);
+
+        string errors = string.Join('\n', tuple.Item3);
+
+        if (!errors.IsNullOrWhiteSpace()) await _uiMessageService.Warn(errors);
+
+        List<string> outputPdfPaths = GenerateA6Pdf(tuple.Item1);
+
+        if (tuple.Item2 is { Count: > 0 }) outputPdfPaths.AddRange(tuple.Item2);
+
+        if (outputPdfPaths is { Count: > 0 })
+        {
+            MemoryStream combinedPdfStream = CombinePdf(outputPdfPaths);
+
+            await JSRuntime.InvokeVoidAsync("downloadFile", new
+            {
+                ByteArray = combinedPdfStream.ToArray(),
+                FileName = "ShippingLabels.pdf",
+                ContentType = "application/pdf"
+            });
+        }
+
+        Directory.Delete(Path.Combine(Path.GetTempPath(), "MergeTemp"), true);
+
+        loading = false;
+    }
+    public List<string> GeneratePdf(List<string> htmls)
+    {
+        List<string> pdfFilePaths = [];
+
+        CustomAssemblyContext customAssembly = new();
+
+        customAssembly.LoadDinkToPdfDll();
+
+        for (int i = 0; i < htmls.Count; i++)
+        {
+            try
+            {
+                string tempPath = Path.Combine(Path.GetTempPath(), "MergeTemp");
+
+                string htmlFilePath = Path.Combine(tempPath, $"outputHTML{i}.html");
+
+                string pdfFilePath = Path.Combine(tempPath, $"output{i}.pdf");
+
+                pdfFilePaths.Add(pdfFilePath);
+
+                File.WriteAllText(htmlFilePath, htmls[i]);
+
+                if (File.Exists(pdfFilePath)) File.Delete(pdfFilePath);
+
+                var doc = new HtmlToPdfDocument
+                {
+                    GlobalSettings = new GlobalSettings
+                    {
+                        ColorMode = ColorMode.Color,
+                        Orientation = DinkToPdf.Orientation.Portrait,
+                        PaperSize = PaperKind.A4,
+                        Out = pdfFilePath,
+
+                    },
+                    Objects =
+                    {
+                        new ObjectSettings
+                        {
+                            Page = htmlFilePath,
+                            LoadSettings = new LoadSettings { JSDelay = 5000 },
+                            WebSettings = new WebSettings
+                            {
+                                EnableJavascript = true,
+                                DefaultEncoding = "UTF-8",
+                                LoadImages = true,
+
+                            }
+                        }
+                    }
+                };
+
+                Converter.Convert(doc);
+                Console.WriteLine($"PDF generated successfully: {pdfFilePath}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error during PDF generation: {ex.Message}");
+            }
+        }
+
+        return pdfFilePaths;
+    }
+    public List<string> GenerateA6Pdf(List<string> htmls)
+    {
+        List<string> pdfFilePaths = new(); // List to store generated PDF file paths
+        CustomAssemblyContext customAssembly = new();
+        customAssembly.LoadDinkToPdfDll(); // Load the required DLL for PDF conversion
+
+        string tempPath = Path.GetTempPath(); // Get the system's temporary folder path
+
+        for (int i = 0; i < htmls.Count; i++) // Loop through each HTML string provided
+        {
+            try
+            {
+                // Parse the HTML content
+                HtmlDocument htmlDoc = new();
+                htmlDoc.LoadHtml(htmls[i]);
+
+                // Check if <div class="PrintToolsBlock"> exists
+                var printToolsBlockDiv = htmlDoc.DocumentNode.SelectSingleNode("//div[contains(@class, 'PrintToolsBlock')]");
+                if (printToolsBlockDiv != null)
+                {
+                    // Check if <div id="PrintBlock"> exists inside PrintToolsBlock
+                    var printBlockDiv = printToolsBlockDiv.SelectSingleNode(".//div[@id='PrintBlock']");
+                    if (printBlockDiv != null)
+                    {
+                        // Check if the number of <img> tags inside PrintBlock is more than 1
+                        var imgTags = printBlockDiv.SelectNodes(".//img");
+                        if (imgTags != null && imgTags.Count > 1)
+                        {
+                            // Retrieve the head and body nodes from the HTML document
+                            var headNode = htmlDoc.DocumentNode.SelectSingleNode("//head");
+                            var bodyNode = htmlDoc.DocumentNode.SelectSingleNode("//body");
+
+                            // Store the original head content and body class
+                            string originalHead = headNode?.OuterHtml ?? "<head></head>";
+                            string originalBodyClass = bodyNode?.GetAttributeValue("class", string.Empty) ?? "";
+
+                            for (int j = 0; j < imgTags.Count; j++) // Loop through each image tag
+                            {
+                                // Define paths for temporary HTML and PDF files
+                                string htmlFilePath = Path.Combine(tempPath, $"outputHTML_{i}_{j}.html");
+                                string pdfFilePath = Path.Combine(tempPath, $"output_{i}_{j}.pdf");
+
+                                // Create new HTML content containing the image and the original structure
+                                string newHtmlContent = $@"
+                            <!DOCTYPE html>
+                            <html>
+                            {originalHead}
+                            <body class='{originalBodyClass}'>
+                                <div id='PrintBlock'>
+                                        < div style ='position: relative; display: inline-block;'> <!-- Corrected display property -->
+                                            {imgTags[j].OuterHtml}
+                                    </ div >
+                                </ div >
+                            </ body >
+                            </ html > ";
+
+                                // Write the new HTML content to a temporary file
+                                File.WriteAllText(htmlFilePath, newHtmlContent);
+
+                                // Delete the existing PDF file if it already exists
+                                if (File.Exists(pdfFilePath)) File.Delete(pdfFilePath);
+
+                                // Create a PDF document configuration
+                                var doc = new HtmlToPdfDocument
+                                {
+                                    GlobalSettings = new GlobalSettings
+                                    {
+                                        ColorMode = ColorMode.Color,
+                                        Orientation = DinkToPdf.Orientation.Portrait,
+                                        PaperSize = PaperKind.A6,
+
+                                        Margins = new MarginSettings { Top = 3, Left = 0, Bottom = 5, Right = 0 },
+                                        Out = pdfFilePath
+                                    },
+                                    Objects =
+                                {
+                                    new ObjectSettings
+                                    {
+                                        Page = htmlFilePath,
+                                        LoadSettings = new LoadSettings { JSDelay = 5000 },
+
+                                        WebSettings = new WebSettings
+                                        {
+                                            EnableJavascript = true,
+                                            DefaultEncoding = "UTF-8",
+                                            LoadImages = true
+                                        }
+                                    }
+                                }
+                                };
+
+                                // Convert the HTML to PDF and add the PDF path to the list
+                                Converter.Convert(doc);
+                                pdfFilePaths.Add(pdfFilePath);
+                                Console.WriteLine($"PDF generated successfully for PrintBlock image: {pdfFilePath}");
+                            }
+                            continue; // Skip to the next HTML input after processing images
+                        }
+                    }
+                    else
+                    {
+                        var imgTags = htmlDoc.DocumentNode.SelectNodes("//img[contains(@class, 'ForwardOrderTCat imgGwLoad')]");
+                        if (imgTags != null && imgTags.Count > 1) // Process only if more than 1 matching <img> tag exists
+                        {
+                            // Retrieve the head and body nodes
+                            var headNode = htmlDoc.DocumentNode.SelectSingleNode("//head");
+                            var bodyNode = htmlDoc.DocumentNode.SelectSingleNode("//body");
+
+                            // Store the original head content and body attributes
+                            string originalHead = headNode?.OuterHtml ?? "<head></head>";
+                            string originalBodyClass = bodyNode?.GetAttributeValue("class", string.Empty) ?? "";
+
+                            for (int j = 0; j < imgTags.Count; j++) // Loop through each matching <img> tag
+                            {
+                                // Define paths for temporary HTML and PDF files
+                                string htmlFilePath = Path.Combine(tempPath, $"outputHTML_{i}_{j}.html");
+                                string pdfFilePath = Path.Combine(tempPath, $"output_{i}_{j}.pdf");
+
+                                // Create new HTML content with the current <img> tag
+                                string newHtmlContent = $@"
+                    <!DOCTYPE html>
+                    <html>
+                    {originalHead}
+                    <body class='{originalBodyClass}'>
+                        <div id='PrintBlock'>
+                            <div style='position: relative; display: inline-block;'>
+                                {imgTags[j].OuterHtml}
+                            </div>
+                        </div>
+                    </body>
+                    </html>";
+
+                                // Write the new HTML content to a temporary file
+                                File.WriteAllText(htmlFilePath, newHtmlContent);
+
+                                // Delete the existing PDF file if it already exists
+                                if (File.Exists(pdfFilePath)) File.Delete(pdfFilePath);
+
+                                // Create a PDF document configuration
+                                var doc = new HtmlToPdfDocument
+                                {
+                                    GlobalSettings = new GlobalSettings
+                                    {
+                                        ColorMode = ColorMode.Color,
+                                        Orientation = DinkToPdf.Orientation.Portrait,
+                                        PaperSize = PaperKind.A6,
+                                        Margins = new MarginSettings { Top = 3, Left = 0, Bottom = 5, Right = 0 },
+                                        Out = pdfFilePath
+                                    },
+                                    Objects =
+                        {
+                            new ObjectSettings
+                            {
+                                Page = htmlFilePath,
+                                LoadSettings = new LoadSettings { JSDelay = 5000,ZoomFactor=1.5 },
+                                WebSettings = new WebSettings
+                                {
+                                    EnableJavascript = true,
+                                    DefaultEncoding = "UTF-8",
+                                    LoadImages = true
+                                }
+                            }
+                        }
+                                };
+
+                                // Convert the HTML to PDF and add the PDF path to the list
+                                Converter.Convert(doc);
+                                pdfFilePaths.Add(pdfFilePath);
+                                Console.WriteLine($"PDF generated successfully for ForwardOrderTCat image: {pdfFilePath}");
+                            }
+
+
+
+                        }
+                        else // Process any remaining HTML without specific blocks or tables
+                        {
+                            // Define paths for temporary HTML and PDF files
+                            string htmlFilePath = Path.Combine(tempPath, $"outputHTML{i}.html");
+                            string pdfFilePath = Path.Combine(tempPath, $"output{i}.pdf");
+
+                            // Add the PDF file path to the list
+                            pdfFilePaths.Add(pdfFilePath);
+
+                            // Write the original HTML content to a temporary file
+                            File.WriteAllText(htmlFilePath, htmls[i]);
+
+                            // Delete the existing PDF file if it already exists
+                            if (File.Exists(pdfFilePath)) File.Delete(pdfFilePath);
+
+                            // Create a PDF document configuration
+                            var doc = new HtmlToPdfDocument
+                            {
+                                GlobalSettings = new GlobalSettings
+                                {
+                                    ColorMode = ColorMode.Color,
+                                    Orientation = DinkToPdf.Orientation.Portrait,
+                                    PaperSize = PaperKind.A6,
+                                    Out = pdfFilePath
+                                },
+                                Objects =
+                        {
+                            new ObjectSettings
+                            {
+                                Page = htmlFilePath,
+                                 LoadSettings = new LoadSettings { JSDelay = 5000,ZoomFactor=1.5 },
+                                WebSettings = new WebSettings
+                                {
+                                    EnableJavascript = true,
+                                    DefaultEncoding = "UTF-8",
+                                    LoadImages = true
+                                }
+                            }
+                        }
+                            };
+
+                            // Convert the HTML to PDF
+                            Converter.Convert(doc);
+                            Console.WriteLine($"PDF generated successfully: {pdfFilePath}");
+                        }
+                    }
+                }
+                else
+                {
+                    // Existing logic for div_frame or PrintContent tables...
+                    var divFrames = htmlDoc.DocumentNode.SelectNodes("//div[contains(@class, 'div_frame')]");
+                    if (divFrames == null || divFrames.Count == 0) // Check if there are no div_frames
+                    {
+                        // Check for <table class="PrintContent">
+                        var printContentTables = htmlDoc.DocumentNode.SelectNodes("//table[contains(@class, 'PrintContent')]");
+                        if (printContentTables != null && printContentTables.Count > 0)
+                        {
+                            // Define a temporary directory for merged content
+                            tempPath = Path.Combine(tempPath, "MergeTemp");
+
+                            // Retrieve the head and body nodes from the HTML document
+                            var headNode = htmlDoc.DocumentNode.SelectSingleNode("//head");
+                            var bodyNode = htmlDoc.DocumentNode.SelectSingleNode("//body");
+
+                            // Store the original head content and body class
+                            string originalHead = headNode?.OuterHtml ?? "<head></head>";
+                            string originalBodyClass = bodyNode?.GetAttributeValue("class", string.Empty) ?? "";
+
+                            for (int j = 0; j < printContentTables.Count; j++) // Loop through each table
+                            {
+                                // Define paths for temporary HTML and PDF files
+                                string htmlFilePath = Path.Combine(tempPath, $"outputHTML_{i}_{j}.html");
+                                string pdfFilePath = Path.Combine(tempPath, $"output_{i}_{j}.pdf");
+
+                                // Create new HTML content containing the table and the original structure
+                                string newHtmlContent = $@"
+                        <!DOCTYPE html>
+                        <html>
+                        {originalHead}
+                        <body class='
+                            {originalBodyClass}'>
+                            <div style='position: relative; display: inline - block;'> <!-- Corrected display property -->
+                                    {printContentTables[j].OuterHtml}
+                            </ div >
+                        </ body >
+                        </ html > ";
+
+                                // Create the temporary directory if it doesn't exist
+                                Directory.CreateDirectory(tempPath);
+
+                                // Write the new HTML content to a temporary file
+                                File.WriteAllText(htmlFilePath, newHtmlContent);
+
+                                // Delete the existing PDF file if it already exists
+                                if (File.Exists(pdfFilePath)) File.Delete(pdfFilePath);
+
+                                // Create a PDF document configuration
+                                var doc = new HtmlToPdfDocument
+                                {
+                                    GlobalSettings = new GlobalSettings
+                                    {
+                                        ColorMode = ColorMode.Color,
+                                        Orientation = DinkToPdf.Orientation.Portrait,
+                                        PaperSize = PaperKind.A6,
+                                        Margins = new MarginSettings { Top = 3, Left = 0, Bottom = 5, Right = 0 },
+                                        Out = pdfFilePath
+                                    },
+                                    Objects =
+                            {
+                                new ObjectSettings
+                                {
+                                    Page = htmlFilePath,
+                                     LoadSettings = new LoadSettings { JSDelay = 5000,ZoomFactor=1.5 },
+                                    WebSettings = new WebSettings
+                                    {
+                                        EnableJavascript = true,
+                                        DefaultEncoding = "UTF-8",
+                                        LoadImages = true
+                                    }
+                                }
+                            }
+                                };
+
+                                // Convert the HTML to PDF and add the PDF path to the list
+                                Converter.Convert(doc);
+                                pdfFilePaths.Add(pdfFilePath);
+                                Console.WriteLine($"PDF generated successfully for PrintContent: {pdfFilePath}");
+                            }
+                        }
+                        else // Process any remaining HTML without specific blocks or tables
+                        {
+                            // Define paths for temporary HTML and PDF files
+                            string htmlFilePath = Path.Combine(tempPath, $"outputHTML{i}.html");
+                            string pdfFilePath = Path.Combine(tempPath, $"output{i}.pdf");
+
+                            // Add the PDF file path to the list
+                            pdfFilePaths.Add(pdfFilePath);
+
+                            // Write the original HTML content to a temporary file
+                            File.WriteAllText(htmlFilePath, htmls[i]);
+
+                            // Delete the existing PDF file if it already exists
+                            if (File.Exists(pdfFilePath)) File.Delete(pdfFilePath);
+
+                            // Create a PDF document configuration
+                            var doc = new HtmlToPdfDocument
+                            {
+                                GlobalSettings = new GlobalSettings
+                                {
+                                    ColorMode = ColorMode.Color,
+                                    Orientation = DinkToPdf.Orientation.Portrait,
+                                    PaperSize = PaperKind.A6,
+                                    Out = pdfFilePath
+                                },
+                                Objects =
+                        {
+                            new ObjectSettings
+                            {
+                                Page = htmlFilePath,
+                                LoadSettings = new LoadSettings { JSDelay = 5000 },
+                                WebSettings = new WebSettings
+                                {
+                                    EnableJavascript = true,
+                                    DefaultEncoding = "UTF-8",
+                                    LoadImages = true
+                                }
+                            }
+                        }
+                            };
+
+                            // Convert the HTML to PDF
+                            Converter.Convert(doc);
+                            Console.WriteLine($"PDF generated successfully: {pdfFilePath}");
+                        }
+                    }
+                    else
+                    {
+                        //For SevenElevenC2C
+                        // Logic for processing divFrames remains unchanged
+                        tempPath = Path.Combine(Path.GetTempPath(), "MergeTemp");
+
+                        var headNode = htmlDoc.DocumentNode.SelectSingleNode("//head");
+                        var bodyNode = htmlDoc.DocumentNode.SelectSingleNode("//body");
+
+                        string originalHead = headNode?.OuterHtml ?? "<head></head>";
+                        string originalBodyStart = bodyNode?.InnerHtml.Split(new[] { "<div class=\"div_frame\">" }, StringSplitOptions.None)[0] ?? "";
+
+                        // Create a separate PDF for each <div class="div_frame">
+                        for (int j = 0; j < divFrames.Count; j++)
+                        {
+                            string htmlFilePath = Path.Combine(tempPath, $"outputHTML_{i}_{j}.html");
+                            string pdfFilePath = Path.Combine(tempPath, $"output_{i}_{j}.pdf");
+
+                            // Build the new HTML content for the current div_frame
+                            string newHtmlContent = $@"
+                    <!DOCTYPE html>
+                    <html>
+                    {originalHead}
+                    <body class='{bodyNode.GetAttributeValue("class", string.Empty)}'>
+                        {originalBodyStart}
+                        {divFrames[j].OuterHtml}
+                    </body>
+                    </html>";
+
+                            // Save the HTML file
+                            File.WriteAllText(htmlFilePath, newHtmlContent);
+
+                            // Generate PDF
+                            if (File.Exists(pdfFilePath)) File.Delete(pdfFilePath);
+                            pdfFilePaths.Add(pdfFilePath);
+
+                            var doc = new HtmlToPdfDocument
+                            {
+                                GlobalSettings = new GlobalSettings
+                                {
+                                    ColorMode = ColorMode.Color,
+                                    Orientation = DinkToPdf.Orientation.Portrait,
+                                    PaperSize = PaperKind.A6,
+                                    Margins = new MarginSettings { Top = 3, Left = 0, Bottom = 5, Right = 0 },
+                                    Out = pdfFilePath
+                                },
+                                Objects =
+                        {
+                            new ObjectSettings
+                            {
+                                Page = htmlFilePath,
+                                LoadSettings = new LoadSettings { JSDelay = 5000 },
+                                WebSettings = new WebSettings
+                                {
+                                    EnableJavascript = true,
+                                    DefaultEncoding = "UTF-8",
+                                    LoadImages = true,
+                                }
+                            }
+                        }
+                            };
+
+                            Converter.Convert(doc);
+                            Console.WriteLine($"PDF generated successfully for div_frame: {pdfFilePath}");
+                        }
+
+
+
+                    }
+                }
+
+            }
+            catch (Exception ex)
+            {
+                // Log any errors that occur during PDF generation
+                Console.WriteLine($"Error generating PDF: {ex.Message}");
+            }
+        }
+
+        // Return the list of generated PDF file paths
+        return pdfFilePaths;
+    }
+    public MemoryStream CombinePdf(List<string> inputPdfPaths)
+    {
+        var memoryStream = new MemoryStream();
+
+        string tempPath = Path.Combine(Path.GetTempPath(), "MergeTemp");
+
+        string outputPdfPath = Path.Combine(tempPath, "combinedPdf.pdf");
+
+        using (var outputDocument = new PdfDocument())
+        {
+            foreach (var path in inputPdfPaths)
+            {
+                var inputDocument = PdfReader.Open(path, PdfDocumentOpenMode.Import);
+                foreach (var page in inputDocument.Pages)
+                {
+                    outputDocument.AddPage(page);
+                }
+            }
+
+            outputDocument.Save(memoryStream);
+
+            Console.WriteLine($"Combined PDF created successfully at: {outputPdfPath}");
+        }
+
+        memoryStream.Position = 0;
+
+        return memoryStream;
+    }
     private void OpenRefundModal()
     {
         refunds = new RefundOrder
