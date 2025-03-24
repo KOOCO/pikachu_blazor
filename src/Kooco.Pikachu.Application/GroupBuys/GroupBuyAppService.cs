@@ -64,6 +64,7 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
     private readonly IImageAppService _ImageAppService;
     private readonly IGroupBuyProductRankingAppService _groupBuyProductRankingAppService;
     private readonly UnitOfWorkManager _unitOfWorkManager;
+    private readonly ILogisticsProvidersAppService _logisticsProvidersAppService;
 
     #endregion
 
@@ -85,7 +86,8 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
         IDeliveryTemperatureCostAppService DeliveryTemperatureCostAppService,
         IImageAppService ImageAppService,
         IGroupBuyProductRankingAppService groupBuyProductRankingAppService,
-        UnitOfWorkManager unitOfWorkManager
+        UnitOfWorkManager unitOfWorkManager,
+        ILogisticsProvidersAppService logisticsProvidersAppService
     )
     {
         _groupBuyManager = groupBuyManager;
@@ -105,6 +107,7 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
         _ImageAppService = ImageAppService;
         _groupBuyProductRankingAppService = groupBuyProductRankingAppService;
         _unitOfWorkManager = unitOfWorkManager;
+        _logisticsProvidersAppService = logisticsProvidersAppService;
     }
     #endregion
 
@@ -577,133 +580,138 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
         using (_dataFilter.Disable<IMultiTenant>())
         {
             GroupBuy item = await _groupBuyRepository.GetAsync(id);
+            var response = new ShippingMethodResponse();
 
-            // Safely deserialize the ExcludeShippingMethod
+            // Deserialize relevant data
             List<string>? shippingMethods = !string.IsNullOrEmpty(item?.ExcludeShippingMethod)
                 ? JsonSerializer.Deserialize<List<string>>(item.ExcludeShippingMethod)
                 : [];
 
-            // Safely deserialize HomeDeliveryDeliveryTime
             List<string>? homeDeliveryTimes = !string.IsNullOrEmpty(item?.HomeDeliveryDeliveryTime)
                 ? JsonSerializer.Deserialize<List<string>>(item.HomeDeliveryDeliveryTime)
                 : [];
 
-            // Safely deserialize DeliveredByStoreDeliveryTime (for convenience store)
             List<string>? convenienceStoreTimes = !string.IsNullOrEmpty(item?.DeliveredByStoreDeliveryTime)
                 ? JsonSerializer.Deserialize<List<string>>(item.DeliveredByStoreDeliveryTime)
                 : [];
 
-            // Safely deserialize SelfPickupDeliveryTime
             List<string>? selfPickupTimes = !string.IsNullOrEmpty(item?.SelfPickupDeliveryTime)
                 ? JsonSerializer.Deserialize<List<string>>(item.SelfPickupDeliveryTime)
                 : [];
 
-            List<string>? blackCatTCatPickupTimes = !string.IsNullOrEmpty(item?.BlackCatDeliveryTime) ?
-                JsonSerializer.Deserialize<List<string>>(item.BlackCatDeliveryTime) : [];
+            List<string>? blackCatTCatPickupTimes = !string.IsNullOrEmpty(item?.BlackCatDeliveryTime)
+                ? JsonSerializer.Deserialize<List<string>>(item.BlackCatDeliveryTime)
+                : [];
 
-            // Create response object
-            ShippingMethodResponse response = new();
-
-            // Map Home Delivery Methods
-            foreach (string method in shippingMethods ?? [])
+            // Get all logistics providers
+            using (CurrentTenant.Change(item.TenantId))
             {
-                if (method.Contains("HomeDelivery"))
+                var logisticsProviders = await _logisticsProvidersAppService.GetAllAsync();
+
+
+                var providerMapping = new Dictionary<DeliveryMethod, LogisticProviders>
+        {
+            { DeliveryMethod.HomeDelivery, LogisticProviders.HomeDelivery },
+            { DeliveryMethod.PostOffice, LogisticProviders.PostOffice },
+            { DeliveryMethod.FamilyMart1, LogisticProviders.FamilyMart },
+            { DeliveryMethod.SevenToEleven1, LogisticProviders.SevenToEleven },
+            { DeliveryMethod.SevenToElevenFrozen, LogisticProviders.SevenToElevenFrozen },
+            { DeliveryMethod.BlackCat1, LogisticProviders.BNormal },
+            { DeliveryMethod.BlackCatFreeze, LogisticProviders.BFreeze },
+            { DeliveryMethod.BlackCatFrozen, LogisticProviders.BFrozen },
+            { DeliveryMethod.FamilyMartC2C, LogisticProviders.FamilyMartC2C },
+            { DeliveryMethod.SevenToElevenC2C, LogisticProviders.SevenToElevenC2C },
+            { DeliveryMethod.TCatDeliveryNormal, LogisticProviders.TCatNormal },
+            { DeliveryMethod.TCatDeliveryFreeze, LogisticProviders.TCat711Freeze },
+            { DeliveryMethod.TCatDeliveryFrozen, LogisticProviders.TCatFrozen },
+            { DeliveryMethod.TCatDeliverySevenElevenNormal, LogisticProviders.TCat711Normal },
+            { DeliveryMethod.TCatDeliverySevenElevenFreeze, LogisticProviders.TCat711Freeze },
+            { DeliveryMethod.TCatDeliverySevenElevenFrozen, LogisticProviders.TCat711Frozen }
+        };
+
+                bool IsMethodEnabled(string method)
                 {
-                    // Always add the method to the response, even if there are no times
-                    var matchingTimes = homeDeliveryTimes.Where(time => !string.IsNullOrEmpty(time)).ToList();
-                    response.HomeDeliveryType[method] = matchingTimes.Count > 0 ? matchingTimes : ["No time preference"];
-                }
-
-                else if (method.Contains("TCatDeliveryNormal")
-                    || method.Contains("TCatDeliveryFreeze") || method.Contains("TCatDeliveryFrozen")
-                    || method.Contains("BlackCat") || method.Contains("BlackCatFreeze") || method.Contains("BlackCatFrozen"))
-                {
-                    List<string> matchingTimes = [.. blackCatTCatPickupTimes.Where(time => !string.IsNullOrEmpty(time))];
-
-                    response.HomeDeliveryType[method] = matchingTimes.Count > 0 ? matchingTimes : ["No time preference"];
-                }
-
-                else if (method.Contains("PostOffice")) response.HomeDeliveryType[method] = ["Not Specified"];
-            }
-
-            // Map Convenience Store Shipping Methods
-            foreach (string method in shippingMethods ?? [])
-            {
-                if (method.Contains("SevenToEleven1") || method.Contains("SevenToEleven1Freeze") || method.Contains("SevenToElevenFrozen")
-                    || method.Contains("SevenToElevenC2C")
-                    || method.Contains("FamilyMart1") || method.Contains("FamilyMartC2C")
-                    || method.Contains("TCatDeliverySevenElevenNormal") || method.Contains("TCatDeliverySevenElevenFreeze")
-                    || method.Contains("TCatDeliverySevenElevenFrozen"))
-                {
-                    response.ConvenienceStoreType[method] = [string.Empty];
-                }
-            }
-
-            // Map Self-Pickup Methods
-            foreach (string method in shippingMethods ?? [])
-            {
-                if (method.Contains("SelfPickup"))
-                {
-                    // Always add the method to the response, even if there are no times
-                    var matchingTimes = selfPickupTimes.Where(time => !string.IsNullOrEmpty(time)).ToList();
-                    response.SelfPickupType[method] = matchingTimes.Count > 0 ? matchingTimes : new List<string> { "No time preference" };
-                }
-            }
-
-            foreach (string method in shippingMethods ?? [])
-            {
-                if (method.Contains("DeliveredByStore"))
-                {
-                    using (_dataFilter.Enable<IMultiTenant>())
+                    foreach (var pair in providerMapping)
                     {
-                        List<DeliveryTemperatureCostDto> deliveryTemperatureCosts = await _DeliveryTemperatureCostAppService.GetListAsync();
-
-                        foreach (DeliveryTemperatureCostDto deliveryTemperatureCost in deliveryTemperatureCosts)
+                        if (method.Contains(pair.Key.ToString()))
                         {
-                            if (response.DeliveredByStoreType.ContainsKey(deliveryTemperatureCost.Temperature.ToString()))
-                                response.DeliveredByStoreType[deliveryTemperatureCost.Temperature.ToString()].DeliveryMethod = deliveryTemperatureCost.DeliveryMethod.ToString();
+                            var matched = logisticsProviders.FirstOrDefault(p => p.LogisticProvider == pair.Value && p.TenantId==item.TenantId);
+                            return matched?.IsEnabled == true;
+                        }
+                    }
+                    return false;
+                }
 
-                            else response.DeliveredByStoreType.Add(deliveryTemperatureCost.Temperature.ToString(), new() { DeliveryMethod = deliveryTemperatureCost.DeliveryMethod.ToString() });
+                foreach (string method in shippingMethods ?? [])
+                {
+                    if (IsMethodEnabled(method))
+                    {
+                        if (method.Contains("HomeDelivery"))
+                        {
+                            var matchingTimes = homeDeliveryTimes.Where(t => !string.IsNullOrEmpty(t)).ToList();
+                            response.HomeDeliveryType[method] = matchingTimes.Count > 0 ? matchingTimes : ["No time preference"];
+                        }
+                        else if (method.Contains("TCatDelivery") || method.Contains("BlackCat"))
+                        {
+                            var matchingTimes = blackCatTCatPickupTimes.Where(t => !string.IsNullOrEmpty(t)).ToList();
+                            response.HomeDeliveryType[method] = matchingTimes.Count > 0 ? matchingTimes : ["No time preference"];
+                        }
+                        else if (method.Contains("PostOffice"))
+                        {
+                            response.HomeDeliveryType[method] = ["Not Specified"];
+                        }
+                        else if (method.Contains("SevenToEleven") || method.Contains("FamilyMart") || method.Contains("TCatDeliverySevenEleven"))
+                        {
+                            response.ConvenienceStoreType[method] = [string.Empty];
+                        }
+                        
+                        else if (method.Contains("DeliveredByStore"))
+                        {
+                            using (_dataFilter.Enable<IMultiTenant>())
+                            {
+                                var deliveryTemperatureCosts = await _DeliveryTemperatureCostAppService.GetListAsync();
 
-                            if (deliveryTemperatureCost.DeliveryMethod is not null &&
-                                (deliveryTemperatureCost.DeliveryMethod is DeliveryMethod.BlackCat1 ||
-                                 deliveryTemperatureCost.DeliveryMethod is DeliveryMethod.BlackCatFreeze ||
-                                 deliveryTemperatureCost.DeliveryMethod is DeliveryMethod.BlackCatFrozen ||
-                                 deliveryTemperatureCost.DeliveryMethod is DeliveryMethod.TCatDeliveryNormal ||
-                                 deliveryTemperatureCost.DeliveryMethod is DeliveryMethod.TCatDeliveryFreeze ||
-                                 deliveryTemperatureCost.DeliveryMethod is DeliveryMethod.TCatDeliveryFrozen))
-                            {
-                                List<string> matchingTimes = convenienceStoreTimes.Where(time => !string.IsNullOrEmpty(time)).ToList();
+                                foreach (var deliveryCost in deliveryTemperatureCosts)
+                                {
+                                    var key = deliveryCost.Temperature.ToString();
+                                    response.DeliveredByStoreType.TryAdd(key, new());
 
-                                response.DeliveredByStoreType[deliveryTemperatureCost.Temperature.ToString()].DeliveryTime = matchingTimes.Count > 0 ? matchingTimes : ["No time preference"];
-                                response.DeliveredByStoreType[deliveryTemperatureCost.Temperature.ToString()].DeliveryType = 0;
-                            }
-                            else if ((deliveryTemperatureCost.DeliveryMethod is not null &&
-                                 (deliveryTemperatureCost.DeliveryMethod is DeliveryMethod.HomeDelivery ||
-                                 deliveryTemperatureCost.DeliveryMethod is DeliveryMethod.PostOffice)))
-                            {
-                                response.DeliveredByStoreType[deliveryTemperatureCost.Temperature.ToString()].DeliveryType = 0;
-                            }
-                            else if (deliveryTemperatureCost.DeliveryMethod is not null &&
-                                 (deliveryTemperatureCost.DeliveryMethod is DeliveryMethod.SevenToEleven1 ||
-                                 deliveryTemperatureCost.DeliveryMethod is DeliveryMethod.SevenToElevenC2C ||
-                                 deliveryTemperatureCost.DeliveryMethod is DeliveryMethod.FamilyMart1 ||
-                                 deliveryTemperatureCost.DeliveryMethod is DeliveryMethod.FamilyMartC2C ||
-                                 deliveryTemperatureCost.DeliveryMethod is DeliveryMethod.TCatDeliverySevenElevenFreeze ||
-                                 deliveryTemperatureCost.DeliveryMethod is DeliveryMethod.TCatDeliverySevenElevenFrozen ||
-                                 deliveryTemperatureCost.DeliveryMethod is DeliveryMethod.TCatDeliverySevenElevenNormal ||
-                                 deliveryTemperatureCost.DeliveryMethod is DeliveryMethod.SevenToElevenFrozen))
-                            {
-                                response.DeliveredByStoreType[deliveryTemperatureCost.Temperature.ToString()].DeliveryType = 1;
+                                    response.DeliveredByStoreType[key].DeliveryMethod = deliveryCost.DeliveryMethod?.ToString();
+
+                                    if (deliveryCost.DeliveryMethod is DeliveryMethod.BlackCat1 or DeliveryMethod.BlackCatFreeze or DeliveryMethod.BlackCatFrozen or
+                                        DeliveryMethod.TCatDeliveryNormal or DeliveryMethod.TCatDeliveryFreeze or DeliveryMethod.TCatDeliveryFrozen)
+                                    {
+                                        var matchingTimes = convenienceStoreTimes.Where(t => !string.IsNullOrEmpty(t)).ToList();
+                                        response.DeliveredByStoreType[key].DeliveryTime = matchingTimes.Count > 0 ? matchingTimes : ["No time preference"];
+                                        response.DeliveredByStoreType[key].DeliveryType = 0;
+                                    }
+                                    else if (deliveryCost.DeliveryMethod is DeliveryMethod.HomeDelivery or DeliveryMethod.PostOffice)
+                                    {
+                                        response.DeliveredByStoreType[key].DeliveryType = 0;
+                                    }
+                                    else if (deliveryCost.DeliveryMethod is DeliveryMethod.SevenToEleven1 or DeliveryMethod.SevenToElevenC2C or
+                                             DeliveryMethod.FamilyMart1 or DeliveryMethod.FamilyMartC2C or
+                                             DeliveryMethod.TCatDeliverySevenElevenNormal or DeliveryMethod.TCatDeliverySevenElevenFreeze or
+                                             DeliveryMethod.TCatDeliverySevenElevenFrozen or DeliveryMethod.SevenToElevenFrozen)
+                                    {
+                                        response.DeliveredByStoreType[key].DeliveryType = 1;
+                                    }
+                                }
                             }
                         }
                     }
+                    else if (method.Contains("SelfPickup"))
+                    {
+                        var matchingTimes = selfPickupTimes.Where(t => !string.IsNullOrEmpty(t)).ToList();
+                        response.SelfPickupType[method] = matchingTimes.Count > 0 ? matchingTimes : ["No time preference"];
+                    }
                 }
-            }
 
-            return response;
+                return response;
+            }
         }
     }
+
     /// <summary>
     /// This Method Returns the Desired Result For the Store Front End.
     /// Do not change unless you want to make changes in the Store Front End Code
