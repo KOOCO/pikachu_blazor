@@ -2776,76 +2776,7 @@
             </Card>
         </div>
     </div>
-    <div class="row">
-        <div class="col-6">
-            <h4>@L["StoreCustomerServiceReply"]</h4>
-            <Card>
-                <CardBody>
-                    <div class="row">
-                        <EditForm Model="@StoreCustomerService" OnValidSubmit="SubmitCustomerServiceReplyAsync">
-                            <DataAnnotationsValidator />
-                            <div class="col-12 mb-2">
-                                <InputTextArea class="form-control" @bind-Value="@StoreCustomerService.Message"></InputTextArea>
-                                <ValidationMessage For="@(() => StoreCustomerService.Message)" />
-                            </div>
-                            @if (Order.OrderType != OrderType.MargeToNew)
-                            {
-                                <div class="col-12 text-end">
-                                    <Button Type="ButtonType.Button" Class="btn btn-sm btn-danger me-1" Clicked="() => StoreCustomerService = new()">
-                                        @L["Cancel"]
-                                    </Button>
-                                    @*   @if (StoreCustomerService.Id == null)
-                                { *@
-                                    <Button Type="ButtonType.Submit" Class="btn btn-sm btn-primary">
-                                        <i class="fa fa-check"></i>
-                                        @L["Save"]
-                                    </Button>
-                                    @*  }
-                                else
-                                {
-                                <Button Type="ButtonType.Submit" Class="btn btn-sm btn-primary">
-                                <i class="fa fa-check"></i>
-                                @L["Update"]
-                                </Button>
-                                } *@
-                                </div>
-                            }
-                        </EditForm>
-                    </div>
-                </CardBody>
-            </Card>
-        </div>
-        <div class="col-6">
-            <h4>@L["CustomerServiceHistory"]</h4>
-            <Card>
-                <CardBody>
-                    <div class="row">
-                        @if (CustomerServiceHistory.Count > 0)
-                        {
-                            @foreach (var comment in CustomerServiceHistory)
-                            {
-                                <div class="col-12">
-                                    <span class="fw-bold me-2">
-                                        @comment.SenderName
-                                    </span>
-                                    <span class="me-2">
-                                        @comment.Timestamp
-                                    </span>
-                                    @*  @if (comment.CreatorId == CurrentUser.Id)
-                            {
-                            <span>
-                            <i class="fa fa-pencil text-secondary cursor-pointer" @onclick="() => EditStoreComment(comment.Id, comment.Comment)"></i>
-                            </span>
-                            } *@
-                                    <p class="me-2">@comment.Message</p>
-                                </div>
-                            }
-                        }
-                    </div>
-                </CardBody>
-            </Card>
-        </div>
-    </div>
+  
     </div>
     <Modal @ref="CreateShipmentModal">
         <ModalBackdrop />
