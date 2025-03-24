@@ -548,11 +548,11 @@ public partial class EditItem
         {
             throw new BusinessException(L[PikachuDomainErrorCodes.SKUForItemDetailsCannotBeNull]);
         }
-        if (Attributes.Any(x => x.Name.IsNullOrEmpty()))
-        {
-            throw new BusinessException(L[PikachuDomainErrorCodes.ItemStyleKeyCannotBeNull]);
+        //if (Attributes.Any(x => x.Name.IsNullOrEmpty()))
+        //{
+        //    throw new BusinessException(L[PikachuDomainErrorCodes.ItemStyleKeyCannotBeNull]);
 
-        }
+        //}
         if (Attributes.GroupBy(x => x.Name).Any(g => g.Count() > 1))
         {
 
