@@ -1338,6 +1338,11 @@
     "FamilyMartB2C": "Family Mart B2C",
     "7-11B2C": "7-11 B2C",
     "7-11 frozen B2C": "7-11 Frozen B2C",
-    "Logistics:COD": "Cash On Delivery"
+    "Logistics:COD": "Cash On Delivery",
+    "MemberType": "Member Type",
+    "All": "All",
+    "NewMembers": "New Members",
+    "ExistingMembers": "Existing Members",
+    "NewMember": "New Member"
   }
 }

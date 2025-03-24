@@ -614,3 +614,24 @@
     content: ' *';
     color: crimson;
 }
+
+.member-image {
+    position: relative;
+    width: 40px;
+}
+
+    .member-image img {
+        width: 40px;
+        height: auto;
+    }
+
+    .member-image .b-tooltip {
+        position: absolute;
+        right: 0;
+        bottom: -5px;
+    }
+
+    .member-image i {
+        color: #81ff7c;
+        text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
+    }

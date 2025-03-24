@@ -1408,6 +1408,11 @@
     "FamilyMartB2C": "全家 B2C",
     "7-11B2C": "7-11 B2C",
     "7-11 frozen B2C": "7-11 冷凍 B2C",
-    "Logistics:COD": "是否代收款"
+    "Logistics:COD": "是否代收款",
+    "MemberType": "會員類型",
+    "All": "全部",
+    "NewMembers": "新會員",
+    "ExistingMembers": "現有會員",
+    "NewMember": "新會員"
   }
 }

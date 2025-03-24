@@ -30,12 +30,48 @@
 </Div>
 <Card>
     <CardBody>
-        <Div Class="input-group">
-            <TextEdit @bind-Text="Filters.Filter" />
-            <Button Color="Color.Primary" Clicked="ApplyFilters">
-                <Icon Class="fas fa-search"></Icon>
-            </Button>
-        </Div>
+        <Row>
+            <Column ColumnSize="ColumnSize.Is10">
+                <Div Class="input-group">
+                    <TextEdit @bind-Text="Filters.Filter" Style="border-radius: 0.5rem 0 0 0.5rem;" />
+                    <Button Color="Color.Primary" Clicked="ApplyFilters"
+                            Style="border-radius: 0 0.5rem 0.5rem 0;">
+                        <Icon Class="fas fa-search"></Icon>
+                    </Button>
+                </Div>
+            </Column>
+            <Column ColumnSize="ColumnSize.Is2">
+                <Button Class="btn-outline-primary w-100" Clicked="(() => FiltersVisible = !FiltersVisible)">
+                    @L["Filters"]
+                    <i class="fas @(FiltersVisible ? "fa-angles-up" : "fa-angles-down") ms-1"></i>
+                </Button>
+            </Column>
+        </Row>
+        @if (FiltersVisible)
+        {
+            <Row Class="mt-2">
+                <Column ColumnSize="ColumnSize.Is3">
+                    <Label>@L["MemberType"]</Label>
+                    <Select TValue="string" @bind-SelectedValue="@Filters.MemberType" Size="Size.Small">
+                        <SelectItem Value="@(MemberConsts.All)">@L[MemberConsts.All]</SelectItem>
+                        <SelectItem Value="@(MemberConsts.NewMembers)">@L[MemberConsts.NewMembers]</SelectItem>
+                        <SelectItem Value="@(MemberConsts.ExistingMembers)">@L[MemberConsts.ExistingMembers]</SelectItem>
+                    </Select>
+                </Column>
+                <Column ColumnSize="ColumnSize.Is3">
+                    <Div Class="d-flex align-items-end gap-1 h-100">
+                        <Button Class="btn-sm btn-outline-primary" Clicked="ResetFilters">
+                            <Icon Name="IconName.Undo"></Icon>
+                            @L["Reset"]
+                        </Button>
+                        <Button Class="btn-sm btn-primary" Clicked="ApplyFilters">
+                            <Icon Name="IconName.Filter"></Icon>
+                            @L["Filter"]
+                        </Button>
+                    </Div>
+                </Column>
+            </Row>
+        }
     </CardBody>
 </Card>
 <Card>
@@ -62,8 +98,16 @@
                                 Caption="@L["Name"]">
                     <DisplayTemplate>
                         <Div Class="d-flex align-items-center gap-1">
-                            <Div>
-                                <img class="img-fluid rounded-circle" style="height: 40px;" src="https://e7.pngegg.com/pngimages/799/987/png-clipart-computer-icons-avatar-icon-design-avatar-heroes-computer-wallpaper-thumbnail.png" alt="Alternate Text" />
+                            <Div Class="member-image">
+                                <img class="img-fluid rounded-circle" src="https://e7.pngegg.com/pngimages/799/987/png-clipart-computer-icons-avatar-icon-design-avatar-heroes-computer-wallpaper-thumbnail.png" alt="Alternate Text" />
+                                @if (context.TotalOrders == 0)
+                                {
+                                    <Div>
+                                        <Tooltip Text="@L["NewMember"]">
+                                            <Icon Name="IconName.Star"></Icon>
+                                        </Tooltip>
+                                    </Div>
+                                }
                             </Div>
                             <Div>
                                 <Div>

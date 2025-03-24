@@ -21,7 +21,7 @@ public partial class Members
 
     private MemberDto SelectedMember { get; set; }
     private List<MemberDto> SelectedMembers { get; set; }
-
+    private bool FiltersVisible { get; set; } = false;
     private bool IsExporting { get; set; }
 
     public Members()
@@ -46,7 +46,8 @@ public partial class Members
                     MaxResultCount = PageSize,
                     SkipCount = (CurrentPage - 1) * PageSize,
                     Sorting = CurrentSorting,
-                    Filter = Filters.Filter
+                    Filter = Filters.Filter,
+                    MemberType = Filters.MemberType
                 }
             );
 

@@ -2,6 +2,10 @@
 
 public static class MemberConsts
 {
+    public const string All = "All";
+    public const string NewMembers = "NewMembers";
+    public const string ExistingMembers = "ExistingMembers";
+
     public const string Role = "MEMBER";
 
     public const string MembersManagement = "MembersManagement";
