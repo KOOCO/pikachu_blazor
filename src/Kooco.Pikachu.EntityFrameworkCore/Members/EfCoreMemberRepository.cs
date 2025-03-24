@@ -1,6 +1,5 @@
 ﻿using Kooco.Pikachu.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using Polly;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +9,6 @@ using Volo.Abp.Data;
 using Volo.Abp.EntityFrameworkCore;
 using Volo.Abp.Identity;
 using Volo.Abp.Identity.EntityFrameworkCore;
-using static Volo.Abp.Identity.Settings.IdentitySettingNames;
 
 namespace Kooco.Pikachu.Members;
 
@@ -22,25 +20,32 @@ public class EfCoreMemberRepository(IDbContextProvider<PikachuDbContext> pikachu
         return pikachuDbContextProvider.GetDbContextAsync();
     }
 
-    public async Task<long> GetCountAsync(string? filter)
+    public async Task<long> GetCountAsync(string? filter = null, string? memberType = null)
     {
-        var queryable = await GetQueryableAsync();
-        queryable = queryable
-            .WhereIf(!string.IsNullOrWhiteSpace(filter), q => q.UserName.Contains(filter)
-            || q.PhoneNumber.Contains(filter) || q.Email.Contains(filter));
-        return queryable.Count();
+        var queryable = await GetFilteredQueryableAsync(filter, memberType);
+        return await queryable.LongCountAsync();
     }
 
-    public async Task<List<MemberModel>> GetListAsync(int skipCount, int maxResultCount, string sorting, string? filter)
+    public async Task<List<MemberModel>> GetListAsync(int skipCount, int maxResultCount, string sorting, string? filter = null, string? memberType = null)
+    {
+        var query = await GetFilteredQueryableAsync(filter, memberType);
+        var members = await query
+                        .OrderBy(sorting)
+                        .Skip(skipCount)
+                        .Take(maxResultCount)
+                        .ToListAsync();
+
+        return members;
+    }
+
+    private async Task<IQueryable<MemberModel>> GetFilteredQueryableAsync(string? filter, string? memberType)
     {
         var dbContext = await GetPikachuDbContextAsync();
-        var query = from user in dbContext.Users
-                    
-                    where string.IsNullOrWhiteSpace(filter)
-                          || user.UserName.Contains(filter)
+        var queryable = dbContext.Users
+                    .WhereIf(!string.IsNullOrWhiteSpace(filter), user => user.UserName.Contains(filter)
                           || user.PhoneNumber.Contains(filter)
-                          || user.Email.Contains(filter)
-                    select new MemberModel
+                          || user.Email.Contains(filter))
+                    .Select(user => new MemberModel
                     {
                         Id = user.Id,
                         UserName = user.UserName,
@@ -48,17 +53,13 @@ public class EfCoreMemberRepository(IDbContextProvider<PikachuDbContext> pikachu
                         PhoneNumber = user.PhoneNumber,
                         Email = user.Email,
                         Birthday = (DateTime?)user.GetProperty(Constant.Birthday, null),
-                        TotalOrders =dbContext.Orders.Where(x=>x.UserId==user.Id).Count(),
-                        TotalSpent = (int)dbContext.Orders.Where(x => x.UserId == user.Id && (x.OrderStatus!=EnumValues.OrderStatus.Exchange && x.OrderStatus != EnumValues.OrderStatus.Refund)).Sum(x=>x.TotalAmount)
-                    };
+                        TotalOrders = dbContext.Orders.Where(x => x.UserId == user.Id).Count(),
+                        TotalSpent = (int)dbContext.Orders.Where(x => x.UserId == user.Id && (x.OrderStatus != EnumValues.OrderStatus.Exchange && x.OrderStatus != EnumValues.OrderStatus.Refund)).Sum(x => x.TotalAmount)
+                    })
+                    .WhereIf(memberType == MemberConsts.NewMembers, user => user.TotalOrders == 0)
+                    .WhereIf(memberType == MemberConsts.ExistingMembers, user => user.TotalOrders > 0);
 
-
-        var members = await query.OrderBy(sorting)
-                                 .Skip(skipCount)
-                                 .Take(maxResultCount)
-                                 .ToListAsync();
-
-        return members;
+        return queryable;
     }
 
     public async Task<long> GetMemberCreditRecordCountAsync(string? filter, DateTime? usageTimeFrom, DateTime? usageTimeTo,
@@ -87,11 +88,11 @@ public class EfCoreMemberRepository(IDbContextProvider<PikachuDbContext> pikachu
 
         var memberCredits = (from credits in dbContext.UserShoppingCredits
                             .Where(x => userId != null && x.UserId == userId)
-                            join orders in dbContext.Orders
-                            on credits.Id equals orders.CreditDeductionRecordId
-                            into creditsWithOrders
-                            from orders in creditsWithOrders.DefaultIfEmpty()
-                            select new { credits, orders })
+                             join orders in dbContext.Orders
+                             on credits.Id equals orders.CreditDeductionRecordId
+                             into creditsWithOrders
+                             from orders in creditsWithOrders.DefaultIfEmpty()
+                             select new { credits, orders })
                            //.Join(dbContext.Orders, credits => credits.Id, orders => orders.CreditDeductionRecordId, (credits, orders) => new { credits, orders })
                            .WhereIf(usageTimeFrom.HasValue, x => x.credits.CreationTime >= usageTimeFrom)
                            .WhereIf(usageTimeTo.HasValue, x => x.credits.CreationTime <= usageTimeTo)

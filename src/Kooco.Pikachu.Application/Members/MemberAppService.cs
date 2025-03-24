@@ -50,8 +50,8 @@ public class MemberAppService(IObjectMapper objectMapper, IMemberRepository memb
             input.Sorting = nameof(IdentityUser.UserName);
         }
 
-        var totalCount = await memberRepository.GetCountAsync(input.Filter);
-        var items = await memberRepository.GetListAsync(input.SkipCount, input.MaxResultCount, input.Sorting, input.Filter);
+        var totalCount = await memberRepository.GetCountAsync(input.Filter, input.MemberType);
+        var items = await memberRepository.GetListAsync(input.SkipCount, input.MaxResultCount, input.Sorting, input.Filter, input.MemberType);
         return new PagedResultDto<MemberDto>
         {
             TotalCount = totalCount,
