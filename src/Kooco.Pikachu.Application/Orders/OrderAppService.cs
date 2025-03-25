@@ -341,7 +341,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
                             if (freebie != null && freebie.FreebieAmount > 0)
                             {
-                                freebie.FreebieAmount -= item.Quantity;
+                                freebie.FreebieQuantity -= item.Quantity;
                                 await _freebieRepository.UpdateAsync(freebie);
                             }
                             else
