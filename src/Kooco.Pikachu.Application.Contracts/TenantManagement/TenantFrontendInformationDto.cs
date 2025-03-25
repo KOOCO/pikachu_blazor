@@ -7,4 +7,5 @@ public class TenantFrontendInformationDto
     public string? FaviconUrl { get; set; }
     public string? LogoUrl { get; set; }
     public string? BannerUrl { get; set; }
+
 }

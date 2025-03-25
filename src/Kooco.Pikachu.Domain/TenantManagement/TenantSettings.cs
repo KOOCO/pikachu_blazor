@@ -22,9 +22,12 @@ public class TenantSettings : FullAuditedEntity<Guid>, IMultiTenant
     public DateTime? ServiceHoursFrom { get; private set; }
     public DateTime? ServiceHoursTo { get; private set; }
 
-    public string? Facebook { get; set; }
-    public string? Instagram { get; set; }
-    public string? Line { get; set; }
+    public string? FacebookDisplayName { get; set; }
+    public string? FacebookLink { get; set; }
+    public string? InstagramDisplayName { get; set; }
+    public string? InstagramLink { get; set; }
+    public string? LineDisplayName { get; set; }
+    public string? LineLink { get; set; }
 
     public bool GtmEnabled { get; set; }
     public string? GtmContainerId { get; set; }
@@ -50,9 +53,12 @@ public class TenantSettings : FullAuditedEntity<Guid>, IMultiTenant
         string? customerServiceContactPhone,
         DateTime? serviceHoursFrom,
         DateTime? serviceHoursTo,
-        string? facebook,
-        string? instagram,
-        string? line,
+        string? facebookLink,
+        string? instagramLink,
+        string? lineLink,
+        string? facebookTitle,
+        string? instagramTitle,
+        string? lineTitle,
         bool gtmEnabled,
         string? gtmContainerId,
         string? description
@@ -67,7 +73,7 @@ public class TenantSettings : FullAuditedEntity<Guid>, IMultiTenant
         SetCustomerServiceEmail(customerServiceEmail);
         SetCustomerServiceContactPhone(customerServiceContactPhone);
         SetServiceHours(serviceHoursFrom, serviceHoursTo);
-        SetSocials(facebook, instagram, line);
+        SetSocials(facebookTitle, facebookLink, instagramTitle,instagramLink, lineTitle,lineLink);
         SetGtm(gtmEnabled, gtmContainerId);
         SetDescription(description);
     }
@@ -138,11 +144,14 @@ public class TenantSettings : FullAuditedEntity<Guid>, IMultiTenant
         return this;
     }
 
-    public TenantSettings SetSocials(string? facebook, string? instagram, string? line)
+    public TenantSettings SetSocials(string? facebookTitle,string? facebookUrl, string? instagramTitle, string? instagramUrl,string? lineTitle,string? lineUrl)
     {
-        Facebook = facebook.IsEmptyOrValidUrl() ? facebook : throw new InvalidUrlException(nameof(facebook));
-        Instagram = instagram.IsEmptyOrValidUrl() ? instagram : throw new InvalidUrlException(nameof(instagram));
-        Line = line.IsEmptyOrValidUrl() ? line : throw new InvalidUrlException(nameof(line));
+        FacebookLink = facebookUrl.IsEmptyOrValidUrl() ? facebookUrl : throw new InvalidUrlException(nameof(facebookUrl));
+        InstagramLink = instagramUrl.IsEmptyOrValidUrl() ? instagramUrl : throw new InvalidUrlException(nameof(instagramUrl));
+        LineLink = lineUrl.IsEmptyOrValidUrl() ? lineUrl : throw new InvalidUrlException(nameof(lineUrl));
+        FacebookDisplayName = facebookTitle;
+        InstagramDisplayName = instagramTitle;
+        LineDisplayName = lineTitle;
         return this;
     }
 

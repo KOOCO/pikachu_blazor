@@ -4,12 +4,14 @@ namespace Kooco.Pikachu.TenantManagement;
 
 public class UpdateTenantSocialMediaDto
 {
+    
+    public string? FacebookDisplayName { get; set; }
     [Url]
-    public string? Facebook { get; set; }
-
+    public string? FacebookLink { get; set; }
+    public string? InstagramDisplayName { get; set; }
     [Url]
-    public string? Instagram { get; set; }
-
+    public string? InstagramLink { get; set; }
+    public string? LineDisplayName { get; set; }
     [Url]
-    public string? Line { get; set; }
+    public string? LineLink { get; set; }
 }

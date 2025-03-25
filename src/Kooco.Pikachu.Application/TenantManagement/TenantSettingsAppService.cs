@@ -110,7 +110,7 @@ public class TenantSettingsAppService(TenantSettingsManager tenantSettingsManage
     [Authorize(PikachuPermissions.TenantSettings.Edit)]
     public async Task<TenantSocialMediaDto> UpdateTenantSocialMediaAsync(UpdateTenantSocialMediaDto input)
     {
-        var tenantSettings = await tenantSettingsManager.UpdateTenantSocialMediaAsync(input.Facebook, input.Instagram, input.Line);
+        var tenantSettings = await tenantSettingsManager.UpdateTenantSocialMediaAsync(input.FacebookDisplayName, input.FacebookLink, input.InstagramDisplayName,input.InstagramLink, input.LineDisplayName,input.LineLink);
 
         return ObjectMapper.Map<TenantSettings, TenantSocialMediaDto>(tenantSettings);
     }

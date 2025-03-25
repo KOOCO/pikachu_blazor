@@ -133,10 +133,10 @@ public class TenantSettingsManager(IRepository<TenantSettings, Guid> tenantSetti
         return tenantSettings;
     }
 
-    public async Task<TenantSettings> UpdateTenantSocialMediaAsync(string? facebook, string? instagram, string? line)
+    public async Task<TenantSettings> UpdateTenantSocialMediaAsync(string? facebookTitle, string? facebookLink, string? instagramTitle, string? instagramLink, string? lineTitle, string? lineLink)
     {
         var tenantSettings = await GetAsync();
-        tenantSettings.SetSocials(facebook, instagram, line);
+        tenantSettings.SetSocials(facebookTitle, facebookLink, instagramTitle, instagramLink, lineTitle, lineLink);
         await tenantSettingsRepository.UpdateAsync(tenantSettings);
         return tenantSettings;
     }

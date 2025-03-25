@@ -18,8 +18,8 @@
                     <Column ColumnSize="ViewMode ? ColumnSize.Is12 : ColumnSize.Is12.Is9.OnDesktop">
                         <Validation MessageLocalizer="@LH.Localize">
                             <Field>
-                                <FieldLabel>@L["Facebook"]</FieldLabel>
-                                <TextEdit @bind-Text="Entity.Facebook" Disabled="ViewMode">
+                                <FieldLabel>@L["Facebook Title"]</FieldLabel>
+                                <TextEdit @bind-Text="Entity.FacebookDisplayName" Disabled="ViewMode">
                                     <Feedback>
                                         <ValidationError />
                                     </Feedback>
@@ -28,8 +28,8 @@
                         </Validation>
                         <Validation MessageLocalizer="@LH.Localize">
                             <Field>
-                                <FieldLabel>@L["Instagram"]</FieldLabel>
-                                <TextEdit @bind-Text="Entity.Instagram" Disabled="ViewMode">
+                                <FieldLabel>@L["Facebook Link"]</FieldLabel>
+                                <TextEdit @bind-Text="Entity.FacebookLink" Disabled="ViewMode">
                                     <Feedback>
                                         <ValidationError />
                                     </Feedback>
@@ -38,8 +38,38 @@
                         </Validation>
                         <Validation MessageLocalizer="@LH.Localize">
                             <Field>
-                                <FieldLabel>@L["Line"]</FieldLabel>
-                                <TextEdit @bind-Text="Entity.Line" Disabled="ViewMode">
+                                <FieldLabel>@L["Instagram Title"]</FieldLabel>
+                                <TextEdit @bind-Text="Entity.InstagramDisplayName" Disabled="ViewMode">
+                                    <Feedback>
+                                        <ValidationError />
+                                    </Feedback>
+                                </TextEdit>
+                            </Field>
+                        </Validation>
+                        <Validation MessageLocalizer="@LH.Localize">
+                            <Field>
+                                <FieldLabel>@L["Instagram Link"]</FieldLabel>
+                                <TextEdit @bind-Text="Entity.InstagramLink" Disabled="ViewMode">
+                                    <Feedback>
+                                        <ValidationError />
+                                    </Feedback>
+                                </TextEdit>
+                            </Field>
+                        </Validation>
+                        <Validation MessageLocalizer="@LH.Localize">
+                            <Field>
+                                <FieldLabel>@L["Line Title"]</FieldLabel>
+                                <TextEdit @bind-Text="Entity.LineDisplayName" Disabled="ViewMode">
+                                    <Feedback>
+                                        <ValidationError />
+                                    </Feedback>
+                                </TextEdit>
+                                </Field>
+                                </Validation>
+                                <Validation MessageLocalizer="@LH.Localize">
+                                    <Field>
+                                <FieldLabel>@L["Line Link"]</FieldLabel>
+                                <TextEdit @bind-Text="Entity.LineLink" Disabled="ViewMode">
                                     <Feedback>
                                         <ValidationError />
                                     </Feedback>
