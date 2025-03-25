@@ -869,42 +869,26 @@
             </div>
         </div>
 
-        <div class="row">
+       @*  <div class="row">
             <div class="col-2"></div>
-            @*  <div class="col-2">
+             <div class="col-2">
             <label>@L["FaceBookPixelID"]</label>
             </div>
             <div class="col-5">
-            <InputNumber class="form-control" @bind-Value="@CreateGroupBuyDto.MetaPixelNo" />
-            </div> *@
-        </div>
-        @*  <div class="row">
+            <TextEdit class="form-control" @bind-Value="@CreateGroupBuyDto.FBID" />
+            </div>
+        </div> *@
+         <div class="row">
         <div class="col-2"></div>
         <div class="col-2">
-        <label>@L["FaceBookID"]</label>
+        <label>@L["FaceBookPixelID"]</label>
         </div>
         <div class="col-5">
         <TextEdit @bind-Text="@CreateGroupBuyDto.FBID" />
         </div>
         </div>
-        <div class="row">
-        <div class="col-2"></div>
-        <div class="col-2">
-        <label>@L["IGID"]</label>
-        </div>
-        <div class="col-5">
-        <TextEdit @bind-Text="@CreateGroupBuyDto.IGID" />
-        </div>
-        </div>
-        <div class="row">
-        <div class="col-2"></div>
-        <div class="col-2">
-        <label>@L["LINEID"]</label>
-        </div>
-        <div class="col-5">
-        <TextEdit @bind-Text="@CreateGroupBuyDto.LineID" />
-        </div>
-        </div>
+       
+       
         <div class="row">
         <div class="col-2"></div>
         <div class="col-2">
@@ -914,15 +898,7 @@
         <TextEdit @bind-Text="@CreateGroupBuyDto.GAID" />
         </div>
         </div>
-        <div class="row">
-        <div class="col-2"></div>
-        <div class="col-2">
-        <label>@L["GTM"]</label>
-        </div>
-        <div class="col-5">
-        <TextEdit @bind-Text="@CreateGroupBuyDto.GTM" />
-        </div>
-        </div> *@
+      
         <Divider></Divider>
         <Div Class="row">
             <Div Class="col-2">@L["ColorSchemes"]</Div>
@@ -1876,6 +1852,18 @@
                     </Blazored.TextEditor.BlazoredTextEditor>
                 </div>
             </div>
+        </div>
+        <Divider></Divider>
+        <div class="row">
+             <div class="col-2">
+                <fieldLabel>@L["GA4 ID"]</fieldLabel>
+            </div>
+            <div class="col-10">
+                <div class="col-12">
+            <InputText></InputText>
+            </div>
+            </div>
+            
         </div>
     </CardBody>
 </Card>
