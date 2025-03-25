@@ -102,11 +102,7 @@
                                 <img class="img-fluid rounded-circle" src="https://e7.pngegg.com/pngimages/799/987/png-clipart-computer-icons-avatar-icon-design-avatar-heroes-computer-wallpaper-thumbnail.png" alt="Alternate Text" />
                                 @if (context.TotalOrders == 0)
                                 {
-                                    <Div>
-                                        <Tooltip Text="@L["NewMember"]">
-                                            <Icon Name="IconName.Star"></Icon>
-                                        </Tooltip>
-                                    </Div>
+                                    <Badge>@L["New"]</Badge>
                                 }
                             </Div>
                             <Div>
