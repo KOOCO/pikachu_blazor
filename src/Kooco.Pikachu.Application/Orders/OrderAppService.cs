@@ -339,7 +339,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                         {
                             Freebie? freebie = await _freebieRepository.FirstOrDefaultAsync(x => x.Id == item.FreebieId);
 
-                            if (freebie != null && freebie.FreebieAmount > 0)
+                            if (freebie != null && freebie.FreebieQuantity > 0)
                             {
                                 freebie.FreebieQuantity -= item.Quantity;
                                 await _freebieRepository.UpdateAsync(freebie);
