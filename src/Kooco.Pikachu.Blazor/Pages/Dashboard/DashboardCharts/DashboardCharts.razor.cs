@@ -1,16 +1,11 @@
 using Kooco.Pikachu.Dashboards;
-using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
-using System;
 using System.Threading.Tasks;
 
 namespace Kooco.Pikachu.Blazor.Pages.Dashboard.DashboardCharts;
 
 public partial class DashboardCharts
 {
-    [Parameter]
-    public DashboardChartsDto Value { get; set; }
-
     private static string BarChartId => "dashboard-bar-chart";
     private static string DonutChartId => "dashboard-donut-chart";
 

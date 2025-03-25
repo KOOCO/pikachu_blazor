@@ -14,9 +14,13 @@ public partial class Dashboard
     private List<KeyValueDto> GroupBuyOptions { get; set; } = [];
 
     private DashboardStatsDto DashboardStats { get; set; } = new();
-    private DashboardChartsDto DashboardCharts { get; set; } = new();
+    private int RecentOrdersCount { get; set; }
+    private IReadOnlyList<DashboardOrdersDto> RecentOrdersList { get; set; } = [];
 
     private DashboardCharts.DashboardCharts _dashboardCharts;
+    private DashboardOrdersTable.DashboardOrdersTable _ordersTable;
+    private DashboardBestSellers.DashboardBestSellers _bestSellers;
+
     private bool IsLoading { get; set; } = false;
     public Dashboard()
     {
@@ -33,6 +37,13 @@ public partial class Dashboard
         }
     }
 
+    private async Task GetRecentOrders()
+    {
+        var orderData = await DashboardAppService.GetRecentOrdersAsync(Filters);
+        RecentOrdersList = orderData.Items;
+        RecentOrdersCount = (int)orderData.TotalCount;
+    }
+
     private async Task ApplyFilters()
     {
         try
@@ -40,6 +51,7 @@ public partial class Dashboard
             IsLoading = true;
             DashboardStats = await DashboardAppService.GetDashboardStatsAsync(Filters);
             await _dashboardCharts.RenderCharts(await DashboardAppService.GetDashboardChartsAsync(Filters));
+
         }
         catch (Exception ex)
         {

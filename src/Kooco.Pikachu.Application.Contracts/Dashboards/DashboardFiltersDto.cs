@@ -28,4 +28,7 @@ public class DashboardFiltersDto
             };
         }
     }
+
+    public int SkipCount { get; set; }
+    public int MaxResultCount { get; set; } = 5;
 }

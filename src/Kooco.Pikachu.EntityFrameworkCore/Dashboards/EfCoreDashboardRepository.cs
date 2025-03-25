@@ -174,4 +174,30 @@ public class EfCoreDashboardRepository(IDbContextProvider<PikachuDbContext> dbCo
 
         return model;
     }
+
+    public async Task<DashboardOrdersWithCountModel> GetRecentOrdersAsync(int skipCount, int maxResultCount, IEnumerable<Guid> selectedGroupBuyIds, DateTime? startDate, DateTime? endDate)
+    {
+        var dbContext = await GetDbContextAsync();
+
+        var query = dbContext.Orders
+            .WhereIf(selectedGroupBuyIds.Any(), o => selectedGroupBuyIds.Contains(o.GroupBuyId))
+            .OrderByDescending(o => o.CreationTime)
+            .Select(o => new DashboardOrdersModel
+            {
+                Id = o.Id,
+                OrderNo = o.OrderNo,
+                CustomerName = o.CustomerName,
+                TotalAmount = o.TotalAmount,
+                ShippingStatus = o.ShippingStatus
+            });
+
+        var totalCount = await query.LongCountAsync();
+        var orders = await query.PageBy(skipCount, maxResultCount).ToListAsync();
+        
+        return new DashboardOrdersWithCountModel
+        {
+            TotalCount = totalCount,
+            Items = orders
+        };
+    }
 }

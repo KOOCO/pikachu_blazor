@@ -16,6 +16,7 @@
 
 @inject IDashboardAppService DashboardAppService
 @inject IGroupBuyAppService GroupBuyAppService
+@inject NavigationManager NavigationManager
 
 <Card>
     <CardBody>
@@ -66,17 +67,83 @@
 </Card>
 
 <Div>
-    <DashboardStats Value="DashboardStats"></DashboardStats>
+    @* <DashboardStats Value="DashboardStats"></DashboardStats> *@
 </Div>
 <Div>
-    <DashboardCharts @ref="_dashboardCharts" Value="DashboardCharts"></DashboardCharts>
+    <DashboardCharts @ref="_dashboardCharts"></DashboardCharts>
 </Div>
 
 <Row>
     <Column ColumnSize="ColumnSize.Is12.Is8.OnFullHD">
-        <DashboardOrdersTable></DashboardOrdersTable>
+        <Card>
+            <CardBody>
+                <Div Class="d-flex align-items-center justify-content-between">
+                    <h4 class="m-0">@L["RecentOrders"]</h4>
+                    <Button Class="btn-link" Clicked="@(() => NavigationManager.NavigateTo("/Orders"))">@L["ViewAll"]</Button>
+                </Div>
+                <Divider></Divider>
+                @* <DataGrid TItem="DashboardOrdersDto"
+                          Data="RecentOrdersList"
+                          ReadData="OnDataGridReadAsync"
+                          TotalItems="RecentOrdersCount"
+                          ShowPager="true"
+                          PageSize="PageSize"
+                          CurrentPage="CurrentPage"
+                          Hoverable
+                          Narrow
+                          Responsive
+                          @bind-SelectedRow="@SelectedMember"
+                          SelectionMode="DataGridSelectionMode.Multiple"
+                          @bind-SelectedRows="SelectedMembers"
+                          RowSelectable="RowSelectableHandler">
+                    <DataGridColumns>
+                        <DataGridMultiSelectColumn TItem="MemberDto" Width="30px"></DataGridMultiSelectColumn>
+                        <DataGridCommandColumn TItem="MemberDto" />
+                        <DataGridColumn TItem="MemberDto"
+                                        Field="@nameof(MemberDto.UserName)"
+                                        Caption="@L["Name"]">
+                            <DisplayTemplate>
+                                <Div Class="d-flex align-items-center gap-1">
+                                    <Div Class="member-image">
+                                        <img class="img-fluid rounded-circle" src="https://e7.pngegg.com/pngimages/799/987/png-clipart-computer-icons-avatar-icon-design-avatar-heroes-computer-wallpaper-thumbnail.png" alt="Alternate Text" />
+                                        @if (context.TotalOrders == 0)
+                                        {
+                                            <Badge>@L["New"]</Badge>
+                                        }
+                                    </Div>
+                                    <Div>
+                                        <Div>
+                                            <Button Class="btn-link hyperlink fs-large" Clicked="() => EditMember(context)">@context.UserName</Button>
+                                        </Div>
+                                        <Span>@context.Email</Span>
+                                    </Div>
+                                </Div>
+                            </DisplayTemplate>
+                        </DataGridColumn>
+                        <DataGridColumn TItem="MemberDto"
+                                        Field="@nameof(MemberDto.PhoneNumber)"
+                                        Caption="@L["Phone"]">
+                        </DataGridColumn>
+                        <DataGridColumn TItem="MemberDto"
+                                        Field="@nameof(MemberDto.TotalOrders)"
+                                        Caption="@L["Orders"]">
+                            <DisplayTemplate>
+                                @context.TotalOrders.ToString("N0")
+                            </DisplayTemplate>
+                        </DataGridColumn>
+                        <DataGridColumn TItem="MemberDto"
+                                        Field="@nameof(MemberDto.TotalSpent)"
+                                        Caption="@L["Spent"]">
+                            <DisplayTemplate>
+                                $ @context.TotalSpent.ToString("N2")
+                            </DisplayTemplate>
+                        </DataGridColumn>
+                    </DataGridColumns>
+                </DataGrid> *@
+            </CardBody>
+        </Card>
     </Column>
     <Column ColumnSize="ColumnSize.Is12.Is4.OnFullHD">
-        <DashboardBestSellers></DashboardBestSellers>
+        <DashboardBestSellers @ref="_bestSellers"></DashboardBestSellers>
     </Column>
 </Row>

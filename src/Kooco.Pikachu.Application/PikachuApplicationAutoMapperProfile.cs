@@ -352,5 +352,6 @@ public class PikachuApplicationAutoMapperProfile : Profile
         CreateMap<DashboardChartsModel, DashboardChartsDto>();
         CreateMap<DashboardDonutChartModel, DashboardDonutChartDto>();
         CreateMap<DashboardBarChartModel, DashboardBarChartDto>();
+        CreateMap<DashboardOrdersModel, DashboardOrdersDto>();
     }
 }

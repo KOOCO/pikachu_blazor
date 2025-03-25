@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Volo.Abp;
+using Volo.Abp.Application.Dtos;
 
 namespace Kooco.Pikachu.Dashboards;
 
@@ -32,5 +34,22 @@ public class DashboardAppService(IDashboardRepository dashboardRepository) : Pik
         );
 
         return ObjectMapper.Map<DashboardChartsModel, DashboardChartsDto>(charts);
+    }
+
+    public async Task<PagedResultDto<DashboardOrdersDto>> GetRecentOrdersAsync(DashboardFiltersDto input)
+    {
+        var data = await _dashboardRepository.GetRecentOrdersAsync(
+            input.SkipCount,
+            input.MaxResultCount,
+            input.SelectedGroupBuyIds,
+            input.StartDate,
+            input.EndDate
+            );
+
+        return new PagedResultDto<DashboardOrdersDto>
+        {
+            TotalCount = data.TotalCount,
+            Items = ObjectMapper.Map<List<DashboardOrdersModel>, List<DashboardOrdersDto>>(data.Items)
+        };
     }
 }
