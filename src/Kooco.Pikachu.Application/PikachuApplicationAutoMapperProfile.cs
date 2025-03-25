@@ -1,6 +1,7 @@
 using AutoMapper;
 using Kooco.Pikachu.AddOnProducts;
 using Kooco.Pikachu.AutomaticEmails;
+using Kooco.Pikachu.Dashboards;
 using Kooco.Pikachu.DeliveryTemperatureCosts;
 using Kooco.Pikachu.DeliveryTempratureCosts;
 using Kooco.Pikachu.DiscountCodes;
@@ -180,7 +181,7 @@ public class PikachuApplicationAutoMapperProfile : Profile
             .ForMember(dest => dest.Birthday, opt => opt.MapFrom(src => src.GetBirthday()))
             .ForMember(dest => dest.MobileNumber, opt => opt.MapFrom(src => src.GetMobileNumber()))
             .ForMember(dest => dest.Gender, opt => opt.MapFrom(src => src.GetGender()));
-        
+
         CreateMap<IdentityUserDto, MemberDto>()
             .ForMember(dest => dest.Birthday, opt => opt.MapFrom(src => src.GetBirthday()))
             .ForMember(dest => dest.MobileNumber, opt => opt.MapFrom(src => src.GetMobileNumber()))
@@ -346,5 +347,10 @@ public class PikachuApplicationAutoMapperProfile : Profile
 
         CreateMap<GroupBuyReportOrderModel, GroupBuyReportOrderDto>();
         CreateMap<GroupBuyReportOrderItemsModel, GroupBuyReportOrderItemsDto>();
+
+        CreateMap<DashboardStatsModel, DashboardStatsDto>();
+        CreateMap<DashboardChartsModel, DashboardChartsDto>();
+        CreateMap<DashboardDonutChartModel, DashboardDonutChartDto>();
+        CreateMap<DashboardBarChartModel, DashboardBarChartDto>();
     }
 }

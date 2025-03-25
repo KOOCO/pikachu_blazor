@@ -1,0 +1,22 @@
+﻿@inherits PikachuComponentBase
+
+<div class="dashboard-stats">
+    @foreach (var stat in Stats)
+    {
+        <div class="stats-card">
+            <div class="stats-icon @(stat.Color)">
+                <i class="fas @stat.Icon"></i>
+            </div>
+            <div class="stats-info">
+                <h3><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">@(stat.DisplayValue)</font></font></h3>
+                <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">@(stat.Name)</font></font></p>
+            </div>
+            <div class="stats-progress">
+                <div class="progress-bar">
+                    <div class="progress @(stat.Color)" style="width: @(Math.Abs(stat.GrowthOrLoss))%"></div>
+                </div>
+                <span><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">@(stat.GrowthOrLoss)% growth</font></font></span>
+            </div>
+        </div>
+    }
+</div>

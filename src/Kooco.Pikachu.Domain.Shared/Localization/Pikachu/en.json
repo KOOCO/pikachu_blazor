@@ -1343,6 +1343,13 @@
     "All": "All",
     "NewMembers": "New Members",
     "ExistingMembers": "Existing Members",
-    "NewMember": "New Member"
+    "NewMember": "New Member",
+    "TimeRange": "Time Range",
+    "TotalOrders": "Total Orders",
+    "TotalSales": "Total Sales",
+    "TotalProducts": "Total Products",
+    "RecentOrders": "Recent Orders",
+    "BestSellers": "Best Sellers",
+    "ViewAll": "View All"
   }
 }

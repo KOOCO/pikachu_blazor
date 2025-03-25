@@ -1,0 +1,82 @@
+﻿@using System
+@using Kooco.Pikachu.Blazor.Pages.Dashboard.DashboardBestSellers
+@using Kooco.Pikachu.Blazor.Pages.Dashboard.DashboardCharts
+@using Kooco.Pikachu.Blazor.Pages.Dashboard.DashboardOrdersTable
+@using Kooco.Pikachu.Blazor.Pages.Dashboard.DashboardStats
+@using Kooco.Pikachu.Dashboards
+@using Kooco.Pikachu.GroupBuys
+@using Kooco.Pikachu.Items.Dtos
+@using Kooco.Pikachu.Reports
+<link href="css/dashboard.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+<script src="js/dashboard.js"></script>
+
+@attribute [Authorize]
+@inherits PikachuComponentBase
+
+@inject IDashboardAppService DashboardAppService
+@inject IGroupBuyAppService GroupBuyAppService
+
+<Card>
+    <CardBody>
+        <Row Gutter="(10, 10)">
+            <Column ColumnSize="ColumnSize.Is12.Is6.OnDesktop.Is3.OnFullHD">
+                <Label>@L["Period"]</Label>
+                <AntDesign.Select @bind-Value="@Filters.SelectedPeriodOption"
+                                  TItem="ReportCalculationUnits?"
+                                  TItemValue="ReportCalculationUnits?">
+                    <SelectOptions>
+                        @foreach (var item in PeriodOptions)
+                        {
+                            <AntDesign.SelectOption TItemValue="ReportCalculationUnits?" TItem="ReportCalculationUnits?" Value=@item Label="@L[item.ToString()]" />
+                        }
+                    </SelectOptions>
+                </AntDesign.Select>
+            </Column>
+            <Column ColumnSize="ColumnSize.Is12.Is6.OnDesktop.Is4.OnFullHD">
+                <Label>@L["TimeRange"]</Label>
+                <AntDesign.RangePicker TValue="DateTime?[]" Value="@Filters.SelectedDateRange" />
+            </Column>
+            <Column ColumnSize="ColumnSize.Is12.Is6.OnDesktop.Is4.OnFullHD">
+                <Label>@L["SpecificGroupBuys"]</Label>
+                <AntDesign.Select Mode="AntDesign.SelectMode.Multiple"
+                                  @bind-Values="@Filters.SelectedGroupBuyIds"
+                                  EnableSearch
+                                  HideSelected
+                                  TItem="Guid"
+                                  TItemValue="Guid">
+                    <SelectOptions>
+                        @foreach (var item in GroupBuyOptions)
+                        {
+                            <AntDesign.SelectOption TItemValue="Guid" TItem="Guid" Value=@item.Id Label=@item.Name />
+                        }
+                    </SelectOptions>
+                </AntDesign.Select>
+            </Column>
+            <Column ColumnSize="ColumnSize.Is12.Is1.OnDesktop">
+                <Div Class="d-flex align-items-end justify-content-center h-100">
+                    <PikachuButton Class="pk-btn-sm pk-btn-outline-primary w-100"
+                                   IconClass="fas fa-filter" Clicked="ApplyFilters"
+                                   Loading="IsLoading">
+                    </PikachuButton>
+                </Div>
+            </Column>
+        </Row>
+    </CardBody>
+</Card>
+
+<Div>
+    <DashboardStats Value="DashboardStats"></DashboardStats>
+</Div>
+<Div>
+    <DashboardCharts @ref="_dashboardCharts" Value="DashboardCharts"></DashboardCharts>
+</Div>
+
+<Row>
+    <Column ColumnSize="ColumnSize.Is12.Is8.OnFullHD">
+        <DashboardOrdersTable></DashboardOrdersTable>
+    </Column>
+    <Column ColumnSize="ColumnSize.Is12.Is4.OnFullHD">
+        <DashboardBestSellers></DashboardBestSellers>
+    </Column>
+</Row>
