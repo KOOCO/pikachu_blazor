@@ -1,13 +1,8 @@
-﻿using AntDesign.JsInterop;
-using AntDesign.TableModels;
-using Azure;
-using Blazorise;
+﻿using Blazorise;
 using Blazorise.DataGrid;
-using Blazorise.LoadingIndicator;
 using Kooco.Pikachu.DeliveryTemperatureCosts;
 using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.OrderDeliveries;
-using Kooco.Pikachu.OrderHistories;
 using Kooco.Pikachu.OrderItems;
 using Kooco.Pikachu.Orders;
 using Kooco.Pikachu.PaymentGateways;
@@ -16,35 +11,23 @@ using Kooco.Pikachu.StoreLogisticOrders;
 using Kooco.Pikachu.TestLables;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
-using Microsoft.AspNetCore.Html;
 using Microsoft.Extensions.Configuration;
 using Microsoft.JSInterop;
 using Newtonsoft.Json;
 using PdfSharp.Pdf.IO;
 using PdfSharp.Pdf;
-using Polly;
 using RestSharp;
 using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Net.Http;
 using System.Security.Cryptography;
 using System.Text;
-using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using System.Web;
-using Volo.Abp;
-using Volo.Abp.Http.Modeling;
 using Volo.Abp.ObjectMapping;
-using static Kooco.Pikachu.Permissions.PikachuPermissions;
-using static Volo.Abp.UI.Navigation.DefaultMenuNames.Application;
-using PdfSharp.Pdf;
-using PdfSharp.Pdf.IO;
 using Kooco.Pikachu.Assembly;
 using DinkToPdf;
 using HtmlAgilityPack;
@@ -2165,11 +2148,20 @@ public partial class OrderDetails
             }
         }
 
+        if (Order.DeliveryMethod is DeliveryMethod.SevenToElevenC2C)
+        {
+            await SevenElevenC2CShippingLabelAsync(AllPayLogisticsIds, DeliveryNumbers);
+
+            loading = false;
+
+            return;
+        }
+
         string MergeTempFolder = Path.Combine(Path.GetTempPath(), "MergeTemp");
 
         Directory.CreateDirectory(MergeTempFolder);
 
-        Tuple<List<string>, List<string>, List<string>> tuple = await _storeLogisticsOrderAppService.OnBatchPrintingShippingLabel(AllPayLogisticsIds, DeliveryNumbers, allPayLogistic);
+        var tuple = await _storeLogisticsOrderAppService.OnBatchPrintingShippingLabel(AllPayLogisticsIds, DeliveryNumbers, allPayLogistic);
 
         string errors = string.Join('\n', tuple.Item3);
 
@@ -2311,11 +2303,20 @@ public partial class OrderDetails
             }
         }
 
+        if (Order.DeliveryMethod is DeliveryMethod.SevenToElevenC2C)
+        {
+            await SevenElevenC2CShippingLabelAsync(AllPayLogisticsIds, DeliveryNumbers);
+
+            loading = false;
+
+            return;
+        }
+
         string MergeTempFolder = Path.Combine(Path.GetTempPath(), "MergeTemp");
 
         Directory.CreateDirectory(MergeTempFolder);
 
-        Tuple<List<string>, List<string>, List<string>> tuple = await _storeLogisticsOrderAppService.OnBatchPrintingShippingLabel(AllPayLogisticsIds, DeliveryNumbers, allPayLogistic);
+        var tuple = await _storeLogisticsOrderAppService.OnBatchPrintingShippingLabel(AllPayLogisticsIds, DeliveryNumbers, allPayLogistic);
 
         string errors = string.Join('\n', tuple.Item3);
 
@@ -3071,6 +3072,25 @@ public partial class OrderDetails
             loading=false;
         }
     }
+
+    private async Task SevenElevenC2CShippingLabelAsync(
+        Dictionary<string, string> allPayLogisticsIds,
+        Dictionary<string, string>? deliveryNumbers)
+    {
+        var keyValuesParams = await _storeLogisticsOrderAppService.OnSevenElevenC2CShippingLabelAsync(
+            allPayLogisticsIds,
+            deliveryNumbers);
+
+        await JSRuntime.InvokeVoidAsync(
+            "downloadSevenElevenC2C",
+            keyValuesParams.GetValueOrDefault("ActionUrl"),
+            keyValuesParams.GetValueOrDefault("MerchantID"),
+            keyValuesParams.GetValueOrDefault("AllPayLogisticsID"),
+            keyValuesParams.GetValueOrDefault("CVSPaymentNo"),
+            keyValuesParams.GetValueOrDefault("CVSValidationNo"),
+            keyValuesParams.GetValueOrDefault("CheckMacValue"));
+    }
+
     public class StoreCommentsModel
     {
         public Guid? Id { get; set; }

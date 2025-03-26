@@ -89,6 +89,64 @@ window.openPopup = function (htmlContent) {
 window.openInNewTab = function (url) {
     window.open(url, '_blank');
 }
+
+window.downloadSevenElevenC2C = function (
+    actionUrl,
+    merchantID,
+    allPayLogisticsID,
+    cvsPaymentNo,
+    cvsValidationNo,
+    checkMacValue) {
+    var form = document.createElement("form");
+    form.target = "_blank";
+    form.method = "post";
+    form.action = actionUrl;
+
+    var inputAllPayLogisticsID = document.createElement("input");
+    inputAllPayLogisticsID.type = "text";
+    inputAllPayLogisticsID.name = "AllPayLogisticsID";
+    inputAllPayLogisticsID.value = allPayLogisticsID;
+    form.appendChild(inputAllPayLogisticsID);
+    form.appendChild(document.createElement("br"));
+
+    var inputCVSPaymentNo = document.createElement("input");
+    inputCVSPaymentNo.type = "text";
+    inputCVSPaymentNo.name = "CVSPaymentNo";
+    inputCVSPaymentNo.value = cvsPaymentNo;
+    form.appendChild(inputCVSPaymentNo);
+    form.appendChild(document.createElement("br"));
+
+    var inputCVSValidationNo = document.createElement("input");
+    inputCVSValidationNo.type = "text";
+    inputCVSValidationNo.name = "CVSValidationNo";
+    inputCVSValidationNo.value = cvsValidationNo;
+    form.appendChild(inputCVSValidationNo);
+    form.appendChild(document.createElement("br"));
+
+    var inputMerchantID = document.createElement("input");
+    inputMerchantID.type = "text";
+    inputMerchantID.name = "MerchantID";
+    inputMerchantID.value = merchantID;
+    form.appendChild(inputMerchantID);
+    form.appendChild(document.createElement("br"));
+
+    var inputCheckMacValue = document.createElement("input");
+    inputCheckMacValue.type = "text";
+    inputCheckMacValue.name = "CheckMacValue";
+    inputCheckMacValue.value = checkMacValue;
+    form.appendChild(inputCheckMacValue);
+    form.appendChild(document.createElement("br"));
+
+    var submitButton = document.createElement("input");
+    submitButton.type = "submit";
+    submitButton.value = "Submit Button";
+    form.appendChild(submitButton);
+
+    document.body.appendChild(form);
+
+    form.submit();
+}
+
 function preventDefaultDrag(event) {
     event.preventDefault(); // Prevent the default drag behavior
 }

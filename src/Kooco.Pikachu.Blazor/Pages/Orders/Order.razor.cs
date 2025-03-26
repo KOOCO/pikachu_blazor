@@ -1,17 +1,9 @@
-﻿using Blazorise;
-using Blazorise.DataGrid;
-using Blazorise.LoadingIndicator;
-using Blazorise.Utilities;
+﻿using Blazorise.DataGrid;
 using DinkToPdf;
-using HtmlAgilityPack;
-using Hangfire.Server;
 using Kooco.Pikachu.Assembly;
-using Kooco.Pikachu.Blazor.Pages.ItemManagement;
 using Kooco.Pikachu.DeliveryTemperatureCosts;
-using Kooco.Pikachu.ElectronicInvoiceSettings;
 using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Items.Dtos;
-using Kooco.Pikachu.Localization;
 using Kooco.Pikachu.OrderDeliveries;
 using Kooco.Pikachu.OrderItems;
 using Kooco.Pikachu.Orders;
@@ -19,36 +11,19 @@ using Kooco.Pikachu.Response;
 using Kooco.Pikachu.StoreLogisticOrders;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
-using Microsoft.AspNetCore.Html;
-using Microsoft.AspNetCore.Server.Kestrel.Core;
-using Microsoft.EntityFrameworkCore.Update.Internal;
 using Microsoft.JSInterop;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using NUglify.Html;
-using OneOf.Types;
-using PdfSharp;
 using PdfSharp.Pdf;
 using PdfSharp.Pdf.IO;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
-using System.Net.Http;
-using System.Threading;
 using System.Threading.Tasks;
-using Volo.Abp.Account.Web;
 using Volo.Abp.Application.Dtos;
-using Volo.Abp.AspNetCore.Mvc.UI.Bootstrap.TagHelpers.Form;
-using static Kooco.Pikachu.Permissions.PikachuPermissions;
 using HtmlDocument = HtmlAgilityPack.HtmlDocument;
 using MudBlazor;
-using static Volo.Abp.Ui.LayoutHooks.LayoutHooks;
-using AntDesign;
-using Azure;
-using AngleSharp.Io;
 using Blazorise.Extensions;
 
 namespace Kooco.Pikachu.Blazor.Pages.Orders;
@@ -161,7 +136,10 @@ public partial class Order
     {
         loading = true;
 
-        List<Guid> orderIds = Orders.Where(w => w.IsSelected && w.ShippingStatus==ShippingStatus.ToBeShipped).Select(s => s.OrderId).ToList();
+        List<Guid> orderIds = Orders.Where(w => w.IsSelected && 
+                                                w.ShippingStatus is ShippingStatus.ToBeShipped)
+                                    .Select(s => s.OrderId)
+                                    .ToList();
 
         Dictionary<string, string> AllPayLogisticsIds = new()
         {
@@ -273,36 +251,63 @@ public partial class Order
             }
         }
 
-        string MergeTempFolder = Path.Combine(Path.GetTempPath(), "MergeTemp");
-
-        Directory.CreateDirectory(MergeTempFolder);
-
-        Tuple<List<string>, List<string>, List<string>> tuple = await _StoreLogisticsOrderAppService.OnBatchPrintingShippingLabel(AllPayLogisticsIds, DeliveryNumbers, allPayLogistic);
-
-        string errors = string.Join('\n', tuple.Item3);
-
-        if (!errors.IsNullOrWhiteSpace()) await _uiMessageService.Warn(errors);
-
-        List<string> outputPdfPaths = GeneratePdf(tuple.Item1);
-
-        if (tuple.Item2 is { Count: > 0 }) outputPdfPaths.AddRange(tuple.Item2);
-
-        if (outputPdfPaths is { Count: > 0 })
+        if (AllPayLogisticsIds.Any(w => w.Key is "SevenToElevenC2C" && !w.Value.IsNullOrEmpty()))
         {
-            MemoryStream combinedPdfStream = CombinePdf(outputPdfPaths);
-
-            await JSRuntime.InvokeVoidAsync("downloadFile", new
-            {
-                ByteArray = combinedPdfStream.ToArray(),
-                FileName = "ShippingLabels.pdf",
-                ContentType = "application/pdf"
-            });
+            await SevenElevenC2CShippingLabelAsync(AllPayLogisticsIds, DeliveryNumbers);
         }
 
-        Directory.Delete(Path.Combine(Path.GetTempPath(), "MergeTemp"), true);
+        if (AllPayLogisticsIds.Any(w => w.Key is not "SevenToElevenC2C" && !w.Value.IsNullOrEmpty()))
+        {
+            string MergeTempFolder = Path.Combine(Path.GetTempPath(), "MergeTemp");
+
+            Directory.CreateDirectory(MergeTempFolder);
+
+            var tuple = await _StoreLogisticsOrderAppService.OnBatchPrintingShippingLabel(AllPayLogisticsIds, DeliveryNumbers, allPayLogistic);
+
+            string errors = string.Join('\n', tuple.Item3);
+
+            if (!errors.IsNullOrWhiteSpace()) await _uiMessageService.Warn(errors);
+
+            List<string> outputPdfPaths = GeneratePdf(tuple.Item1);
+
+            if (tuple.Item2 is { Count: > 0 }) outputPdfPaths.AddRange(tuple.Item2);
+
+            if (outputPdfPaths is { Count: > 0 })
+            {
+                MemoryStream combinedPdfStream = CombinePdf(outputPdfPaths);
+
+                await JSRuntime.InvokeVoidAsync("downloadFile", new
+                {
+                    ByteArray = combinedPdfStream.ToArray(),
+                    FileName = "ShippingLabels.pdf",
+                    ContentType = "application/pdf"
+                });
+            }
+
+            Directory.Delete(Path.Combine(Path.GetTempPath(), "MergeTemp"), true);
+        }
 
         loading = false;
     }
+
+    private async Task SevenElevenC2CShippingLabelAsync(
+        Dictionary<string, string> allPayLogisticsIds,
+        Dictionary<string, string>? deliveryNumbers)
+    {
+        var keyValuesParams = await _StoreLogisticsOrderAppService.OnSevenElevenC2CShippingLabelAsync(
+            allPayLogisticsIds,
+            deliveryNumbers);
+
+        await JSRuntime.InvokeVoidAsync(
+            "downloadSevenElevenC2C",
+            keyValuesParams.GetValueOrDefault("ActionUrl"),
+            keyValuesParams.GetValueOrDefault("MerchantID"),
+            keyValuesParams.GetValueOrDefault("AllPayLogisticsID"),
+            keyValuesParams.GetValueOrDefault("CVSPaymentNo"),
+            keyValuesParams.GetValueOrDefault("CVSValidationNo"),
+            keyValuesParams.GetValueOrDefault("CheckMacValue"));
+    }
+
     private async void ClosePanel()
     {
         isDetailOpen = false;
@@ -425,33 +430,41 @@ public partial class Order
             }
         }
 
-        string MergeTempFolder = Path.Combine(Path.GetTempPath(), "MergeTemp");
-
-        Directory.CreateDirectory(MergeTempFolder);
-
-        Tuple<List<string>, List<string>, List<string>> tuple = await _StoreLogisticsOrderAppService.OnBatchPrintingShippingLabel(AllPayLogisticsIds, DeliveryNumbers, allPayLogistic);
-
-        string errors = string.Join('\n', tuple.Item3);
-
-        if (!errors.IsNullOrWhiteSpace()) await _uiMessageService.Warn(errors);
-
-        List<string> outputPdfPaths = GenerateA6Pdf(tuple.Item1);
-
-        if (tuple.Item2 is { Count: > 0 }) outputPdfPaths.AddRange(tuple.Item2);
-
-        if (outputPdfPaths is { Count: > 0 })
+        if (AllPayLogisticsIds.Any(w => w.Key is "SevenToElevenC2C" && !w.Value.IsNullOrEmpty()))
         {
-            MemoryStream combinedPdfStream = CombinePdf(outputPdfPaths);
-
-            await JSRuntime.InvokeVoidAsync("downloadFile", new
-            {
-                ByteArray = combinedPdfStream.ToArray(),
-                FileName = "ShippingLabels.pdf",
-                ContentType = "application/pdf"
-            });
+            await SevenElevenC2CShippingLabelAsync(AllPayLogisticsIds, DeliveryNumbers);
         }
 
-        Directory.Delete(Path.Combine(Path.GetTempPath(), "MergeTemp"), true);
+        if (AllPayLogisticsIds.Any(w => w.Key is not "SevenToElevenC2C" && !w.Value.IsNullOrEmpty()))
+        {
+            string MergeTempFolder = Path.Combine(Path.GetTempPath(), "MergeTemp");
+
+            Directory.CreateDirectory(MergeTempFolder);
+
+            var tuple = await _StoreLogisticsOrderAppService.OnBatchPrintingShippingLabel(AllPayLogisticsIds, DeliveryNumbers, allPayLogistic);
+
+            string errors = string.Join('\n', tuple.Item3);
+
+            if (!errors.IsNullOrWhiteSpace()) await _uiMessageService.Warn(errors);
+
+            List<string> outputPdfPaths = GenerateA6Pdf(tuple.Item1);
+
+            if (tuple.Item2 is { Count: > 0 }) outputPdfPaths.AddRange(tuple.Item2);
+
+            if (outputPdfPaths is { Count: > 0 })
+            {
+                MemoryStream combinedPdfStream = CombinePdf(outputPdfPaths);
+
+                await JSRuntime.InvokeVoidAsync("downloadFile", new
+                {
+                    ByteArray = combinedPdfStream.ToArray(),
+                    FileName = "ShippingLabels.pdf",
+                    ContentType = "application/pdf"
+                });
+            }
+
+            Directory.Delete(Path.Combine(Path.GetTempPath(), "MergeTemp"), true);
+        }
 
         loading = false;
     }

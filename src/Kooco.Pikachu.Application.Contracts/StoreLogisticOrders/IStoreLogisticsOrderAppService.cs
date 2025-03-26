@@ -4,7 +4,6 @@ using Kooco.Pikachu.Orders;
 using Kooco.Pikachu.Response;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Services;
 
@@ -34,7 +33,10 @@ namespace Kooco.Pikachu.StoreLogisticOrders
         Task<Tuple<List<string>, List<string>, List<string>>> OnBatchPrintingShippingLabel(
             Dictionary<string, string> allPayLogisticsIds, 
             Dictionary<string, string>? DeliveryNumbers,
-            Dictionary<string, string>? allPayLogisticsForTCat711
-        );
+            Dictionary<string, string>? allPayLogisticsForTCat711);
+
+        Task<Dictionary<string, string>> OnSevenElevenC2CShippingLabelAsync(
+            Dictionary<string, string> allPayLogisticsIds,
+            Dictionary<string, string>? DeliveryNumbers);
     }
 }
