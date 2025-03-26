@@ -1,5 +1,6 @@
 using Kooco.Pikachu.Dashboards;
 using Microsoft.JSInterop;
+using System;
 using System.Threading.Tasks;
 
 namespace Kooco.Pikachu.Blazor.Pages.Dashboard.DashboardCharts;
@@ -26,6 +27,8 @@ public partial class DashboardCharts
             series = value.Donut.Series.ToArray(),
             labels = value.Donut.Labels.ToArray()
         };
+
+        await Task.Delay(TimeSpan.FromSeconds(1));
 
         if (value != null)
         {

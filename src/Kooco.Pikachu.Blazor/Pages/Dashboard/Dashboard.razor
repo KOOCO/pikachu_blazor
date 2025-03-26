@@ -103,14 +103,14 @@
                                         Caption="@L["Customer"]">
                         </DataGridColumn>
                         <DataGridColumn TItem="DashboardOrdersDto"
-                                        Field="@nameof(DashboardOrdersDto.ItemName)"
-                                        Caption="@L["Product"]">
+                                        Field="@nameof(DashboardOrdersDto.GroupBuyName)"
+                                        Caption="@L["GroupBuy"]">
                         </DataGridColumn>
                         <DataGridColumn TItem="DashboardOrdersDto"
                                         Field="@nameof(DashboardOrdersDto.TotalAmount)"
                                         Caption="@L["Amount"]">
                             <DisplayTemplate>
-                                ¥@context.TotalAmount.ToString("N2")
+                                <Span>@Constant.CurrencySymbol</Span>@context.TotalAmount.ToString("N2")
                             </DisplayTemplate>
                         </DataGridColumn>
                         <DataGridColumn TItem="DashboardOrdersDto"
