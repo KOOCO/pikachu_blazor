@@ -29,6 +29,7 @@ using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.AspNetCore.Components.Messages;
 using Volo.Abp.Data;
+using Volo.Abp.MultiTenancy;
 using Volo.Abp.ObjectMapping;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement;
