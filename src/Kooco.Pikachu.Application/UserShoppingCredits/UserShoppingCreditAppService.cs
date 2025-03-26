@@ -145,7 +145,10 @@ public class UserShoppingCreditAppService(UserShoppingCreditManager userShopping
 
     public async Task<int> GetMemberCurrentShoppingCreditAsync(Guid memberId)
     {
-        var userCredit = (await userShoppingCreditRepository.GetQueryableAsync()).Where(x => x.UserId == memberId).OrderByDescending(x => x.CreationTime).LastOrDefault();
+        var userCredit = await (await userShoppingCreditRepository.GetQueryableAsync())
+            .Where(x => x.UserId == memberId)
+            .OrderByDescending(x => x.CreationTime)
+            .FirstOrDefaultAsync();
         return userCredit?.CurrentRemainingCredits ?? 0;
     }
 
