@@ -17,5 +17,5 @@ public class DashboardOrdersModel
     public string? CustomerName { get; set; }
     public decimal TotalAmount { get; set; }
     public ShippingStatus ShippingStatus { get; set; }
-    public string ItemName { get; set; }
+    public string? ItemName { get; set; }
 }

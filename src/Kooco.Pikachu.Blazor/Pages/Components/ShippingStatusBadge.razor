@@ -1,0 +1,36 @@
+﻿@using Kooco.Pikachu.EnumValues
+@inherits PikachuComponentBase
+
+<PikachuBadge Class="@_badgeColor">@_text</PikachuBadge>
+
+@code {
+    [Parameter]
+    public ShippingStatus? Status { get; set; }
+
+    private string _text
+    {
+        get
+        {
+            return Status.HasValue ? L[Status?.ToString()] : "";
+        }
+    }
+
+    private string _badgeColor
+    {
+        get
+        {
+            var color = Status switch
+            {
+                ShippingStatus.WaitingForPayment => "warning",
+                ShippingStatus.Completed => "success",
+                ShippingStatus.Shipped => "primary",
+                ShippingStatus.Closed => "danger",
+                ShippingStatus.PrepareShipment => "info",
+                ShippingStatus.ToBeShipped => "purple",
+                _ => "default"
+            };
+
+            return $"pk-badge-{color}";
+        }
+    }
+}

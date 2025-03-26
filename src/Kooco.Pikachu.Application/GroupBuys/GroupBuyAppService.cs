@@ -183,12 +183,12 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
 
                 await _groupBuyRepository.EnsureCollectionLoadedAsync(groupBuy, x => x.ItemGroups);
                 ObjectMapper.Map(input, groupBuy);
-               
+
                 await ProcessItemGroups(groupBuy, input.ItemGroups.ToList());
 
-                
-                    groupBuy.ItemGroups.RemoveAll(w => w.Id == Guid.Empty);
-                
+
+                groupBuy.ItemGroups.RemoveAll(w => w.Id == Guid.Empty);
+
 
                 await _groupBuyRepository.UpdateAsync(groupBuy, true);
 
@@ -266,7 +266,7 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
                             await _GroupBuyItemGroupDetailsRepository.DeleteAsync(d => d.GroupBuyItemGroupId == itemGroup.Id);
 
                         ProcessItemDetails(itemGroup, group.ItemDetails);
-                        
+
                         itemGroup.ItemGroupDetails ??= [];
                         foreach (GroupBuyItemGroupDetails itemGroupDetails in itemGroup.ItemGroupDetails)
                         {
@@ -322,7 +322,7 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
         {
             foreach (var group in input.ItemGroups)
             {
-              
+
                 var itemGroup = _groupBuyManager.AddItemGroup(
                    result,
                    group.SortOrder,
@@ -368,50 +368,50 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
         }
 
         await _groupBuyRepository.InsertAsync(result);
-       
+
         var GroupPurchaseOverviewModules = await _GroupPurchaseOverviewAppService.GetListByGroupBuyIdAsync(Id);
         if (GroupPurchaseOverviewModules is { Count: > 0 })
         {
             foreach (GroupPurchaseOverviewDto groupPurchaseOverview in GroupPurchaseOverviewModules)
             {
-              
-                    groupPurchaseOverview.GroupBuyId = result.Id;
+
+                groupPurchaseOverview.GroupBuyId = result.Id;
                 groupPurchaseOverview.Id = Guid.Empty;
-                    await _GroupPurchaseOverviewAppService.CreateGroupPurchaseOverviewAsync(groupPurchaseOverview);
-               
+                await _GroupPurchaseOverviewAppService.CreateGroupPurchaseOverviewAsync(groupPurchaseOverview);
+
             }
         }
-        var  GroupBuyOrderInstructionModules= await _GroupBuyOrderInstructionAppService.GetListByGroupBuyIdAsync(Id);
+        var GroupBuyOrderInstructionModules = await _GroupBuyOrderInstructionAppService.GetListByGroupBuyIdAsync(Id);
 
         if (GroupBuyOrderInstructionModules is { Count: > 0 })
         {
             foreach (GroupBuyOrderInstructionDto groupBuyOrderInstruction in GroupBuyOrderInstructionModules)
             {
-                
-                    groupBuyOrderInstruction.GroupBuyId = result.Id;
-                    groupBuyOrderInstruction.Id = Guid.Empty;
 
-                    await _GroupBuyOrderInstructionAppService.CreateGroupBuyOrderInstructionAsync(groupBuyOrderInstruction);
-                
+                groupBuyOrderInstruction.GroupBuyId = result.Id;
+                groupBuyOrderInstruction.Id = Guid.Empty;
+
+                await _GroupBuyOrderInstructionAppService.CreateGroupBuyOrderInstructionAsync(groupBuyOrderInstruction);
+
             }
         }
-        var ProductRankingCarouselModules= await _groupBuyProductRankingAppService.GetListByGroupBuyIdAsync(Id);
+        var ProductRankingCarouselModules = await _groupBuyProductRankingAppService.GetListByGroupBuyIdAsync(Id);
         if (ProductRankingCarouselModules is { Count: > 0 })
         {
             foreach (var productRankingCarouselModule in ProductRankingCarouselModules)
             {
-                
 
-               
-                    await _groupBuyProductRankingAppService.CreateGroupBuyProductRankingAsync(new()
-                    {
-                        GroupBuyId = result.Id,
-                        Title = productRankingCarouselModule.Title,
-                        SubTitle = productRankingCarouselModule.SubTitle,
-                        Content = productRankingCarouselModule.Content,
-                        ModuleNumber = ProductRankingCarouselModules.IndexOf(productRankingCarouselModule) + 1
-                    });
-            
+
+
+                await _groupBuyProductRankingAppService.CreateGroupBuyProductRankingAsync(new()
+                {
+                    GroupBuyId = result.Id,
+                    Title = productRankingCarouselModule.Title,
+                    SubTitle = productRankingCarouselModule.SubTitle,
+                    Content = productRankingCarouselModule.Content,
+                    ModuleNumber = ProductRankingCarouselModules.IndexOf(productRankingCarouselModule) + 1
+                });
+
             }
         }
 
@@ -571,7 +571,10 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
     }
     public async Task<List<KeyValueDto>> GetAllGroupBuyLookupAsync()
     {
-        var groupbuys = (await _groupBuyRepository.GetListAsync()).Select(x => new GroupBuyList { Id = x.Id, GroupBuyName = x.GroupBuyName }).ToList();
+        var groupbuys = (await _groupBuyRepository.GetQueryableAsync())
+            .Select(x => new GroupBuyList { Id = x.Id, GroupBuyName = x.GroupBuyName })
+            .OrderBy(x => x.GroupBuyName)
+            .ToList();
         return ObjectMapper.Map<List<GroupBuyList>, List<KeyValueDto>>(groupbuys);
     }
 
@@ -635,7 +638,7 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
                     {
                         if (method.Contains(pair.Key.ToString()))
                         {
-                            var matched = logisticsProviders.FirstOrDefault(p => p.LogisticProvider == pair.Value && p.TenantId==item.TenantId);
+                            var matched = logisticsProviders.FirstOrDefault(p => p.LogisticProvider == pair.Value && p.TenantId == item.TenantId);
                             return matched?.IsEnabled == true;
                         }
                     }
@@ -664,7 +667,7 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
                         {
                             response.ConvenienceStoreType[method] = [string.Empty];
                         }
-                        
+
                         else if (method.Contains("DeliveredByStore"))
                         {
                             using (_dataFilter.Enable<IMultiTenant>())
@@ -773,7 +776,7 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
 
             foreach (GroupBuyItemGroupModuleDetailsDto module in modules)
             {
-                if (module.GroupBuyModuleType is GroupBuyModuleType.ProductGroupModule|| module.GroupBuyModuleType is GroupBuyModuleType.ProductRankingCarouselModule)
+                if (module.GroupBuyModuleType is GroupBuyModuleType.ProductGroupModule || module.GroupBuyModuleType is GroupBuyModuleType.ProductRankingCarouselModule)
                 {
                     foreach (GroupBuyItemGroupDetailsDto itemDetail in module.ItemGroupDetails)
                     {
@@ -815,9 +818,9 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
                                 });
                             }
                         }
-                        if(itemDetail.ItemType == ItemType.SetItem)
+                        if (itemDetail.ItemType == ItemType.SetItem)
                         {
-                            foreach(var setItemDetail in itemDetail.SetItem.SetItemDetails)
+                            foreach (var setItemDetail in itemDetail.SetItem.SetItemDetails)
                             {
                                 if (!setItemDetail.Item.Attribute1Name.IsNullOrEmpty())
                                 {
@@ -872,7 +875,7 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
 
 
                 }
-                    if (module.GroupBuyModuleType is GroupBuyModuleType.CarouselImages)
+                if (module.GroupBuyModuleType is GroupBuyModuleType.CarouselImages)
                 {
                     Tuple<List<string>, string?> tuple = await GetCarouselImagesModuleWiseAsync(groupBuyId, module.ModuleNumber!.Value);
 
@@ -1108,10 +1111,10 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
         }
     }
 
-    public async Task<IRemoteStreamContent> GetListAsExcelFileAsync(Guid id, DateTime? startDate = null, DateTime? endDate = null,OrderStatus? orderStatus = null, bool isChinese = false)
+    public async Task<IRemoteStreamContent> GetListAsExcelFileAsync(Guid id, DateTime? startDate = null, DateTime? endDate = null, OrderStatus? orderStatus = null, bool isChinese = false)
     {
         var groupBuy = await _groupBuyRepository.FirstOrDefaultAsync(x => x.Id == id);
-       var items= await _orderRepository.GetAllListAsync(0, int.MaxValue, "CreationTime desc", null, id, null, startDate, endDate, orderStatus);
+        var items = await _orderRepository.GetAllListAsync(0, int.MaxValue, "CreationTime desc", null, id, null, startDate, endDate, orderStatus);
         var data = ObjectMapper.Map<List<Order>, List<OrderDto>>(items);
 
         if (groupBuy.ProtectPrivacyData)
@@ -1175,7 +1178,7 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
                 RecurrenceType.Weekly => date.AddDays(-7),
                 _ => throw new ArgumentException("Invalid RecurrenceType"),
             };
-            return await GetListAsExcelFileAsync(id, startDate, endDate,null, true);
+            return await GetListAsExcelFileAsync(id, startDate, endDate, null, true);
         }
     }
 

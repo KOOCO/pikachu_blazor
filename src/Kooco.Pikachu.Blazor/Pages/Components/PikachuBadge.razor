@@ -1,0 +1,27 @@
+﻿<span class="pk-badge @_class">
+    @ChildContent
+</span>
+
+@code {
+    [Parameter]
+    public string Class { get; set; }
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    [Parameter]
+    public bool TextWrap { get; set; }
+
+    private string _class
+    {
+        get
+        {
+            var value = Class;
+            if (!TextWrap)
+            {
+                value += " text-nowrap";
+            }
+            return value;
+        }
+    }
+}
