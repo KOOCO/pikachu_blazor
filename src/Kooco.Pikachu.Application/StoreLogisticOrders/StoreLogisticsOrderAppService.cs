@@ -35,7 +35,6 @@ using Volo.Abp.Data;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Emailing;
 using Volo.Abp.Uow;
-using static Kooco.Pikachu.Permissions.PikachuPermissions;
 
 namespace Kooco.Pikachu.StoreLogisticOrders;
 
@@ -604,7 +603,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
 
         LogisticsProviderSettingsDto? greenWorldC2C = providers.Where(p => p.LogisticProvider == LogisticProviders.GreenWorldLogisticsC2C).FirstOrDefault();
 
-        if (greenWorld is not null) GreenWorldC2C = ObjectMapper.Map<LogisticsProviderSettingsDto, GreenWorldLogisticsCreateUpdateDto>(greenWorldC2C);
+        if (greenWorldC2C is not null) GreenWorldC2C = ObjectMapper.Map<LogisticsProviderSettingsDto, GreenWorldLogisticsCreateUpdateDto>(greenWorldC2C);
 
         LogisticsProviderSettingsDto? tCat = providers.FirstOrDefault(f => f.LogisticProvider is LogisticProviders.TCat);
 
@@ -683,36 +682,6 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
                 request.AddParameter("CheckMacValue", GenerateCheckMacValue(greenWorldC2C!.HashKey, greenWorldC2C!.HashIV, parameters));
             }
 
-            else if (allPayLogisticsId.Key.Contains("SevenToElevenC2C"))
-            {
-                request = new(_configuration["EcPay:PrintUniMartC2COrderInfo"], Method.Post);
-
-                request.AddParameter("MerchantID", GreenWorldC2C.StoreCode);
-                request.AddParameter("AllPayLogisticsID", allPayLogisticsId.Value);
-                request.AddParameter("CVSPaymentNo", string.Join(",", DeliveryNumbers?.GetValueOrDefault("SevenToElevenC2C")?
-                                                                    .Split(',')
-                                                                    .Select(number => number.Remove(number.Length - 4))));
-                request.AddParameter("CVSValidationNo", string.Join(",", DeliveryNumbers?.GetValueOrDefault("SevenToElevenC2C")?
-                                                                       .Split(',')
-                                                                       .Select(number => number.Substring(number.Length - 4))));
-
-                parameters = new()
-                {
-                    { "MerchantID", GreenWorldC2C.StoreCode },
-                    { "AllPayLogisticsID", allPayLogisticsId.Value},
-                    { "CVSPaymentNo", string.Join(",", DeliveryNumbers?.GetValueOrDefault("SevenToElevenC2C")?
-                                                                       .Split(',')
-                                                                       .Select(number => number.Remove(number.Length - 4)))
-                    },
-                    { "CVSValidationNo", string.Join(",", DeliveryNumbers?.GetValueOrDefault("SevenToElevenC2C")?
-                                                                          .Split(',')
-                                                                          .Select(number => number.Substring(number.Length - 4)))
-                    }
-                };
-
-                request.AddParameter("CheckMacValue", GenerateCheckMacValue(greenWorldC2C!.HashKey, greenWorldC2C!.HashIV, parameters));
-            }
-
             RestResponse response = await client.ExecuteAsync(request);
 
             if (response.Content!.ToString().Contains("alert("))
@@ -756,6 +725,44 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
         }
 
         return Tuple.Create(htmls, preDefinedPdfPaths, errors);
+    }
+
+    public async Task<Dictionary<string, string>> OnSevenElevenC2CShippingLabelAsync(
+        Dictionary<string, string> allPayLogisticsIds,
+        Dictionary<string, string>? DeliveryNumbers)
+    {
+        List<LogisticsProviderSettingsDto> providers = await _logisticsProvidersAppService.GetAllAsync();
+        LogisticsProviderSettingsDto? greenWorldC2C = providers.FirstOrDefault(p => p.LogisticProvider is LogisticProviders.GreenWorldLogisticsC2C);
+
+        if (greenWorldC2C is not null)
+        {
+            GreenWorldC2C = ObjectMapper.Map<LogisticsProviderSettingsDto, GreenWorldLogisticsCreateUpdateDto>(greenWorldC2C);
+        }
+
+        KeyValuePair<string, string> allPayLogisticsId = allPayLogisticsIds.FirstOrDefault(f => f.Key.Contains("SevenToElevenC2C"));
+
+        Dictionary<string, string> parameters = [];
+
+        string cvsPaymentNo = string.Join(",", DeliveryNumbers?.GetValueOrDefault("SevenToElevenC2C")?
+                                    .Split(',')
+                                    .Select(number => number.Remove(number.Length - 4)));
+
+        string cvsValidationNo = string.Join(",", DeliveryNumbers?.GetValueOrDefault("SevenToElevenC2C")?
+                                    .Split(',')
+                                    .Select(number => number.Substring(number.Length - 4)));
+
+        parameters = new Dictionary<string, string>
+        {
+            { "MerchantID", GreenWorldC2C.StoreCode },
+            { "AllPayLogisticsID", allPayLogisticsId.Value },
+            { "CVSPaymentNo", cvsPaymentNo },
+            { "CVSValidationNo", cvsValidationNo }
+        };
+
+        parameters["CheckMacValue"] = GenerateCheckMacValue(greenWorldC2C?.HashKey, greenWorldC2C?.HashIV, parameters);
+        parameters["ActionUrl"] = _configuration["EcPay:PrintUniMartC2COrderInfo"] ?? string.Empty;
+
+        return parameters;
     }
 
     public void MapAllLogistics(List<LogisticsProviderSettingsDto> providers)

@@ -88,4 +88,10 @@ public class StoreLogisticOrderController(
     {
         throw new NotImplementedException();
     }
+
+    [HttpGet("seven-eleven-c2c-shipping-label")]
+    public Task<Dictionary<string, string>> OnSevenElevenC2CShippingLabelAsync(Dictionary<string, string> allPayLogisticsIds, Dictionary<string, string>? DeliveryNumbers)
+    {
+        throw new NotImplementedException();
+    }
 }
