@@ -10,5 +10,6 @@ public interface IDashboardRepository : IRepository
 {
     Task<DashboardStatsModel> GetDashboardStatsAsync(IEnumerable<Guid> selectedGroupBuyIds, DateTime? startDate, DateTime? endDate, DateTime? previousDate);
     Task<DashboardChartsModel> GetDashboardChartsAsync(ReportCalculationUnits? periodOption, IEnumerable<Guid> selectedGroupBuyIds, DateTime? startDate, DateTime? endDate);
-    Task<DashboardOrdersWithCountModel> GetRecentOrdersAsync(int skipCount, int maxResultCount, IEnumerable<Guid> selectedGroupBuyIds, DateTime? startDate, DateTime? endDate);
+    Task<DashboardOrdersWithCountModel> GetRecentOrdersAsync(int skipCount, int maxResultCount, IEnumerable<Guid> selectedGroupBuyIds);
+    Task<List<DashboardBestSellerModel>> GetBestSellerItemsAsync(IEnumerable<Guid> selectedGroupBuyIds);
 }

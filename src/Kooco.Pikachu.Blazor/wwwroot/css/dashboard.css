@@ -148,3 +148,42 @@
     padding: 0;
     text-decoration: none;
 }
+
+.best-seller-image {
+    width: 20%;
+}
+
+    .best-seller-image img {
+        width: 70px;
+    }
+
+.best-seller-details {
+    width: 80%;
+}
+
+    .best-seller-details h5 {
+        font-size: 18px;
+        margin: 0;
+    }
+
+.best-seller-amount {
+    color: var(--primary-color);
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.best-seller-quantity span {
+    margin-right: 5px;
+}
+
+.best-seller:nth-of-type(1) .progress {
+    background-color: var(--primary-color);
+}
+
+.best-seller:nth-of-type(2) .progress {
+    background-color: var(--purple-color);
+}
+
+.best-seller:nth-of-type(3) .progress {
+    background-color: var(--orange-color);
+}

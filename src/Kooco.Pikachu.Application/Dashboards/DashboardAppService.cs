@@ -41,9 +41,7 @@ public class DashboardAppService(IDashboardRepository dashboardRepository) : Pik
         var data = await _dashboardRepository.GetRecentOrdersAsync(
             input.SkipCount,
             input.MaxResultCount,
-            input.SelectedGroupBuyIds,
-            input.StartDate,
-            input.EndDate
+            input.SelectedGroupBuyIds
             );
 
         return new PagedResultDto<DashboardOrdersDto>
@@ -51,5 +49,11 @@ public class DashboardAppService(IDashboardRepository dashboardRepository) : Pik
             TotalCount = data.TotalCount,
             Items = ObjectMapper.Map<List<DashboardOrdersModel>, List<DashboardOrdersDto>>(data.Items)
         };
+    }
+
+    public async Task<List<DashboardBestSellerDto>> GetBestSellerItemsAsync(DashboardFiltersDto input)
+    {
+        var data = await _dashboardRepository.GetBestSellerItemsAsync(input.SelectedGroupBuyIds);
+        return ObjectMapper.Map<List<DashboardBestSellerModel>, List<DashboardBestSellerDto>>(data);
     }
 }

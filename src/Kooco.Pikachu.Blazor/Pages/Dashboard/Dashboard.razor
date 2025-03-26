@@ -82,68 +82,60 @@
                     <Button Class="btn-link" Clicked="@(() => NavigationManager.NavigateTo("/Orders"))">@L["ViewAll"]</Button>
                 </Div>
                 <Divider></Divider>
-                @* <DataGrid TItem="DashboardOrdersDto"
+                <DataGrid TItem="DashboardOrdersDto"
                           Data="RecentOrdersList"
                           ReadData="OnDataGridReadAsync"
                           TotalItems="RecentOrdersCount"
                           ShowPager="true"
                           PageSize="PageSize"
                           CurrentPage="CurrentPage"
-                          Hoverable
                           Narrow
                           Responsive
-                          @bind-SelectedRow="@SelectedMember"
-                          SelectionMode="DataGridSelectionMode.Multiple"
-                          @bind-SelectedRows="SelectedMembers"
-                          RowSelectable="RowSelectableHandler">
+                          Sortable="false"
+                          Class="rm-table-min-height text-dark">
                     <DataGridColumns>
-                        <DataGridMultiSelectColumn TItem="MemberDto" Width="30px"></DataGridMultiSelectColumn>
-                        <DataGridCommandColumn TItem="MemberDto" />
-                        <DataGridColumn TItem="MemberDto"
-                                        Field="@nameof(MemberDto.UserName)"
-                                        Caption="@L["Name"]">
+                        <DataGridColumn TItem="DashboardOrdersDto"
+                                        Field="@nameof(DashboardOrdersDto.OrderNo)"
+                                        Caption="@L["OrderNo"]">
+                        </DataGridColumn>
+                        <DataGridColumn TItem="DashboardOrdersDto"
+                                        Field="@nameof(DashboardOrdersDto.CustomerName)"
+                                        Caption="@L["Customer"]">
+                        </DataGridColumn>
+                        <DataGridColumn TItem="DashboardOrdersDto"
+                                        Field="@nameof(DashboardOrdersDto.ItemName)"
+                                        Caption="@L["Product"]">
+                        </DataGridColumn>
+                        <DataGridColumn TItem="DashboardOrdersDto"
+                                        Field="@nameof(DashboardOrdersDto.TotalAmount)"
+                                        Caption="@L["Amount"]">
                             <DisplayTemplate>
-                                <Div Class="d-flex align-items-center gap-1">
-                                    <Div Class="member-image">
-                                        <img class="img-fluid rounded-circle" src="https://e7.pngegg.com/pngimages/799/987/png-clipart-computer-icons-avatar-icon-design-avatar-heroes-computer-wallpaper-thumbnail.png" alt="Alternate Text" />
-                                        @if (context.TotalOrders == 0)
-                                        {
-                                            <Badge>@L["New"]</Badge>
-                                        }
-                                    </Div>
-                                    <Div>
-                                        <Div>
-                                            <Button Class="btn-link hyperlink fs-large" Clicked="() => EditMember(context)">@context.UserName</Button>
-                                        </Div>
-                                        <Span>@context.Email</Span>
-                                    </Div>
-                                </Div>
+                                ¥@context.TotalAmount.ToString("N2")
                             </DisplayTemplate>
                         </DataGridColumn>
-                        <DataGridColumn TItem="MemberDto"
-                                        Field="@nameof(MemberDto.PhoneNumber)"
-                                        Caption="@L["Phone"]">
-                        </DataGridColumn>
-                        <DataGridColumn TItem="MemberDto"
-                                        Field="@nameof(MemberDto.TotalOrders)"
-                                        Caption="@L["Orders"]">
+                        <DataGridColumn TItem="DashboardOrdersDto"
+                                        Field="@nameof(DashboardOrdersDto.ShippingStatus)"
+                                        Caption="@L["Status"]"
+                                        TextAlignment="TextAlignment.Center">
                             <DisplayTemplate>
-                                @context.TotalOrders.ToString("N0")
+                                <ShippingStatusBadge Status="context.ShippingStatus"></ShippingStatusBadge>
                             </DisplayTemplate>
                         </DataGridColumn>
-                        <DataGridColumn TItem="MemberDto"
-                                        Field="@nameof(MemberDto.TotalSpent)"
-                                        Caption="@L["Spent"]">
+                        <DataGridColumn TItem="DashboardOrdersDto"
+                                        Caption="@L["Actions"]"
+                                        TextAlignment="TextAlignment.Center">
                             <DisplayTemplate>
-                                $ @context.TotalSpent.ToString("N2")
+                                <PikachuButton Class="pk-btn-sm pk-btn-icon" IconClass="fas fa-edit"
+                                               Clicked="@(() => NavigationManager.NavigateTo($"Orders/OrderDetails/{context.Id}"))">
+                                </PikachuButton>
                             </DisplayTemplate>
                         </DataGridColumn>
                     </DataGridColumns>
-                </DataGrid> *@
+                </DataGrid>
             </CardBody>
         </Card>
     </Column>
     <Column ColumnSize="ColumnSize.Is12.Is4.OnFullHD">
-        <DashboardBestSellers @ref="_bestSellers"></DashboardBestSellers>
+        <DashboardBestSellers @ref="_bestSellers" Values="BestSeller"></DashboardBestSellers>
     </Column>
 </Row>

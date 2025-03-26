@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
 using Volo.Abp.EntityFrameworkCore;
 
@@ -175,29 +176,103 @@ public class EfCoreDashboardRepository(IDbContextProvider<PikachuDbContext> dbCo
         return model;
     }
 
-    public async Task<DashboardOrdersWithCountModel> GetRecentOrdersAsync(int skipCount, int maxResultCount, IEnumerable<Guid> selectedGroupBuyIds, DateTime? startDate, DateTime? endDate)
+    public async Task<DashboardOrdersWithCountModel> GetRecentOrdersAsync(int skipCount, int maxResultCount, IEnumerable<Guid> selectedGroupBuyIds)
     {
         var dbContext = await GetDbContextAsync();
 
         var query = dbContext.Orders
             .WhereIf(selectedGroupBuyIds.Any(), o => selectedGroupBuyIds.Contains(o.GroupBuyId))
+            .Include(o => o.OrderItems)
             .OrderByDescending(o => o.CreationTime)
-            .Select(o => new DashboardOrdersModel
+            .Select(o => new
             {
-                Id = o.Id,
-                OrderNo = o.OrderNo,
-                CustomerName = o.CustomerName,
-                TotalAmount = o.TotalAmount,
-                ShippingStatus = o.ShippingStatus
+                o.Id,
+                o.OrderNo,
+                o.CustomerName,
+                o.TotalAmount,
+                o.ShippingStatus,
+                OrderItem = o.OrderItems
+                    .Where(oi => oi.ItemId.HasValue || oi.SetItemId.HasValue)
+                    .FirstOrDefault()
             });
 
         var totalCount = await query.LongCountAsync();
         var orders = await query.PageBy(skipCount, maxResultCount).ToListAsync();
-        
+
+        var itemIds = orders.Where(o => o.OrderItem?.ItemId != null).Select(o => o.OrderItem!.ItemId!.Value).ToList();
+        var setItemIds = orders.Where(o => o.OrderItem?.SetItemId != null).Select(o => o.OrderItem!.SetItemId!.Value).ToList();
+
+        var items = await dbContext.Items.Where(i => itemIds.Contains(i.Id)).Select(i => new { i.Id, i.ItemName }).ToListAsync();
+        var setItems = await dbContext.SetItems.Where(s => setItemIds.Contains(s.Id)).Select(s => new { s.Id, s.SetItemName }).ToListAsync();
+
+        var model = orders.Select(o => new DashboardOrdersModel
+        {
+            Id = o.Id,
+            OrderNo = o.OrderNo,
+            CustomerName = o.CustomerName,
+            TotalAmount = o.TotalAmount,
+            ShippingStatus = o.ShippingStatus,
+            ItemName = o.OrderItem?.ItemType == ItemType.Item
+                ? items.Where(i => i.Id == o.OrderItem.ItemId).FirstOrDefault()?.ItemName
+                : setItems.Where(s => o.OrderItem != null && s.Id == o.OrderItem.SetItemId).FirstOrDefault()?.SetItemName
+        }).ToList();
+
         return new DashboardOrdersWithCountModel
         {
             TotalCount = totalCount,
-            Items = orders
+            Items = model
         };
+    }
+
+    public async Task<List<DashboardBestSellerModel>> GetBestSellerItemsAsync(IEnumerable<Guid> selectedGroupBuyIds)
+    {
+        var dbContext = await GetDbContextAsync();
+
+        var orderItems = await dbContext.Orders
+            .WhereIf(selectedGroupBuyIds.Any(), o => selectedGroupBuyIds.Contains(o.GroupBuyId))
+            .Include(o => o.OrderItems)
+            .SelectMany(o => o.OrderItems)
+            .Select(oi => new
+            {
+                oi.ItemType,
+                oi.ItemId,
+                oi.Quantity,
+                oi.TotalAmount
+            })
+            .Where(oi => oi.ItemId.HasValue)
+            .GroupBy(oi => oi.ItemId!.Value)
+            .Select(g => new
+            {
+                ItemId = g.Key,
+                Quantity = g.Sum(x => x.Quantity),
+                Amount = g.Sum(x => x.TotalAmount),
+            })
+            .ToListAsync();
+
+        var itemIds = orderItems.Select(oi => oi.ItemId).ToList();
+        var items = await dbContext.Items
+            .Where(i => itemIds.Contains(i.Id))
+            .Include(i => i.Images)
+            .Select(i => new { i.Id, i.ItemName, Image = i.Images.Where(image => image.ImageUrl != null).FirstOrDefault() })
+            .ToListAsync();
+
+        var totalAmount = orderItems.Sum(oi => oi.Amount);
+
+        var model = orderItems.Select(oi => new DashboardBestSellerModel
+        {
+            ItemId = oi.ItemId,
+            ItemName = items.Where(i => i.Id == oi.ItemId).FirstOrDefault()?.ItemName,
+            ImageUrl = items.Where(i => i.Id == oi.ItemId).FirstOrDefault()?.Image?.ImageUrl,
+            Quantity = oi.Quantity,
+            Amount = oi.Amount
+        })
+            .Where(oi => !string.IsNullOrEmpty(oi.ItemName))
+            .OrderByDescending(oi => oi.Amount)
+            .Take(3)
+            .ToList();
+
+        model.ForEach(m => m.Percentage = (int)Math.Round(totalAmount > 0 ? (m.Amount / totalAmount) * 100 : 0));
+
+        return model;
     }
 }

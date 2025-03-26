@@ -8,5 +8,26 @@
             <Button Class="btn-link" Clicked="@(() => NavigationManager.NavigateTo("/Items"))">@L["ViewAll"]</Button>
         </Div>
         <Divider></Divider>
+        <Div>
+            @foreach (var item in Values)
+            {
+                <Div Class="d-flex align-items-center w-100 best-seller">
+                    <Div Class="best-seller-image">
+                        <img class="img-fluid" src="@item.ImageUrl" />
+                    </Div>
+                    <Div Class="best-seller-details">
+                        <h5>@item.ItemName</h5>
+                        <Div Class="best-seller-amount"><Span>@Constant.CurrencySymbol</Span>@item.Amount.ToString("N2")</Div>
+                        <div class="stats-progress">
+                            <div class="progress-bar">
+                                <div class="progress" style="width: @(Math.Abs(item.Percentage))%"></div>
+                            </div>
+                        </div>
+                        <Div Class="best-seller-quantity"><Span>@item.Quantity</Span>@L["Sold"]</Div>
+                    </Div>
+                </Div>
+                <Divider></Divider>
+            }
+        </Div>
     </CardBody>
 </Card>

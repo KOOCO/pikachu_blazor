@@ -1,14 +1,12 @@
 ﻿using Kooco.Pikachu.Reports;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 
 namespace Kooco.Pikachu.Dashboards;
 
 public class DashboardFiltersDto
 {
-    [Required]
     public ReportCalculationUnits? SelectedPeriodOption { get; set; } = ReportCalculationUnits.Daily;
     public IEnumerable<Guid> SelectedGroupBuyIds { get; set; } = [];
     public DateTime?[] SelectedDateRange { get; set; } = [DateTime.Today, DateTime.Today.AddDays(1).AddMilliseconds(-1)];
