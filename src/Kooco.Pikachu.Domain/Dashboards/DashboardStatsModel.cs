@@ -25,7 +25,7 @@ public class DashboardStatsModel
         if (previous == 0)
             return current > 0 ? 100 : 0;
 
-        return (int)(((current - previous) / Math.Abs(previous)) * 100);
+        return (int)(((current - previous) / Math.Abs(current)) * 100);
     }
 }
 

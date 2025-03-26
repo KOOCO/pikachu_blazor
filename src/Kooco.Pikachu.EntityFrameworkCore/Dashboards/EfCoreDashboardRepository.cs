@@ -69,6 +69,8 @@ public class EfCoreDashboardRepository(IDbContextProvider<PikachuDbContext> dbCo
 
     public async Task<DashboardChartsModel> GetDashboardChartsAsync(ReportCalculationUnits? periodOption, IEnumerable<Guid> selectedGroupBuyIds, DateTime? startDate, DateTime? endDate)
     {
+        startDate ??= DateTime.Today;
+        endDate ??= DateTime.Today.AddDays(1).AddMicroseconds(-1);
         var dbContext = await GetDbContextAsync();
 
         var orders = await dbContext.Orders
