@@ -184,7 +184,6 @@ public class EfCoreDashboardRepository(IDbContextProvider<PikachuDbContext> dbCo
 
         var query = dbContext.Orders
             .WhereIf(selectedGroupBuyIds.Any(), o => selectedGroupBuyIds.Contains(o.GroupBuyId))
-            .Include(o => o.OrderItems)
             .OrderByDescending(o => o.CreationTime)
             .Select(o => new
             {
@@ -193,19 +192,16 @@ public class EfCoreDashboardRepository(IDbContextProvider<PikachuDbContext> dbCo
                 o.CustomerName,
                 o.TotalAmount,
                 o.ShippingStatus,
-                OrderItem = o.OrderItems
-                    .Where(oi => oi.ItemId.HasValue || oi.SetItemId.HasValue)
-                    .FirstOrDefault()
+                o.GroupBuyId
             });
 
         var totalCount = await query.LongCountAsync();
         var orders = await query.PageBy(skipCount, maxResultCount).ToListAsync();
 
-        var itemIds = orders.Where(o => o.OrderItem?.ItemId != null).Select(o => o.OrderItem!.ItemId!.Value).ToList();
-        var setItemIds = orders.Where(o => o.OrderItem?.SetItemId != null).Select(o => o.OrderItem!.SetItemId!.Value).ToList();
-
-        var items = await dbContext.Items.Where(i => itemIds.Contains(i.Id)).Select(i => new { i.Id, i.ItemName }).ToListAsync();
-        var setItems = await dbContext.SetItems.Where(s => setItemIds.Contains(s.Id)).Select(s => new { s.Id, s.SetItemName }).ToListAsync();
+        var groupBuyNames = await dbContext.GroupBuys
+            .Where(g => orders.Select(o => o.GroupBuyId).Contains(g.Id))
+            .Select(g => new { g.Id, g.GroupBuyName })
+            .ToListAsync();
 
         var model = orders.Select(o => new DashboardOrdersModel
         {
@@ -214,9 +210,7 @@ public class EfCoreDashboardRepository(IDbContextProvider<PikachuDbContext> dbCo
             CustomerName = o.CustomerName,
             TotalAmount = o.TotalAmount,
             ShippingStatus = o.ShippingStatus,
-            ItemName = o.OrderItem?.ItemType == ItemType.Item
-                ? items.Where(i => i.Id == o.OrderItem.ItemId).FirstOrDefault()?.ItemName
-                : setItems.Where(s => o.OrderItem != null && s.Id == o.OrderItem.SetItemId).FirstOrDefault()?.SetItemName
+            GroupBuyName = groupBuyNames.Where(g => g.Id == o.GroupBuyId).FirstOrDefault()?.GroupBuyName
         }).ToList();
 
         return new DashboardOrdersWithCountModel

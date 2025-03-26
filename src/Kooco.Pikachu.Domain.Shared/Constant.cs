@@ -36,6 +36,6 @@ namespace Kooco.Pikachu
         public static readonly List<string> TenantContactTitles = ["Mr.", "Ms."];
         public static IReadOnlyList<string> Genders = ["Male", "Female", "Other"];
 
-        public const string CurrencySymbol = "¥";
+        public const string CurrencySymbol = "$";
     }
 }

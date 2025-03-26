@@ -17,7 +17,7 @@ public partial class DashboardStats
         Stats = [
             new(1, "Total Orders", "fa-shopping-cart", "", 0, 0),
             new(2, "New Members", "fa-users", "purple", 0, 0),
-            new(3, "Total Sales", "fa-dollar", "orange", 0, 0, "¥"),
+            new(3, "Total Sales", "fa-dollar", "orange", 0, 0, Constant.CurrencySymbol),
             new(4, "Total Products", "fa-box", "green", 0, 0)
         ];
     }

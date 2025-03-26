@@ -357,7 +357,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 if (insufficientItems.Count > 0)
                 {
                     string errorMessage = string.Join("; ", insufficientItems);
-                    throw new BusinessException("409", "Insufficient stock for the following items: " + errorMessage);
+                    throw new UserFriendlyException("409", "Insufficient stock for the following items: " + errorMessage);
                 }
             }
 

@@ -9,11 +9,15 @@
 @using Volo.Abp.Localization
 @using Volo.Abp.AspNetCore.Components.Web.LeptonXLiteTheme.Themes.LeptonXLite
 @using Volo.Abp.AspNetCore.Components.Server.LeptonXLiteTheme.Bundling
+@using Volo.Abp.MultiTenancy
 @attribute [Authorize]
+@inject ICurrentTenant CurrentTenant
 @inject IStringLocalizer<PikachuResource> L
 @{
     Layout = null;
     var rtl = CultureHelper.IsRtl ? "rtl" : string.Empty;
+    
+   
 }
 
 <!DOCTYPE html>
@@ -21,7 +25,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@L["GoodPoint"]</title>
+    <title>@CurrentTenant.Name</title>
     <base href="~/" />
     <link href="~/libs/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
     <link href="~/libs/bootstrap/css/bootstrap.rtl.min.css" rel="stylesheet" />
