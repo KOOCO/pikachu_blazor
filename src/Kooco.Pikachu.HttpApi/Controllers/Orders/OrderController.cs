@@ -134,7 +134,7 @@ public class OrderController : AbpController, IOrderAppService
         {
             if (order.PaymentMethod is PaymentMethods.BankTransfer)
             {
-                paymentMethod = PaymentMethod.WebATM;
+                paymentMethod = PaymentMethod.ATM;
 
                 isDefaultPayment = false;
             }
