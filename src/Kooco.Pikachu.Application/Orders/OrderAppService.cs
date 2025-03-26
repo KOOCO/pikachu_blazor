@@ -339,15 +339,15 @@ public class OrderAppService : ApplicationService, IOrderAppService
                         {
                             Freebie? freebie = await _freebieRepository.FirstOrDefaultAsync(x => x.Id == item.FreebieId);
 
-                            if (freebie != null && freebie.FreebieQuantity > 0)
+                            if (freebie != null && freebie.FreebieAmount > 0)
                             {
-                                freebie.FreebieQuantity -= item.Quantity;
+                                freebie.FreebieAmount -= 1;
                                 await _freebieRepository.UpdateAsync(freebie);
                             }
                             else
                             {
 
-                                insufficientItems.Add("Insufficient Giftable Quantity");
+                                insufficientItems.Add("贈品庫存不足");
                             }
                         }
                     }
@@ -357,7 +357,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 if (insufficientItems.Count > 0)
                 {
                     string errorMessage = string.Join("; ", insufficientItems);
-                    throw new UserFriendlyException("409", "Insufficient stock for the following items: " + errorMessage);
+                    throw new UserFriendlyException("409", "以下商品庫存不足,請刷新後再試: " + errorMessage);
                 }
             }
 
