@@ -18,8 +18,6 @@ window.renderApexChart = (chartId, chartOptions) => {
         element.chartInstance.destroy();
     }
 
-    element?.textContent = '';
-
     var chart = new ApexCharts(element, chartOptions);
     chart.render();
 

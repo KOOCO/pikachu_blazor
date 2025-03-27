@@ -8,12 +8,8 @@
 @using Kooco.Pikachu.Items.Dtos
 @using Kooco.Pikachu.Reports
 <link href="css/dashboard.css" rel="stylesheet" />
-<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
-<script src="js/dashboard.js"></script>
-
 @attribute [Authorize]
 @inherits PikachuComponentBase
-
 @inject IDashboardAppService DashboardAppService
 @inject IGroupBuyAppService GroupBuyAppService
 @inject NavigationManager NavigationManager

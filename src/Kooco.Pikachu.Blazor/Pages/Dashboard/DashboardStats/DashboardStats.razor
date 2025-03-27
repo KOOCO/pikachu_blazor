@@ -23,7 +23,7 @@
             </div>
             <div class="stats-progress">
                 <div class="progress-bar">
-                    <div class="progress @(stat.Color)" style="width: @(Math.Abs(stat.GrowthOrLoss))%"></div>
+                    <div class="progress @(stat.Color)" style="width: @(stat.GrowthOrLoss > 0 ? stat.GrowthOrLoss : 0)%"></div>
                 </div>
                 <span>@(stat.GrowthOrLoss)% growth</span>
             </div>

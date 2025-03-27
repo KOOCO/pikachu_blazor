@@ -33,8 +33,6 @@ public partial class DashboardCharts
             labels = value.Donut.Labels.ToArray()
         };
 
-        await Task.Delay(TimeSpan.FromSeconds(2));
-
         if (value != null)
         {
             if (value.Bar != null)
