@@ -789,7 +789,7 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
                                 itemDetail.Item.AttributeNameOptions.Add(new()
                                 {
                                     AttributeName = itemDetail.Item.Attribute1Name,
-                                    AttributeOptions = [.. itemDetail.Item.ItemDetails.Where(w => !w.Attribute1Value.IsNullOrEmpty())
+                                    AttributeOptions = [.. itemDetail.Item.ItemDetails.DistinctBy(x=>x.Attribute1Value).Where(w => !w.Attribute1Value.IsNullOrEmpty())
                                                                                   .Select(s => s.Attribute1Value)]
                                 });
                             }
@@ -801,7 +801,7 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
                                 itemDetail.Item.AttributeNameOptions.Add(new()
                                 {
                                     AttributeName = itemDetail.Item.Attribute2Name,
-                                    AttributeOptions = [.. itemDetail.Item.ItemDetails.Where(w => !w.Attribute2Value.IsNullOrEmpty())
+                                    AttributeOptions = [.. itemDetail.Item.ItemDetails.DistinctBy(x=>x.Attribute2Value).Where(w => !w.Attribute2Value.IsNullOrEmpty())
                                                                                   .Select(w => w.Attribute2Value)]
                                 });
                             }
