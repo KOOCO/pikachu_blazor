@@ -27,6 +27,8 @@
 
     <PackageReference Include="Blazored.TextEditor" Version="1.1.2" />
 
+    <PackageReference Include="Blazorise.Cropper" Version="1.7.3" />
+
     <PackageReference Include="Blazorise.LoadingIndicator" Version="1.7.3" />
 
     <PackageReference Include="Blazorise.Splitter" Version="1.7.3" />
