@@ -7,7 +7,9 @@
             <CardBody>
                 @if (Loading)
                 {
-                    <SkeletonTable Rows="5" Columns="1"></SkeletonTable>
+                    <div class="charts-spinner">
+                        <div class="spinner-border text-primary"></div>
+                    </div>
                 }
                 <Div id="@BarChartId" Display="Loading ? Display.None : Display.Block"></Div>
             </CardBody>
@@ -18,7 +20,9 @@
             <CardBody>
                 @if (Loading)
                 {
-                    <SkeletonTable Rows="5" Columns="1"></SkeletonTable>
+                    <div class="charts-spinner">
+                        <div class="spinner-border text-primary"></div>
+                    </div>
                 }
                 <Div id="@DonutChartId" Display="Loading ? Display.None : Display.Block"></Div>
             </CardBody>
