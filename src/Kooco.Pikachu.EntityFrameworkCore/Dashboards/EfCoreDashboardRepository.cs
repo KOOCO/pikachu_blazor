@@ -22,16 +22,20 @@ public class EfCoreDashboardRepository(IDbContextProvider<PikachuDbContext> dbCo
 
     public async Task<DashboardStatsModel> GetDashboardStatsAsync(IEnumerable<Guid> selectedGroupBuyIds, DateTime? startDate, DateTime? endDate, DateTime? previousDate)
     {
+        var today = DateTime.Today;
+        startDate = startDate?.Date ?? today;
+        endDate = (endDate?.Date ?? today).AddDays(1).AddTicks(-1);
+        previousDate = previousDate?.Date ?? startDate.Value.AddDays(-1);
+        
         var dbContext = await GetDbContextAsync();
 
         var query = await dbContext.Orders
             .Where(o => o.ShippingStatus == ShippingStatus.Completed)
-            .Where(o => startDate.HasValue && endDate.HasValue && previousDate.HasValue && o.CompletionTime.HasValue)
-            .Where(o => o.CompletionTime.Value.Date >= previousDate && o.CompletionTime.Value.Date <= endDate)
+            .Where(o => o.CompletionTime >= previousDate && o.CompletionTime <= endDate)
             .WhereIf(selectedGroupBuyIds.Any(), o => selectedGroupBuyIds.Contains(o.GroupBuyId))
             .Select(o => new
             {
-                CompletionTime = o.CompletionTime.Value.Date,
+                o.CompletionTime,
                 o.TotalAmount,
                 o.TotalQuantity
             }).ToListAsync();
@@ -39,11 +43,11 @@ public class EfCoreDashboardRepository(IDbContextProvider<PikachuDbContext> dbCo
         var newMembers = await dbContext.Users
             .Where(u => u.CreationTime >= previousDate && u.CreationTime <= endDate)
             .GroupJoin(dbContext.Orders,
-            user => user.Id,
-            orders => orders.UserId,
-            (user, orders) => new { user, orders })
-            .Where(x => !x.orders.Any())
-            .Select(x => x.user.CreationTime)
+                user => user.Id,
+                orders => orders.UserId,
+                (user, orders) => new { user.CreationTime, HasOrders = orders.Any() })
+            .Where(x => !x.HasOrders)
+            .Select(x => x.CreationTime)
             .ToListAsync();
 
         var timePeriodOrders = query.Where(o => o.CompletionTime >= startDate).ToList();
@@ -54,14 +58,14 @@ public class EfCoreDashboardRepository(IDbContextProvider<PikachuDbContext> dbCo
             TotalOrders = timePeriodOrders.Count,
             TotalPreviousOrders = previousOrders.Count,
 
-            TotalSales = query.Sum(o => o.TotalAmount),
+            TotalSales = timePeriodOrders.Sum(o => o.TotalAmount),
             TotalPreviousSales = previousOrders.Sum(o => o.TotalAmount),
 
-            TotalQuantity = query.Sum(o => o.TotalQuantity),
+            TotalQuantity = timePeriodOrders.Sum(o => o.TotalQuantity),
             TotalPreviousQuantity = previousOrders.Sum(o => o.TotalQuantity),
 
-            NewMembers = newMembers.Where(o => o >= startDate).Count(),
-            PreviousNewMembers = newMembers.Where(o => o < startDate).Count()
+            NewMembers = newMembers.Count(o => o >= startDate),
+            PreviousNewMembers = newMembers.Count(o => o < startDate)
         };
 
         return model;
@@ -69,18 +73,19 @@ public class EfCoreDashboardRepository(IDbContextProvider<PikachuDbContext> dbCo
 
     public async Task<DashboardChartsModel> GetDashboardChartsAsync(ReportCalculationUnits? periodOption, IEnumerable<Guid> selectedGroupBuyIds, DateTime? startDate, DateTime? endDate)
     {
-        startDate ??= DateTime.Today;
-        endDate ??= DateTime.Today.AddDays(1).AddMicroseconds(-1);
+        var today = DateTime.Today;
+        startDate = startDate?.Date ?? today;
+        endDate = (endDate?.Date ?? today).AddDays(1).AddTicks(-1);
+
         var dbContext = await GetDbContextAsync();
 
         var orders = await dbContext.Orders
             .Where(o => o.ShippingStatus == ShippingStatus.Completed)
-            .Where(o => startDate.HasValue && endDate.HasValue && o.CompletionTime.HasValue)
-            .Where(o => o.CompletionTime.Value.Date >= startDate && o.CompletionTime.Value.Date <= endDate)
+            .Where(o => o.CompletionTime >= startDate && o.CompletionTime <= endDate)
             .WhereIf(selectedGroupBuyIds.Any(), o => selectedGroupBuyIds.Contains(o.GroupBuyId))
             .Select(o => new
             {
-                CompletionTime = o.CompletionTime.Value.Date,
+                CompletionTime = o.CompletionTime!.Value.Date,
                 o.TotalAmount,
                 o.TotalQuantity,
                 o.GroupBuyId
@@ -88,7 +93,7 @@ public class EfCoreDashboardRepository(IDbContextProvider<PikachuDbContext> dbCo
 
         var groupBuyNames = await dbContext.GroupBuys
             .Where(gb => orders.Select(o => o.GroupBuyId).Contains(gb.Id))
-            .Select(gb => new { gb.GroupBuyName, gb.Id })
+            .Select(gb => new { gb.Id, gb.GroupBuyName })
             .ToListAsync();
 
         var donutData = orders
@@ -109,9 +114,9 @@ public class EfCoreDashboardRepository(IDbContextProvider<PikachuDbContext> dbCo
 
         var barChart = new DashboardBarChartModel
         {
-            Categories = new List<string>(),
-            TotalSales = new List<int>(),
-            TotalOrders = new List<int>()
+            Categories = [],
+            TotalSales = [],
+            TotalOrders = []
         };
 
         if (periodOption == ReportCalculationUnits.Daily)

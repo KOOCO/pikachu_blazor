@@ -187,11 +187,3 @@
 .best-seller:nth-of-type(3) .progress {
     background-color: var(--orange-color);
 }
-
-.charts-spinner {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    min-height: 250px;
-}

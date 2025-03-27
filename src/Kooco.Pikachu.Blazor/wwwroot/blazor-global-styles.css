@@ -711,3 +711,11 @@
     background-color: rgba(243, 18, 228, 0.1);
     color: #f312e4;
 }
+
+.charts-spinner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 250px;
+}
