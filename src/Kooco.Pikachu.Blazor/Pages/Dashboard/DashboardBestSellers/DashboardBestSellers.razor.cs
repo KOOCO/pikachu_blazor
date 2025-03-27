@@ -8,4 +8,7 @@ public partial class DashboardBestSellers
 {
     [Parameter]
     public IReadOnlyList<DashboardBestSellerDto> Values { get; set; } = [];
+
+    [Parameter]
+    public bool Loading { get; set; }
 }

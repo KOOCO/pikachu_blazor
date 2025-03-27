@@ -14,15 +14,15 @@
 window.renderApexChart = (chartId, chartOptions) => {
     let element = document.querySelector("#" + chartId);
 
-    //// Destroy previous instance if exists
     if (element && element.chartInstance) {
         element.chartInstance.destroy();
     }
 
+    element?.textContent = '';
+
     var chart = new ApexCharts(element, chartOptions);
     chart.render();
 
-    // Store chart instance for cleanup
     element.chartInstance = chart;
 };
 

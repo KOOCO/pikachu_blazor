@@ -1,7 +1,6 @@
 using Kooco.Pikachu.Dashboards;
 using Microsoft.AspNetCore.Components;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace Kooco.Pikachu.Blazor.Pages.Dashboard.DashboardStats;
 
@@ -9,6 +8,9 @@ public partial class DashboardStats
 {
     [Parameter]
     public DashboardStatsDto Value { get; set; }
+
+    [Parameter]
+    public bool Loading { get; set; }
 
     private List<StatsModel> Stats { get; set; } = [];
 
@@ -22,7 +24,7 @@ public partial class DashboardStats
         ];
     }
 
-    protected override Task OnParametersSetAsync()
+    protected override void OnParametersSet()
     {
         for (int i = 0; i < Stats.Count; i++)
         {
@@ -35,7 +37,6 @@ public partial class DashboardStats
                 _ => (0, 0)
             };
         }
-        return base.OnParametersSetAsync();
     }
 
     public class StatsModel

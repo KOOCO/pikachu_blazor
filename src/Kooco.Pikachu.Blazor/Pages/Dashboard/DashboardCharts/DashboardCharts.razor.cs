@@ -1,4 +1,6 @@
+using Blazorise;
 using Kooco.Pikachu.Dashboards;
+using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using System;
 using System.Threading.Tasks;
@@ -7,6 +9,9 @@ namespace Kooco.Pikachu.Blazor.Pages.Dashboard.DashboardCharts;
 
 public partial class DashboardCharts
 {
+    [Parameter]
+    public bool Loading { get; set; } = true;
+
     private static string BarChartId => "dashboard-bar-chart";
     private static string DonutChartId => "dashboard-donut-chart";
 
@@ -28,7 +33,7 @@ public partial class DashboardCharts
             labels = value.Donut.Labels.ToArray()
         };
 
-        await Task.Delay(TimeSpan.FromSeconds(1));
+        await Task.Delay(TimeSpan.FromSeconds(2));
 
         if (value != null)
         {

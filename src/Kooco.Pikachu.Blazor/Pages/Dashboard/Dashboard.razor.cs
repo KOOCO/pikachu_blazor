@@ -22,10 +22,9 @@ public partial class Dashboard
     private IReadOnlyList<DashboardBestSellerDto> BestSeller { get; set; } = [];
 
     private DashboardCharts.DashboardCharts _dashboardCharts;
-    private DashboardOrdersTable.DashboardOrdersTable _ordersTable;
-    private DashboardBestSellers.DashboardBestSellers _bestSellers;
 
-    private bool IsLoading { get; set; } = false;
+    private bool Loading { get; set; } = true;
+
     public Dashboard()
     {
         var units = Enum.GetValues<ReportCalculationUnits>();
@@ -52,23 +51,30 @@ public partial class Dashboard
 
     private async Task GetRecentOrders()
     {
-        Filters.MaxResultCount = PageSize;
-        Filters.SkipCount = (CurrentPage - 1) * PageSize;
+        try
+        {
+            Filters.MaxResultCount = PageSize;
+            Filters.SkipCount = (CurrentPage - 1) * PageSize;
 
-        var orderData = await DashboardAppService.GetRecentOrdersAsync(Filters);
-        RecentOrdersList = orderData.Items;
-        RecentOrdersCount = (int)orderData.TotalCount;
+            var orderData = await DashboardAppService.GetRecentOrdersAsync(Filters);
+            RecentOrdersList = orderData.Items;
+            RecentOrdersCount = (int)orderData.TotalCount;
+        }
+        catch (Exception ex)
+        {
+            await HandleErrorAsync(ex);
+        }
     }
 
     private async Task ApplyFilters()
     {
         try
         {
-            IsLoading = true;
+            Loading = true;
             DashboardStats = await DashboardAppService.GetDashboardStatsAsync(Filters);
-            await _dashboardCharts.RenderCharts(await DashboardAppService.GetDashboardChartsAsync(Filters));
             await GetRecentOrders();
             BestSeller = await DashboardAppService.GetBestSellerItemsAsync(Filters);
+            await _dashboardCharts.RenderCharts(await DashboardAppService.GetDashboardChartsAsync(Filters));
         }
         catch (Exception ex)
         {
@@ -76,7 +82,7 @@ public partial class Dashboard
         }
         finally
         {
-            IsLoading = false;
+            Loading = false;
             StateHasChanged();
         }
     }

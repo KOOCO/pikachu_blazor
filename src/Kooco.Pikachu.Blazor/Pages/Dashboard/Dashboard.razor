@@ -58,7 +58,7 @@
                 <Div Class="d-flex align-items-end justify-content-center h-100">
                     <PikachuButton Class="pk-btn-sm pk-btn-outline-primary w-100"
                                    IconClass="fas fa-filter" Clicked="ApplyFilters"
-                                   Loading="IsLoading">
+                                   Loading="Loading">
                     </PikachuButton>
                 </Div>
             </Column>
@@ -67,10 +67,10 @@
 </Card>
 
 <Div>
-    <DashboardStats Value="DashboardStats"></DashboardStats>
+    <DashboardStats Value="DashboardStats" Loading="Loading"></DashboardStats>
 </Div>
 <Div>
-    <DashboardCharts @ref="_dashboardCharts"></DashboardCharts>
+    <DashboardCharts @ref="_dashboardCharts" Loading="Loading"></DashboardCharts>
 </Div>
 
 <Row>
@@ -82,60 +82,67 @@
                     <Button Class="btn-link" Clicked="@(() => NavigationManager.NavigateTo("/Orders"))">@L["ViewAll"]</Button>
                 </Div>
                 <Divider></Divider>
-                <DataGrid TItem="DashboardOrdersDto"
-                          Data="RecentOrdersList"
-                          ReadData="OnDataGridReadAsync"
-                          TotalItems="RecentOrdersCount"
-                          ShowPager="true"
-                          PageSize="PageSize"
-                          CurrentPage="CurrentPage"
-                          Narrow
-                          Responsive
-                          Sortable="false"
-                          Class="rm-table-min-height text-dark">
-                    <DataGridColumns>
-                        <DataGridColumn TItem="DashboardOrdersDto"
-                                        Field="@nameof(DashboardOrdersDto.OrderNo)"
-                                        Caption="@L["OrderNo"]">
-                        </DataGridColumn>
-                        <DataGridColumn TItem="DashboardOrdersDto"
-                                        Field="@nameof(DashboardOrdersDto.CustomerName)"
-                                        Caption="@L["Customer"]">
-                        </DataGridColumn>
-                        <DataGridColumn TItem="DashboardOrdersDto"
-                                        Field="@nameof(DashboardOrdersDto.GroupBuyName)"
-                                        Caption="@L["GroupBuy"]">
-                        </DataGridColumn>
-                        <DataGridColumn TItem="DashboardOrdersDto"
-                                        Field="@nameof(DashboardOrdersDto.TotalAmount)"
-                                        Caption="@L["Amount"]">
-                            <DisplayTemplate>
-                                <Span>@Constant.CurrencySymbol</Span>@context.TotalAmount.ToString("N2")
-                            </DisplayTemplate>
-                        </DataGridColumn>
-                        <DataGridColumn TItem="DashboardOrdersDto"
-                                        Field="@nameof(DashboardOrdersDto.ShippingStatus)"
-                                        Caption="@L["Status"]"
-                                        TextAlignment="TextAlignment.Center">
-                            <DisplayTemplate>
-                                <ShippingStatusBadge Status="context.ShippingStatus"></ShippingStatusBadge>
-                            </DisplayTemplate>
-                        </DataGridColumn>
-                        <DataGridColumn TItem="DashboardOrdersDto"
-                                        Caption="@L["Actions"]"
-                                        TextAlignment="TextAlignment.Center">
-                            <DisplayTemplate>
-                                <PikachuButton Class="pk-btn-sm pk-btn-icon" IconClass="fas fa-edit"
-                                               Clicked="@(() => NavigationManager.NavigateTo($"Orders/OrderDetails/{context.Id}"))">
-                                </PikachuButton>
-                            </DisplayTemplate>
-                        </DataGridColumn>
-                    </DataGridColumns>
-                </DataGrid>
+                @if (Loading)
+                {
+                    <SkeletonTable Rows="5" Columns="6" />
+                }
+                else
+                {
+                    <DataGrid TItem="DashboardOrdersDto"
+                              Data="RecentOrdersList"
+                              ReadData="OnDataGridReadAsync"
+                              TotalItems="RecentOrdersCount"
+                              ShowPager="true"
+                              PageSize="PageSize"
+                              CurrentPage="CurrentPage"
+                              Narrow
+                              Responsive
+                              Sortable="false"
+                              Class="rm-table-min-height text-dark">
+                        <DataGridColumns>
+                            <DataGridColumn TItem="DashboardOrdersDto"
+                                            Field="@nameof(DashboardOrdersDto.OrderNo)"
+                                            Caption="@L["OrderNo"]">
+                            </DataGridColumn>
+                            <DataGridColumn TItem="DashboardOrdersDto"
+                                            Field="@nameof(DashboardOrdersDto.CustomerName)"
+                                            Caption="@L["Customer"]">
+                            </DataGridColumn>
+                            <DataGridColumn TItem="DashboardOrdersDto"
+                                            Field="@nameof(DashboardOrdersDto.GroupBuyName)"
+                                            Caption="@L["GroupBuy"]">
+                            </DataGridColumn>
+                            <DataGridColumn TItem="DashboardOrdersDto"
+                                            Field="@nameof(DashboardOrdersDto.TotalAmount)"
+                                            Caption="@L["Amount"]">
+                                <DisplayTemplate>
+                                    <Span>@Constant.CurrencySymbol</Span>@context.TotalAmount.ToString("N2")
+                                </DisplayTemplate>
+                            </DataGridColumn>
+                            <DataGridColumn TItem="DashboardOrdersDto"
+                                            Field="@nameof(DashboardOrdersDto.ShippingStatus)"
+                                            Caption="@L["Status"]"
+                                            TextAlignment="TextAlignment.Center">
+                                <DisplayTemplate>
+                                    <ShippingStatusBadge Status="context.ShippingStatus"></ShippingStatusBadge>
+                                </DisplayTemplate>
+                            </DataGridColumn>
+                            <DataGridColumn TItem="DashboardOrdersDto"
+                                            Caption="@L["Actions"]"
+                                            TextAlignment="TextAlignment.Center">
+                                <DisplayTemplate>
+                                    <PikachuButton Class="pk-btn-sm pk-btn-icon" IconClass="fas fa-edit"
+                                                   Clicked="@(() => NavigationManager.NavigateTo($"Orders/OrderDetails/{context.Id}"))">
+                                    </PikachuButton>
+                                </DisplayTemplate>
+                            </DataGridColumn>
+                        </DataGridColumns>
+                    </DataGrid>
+                }
             </CardBody>
         </Card>
     </Column>
     <Column ColumnSize="ColumnSize.Is12.Is4.OnFullHD">
-        <DashboardBestSellers @ref="_bestSellers" Values="BestSeller"></DashboardBestSellers>
+        <DashboardBestSellers Values="BestSeller" Loading="Loading"></DashboardBestSellers>
     </Column>
 </Row>
