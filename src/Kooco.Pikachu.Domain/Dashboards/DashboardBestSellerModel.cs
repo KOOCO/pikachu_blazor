@@ -9,5 +9,5 @@ public class DashboardBestSellerModel
     public string? ImageUrl { get; set; }
     public int Quantity { get; set; }
     public decimal Amount { get; set; }
-    public int Percentage { get; set; }
+    public double Percentage { get; set; }
 }

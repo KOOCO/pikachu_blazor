@@ -26,7 +26,7 @@ public class EfCoreDashboardRepository(IDbContextProvider<PikachuDbContext> dbCo
         startDate = startDate?.Date ?? today;
         endDate = (endDate?.Date ?? today).AddDays(1).AddTicks(-1);
         previousDate = previousDate?.Date ?? startDate.Value.AddDays(-1);
-        
+
         var dbContext = await GetDbContextAsync();
 
         var query = await dbContext.Orders
@@ -230,6 +230,7 @@ public class EfCoreDashboardRepository(IDbContextProvider<PikachuDbContext> dbCo
         var dbContext = await GetDbContextAsync();
 
         var orderItems = await dbContext.Orders
+            .Where(o => o.ShippingStatus == ShippingStatus.Completed)
             .WhereIf(selectedGroupBuyIds.Any(), o => selectedGroupBuyIds.Contains(o.GroupBuyId))
             .Include(o => o.OrderItems)
             .SelectMany(o => o.OrderItems)
@@ -257,7 +258,7 @@ public class EfCoreDashboardRepository(IDbContextProvider<PikachuDbContext> dbCo
             .Select(i => new { i.Id, i.ItemName, Image = i.Images.Where(image => image.ImageUrl != null).FirstOrDefault() })
             .ToListAsync();
 
-        var totalAmount = orderItems.Sum(oi => oi.Amount);
+        var totalQuantity = orderItems.Sum(oi => oi.Quantity);
 
         var model = orderItems.Select(oi => new DashboardBestSellerModel
         {
@@ -268,11 +269,15 @@ public class EfCoreDashboardRepository(IDbContextProvider<PikachuDbContext> dbCo
             Amount = oi.Amount
         })
             .Where(oi => !string.IsNullOrEmpty(oi.ItemName))
-            .OrderByDescending(oi => oi.Amount)
+            .OrderByDescending(oi => oi.Quantity)
             .Take(3)
             .ToList();
 
-        model.ForEach(m => m.Percentage = (int)Math.Round(totalAmount > 0 ? (m.Amount / totalAmount) * 100 : 0));
+        for (int i = 0; i < model.Count; i++)
+        {
+            double quantity = model[i].Quantity;
+            model[i].Percentage = totalQuantity > 0 ? (quantity / totalQuantity) * 100 : 0d;
+        }
 
         return model;
     }
