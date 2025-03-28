@@ -1426,7 +1426,9 @@
     "Return&Exchange": "退換貨列表退換貨列表",
     "Filters": "篩選器",
     "Active": "上架中",
-    "Inactive": "已下架"
+    "Inactive": "已下架",
+    "Used": "已使用",
+    "UnUsed": "未使用"
 
   }
 }
