@@ -100,9 +100,9 @@
                         <Div Class="d-flex align-items-center gap-1">
                             <Div Class="member-image">
                                 <img class="img-fluid rounded-circle" src="https://e7.pngegg.com/pngimages/799/987/png-clipart-computer-icons-avatar-icon-design-avatar-heroes-computer-wallpaper-thumbnail.png" alt="Alternate Text" />
-                                @if (context.TotalOrders == 0)
+                                @if (context.MemberTags.Contains(MemberConsts.MemberTags.New))
                                 {
-                                    <Badge>@L["New"]</Badge>
+                                    <Badge>@L[MemberConsts.MemberTags.New]</Badge>
                                 }
                             </Div>
                             <Div>

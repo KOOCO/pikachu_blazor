@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Domain.Services;
@@ -29,9 +30,9 @@ public class MemberTagManager : DomainService
         return await CreateTagAsync(userId, tagName);
     }
 
-    private async Task<MemberTag> CreateTagAsync(Guid userId, string tagName)
+    private async Task<MemberTag> CreateTagAsync(Guid userId, string tagName, Guid? vipTierId = null)
     {
-        var tag = new MemberTag(GuidGenerator.Create(), userId, tagName);
+        var tag = new MemberTag(GuidGenerator.Create(), userId, tagName, vipTierId);
         return await _repository.InsertAsync(tag);
     }
 
@@ -60,5 +61,14 @@ public class MemberTagManager : DomainService
     public Task DeleteNewAsync(Guid userId) => DeleteTagAsync(userId, MemberConsts.MemberTags.New);
     public Task DeleteExistingAsync(Guid userId) => DeleteTagAsync(userId, MemberConsts.MemberTags.Existing);
     public Task DeleteBlacklistedAsync(Guid userId) => DeleteTagAsync(userId, MemberConsts.MemberTags.Blacklisted);
+
+    public Task SetNewOrExistingAsync(Guid userId, long orderCount) => orderCount > 0 ? AddExistingAsync(userId) : AddNewAsync(userId);
+
+    public async Task AddVipTierAsync(Guid userId, string name, Guid vipTierId)
+    {
+        var tags = await _repository.GetListAsync(tag => tag.UserId == userId && tag.VipTierId.HasValue);
+        await _repository.DeleteManyAsync(tags);
+        await CreateTagAsync(userId, name, vipTierId);
+    }
 }
 

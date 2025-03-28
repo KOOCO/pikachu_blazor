@@ -13,6 +13,12 @@
                     <Span Class="bg-lightgrey rounded-3" Style="padding: 1px 10px;">
                         <Copy Text="@Member?.Id" ShouldDisplayIcon="false"></Copy>
                     </Span>
+                    <Div Class="mt-1">
+                        @foreach (var tag in Member.MemberTags)
+                        {
+                            <MemberTagComponent Tag="@tag" Margin="true" />
+                        }
+                    </Div>
                 </Div>
                 @if (CanEditMember)
                 {

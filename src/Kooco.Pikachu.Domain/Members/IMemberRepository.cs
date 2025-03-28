@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Kooco.Pikachu.TierManagement;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -9,8 +10,14 @@ namespace Kooco.Pikachu.Members;
 
 public interface IMemberRepository : IIdentityUserRepository, IRepository<IdentityUser, Guid>
 {
+    Task<MemberModel> GetMemberAsync(Guid memberId);
+
     Task<long> GetCountAsync(string? filter = null, string? memberType = null);
     Task<List<MemberModel>> GetListAsync(int skipCount, int maxResultCount, string sorting, string? filter = null, string? memberType = null);
+
+    Task<long> CountOrdersAsync(Guid memberId);
+
+    Task<VipTier?> CheckForVipTierAsync(Guid userId);
 
     Task<long> GetMemberCreditRecordCountAsync(string? filter, DateTime? usageTimeFrom, DateTime? usageTimeTo,
         DateTime? expiryTimeFrom, DateTime? expiryTimeTo, int? minRemainingCredits, int? maxRemainingCredits,

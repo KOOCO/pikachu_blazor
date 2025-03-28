@@ -360,5 +360,7 @@ public class PikachuApplicationAutoMapperProfile : Profile
         CreateMap<VipTierSettingDto, UpdateVipTierSettingDto>();
         CreateMap<VipTier, VipTierDto>();
         CreateMap<VipTierDto, UpdateVipTierDto>();
+
+        CreateMap<MemberTag, MemberTagDto>();
     }
 }
