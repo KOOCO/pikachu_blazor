@@ -1367,6 +1367,7 @@
     "BasedOnAmount": "Based On Amount",
     "BasedOnCount": "Based On Count",
     "SelectLogistics": "Select Logistics",
-    "SelectDeliveryMethod": "Select Delivery Method"
+    "SelectDeliveryMethod": "Select Delivery Method",
+    "Return&Exchang": "Return & Exchang"
   }
 }

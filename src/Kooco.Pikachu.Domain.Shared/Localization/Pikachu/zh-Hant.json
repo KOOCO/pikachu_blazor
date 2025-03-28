@@ -1422,7 +1422,8 @@
     "Hours": "小時",
     "Miniutes": "分鐘",
     "SelectLogistics": "選擇物流商",
-    "SelectDeliveryMethod": "選擇物流方式"
+    "SelectDeliveryMethod": "選擇物流方式",
+    "Return&Exchange": "退換貨列表退換貨列表"
 
   }
 }
