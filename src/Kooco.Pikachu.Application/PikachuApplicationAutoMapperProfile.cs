@@ -35,6 +35,7 @@ using Kooco.Pikachu.ShoppingCredits;
 using Kooco.Pikachu.StoreComments;
 using Kooco.Pikachu.TenantEmailing;
 using Kooco.Pikachu.TenantManagement;
+using Kooco.Pikachu.TierManagement;
 using Kooco.Pikachu.UserAddresses;
 using Kooco.Pikachu.UserCumulativeCredits;
 using Kooco.Pikachu.UserCumulativeFinancials;
@@ -354,5 +355,12 @@ public class PikachuApplicationAutoMapperProfile : Profile
         CreateMap<DashboardBarChartModel, DashboardBarChartDto>();
         CreateMap<DashboardOrdersModel, DashboardOrdersDto>();
         CreateMap<DashboardBestSellerModel, DashboardBestSellerDto>();
+
+        CreateMap<VipTierSetting, VipTierSettingDto>();
+        CreateMap<VipTierSettingDto, UpdateVipTierSettingDto>();
+        CreateMap<VipTier, VipTierDto>();
+        CreateMap<VipTierDto, UpdateVipTierDto>();
+
+        CreateMap<MemberTag, MemberTagDto>();
     }
 }

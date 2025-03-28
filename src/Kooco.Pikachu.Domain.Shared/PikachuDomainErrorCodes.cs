@@ -69,4 +69,7 @@ public static class PikachuDomainErrorCodes
     public const string InvalidUrl = "Pikachu:InvalidUrlWithProperty";
     public const string ItemStorageTemperatureCannotBeNull = "Pikachu:ItemStorageTemperatureCannotBeNull";
     public const string InvalidNumberOfLinks = "Pikachu:InvalidNumberOfLinks";
+    public const string VipTierConditionChecked = "Pikachu:VipTierConditionChecked";
+    public const string VipTierCondition = "Pikachu:VipTierCondition";
+    public const string DuplicateTier = "Pikachu:DuplicateTier";
 }

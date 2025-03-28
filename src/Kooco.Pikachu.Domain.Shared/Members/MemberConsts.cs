@@ -34,4 +34,11 @@ public static class MemberConsts
     {
         public const string Default = MembersManagement + ".UserShoppingCredits";
     }
+
+    public static class MemberTags
+    {
+        public const string New = "New";
+        public const string Existing = "Existing";
+        public const string Blacklisted = "Blacklisted";
+    }
 }

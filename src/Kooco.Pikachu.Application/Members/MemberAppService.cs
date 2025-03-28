@@ -35,12 +35,14 @@ public class MemberAppService(IObjectMapper objectMapper, IMemberRepository memb
     UserCumulativeFinancialManager userCumulativeFinancialManager,
     IUserShoppingCreditAppService userShoppingCreditAppService,
     IShoppingCreditEarnSettingAppService shoppingCreditEarnSettingAppService,
-    IPikachuAccountAppService pikachuAccountAppService, IUserAddressRepository userAddressRepository, IUserCumulativeCreditAppService userCumulativeCreditAppService, IUserCumulativeCreditRepository userCumulativeCreditRepository) : PikachuAppService, IMemberAppService
+    IPikachuAccountAppService pikachuAccountAppService, IUserAddressRepository userAddressRepository,
+    IUserCumulativeCreditAppService userCumulativeCreditAppService, IUserCumulativeCreditRepository userCumulativeCreditRepository,
+    MemberTagManager memberTagManager) : PikachuAppService, IMemberAppService
 {
     public async Task<MemberDto> GetAsync(Guid id)
     {
-        var member = await memberRepository.GetAsync(id);
-        return base.ObjectMapper.Map<IdentityUser, MemberDto>(member);
+        var member = await memberRepository.GetMemberAsync(id);
+        return base.ObjectMapper.Map<MemberModel, MemberDto>(member);
     }
 
     public async Task<PagedResultDto<MemberDto>> GetListAsync(GetMemberListDto input)
@@ -237,6 +239,32 @@ public class MemberAppService(IObjectMapper objectMapper, IMemberRepository memb
         return base.ObjectMapper.Map<List<MemberOrderInfoModel>, List<MemberOrderInfoDto>>(orders);
     }
 
+    public async Task SetBlacklistedAsync(Guid memberId, bool blacklisted)
+    {
+        if (blacklisted)
+        {
+            await memberTagManager.AddBlacklistedAsync(memberId);
+        }
+        else
+        {
+            await memberTagManager.DeleteBlacklistedAsync(memberId);
+        }
+    }
+
+    public async Task SetNewOrExistingMemberAsync(string userNameOrEmailAddress)
+    {
+        var member = await identityUserManager.FindByEmailAsync(userNameOrEmailAddress);
+        member ??= await identityUserManager.FindByNameAsync(userNameOrEmailAddress);
+
+        if (member == null)
+        {
+            return;
+        }
+
+        var orderCount = await memberRepository.CountOrdersAsync(member.Id);
+        await memberTagManager.SetNewOrExistingAsync(member.Id, orderCount);
+    }
+
     [AllowAnonymous]
     public async Task<MemberLoginResponseDto> LoginAsync(MemberLoginInputDto input)
     {
@@ -247,6 +275,8 @@ public class MemberAppService(IObjectMapper objectMapper, IMemberRepository memb
         {
             return new MemberLoginResponseDto(false);
         }
+
+        await SetNewOrExistingMemberAsync(input.UserNameOrEmailAddress);
         return base.ObjectMapper.Map<PikachuLoginResponseDto, MemberLoginResponseDto>(loginResult);
     }
 
@@ -284,6 +314,9 @@ public class MemberAppService(IObjectMapper objectMapper, IMemberRepository memb
 
             }
         }
+
+        await memberTagManager.AddNewAsync(identityUser.Id);
+
         if (input.isCallFromTest)
         {
             return objectMapper.Map<IdentityUserDto, MemberDto>(identityUser);

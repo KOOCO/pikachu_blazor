@@ -1,0 +1,30 @@
+﻿@using Kooco.Pikachu.Members
+@inherits PikachuComponentBase
+
+<PikachuBadge Class="@_badgeColor" Style="@(_margin)">@Tag</PikachuBadge>
+
+@code {
+    [Parameter]
+    public string Tag { get; set; }
+
+    [Parameter]
+    public bool Margin { get; set; }
+
+    private string _badgeColor
+    {
+        get
+        {
+            var color = Tag switch
+            {
+                MemberConsts.MemberTags.New => "primary",
+                MemberConsts.MemberTags.Existing => "warning",
+                MemberConsts.MemberTags.Blacklisted => "danger",
+                _ => "success"
+            };
+
+            return $"pk-badge-{color}";
+        }
+    }
+
+    private string _margin { get { return Margin ? "margin-right: 5px;" : ""; } }
+}

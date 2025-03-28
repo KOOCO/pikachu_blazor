@@ -53,6 +53,8 @@ using Kooco.Pikachu.WebsiteManagement.FooterSettings;
 using Kooco.Pikachu.WebsiteManagement.TopbarSettings;
 using Kooco.Pikachu.OrderHistories;
 using Kooco.Pikachu.OrderTransactions;
+using Kooco.Pikachu.TierManagement;
+using Kooco.Pikachu.Members;
 
 namespace Kooco.Pikachu.EntityFrameworkCore;
 
@@ -159,6 +161,9 @@ public class PikachuDbContext :
     public DbSet<OrderTransaction> OrderTransactions { get; set; }
 
     public DbSet<IdentitySession> Sessions { get; set; }
+
+    public DbSet<VipTierSetting> VipTierSettings { get; set; }
+    public DbSet<MemberTag> MemberTags { get; set; }
 
     public PikachuDbContext(DbContextOptions<PikachuDbContext> options)
         : base(options)
@@ -678,6 +683,28 @@ public class PikachuDbContext :
             b.ConfigureByConvention();
         });
         #endregion
+
+        builder.Entity<VipTierSetting>(b =>
+        {
+            b.ToTable(PikachuConsts.DbTablePrefix + "VipTierSettings", PikachuConsts.DbSchema);
+            b.ConfigureByConvention();
+
+            b.HasMany(x => x.Tiers).WithOne(x => x.TierSetting).HasForeignKey(x => x.TierSettingId);
+        });
+
+        builder.Entity<VipTier>(b =>
+        {
+            b.ToTable(PikachuConsts.DbTablePrefix + "VipTiers", PikachuConsts.DbSchema);
+            b.ConfigureByConvention();
+
+            b.HasOne(x => x.TierSetting).WithMany(x => x.Tiers).HasForeignKey(x => x.TierSettingId);
+        });
+
+        builder.Entity<MemberTag>(b =>
+        {
+            b.ToTable(PikachuConsts.DbTablePrefix + "MemberTags", PikachuConsts.DbSchema);
+            b.ConfigureByConvention();
+        });
     }
 }
 

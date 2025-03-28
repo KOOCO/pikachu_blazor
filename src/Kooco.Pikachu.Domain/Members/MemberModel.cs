@@ -1,5 +1,5 @@
 ﻿using System;
-using Volo.Abp.Identity;
+using System.Collections.Generic;
 
 namespace Kooco.Pikachu.Members;
 
@@ -13,4 +13,5 @@ public class MemberModel
     public DateTime? Birthday { get; set; }
     public int TotalOrders { get; set; }
     public int TotalSpent { get; set; }
+    public List<string> MemberTags { get; set; }
 }

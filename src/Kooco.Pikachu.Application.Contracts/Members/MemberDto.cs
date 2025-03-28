@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Kooco.Pikachu.Members;
 
@@ -14,4 +15,5 @@ public class MemberDto
     public string? Gender { get; set; }
     public int TotalOrders { get; set; }
     public int TotalSpent { get; set; }
+    public List<string> MemberTags { get; set; }
 }

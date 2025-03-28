@@ -179,4 +179,10 @@ public class MemberController(IMemberAppService memberAppService, IPikachuAccoun
     {
         return memberAppService.GetMemberOrdersByGroupBuyAsync(groupBuyId);
     }
+
+    [HttpPost("set-blacklisted/{memberId}/{blacklisted}")]
+    public Task SetBlacklistedAsync(Guid memberId, bool blacklisted)
+    {
+        return memberAppService.SetBlacklistedAsync(memberId, blacklisted);
+    }
 }

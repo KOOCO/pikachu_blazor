@@ -1,4 +1,5 @@
 ﻿using Kooco.Pikachu.EntityFrameworkCore;
+using Kooco.Pikachu.TierManagement;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -6,6 +7,7 @@ using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
 using Volo.Abp.Data;
+using Volo.Abp.Domain.Entities;
 using Volo.Abp.EntityFrameworkCore;
 using Volo.Abp.Identity;
 using Volo.Abp.Identity.EntityFrameworkCore;
@@ -18,6 +20,26 @@ public class EfCoreMemberRepository(IDbContextProvider<PikachuDbContext> pikachu
     protected virtual Task<PikachuDbContext> GetPikachuDbContextAsync()
     {
         return pikachuDbContextProvider.GetDbContextAsync();
+    }
+
+    public async Task<MemberModel> GetMemberAsync(Guid memberId)
+    {
+        var dbContext = await GetPikachuDbContextAsync();
+        var user = await dbContext.Users.FirstOrDefaultAsync(m => m.Id == memberId)
+            ?? throw new EntityNotFoundException(typeof(IdentityUser), memberId);
+
+        return new MemberModel
+        {
+            Id = user.Id,
+            UserName = user.UserName,
+            Name = user.Name,
+            PhoneNumber = user.PhoneNumber,
+            Email = user.Email,
+            Birthday = (DateTime?)user.GetProperty(Constant.Birthday, null),
+            TotalOrders = dbContext.Orders.Where(x => x.UserId == user.Id).Count(),
+            TotalSpent = (int)dbContext.Orders.Where(x => x.UserId == user.Id && (x.OrderStatus != EnumValues.OrderStatus.Exchange && x.OrderStatus != EnumValues.OrderStatus.Refund)).Sum(x => x.TotalAmount),
+            MemberTags = [.. dbContext.MemberTags.AsNoTracking().Where(x => x.UserId == user.Id).Select(x => x.Name)]
+        };
     }
 
     public async Task<long> GetCountAsync(string? filter = null, string? memberType = null)
@@ -42,9 +64,6 @@ public class EfCoreMemberRepository(IDbContextProvider<PikachuDbContext> pikachu
     {
         var dbContext = await GetPikachuDbContextAsync();
         var queryable = dbContext.Users
-                    .WhereIf(!string.IsNullOrWhiteSpace(filter), user => user.UserName.Contains(filter)
-                          || user.PhoneNumber.Contains(filter)
-                          || user.Email.Contains(filter))
                     .Select(user => new MemberModel
                     {
                         Id = user.Id,
@@ -54,12 +73,53 @@ public class EfCoreMemberRepository(IDbContextProvider<PikachuDbContext> pikachu
                         Email = user.Email,
                         Birthday = (DateTime?)user.GetProperty(Constant.Birthday, null),
                         TotalOrders = dbContext.Orders.Where(x => x.UserId == user.Id).Count(),
-                        TotalSpent = (int)dbContext.Orders.Where(x => x.UserId == user.Id && (x.OrderStatus != EnumValues.OrderStatus.Exchange && x.OrderStatus != EnumValues.OrderStatus.Refund)).Sum(x => x.TotalAmount)
+                        TotalSpent = (int)dbContext.Orders.Where(x => x.UserId == user.Id && (x.OrderStatus != EnumValues.OrderStatus.Exchange && x.OrderStatus != EnumValues.OrderStatus.Refund)).Sum(x => x.TotalAmount),
+                        MemberTags = dbContext.MemberTags.AsNoTracking().Where(x => x.UserId == user.Id).Select(x => x.Name).ToList(),
                     })
-                    .WhereIf(memberType == MemberConsts.NewMembers, user => user.TotalOrders == 0)
-                    .WhereIf(memberType == MemberConsts.ExistingMembers, user => user.TotalOrders > 0);
+                    .WhereIf(!string.IsNullOrWhiteSpace(filter), member => member.MemberTags.Contains(filter) || member.UserName.Contains(filter)
+                    || member.PhoneNumber.Contains(filter) || member.Email.Contains(filter))
+                    .WhereIf(memberType == MemberConsts.NewMembers, member => member.MemberTags.Contains(MemberConsts.MemberTags.New))
+                    .WhereIf(memberType == MemberConsts.ExistingMembers, member => member.MemberTags.Contains(MemberConsts.MemberTags.Existing));
 
         return queryable;
+    }
+
+    public async Task<long> CountOrdersAsync(Guid memberId)
+    {
+        var dbContext = await GetPikachuDbContextAsync();
+        return await dbContext.Orders.Where(x => x.UserId == memberId).LongCountAsync();
+    }
+
+    public async Task<VipTier?> CheckForVipTierAsync(Guid userId)
+    {
+        var dbContext = await GetPikachuDbContextAsync();
+        var vipTierSettings = await dbContext.VipTierSettings.Include(v => v.Tiers).FirstOrDefaultAsync();
+
+        if (vipTierSettings == null) return default;
+
+        var orders = dbContext.Orders.Where(o => o.UserId == userId);
+
+        var count = await orders.LongCountAsync();
+        var amount = await orders.SumAsync(x => x.TotalAmount);
+
+        var tiers = vipTierSettings.Tiers.OrderByDescending(tier => tier.Tier);
+
+        return vipTierSettings switch
+        {
+            { BasedOnAmount: true, BasedOnCount: true, TierCondition: VipTierCondition.OnlyWhenReachedBoth }
+                => tiers.FirstOrDefault(tier => tier.OrdersAmount < amount && tier.OrdersCount < count),
+
+            { BasedOnAmount: true, BasedOnCount: true }
+                => tiers.FirstOrDefault(tier => tier.OrdersAmount < amount || tier.OrdersCount < count),
+
+            { BasedOnAmount: true }
+                => tiers.FirstOrDefault(tier => tier.OrdersAmount < amount),
+
+            { BasedOnCount: true }
+                => tiers.FirstOrDefault(tier => tier.OrdersCount < count),
+
+            _ => null
+        };
     }
 
     public async Task<long> GetMemberCreditRecordCountAsync(string? filter, DateTime? usageTimeFrom, DateTime? usageTimeTo,
@@ -133,7 +193,5 @@ public class EfCoreMemberRepository(IDbContextProvider<PikachuDbContext> pikachu
             .ToList();
 
         return filteredUsers;
-
-
     }
 }

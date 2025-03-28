@@ -7,6 +7,7 @@ using Kooco.Pikachu.Groupbuys;
 using Kooco.Pikachu.GroupBuys;
 using Kooco.Pikachu.Items;
 using Kooco.Pikachu.Localization;
+using Kooco.Pikachu.Members;
 using Kooco.Pikachu.OrderDeliveries;
 using Kooco.Pikachu.OrderHistories;
 using Kooco.Pikachu.OrderItems;
@@ -81,6 +82,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
     private readonly OrderHistoryManager _orderHistoryManager;
     private readonly IOrderHistoryRepository _orderHistoryRepository;
     private readonly OrderTransactionManager _orderTransactionManager;
+    private readonly MemberTagManager _memberTagManager;
+    private readonly IMemberRepository _memberRepository;
 
     #endregion
 
@@ -116,7 +119,9 @@ public class OrderAppService : ApplicationService, IOrderAppService
         IIdentityUserRepository userRepository,
         OrderHistoryManager orderHistoryManager,
         IOrderHistoryRepository orderHistoryRepository,
-        OrderTransactionManager orderTransactionManager
+        OrderTransactionManager orderTransactionManager,
+        MemberTagManager memberTagManager,
+        IMemberRepository memberRepository
     )
     {
         _orderRepository = orderRepository;
@@ -150,6 +155,8 @@ public class OrderAppService : ApplicationService, IOrderAppService
         _orderHistoryManager = orderHistoryManager;
         _orderHistoryRepository = orderHistoryRepository;
         _orderTransactionManager = orderTransactionManager;
+        _memberTagManager = memberTagManager;
+        _memberRepository = memberRepository;
     }
     #endregion
 
@@ -163,9 +170,22 @@ public class OrderAppService : ApplicationService, IOrderAppService
     public async Task<OrderDto> CreateAsync(CreateUpdateOrderDto input)
     {
         GroupBuy groupBuy = new();
+        IdentityUser? user = null;
 
         using (_dataFilter.Disable<IMultiTenant>())
         {
+            if (input.UserId.HasValue)
+            {
+                user = await _userRepository.FindAsync(input.UserId.Value);
+                if (user != null)
+                {
+                    var blacklisted = await _memberTagManager.IsBlacklistedAsync(user.Id);
+                    if (blacklisted)
+                    {
+                        throw new UserFriendlyException("該用戶已被列入黑名單，無法下單 - This user is blacklisted and can not place an order");
+                    }
+                }
+            }
             groupBuy = await _groupBuyRepository.GetAsync(input.GroupBuyId);
         }
 
@@ -557,8 +577,21 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 ExpireOrderBackgroundJobArgs args = new ExpireOrderBackgroundJobArgs { OrderId = order.Id };
                 var jobid = await _backgroundJobManager.EnqueueAsync(args, BackgroundJobPriority.High, (expirationTime - order.CreationTime));
             }
-            return ObjectMapper.Map<Order, OrderDto>(order);
 
+            if (user != null)
+            {
+                using (CurrentTenant.Change(user.TenantId))
+                {
+                    await _memberTagManager.AddExistingAsync(user.Id);
+                    var vipTier = await _memberRepository.CheckForVipTierAsync(user.Id);
+                    if (vipTier != null)
+                    {
+                        await _memberTagManager.AddVipTierAsync(user.Id, vipTier.TierName, vipTier.Id);
+                    }
+                }
+            }
+
+            return ObjectMapper.Map<Order, OrderDto>(order);
         }
     }
 

@@ -213,13 +213,21 @@ public class PikachuMenuContributor : IMenuContributor
         membersMenu.AddItem(new ApplicationMenuItem(
             name: PikachuMenus.MembersList,
             displayName: l["Menu:MembersList"],
+            icon: "fas fa-user-group",
             url: "/Members",
             requiredPermissionName: PikachuPermissions.Members.Default
             ));
         membersMenu.AddItem(new ApplicationMenuItem(
             name: PikachuMenus.LoginConfigurations,
             displayName: l["Menu:LoginConfigurations"],
+            icon: "fas fa-user-gear",
             url: "/Login-Configurations"
+            ).RequireAuthenticated());
+        membersMenu.AddItem(new ApplicationMenuItem(
+            name: PikachuMenus.TierManagement,
+            displayName: l["Menu:TierManagement"],
+            icon: "fas fa-user-tag",
+            url: "/Members/Tier-Management"
             ).RequireAuthenticated());
         context.Menu.AddItem(membersMenu);
 
