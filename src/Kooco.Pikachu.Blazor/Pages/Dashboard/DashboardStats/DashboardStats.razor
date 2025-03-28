@@ -19,13 +19,13 @@
                 {
                     <h3>@(stat.DisplayValue)</h3>
                 }
-                <p class="m-0">@(stat.Name)</p>
+                <p class="m-0">@(L[stat.Name])</p>
             </div>
             <div class="stats-progress">
                 <div class="progress-bar">
                     <div class="progress @(stat.Color)" style="width: @(stat.GrowthOrLoss > 0 ? stat.GrowthOrLoss : 0)%"></div>
                 </div>
-                <span>@(stat.GrowthOrLoss)% growth</span>
+                <span>@(stat.GrowthOrLoss)% @L["growth"]</span>
             </div>
         </div>
     }

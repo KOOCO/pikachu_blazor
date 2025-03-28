@@ -62,6 +62,7 @@ namespace Kooco.Pikachu.Members
         private readonly Mock<IUserCumulativeOrderRepository> _userCumulativeOrderRepositoryMock;
         private readonly Mock<IUserCumulativeFinancialRepository> _userCumulativeFinancialRepositoryMock;
 
+        private readonly Mock<MemberTagManager> _memberTagManager;
 
 
 
@@ -85,6 +86,7 @@ namespace Kooco.Pikachu.Members
             _userCumulativeCreditManager = new UserCumulativeCreditManager(_userCumulativeCreditRepositoryMock.Object);
             _userCumulativeOrderManager = new UserCumulativeOrderManager(_userCumulativeOrderRepositoryMock.Object);
             _userCumulativeFinancialManager = new UserCumulativeFinancialManager(_userCumulativeFinancialRepositoryMock.Object);
+            _memberTagManager = new Mock<MemberTagManager>();
 
             // ✅ Provide Real `IdentityUserManager` Instead of Mocking
             var userStoreMock = new Mock<IUserStore<IdentityUser>>();
@@ -158,7 +160,8 @@ namespace Kooco.Pikachu.Members
                 _pikachuAccountAppServiceMock.Object,
                 _userAddressRepositoryMock.Object,
                 _userCumulativeCreditAppServiceMock.Object,
-                _userCumulativeCreditRepositoryMock.Object
+                _userCumulativeCreditRepositoryMock.Object,
+                _memberTagManager.Object
             );
           
 

@@ -1428,7 +1428,18 @@
     "Active": "上架中",
     "Inactive": "已下架",
     "Used": "已使用",
-    "UnUsed": "未使用"
-
+    "UnUsed": "未使用",
+    "Period": "單位",
+    "TimeRange": "時間區段",
+    "TotalOrders": "已完成訂單",
+    "NewMembersDashboard": "新註冊會員",
+    "TotalSales": "總銷售額",
+    "TotalProducts": "商品銷售數量",
+    "growth": "成長率",
+    "RecentOrders": "最近訂單",
+    "BestSellers": "熱賣商品",
+    "ViewAll": "查看全部",
+    "Sold": "已售出",
+    "Customer": "客戶名稱"
   }
 }
