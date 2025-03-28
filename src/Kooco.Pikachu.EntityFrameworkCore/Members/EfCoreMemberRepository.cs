@@ -133,7 +133,5 @@ public class EfCoreMemberRepository(IDbContextProvider<PikachuDbContext> pikachu
             .ToList();
 
         return filteredUsers;
-
-
     }
 }

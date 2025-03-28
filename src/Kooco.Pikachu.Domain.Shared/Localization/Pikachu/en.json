@@ -1350,6 +1350,21 @@
     "TotalProducts": "Total Products",
     "RecentOrders": "Recent Orders",
     "BestSellers": "Best Sellers",
-    "ViewAll": "View All"
+    "ViewAll": "View All",
+    "Menu:TierManagement": "Tier Management",
+    "CustomVipName": "Custom Vip Name",
+    "TierManagement": "Tier Management",
+    "Enum:VipTierCondition.1": "When Reached Either One",
+    "Enum:VipTierCondition.2": "Only When Reached Both",
+    "Enum:VipTier.1": "Tier 1",
+    "Enum:VipTier.2": "Tier 2",
+    "Enum:VipTier.3": "Tier 3",
+    "Enum:VipTier.4": "Tier 4",
+    "Enum:VipTier.5": "Tier 5",
+    "Pikachu:VipTierConditionChecked": "Atleast one checkbox field is required.",
+    "Pikachu:VipTierCondition": "The field Vip Tier Condition is required.",
+    "Pikachu:DuplicateTier": "Invalid Input - Duplicate Tiers Exist.",
+    "BasedOnAmount": "Based On Amount",
+    "BasedOnCount": "Based On Count"
   }
 }

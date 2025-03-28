@@ -1,0 +1,92 @@
+﻿@page "/Members/Tier-Management"
+@using Kooco.Pikachu.TierManagement
+@inherits PikachuComponentBase
+@inject IVipTierSettingAppService VipTierSettingAppService
+
+<h3>@L["TierManagement"]</h3>
+<Div Class="rounded-cards">
+    <Card>
+        @if (Entity == null)
+        {
+            <CardBody>
+                <div class="d-flex align-items-center justify-content-center w-100" style="height: 400px;">
+                    <div class="spinner-border text-primary"></div>
+                </div>
+            </CardBody>
+        }
+        else
+        {
+            <CardBody>
+                @if (Entity.BasedOnAmount && Entity.BasedOnCount)
+                {
+                    <Row Class="mb-3">
+                        <Column ColumnSize="ColumnSize.Is6">
+                        </Column>
+                        <Column ColumnSize="ColumnSize.Is6">
+                            <AntDesign.Select @bind-Value="Entity.TierCondition"
+                                              TItem="VipTierCondition?"
+                                              TItemValue="VipTierCondition?">
+                                <SelectOptions>
+                                    @foreach (VipTierCondition item in VipTierConsts.TierConditionOptions)
+                                    {
+                                        <AntDesign.SelectOption TItemValue="VipTierCondition?"
+                                                                TItem="VipTierCondition?"
+                                                                Value=@item Label="@L[$"Enum:VipTierCondition.{(int)item}"]">
+                                        </AntDesign.SelectOption>
+                                    }
+                                </SelectOptions>
+                            </AntDesign.Select>
+                        </Column>
+                    </Row>
+                }
+                <Row>
+                    <Column ColumnSize="ColumnSize.Is1"></Column>
+                    <Column ColumnSize="ColumnSize.Is5">
+                        <h6 class="m-0">@L["CustomVipName"]</h6>
+                    </Column>
+                    <Column ColumnSize="ColumnSize.Is3">
+                        <Check TValue="bool" @bind-Checked="Entity.BasedOnAmount">@L["BasedOnAmount"]</Check>
+                    </Column>
+                    <Column ColumnSize="ColumnSize.Is3">
+                        <Check TValue="bool" @bind-Checked="Entity.BasedOnCount">@L["BasedOnCount"]</Check>
+                    </Column>
+                </Row>
+
+                @foreach (var tier in Entity.Tiers)
+                {
+                    <Row Class="mb-2">
+                        <Column ColumnSize="ColumnSize.Is1">
+                            <Label Width="Width.Is100" TextAlignment="TextAlignment.End"
+                                   Margin="Margin.Is2.FromTop">
+                                @L[$"Enum:VipTier.{(int)tier.Tier}"]
+                            </Label>
+                        </Column>
+                        <Column ColumnSize="ColumnSize.Is10.Is5.OnDesktop">
+                            <Addons>
+                                <Addon AddonType="AddonType.Body">
+                                    <TextEdit @bind-Text="tier.TierName" MaxLength="VipTierConsts.MaxTierNameLength"></TextEdit>
+                                </Addon>
+                                <Addon AddonType="AddonType.End">
+                                    <AddonLabel Style="background-color: #f5f5f7">
+                                        @(tier.TierName?.Length ?? 0)/@(VipTierConsts.MaxTierNameLength)
+                                    </AddonLabel>
+                                </Addon>
+                            </Addons>
+                        </Column>
+                        <Column ColumnSize="ColumnSize.Is10.Is3.OnDesktop">
+                            <NumericEdit TValue="int" @bind-Value="tier.OrdersAmount"></NumericEdit>
+                        </Column>
+                        <Column ColumnSize="ColumnSize.Is10.Is3.OnDesktop">
+                            <NumericEdit TValue="int" @bind-Value="tier.OrdersCount"></NumericEdit>
+                        </Column>
+                    </Row>
+                }
+                <Div Class="text-end">
+                    <PikachuButton Class="pk-btn-primary" Loading="Loading" Clicked="UpdateAsync">
+                        @L["Update"]
+                    </PikachuButton>
+                </Div>
+            </CardBody>
+        }
+    </Card>
+</Div>

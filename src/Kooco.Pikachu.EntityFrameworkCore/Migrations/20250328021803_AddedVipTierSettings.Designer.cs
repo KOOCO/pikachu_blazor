@@ -4,6 +4,7 @@ using Kooco.Pikachu.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Volo.Abp.EntityFrameworkCore;
 
@@ -12,9 +13,11 @@ using Volo.Abp.EntityFrameworkCore;
 namespace Kooco.Pikachu.Migrations
 {
     [DbContext(typeof(PikachuDbContext))]
-    partial class PikachuDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250328021803_AddedVipTierSettings")]
+    partial class AddedVipTierSettings
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -2099,34 +2102,6 @@ namespace Kooco.Pikachu.Migrations
                         {
                             t.HasComment("");
                         });
-                });
-
-            modelBuilder.Entity("Kooco.Pikachu.Members.MemberTag", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid?>("TenantId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("TenantId");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("VipTierId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.HasIndex("VipTierId");
-
-                    b.ToTable("AppMemberTags", (string)null);
                 });
 
             modelBuilder.Entity("Kooco.Pikachu.OrderDeliveries.OrderDelivery", b =>
@@ -6807,23 +6782,6 @@ namespace Kooco.Pikachu.Migrations
                     b.Navigation("Item");
 
                     b.Navigation("SetItem");
-                });
-
-            modelBuilder.Entity("Kooco.Pikachu.Members.MemberTag", b =>
-                {
-                    b.HasOne("Volo.Abp.Identity.IdentityUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Kooco.Pikachu.TierManagement.VipTier", "VipTier")
-                        .WithMany()
-                        .HasForeignKey("VipTierId");
-
-                    b.Navigation("User");
-
-                    b.Navigation("VipTier");
                 });
 
             modelBuilder.Entity("Kooco.Pikachu.OrderDeliveries.OrderDelivery", b =>
