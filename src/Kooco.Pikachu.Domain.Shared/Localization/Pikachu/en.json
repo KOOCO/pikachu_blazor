@@ -1368,6 +1368,7 @@
     "BasedOnCount": "Based On Count",
     "SelectLogistics": "Select Logistics",
     "SelectDeliveryMethod": "Select Delivery Method",
-    "Return&Exchang": "Return & Exchang"
+    "Return&Exchange": "Return & Exchange",
+    "Filters": "Filters"
   }
 }
