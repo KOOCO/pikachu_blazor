@@ -1365,6 +1365,8 @@
     "Pikachu:VipTierCondition": "The field Vip Tier Condition is required.",
     "Pikachu:DuplicateTier": "Invalid Input - Duplicate Tiers Exist.",
     "BasedOnAmount": "Based On Amount",
-    "BasedOnCount": "Based On Count"
+    "BasedOnCount": "Based On Count",
+    "SelectLogistics": "Select Logistics",
+    "SelectDeliveryMethod": "Select Delivery Method"
   }
 }

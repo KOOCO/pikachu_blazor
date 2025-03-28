@@ -1420,7 +1420,9 @@
     "LinePointsRedemption": "折抵Line Points",
     "Days": "天",
     "Hours": "小時",
-    "Miniutes": "分鐘"
+    "Miniutes": "分鐘",
+    "SelectLogistics": "選擇物流商",
+    "SelectDeliveryMethod": "選擇物流方式"
 
   }
 }
