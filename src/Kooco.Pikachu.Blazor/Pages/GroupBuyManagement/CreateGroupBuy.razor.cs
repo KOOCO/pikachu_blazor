@@ -821,7 +821,7 @@ public partial class CreateGroupBuy
     private async Task ResetSelection()
     {
         cropButtonDisabled = true;
-
+        croppedImage = "";
         await LogoCropper.ResetSelection();
     }
     private async Task GetCroppedImage() {
