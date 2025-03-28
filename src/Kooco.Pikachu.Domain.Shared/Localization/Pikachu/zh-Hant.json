@@ -1086,8 +1086,8 @@
     "A4TripleModePickingList": "A4 三模式揀貨清單",
     "A4TripleModeB2S": "A4 三模式 B2S",
     "ThermalTransferB2S": "熱轉印 B2S",
-    "BorneByStore": "Borne By Store",
-    "BorneByCustomer": "Borne By Customer",
+    "BorneByStore": "商家承擔",
+    "BorneByCustomer": "顧客承擔",
     "SelectReverseLogisticShippingFee": "選擇逆向物流運費",
     "SelectShippingLabelFormSevenEleven": "選擇 7-11 運送標籤表單",
     "RoundedCornersWithoutFullWidth": "圓角無全寬",
@@ -1421,5 +1421,6 @@
     "Days": "天",
     "Hours": "小時",
     "Miniutes": "分鐘"
+
   }
 }
