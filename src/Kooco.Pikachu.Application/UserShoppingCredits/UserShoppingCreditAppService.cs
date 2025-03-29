@@ -1,4 +1,5 @@
-﻿using Kooco.Pikachu.Orders;
+﻿using Kooco.Pikachu.Emails;
+using Kooco.Pikachu.Orders;
 using Kooco.Pikachu.Permissions;
 using Kooco.Pikachu.ShoppingCredits;
 using Kooco.Pikachu.UserCumulativeCredits;
@@ -21,7 +22,7 @@ namespace Kooco.Pikachu.UserShoppingCredits;
 public class UserShoppingCreditAppService(UserShoppingCreditManager userShoppingCreditManager,
     IUserShoppingCreditRepository userShoppingCreditRepository, IUserCumulativeCreditAppService userCumulativeCreditAppService,
     IUserCumulativeCreditRepository userCumulativeCreditRepository, IDataFilter<IMultiTenant> _multiTenantFilter,
-    IOrderRepository orderRepository) : PikachuAppService, IUserShoppingCreditAppService
+    IOrderRepository orderRepository, IEmailAppService emailAppService) : PikachuAppService, IUserShoppingCreditAppService
 {
     [Authorize(PikachuPermissions.UserShoppingCredits.Create)]
     public async Task<UserShoppingCreditDto> CreateAsync(CreateUserShoppingCreditDto input)
@@ -55,6 +56,11 @@ public class UserShoppingCreditAppService(UserShoppingCreditManager userShopping
                 userCumulativeCredit.ChangeTotalDeductions(userCumulativeCredit.TotalDeductions + input.Amount);
             }
             await userCumulativeCreditRepository.UpdateAsync(userCumulativeCredit);
+        }
+
+        if (input.SendEmail)
+        {
+            await emailAppService.SendShoppingCreditGrantEmailAsync(input.UserId, input.Amount);
         }
 
         return ObjectMapper.Map<UserShoppingCredit, UserShoppingCreditDto>(userShoppingCredit);

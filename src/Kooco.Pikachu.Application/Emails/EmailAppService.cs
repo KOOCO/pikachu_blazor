@@ -17,13 +17,14 @@ using Volo.Abp.BackgroundJobs;
 using Volo.Abp.Data;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Emailing;
+using Volo.Abp.Identity;
 using Volo.Abp.Localization;
 
 namespace Kooco.Pikachu.Emails;
 
 public class EmailAppService(IOrderRepository orderRepository, IGroupBuyRepository groupBuyRepository,
     ITenantSettingsAppService tenantSettingsAppService, IEmailSender emailSender, IBackgroundJobManager backgroundJobManager,
-    IConfiguration configuration) : PikachuAppService, IEmailAppService
+    IConfiguration configuration, IdentityUserManager userManager) : PikachuAppService, IEmailAppService
 {
     public async Task SendLogisticsEmailAsync(Guid orderId, string? deliveryNo = "", DeliveryMethod? deliveryMethod = null)
     {
@@ -428,6 +429,35 @@ public class EmailAppService(IOrderRepository orderRepository, IGroupBuyReposito
             body = body.Replace("{{GroupBuyUrl}}", groupBuyUrl);
 
             await SendAsync(order.CustomerEmail, subject, body);
+        }
+    }
+
+    public async Task SendShoppingCreditGrantEmailAsync(Guid userId, decimal amount)
+    {
+        using (CultureHelper.Use(CultureInfo.GetCultureInfo("zh-Hant")))
+        {
+            var user = await userManager.GetByIdAsync(userId);
+            string subject = "購物金發放通知";
+
+            string body = File.ReadAllText("wwwroot/EmailTemplates/shopping_credit.html");
+
+            body = body.Replace("{{CustomerName}}", user.Name ?? user.UserName);
+            body = body.Replace("{{GrantAmount}}", amount.ToString("N2"));
+
+            var tenantSettings = await tenantSettingsAppService.FirstOrDefaultAsync();
+
+            string? tenantUrl = tenantSettings?.Tenant.GetProperty<string?>(Constant.TenantUrl);
+
+            body = body.Replace("{{LogoUrl}}", tenantSettings?.LogoUrl);
+            body = body.Replace("{{FacebookUrl}}", tenantSettings?.Facebook);
+            body = body.Replace("{{InstagramUrl}}", tenantSettings?.Instagram);
+            body = body.Replace("{{LineUrl}}", tenantSettings?.Line);
+
+            body = body.Replace("{{CurrentYear}}", DateTime.Today.ToString("yyyy"));
+            body = body.Replace("{{CompanyName}}", tenantSettings?.CompanyName);
+            body = body.Replace("{{TenantUrl}}", tenantUrl);
+
+            await SendAsync(user.Email, subject, body);
         }
     }
 
