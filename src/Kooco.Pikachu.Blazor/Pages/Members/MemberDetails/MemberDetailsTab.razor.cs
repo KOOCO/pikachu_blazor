@@ -1,5 +1,4 @@
 using Kooco.Pikachu.Members;
-using Kooco.Pikachu.Orders;
 using Kooco.Pikachu.UserAddresses;
 using Kooco.Pikachu.UserCumulativeFinancials;
 using Microsoft.AspNetCore.Components;
@@ -17,6 +16,9 @@ public partial class MemberDetailsTab
     public EventCallback<MemberDto> OnDelete { get; set; }
 
     [Parameter]
+    public EventCallback<MemberDto> OnBlacklistChange { get; set; }
+
+    [Parameter]
     public bool CanDeleteMember { get; set; }
 
     private UserCumulativeFinancialDto? CumulativeFinancials { get; set; }
@@ -25,6 +27,7 @@ public partial class MemberDetailsTab
     decimal RefundedAmount = 0;
 
     bool IsDeleting = false;
+    bool Blacklisting = false;
 
     private UserAddressDto? DefaultAddress { get; set; }
 
@@ -36,7 +39,7 @@ public partial class MemberDetailsTab
             {
                 DefaultAddress = await MemberAppService.GetDefaultAddressAsync(Member.Id);
                 CumulativeFinancials = await MemberAppService.GetMemberCumulativeFinancialsAsync(Member.Id);
-                (PaidAmount,UnpaidAmount,RefundedAmount)=await OrderAppService.GetOrderStatusAmountsAsync(Member.Id);
+                (PaidAmount, UnpaidAmount, RefundedAmount) = await OrderAppService.GetOrderStatusAmountsAsync(Member.Id);
                 StateHasChanged();
             }
         }
@@ -69,6 +72,25 @@ public partial class MemberDetailsTab
         {
             IsDeleting = false;
             StateHasChanged();
+        }
+    }
+
+    async Task SetBlacklistedAsync()
+    {
+        try
+        {
+            Blacklisting = true;
+            StateHasChanged();
+            await MemberAppService.SetBlacklistedAsync(Member.Id, !Member.IsBlacklisted);
+            await OnBlacklistChange.InvokeAsync(Member);
+        }
+        catch (Exception ex)
+        {
+            await HandleErrorAsync(ex);
+        }
+        finally
+        {
+            Blacklisting = false;
         }
     }
 }

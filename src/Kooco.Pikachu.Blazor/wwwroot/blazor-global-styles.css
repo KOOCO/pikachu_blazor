@@ -340,6 +340,9 @@
     --pk-primary-light: #6366F190;
     --pk-primary-dark: #4549ED;
     --pk-success-light: #F0FDF9;
+    --pk-warning: #F59E0B;
+    --pk-warning-light: #F59E0B90;
+    --pk-warning-dark: #D97706;
     --pk-bg-warning-light: #FFFAEB;
     --pk-danger: #F04438;
     --pk-danger-light: #F0443890;
@@ -472,6 +475,28 @@
 
     .pk-btn-outline-danger:disabled {
         color: var(--pk-danger-light);
+        background-color: transparent;
+    }
+
+.pk-btn-outline-warning,
+.table .pk-btn-outline-warning {
+    border-color: var(--pk-warning-light);
+    color: var(--pk-warning);
+    background: transparent;
+}
+
+    .pk-btn-outline-warning:hover {
+        background-color: var(--pk-warning);
+        color: var(--pk-light);
+    }
+
+    .pk-btn-outline-warning:active {
+        background-color: var(--pk-warning-dark);
+        color: var(--pk-light);
+    }
+
+    .pk-btn-outline-warning:disabled {
+        color: var(--pk-warning-light);
         background-color: transparent;
     }
 
@@ -661,6 +686,20 @@
         text-transform: uppercase;
         font-size: 10px;
         width: 100%;
+    }
+
+    .member-image .blacklisted {
+        position: absolute;
+        right: 0;
+        bottom: -4px;
+        background-color: var(--pk-danger);
+        text-transform: uppercase;
+        font-size: 14px;
+        color: white;
+        border-radius: 50%;
+        height: 20px;
+        width: 20px;
+        text-align: center;
     }
 
 .ant-picker,

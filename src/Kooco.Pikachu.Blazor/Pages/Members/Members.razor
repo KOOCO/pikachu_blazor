@@ -100,7 +100,13 @@
                         <Div Class="d-flex align-items-center gap-1">
                             <Div Class="member-image">
                                 <img class="img-fluid rounded-circle" src="https://e7.pngegg.com/pngimages/799/987/png-clipart-computer-icons-avatar-icon-design-avatar-heroes-computer-wallpaper-thumbnail.png" alt="Alternate Text" />
-                                @if (context.MemberTags.Contains(MemberConsts.MemberTags.New))
+                                @if (context.IsBlacklisted)
+                                {
+                                    <Span Class="blacklisted">
+                                        <Icon Name="IconName.Ban"></Icon>
+                                    </Span>
+                                }
+                                else if (context.IsNew)
                                 {
                                     <Badge>@L[MemberConsts.MemberTags.New]</Badge>
                                 }

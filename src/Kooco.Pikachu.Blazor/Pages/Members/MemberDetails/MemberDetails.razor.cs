@@ -20,22 +20,26 @@ public partial class MemberDetails
 
     protected override async Task OnInitializedAsync()
     {
-        try
-        {
-            await SetPermissionsAsync();
-            Member = await MemberAppService.GetAsync(Id);
-        }
-        catch (Exception ex)
-        {
-            await HandleErrorAsync(ex);
-        }
-        await base.OnInitializedAsync();
+        await SetPermissionsAsync();
+        await GetMemberAsync();
     }
 
     private async Task SetPermissionsAsync()
     {
         CanEditMember = await AuthorizationService.IsGrantedAnyAsync(PikachuPermissions.Members.Edit);
         CanDeleteMember = await AuthorizationService.IsGrantedAnyAsync(PikachuPermissions.Members.Delete);
+    }
+
+    private async Task GetMemberAsync()
+    {
+        try
+        {
+            Member = await MemberAppService.GetAsync(Id);
+        }
+        catch (Exception ex)
+        {
+            await HandleErrorAsync(ex);
+        }
     }
 
     private Task OnSelectedTabChanged(string name)

@@ -71,18 +71,32 @@
                 </Row>
             </CardBody>
         </Card>
-        @if (CanDeleteMember)
-        {
-            <Card>
-                <CardBody>
-                    <h4>@L["DataManagement"]</h4>
-                    <PikachuButton Class="pk-btn-outline-danger" Loading="IsDeleting" Clicked="DeleteAsync">
-                        @L["DeleteAccount"]
-                    </PikachuButton>
 
-                    <p class="mt-2">@L["DeleteMemberCautionMessage"]</p>
-                </CardBody>
-            </Card>
-        }
+        <Card>
+            <CardBody>
+                <h4>@L["DataManagement"]</h4>
+                <Row Class="py-3" HorizontalGutter="10">
+                    <Column ColumnSize="@(CanDeleteMember ? ColumnSize.Is12.Is6.OnDesktop : ColumnSize.Is12)">
+                        <PikachuCard Type="warning" Class="py-3" ImageHidden>
+                            <PikachuButton Class="pk-btn-outline-warning" Loading="Blacklisting" Clicked="SetBlacklistedAsync">
+                                @L[(Member.IsBlacklisted ? "RemoveFromBlacklist" : "AddToBlacklist")]
+                            </PikachuButton>
+                            <p class="mt-2">@L[(Member.IsBlacklisted ? "RemoveBlacklistMemberCautionMessage" : "BlacklistMemberCautionMessage")]</p>
+                        </PikachuCard>
+                    </Column>
+                    @if (CanDeleteMember)
+                    {
+                        <Column ColumnSize="ColumnSize.Is12.Is6.OnDesktop">
+                            <PikachuCard Type="danger" Class="py-3" ImageHidden>
+                                <PikachuButton Class="pk-btn-outline-danger" Loading="IsDeleting" Clicked="DeleteAsync">
+                                    @L["DeleteAccount"]
+                                </PikachuButton>
+                                <p class="mt-2">@L["DeleteMemberCautionMessage"]</p>
+                            </PikachuCard>
+                        </Column>
+                    }
+                </Row>
+            </CardBody>
+        </Card>
     </Column>
 </Row>

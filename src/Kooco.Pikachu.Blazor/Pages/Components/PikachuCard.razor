@@ -1,8 +1,11 @@
-﻿<div class="pk-card bg-@Type-light">
+﻿<div class="pk-card bg-@Type-light @Class">
     <Div Class="pk-card-inner">
-        <Div>
-            <img src="/images/icons/icon-@Type-light.png" />
-        </Div>
+        @if (!ImageHidden)
+        {
+            <Div>
+                <img src="/images/icons/icon-@Type-light.png" />
+            </Div>
+        }
         <Div>
             <h5 class="m-0">@Title</h5>
             <h3 class="fw-bolder m-0">
@@ -20,6 +23,7 @@
                 }
             </h3>
         </Div>
+        <Div>@ChildContent</Div>
     </Div>
 </div>
 @code {
@@ -36,8 +40,17 @@
     public int? Count { get; set; }
 
     [Parameter]
+    public bool ImageHidden { get; set; }
+
+    [Parameter]
+    public string Class { get; set; }
+
+    [Parameter]
     public bool AmountVisible { get; set; } = false;
 
     [Parameter]
     public bool CountVisible { get; set; } = false;
+
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
 }
