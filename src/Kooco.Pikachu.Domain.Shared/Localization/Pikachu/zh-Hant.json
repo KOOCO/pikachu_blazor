@@ -1444,6 +1444,21 @@
     "BestSellers": "熱賣商品",
     "ViewAll": "查看全部",
     "Sold": "已售出",
-    "Customer": "客戶名稱"
+    "Customer": "客戶名稱",
+    "Menu:TierManagement": "等級管理",
+    "CustomVipName": "自訂 VIP 名稱",
+    "TierManagement": "等級管理",
+    "Enum:VipTierCondition.1": "達成任一條件",
+    "Enum:VipTierCondition.2": "僅當達成所有條件",
+    "Enum:VipTier.1": "等級 1",
+    "Enum:VipTier.2": "等級 2",
+    "Enum:VipTier.3": "等級 3",
+    "Enum:VipTier.4": "等級 4",
+    "Enum:VipTier.5": "等級 5",
+    "Pikachu:VipTierConditionChecked": "至少需要選擇一個條件。",
+    "Pikachu:VipTierCondition": "VIP 等級條件欄位為必填。",
+    "Pikachu:DuplicateTier": "無效輸入 - 存在重複的等級。",
+    "BasedOnAmount": "基於金額",
+    "BasedOnCount": "基於次數"
   }
 }
