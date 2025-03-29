@@ -1376,6 +1376,9 @@
     "Return&Exchange": "Return & Exchange",
     "Filters": "Filters",
     "Active": "Active",
-    "Inactive": "Inactive"
+    "Inactive": "Inactive",
+    "MemberTags": "Member Tags",
+    "MemberStatus": "Member Status",
+    "VipTier": "Vip Tier"
   }
 }

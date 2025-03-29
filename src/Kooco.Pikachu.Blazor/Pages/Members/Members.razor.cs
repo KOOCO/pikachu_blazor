@@ -1,3 +1,4 @@
+using AngleSharp.Common;
 using Blazorise;
 using Blazorise.DataGrid;
 using Kooco.Pikachu.Members;
@@ -12,6 +13,7 @@ namespace Kooco.Pikachu.Blazor.Pages.Members;
 public partial class Members
 {
     private IReadOnlyList<MemberDto> MembersList { get; set; }
+    private IReadOnlyList<string> MemberTagOptions { get; set; }
     private int PageSize { get; } = LimitedResultRequestDto.DefaultMaxResultCount;
     private int CurrentPage { get; set; } = 1;
     private string CurrentSorting { get; set; }
@@ -27,6 +29,7 @@ public partial class Members
     public Members()
     {
         MembersList = [];
+        MemberTagOptions = [];
         Filters = new();
     }
 
@@ -34,6 +37,22 @@ public partial class Members
     {
         await GetMembersAsync();
         await base.OnInitializedAsync();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try
+            {
+                var tierNameOptions = await VipTierSettingAppService.GetVipTierNamesAsync();
+                MemberTagOptions = [.. tierNameOptions.Concat(MemberConsts.MemberTags.Names)];
+            }
+            catch (Exception ex)
+            {
+                await HandleErrorAsync(ex);
+            }
+        }
     }
 
     private async Task GetMembersAsync()
@@ -47,7 +66,8 @@ public partial class Members
                     SkipCount = (CurrentPage - 1) * PageSize,
                     Sorting = CurrentSorting,
                     Filter = Filters.Filter,
-                    MemberType = Filters.MemberType
+                    MemberType = Filters.MemberType,
+                    SelectedMemberTags = Filters.SelectedMemberTags
                 }
             );
 

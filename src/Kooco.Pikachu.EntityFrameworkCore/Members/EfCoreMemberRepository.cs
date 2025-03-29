@@ -42,15 +42,15 @@ public class EfCoreMemberRepository(IDbContextProvider<PikachuDbContext> pikachu
         };
     }
 
-    public async Task<long> GetCountAsync(string? filter = null, string? memberType = null)
+    public async Task<long> GetCountAsync(string? filter = null, string? memberType = null, IEnumerable<string>? selectedMemberTags = null)
     {
         var queryable = await GetFilteredQueryableAsync(filter, memberType);
         return await queryable.LongCountAsync();
     }
 
-    public async Task<List<MemberModel>> GetListAsync(int skipCount, int maxResultCount, string sorting, string? filter = null, string? memberType = null)
+    public async Task<List<MemberModel>> GetListAsync(int skipCount, int maxResultCount, string sorting, string? filter = null, string? memberType = null, IEnumerable<string>? selectedMemberTags = null)
     {
-        var query = await GetFilteredQueryableAsync(filter, memberType);
+        var query = await GetFilteredQueryableAsync(filter, memberType, selectedMemberTags);
         var members = await query
                         .OrderBy(sorting)
                         .Skip(skipCount)
@@ -60,8 +60,9 @@ public class EfCoreMemberRepository(IDbContextProvider<PikachuDbContext> pikachu
         return members;
     }
 
-    private async Task<IQueryable<MemberModel>> GetFilteredQueryableAsync(string? filter, string? memberType)
+    private async Task<IQueryable<MemberModel>> GetFilteredQueryableAsync(string? filter, string? memberType, IEnumerable<string>? selectedMemberTags = null)
     {
+        selectedMemberTags ??= [];
         var dbContext = await GetPikachuDbContextAsync();
         var queryable = dbContext.Users
                     .Select(user => new MemberModel
@@ -78,8 +79,8 @@ public class EfCoreMemberRepository(IDbContextProvider<PikachuDbContext> pikachu
                     })
                     .WhereIf(!string.IsNullOrWhiteSpace(filter), member => member.MemberTags.Contains(filter) || member.UserName.Contains(filter)
                     || member.PhoneNumber.Contains(filter) || member.Email.Contains(filter))
-                    .WhereIf(memberType == MemberConsts.NewMembers, member => member.MemberTags.Contains(MemberConsts.MemberTags.New))
-                    .WhereIf(memberType == MemberConsts.ExistingMembers, member => member.MemberTags.Contains(MemberConsts.MemberTags.Existing));
+                    .WhereIf(selectedMemberTags.Any(), member => selectedMemberTags.Any(tier => member.MemberTags.Contains(tier)))
+                    .WhereIf(!string.IsNullOrWhiteSpace(memberType), member => member.MemberTags.Contains(memberType));
 
         return queryable;
     }

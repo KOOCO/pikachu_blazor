@@ -1,11 +1,10 @@
-﻿namespace Kooco.Pikachu.Members;
+﻿using System.Collections.Generic;
+using System.Runtime.CompilerServices;
+
+namespace Kooco.Pikachu.Members;
 
 public static class MemberConsts
 {
-    public const string All = "All";
-    public const string NewMembers = "NewMembers";
-    public const string ExistingMembers = "ExistingMembers";
-
     public const string Role = "MEMBER";
 
     public const string MembersManagement = "MembersManagement";
@@ -40,5 +39,12 @@ public static class MemberConsts
         public const string New = "New";
         public const string Existing = "Existing";
         public const string Blacklisted = "Blacklisted";
+
+        public static readonly List<string> Names =
+            [
+                New,
+                Existing,
+                Blacklisted
+            ];
     }
 }

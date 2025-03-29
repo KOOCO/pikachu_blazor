@@ -4,9 +4,11 @@
 @using Kooco.Pikachu.Localization
 @using Kooco.Pikachu.Members
 @using Kooco.Pikachu.Permissions
+@using Kooco.Pikachu.TierManagement
 @using Microsoft.Extensions.Localization
 @inherits PikachuComponentBase
 @inject IMemberAppService MemberAppService
+@inject IVipTierSettingAppService VipTierSettingAppService
 @inject NavigationManager NavigationManager
 @inject ExcelDownloadHelper ExcelDownloadHelper
 
@@ -52,11 +54,34 @@
             <Row Class="mt-2">
                 <Column ColumnSize="ColumnSize.Is3">
                     <Label>@L["MemberType"]</Label>
-                    <Select TValue="string" @bind-SelectedValue="@Filters.MemberType" Size="Size.Small">
-                        <SelectItem Value="@(MemberConsts.All)">@L[MemberConsts.All]</SelectItem>
-                        <SelectItem Value="@(MemberConsts.NewMembers)">@L[MemberConsts.NewMembers]</SelectItem>
-                        <SelectItem Value="@(MemberConsts.ExistingMembers)">@L[MemberConsts.ExistingMembers]</SelectItem>
-                    </Select>
+                    <AntDesign.Select @bind-Value="@Filters.MemberType"
+                                      AllowClear
+                                      TItem="string"
+                                      TItemValue="string">
+                        <SelectOptions>
+                            @foreach (var tagName in MemberConsts.MemberTags.Names)
+                            {
+                                <AntDesign.SelectOption TItemValue="string" TItem="string" Value=@tagName Label=@L[tagName] />
+                            }
+                        </SelectOptions>
+                    </AntDesign.Select>
+                </Column>
+                <Column ColumnSize="ColumnSize.Is3">
+                    <Label>@L["MemberTags"]</Label>
+                    <AntDesign.Select Mode="AntDesign.SelectMode.Multiple"
+                                      @bind-Values="@Filters.SelectedMemberTags"
+                                      MaxTagCount="AntDesign.Select.ResponsiveTag.Responsive"
+                                      HideSelected
+                                      AllowClear
+                                      TItem="string"
+                                      TItemValue="string">
+                        <SelectOptions>
+                            @foreach (var item in MemberTagOptions)
+                            {
+                                <AntDesign.SelectOption TItemValue="string" TItem="string" Value=@item Label=@item />
+                            }
+                        </SelectOptions>
+                    </AntDesign.Select>
                 </Column>
                 <Column ColumnSize="ColumnSize.Is3">
                     <Div Class="d-flex align-items-end gap-1 h-100">
@@ -121,8 +146,24 @@
                     </DisplayTemplate>
                 </DataGridColumn>
                 <DataGridColumn TItem="MemberDto"
-                                Field="@nameof(MemberDto.PhoneNumber)"
-                                Caption="@L["Phone"]">
+                                Caption="@L["MemberStatus"]"
+                                TextAlignment="TextAlignment.Center">
+                    <DisplayTemplate>
+                        @if (context.IsBlacklisted || context.IsNew)
+                        {
+                            <MemberTagComponent Tag="@(context.IsBlacklisted ? MemberConsts.MemberTags.Blacklisted : MemberConsts.MemberTags.New)" />
+                        }
+                    </DisplayTemplate>
+                </DataGridColumn>
+                <DataGridColumn TItem="MemberDto"
+                                Caption="@L["VipTier"]"
+                                TextAlignment="TextAlignment.Center">
+                    <DisplayTemplate>
+                        @foreach (var tag in context.MemberTags.Where(tag => !MemberConsts.MemberTags.Names.Contains(tag)))
+                        {
+                            <MemberTagComponent Tag="@tag" Margin />
+                        }
+                    </DisplayTemplate>
                 </DataGridColumn>
                 <DataGridColumn TItem="MemberDto"
                                 Field="@nameof(MemberDto.TotalOrders)"

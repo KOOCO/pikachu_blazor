@@ -1459,6 +1459,9 @@
     "Pikachu:VipTierCondition": "VIP 等級條件欄位為必填。",
     "Pikachu:DuplicateTier": "無效輸入 - 存在重複的等級。",
     "BasedOnAmount": "基於金額",
-    "BasedOnCount": "基於次數"
+    "BasedOnCount": "基於次數",
+    "MemberTags": "會員標籤",
+    "MemberStatus": "會員狀態",
+    "VipTier": "VIP 等級"
   }
 }

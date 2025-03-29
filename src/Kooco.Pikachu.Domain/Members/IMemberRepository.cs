@@ -12,8 +12,8 @@ public interface IMemberRepository : IIdentityUserRepository, IRepository<Identi
 {
     Task<MemberModel> GetMemberAsync(Guid memberId);
 
-    Task<long> GetCountAsync(string? filter = null, string? memberType = null);
-    Task<List<MemberModel>> GetListAsync(int skipCount, int maxResultCount, string sorting, string? filter = null, string? memberType = null);
+    Task<long> GetCountAsync(string? filter = null, string? memberType = null, IEnumerable<string>? selectedMemberTags = null);
+    Task<List<MemberModel>> GetListAsync(int skipCount, int maxResultCount, string sorting, string? filter = null, string? memberType = null, IEnumerable<string>? selectedMemberTags = null);
 
     Task<long> CountOrdersAsync(Guid memberId);
 

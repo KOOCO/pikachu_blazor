@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Volo.Abp;
-using Volo.Abp.Domain.Repositories;
 
 namespace Kooco.Pikachu.TierManagement;
 
@@ -53,5 +52,16 @@ public class VipTierSettingAppService : PikachuAppService, IVipTierSettingAppSer
         }
 
         return ObjectMapper.Map<VipTierSetting, VipTierSettingDto>(vipTierSetting);
+    }
+
+    public async Task<List<string>> GetVipTierNamesAsync()
+    {
+        var vipTierSetting = await _vipTierSettingManager.FirstOrDefaultAsync();
+        return [.. vipTierSetting?.Tiers?
+            .Where(tier => !string.IsNullOrWhiteSpace(tier.TierName))
+            .OrderBy(tier => tier.TierName)
+            .Select(tier => tier.TierName) 
+            ?? []
+            ];
     }
 }
