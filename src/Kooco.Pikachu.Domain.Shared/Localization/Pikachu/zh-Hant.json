@@ -743,8 +743,17 @@
     "Pikachu:TenantSettingsAlreadyExist": "租戶設定已存在",
     "Permission:TenantSettings": "租戶設定",
     "Menu:TenantSettings": "租戶設定",
+    "Menu:TenantWallet": "租戶錢包",
+    "Tenant": "租戶",
     "TenantId": "租戶編號",
     "TenantSettings": "租戶設定",
+    "WalletId": "錢包編號",
+    "Wallet:WalletBalance": "錢包餘額",
+    "Wallet:AwaitingReviewCount": "待審核數",
+    "Wallet:ManageWallet": "管理錢包",
+    "Wallet:AmountsAwaitingReview": "待審核款項",
+    "Wallet:WalletDetailsRecord": "錢包詳細記錄",
+
     "WebpageTitle": "網頁標題",
     "CompanyName": "公司名稱",
     "BusinessRegistrationNumber": "統一編號",
@@ -1462,6 +1471,8 @@
     "BasedOnCount": "基於次數",
     "MemberTags": "會員標籤",
     "MemberStatus": "會員狀態",
-    "VipTier": "VIP 等級"
+    "VipTier": "VIP 等級",
+
+    "CreationTime": "創建時間"
   }
 }

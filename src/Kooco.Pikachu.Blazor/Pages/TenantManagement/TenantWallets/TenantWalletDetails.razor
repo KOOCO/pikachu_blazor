@@ -1,0 +1,34 @@
+﻿@page "/TenantManagement/TenantWalletDetails/{PreviousPage}/{Id:guid}"
+@attribute [Authorize(PikachuPermissions.TenantWallet.Default)]
+@inherits FormComponentBase
+
+<Div Class="rounded-cards">
+    <PikachuButton Clicked="OnNavigateBack">
+        <Icon Name="IconName.ArrowLeft" Class="me-1"></Icon>
+        @L["Tenant"]
+    </PikachuButton>
+    <WalletDetailsHeader TenantWallet="TenantWallet" CanEditTenantWallet="CanEdit" />
+    @if (TenantWallet is not null)
+    {
+        <Tabs RenderMode="TabsRenderMode.LazyLoad"
+              SelectedTabChanged="@OnSelectedTab"
+              SelectedTab="@SelectedTab">
+            <Items>
+                <Tab Name="WalletManageWallet">@L["Wallet:ManageWallet"]</Tab>
+                <Tab Name="WalletAmountsAwaitingReview">@L["Wallet:AmountsAwaitingReview"]</Tab>
+                <Tab Name="WalletWalletDetailsRecord">@L["Wallet:WalletDetailsRecord"]</Tab>
+            </Items>
+            <Content>
+                <TabPanel Name="WalletManageWallet">
+                    <WalletManageWallet />
+                </TabPanel>
+                <TabPanel Name="WalletAmountsAwaitingReview">
+                    <WalletAmountsAwaitingReview />
+                </TabPanel>
+                <TabPanel Name="WalletWalletDetailsRecord">
+                    <WalletWalletDetailsRecord />
+                </TabPanel>
+            </Content>
+        </Tabs>
+    }
+</Div>

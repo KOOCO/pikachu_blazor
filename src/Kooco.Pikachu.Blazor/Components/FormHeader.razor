@@ -1,0 +1,20 @@
+﻿<Card>
+    <CardHeader TextSize="TextSize.Heading4">
+        <PageHeader Title="@Title" />
+    </CardHeader>
+    <CardBody>
+        <Row Class="mt-2">
+            <Column ColumnSize="ColumnSize.Is12">
+                <Div class="input-group">
+                    <TextEdit placeholder="Search..."
+                              TextChanged="@Filter"
+                              KeyPress="OnKeyboardAsync" />
+                    <Button Color="Color.Primary"
+                            Clicked="@Search">
+                        <Icon Name="IconName.Search" />
+                    </Button>
+                </Div>
+            </Column>
+        </Row>
+    </CardBody>
+</Card>

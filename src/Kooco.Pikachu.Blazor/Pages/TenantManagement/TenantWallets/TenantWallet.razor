@@ -1,0 +1,49 @@
+﻿@page "/TenantManagement/TenantWallet"
+@attribute [Authorize(PikachuPermissions.TenantWallet.Default)]
+@inherits FormManagement<FormEntranceBase, TenantWalletResultDto>
+
+<LoadingIndicator @ref="Loading" FullScreen FadeIn />
+<FormHeader Title="@L["Menu:TenantWallet"]"
+            Search="OnSearchAsync"
+            Filter="OnFilterChanged">
+</FormHeader>
+<Card>
+    <CardBody>
+        <DataGrid PageSize="PageSize"
+                  TotalItems="TotalCount"
+                  CurrentPage="CurrentPage"
+                  ReadData="OnDataGridReadAsync"
+                  RowClicked="OnRowClick"
+                  TItem="TenantWalletResultDto"
+                  Data="Entities"
+                  ShowPager
+                  Responsive
+                  Narrow
+                  Striped
+                  Hoverable>
+            <DataGridColumns>
+                <DataGridCommandColumn TItem="TenantWalletResultDto" />
+                <DataGridColumn TItem="TenantWalletResultDto"
+                                Field="@nameof(TenantWalletResultDto.Id)"
+                                Caption="@L["WalletId"]">
+                </DataGridColumn>
+                <DataGridColumn TItem="TenantWalletResultDto"
+                                Field="@nameof(TenantWalletResultDto.TenantName)"
+                                Caption="@L["TenantName"]">
+                </DataGridColumn>       
+                <DataGridColumn TItem="TenantWalletResultDto"
+                                Field="@nameof(TenantWalletResultDto.Balance)"
+                                Caption="@L["Wallet:WalletBalance"]">
+                </DataGridColumn>
+                <DataGridColumn TItem="TenantWalletResultDto"
+                                Field="@nameof(TenantWalletResultDto.AwaitingReviewCount)"
+                                Caption="@L["Wallet:AwaitingReviewCount"]">
+                </DataGridColumn>
+                <DataGridColumn TItem="TenantWalletResultDto"
+                                Field="@nameof(TenantWalletResultDto.CreationTime)"
+                                Caption="@L["CreationTime"]">
+                </DataGridColumn>
+            </DataGridColumns>
+        </DataGrid>
+    </CardBody>
+</Card>

@@ -706,8 +706,17 @@
     "Pikachu:TenantSettingsAlreadyExist": "Tenant Settings for the current tenant already exist.",
     "Permission:TenantSettings": "Tenant Settings",
     "Menu:TenantSettings": "Tenant Settings",
+    "Menu:TenantWallet": "Tenant Wallet",
+    "Tenant": "Tenant",
     "TenantId": "Tenant Id",
     "TenantSettings": "Tenant Settings",
+    "WalletId": "Wallet Id",
+    "Wallet:WalletBalance": "Wallet Balance",
+    "Wallet:AwaitingReviewCount": "Awaiting Review Count",
+    "Wallet:ManageWallet": "Manage Wallet",
+    "Wallet:AmountsAwaitingReview": "Amounts Awaiting Review",
+    "Wallet:WalletDetailsRecord": "Wallet Details Record",
+
     "WebpageTitle": "Webpage Title",
     "CompanyName": "Company Name",
     "BusinessRegistrationNumber": "Business Registration Number",
@@ -1379,6 +1388,8 @@
     "Inactive": "Inactive",
     "MemberTags": "Member Tags",
     "MemberStatus": "Member Status",
-    "VipTier": "Vip Tier"
+    "VipTier": "Vip Tier",
+
+    "CreationTime": "創建時間"
   }
 }

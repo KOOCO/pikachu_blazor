@@ -141,4 +141,9 @@
   <ItemGroup>
     <Folder Include="wwwroot\libs\DinkToPdf\" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="Kooco.Pikachu.Blazor" />
+  </ItemGroup>
+  
 </Project>

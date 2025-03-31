@@ -1,0 +1,18 @@
+﻿@inherits FormComponentBase
+
+<Card>
+    <CardBody>
+        <Div Class="text-dark d-flex align-items-start justify-content-between">
+            <Div>
+                <Heading Size="HeadingSize.Is4"
+                         Class="m-0 mb-1">
+                    @TenantWallet.TenantName
+                </Heading>
+                @L["WalletId"]:
+                <Span Class="bg-lightgrey rounded-3" Style="padding: 1px 10px;">
+                    <Copy Text="@TenantWallet.Id" ShouldDisplayIcon="false"></Copy>
+                </Span>
+            </Div>
+        </Div>
+    </CardBody>
+</Card>

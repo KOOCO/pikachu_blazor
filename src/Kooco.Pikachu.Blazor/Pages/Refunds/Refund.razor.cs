@@ -87,7 +87,7 @@ public partial class Refund
     {
         try
         {
-            
+            var jj = L["Doyouapprovetherefund"];
             var confirmed = await _uiMessageService.Confirm(L["Doyouapprovetherefund"]);
             if (!confirmed)
             {
