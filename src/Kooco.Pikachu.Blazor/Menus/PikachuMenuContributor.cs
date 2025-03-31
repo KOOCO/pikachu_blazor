@@ -9,6 +9,7 @@ using Volo.Abp.Authorization.Permissions;
 using Volo.Abp.Identity.Blazor;
 using Volo.Abp.SettingManagement;
 using Volo.Abp.SettingManagement.Blazor.Menus;
+using Volo.Abp.TenantManagement;
 using Volo.Abp.TenantManagement.Blazor.Navigation;
 using Volo.Abp.UI.Navigation;
 
@@ -16,13 +17,13 @@ namespace Kooco.Pikachu.Blazor.Menus;
 
 public class PikachuMenuContributor : IMenuContributor
 {
-  
+
     public async Task ConfigureMenuAsync(MenuConfigurationContext context)
     {
         if (context.Menu.Name == StandardMenus.Main)
         {
             await ConfigureMainMenuAsync(context);
-          
+
         }
 
     }
@@ -61,7 +62,8 @@ public class PikachuMenuContributor : IMenuContributor
             icon: "fas fa-list",
             url: "/GroupBuyManagement/GroupBuyList"
             ));
-        };
+        }
+        ;
         if (await context.IsGrantedAsync(PikachuPermissions.GroupBuyReport))
         {
             groupMangment.AddItem(new ApplicationMenuItem(
@@ -154,7 +156,7 @@ public class PikachuMenuContributor : IMenuContributor
             requiredPermissionName: PikachuPermissions.Orders.Default
             )
             );
-       
+
         string displayName = l["Menu:ReturnAndExchangeOrder"];
         //if (returnExchangeOrderCount > 0)
         //{
@@ -185,7 +187,7 @@ public class PikachuMenuContributor : IMenuContributor
          displayName: l["RefundsList"],
          url: "/Refund",
          requiredPermissionName: PikachuPermissions.Orders.Default);
-        
+
         using (var scope = context.ServiceProvider.CreateScope())
         {
             var refundService = scope.ServiceProvider.GetRequiredService<RefundAppService>();
@@ -197,13 +199,13 @@ public class PikachuMenuContributor : IMenuContributor
             refundmenu.CustomData["data-notification-count"] = returnExchangeOrderCount.ToString();
         }
         orderMangment.AddItem(refundmenu);
-       orderMangment.AddItem(new ApplicationMenuItem(
-        name: "EnterpricePurchase",
-        icon: "fas fa-stamp",
-        displayName: l["EnterpricePurchase"],
-        url: "/enterprice-purchase",
-        requiredPermissionName: PikachuPermissions.Orders.Default)
-        );
+        orderMangment.AddItem(new ApplicationMenuItem(
+         name: "EnterpricePurchase",
+         icon: "fas fa-stamp",
+         displayName: l["EnterpricePurchase"],
+         url: "/enterprice-purchase",
+         requiredPermissionName: PikachuPermissions.Orders.Default)
+         );
         var membersMenu = new ApplicationMenuItem(
             PikachuMenus.Members,
             displayName: l["Menu:Members"],
@@ -444,6 +446,15 @@ public class PikachuMenuContributor : IMenuContributor
                     displayName: l["Menu:TenantSettings"],
                     url: "/Tenant-Settings",
                     requiredPermissionName: PikachuPermissions.TenantSettings.Default
+                )
+            );
+
+            tenantManagementMenu?.AddItem(
+                new ApplicationMenuItem(
+                    name: PikachuMenus.TenantWallets,
+                    displayName: l["Menu:TenantWallet"],
+                    url: "/TenantManagement/TenantWallet",
+                    requiredPermissionName: PikachuPermissions.TenantWallet.Default
                 )
             );
         }

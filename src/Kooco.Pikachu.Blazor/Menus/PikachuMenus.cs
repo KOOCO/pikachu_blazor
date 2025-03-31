@@ -25,6 +25,7 @@ public class PikachuMenus
     public const string TierManagement = Prefix + ".TierManagement";
 
     public const string TenantSettings = Prefix + ".TenantSettings";
+    public const string TenantWallets = Prefix + ".TenantWallets";
 
     public const string WebsiteManagement = Prefix + ".WebsiteManagement";
     public const string WebsiteSettings = WebsiteManagement + ".WebsiteSettings";

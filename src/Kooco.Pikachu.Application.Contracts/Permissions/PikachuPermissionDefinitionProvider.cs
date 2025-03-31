@@ -2,6 +2,7 @@ using Kooco.Pikachu.Localization;
 using Volo.Abp.Authorization.Permissions;
 using Volo.Abp.Localization;
 using Volo.Abp.MultiTenancy;
+using Volo.Abp.TenantManagement;
 
 namespace Kooco.Pikachu.Permissions;
 
@@ -111,6 +112,10 @@ public class PikachuPermissionDefinitionProvider : PermissionDefinitionProvider
 
         var tenantSettingsPermissions = myGroup.AddPermission(PikachuPermissions.TenantSettings.Default, L("Permission:TenantSettings"), MultiTenancySides.Tenant);
         tenantSettingsPermissions.AddChild(PikachuPermissions.TenantSettings.Edit, L("Permission:Edit"), MultiTenancySides.Tenant);
+
+        var tenantManagementGroup = context.GetGroup(TenantManagementPermissions.GroupName);
+        var tenantWalletPermissions = tenantManagementGroup.AddPermission(PikachuPermissions.TenantWallet.Default, L("Menu:TenantWallet"), MultiTenancySides.Host);
+        tenantWalletPermissions.AddChild(PikachuPermissions.TenantWallet.Edit, L("Permission:Edit"), MultiTenancySides.Host);
 
         var websiteManagementPermissions = context.AddGroup(PikachuPermissions.WebsiteManagement.Default, L("Permission:WebsiteManagement"));
         websiteManagementPermissions.AddPermission(PikachuPermissions.WebsiteManagement.Default, L("Permission:WebsiteManagement"));

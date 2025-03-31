@@ -1,3 +1,5 @@
+using Volo.Abp.TenantManagement;
+
 namespace Kooco.Pikachu.Permissions;
 
 public static class PikachuPermissions
@@ -141,6 +143,12 @@ public static class PikachuPermissions
     public static class TenantSettings
     {
         public const string Default = ".TenantSettings";
+        public const string Edit = Default + ".Edit";
+    }
+
+    public static class TenantWallet
+    {
+        public const string Default = TenantManagementPermissions.GroupName + ".TenantWallets";
         public const string Edit = Default + ".Edit";
     }
 
