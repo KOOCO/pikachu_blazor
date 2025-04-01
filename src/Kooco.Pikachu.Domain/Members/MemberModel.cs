@@ -18,4 +18,5 @@ public class MemberModel
     public string? GoogleId { get; set; }
     public string? FacebookId { get; set; }
     public List<string> MemberTags { get; set; }
+    public bool IsMember { get; set; }
 }
