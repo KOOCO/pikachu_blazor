@@ -55,9 +55,9 @@
                 <Column ColumnSize="ColumnSize.Is3">
                     <Label>@L["MemberType"]</Label>
                     <AntDesign.Select @bind-Value="@Filters.MemberType"
-                                      AllowClear
-                                      TItem="string"
-                                      TItemValue="string">
+                    AllowClear
+                    TItem="string"
+                    TItemValue="string">
                         <SelectOptions>
                             @foreach (var tagName in MemberConsts.MemberTags.Names)
                             {
@@ -69,12 +69,12 @@
                 <Column ColumnSize="ColumnSize.Is3">
                     <Label>@L["MemberTags"]</Label>
                     <AntDesign.Select Mode="AntDesign.SelectMode.Multiple"
-                                      @bind-Values="@Filters.SelectedMemberTags"
-                                      MaxTagCount="AntDesign.Select.ResponsiveTag.Responsive"
-                                      HideSelected
-                                      AllowClear
-                                      TItem="string"
-                                      TItemValue="string">
+                    @bind-Values="@Filters.SelectedMemberTags"
+                    MaxTagCount="AntDesign.Select.ResponsiveTag.Responsive"
+                    HideSelected
+                    AllowClear
+                    TItem="string"
+                    TItemValue="string">
                         <SelectOptions>
                             @foreach (var item in MemberTagOptions)
                             {
@@ -102,25 +102,25 @@
 <Card>
     <CardBody>
         <DataGrid TItem="MemberDto"
-                  Data="MembersList"
-                  ReadData="OnDataGridReadAsync"
-                  TotalItems="TotalCount"
-                  ShowPager="true"
-                  PageSize="PageSize"
-                  CurrentPage="CurrentPage"
-                  Hoverable
-                  Narrow
-                  Responsive
-                  @bind-SelectedRow="@SelectedMember"
-                  SelectionMode="DataGridSelectionMode.Multiple"
-                  @bind-SelectedRows="SelectedMembers"
-                  RowSelectable="RowSelectableHandler">
+        Data="MembersList"
+        ReadData="OnDataGridReadAsync"
+        TotalItems="TotalCount"
+        ShowPager="true"
+        PageSize="PageSize"
+        CurrentPage="CurrentPage"
+        Hoverable
+        Narrow
+        Responsive
+        @bind-SelectedRow="@SelectedMember"
+        SelectionMode="DataGridSelectionMode.Multiple"
+        @bind-SelectedRows="SelectedMembers"
+        RowSelectable="RowSelectableHandler">
             <DataGridColumns>
                 <DataGridMultiSelectColumn TItem="MemberDto" Width="30px"></DataGridMultiSelectColumn>
                 <DataGridCommandColumn TItem="MemberDto" />
                 <DataGridColumn TItem="MemberDto"
-                                Field="@nameof(MemberDto.UserName)"
-                                Caption="@L["Name"]">
+                Field="@nameof(MemberDto.Name)"
+                Caption="@L["Name"]">
                     <DisplayTemplate>
                         <Div Class="d-flex align-items-center gap-1">
                             <Div Class="member-image">
@@ -138,11 +138,32 @@
                             </Div>
                             <Div>
                                 <Div>
-                                    <Button Class="btn-link hyperlink fs-large" Clicked="() => EditMember(context)">@context.UserName</Button>
+                                    <Button Class="btn-link hyperlink fs-large" Clicked="() => EditMember(context)">@context.Name</Button>
                                 </Div>
                                 <Span>@context.Email</Span>
                             </Div>
                         </Div>
+                    </DisplayTemplate>
+                </DataGridColumn>
+                <DataGridColumn TItem="MemberDto"
+                Caption="@L["MembershipType"]">
+                    <DisplayTemplate>
+                        @if (!context.LineId.IsNullOrEmpty())
+                        {
+                            <Span>Line</Span>
+                        } 
+                        else if (!context.GoogleId.IsNullOrEmpty())
+                        {
+                            <Span>Google</Span>
+                        }
+                        else if (!context.FacebookId.IsNullOrEmpty())
+                        {
+                            <Span>Facebook</Span>
+                        }
+                        else
+                        {
+                            <Span>Email</Span>
+                        }
                     </DisplayTemplate>
                 </DataGridColumn>
                 <DataGridColumn TItem="MemberDto"
