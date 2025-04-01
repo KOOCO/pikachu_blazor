@@ -14,7 +14,6 @@ public class MemberModel
     public DateTime? Birthday { get; set; }
     public int TotalOrders { get; set; }
     public int TotalSpent { get; set; }
-    public ExtraPropertyDictionary ExtraProperties { get; set; } = [];
     public string? LineId { get; set; }
     public string? GoogleId { get; set; }
     public string? FacebookId { get; set; }

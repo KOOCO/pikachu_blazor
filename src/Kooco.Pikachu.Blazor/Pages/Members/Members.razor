@@ -146,23 +146,23 @@
                     </DisplayTemplate>
                 </DataGridColumn>
                 <DataGridColumn TItem="MemberDto"
-                Caption="@L["MembershipType"]">
+                Caption="@L["LoginType"]">
                     <DisplayTemplate>
                         @if (!context.LineId.IsNullOrEmpty())
                         {
-                            <Span>Line</Span>
+                            <PikachuBadge Class="pk-badge-success">Line</PikachuBadge>
                         } 
                         else if (!context.GoogleId.IsNullOrEmpty())
                         {
-                            <Span>Google</Span>
+                            <PikachuBadge Class="pk-badge-danger">Google</PikachuBadge>
                         }
                         else if (!context.FacebookId.IsNullOrEmpty())
                         {
-                            <Span>Facebook</Span>
+                            <PikachuBadge Class="pk-badge-primary">Facebook</PikachuBadge>
                         }
                         else
                         {
-                            <Span>Email</Span>
+                            <PikachuBadge Class="pk-badge-warning">Email</PikachuBadge>
                         }
                     </DisplayTemplate>
                 </DataGridColumn>
