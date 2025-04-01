@@ -55,14 +55,16 @@ using Kooco.Pikachu.OrderHistories;
 using Kooco.Pikachu.OrderTransactions;
 using Kooco.Pikachu.TierManagement;
 using Kooco.Pikachu.Members;
+using System.Reflection;
+using Kooco.Pikachu.TenantWallets.Entities;
 
 namespace Kooco.Pikachu.EntityFrameworkCore;
 
 [ReplaceDbContext(typeof(IIdentityDbContext))]
 [ReplaceDbContext(typeof(ITenantManagementDbContext))]
 [ConnectionStringName("Default")]
-public class PikachuDbContext :
-    AbpDbContext<PikachuDbContext>,
+public class PikachuDbContext(DbContextOptions<PikachuDbContext> options) :
+    AbpDbContext<PikachuDbContext>(options),
     IIdentityDbContext,
     ITenantManagementDbContext
 {
@@ -165,11 +167,9 @@ public class PikachuDbContext :
     public DbSet<VipTierSetting> VipTierSettings { get; set; }
     public DbSet<MemberTag> MemberTags { get; set; }
 
-    public PikachuDbContext(DbContextOptions<PikachuDbContext> options)
-        : base(options)
-    {
-
-    }
+    // TenantWallets
+    public DbSet<TenantWallet> TenantWallets { get; set; }
+    public DbSet<TenantWalletTransaction> TenantWalletTransactions { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -182,6 +182,7 @@ public class PikachuDbContext :
         builder.ConfigureOpenIddict();
         builder.ConfigureFeatureManagement();
         builder.ConfigureTenantManagement();
+        builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
 
         builder.Entity<Item>(b =>
         {
@@ -707,4 +708,3 @@ public class PikachuDbContext :
         });
     }
 }
-
