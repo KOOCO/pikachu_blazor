@@ -89,19 +89,19 @@
                         <Div Margin="Margin.Is1.FromBottom">
                             <Check TValue="bool"
                                    @bind-Checked="RechargeFormModel.EnableEmailNotifications">
-                                Email通知
+                                @PL["TenantWallet:EmailNotification"]
                             </Check>
                         </Div>
                         <Div Margin="Margin.Is1.FromBottom">
                             <Check TValue="bool"
                                    @bind-Checked="RechargeFormModel.EnableTextMessageNotifications">
-                                簡訊通知
+                                @PL["TenantWallet:TextMessageNotification"]
                             </Check>
                         </Div>
                         <Div>
                             <Check TValue="bool"
                                    @bind-Checked="RechargeFormModel.EnableBackstageNotifications">
-                                後台通知
+                                @PL["TenantWallet:BackstageNotification"]
                             </Check>
                         </Div>
                     </Field>
@@ -143,19 +143,19 @@
                         <Div Margin="Margin.Is1.FromBottom">
                             <Check TValue="bool"
                                    @bind-Checked="DeductionFormModel.EnableEmailNotifications">
-                                Email通知
+                                @PL["TenantWallet:EmailNotification"]
                             </Check>
                         </Div>
                         <Div Margin="Margin.Is1.FromBottom">
                             <Check TValue="bool"
                                    @bind-Checked="DeductionFormModel.EnableTextMessageNotifications">
-                                簡訊通知
+                                @PL["TenantWallet:TextMessageNotification"]
                             </Check>
                         </Div>
                         <Div>
                             <Check TValue="bool"
                                    @bind-Checked="DeductionFormModel.EnableBackstageNotifications">
-                                後台通知
+                                @PL["TenantWallet:BackstageNotification"]
                             </Check>
                         </Div>
                     </Field>

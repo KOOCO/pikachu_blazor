@@ -46,7 +46,7 @@ public partial class ManageWallet
             await Loading.Show();
             var wallet = await TenantWalletRepository.GetAsync(Id);
 
-            if (DeductionFormModel.Amount >= wallet.WalletBalance)
+            if (DeductionFormModel.Amount > wallet.WalletBalance)
             {
                 SubmitMessage = PL["TenantWallet:LowBalanceAlert"];
                 return;
