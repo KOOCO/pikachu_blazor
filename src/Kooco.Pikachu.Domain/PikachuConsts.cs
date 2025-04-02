@@ -9,6 +9,6 @@ public static class PikachuConsts
 
     public static string ToDatabaseName(this Type type)
     {
-        return $"{DbTablePrefix}{type.Name.Pluralize()}";
+        return $"{DbTablePrefix}{type.Name!.Pluralize()}";
     }
 }
