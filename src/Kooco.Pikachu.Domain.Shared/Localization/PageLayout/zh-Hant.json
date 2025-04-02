@@ -13,6 +13,9 @@
     "TenantWallet:InputDeductionReminder": "請輸入扣除的金額",
     "TenantWallet:ConfirmRecharge": "確認加值",
     "TenantWallet:ConfirmDeduction": "確認扣款",
-    "TenantWallet:LowBalanceAlert": "餘額不足, 不能扣款。"
+    "TenantWallet:LowBalanceAlert": "餘額不足, 不能扣款。",
+    "TenantWallet:EmailNotification": "Email通知",
+    "TenantWallet:TextMessageNotification": "簡訊通知",
+    "TenantWallet:BackstageNotification": "後台通知"
   }
 }

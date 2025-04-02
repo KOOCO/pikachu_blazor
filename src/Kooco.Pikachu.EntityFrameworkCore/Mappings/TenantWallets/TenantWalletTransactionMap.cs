@@ -25,7 +25,7 @@ public sealed class TenantWalletTransactionMap : IEntityTypeConfiguration<Tenant
             .IsRequired();
 
         builder.Property(x => x.TransactionNotes)
-            .HasMaxLength(TenantWalletConsts.MaxTransactionRemarkLenght);
+            .HasMaxLength(TenantWalletConsts.MaxTransactionRemarkLength);
 
         builder.HasOne(x => x.TenantWallet)
             .WithMany(tw => tw.TenantWalletTransactions)

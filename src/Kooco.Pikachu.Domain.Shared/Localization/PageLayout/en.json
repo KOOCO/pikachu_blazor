@@ -13,6 +13,9 @@
     "TenantWallet:InputDeductionReminder": "Please enter the amount to be deducted",
     "TenantWallet:ConfirmRecharge": "Recharge",
     "TenantWallet:ConfirmDeduction": "Deduction",
-    "TenantWallet:LowBalanceAlert": "Insufficient balance, cannot deduct money."
+    "TenantWallet:LowBalanceAlert": "Insufficient balance, cannot deduct money.",
+    "TenantWallet:EmailNotification": "Email Notification",
+    "TenantWallet:TextMessageNotification": "Text Message Notification",
+    "TenantWallet:BackstageNotification": "Backstage Notification"
   }
 }
