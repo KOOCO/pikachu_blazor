@@ -1,10 +1,11 @@
 ﻿using Blazorise.DataGrid;
 using Kooco.Pikachu.TenantManagement;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Kooco.Pikachu.Blazor.Pages.TenantManagement.TenantWallets;
-public partial class TenantWallet
+public partial class TenantWalletList
 {
     async Task OnSearchAsync()
     {
@@ -20,7 +21,7 @@ public partial class TenantWallet
     }
     void OnRowClick(DataGridRowMouseEventArgs<TenantWalletResultDto> e) => NavigationManager.NavigateTo(
        segments: [nameof(TenantManagement), nameof(TenantWalletDetails)],
-       previousPage: nameof(TenantWallet),
+       previousPage: nameof(TenantWalletList),
        id: e.Item.Id,
        currentPage: CurrentPage);
     async Task OnLoadDataAsync()
@@ -28,18 +29,26 @@ public partial class TenantWallet
         try
         {
             await Loading.Show();
+            var (totalCount, values) = await TenantWalletRepository.GetPagedAllAsync(
+                skipCount: (CurrentPage - 1) * PageSize,
+                maxResultCount: PageSize,
+                searchTerm: Entrance.SearchTerm);
 
-            Entities =
-            [
-                new TenantWalletResultDto
+            List<TenantWalletResultDto> entities = [];
+            foreach (var (tenant, wallet) in values)
+            {
+                entities.Add(new TenantWalletResultDto
                 {
-                    Id = Guid.NewGuid(),
-                    TenantName = "Test",
-                    Balance = 1000,
-                    AwaitingReviewCount = 1,
-                    CreationTime = DateTime.Now,
-                },
-            ];
+                    Id = wallet.Id,
+                    TenantName = tenant.Name,
+                    Balance = wallet.WalletBalance,
+                    AwaitingReviewCount = 0,
+                    CreationTime = wallet.CreationTime,
+                });
+            }
+
+            Entities = entities;
+            TotalCount = totalCount;
 
             await InvokeAsync(StateHasChanged);
         }

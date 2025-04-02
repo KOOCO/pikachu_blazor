@@ -1,0 +1,229 @@
+﻿@attribute [Authorize(PikachuPermissions.TenantWallet.Default)]
+@inherits FormComponentBase
+
+@if (!string.IsNullOrEmpty(SubmitMessage))
+{
+    <Div class="alert alert-danger">@SubmitMessage</Div>
+}
+
+<LoadingIndicator @ref="Loading" FullScreen FadeIn />
+<Row Margin="Margin.Is0.OnY">
+    <Column ColumnSize="ColumnSize.Is4">
+        <Card Class="compact-card"
+              Style="background-color: #a4ba86;">
+            <CardBody Class="compact-card-body">
+                <Div Class="compact-card-content">
+                    <Text Class="compact-card-text"
+                          Style="color: #6c757d;">
+                        @PL["TenantWallet:Balance"]
+                    </Text>
+                    <Text Class="compact-card-text"
+                          Style="font-weight: bold; color: #333;">
+                        @BalanceCurrency
+                    </Text>
+                </Div>
+            </CardBody>
+        </Card>
+    </Column>
+    <Column ColumnSize="ColumnSize.Is4">
+        <Card Class="compact-card"
+              Style="background-color: #ccad7a;">
+            <CardBody Class="compact-card-body">
+                <Div Class="compact-card-content">
+                    <Text Class="compact-card-text"
+                          Style="color: #6c757d;">
+                        @PL["TenantWallet:RechargeAmountOfStored"]
+                    </Text>
+                    <Text Class="compact-card-text"
+                          Style="font-weight: bold; color: #333;">
+                        @RechargeAmountOfStoredCurrency
+                    </Text>
+                </Div>
+            </CardBody>
+        </Card>
+    </Column>
+    <Column ColumnSize="ColumnSize.Is4">
+        <Card Class="compact-card"
+              Style="background-color: #cc857a;">
+            <CardBody Class="compact-card-body">
+                <Div Class="compact-card-content">
+                    <Text Class="compact-card-text"
+                          Style="color: #6c757d;">
+                        @PL["TenantWallet:DeductionAmountOfStored"]
+                    </Text>
+                    <Text Class="compact-card-text"
+                          Style="font-weight: bold; color: #333;">
+                        @DeductionAmountOfStoredCurrency
+                    </Text>
+                </Div>
+            </CardBody>
+        </Card>
+    </Column>
+</Row>
+<Row>
+    <Column ColumnSize="ColumnSize.Is12.OnMobile.Is6.OnTablet">
+        <EditForm Model="@RechargeFormModel"
+                  OnValidSubmit="HandleRechargeSubmit">
+            <DataAnnotationsValidator />
+            <Card Margin="Margin.Is4.FromBottom" Height="Height.Is100">
+                <CardHeader>
+                    <CardTitle>@PL["TenantWallet:RechargeAmount"]</CardTitle>
+                </CardHeader>
+                <CardBody>
+                    <Field>
+                        <FieldLabel>@PL["TenantWallet:Amount"]</FieldLabel>
+                        <NumericEdit TValue="decimal"
+                                     Min="@Denomination"
+                                     Step="@Denomination"
+                                     @bind-Value="RechargeFormModel.Amount"
+                                     Placeholder="@PL["TenantWallet:EnterAmount"]" />
+                        <FieldHelp>@PL["TenantWallet:InputRechargeReminder", $"{Denomination}"]</FieldHelp>
+                        <ValidationMessage For="@(() => RechargeFormModel.Amount)" />
+                    </Field>
+                    <Field>
+                        <FieldLabel>@PL["TenantWallet:Remark"]</FieldLabel>
+                        <TextEdit @bind-Text="RechargeFormModel.Remark" />
+                        <ValidationMessage For="@(() => RechargeFormModel.Remark)" />
+                    </Field>
+                    <Field>
+                        <Div Margin="Margin.Is1.FromBottom">
+                            <Check TValue="bool"
+                                   @bind-Checked="RechargeFormModel.EnableEmailNotifications">
+                                Email通知
+                            </Check>
+                        </Div>
+                        <Div Margin="Margin.Is1.FromBottom">
+                            <Check TValue="bool"
+                                   @bind-Checked="RechargeFormModel.EnableTextMessageNotifications">
+                                簡訊通知
+                            </Check>
+                        </Div>
+                        <Div>
+                            <Check TValue="bool"
+                                   @bind-Checked="RechargeFormModel.EnableBackstageNotifications">
+                                後台通知
+                            </Check>
+                        </Div>
+                    </Field>
+                    <Field Display="Display.Flex"
+                           JustifyContent="JustifyContent.End"
+                           Width="Width.Is100">
+                        <Button Color="Color.Primary"
+                                Type="ButtonType.Submit">
+                            @PL["TenantWallet:ConfirmRecharge"]
+                        </Button>
+                    </Field>
+                </CardBody>
+            </Card>
+        </EditForm>
+    </Column>
+    <Column ColumnSize="ColumnSize.Is12.OnMobile.Is6.OnTablet">
+        <EditForm Model="@DeductionFormModel"
+                  OnValidSubmit="HandleDeductionSubmit">
+            <DataAnnotationsValidator />
+            <Card Margin="Margin.Is4.FromBottom" Height="Height.Is100">
+                <CardHeader>
+                    <CardTitle>@PL["TenantWallet:DeductionAmount"]</CardTitle>
+                </CardHeader>
+                <CardBody>
+                    <Field>
+                        <FieldLabel>@PL["TenantWallet:Amount"]</FieldLabel>
+                        <NumericEdit TValue="decimal"
+                                     @bind-Value="DeductionFormModel.Amount"
+                                     Placeholder="@PL["TenantWallet:EnterAmount"]" />
+                        <FieldHelp>@PL["TenantWallet:InputDeductionReminder"]</FieldHelp>
+                        <ValidationMessage For="@(() => DeductionFormModel.Amount)" />
+                    </Field>
+                    <Field>
+                        <FieldLabel>@PL["TenantWallet:Remark"]</FieldLabel>
+                        <TextEdit @bind-Text="DeductionFormModel.Remark" />
+                        <ValidationMessage For="@(() => DeductionFormModel.Remark)" />
+                    </Field>
+                    <Field>
+                        <Div Margin="Margin.Is1.FromBottom">
+                            <Check TValue="bool"
+                                   @bind-Checked="DeductionFormModel.EnableEmailNotifications">
+                                Email通知
+                            </Check>
+                        </Div>
+                        <Div Margin="Margin.Is1.FromBottom">
+                            <Check TValue="bool"
+                                   @bind-Checked="DeductionFormModel.EnableTextMessageNotifications">
+                                簡訊通知
+                            </Check>
+                        </Div>
+                        <Div>
+                            <Check TValue="bool"
+                                   @bind-Checked="DeductionFormModel.EnableBackstageNotifications">
+                                後台通知
+                            </Check>
+                        </Div>
+                    </Field>
+                    <Field Display="Display.Flex"
+                           JustifyContent="JustifyContent.End"
+                           Width="Width.Is100">
+                        <Button Color="Color.Warning"
+                                Type="ButtonType.Submit">
+                            @PL["TenantWallet:ConfirmDeduction"]
+                        </Button>
+                    </Field>
+                </CardBody>
+            </Card>
+        </EditForm>
+    </Column>
+</Row>
+
+<style>
+    .compact-card {
+        /* 基本外觀 */
+        border: 1px solid #dee2e6; /* 邊框顏色 */
+        border-radius: 8px; /* 圓角 */
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* 陰影效果 */
+        background-color: #f8f9fa; /* 背景顏色 */
+        /* 尺寸與佈局 */
+        min-height: 75px; /* ADJUSTABLE: 卡片的最小高度，確保內容空間，可根據字體大小調整 */
+        display: flex; /* 使用 Flexbox 佈局 */
+        align-items: center; /* 垂直居中卡片內容 (CardBody) */
+        /* 動畫效果 (可選) */
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .compact-card-body {
+        /* 內邊距 */
+        padding: 0.5rem 0.75rem; /* ADJUSTABLE: 上下 左右 的內邊距，可微調 */
+        /* 尺寸與佈局 */
+        width: 100%; /* 佔滿卡片寬度 */
+        display: flex; /* 使用 Flexbox */
+        align-items: center; /* 垂直居中 CardContent */
+    }
+
+    .compact-card-content {
+        /* 佈局：設定為 Flexbox 垂直排列 */
+        display: flex;
+        flex-direction: column; /* 主要設定：讓子元素 (Text) 垂直堆疊 */
+        justify-content: center; /* 在垂直方向上居中 (因為 flex-direction 是 column) */
+        align-items: flex-start; /* 在水平方向上靠左對齊，若要居中改為 center */
+        /* 尺寸 */
+        width: 100%; /* 佔滿 CardBody 寬度 */
+        /* 間距 */
+        gap: 1rem; /* ADJUSTABLE: 標題和金額之間的垂直間距 */
+    }
+
+        .compact-card-content .compact-card-text { /* More specific selector */
+            margin-bottom: 0; /* 清除預設的底部邊距 */
+            line-height: 1.3; /* 基礎行高 */
+        }
+
+            .compact-card-content .compact-card-text:first-child {
+                /* 字體 */
+                font-size: 1.3rem; /* ADJUSTABLE: 標題的字體大小 */
+                /* 顏色由 HTML inline style 控制: color: #6c757d; */
+            }
+
+            .compact-card-content .compact-card-text:last-child {
+                /* 字體 */
+                font-size: 1.1rem; /* ADJUSTABLE: 金額的字體大小 */
+                /* 字重由 HTML inline style 控制: font-weight: bold; */
+                /* 顏色由 HTML inline style 控制: color: #333; */
+            }
+</style>

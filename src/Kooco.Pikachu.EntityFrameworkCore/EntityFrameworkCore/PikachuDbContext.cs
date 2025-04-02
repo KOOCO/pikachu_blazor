@@ -56,7 +56,7 @@ using Kooco.Pikachu.OrderTransactions;
 using Kooco.Pikachu.TierManagement;
 using Kooco.Pikachu.Members;
 using System.Reflection;
-using Kooco.Pikachu.TenantWallets.Entities;
+using Kooco.Pikachu.TenantManagement.Entities;
 
 namespace Kooco.Pikachu.EntityFrameworkCore;
 

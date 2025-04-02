@@ -453,7 +453,7 @@ public class PikachuMenuContributor : IMenuContributor
                 new ApplicationMenuItem(
                     name: PikachuMenus.TenantWallets,
                     displayName: l["Menu:TenantWallet"],
-                    url: "/TenantManagement/TenantWallet",
+                    url: "/TenantManagement/TenantWalletList",
                     requiredPermissionName: PikachuPermissions.TenantWallet.Default
                 )
             );

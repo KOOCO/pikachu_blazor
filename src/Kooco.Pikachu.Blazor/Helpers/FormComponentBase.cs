@@ -1,7 +1,9 @@
 ﻿using Blazorise;
 using Blazorise.LoadingIndicator;
 using Kooco.Pikachu.Localization;
+using Kooco.Pikachu.TenantManagement;
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.Localization;
 using Microsoft.JSInterop;
 using System;
 using Volo.Abp.AspNetCore.Components;
@@ -23,4 +25,7 @@ public abstract class FormComponentBase : AbpComponentBase
     public LoadingIndicator Loading { get; set; } = new();
     public required NavigationManager NavigationManager { get; init; }
     public required IJSRuntime JSRuntime { get; init; }
+    public required IStringLocalizer<PageLayoutResource> PL { get; set; }
+    public required ITenantWalletRepository TenantWalletRepository { get; init; }
+    public required ITenantWalletAppService TenantWalletAppService { get; init; }
 }
