@@ -15,8 +15,11 @@ public class MemberDto
     public string? Gender { get; set; }
     public int TotalOrders { get; set; }
     public int TotalSpent { get; set; }
+    public string? LineId { get; set; }
+    public string? GoogleId { get; set; }
+    public string? FacebookId { get; set; }
     public List<string> MemberTags { get; set; }
-
+    public bool IsMember { get; set; }
     public bool IsNew { get { return MemberTags?.Contains(MemberConsts.MemberTags.New) ?? false; } }
     public bool IsBlacklisted { get { return MemberTags?.Contains(MemberConsts.MemberTags.Blacklisted) ?? false; } }
 }

@@ -1,6 +1,7 @@
 {
   "culture": "en",
   "texts": {
+    "LoginType": "Login Type",
     "Pikachu:EnterprisePurchaseCanOnlyUseSelfPickup": "Enterprise Purchase can only use Self-Pickup",
     "ProductRankingCarouselModule": "Product Ranking Carousel Module",
     "OrderInstruction": "Order Instruction",

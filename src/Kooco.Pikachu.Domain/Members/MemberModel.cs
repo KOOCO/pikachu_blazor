@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Volo.Abp.Data;
 
 namespace Kooco.Pikachu.Members;
 
@@ -13,5 +14,9 @@ public class MemberModel
     public DateTime? Birthday { get; set; }
     public int TotalOrders { get; set; }
     public int TotalSpent { get; set; }
+    public string? LineId { get; set; }
+    public string? GoogleId { get; set; }
+    public string? FacebookId { get; set; }
     public List<string> MemberTags { get; set; }
+    public bool IsMember { get; set; }
 }

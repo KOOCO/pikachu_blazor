@@ -64,7 +64,9 @@ public class EfCoreMemberRepository(IDbContextProvider<PikachuDbContext> pikachu
     {
         selectedMemberTags ??= [];
         var dbContext = await GetPikachuDbContextAsync();
+        var memberRole = await dbContext.Roles.FirstOrDefaultAsync(x => x.Name == MemberConsts.Role);
         var queryable = dbContext.Users
+                    .Include(user => user.Roles)
                     .Select(user => new MemberModel
                     {
                         Id = user.Id,
@@ -75,6 +77,10 @@ public class EfCoreMemberRepository(IDbContextProvider<PikachuDbContext> pikachu
                         Birthday = (DateTime?)user.GetProperty(Constant.Birthday, null),
                         TotalOrders = dbContext.Orders.Where(x => x.UserId == user.Id).Count(),
                         TotalSpent = (int)dbContext.Orders.Where(x => x.UserId == user.Id && (x.OrderStatus != EnumValues.OrderStatus.Exchange && x.OrderStatus != EnumValues.OrderStatus.Refund)).Sum(x => x.TotalAmount),
+                        LineId = EF.Property<string>(user, Constant.LineId),
+                        GoogleId = EF.Property<string>(user, Constant.GoogleId),
+                        FacebookId = EF.Property<string>(user, Constant.FacebookId),
+                        IsMember = memberRole != null ? user.IsInRole(memberRole.Id) : false,
                         MemberTags = dbContext.MemberTags.AsNoTracking().Where(x => x.UserId == user.Id).Select(x => x.Name).ToList(),
                     })
                     .WhereIf(!string.IsNullOrWhiteSpace(filter), member => member.MemberTags.Contains(filter) || member.UserName.Contains(filter)
