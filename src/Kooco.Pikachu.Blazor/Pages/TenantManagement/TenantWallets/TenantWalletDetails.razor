@@ -7,28 +7,52 @@
         <Icon Name="IconName.ArrowLeft" Class="me-1"></Icon>
         @L["Tenant"]
     </PikachuButton>
-    <WalletDetailsHeader TenantWallet="TenantWallet" CanEditTenantWallet="CanEdit" />
-    @if (TenantWallet is not null)
+    @if (Tenant != null && Wallet != null)
     {
+        <Card>
+            <CardBody>
+                <Div Class="text-dark d-flex align-items-start justify-content-between">
+                    <Div>
+                        <Heading Size="HeadingSize.Is4"
+                                 Class="m-0 mb-1">
+                            @Tenant.Name
+                        </Heading>
+                        @L["WalletId"]:
+                        <Span Class="bg-lightgrey rounded-3"
+                              Style="padding: 1px 10px;">
+                            <Copy Text="@Wallet.Id"
+                                  ShouldDisplayIcon="false" />
+                        </Span>
+                    </Div>
+                </Div>
+            </CardBody>
+        </Card>
+
         <Tabs RenderMode="TabsRenderMode.LazyLoad"
               SelectedTabChanged="@OnSelectedTab"
               SelectedTab="@SelectedTab">
             <Items>
-                <Tab Name="WalletManageWallet">@L["Wallet:ManageWallet"]</Tab>
-                <Tab Name="WalletAmountsAwaitingReview">@L["Wallet:AmountsAwaitingReview"]</Tab>
-                <Tab Name="WalletWalletDetailsRecord">@L["Wallet:WalletDetailsRecord"]</Tab>
+                <Tab Name="ManageWallet">@L["Wallet:ManageWallet"]</Tab>
+                <Tab Name="AmountsAwaitingReview">@L["Wallet:AmountsAwaitingReview"]</Tab>
+                <Tab Name="WalletDetailsRecord">@L["Wallet:WalletDetailsRecord"]</Tab>
             </Items>
             <Content>
-                <TabPanel Name="WalletManageWallet">
-                    <WalletManageWallet />
+                <TabPanel Name="ManageWallet">
+                    <ManageWallet Id="@Wallet.Id" />
                 </TabPanel>
-                <TabPanel Name="WalletAmountsAwaitingReview">
-                    <WalletAmountsAwaitingReview />
+                <TabPanel Name="AmountsAwaitingReview">
+                    <AmountsAwaitingReview />
                 </TabPanel>
-                <TabPanel Name="WalletWalletDetailsRecord">
-                    <WalletWalletDetailsRecord />
+                <TabPanel Name="WalletDetailsRecord">
+                    <WalletDetailsRecord />
                 </TabPanel>
             </Content>
         </Tabs>
+    }
+    else
+    {
+        <Div Class="text-center">
+            <Span Class="spinner-border text-primary"></Span>
+        </Div>
     }
 </Div>

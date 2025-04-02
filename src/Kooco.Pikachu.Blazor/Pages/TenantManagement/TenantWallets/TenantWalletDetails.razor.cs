@@ -1,16 +1,16 @@
 ﻿using Kooco.Pikachu.Permissions;
-using Kooco.Pikachu.TenantManagement;
+using Kooco.Pikachu.TenantManagement.Entities;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Components;
 using System;
 using System.Threading.Tasks;
+using Volo.Abp.TenantManagement;
 
 namespace Kooco.Pikachu.Blazor.Pages.TenantManagement.TenantWallets;
 public partial class TenantWalletDetails
 {
     bool CanEdit;
     int UpperPage = default;
-    string SelectedTab = nameof(WalletManageWallet);
+    string SelectedTab = nameof(ManageWallet);
     void OnNavigateBack() => NavigationManager.NavigateTo(
         segments: [nameof(TenantManagement), PreviousPage],
         currentPage: UpperPage);
@@ -20,21 +20,17 @@ public partial class TenantWalletDetails
         try
         {
             if (NavigationManager.TryGetPage(out var page)) UpperPage = page;
-            // BackendMemberItemDto = await MemberRepository.GetMemberByIdAsync(Id);
-
             CanEdit = await AuthorizationService.IsGrantedAnyAsync(PikachuPermissions.TenantWallet.Edit);
+            var (tenant, wallet) = await TenantWalletRepository.FindTenantAndWalletAsync(Id);
+            Tenant = tenant;
+            Wallet = wallet;
         }
         catch (Exception e)
         {
             await HandleErrorAsync(e);
         }
     }
-    public TenantWalletResultDto TenantWallet { get; set; } = new TenantWalletResultDto
-    {
-        Id = Guid.NewGuid(),
-        TenantName = "Test",
-        Balance = 1000,
-        AwaitingReviewCount = 1,
-        CreationTime = DateTime.Now,
-    };
+
+    public Tenant? Tenant { get; set; }
+    public TenantWallet? Wallet { get; set; }
 }

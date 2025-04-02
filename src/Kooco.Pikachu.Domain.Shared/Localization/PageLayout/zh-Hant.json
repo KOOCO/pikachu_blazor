@@ -1,0 +1,18 @@
+{
+  "culture": "zh-Hant",
+  "texts": {
+    "TenantWallet:Amount": "金額",
+    "TenantWallet:Balance": "餘額",
+    "TenantWallet:Remark": "備註",
+    "TenantWallet:EnterAmount": "輸入金額",
+    "TenantWallet:RechargeAmount": "加值金額",
+    "TenantWallet:RechargeAmountOfStored": "已加值金額",
+    "TenantWallet:InputRechargeReminder": "請輸入 {0} 的倍數金額",
+    "TenantWallet:DeductionAmount": "扣款金額",
+    "TenantWallet:DeductionAmountOfStored": "已扣款金額",
+    "TenantWallet:InputDeductionReminder": "請輸入扣除的金額",
+    "TenantWallet:ConfirmRecharge": "確認加值",
+    "TenantWallet:ConfirmDeduction": "確認扣款",
+    "TenantWallet:LowBalanceAlert": "餘額不足, 不能扣款。"
+  }
+}

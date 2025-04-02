@@ -1,4 +1,4 @@
-﻿using Kooco.Pikachu.TenantWallets.Entities;
+﻿using Kooco.Pikachu.TenantManagement.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Volo.Abp.EntityFrameworkCore.Modeling;

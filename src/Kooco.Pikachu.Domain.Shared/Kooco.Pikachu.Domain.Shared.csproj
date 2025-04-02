@@ -33,4 +33,9 @@
   <ItemGroup>
     <None Remove="Items\" />
   </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Localization\PageLayout\en.json" />
+    <EmbeddedResource Include="Localization\PageLayout\zh-Hant.json" />
+  </ItemGroup>
 </Project>

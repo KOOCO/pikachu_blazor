@@ -23,8 +23,8 @@ namespace Kooco.Pikachu;
     typeof(AbpOpenIddictDomainSharedModule),
     typeof(AbpPermissionManagementDomainSharedModule),
     typeof(AbpSettingManagementDomainSharedModule),
-    typeof(AbpTenantManagementDomainSharedModule)    
-    )]
+    typeof(AbpTenantManagementDomainSharedModule)
+)]
 public class PikachuDomainSharedModule : AbpModule
 {
     public override void PreConfigureServices(ServiceConfigurationContext context)
@@ -46,8 +46,13 @@ public class PikachuDomainSharedModule : AbpModule
                 .Add<PikachuResource>("en")
                 .AddBaseTypes(typeof(AbpValidationResource))
                 .AddVirtualJson("/Localization/Pikachu");
-
             options.DefaultResourceType = typeof(PikachuResource);
+
+            options.Resources
+                .Add<PageLayoutResource>("en")
+                .AddBaseTypes(typeof(AbpValidationResource))
+                .AddVirtualJson("/Localization/PageLayout");
+            options.DefaultResourceType = typeof(PageLayoutResource);
         });
 
         Configure<AbpExceptionLocalizationOptions>(options =>
