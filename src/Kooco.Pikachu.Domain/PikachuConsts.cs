@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Humanizer;
+using System;
 
 namespace Kooco.Pikachu;
 public static class PikachuConsts
@@ -8,15 +9,6 @@ public static class PikachuConsts
 
     public static string ToDatabaseName(this Type type)
     {
-        return $"{DbTablePrefix}{GetPluralForm(type.Name)}";
+        return $"{DbTablePrefix}{type.Name.Pluralize()}";
     }
-    static string GetPluralForm(string word)
-    {
-        if (word.EndsWith('y') && word.Length > 1 && !IsVowel(word[^2]))
-        {
-            return string.Concat(word.AsSpan(0, word.Length - 1), "ies");
-        }
-        return word + "s";
-    }
-    static bool IsVowel(char c) => "aeiouAEIOU".Contains(c, StringComparison.Ordinal);
 }
