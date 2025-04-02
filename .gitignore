@@ -248,8 +248,9 @@ paket-files/
 .fake/
 
 # JetBrains Rider
-.idea/
+.idea
 *.sln.iml
+.github
 
 # Pikachu
 src/Kooco.Pikachu.Web/Logs/*
@@ -260,5 +261,3 @@ src/Kooco.Pikachu.HttpApi.HostWithIds/Logs/*
 src/Kooco.Pikachu.DbMigrator/Logs/*
 src/Kooco.Pikachu.Blazor/Logs/*
 src/Kooco.Pikachu.Blazor.Tiered/Logs/*
-
-

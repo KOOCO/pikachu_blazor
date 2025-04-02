@@ -10,15 +10,15 @@
 <Row Margin="Margin.Is0.OnY">
     <Column ColumnSize="ColumnSize.Is4">
         <Card Class="compact-card"
-              Style="background-color: #a4ba86;">
+              Style="background-color: #72D9BF45;">
             <CardBody Class="compact-card-body">
                 <Div Class="compact-card-content">
                     <Text Class="compact-card-text"
-                          Style="color: #6c757d;">
+                          Style="color: #217762FF;">
                         @PL["TenantWallet:Balance"]
                     </Text>
                     <Text Class="compact-card-text"
-                          Style="font-weight: bold; color: #333;">
+                          Style="font-weight: bold; color: #217762FF;">
                         @BalanceCurrency
                     </Text>
                 </Div>
@@ -27,15 +27,15 @@
     </Column>
     <Column ColumnSize="ColumnSize.Is4">
         <Card Class="compact-card"
-              Style="background-color: #ccad7a;">
+              Style="background-color: #FFDB5A45;">
             <CardBody Class="compact-card-body">
                 <Div Class="compact-card-content">
                     <Text Class="compact-card-text"
-                          Style="color: #6c757d;">
+                          Style="color: #FD9150FF;">
                         @PL["TenantWallet:RechargeAmountOfStored"]
                     </Text>
                     <Text Class="compact-card-text"
-                          Style="font-weight: bold; color: #333;">
+                          Style="font-weight: bold; color: #FD9150FF;">
                         @RechargeAmountOfStoredCurrency
                     </Text>
                 </Div>
@@ -44,15 +44,15 @@
     </Column>
     <Column ColumnSize="ColumnSize.Is4">
         <Card Class="compact-card"
-              Style="background-color: #cc857a;">
+              Style="background-color: #DE3B4045;">
             <CardBody Class="compact-card-body">
                 <Div Class="compact-card-content">
                     <Text Class="compact-card-text"
-                          Style="color: #6c757d;">
+                          Style="color: #B93448FF;">
                         @PL["TenantWallet:DeductionAmountOfStored"]
                     </Text>
                     <Text Class="compact-card-text"
-                          Style="font-weight: bold; color: #333;">
+                          Style="font-weight: bold; color: #B93448FF; ">
                         @DeductionAmountOfStoredCurrency
                     </Text>
                 </Div>
@@ -162,8 +162,8 @@
                     <Field Display="Display.Flex"
                            JustifyContent="JustifyContent.End"
                            Width="Width.Is100">
-                        <Button Color="Color.Warning"
-                                Type="ButtonType.Submit">
+                        <Button Type="ButtonType.Submit"
+                                Style="background-color: #DE3B40FF; border-color: #DE3B40FF; color: white;">
                             @PL["TenantWallet:ConfirmDeduction"]
                         </Button>
                     </Field>
@@ -181,7 +181,7 @@
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* 陰影效果 */
         background-color: #f8f9fa; /* 背景顏色 */
         /* 尺寸與佈局 */
-        min-height: 75px; /* ADJUSTABLE: 卡片的最小高度，確保內容空間，可根據字體大小調整 */
+        min-height: 100px; /* ADJUSTABLE: 卡片的最小高度，確保內容空間，可根據字體大小調整 */
         display: flex; /* 使用 Flexbox 佈局 */
         align-items: center; /* 垂直居中卡片內容 (CardBody) */
         /* 動畫效果 (可選) */
@@ -206,24 +206,26 @@
         /* 尺寸 */
         width: 100%; /* 佔滿 CardBody 寬度 */
         /* 間距 */
-        gap: 1rem; /* ADJUSTABLE: 標題和金額之間的垂直間距 */
+        gap: 2rem; /* ADJUSTABLE: 標題和金額之間的垂直間距 */
     }
 
         .compact-card-content .compact-card-text { /* More specific selector */
             margin-bottom: 0; /* 清除預設的底部邊距 */
-            line-height: 1.3; /* 基礎行高 */
+            line-height: 1.5; /* 基礎行高 */
         }
 
             .compact-card-content .compact-card-text:first-child {
-                /* 字體 */
-                font-size: 1.3rem; /* ADJUSTABLE: 標題的字體大小 */
-                /* 顏色由 HTML inline style 控制: color: #6c757d; */
+                width: 163px;
+                font-family: Inter;
+                font-size: 28px;
+                line-height: 22px;
+                font-weight: 400;
             }
 
             .compact-card-content .compact-card-text:last-child {
-                /* 字體 */
-                font-size: 1.1rem; /* ADJUSTABLE: 金額的字體大小 */
-                /* 字重由 HTML inline style 控制: font-weight: bold; */
-                /* 顏色由 HTML inline style 控制: color: #333; */
+                font-family: Inter;
+                font-size: 40px;
+                line-height: 40px;
+                font-weight: 700;
             }
 </style>
