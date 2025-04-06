@@ -175,7 +175,7 @@
                         {
                             <MemberTagComponent Tag="@(context.IsBlacklisted ? MemberConsts.MemberTags.Blacklisted : MemberConsts.MemberTags.New)" />
                         }
-                        else if (context.IsMember)
+                        else
                         {
                             <MemberTagComponent Tag="@MemberConsts.MemberTags.Existing" />
                         }

@@ -175,4 +175,9 @@ public static class PikachuPermissions
         public const string Edit = Default + ".Edit";
         public const string Delete = Default + ".Delete";
     }
+
+    public static class VipTierSettings
+    {
+        public const string Default = MembersManagement + ".VipTierSettings";
+    }
 }

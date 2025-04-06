@@ -1390,7 +1390,7 @@
     "MemberTags": "Member Tags",
     "MemberStatus": "Member Status",
     "VipTier": "Vip Tier",
-
-    "CreationTime": "創建時間"
+    "CreationTime": "創建時間",
+    "Permission:VipTierSettings": "Vip Tier Settings"
   }
 }

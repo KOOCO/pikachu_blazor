@@ -44,7 +44,7 @@ public class EfCoreMemberRepository(IDbContextProvider<PikachuDbContext> pikachu
 
     public async Task<long> GetCountAsync(string? filter = null, string? memberType = null, IEnumerable<string>? selectedMemberTags = null)
     {
-        var queryable = await GetFilteredQueryableAsync(filter, memberType);
+        var queryable = await GetFilteredQueryableAsync(filter, memberType, selectedMemberTags);
         return await queryable.LongCountAsync();
     }
 
@@ -67,6 +67,7 @@ public class EfCoreMemberRepository(IDbContextProvider<PikachuDbContext> pikachu
         var memberRole = await dbContext.Roles.FirstOrDefaultAsync(x => x.Name == MemberConsts.Role);
         var queryable = dbContext.Users
                     .Include(user => user.Roles)
+                    .Where(user => memberRole != null && user.Roles.Any(role => role.RoleId == memberRole.Id))
                     .Select(user => new MemberModel
                     {
                         Id = user.Id,
@@ -80,7 +81,6 @@ public class EfCoreMemberRepository(IDbContextProvider<PikachuDbContext> pikachu
                         LineId = EF.Property<string>(user, Constant.LineId),
                         GoogleId = EF.Property<string>(user, Constant.GoogleId),
                         FacebookId = EF.Property<string>(user, Constant.FacebookId),
-                        IsMember = memberRole != null ? user.IsInRole(memberRole.Id) : false,
                         MemberTags = dbContext.MemberTags.AsNoTracking().Where(x => x.UserId == user.Id).Select(x => x.Name).ToList(),
                     })
                     .WhereIf(!string.IsNullOrWhiteSpace(filter), member => member.MemberTags.Contains(filter) || member.UserName.Contains(filter)
@@ -127,6 +127,70 @@ public class EfCoreMemberRepository(IDbContextProvider<PikachuDbContext> pikachu
 
             _ => null
         };
+    }
+
+    public async Task UpdateMemberTierAsync()
+    {
+        var dbContext = await GetPikachuDbContextAsync();
+        var vipTierSettings = await dbContext.VipTierSettings.Include(v => v.Tiers).FirstOrDefaultAsync();
+        var tiers = vipTierSettings?.Tiers.OrderByDescending(tier => tier.Tier);
+
+        var memberRole = await dbContext.Roles.FirstOrDefaultAsync(x => x.Name == MemberConsts.Role);
+
+        var members = await dbContext.Users
+            .Include(user => user.Roles)
+            .Where(user => memberRole != null && user.Roles.Any(role => role.RoleId == memberRole.Id))
+            .GroupJoin(dbContext.Orders,
+            user => user.Id,
+            order => order.UserId,
+            (user, orders) => new { user, orders })
+            .Select(g => new
+            {
+                User = g.user,
+                MemberTags = dbContext.MemberTags.Where(mt => mt.UserId == g.user.Id).ToList(),
+                TotalOrders = g.orders.Count(),
+                TotalSpent = g.orders.Sum(order => order.TotalAmount)
+            })
+            .ToListAsync();
+
+        foreach (var member in members)
+        {
+            dbContext.MemberTags.RemoveRange(member.MemberTags.Where(mt => mt.Name != MemberConsts.MemberTags.Blacklisted));
+
+            if (tiers.Any())
+            {
+                var tier = vipTierSettings switch
+                {
+                    { BasedOnAmount: true, BasedOnCount: true, TierCondition: VipTierCondition.OnlyWhenReachedBoth }
+                        => tiers.FirstOrDefault(tier => tier.OrdersAmount < member.TotalSpent && tier.OrdersCount < member.TotalOrders),
+
+                    { BasedOnAmount: true, BasedOnCount: true }
+                        => tiers.FirstOrDefault(tier => tier.OrdersAmount < member.TotalSpent || tier.OrdersCount < member.TotalOrders),
+
+                    { BasedOnAmount: true }
+                        => tiers.FirstOrDefault(tier => tier.OrdersAmount < member.TotalSpent),
+
+                    { BasedOnCount: true }
+                        => tiers.FirstOrDefault(tier => tier.OrdersCount < member.TotalOrders),
+
+                    _ => null
+                };
+
+                if (tier != null)
+                {
+                    dbContext.MemberTags.Add(new MemberTag(GuidGenerator.Create(), member.User.Id, tier.TierName, tier.Id));
+                }
+            }
+
+            if (member.TotalOrders == 0)
+            {
+                dbContext.MemberTags.Add(new MemberTag(GuidGenerator.Create(), member.User.Id, MemberConsts.MemberTags.New));
+            }
+            else
+            {
+                dbContext.MemberTags.Add(new MemberTag(GuidGenerator.Create(), member.User.Id, MemberConsts.MemberTags.Existing));
+            }
+        }
     }
 
     public async Task<long> GetMemberCreditRecordCountAsync(string? filter, DateTime? usageTimeFrom, DateTime? usageTimeTo,

@@ -19,6 +19,8 @@ public interface IMemberRepository : IIdentityUserRepository, IRepository<Identi
 
     Task<VipTier?> CheckForVipTierAsync(Guid userId);
 
+    Task UpdateMemberTierAsync();
+
     Task<long> GetMemberCreditRecordCountAsync(string? filter, DateTime? usageTimeFrom, DateTime? usageTimeTo,
         DateTime? expiryTimeFrom, DateTime? expiryTimeTo, int? minRemainingCredits, int? maxRemainingCredits,
         int? minAmount, int? maxAmount, Guid? userId);
