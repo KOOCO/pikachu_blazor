@@ -1,7 +1,5 @@
 ﻿using Kooco.Pikachu.EnumValues;
-using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Kooco.Pikachu.PaymentGateways
 {
@@ -32,5 +30,6 @@ namespace Kooco.Pikachu.PaymentGateways
         public string? CreditCheckCode { get; set; }
         public bool IsCreditCardEnabled { get; set; }
         public bool IsBankTransferEnabled { get; set; }
+        public List<string> InstallmentPeriods { get; set; }
     }
 }

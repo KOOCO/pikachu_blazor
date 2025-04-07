@@ -139,10 +139,10 @@
         <div class="row">
             <div class="col-2">@L["GroupBuyTime"]</div>
             <div class="col-5">
-                <DatePicker TValue="DateTime?" @bind-Date="CreateGroupBuyDto.StartTime" InputMode="DateInputMode.DateTime" Placeholder="@L["StartTime"]" />
+                <DatePicker TValue="DateTime?" @bind-Date="CreateGroupBuyDto.StartTime" TimeAs24hr InputMode="DateInputMode.DateTime" Placeholder="@L["StartTime"]" />
             </div>
             <div class="col-5">
-                <DatePicker TValue="DateTime?" @bind-Date="CreateGroupBuyDto.EndTime" InputMode="DateInputMode.DateTime" Placeholder="@L["EndTime"]" />
+                <DatePicker TValue="DateTime?" @bind-Date="CreateGroupBuyDto.EndTime" TimeAs24hr InputMode="DateInputMode.DateTime" Placeholder="@L["EndTime"]" />
             </div>
         </div>
 
@@ -1853,7 +1853,7 @@
                 </div>
             </div>
         </div>
-        <Divider></Divider>
+    @*     <Divider></Divider>
         <div class="row">
              <div class="col-2">
                 <fieldLabel>@L["GA4 ID"]</fieldLabel>
@@ -1864,7 +1864,7 @@
             </div>
             </div>
             
-        </div>
+        </div> *@
     </CardBody>
 </Card>
 <div class="row">
@@ -1929,6 +1929,39 @@
       
         <Button Color="Color.Secondary" Clicked="@CloseCropModal">@L["Cancel"]</Button>
         <Button Color="Color.Primary" Disabled="@croppedImage.IsNullOrWhiteSpace()" Clicked="@CropImageAsync">@L["Save"]</Button>
+    </ModalFooter>
+    </ModalContent>
+</Modal>
+<Modal @ref="CarouselCropperModal" >
+    <ModalContent Size="ModalSize.Large">
+        <ModalHeader>
+             <ModalTitle>@L["Cropper"]</ModalTitle>
+                <CloseButton  Clicked="@CloseCropModal" />
+        </ModalHeader>
+        <ModalBody>
+            <Row>
+                <Column ColumnSize="ColumnSize.Is6">
+        <Cropper @ref="LogoCropper"
+                      Source="@imageToCrop"
+                      Style="aspect-ratio: 16 / 9;" 
+                      SelectionChanged="@OnSelectionChanged"
+                      ShowBackground="true"/>
+                      </Column>
+                      <Column ColumnSize="ColumnSize.Is6">
+                           <Div Margin="Margin.Is2.FromBottom">
+            <Button Color="Color.Primary" Clicked="@GetCroppedImage" Disabled="@cropButtonDisabled">Get Cropped Image</Button>
+            <Button Color="Color.Secondary" Clicked="@ResetSelection" Disabled="@cropButtonDisabled">Reset Selection</Button>
+        </Div>
+        <Image Source="@croppedImage" Border="Border.Is1" Style="width: 300px; height: 300px;" />
+
+                      </Column>
+                      </Row>
+
+    </ModalBody>
+    <ModalFooter>
+      
+        <Button Color="Color.Secondary" Clicked="@CloseCropModal">@L["Cancel"]</Button>
+        <Button Color="Color.Primary" Disabled="@croppedImage.IsNullOrWhiteSpace()" Clicked="()=>CropImageAsync(uploadedCarouselImages,CarouselModuleNumber,CarouselPicker,ImageType)">@L["Save"]</Button>
     </ModalFooter>
     </ModalContent>
 </Modal>

@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace Kooco.Pikachu.PaymentGateways
 {
@@ -21,5 +22,7 @@ namespace Kooco.Pikachu.PaymentGateways
 
         [Required(ErrorMessage = "This Field Is Required")]
         public string CreditCheckCode { get; set; }
+
+        public List<string> InstallmentPeriods { get; set; } = [];
     }
 }

@@ -1,4 +1,5 @@
 ﻿@page "/Members/Tier-Management"
+@attribute [Authorize(PikachuPermissions.VipTierSettings.Default)]
 @using Kooco.Pikachu.TierManagement
 @inherits PikachuComponentBase
 @inject IVipTierSettingAppService VipTierSettingAppService

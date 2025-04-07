@@ -1,21 +1,32 @@
-﻿using System;
+﻿using Kooco.Pikachu.Members;
+using Kooco.Pikachu.Permissions;
+using Microsoft.AspNetCore.Authorization;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Volo.Abp;
+using Volo.Abp.BackgroundJobs;
 
 namespace Kooco.Pikachu.TierManagement;
 
 [RemoteService(IsEnabled = false)]
+[Authorize(PikachuPermissions.VipTierSettings.Default)]
 public class VipTierSettingAppService : PikachuAppService, IVipTierSettingAppService
 {
     private readonly VipTierSettingManager _vipTierSettingManager;
+    private readonly IMemberRepository _memberRepository;
+    private readonly IBackgroundJobManager _backgroundJobManager;
 
     public VipTierSettingAppService(
-        VipTierSettingManager vipTierSettingManager
+        VipTierSettingManager vipTierSettingManager,
+        IMemberRepository memberRepository,
+        IBackgroundJobManager backgroundJobManager
         )
     {
         _vipTierSettingManager = vipTierSettingManager;
+        _memberRepository = memberRepository;
+        _backgroundJobManager = backgroundJobManager;
     }
 
     public async Task<VipTierSettingDto> FirstOrDefaultAsync()
@@ -51,6 +62,8 @@ public class VipTierSettingAppService : PikachuAppService, IVipTierSettingAppSer
                 tier.TierName, tier.OrdersAmount, tier.OrdersCount);
         }
 
+        await _backgroundJobManager.EnqueueAsync(new UpdateMemberTierArgs { TenantId = CurrentTenant?.Id }, BackgroundJobPriority.High);
+
         return ObjectMapper.Map<VipTierSetting, VipTierSettingDto>(vipTierSetting);
     }
 
@@ -60,8 +73,17 @@ public class VipTierSettingAppService : PikachuAppService, IVipTierSettingAppSer
         return [.. vipTierSetting?.Tiers?
             .Where(tier => !string.IsNullOrWhiteSpace(tier.TierName))
             .OrderBy(tier => tier.TierName)
-            .Select(tier => tier.TierName) 
+            .Select(tier => tier.TierName)
             ?? []
             ];
+    }
+
+    [AllowAnonymous]
+    public async Task UpdateMemberTierAsync(Guid? tenantId)
+    {
+        using (CurrentTenant.Change(tenantId))
+        {
+            await _memberRepository.UpdateMemberTierAsync();
+        }
     }
 }

@@ -112,7 +112,7 @@ public class OrderController : AbpController, IOrderAppService
     }
 
     [HttpGet("ecpay-proceed-to-checkout")]
-    public async Task<IActionResult> ProceedToCheckout(Guid orderId, string clientBackUrl, PaymentMethods paymentMethodsValue)
+    public async Task<IActionResult> ProceedToCheckout(Guid orderId, string clientBackUrl, PaymentMethods paymentMethodsValue, bool isInstallments = false)
     {
         OrderDto order = await _ordersAppService.GetWithDetailsAsync(orderId);
 
@@ -202,6 +202,9 @@ public class OrderController : AbpController, IOrderAppService
             oPayment.Send.CustomField3 = string.Empty;
             oPayment.Send.CustomField4 = string.Empty;
             oPayment.Send.EncryptType = 1;
+
+            if (isInstallments && paymentMethodsValue == PaymentMethods.CreditCard)
+                oPayment.SendExtend.CreditInstallment = string.Join(",", ecPay.InstallmentPeriods);
 
             foreach (OrderItemDto item in order.OrderItems)
             {
@@ -459,7 +462,7 @@ public class OrderController : AbpController, IOrderAppService
     [HttpPut("update-return-status/{id}/{orderReturnStatus}")]
     public Task ChangeReturnStatusAsync(Guid id, OrderReturnStatus? orderReturnStatus, bool isRefund)
     {
-        return _ordersAppService.ChangeReturnStatusAsync(id, orderReturnStatus,isRefund);
+        return _ordersAppService.ChangeReturnStatusAsync(id, orderReturnStatus, isRefund);
     }
 
     [HttpGet("get-list-as-excel")]
@@ -638,6 +641,18 @@ public class OrderController : AbpController, IOrderAppService
     public Task<long> GetReturnOrderNotificationCount()
     {
         return _ordersAppService.GetReturnOrderNotificationCount();
+    }
+    [HttpGet("get-order-id")]
+    [AllowAnonymous]
+    public Task<Guid> GetOrderIdAsync(string orderNo)
+    {
+        return _ordersAppService.GetOrderIdAsync(orderNo);
+    }
+
+    [HttpGet("order-id/{orderNo}")]
+    public Task<Guid> GetOrderIdAsync(string orderNo)
+    {
+        return _ordersAppService.GetOrderIdAsync(orderNo);
     }
 
 
