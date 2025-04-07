@@ -4,26 +4,14 @@ using System.Text;
 namespace Kooco.Pikachu;
 public static class EncryptionExtensions
 {
-    /// <summary>
-    /// 使用 SHA256 演算法計算文字的雜湊值
-    /// </summary>
     public static string HmacSHA256(this string message, string key)
     {
-        // 使用 UTF-8 編碼將字串轉換為位元組數組
         var keyByte = Encoding.UTF8.GetBytes(key);
         var messageBytes = Encoding.UTF8.GetBytes(message);
-
-        // 使用 HMACSHA256 演算法計算雜湊值
         using HMACSHA256 hmacsha256 = new(keyByte);
         var hashmessage = hmacsha256.ComputeHash(messageBytes);
-
-        // 將雜湊值轉換為 Base64 編碼的字串
         return Convert.ToBase64String(hashmessage);
     }
-
-    /// <summary>
-    /// 使用 AES 演算法加密文字
-    /// </summary>
     public static async Task<string> AesEncryptAsync(
         this string text,
         string key,
@@ -57,10 +45,6 @@ public static class EncryptionExtensions
             return Convert.ToBase64String(ms.ToArray());
         }
     }
-
-    /// <summary>
-    /// 使用 AES 演算法解密文字
-    /// </summary>
     public static async Task<string> AesDecryptAsync(
         this string text,
         string key,

@@ -1,6 +1,4 @@
-﻿using Azure.Core;
-using Hangfire.Storage;
-using Kooco.Pikachu.EnumValues;
+﻿using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Groupbuys;
 using Kooco.Pikachu.GroupBuys;
 using Kooco.Pikachu.OrderHistories;
@@ -8,28 +6,18 @@ using Kooco.Pikachu.Orders;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using RestSharp;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Linq;
 using System.Linq.Dynamic.Core;
-using System.Reflection.PortableExecutable;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
-using System.Transactions;
 using System.Web;
-using Volo.Abp;
-using Volo.Abp.Application.Services;
 using Volo.Abp.Data;
 using Volo.Abp.Domain.Repositories;
-using Volo.Abp.MultiTenancy;
-using Volo.Abp.SettingManagement;
-using Volo.Abp.Uow;
-using static OpenIddict.Abstractions.OpenIddictConstants;
 
 namespace Kooco.Pikachu.ElectronicInvoiceSettings;
 
