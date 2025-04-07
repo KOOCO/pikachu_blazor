@@ -639,6 +639,11 @@ public class OrderController : AbpController, IOrderAppService
     {
         return _ordersAppService.GetReturnOrderNotificationCount();
     }
+    [HttpGet("get-order-id")]
+    public Task<Guid> GetOrderIdAsync(string orderNo)
+    {
+        return _ordersAppService.GetOrderIdAsync(orderNo);
+    }
 
 
     #endregion
