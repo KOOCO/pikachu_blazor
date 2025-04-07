@@ -20,6 +20,7 @@ using Kooco.Pikachu.TenantManagement;
 using Kooco.Pikachu.UserCumulativeCredits;
 using Kooco.Pikachu.UserShoppingCredits;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using MiniExcelLibs;
@@ -608,11 +609,15 @@ public class OrderAppService : ApplicationService, IOrderAppService
             await _orderRepository.GetOrderAsync(groupBuyId, orderNo, extraInfo)
         );
 
-        order.StoreCustomerServiceMessages = await _OrderMessageAppService.GetOrderMessagesAsync(order.OrderNo);
+        order.StoreCustomerServiceMessages = await _OrderMessageAppService.GetOrderMessagesAsync(order.Id);
 
         return order;
     }
-
+    public async Task<Guid> GetOrderIdAsync(string orderNo)
+    {
+        return await (await _orderRepository.GetQueryableAsync()).Where(x => x.OrderNo == orderNo).Select(x => x.Id).FirstOrDefaultAsync();
+    
+    }
     public async Task<OrderDto> UpdateOrderPaymentMethodAsync(OrderPaymentMethodRequest request)
     {
         Order order = await _orderRepository.GetAsync(request.OrderId);
