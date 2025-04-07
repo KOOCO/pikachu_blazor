@@ -752,7 +752,7 @@
     "Wallet:WalletBalance": "錢包餘額",
     "Wallet:AwaitingReviewCount": "待審核數",
     "Wallet:ManageWallet": "管理錢包",
-    "Wallet:AmountsAwaitingReview": "待審核款項",
+    "Wallet:AwaitingAudit": "待審核款項",
     "Wallet:WalletDetailsRecord": "錢包詳細記錄",
 
     "WebpageTitle": "網頁標題",

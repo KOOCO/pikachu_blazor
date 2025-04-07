@@ -7,9 +7,10 @@
 }
 
 <LoadingIndicator @ref="Loading" FullScreen FadeIn />
-<Row Margin="Margin.Is0.OnY">
+<Row Margin="Margin.Is4.FromBottom">
     <Column ColumnSize="ColumnSize.Is4">
         <Card Class="compact-card"
+              Height="Height.Is100"
               Style="background-color: #72D9BF45;">
             <CardBody Class="compact-card-body">
                 <Div Class="compact-card-content">
@@ -27,6 +28,7 @@
     </Column>
     <Column ColumnSize="ColumnSize.Is4">
         <Card Class="compact-card"
+              Height="Height.Is100"
               Style="background-color: #FFDB5A45;">
             <CardBody Class="compact-card-body">
                 <Div Class="compact-card-content">
@@ -44,6 +46,7 @@
     </Column>
     <Column ColumnSize="ColumnSize.Is4">
         <Card Class="compact-card"
+              Height="Height.Is100"
               Style="background-color: #DE3B4045;">
             <CardBody Class="compact-card-body">
                 <Div Class="compact-card-content">
@@ -179,53 +182,65 @@
         border: 1px solid #dee2e6; /* 邊框顏色 */
         border-radius: 8px; /* 圓角 */
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* 陰影效果 */
-        background-color: #f8f9fa; /* 背景顏色 */
-        /* 尺寸與佈局 */
-        min-height: 100px; /* ADJUSTABLE: 卡片的最小高度，確保內容空間，可根據字體大小調整 */
-        display: flex; /* 使用 Flexbox 佈局 */
-        align-items: center; /* 垂直居中卡片內容 (CardBody) */
+        background-color: #f8f9fa; /* 預設背景色，會被內聯樣式覆蓋 */
+        /* 尺寸與佈局 - Height.Is100 處理高度 */
+        display: flex; /* 使用 Flexbox */
+        flex-direction: column; /* 確保卡片主體在需要時可以垂直伸展 */
         /* 動畫效果 (可選) */
         transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
 
     .compact-card-body {
         /* 內邊距 */
-        padding: 0.5rem 0.75rem; /* ADJUSTABLE: 上下 左右 的內邊距，可微調 */
+        padding: 0.75rem 1rem; /* 可根據需要調整內邊距 */
         /* 尺寸與佈局 */
-        width: 100%; /* 佔滿卡片寬度 */
         display: flex; /* 使用 Flexbox */
-        align-items: center; /* 垂直居中 CardContent */
+        align-items: center; /* 垂直置中內容 */
+        justify-content: center; /* 水平置中內容 */
+        flex-grow: 1; /* 允許主體增長以填滿卡片高度 */
+        width: 100%; /* 寬度佔滿 */
     }
 
     .compact-card-content {
-        /* 佈局：設定為 Flexbox 垂直排列 */
+        /* 佈局：垂直堆疊 */
         display: flex;
         flex-direction: column; /* 主要設定：讓子元素 (Text) 垂直堆疊 */
-        justify-content: center; /* 在垂直方向上居中 (因為 flex-direction 是 column) */
-        align-items: flex-start; /* 在水平方向上靠左對齊，若要居中改為 center */
+        justify-content: center; /* 在其空間內垂直置中 */
+        align-items: flex-start; /* 將文字對齊到起始處 (左側) */
         /* 尺寸 */
-        width: 100%; /* 佔滿 CardBody 寬度 */
+        width: 100%; /* 佔滿寬度 */
         /* 間距 */
-        gap: 2rem; /* ADJUSTABLE: 標題和金額之間的垂直間距 */
+        gap: 0.8rem; /* 標題和金額之間的間距 */
+        text-align: left; /* 確保文字靠左對齊 */
     }
 
-        .compact-card-content .compact-card-text { /* More specific selector */
-            margin-bottom: 0; /* 清除預設的底部邊距 */
-            line-height: 1.5; /* 基礎行高 */
+        .compact-card-content .compact-card-text {
+            margin-bottom: 0; /* 移除預設的底部邊距 */
+            line-height: 1.2; /* 調整行高以使其更緊湊 */
+            white-space: nowrap; /* 防止文字換行 */
+            overflow: hidden; /* 隱藏溢出的內容 */
+            text-overflow: ellipsis; /* 如果文字溢出，顯示省略號 (...) */
+            width: 100%; /* 允許文字在應用省略號前佔滿可用寬度 */
         }
 
+            /* 標題的特定樣式 */
             .compact-card-content .compact-card-text:first-child {
-                width: 163px;
-                font-family: Inter;
-                font-size: 28px;
-                line-height: 22px;
+                /* 移除了固定的寬度 */
+                font-family: Inter, sans-serif; /* 加入備用字體 */
+                font-size: clamp(1rem, 2.5vw, 1.5rem); /* 響應式字體大小 */
                 font-weight: 400;
             }
 
+            /* 金額的特定樣式 */
             .compact-card-content .compact-card-text:last-child {
-                font-family: Inter;
-                font-size: 40px;
-                line-height: 40px;
-                font-weight: 700;
+                font-family: Inter, sans-serif; /* 加入備用字體 */
+                font-size: clamp(1.5rem, 4vw, 2.25rem); /* 響應式字體大小 */
+                font-weight: 700; /* 保持粗體 */
             }
+
+    /* 確保編輯表單的卡片也伸展 */
+    .row > .col-md-6 > .card { /* 針對第二行的欄位 (假設它們使用 ColumnSize.Is6.OnTablet 產生的預設 col-md-6 class) */
+        height: 100%; /* 使其高度也為 100% */
+    }
+
 </style>

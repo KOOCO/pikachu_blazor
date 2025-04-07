@@ -2,6 +2,7 @@
 using Blazorise.LoadingIndicator;
 using Kooco.Pikachu.Localization;
 using Kooco.Pikachu.TenantManagement;
+using Kooco.Pikachu.TenantManagement.TenantWallet;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
 using Microsoft.JSInterop;

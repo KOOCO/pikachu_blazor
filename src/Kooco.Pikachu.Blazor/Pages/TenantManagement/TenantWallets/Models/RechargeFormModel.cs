@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Kooco.Pikachu.Blazor.Pages.TenantManagement.TenantWallets;
+namespace Kooco.Pikachu.Blazor.Pages.TenantManagement.TenantWallets.Models;
 public class RechargeFormModel
 {
     [Required(ErrorMessage = "請輸入金額")]

@@ -83,7 +83,7 @@ namespace Kooco.Pikachu.Blazor;
     typeof(AbpSettingManagementBlazorServerModule),
     typeof(AbpBackgroundJobsHangfireModule),
     typeof(AbpBackgroundWorkersModule)
-   )]
+)]
 public class PikachuBlazorModule : AbpModule
 {
     public override void PreConfigureServices(ServiceConfigurationContext context)

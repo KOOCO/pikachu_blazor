@@ -1,9 +1,9 @@
-﻿using Kooco.Pikachu.TenantManagement.Request;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using System;
 using Volo.Abp.Application.Services;
+using Kooco.Pikachu.TenantManagement.TenantWallet.Request;
 
-namespace Kooco.Pikachu.TenantManagement;
+namespace Kooco.Pikachu.TenantManagement.TenantWallet;
 public interface ITenantWalletAppService : IApplicationService
 {
     Task AddRechargeTransactionAsync(Guid walletId, decimal amount, CreateWalletTransactionDto import);

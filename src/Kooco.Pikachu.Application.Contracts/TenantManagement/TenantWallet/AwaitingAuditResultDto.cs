@@ -1,8 +1,8 @@
 ﻿using System;
 using Volo.Abp.Application.Dtos;
 
-namespace Kooco.Pikachu.TenantManagement;
-public class TenantWalletResultDto : CreationAuditedEntityDto<Guid>
+namespace Kooco.Pikachu.TenantManagement.TenantWallet;
+public class AwaitingAuditResultDto : CreationAuditedEntityDto<Guid>
 {
     public required string TenantName { get; set; }
     public required decimal Balance { get; set; }
