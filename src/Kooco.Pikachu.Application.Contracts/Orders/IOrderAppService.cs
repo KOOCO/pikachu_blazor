@@ -64,6 +64,6 @@ namespace Kooco.Pikachu.Orders
         Task<List<OrderHistoryDto>> GetOrderLogsAsync(Guid orderId);
         Task CloseOrdersAsync();
         Task<long> GetReturnOrderNotificationCount();
-        Task<Guid> GetAllOrderIdAsync(string orderNo);
+        Task<Guid> GetOrderIdAsync(string orderNo);
     }
 }

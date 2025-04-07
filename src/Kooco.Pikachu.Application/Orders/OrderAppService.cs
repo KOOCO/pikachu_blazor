@@ -613,7 +613,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
         return order;
     }
-    public async Task<Guid> GetAllOrderIdAsync(string orderNo)
+    public async Task<Guid> GetOrderIdAsync(string orderNo)
     {
         return await (await _orderRepository.GetQueryableAsync()).Where(x => x.OrderNo == orderNo).Select(x => x.Id).FirstOrDefaultAsync();
     
