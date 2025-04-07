@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Application.Services;
@@ -68,6 +69,7 @@ namespace Kooco.Pikachu.PaymentGateways
                 ecPay.HashIV = _stringEncryptionService.Encrypt(input.HashIV);
                 ecPay.TradeDescription = _stringEncryptionService.Encrypt(input.TradeDescription);
                 ecPay.CreditCheckCode = _stringEncryptionService.Encrypt(input.CreditCheckCode);
+                ecPay.InstallmentPeriodsJson = JsonSerializer.Serialize(input.InstallmentPeriods);
                 await _paymentGatewayRepository.UpdateAsync(ecPay);
             }
             else
@@ -81,7 +83,8 @@ namespace Kooco.Pikachu.PaymentGateways
                     HashKey = _stringEncryptionService.Encrypt(input.HashKey),
                     HashIV = _stringEncryptionService.Encrypt(input.HashIV),
                     TradeDescription = _stringEncryptionService.Encrypt(input.TradeDescription),
-                    CreditCheckCode = _stringEncryptionService.Encrypt(input.CreditCheckCode)
+                    CreditCheckCode = _stringEncryptionService.Encrypt(input.CreditCheckCode),
+                    InstallmentPeriodsJson = JsonSerializer.Serialize(input.InstallmentPeriods)
                 };
 
                 await _paymentGatewayRepository.InsertAsync(newEcPay);
