@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Volo.Abp;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Guids;
@@ -13,10 +14,12 @@ namespace Kooco.Pikachu.Orders
     public class OrderMessageAppService : ApplicationService, IOrderMessageAppService
     {
         private readonly IOrderMessageRepository _orderMessageRepository;
+        private readonly IOrderRepository _orderRepository;
 
-        public OrderMessageAppService(IOrderMessageRepository orderMessageRepository)
+        public OrderMessageAppService(IOrderMessageRepository orderMessageRepository, IOrderRepository orderRepository)
         {
             _orderMessageRepository = orderMessageRepository;
+            _orderRepository = orderRepository;
         }
 
         // Retrieve an OrderMessage by ID
@@ -57,8 +60,15 @@ namespace Kooco.Pikachu.Orders
             );
         }
 
-        public async Task<List<OrderMessageDto>> GetOrderMessagesAsync(Guid orderId)
+        public async Task<List<OrderMessageDto>> GetOrderMessagesAsync(string orderNo)
         {
+            var orders = await _orderRepository.GetQueryableAsync();
+            var orderId=orders.Where(x => x.OrderNo == orderNo).Select(x => x.Id).FirstOrDefault();
+            if (orderId == null || orderId == Guid.Empty)
+            {
+                throw new UserFriendlyException("No Order Found");
+            
+            }
             return ObjectMapper.Map<List<OrderMessage>, List<OrderMessageDto>>(
                 await _orderMessageRepository.GetOrderMessagesAsync(orderId)
             );

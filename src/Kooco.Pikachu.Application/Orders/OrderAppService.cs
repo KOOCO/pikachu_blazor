@@ -608,7 +608,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
             await _orderRepository.GetOrderAsync(groupBuyId, orderNo, extraInfo)
         );
 
-        order.StoreCustomerServiceMessages = await _OrderMessageAppService.GetOrderMessagesAsync(order.Id);
+        order.StoreCustomerServiceMessages = await _OrderMessageAppService.GetOrderMessagesAsync(order.OrderNo);
 
         return order;
     }
