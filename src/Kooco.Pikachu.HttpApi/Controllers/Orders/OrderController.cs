@@ -644,15 +644,15 @@ public class OrderController : AbpController, IOrderAppService
     }
     [HttpGet("get-order-id")]
     [AllowAnonymous]
-    public Task<Guid> GetOrderIdAsync(string orderNo)
+    public Task<Guid> GetAllOrderIdAsync(string orderNo)
     {
-        return _ordersAppService.GetOrderIdAsync(orderNo);
+        return _ordersAppService.GetAllOrderIdAsync(orderNo);
     }
 
     [HttpGet("order-id/{orderNo}")]
     public Task<Guid> GetOrderIdAsync(string orderNo)
     {
-        return _ordersAppService.GetOrderIdAsync(orderNo);
+        return _ordersAppService.GetAllOrderIdAsync(orderNo);
     }
 
 
