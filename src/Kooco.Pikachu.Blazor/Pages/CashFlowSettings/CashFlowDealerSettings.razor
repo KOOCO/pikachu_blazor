@@ -15,7 +15,11 @@
 <LoadingIndicator @ref="Loading" FullScreen>
 
 </LoadingIndicator>
-
+<style>
+    .form-check-inline {
+        margin: 0;
+    }
+</style>
 <h3>@L["CashFlowDealerSettings"]</h3>
 <Card>
     <CardHeader>
@@ -287,6 +291,22 @@
                     <Switch TValue="bool" id="g-enable-disable-switch" @bind-Checked="EcPay.IsCreditCardEnabled"></Switch>
                 </div>
             </div>
+            @if (EcPay.IsCreditCardEnabled)
+            {
+                <div class="row justify-content-center mb-2">
+                    <div class="col-2 text-end">
+                        <label class="form-label" for="g-enable-disable-switch"></label>
+                        @L["InstallmentPeriods"]
+                    </div>
+                    <div class="col-6">
+                        @foreach (var period in InstallmentPeriods)
+                        {
+                            <Switch Inline TValue="bool" Checked="@EcPay.InstallmentPeriods.Contains(period)"
+                                    CheckedChanged="(e) => OnInstallmentPeriodChange(e, period)">@L["InstallmentPeriods." + period]</Switch>
+                        }
+                    </div>
+                </div>
+            }
             <div class="row justify-content-center mb-2">
                 <div class="col-2 text-end">
                     <label class="form-label" for="g-enable-disable-switch"></label>

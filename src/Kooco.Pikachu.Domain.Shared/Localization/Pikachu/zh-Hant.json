@@ -1473,7 +1473,13 @@
     "MemberTags": "會員標籤",
     "MemberStatus": "會員狀態",
     "VipTier": "VIP 等級",
-
-    "CreationTime": "創建時間"
+    "CreationTime": "創建時間",
+    "Permission:VipTierSettings": "等級管理",
+    "InstallmentPeriods": "分期付款期數",
+    "InstallmentPeriods.3": "3期",
+    "InstallmentPeriods.6": "6期",
+    "InstallmentPeriods.12": "12期",
+    "InstallmentPeriods.18": "18期",
+    "InstallmentPeriods.24": "24期"
   }
 }

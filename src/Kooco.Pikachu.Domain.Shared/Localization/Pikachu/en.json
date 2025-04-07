@@ -1391,6 +1391,7 @@
     "MemberStatus": "Member Status",
     "VipTier": "Vip Tier",
     "CreationTime": "創建時間",
-    "Permission:VipTierSettings": "Vip Tier Settings"
+    "Permission:VipTierSettings": "Tier Management",
+    "InstallmentPeriods": "Installment Periods"
   }
 }
