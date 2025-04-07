@@ -1,4 +1,5 @@
-﻿using Kooco.Pikachu.Extensions;
+﻿using Kooco.Pikachu.Blazor.Pages.TenantManagement.TenantWallets.Models;
+using Kooco.Pikachu.Extensions;
 using Kooco.Pikachu.TenantManagement;
 using System;
 using System.Threading.Tasks;

@@ -715,7 +715,7 @@
     "Wallet:WalletBalance": "Wallet Balance",
     "Wallet:AwaitingReviewCount": "Awaiting Review Count",
     "Wallet:ManageWallet": "Manage Wallet",
-    "Wallet:AmountsAwaitingReview": "Amounts Awaiting Review",
+    "Wallet:AwaitingAudit": "Awaiting Audit",
     "Wallet:WalletDetailsRecord": "Wallet Details Record",
 
     "WebpageTitle": "Webpage Title",

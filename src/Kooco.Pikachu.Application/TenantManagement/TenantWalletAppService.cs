@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Kooco.Pikachu.TenantManagement.Entities;
-using Kooco.Pikachu.TenantManagement.Request;
+using Kooco.Pikachu.TenantManagement.TenantWallet;
+using Kooco.Pikachu.TenantManagement.TenantWallet.Request;
 using Microsoft.AspNetCore.Authorization;
 using System;
 using System.Threading.Tasks;

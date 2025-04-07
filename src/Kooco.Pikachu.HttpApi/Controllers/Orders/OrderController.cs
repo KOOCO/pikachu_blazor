@@ -11,7 +11,6 @@ using Kooco.Pikachu.StoreLogisticOrders;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections;
@@ -637,20 +636,19 @@ public class OrderController : AbpController, IOrderAppService
     {
         return _ordersAppService.CloseOrdersAsync();
     }
+
     [HttpGet("return-notification-count")]
     public Task<long> GetReturnOrderNotificationCount()
     {
         return _ordersAppService.GetReturnOrderNotificationCount();
     }
+
     [HttpGet("get-order-id")]
     [AllowAnonymous]
     public Task<Guid> GetOrderIdAsync(string orderNo)
     {
         return _ordersAppService.GetOrderIdAsync(orderNo);
     }
-
-    
-
 
     #endregion
 }

@@ -33,15 +33,15 @@
               SelectedTab="@SelectedTab">
             <Items>
                 <Tab Name="ManageWallet">@L["Wallet:ManageWallet"]</Tab>
-                <Tab Name="AmountsAwaitingReview">@L["Wallet:AmountsAwaitingReview"]</Tab>
+                <Tab Name="AwaitingAudit">@L["Wallet:AwaitingAudit"]</Tab>
                 <Tab Name="WalletDetailsRecord">@L["Wallet:WalletDetailsRecord"]</Tab>
             </Items>
             <Content>
                 <TabPanel Name="ManageWallet">
                     <ManageWallet Id="@Wallet.Id" />
                 </TabPanel>
-                <TabPanel Name="AmountsAwaitingReview">
-                    <AmountsAwaitingReview />
+                <TabPanel Name="AwaitingAudit">
+                    <AwaitingAudit />
                 </TabPanel>
                 <TabPanel Name="WalletDetailsRecord">
                     <WalletDetailsRecord />

@@ -1,0 +1,43 @@
+﻿@attribute [Authorize(PikachuPermissions.TenantWallet.Default)]
+@inherits FormComponentBase
+
+<LoadingIndicator @ref="Loading" FullScreen FadeIn />
+<Row Margin="Margin.Is4.FromBottom">
+    <Column ColumnSize="ColumnSize.Is4">
+        <Card Class="compact-card"
+              Height="Height.Is100"
+              Style="background-color: #72D9BF45;">
+            <CardBody Class="compact-card-body">
+                <Div Class="compact-card-content">
+                    <Text Class="compact-card-text"
+                          Style="color: #217762FF;">
+                        @PL["TenantWallet:Balance"]
+                    </Text>
+                    <Text Class="compact-card-text"
+                          Style="font-weight: bold; color: #217762FF;">
+                        BalanceCurrency
+                    </Text>
+                </Div>
+            </CardBody>
+        </Card>
+    </Column>
+    <Column ColumnSize="ColumnSize.Is4">
+        <Card Class="compact-card"
+              Height="Height.Is100"
+              Style="background-color: #FFDB5A45;">
+            <CardBody Class="compact-card-body">
+                <Div Class="compact-card-content">
+                    <Text Class="compact-card-text"
+                          Style="color: #FD9150FF;">
+                        @PL["TenantWallet:RechargeAmountOfStored"]
+                    </Text>
+                    <Text Class="compact-card-text"
+                          Style="font-weight: bold; color: #FD9150FF;">
+                        RechargeAmountOfStoredCurrency
+                    </Text>
+                </Div>
+            </CardBody>
+        </Card>
+    </Column>
+</Row>
+

@@ -1,5 +1,5 @@
 ﻿using Blazorise.DataGrid;
-using Kooco.Pikachu.TenantManagement;
+using Kooco.Pikachu.TenantManagement.TenantWallet;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
