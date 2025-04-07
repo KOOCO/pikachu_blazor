@@ -479,7 +479,8 @@ public partial class EditGroupBuy
             GroupBuyModuleType.GroupPurchaseOverview,
             GroupBuyModuleType.CountdownTimer,
             GroupBuyModuleType.OrderInstruction,
-            GroupBuyModuleType.ProductRankingCarouselModule
+            GroupBuyModuleType.ProductRankingCarouselModule,
+            GroupBuyModuleType.CustomTextModule
         ];
     }
 
@@ -842,6 +843,10 @@ public partial class EditGroupBuy
                     {
                         await Task.Delay(100);
                     }
+
+                    CollapseItem[index].Title = itemGroup.Title;
+                    CollapseItem[index].Text = itemGroup.Text;
+
                     foreach (var item in itemGroup.ItemGroupDetails.OrderBy(x => x.SortOrder))
                     {
                         if (itemGroup.GroupBuyModuleType == GroupBuyModuleType.IndexAnchor)
@@ -880,6 +885,7 @@ public partial class EditGroupBuy
                         && itemGroup.GroupBuyModuleType is not GroupBuyModuleType.GroupPurchaseOverview
                         && itemGroup.GroupBuyModuleType is not GroupBuyModuleType.CountdownTimer
                         && itemGroup.GroupBuyModuleType is not GroupBuyModuleType.OrderInstruction
+                        && itemGroup.GroupBuyModuleType is not GroupBuyModuleType.CustomTextModule
                         && itemGroup.ItemGroupDetails.Count < 3)
                     {
                         for (int x = itemGroup.ItemGroupDetails.Count; x < 3; x++)
@@ -2354,7 +2360,9 @@ public partial class EditGroupBuy
                         AdditionalInfo = item.AdditionalInfo,
                         ProductGroupModuleTitle = item.ProductGroupModuleTitle,
                         ProductGroupModuleImageSize = item.ProductGroupModuleImageSize,
-                        ModuleNumber = item.ModuleNumber
+                        ModuleNumber = item.ModuleNumber,
+                        Title = item.Title,
+                        Text = item.Text
                     };
 
                     if (item.GroupBuyModuleType is GroupBuyModuleType.ProductRankingCarouselModule &&

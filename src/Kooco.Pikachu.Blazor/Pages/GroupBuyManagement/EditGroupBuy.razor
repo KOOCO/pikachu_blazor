@@ -1587,6 +1587,24 @@
                                         }
                                     }
 
+                                    @if (module.GroupBuyModuleType is GroupBuyModuleType.CustomTextModule)
+                                    {
+                                        <Div Class="row">
+                                            <Div Class="col-2 pb-1">
+                                                <Label>@L["Title"]</Label>
+                                            </Div>
+                                            <Div Class="col-12 pb-1">
+                                                <TextEdit @bind-Text="module.Title" />
+                                            </Div>
+                                            <Div Class="col-2 pb-1">
+                                                <Label>@L["Text"]</Label>
+                                            </Div>
+                                            <Div Class="col-12 pb-1">
+                                                <TextEdit @bind-Text="@module.Text" />
+                                            </Div>
+                                        </Div>
+                                    }
+
                                     @if (module.GroupBuyModuleType is not GroupBuyModuleType.ProductRankingCarouselModule)
                                     {
 

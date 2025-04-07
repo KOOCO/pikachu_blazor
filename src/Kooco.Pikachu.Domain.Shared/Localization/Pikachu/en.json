@@ -1398,6 +1398,7 @@
     "InstallmentPeriods.12": "12",
     "InstallmentPeriods.18": "18",
     "InstallmentPeriods.24": "24",
-    "EnterANewBadge": "Enter a new badge"
+    "EnterANewBadge": "Enter a new badge",
+    "CustomTextModule": "Custom Text Module"
   }
 }

@@ -11,5 +11,6 @@ public enum GroupBuyModuleType
     GroupPurchaseOverview,
     CountdownTimer,
     OrderInstruction,
-    ProductRankingCarouselModule
+    ProductRankingCarouselModule,
+    CustomTextModule
 }

@@ -338,17 +338,17 @@
                         item == Enum.GetName(DeliveryMethod.SevenToElevenC2C) ||
                         item == Enum.GetName(DeliveryMethod.SevenToEleven1))
                         {
-                        
-                                <label for="@item" class="form-label me-2">
-                                    <input type="checkbox"
-                                           class="form-check-input"
-                                           id="@item"
-                                           disabled="@(((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore")) && item != "DeliveredByStore")||CheckForShippingMethodData(item)||CreateGroupBuyDto.IsEnterprise||!IsShippingMethodEnabled(item))"
-                                           checked="@((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains(item)))"
-                                           @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
-                                    @L[EnumHelper.GetDescription(Enum.Parse<DeliveryMethod>(item))]
-                                </label>
-                            
+
+                            <label for="@item" class="form-label me-2">
+                                <input type="checkbox"
+                                       class="form-check-input"
+                                       id="@item"
+                                       disabled="@(((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore")) && item != "DeliveredByStore")||CheckForShippingMethodData(item)||CreateGroupBuyDto.IsEnterprise||!IsShippingMethodEnabled(item))"
+                                       checked="@((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains(item)))"
+                                       @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
+                                @L[EnumHelper.GetDescription(Enum.Parse<DeliveryMethod>(item))]
+                            </label>
+
                             @if (item == Enum.GetName(DeliveryMethod.FamilyMartC2C)
                            || item == Enum.GetName(DeliveryMethod.BlackCat1))
                             {
@@ -371,17 +371,17 @@
                         item == Enum.GetName(DeliveryMethod.FamilyMartC2C) ||
                         item == Enum.GetName(DeliveryMethod.TCatDeliverySevenElevenNormal))
                         {
-                          
-                                <label for="@item" class="form-label me-2">
-                                    <input type="checkbox"
-                                           class="form-check-input"
-                                           id="@item"
-                                           disabled="@(((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore"))&&item!="DeliveredByStore")||CheckForShippingMethodData(item)||CreateGroupBuyDto.IsEnterprise||!IsShippingMethodEnabled(item))"
-                                           checked="@((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains(item)))"
-                                           @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
-                                    @L[EnumHelper.GetDescription(Enum.Parse<DeliveryMethod>(item))]
-                                </label>
-                            
+
+                            <label for="@item" class="form-label me-2">
+                                <input type="checkbox"
+                                       class="form-check-input"
+                                       id="@item"
+                                       disabled="@(((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore"))&&item!="DeliveredByStore")||CheckForShippingMethodData(item)||CreateGroupBuyDto.IsEnterprise||!IsShippingMethodEnabled(item))"
+                                       checked="@((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains(item)))"
+                                       @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
+                                @L[EnumHelper.GetDescription(Enum.Parse<DeliveryMethod>(item))]
+                            </label>
+
                             @if (item == Enum.GetName(DeliveryMethod.FamilyMartC2C)
                            || item == Enum.GetName(DeliveryMethod.BlackCat1))
                             {
@@ -401,17 +401,17 @@
                         if (item == Enum.GetName(DeliveryMethod.BlackCatFreeze) ||
                         item == Enum.GetName(DeliveryMethod.TCatDeliveryFreeze))
                         {
-                           
-                                <label for="@item" class="form-label me-2">
-                                    <input type="checkbox"
-                                           class="form-check-input"
-                                           id="@item"
-                                           disabled="@(((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore")) && item != "DeliveredByStore")||CheckForShippingMethodData(item)||CreateGroupBuyDto.IsEnterprise||!IsShippingMethodEnabled(item))"
-                                           checked="@((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains(item)))"
-                                           @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
-                                    @L[EnumHelper.GetDescription(Enum.Parse<DeliveryMethod>(item))]
-                                </label>
-                            
+
+                            <label for="@item" class="form-label me-2">
+                                <input type="checkbox"
+                                       class="form-check-input"
+                                       id="@item"
+                                       disabled="@(((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore")) && item != "DeliveredByStore")||CheckForShippingMethodData(item)||CreateGroupBuyDto.IsEnterprise||!IsShippingMethodEnabled(item))"
+                                       checked="@((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains(item)))"
+                                       @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
+                                @L[EnumHelper.GetDescription(Enum.Parse<DeliveryMethod>(item))]
+                            </label>
+
                         }
                     }
                 }
@@ -423,17 +423,17 @@
                         item == Enum.GetName(DeliveryMethod.TCatDeliveryFreeze) ||
                         item == Enum.GetName(DeliveryMethod.TCatDeliverySevenElevenFreeze))
                         {
-                          
-                                <label for="@item" class="form-label me-2">
-                                    <input type="checkbox"
-                                           class="form-check-input"
-                                           id="@item"
-                                           disabled="@(((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore"))&&item!="DeliveredByStore")||CheckForShippingMethodData(item)||CreateGroupBuyDto.IsEnterprise||!IsShippingMethodEnabled(item))"
-                                           checked="@((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains(item)))"
-                                           @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
-                                    @L[EnumHelper.GetDescription(Enum.Parse<DeliveryMethod>(item))]
-                                </label>
-                            
+
+                            <label for="@item" class="form-label me-2">
+                                <input type="checkbox"
+                                       class="form-check-input"
+                                       id="@item"
+                                       disabled="@(((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore"))&&item!="DeliveredByStore")||CheckForShippingMethodData(item)||CreateGroupBuyDto.IsEnterprise||!IsShippingMethodEnabled(item))"
+                                       checked="@((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains(item)))"
+                                       @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
+                                @L[EnumHelper.GetDescription(Enum.Parse<DeliveryMethod>(item))]
+                            </label>
+
                         }
                     }
                 }
@@ -447,17 +447,17 @@
                         if (item == Enum.GetName(DeliveryMethod.BlackCatFrozen) ||
                         item == Enum.GetName(DeliveryMethod.TCatDeliveryFrozen))
                         {
-                          
-                                <label for="@item" class="form-label me-2">
-                                    <input type="checkbox"
-                                           class="form-check-input"
-                                           id="@item"
-                                           disabled="@(((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore")) && item != "DeliveredByStore")||CheckForShippingMethodData(item)||CreateGroupBuyDto.IsEnterprise||!IsShippingMethodEnabled(item))"
-                                           checked="@((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains(item)))"
-                                           @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
-                                    @L[EnumHelper.GetDescription(Enum.Parse<DeliveryMethod>(item))]
-                                </label>
-                            
+
+                            <label for="@item" class="form-label me-2">
+                                <input type="checkbox"
+                                       class="form-check-input"
+                                       id="@item"
+                                       disabled="@(((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore")) && item != "DeliveredByStore")||CheckForShippingMethodData(item)||CreateGroupBuyDto.IsEnterprise||!IsShippingMethodEnabled(item))"
+                                       checked="@((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains(item)))"
+                                       @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
+                                @L[EnumHelper.GetDescription(Enum.Parse<DeliveryMethod>(item))]
+                            </label>
+
                         }
                     }
                 }
@@ -470,17 +470,17 @@
                         item == Enum.GetName(DeliveryMethod.SevenToElevenFrozen) ||
                         item == Enum.GetName(DeliveryMethod.TCatDeliverySevenElevenFrozen))
                         {
-                           
-                                <label for="@item" class="form-label me-2">
-                                    <input type="checkbox"
-                                           class="form-check-input"
-                                           id="@item"
-                                           disabled="@(((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore"))&&item!="DeliveredByStore")||CheckForShippingMethodData(item)||CreateGroupBuyDto.IsEnterprise||!IsShippingMethodEnabled(item))"
-                                           checked="@((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains(item)))"
-                                           @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
-                                    @L[EnumHelper.GetDescription(Enum.Parse<DeliveryMethod>(item))]
-                                </label>
-                            
+
+                            <label for="@item" class="form-label me-2">
+                                <input type="checkbox"
+                                       class="form-check-input"
+                                       id="@item"
+                                       disabled="@(((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore"))&&item!="DeliveredByStore")||CheckForShippingMethodData(item)||CreateGroupBuyDto.IsEnterprise||!IsShippingMethodEnabled(item))"
+                                       checked="@((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains(item)))"
+                                       @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
+                                @L[EnumHelper.GetDescription(Enum.Parse<DeliveryMethod>(item))]
+                            </label>
+
                         }
                     }
                 }
@@ -491,17 +491,17 @@
                 {
                     if (item == Enum.GetName(DeliveryMethod.HomeDelivery))
                     {
-                       
-                            <label for="@item" class="form-label me-2">
-                                <input type="checkbox"
-                                       class="form-check-input"
-                                       id="@item"
-                                       disabled="@((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore")))||CreateGroupBuyDto.IsEnterprise"
-                                       checked="@((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains(item)))"
-                                       @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
-                                @L[EnumHelper.GetDescription(Enum.Parse<DeliveryMethod>(item))]
-                            </label>
-                        
+
+                        <label for="@item" class="form-label me-2">
+                            <input type="checkbox"
+                                   class="form-check-input"
+                                   id="@item"
+                                   disabled="@((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore")))||CreateGroupBuyDto.IsEnterprise"
+                                   checked="@((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains(item)))"
+                                   @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
+                            @L[EnumHelper.GetDescription(Enum.Parse<DeliveryMethod>(item))]
+                        </label>
+
                     }
 
                     if (item == Enum.GetName(DeliveryMethod.DeliveredByStore) ||
@@ -869,7 +869,7 @@
             </div>
         </div>
 
-       @*  <div class="row">
+        @*  <div class="row">
             <div class="col-2"></div>
              <div class="col-2">
             <label>@L["FaceBookPixelID"]</label>
@@ -878,27 +878,27 @@
             <TextEdit class="form-control" @bind-Value="@CreateGroupBuyDto.FBID" />
             </div>
         </div> *@
-         <div class="row">
-        <div class="col-2"></div>
-        <div class="col-2">
-        <label>@L["FaceBookPixelID"]</label>
-        </div>
-        <div class="col-5">
-        <TextEdit @bind-Text="@CreateGroupBuyDto.FBID" />
-        </div>
-        </div>
-       
-       
         <div class="row">
-        <div class="col-2"></div>
-        <div class="col-2">
-        <label>@L["GAID"]</label>
+            <div class="col-2"></div>
+            <div class="col-2">
+                <label>@L["FaceBookPixelID"]</label>
+            </div>
+            <div class="col-5">
+                <TextEdit @bind-Text="@CreateGroupBuyDto.FBID" />
+            </div>
         </div>
-        <div class="col-5">
-        <TextEdit @bind-Text="@CreateGroupBuyDto.GAID" />
+
+
+        <div class="row">
+            <div class="col-2"></div>
+            <div class="col-2">
+                <label>@L["GAID"]</label>
+            </div>
+            <div class="col-5">
+                <TextEdit @bind-Text="@CreateGroupBuyDto.GAID" />
+            </div>
         </div>
-        </div>
-      
+
         <Divider></Divider>
         <Div Class="row">
             <Div Class="col-2">@L["ColorSchemes"]</Div>
@@ -1521,6 +1521,24 @@
                                         }
                                     }
 
+                                    @if (module.GroupBuyModuleType is GroupBuyModuleType.CustomTextModule)
+                                    {
+                                        <Div Class="row">
+                                            <Div Class="col-2 pb-1">
+                                                <Label>@L["Title"]</Label>
+                                            </Div>
+                                            <Div Class="col-12 pb-1">
+                                                <TextEdit @bind-Text="module.Title" />
+                                            </Div>
+                                            <Div Class="col-2 pb-1">
+                                                <Label>@L["Text"]</Label>
+                                            </Div>
+                                            <Div Class="col-12 pb-1">
+                                                <TextEdit @bind-Text="@module.Text" />
+                                            </Div>
+                                        </Div>
+                                    }
+
                                     <div class="row mt-2">
                                         @if (module.GroupBuyModuleType is GroupBuyModuleType.ProductGroupModule)
                                         {
@@ -1853,7 +1871,7 @@
                 </div>
             </div>
         </div>
-    @*     <Divider></Divider>
+        @*     <Divider></Divider>
         <div class="row">
              <div class="col-2">
                 <fieldLabel>@L["GA4 ID"]</fieldLabel>
@@ -1863,7 +1881,7 @@
             <TextEdit></TextEdit>
             </div>
             </div>
-            
+
         </div> *@
     </CardBody>
 </Card>
@@ -1899,70 +1917,70 @@
         </EditForm>
     </ModalContent>
 </Modal>
-<Modal @ref="CropperModal" >
+<Modal @ref="CropperModal">
     <ModalContent Size="ModalSize.Large">
         <ModalHeader>
-             <ModalTitle>@L["LogoCropper"]</ModalTitle>
-                <CloseButton  Clicked="@CloseCropModal" />
+            <ModalTitle>@L["LogoCropper"]</ModalTitle>
+            <CloseButton Clicked="@CloseCropModal" />
         </ModalHeader>
         <ModalBody>
             <Row>
                 <Column ColumnSize="ColumnSize.Is6">
-        <Cropper @ref="LogoCropper"
-                      Source="@imageToCrop"
-                      Style="aspect-ratio: 16 / 9;" 
-                      SelectionChanged="@OnSelectionChanged"
-                      ShowBackground="true"/>
-                      </Column>
-                      <Column ColumnSize="ColumnSize.Is6">
-                           <Div Margin="Margin.Is2.FromBottom">
-            <Button Color="Color.Primary" Clicked="@GetCroppedImage" Disabled="@cropButtonDisabled">Get Cropped Image</Button>
-            <Button Color="Color.Secondary" Clicked="@ResetSelection" Disabled="@cropButtonDisabled">Reset Selection</Button>
-        </Div>
-        <Image Source="@croppedImage" Border="Border.Is1" Style="width: 300px; height: 300px;" />
+                    <Cropper @ref="LogoCropper"
+                             Source="@imageToCrop"
+                             Style="aspect-ratio: 16 / 9;"
+                             SelectionChanged="@OnSelectionChanged"
+                             ShowBackground="true" />
+                </Column>
+                <Column ColumnSize="ColumnSize.Is6">
+                    <Div Margin="Margin.Is2.FromBottom">
+                        <Button Color="Color.Primary" Clicked="@GetCroppedImage" Disabled="@cropButtonDisabled">Get Cropped Image</Button>
+                        <Button Color="Color.Secondary" Clicked="@ResetSelection" Disabled="@cropButtonDisabled">Reset Selection</Button>
+                    </Div>
+                    <Image Source="@croppedImage" Border="Border.Is1" Style="width: 300px; height: 300px;" />
 
-                      </Column>
-                      </Row>
+                </Column>
+            </Row>
 
-    </ModalBody>
-    <ModalFooter>
-      
-        <Button Color="Color.Secondary" Clicked="@CloseCropModal">@L["Cancel"]</Button>
-        <Button Color="Color.Primary" Disabled="@croppedImage.IsNullOrWhiteSpace()" Clicked="@CropImageAsync">@L["Save"]</Button>
-    </ModalFooter>
+        </ModalBody>
+        <ModalFooter>
+
+            <Button Color="Color.Secondary" Clicked="@CloseCropModal">@L["Cancel"]</Button>
+            <Button Color="Color.Primary" Disabled="@croppedImage.IsNullOrWhiteSpace()" Clicked="@CropImageAsync">@L["Save"]</Button>
+        </ModalFooter>
     </ModalContent>
 </Modal>
-<Modal @ref="CarouselCropperModal" >
+<Modal @ref="CarouselCropperModal">
     <ModalContent Size="ModalSize.Large">
         <ModalHeader>
-             <ModalTitle>@L["Cropper"]</ModalTitle>
-                <CloseButton  Clicked="@CloseCropModal" />
+            <ModalTitle>@L["Cropper"]</ModalTitle>
+            <CloseButton Clicked="@CloseCropModal" />
         </ModalHeader>
         <ModalBody>
             <Row>
                 <Column ColumnSize="ColumnSize.Is6">
-        <Cropper @ref="LogoCropper"
-                      Source="@imageToCrop"
-                      Style="aspect-ratio: 16 / 9;" 
-                      SelectionChanged="@OnSelectionChanged"
-                      ShowBackground="true"/>
-                      </Column>
-                      <Column ColumnSize="ColumnSize.Is6">
-                           <Div Margin="Margin.Is2.FromBottom">
-            <Button Color="Color.Primary" Clicked="@GetCroppedImage" Disabled="@cropButtonDisabled">Get Cropped Image</Button>
-            <Button Color="Color.Secondary" Clicked="@ResetSelection" Disabled="@cropButtonDisabled">Reset Selection</Button>
-        </Div>
-        <Image Source="@croppedImage" Border="Border.Is1" Style="width: 300px; height: 300px;" />
+                    <Cropper @ref="LogoCropper"
+                             Source="@imageToCrop"
+                             Style="aspect-ratio: 16 / 9;"
+                             SelectionChanged="@OnSelectionChanged"
+                             ShowBackground="true" />
+                </Column>
+                <Column ColumnSize="ColumnSize.Is6">
+                    <Div Margin="Margin.Is2.FromBottom">
+                        <Button Color="Color.Primary" Clicked="@GetCroppedImage" Disabled="@cropButtonDisabled">Get Cropped Image</Button>
+                        <Button Color="Color.Secondary" Clicked="@ResetSelection" Disabled="@cropButtonDisabled">Reset Selection</Button>
+                    </Div>
+                    <Image Source="@croppedImage" Border="Border.Is1" Style="width: 300px; height: 300px;" />
 
-                      </Column>
-                      </Row>
+                </Column>
+            </Row>
 
-    </ModalBody>
-    <ModalFooter>
-      
-        <Button Color="Color.Secondary" Clicked="@CloseCropModal">@L["Cancel"]</Button>
-        <Button Color="Color.Primary" Disabled="@croppedImage.IsNullOrWhiteSpace()" Clicked="()=>CropImageAsync(uploadedCarouselImages,CarouselModuleNumber,CarouselPicker,ImageType)">@L["Save"]</Button>
-    </ModalFooter>
+        </ModalBody>
+        <ModalFooter>
+
+            <Button Color="Color.Secondary" Clicked="@CloseCropModal">@L["Cancel"]</Button>
+            <Button Color="Color.Primary" Disabled="@croppedImage.IsNullOrWhiteSpace()" Clicked="()=>CropImageAsync(uploadedCarouselImages,CarouselModuleNumber,CarouselPicker,ImageType)">@L["Save"]</Button>
+        </ModalFooter>
     </ModalContent>
 </Modal>
 @code {

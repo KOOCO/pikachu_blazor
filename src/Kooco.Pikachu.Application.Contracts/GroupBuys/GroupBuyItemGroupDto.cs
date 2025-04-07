@@ -18,7 +18,8 @@ namespace Kooco.Pikachu.GroupBuys
         public string? ProductGroupModuleTitle { get; set; }
         public string? ProductGroupModuleImageSize { get; set; }
         public int? ModuleNumber { get; set; }
-
+        public string? Title { get; set; }
+        public string? Text { get; set; }
         public ICollection<GroupBuyItemGroupDetailsDto> ItemGroupDetails { get; set; }
 
         public string? ConcurrencyStamp { get; set; }

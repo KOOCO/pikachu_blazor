@@ -74,7 +74,7 @@ public partial class CreateGroupBuy
     private List<string> PaymentMethodTags { get; set; } = [];
     private string PaymentTagInputValue { get; set; }
     private List<CollapseItem> CollapseItem = [];
-   
+
     string bannerBlobName;
     protected Validations EditValidationsRef;
     private BlazoredTextEditor NotifyEmailHtml { get; set; }
@@ -86,7 +86,7 @@ public partial class CreateGroupBuy
     bool IsCashOnDelivery { get; set; }
     bool IsLinePay { get; set; }
     public string _ProductPicture = "Product Picture";
-  
+
     private FilePicker BannerPickerCustom { get; set; }
     private FilePicker CarouselPickerCustom { get; set; }
     private List<FilePicker> CarouselFilePickers = [];
@@ -139,7 +139,7 @@ public partial class CreateGroupBuy
 
     private bool IsColorPickerOpen = false;
 
-  
+
     private List<IFileEntry> selectedFiles = new List<IFileEntry>(); // List of selected files
     private List<CreateImageDto> uploadedCarouselImages = new List<CreateImageDto>(); // List for storing image data
     private int CurrentFileIndex = 0;
@@ -207,7 +207,7 @@ public partial class CreateGroupBuy
     #region Methods
     protected override async Task OnInitializedAsync()
     {
-        CreateGroupBuyDto.EntryURL = (await MyTenantAppService.FindTenantUrlAsync(CurrentTenant.Id))+ "groupBuy/";
+        CreateGroupBuyDto.EntryURL = (await MyTenantAppService.FindTenantUrlAsync(CurrentTenant.Id)) + "groupBuy/";
         SetItemList = await _setItemAppService.GetItemsLookupAsync();
         ItemsList = await _itemAppService.GetItemsLookupAsync();
         ItemsList.AddRange(SetItemList);
@@ -523,7 +523,7 @@ public partial class CreateGroupBuy
     public bool isPaymentMethodEnabled()
     {
         var ecpay = PaymentGateways.Where(x => x.PaymentIntegrationType == PaymentIntegrationType.EcPay).FirstOrDefault();
-       
+
         if (ecpay == null)
         {
             return true;
@@ -545,7 +545,7 @@ public partial class CreateGroupBuy
             return true;
         }
         else if (!linePay.IsEnabled) return true;
-        else if (linePay.ChannelId.IsNullOrEmpty() ||  linePay.ChannelSecretKey.IsNullOrEmpty() ) return true;
+        else if (linePay.ChannelId.IsNullOrEmpty() || linePay.ChannelSecretKey.IsNullOrEmpty()) return true;
         else
         {
             return false;
@@ -582,7 +582,8 @@ public partial class CreateGroupBuy
     {
         return Task.CompletedTask;
     }
-    private async Task CloseCropModal() {
+    private async Task CloseCropModal()
+    {
         await LogoPickerCustom.Clear();
         await CropperModal.Hide();
         await CarouselPicker.Clear();
@@ -615,7 +616,8 @@ public partial class CreateGroupBuy
             GroupBuyModuleType.GroupPurchaseOverview,
             GroupBuyModuleType.CountdownTimer,
             GroupBuyModuleType.OrderInstruction,
-            GroupBuyModuleType.ProductRankingCarouselModule
+            GroupBuyModuleType.ProductRankingCarouselModule,
+            GroupBuyModuleType.CustomTextModule
         ];
     }
 
@@ -629,7 +631,7 @@ public partial class CreateGroupBuy
 
     private void OnColorSchemeChange(ChangeEventArgs e)
     {
-      
+
         string? selectedTheme = e.Value.ToString() != "Choose Color Theme" ? e.Value.ToString() : null;
 
         CreateGroupBuyDto.ColorSchemeType = !selectedTheme.IsNullOrEmpty() ? Enum.Parse<ColorScheme>(selectedTheme) : null;
@@ -658,7 +660,7 @@ public partial class CreateGroupBuy
                 CreateGroupBuyDto.SecondaryBackgroundColor = "#C9D6BD";
                 CreateGroupBuyDto.AlertColor = "#FF902A";
                 CreateGroupBuyDto.BlockColor = "#EFF4EB";
-             
+
                 break;
 
             case ColorScheme.TropicalSunset:
@@ -782,8 +784,8 @@ public partial class CreateGroupBuy
         if (e.Files.Length > 1)
         {
             await _uiMessageService.Error("Select Only 1 Logo Upload");
-                   await LogoPickerCustom.Clear();
-                   return;
+            await LogoPickerCustom.Clear();
+            return;
         }
         if (e.Files.Length == 0)
         {
@@ -804,7 +806,7 @@ public partial class CreateGroupBuy
             await _uiMessageService.Error(L[PikachuDomainErrorCodes.FilesAreGreaterThanMaxAllowedFileSize]);
             return;
         }
-      
+
         // Read image to Data URL for cropping preview
         using var stream = selectedFile.OpenReadStream(long.MaxValue);
         using var ms = new MemoryStream();
@@ -834,7 +836,8 @@ public partial class CreateGroupBuy
         croppedImage = "";
         await LogoCropper.ResetSelection();
     }
-    private async Task GetCroppedImage() {
+    private async Task GetCroppedImage()
+    {
         var options = new CropperCropOptions
         {
             Width = 300,       // Set desired width of the cropped image
@@ -850,8 +853,8 @@ public partial class CreateGroupBuy
     {
         try
         {
-          
-           
+
+
             // Strip the prefix
             var base64Data = croppedImage.Substring(croppedImage.IndexOf(",") + 1);
 
@@ -875,7 +878,7 @@ public partial class CreateGroupBuy
         }
         finally
         {
-           await LogoCropper.ResetSelection();
+            await LogoCropper.ResetSelection();
             await LogoPickerCustom.Clear();
             await CropperModal.Hide();
         }
@@ -1159,7 +1162,7 @@ public partial class CreateGroupBuy
             // Reset cropper and picker
             await LogoCropper.ResetSelection();
             //await carouselPicker.Clear();
-            
+
         }
     }
     async Task OnBannerImageModuleUploadAsync(
@@ -1534,12 +1537,13 @@ public partial class CreateGroupBuy
             string? img = null;
             if (CreateGroupBuyDto.ColorSchemeType.HasValue)
             {
-                img = "https://pikachublobs.blob.core.windows.net/images/" + L["Enum:ColorSchemeFile." + (int)CreateGroupBuyDto.ColorSchemeType.Value]+".png";
+                img = "https://pikachublobs.blob.core.windows.net/images/" + L["Enum:ColorSchemeFile." + (int)CreateGroupBuyDto.ColorSchemeType.Value] + ".png";
             }
-            GroupBuyOrderInstructionModules.Add(new GroupBuyOrderInstructionDto {
+            GroupBuyOrderInstructionModules.Add(new GroupBuyOrderInstructionDto
+            {
                 Title = L["OrderInstruction"],
-                Image= img
-});
+                Image = img
+            });
         }
 
         else if (groupBuyModuleType is GroupBuyModuleType.ProductRankingCarouselModule)
@@ -1600,6 +1604,19 @@ public partial class CreateGroupBuy
                     new ItemWithItemTypeDto()
                 ]
             };
+        }
+
+        else if (groupBuyModuleType == GroupBuyModuleType.CustomTextModule)
+        {
+            CollapseItem collapseItem = new()
+            {
+                Index = CollapseItem.Count > 0 ? CollapseItem.Count + 1 : 1,
+                SortOrder = CollapseItem.Count > 0 ? CollapseItem.Max(c => c.SortOrder) + 1 : 1,
+                GroupBuyModuleType = groupBuyModuleType,
+                Selected = []
+            };
+
+            CollapseItem.Add(collapseItem);
         }
 
         else
@@ -1691,7 +1708,7 @@ public partial class CreateGroupBuy
 
             else IsUnableToSpecifyDuringPeakPeriodsForDeliveredByStore = true;
         }
-        
+
         if (clearAll)
         {
             IsUnableToSpecifyDuringPeakPeriodsForDeliveredByStore = false;
@@ -1854,11 +1871,11 @@ public partial class CreateGroupBuy
         {
             DeliveryTimeConts.BlackCat.ForEach(item =>
             {
-              
-                    BlackCatDeliveryTimeCheckedChange(item, new ChangeEventArgs { Value = false });
-                    JSRuntime.InvokeVoidAsync("uncheckOtherCheckbox", item);
-               
-               
+
+                BlackCatDeliveryTimeCheckedChange(item, new ChangeEventArgs { Value = false });
+                JSRuntime.InvokeVoidAsync("uncheckOtherCheckbox", item);
+
+
             });
         }
 
@@ -1867,7 +1884,7 @@ public partial class CreateGroupBuy
             DeliveryTimeConts.HomeDelivery.ForEach(item =>
             {
                 HomeDeliveryTimeCheckedChange(item, new ChangeEventArgs { Value = false }, true);
-                if (!(CreateGroupBuyDto.ShippingMethodList.Any(x => blackCat.Contains(x))&& item== "Inapplicable"))
+                if (!(CreateGroupBuyDto.ShippingMethodList.Any(x => blackCat.Contains(x)) && item == "Inapplicable"))
                     JSRuntime.InvokeVoidAsync("uncheckOtherCheckbox", item);
             });
         }
@@ -1928,7 +1945,7 @@ public partial class CreateGroupBuy
 
         if (CreateGroupBuyDto.IsEnterprise)
         {
-            IsCashOnDelivery = true; CreditCard = false; BankTransfer = false;IsLinePay = false;
+            IsCashOnDelivery = true; CreditCard = false; BankTransfer = false; IsLinePay = false;
             OnShippingMethodCheckedChange("SelfPickup", new ChangeEventArgs { Value = true });
             OnShippingMethodCheckedChange("DeliveredByStore", new ChangeEventArgs { Value = false });
             OnShippingMethodCheckedChange("HomeDelivery", new ChangeEventArgs { Value = false });
@@ -1949,9 +1966,9 @@ public partial class CreateGroupBuy
             OnShippingMethodCheckedChange("PostOffice", new ChangeEventArgs { Value = false });
 
 
-                  
 
-            }
+
+        }
 
     }
 
@@ -2228,7 +2245,7 @@ public partial class CreateGroupBuy
             if (BankTransfer) paymentMethods.Add("Bank Transfer");
             if (IsCashOnDelivery) paymentMethods.Add("Cash On Delivery");
             if (IsLinePay) paymentMethods.Add("LinePay");
-            if(paymentMethods.Count>0) CreateGroupBuyDto.PaymentMethod = string.Join(" , ", paymentMethods);
+            if (paymentMethods.Count > 0) CreateGroupBuyDto.PaymentMethod = string.Join(" , ", paymentMethods);
             else CreateGroupBuyDto.PaymentMethod = string.Empty;
 
             if (CreateGroupBuyDto.ProductType is null)
@@ -2303,7 +2320,7 @@ public partial class CreateGroupBuy
                 await Loading.Hide();
                 return;
             }
-            if (CreateGroupBuyDto.ColorSchemeType == null|| CreateGroupBuyDto.ColorSchemeType ==0)
+            if (CreateGroupBuyDto.ColorSchemeType == null || CreateGroupBuyDto.ColorSchemeType == 0)
             {
                 await _uiMessageService.Warn(L[PikachuDomainErrorCodes.ColorSchemeRequired]);
                 await Loading.Hide();
@@ -2427,7 +2444,7 @@ public partial class CreateGroupBuy
 
             CreateGroupBuyDto.NotifyMessage = await NotifyEmailHtml.GetHTML();
             //CreateGroupBuyDto.GroupBuyConditionDescription = await GroupBuyHtml.GetHTML();
-        
+
             //CreateGroupBuyDto.CustomerInformationDescription = await CustomerInformationHtml.GetHTML();
 
             CreateGroupBuyDto.ItemGroups = new List<GroupBuyItemGroupCreateUpdateDto>();
@@ -2522,6 +2539,18 @@ public partial class CreateGroupBuy
 
                     CreateGroupBuyDto.ItemGroups.Add(itemGroup);
                 }
+
+                if (item.GroupBuyModuleType == GroupBuyModuleType.CustomTextModule)
+                {
+                    GroupBuyItemGroupCreateUpdateDto itemGroup = new()
+                    {
+                        SortOrder = item.SortOrder,
+                        GroupBuyModuleType = item.GroupBuyModuleType,
+                        Title = item.Title,
+                        Text = item.Text
+                    };
+                    CreateGroupBuyDto.ItemGroups.Add(itemGroup);
+                }
             }
 
             GroupBuyDto result = await _groupBuyAppService.CreateAsync(CreateGroupBuyDto);
@@ -2583,15 +2612,10 @@ public partial class CreateGroupBuy
 
             NavigationManager.NavigateTo("GroupBuyManagement/GroupBuyList");
         }
-        catch (BusinessException ex)
-        {
-            await Loading.Hide();
-            await _uiMessageService.Error(L[ex.Code]);
-        }
         catch (Exception ex)
         {
             await Loading.Hide();
-            await _uiMessageService.Error(ex.Message.GetType()?.ToString());
+            await HandleErrorAsync(ex);
         }
     }
     private async Task OnSelectedValueChanged(Guid? id, CollapseItem collapseItem, ItemWithItemTypeDto? selectedItem = null)
@@ -2785,6 +2809,8 @@ public class CollapseItem
     public string? ProductGroupModuleTitle { get; set; }
     public string? ProductGroupModuleImageSize { get; set; }
     public int? ModuleNumber { get; set; }
+    public string? Title { get; set; }
+    public string? Text { get; set; }
     public CollapseItem()
     {
         Selected = [];

@@ -142,7 +142,9 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
                     group.GroupBuyModuleType,
                     group.AdditionalInfo,
                     group.ProductGroupModuleTitle,
-                    group.ProductGroupModuleImageSize
+                    group.ProductGroupModuleImageSize,
+                    group.Title,
+                    group.Text
                 );
 
                 itemGroup.ModuleNumber = group.ModuleNumber;
@@ -256,6 +258,8 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
                         itemGroup.ProductGroupModuleTitle = group.ProductGroupModuleTitle;
                         itemGroup.ProductGroupModuleImageSize = group.ProductGroupModuleImageSize;
                         itemGroup.ModuleNumber = group.ModuleNumber;
+                        itemGroup.Title = group.Title;
+                        itemGroup.Text = group.Text;
                         itemGroup.TenantId = CurrentTenant.Id;
 
                         if (group.ItemDetails.Count is 0) groupBuy.ItemGroups.Remove(itemGroup);
@@ -282,7 +286,9 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
                         group.GroupBuyModuleType,
                         group.AdditionalInfo,
                         group.ProductGroupModuleTitle,
-                        group.ProductGroupModuleImageSize
+                        group.ProductGroupModuleImageSize,
+                        group.Title,
+                        group.Text
                     );
 
                     itemGroup.ModuleNumber = group.ModuleNumber;
@@ -329,7 +335,9 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
                    group.GroupBuyModuleType,
                    group.AdditionalInfo,
                    group.ProductGroupModuleTitle,
-                   group.ProductGroupModuleImageSize
+                   group.ProductGroupModuleImageSize,
+                   group.Title,
+                   group.Text
                );
 
                 itemGroup.ModuleNumber = group.ModuleNumber;
