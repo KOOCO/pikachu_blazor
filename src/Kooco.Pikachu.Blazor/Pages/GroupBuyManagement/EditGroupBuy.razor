@@ -141,10 +141,10 @@
         <div class="row">
             <div class="col-2">@L["GroupBuyTime"]</div>
             <div class="col-5">
-                <DatePicker TValue="DateTime?" @bind-Date="EditGroupBuyDto.StartTime" InputMode="DateInputMode.DateTime" Placeholder="@L["StartTime"]" />
+                <DatePicker TValue="DateTime?" @bind-Date="EditGroupBuyDto.StartTime" TimeAs24hr InputMode="DateInputMode.DateTime" Placeholder="@L["StartTime"]" />
             </div>
             <div class="col-5">
-                <DatePicker TValue="DateTime?" @bind-Date="EditGroupBuyDto.EndTime" InputMode="DateInputMode.DateTime" Placeholder="@L["EndDate"]" />
+                <DatePicker TValue="DateTime?" @bind-Date="EditGroupBuyDto.EndTime" TimeAs24hr InputMode="DateInputMode.DateTime" Placeholder="@L["EndDate"]" />
             </div>
         </div>
 

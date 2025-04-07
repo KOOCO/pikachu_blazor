@@ -180,12 +180,12 @@
     "TCat": "黑貓宅急便",
     "Greetings": "開頭訊息",
     "GroupBuyBanner": "團購橫幅",
-    "GroupBuyCondition": "團購注意事項",
+    "GroupBuyCondition": "團購須知",
     "Groupbuyhaveorderitsnotdeleteable": "無法刪除已有訂單團購",
     "GroupBuyList": "團購列表",
     "GroupBuyLogo": "團購LOGO",
     "GroupBuyName": "團購名稱",
-    "GroupBuyPolicy": "團購內容",
+    "GroupBuyPolicy": "團購條款",
     "GroupBuyPrice": "團購價",
     //Groupbuy Report
     "GroupbuyReport": "團購報表",
@@ -1225,7 +1225,7 @@
 
     "Pikachu:ColorSchemeRequired": "需要顏色方案。",
     "Pikachu:ProductDetailsDisplayMethodRequired": "商品內容顯示方式為必填",
-    "Pikachu:GroupBuyConditionRequired": "團購內容為必填",
+    "Pikachu:GroupBuyConditionRequired": "團購須知為必填",
     "Pikachu:ExchangePolicyRequired": "需要換貨政策。",
     "Pikachu:FreeShippingThresholdRequired": "需要免運門檻。",
     "ThisFieldIsRequired": "此欄位為必填項目。",
