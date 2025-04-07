@@ -138,4 +138,10 @@ public class ItemController(
     {
         return _itemAppService.GetItemsWithAttributesAsync(ids);
     }
+
+    [HttpGet("get-item-badges")]
+    public Task<List<string>> GetItemBadgesAsync()
+    {
+        return _itemAppService.GetItemBadgesAsync();
+    }
 }

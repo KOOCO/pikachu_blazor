@@ -59,6 +59,9 @@ public partial class CreateItem
     private Dictionary<CreateItemDetailsDto, string> ValidationErrors = new();
 
     private CreateItemDetailsDto draggedItem;
+
+    private List<string> ItemBadgeList { get; set; } = [];
+    private string NewItemBadge { get; set; }
     #endregion
 
     #region Constructor
@@ -112,6 +115,7 @@ public partial class CreateItem
             {
                 await JS.InvokeVoidAsync("updateDropText");
                 ProductCategoryLookup = await ProductCategoryAppService.GetProductCategoryLookupAsync();
+                ItemBadgeList = await _itemAppService.GetItemBadgesAsync();
                 await InvokeAsync(StateHasChanged);
             }
             catch (Exception ex)
@@ -270,21 +274,21 @@ public partial class CreateItem
     {
         if (e is not null && e.Key != "Enter")
             return;
-            var attribute = Attributes.First(x => x.Id == id);
-            if (string.IsNullOrEmpty(tag))
-            {
-                attribute.InputTagValue = "";
-                return;
-            }
-            string? res = attribute.ItemTags.Find(s => s == tag);
-
-            if (string.IsNullOrEmpty(res))
-            {
-                Attributes.First(x => x.Id == id).ItemTags.Add(tag);
-                await BindItemDetailList();
-            }
+        var attribute = Attributes.First(x => x.Id == id);
+        if (string.IsNullOrEmpty(tag))
+        {
             attribute.InputTagValue = "";
-        
+            return;
+        }
+        string? res = attribute.ItemTags.Find(s => s == tag);
+
+        if (string.IsNullOrEmpty(res))
+        {
+            Attributes.First(x => x.Id == id).ItemTags.Add(tag);
+            await BindItemDetailList();
+        }
+        attribute.InputTagValue = "";
+
     }
 
     async Task DeleteAttribute(Attributes attribute)
@@ -471,7 +475,7 @@ public partial class CreateItem
             await Loading.Show();
             ValidateForm();
             GenerateAttributesForItemDetails();
-          
+
             CreateItemDto.ItemDetails = ItemDetailsList;
 
             CreateItemDto.ItemDescription = await QuillHtml.GetHTML();
@@ -509,11 +513,11 @@ public partial class CreateItem
         //if (Attributes.Any(x => x.Name.IsNullOrEmpty()))
         //{
         //    throw new BusinessException(L[PikachuDomainErrorCodes.ItemStyleKeyCannotBeNull]);
-  
+
         //}
         if (Attributes.GroupBy(x => x.Name).Any(g => g.Count() > 1))
         {
-          
+
             throw new BusinessException(L[PikachuDomainErrorCodes.ItemStyleKeyCannotBeDuplicate]);
 
         }
@@ -1020,7 +1024,7 @@ public partial class CreateItem
         // Rearrange items in the list
         ItemDetailsList.RemoveAt(fromIndex);
         ItemDetailsList.Insert(toIndex, draggedItem);
-       
+
 
         for (int i = 0; i < ItemDetailsList.Count; i++)
         {
@@ -1054,6 +1058,16 @@ public partial class CreateItem
     //        StateHasChanged();
     //    }
     //}
+
+    private void AddItem()
+    {
+        if (!string.IsNullOrWhiteSpace(NewItemBadge))
+        {
+            ItemBadgeList.Add(NewItemBadge);
+            CreateItemDto.ItemBadge = NewItemBadge;
+            NewItemBadge = string.Empty;
+        }
+    }
     #endregion
 }
 

@@ -29,4 +29,5 @@ public interface IItemAppService :
     Task<List<ItemDto>> GetManyAsync(List<Guid> itemIds);
     Task<List<CategoryProductDto>> GetItemCategoriesAsync(Guid id);
     Task<List<ItemDto>> GetItemsWithAttributesAsync(List<Guid> ids);
+    Task<List<string>> GetItemBadgesAsync();
 }

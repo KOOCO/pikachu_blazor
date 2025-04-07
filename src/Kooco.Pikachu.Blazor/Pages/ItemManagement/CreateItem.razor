@@ -113,18 +113,28 @@
                     <fieldLabel>@L["ItemBadge"]</fieldLabel>
                 </div>
                 <div class="col-10">
-
-                    <Addons>
-                        <Addon AddonType="AddonType.Body">
-                            <TextEdit @bind-Text="@CreateItemDto.ItemBadge" MaxLength="@MaxBadgeTextCount" />
-                        </Addon>
-                        <Addon AddonType="AddonType.End">
-                            <AddonLabel Style="background-color: #f5f5f7">
-                                @(string.IsNullOrWhiteSpace(CreateItemDto.ItemBadge) ? 0 : (CreateItemDto.ItemBadge.Count()))/@MaxBadgeTextCount
-                            </AddonLabel>
-                        </Addon>
-                    </Addons>
-
+                    <AntDesign.Select TItem="string"
+                                      TItemValue="string"
+                                      DataSource="@ItemBadgeList"
+                                      @bind-Value="@CreateItemDto.ItemBadge"
+                                      Size="AntDesign.InputSize.Large"
+                                      EnableSearch
+                                      AllowClear>
+                        <DropdownRender Context="originNode">
+                            <div>
+                                @originNode
+                                <Divider Style="margin: 4px 0"></Divider>
+                                <div class="d-flex flex-nowrap py-2 px-1 gap-1">
+                                    <AntDesign.Input @bind-Value="@NewItemBadge" Placeholder="@L["EnterANewBadge"]"
+                                                     MaxLength="MaxBadgeTextCount" />
+                                    <PikachuButton Class="pk-btn-sm pk-btn-primary text-nowrap" Clicked="AddItem">
+                                        <Icon Name="@IconName.Add" />
+                                        @L["AddItem"]
+                                    </PikachuButton>
+                                </div>
+                            </div>
+                        </DropdownRender>
+                    </AntDesign.Select>
                 </div>
             </div>
             <div class="row">

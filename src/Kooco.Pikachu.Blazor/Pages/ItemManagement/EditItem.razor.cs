@@ -72,6 +72,9 @@ public partial class EditItem
     private Autocomplete<KeyValueDto, Guid?> AutocompleteField { get; set; }
     private string SelectedAutoCompleteText { get; set; }
     private Dictionary<CreateItemDetailsDto, string> ValidationErrors = new();
+    private const int MaxBadgeTextCount = 4;
+    private List<string> ItemBadgeList { get; set; } = [];
+    private string NewItemBadge { get; set; }
     #endregion
 
     #region Constructor
@@ -100,7 +103,7 @@ public partial class EditItem
                 await JS.InvokeVoidAsync("updateDropText");
                 EditingId = Guid.Parse(Id);
                 ExistingItem = await _itemAppService.GetAsync(EditingId, true);
-
+                ItemBadgeList = await _itemAppService.GetItemBadgesAsync();
                 var enumValues = (await _enumValueService.GetEnums(new List<EnumType> {
                                                          EnumType.ShippingMethod,
                                                          EnumType.TaxType
@@ -1127,6 +1130,16 @@ public partial class EditItem
         }
         StateHasChanged();
         draggedItem = null; // Reset dragged item
+    }
+
+    private void AddItem()
+    {
+        if (!string.IsNullOrWhiteSpace(NewItemBadge))
+        {
+            ItemBadgeList.Add(NewItemBadge);
+            UpdateItemDto.ItemBadge = NewItemBadge;
+            NewItemBadge = string.Empty;
+        }
     }
     #endregion
 }

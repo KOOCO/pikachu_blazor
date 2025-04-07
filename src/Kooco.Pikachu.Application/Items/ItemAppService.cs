@@ -33,7 +33,7 @@ public class ItemAppService :
     public ItemAppService(
         IItemRepository repository,
         ItemManager itemManager
-       
+
     )
         : base(repository)
     {
@@ -557,6 +557,14 @@ public class ItemAppService :
 
         // Sanitize and return the safe HTML
         return _htmlSanitizer.Sanitize(itemDescription);
+    }
+
+    public async Task<List<string>> GetItemBadgesAsync()
+    {
+        var items = await _itemRepository.GetQueryableAsync();
+        return [.. items.Where(x => !string.IsNullOrWhiteSpace(x.ItemBadge))
+            .Select(x => x.ItemBadge!)
+            .Distinct()];
     }
     #endregion
 }
