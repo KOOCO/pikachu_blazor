@@ -344,13 +344,13 @@
                                         <input class="form-control form-control-sm" style="min-width: 100px;" @bind-value="@item.Sku" />
                                     </TableRowCell>
                                     <TableRowCell>
-                                        <NumericEdit Class="form-control form-control-sm" style="min-width: 100px;" @bind-Value="@item.SellingPrice"></NumericEdit>
+                                        <NumericEdit Class="form-control form-control-sm" Style="min-width: 100px;" @bind-Value="@item.SellingPrice"></NumericEdit>
                                     </TableRowCell>
                                     <TableRowCell>
-                                        <NumericEdit Class="form-control form-control-sm" style="min-width: 100px;" @bind-Value="@item.GroupBuyPrice"></NumericEdit>
+                                        <NumericEdit Class="form-control form-control-sm" Style="min-width: 100px;" @bind-Value="@item.GroupBuyPrice"></NumericEdit>
                                     </TableRowCell>
                                     <TableRowCell>
-                                        <NumericEdit Class="form-control form-control-sm" style="min-width: 100px;" @bind-Value="@item.Cost"></NumericEdit>
+                                        <NumericEdit Class="form-control form-control-sm" Style="min-width: 100px;" @bind-Value="@item.Cost"></NumericEdit>
                                     </TableRowCell>
                                     <TableRowCell>
                                         <input class="form-control form-control-sm" style="min-width: 100px;" @bind-value="@item.InventoryAccount" />
@@ -358,12 +358,14 @@
                                     <TableRowCell>
                                         <NumericEdit Class="form-control form-control-sm"
                                                      @bind-Value="@item.StockOnHand"
-                                                     @onchange="(e) => OnStockOnHandChanged(e, item)" />
+                                                     @onchange="(e) => OnStockOnHandChanged(e, item)"
+                                                     Style="min-width: 100px;" />
                                     </TableRowCell>
                                     <TableRowCell>
                                         <NumericEdit Class="form-control form-control-sm"
                                                      @bind-Value="@item.SaleableQuantity"
-                                                     @onchange="(e) => OnSaleableQuantityChanged(e, item)" />
+                                                     @onchange="(e) => OnSaleableQuantityChanged(e, item)"
+                                                     Style="min-width: 100px;" />
                                         @if (ValidationErrors.ContainsKey(item))
                                         {
                                             <div class="text-danger">@ValidationErrors[item]</div>
@@ -371,13 +373,13 @@
                                     </TableRowCell>
 
                                     <TableRowCell>
-                                        <NumericEdit Class="form-control form-control-sm" @bind-Value="@item.PreOrderableQuantity"></NumericEdit>
+                                        <NumericEdit Class="form-control form-control-sm" Style="min-width: 100px;" @bind-Value="@item.PreOrderableQuantity"></NumericEdit>
                                     </TableRowCell>
                                     <TableRowCell>
-                                        <NumericEdit Class="form-control form-control-sm" @bind-Value="@item.SaleablePreOrderQuantity"></NumericEdit>
+                                        <NumericEdit Class="form-control form-control-sm" Style="min-width: 100px;" @bind-Value="@item.SaleablePreOrderQuantity"></NumericEdit>
                                     </TableRowCell>
                                     <TableRowCell>
-                                        <NumericEdit class="form-control form-control-sm" @bind-Value="@item.LimitQuantity"></NumericEdit>
+                                        <NumericEdit class="form-control form-control-sm" Style="min-width: 100px;" @bind-Value="@item.LimitQuantity"></NumericEdit>
                                     </TableRowCell>
                                     <TableRowCell>
                                         <Switch @bind-Checked="@item.Status" />

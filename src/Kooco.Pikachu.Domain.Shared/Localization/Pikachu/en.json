@@ -1392,6 +1392,11 @@
     "VipTier": "Vip Tier",
     "CreationTime": "創建時間",
     "Permission:VipTierSettings": "Tier Management",
-    "InstallmentPeriods": "Installment Periods"
+    "InstallmentPeriods": "Installment Periods",
+    "InstallmentPeriods.3": "3",
+    "InstallmentPeriods.6": "6",
+    "InstallmentPeriods.12": "12",
+    "InstallmentPeriods.18": "18",
+    "InstallmentPeriods.24": "24"
   }
 }
