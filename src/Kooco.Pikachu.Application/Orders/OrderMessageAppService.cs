@@ -1,4 +1,5 @@
 ﻿using AutoMapper.Internal.Mappers;
+using Microsoft.AspNetCore.Authorization;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,6 +11,7 @@ using Volo.Abp.Guids;
 
 namespace Kooco.Pikachu.Orders
 {
+    [AllowAnonymous]
     public class OrderMessageAppService : ApplicationService, IOrderMessageAppService
     {
         private readonly IOrderMessageRepository _orderMessageRepository;
@@ -32,7 +34,7 @@ namespace Kooco.Pikachu.Orders
             if (input.Sorting.IsNullOrEmpty())
             {
                 input.Sorting = nameof(OrderMessage.CreationTime) + " DESC";
-            
+
             }
             var totalCount = await _orderMessageRepository.GetCountAsync(
                 input.Filter,
