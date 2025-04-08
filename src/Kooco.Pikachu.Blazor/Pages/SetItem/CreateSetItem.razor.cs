@@ -40,6 +40,9 @@ namespace Kooco.Pikachu.Blazor.Pages.SetItem
         private readonly IItemAppService _itemAppService;
         private readonly ISetItemAppService _setItemAppService;
 
+        private List<string> ItemBadgeList { get; set; } = [];
+        private string NewItemBadge { get; set; }
+
         public CreateSetItem(
             IUiMessageService uiMessageService,
             ImageContainerManager imageConainerManager,
@@ -63,6 +66,8 @@ namespace Kooco.Pikachu.Blazor.Pages.SetItem
             if (firstRender)
             {
                 await JSRuntime.InvokeVoidAsync("updateDropText");
+                ItemBadgeList = await _itemAppService.GetItemBadgesAsync();
+                StateHasChanged();
             }
         }
 
@@ -283,6 +288,16 @@ namespace Kooco.Pikachu.Blazor.Pages.SetItem
                 item.IsSelected = IsAllSelected;
             });
             StateHasChanged();
+        }
+
+        private void AddItem()
+        {
+            if (!string.IsNullOrWhiteSpace(NewItemBadge))
+            {
+                ItemBadgeList.Add(NewItemBadge);
+                CreateUpdateSetItemDto.SetItemBadge = NewItemBadge;
+                NewItemBadge = string.Empty;
+            }
         }
     }
 
