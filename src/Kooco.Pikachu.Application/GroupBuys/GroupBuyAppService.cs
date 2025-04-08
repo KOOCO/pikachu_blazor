@@ -157,7 +157,7 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
 
                 if (group.ItemDetails != null && group.ItemDetails.Any())
                 {
-                    foreach (var item in group.ItemDetails.DistinctBy(x=>x.ItemId))
+                    foreach (var item in group.ItemDetails.DistinctBy(x => x.ItemId))
                     {
                         _groupBuyManager.AddItemGroupDetail(
                             itemGroup,
@@ -168,7 +168,7 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
                             item.DisplayText,
                             item.ModuleNumber
                         );
-                      
+
                     }
                 }
             }
@@ -179,15 +179,15 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
         {
             foreach (var group in input.ItemGroups)
             {
-              
+
 
                 if (group.ItemDetails != null && group.ItemDetails.Any())
                 {
-                    
-                    foreach (var item in group.ItemDetails.DistinctBy(x=>x.ItemDetailId))
+
+                    foreach (var item in group.ItemDetails.DistinctBy(x => x.ItemDetailId))
                     {
-                       
-                        
+
+
                         if (group.GroupBuyModuleType == GroupBuyModuleType.ProductGroupModule)
                         {
                             if (item.ItemType == ItemType.Item)
@@ -751,7 +751,11 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
                         response.SelfPickupType[method] = matchingTimes.Count > 0 ? matchingTimes : ["No time preference"];
                     }
                 }
-
+                using (_dataFilter.Enable<IMultiTenant>())
+                {
+                    var temperatureCosts = await _DeliveryTemperatureCostAppService.GetListAsync();
+                    response.DeliveredByStoreEnabled = temperatureCosts.GroupBy(g => g.IsLogisticProviderActivated).Select(s => s.Key).FirstOrDefault();
+                }
                 return response;
             }
         }
