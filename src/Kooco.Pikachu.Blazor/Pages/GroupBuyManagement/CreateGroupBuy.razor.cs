@@ -7,6 +7,7 @@ using Blazorise.LoadingIndicator;
 using Kooco.Pikachu.AzureStorage.Image;
 using Kooco.Pikachu.ElectronicInvoiceSettings;
 using Kooco.Pikachu.EnumValues;
+using Kooco.Pikachu.GroupBuyItemsPriceses;
 using Kooco.Pikachu.GroupBuyOrderInstructions;
 using Kooco.Pikachu.GroupBuyOrderInstructions.Interface;
 using Kooco.Pikachu.GroupBuyProductRankings.Interface;
@@ -136,6 +137,7 @@ public partial class CreateGroupBuy
     public List<PaymentGatewayDto> PaymentGateways = [];
     private readonly ILogisticsProvidersAppService _LogisticsProvidersAppService;
     private readonly IPaymentGatewayAppService _paymentGatewayAppService;
+    private readonly IGroupBuyItemsPriceAppService _groupBuyItemsPriceAppService;
 
     private bool IsColorPickerOpen = false;
 
@@ -161,7 +163,8 @@ public partial class CreateGroupBuy
         ILogisticsProvidersAppService LogisticsProvidersAppService,
         IGroupBuyProductRankingAppService GroupBuyProductRankingAppService,
         IElectronicInvoiceSettingAppService electronicInvoiceSettingAppService,
-        IPaymentGatewayAppService paymentGatewayAppService
+        IPaymentGatewayAppService paymentGatewayAppService,
+        IGroupBuyItemsPriceAppService groupBuyItemsPriceAppService
     )
     {
         _groupBuyAppService = groupBuyAppService;
@@ -179,6 +182,7 @@ public partial class CreateGroupBuy
         _GroupBuyProductRankingAppService = GroupBuyProductRankingAppService;
         _electronicInvoiceSettingAppService = electronicInvoiceSettingAppService;
         _paymentGatewayAppService = paymentGatewayAppService;
+        _groupBuyItemsPriceAppService = groupBuyItemsPriceAppService;
     }
     #endregion
 

@@ -114,7 +114,7 @@ public class ItemAppService :
                     itemDetail.StockOnHand,
                     itemDetail.PreOrderableQuantity,
                     itemDetail.SaleablePreOrderQuantity,
-                    itemDetail.GroupBuyPrice,
+                   
                     itemDetail.InventoryAccount,
                     itemDetail.Attribute1Value,
                     itemDetail.Attribute2Value,
@@ -222,7 +222,7 @@ public class ItemAppService :
                         itemDetail.StockOnHand,
                         itemDetail.PreOrderableQuantity,
                         itemDetail.SaleablePreOrderQuantity,
-                        itemDetail.GroupBuyPrice,
+                       
                         itemDetail.InventoryAccount,
                         itemDetail.Attribute1Value,
                         itemDetail.Attribute2Value,
@@ -338,7 +338,7 @@ public class ItemAppService :
                     existing.Cost = itemDetail.Cost;
                     existing.PreOrderableQuantity = itemDetail.PreOrderableQuantity;
                     existing.SaleablePreOrderQuantity = itemDetail.SaleablePreOrderQuantity;
-                    existing.GroupBuyPrice = itemDetail.GroupBuyPrice;
+                   
                     existing.InventoryAccount = itemDetail.InventoryAccount;
                     existing.Attribute1Value = itemDetail.Attribute1Value;
                     existing.Attribute2Value = itemDetail.Attribute2Value;
@@ -361,7 +361,7 @@ public class ItemAppService :
                         itemDetail.StockOnHand,
                         itemDetail.PreOrderableQuantity,
                         itemDetail.SaleablePreOrderQuantity,
-                        itemDetail.GroupBuyPrice,
+                      
                         itemDetail.InventoryAccount,
                         itemDetail.Attribute1Value,
                         itemDetail.Attribute2Value,

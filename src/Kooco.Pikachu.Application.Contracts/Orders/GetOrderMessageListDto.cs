@@ -12,6 +12,7 @@ namespace Kooco.Pikachu.Orders
         public Guid? SenderId { get; set; }
 
         public string? Filter { get; set; }
+        public string? OrderNo { get; set; }
 
         public DateTime? Timestamp { get; set; }
 

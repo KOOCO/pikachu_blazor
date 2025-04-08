@@ -9,6 +9,7 @@ using Kooco.Pikachu.ElectronicInvoiceSettings;
 using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Freebies;
 using Kooco.Pikachu.Freebies.Dtos;
+using Kooco.Pikachu.GroupBuyItemsPriceses;
 using Kooco.Pikachu.GroupBuyOrderInstructions;
 using Kooco.Pikachu.GroupBuyProductRankings;
 using Kooco.Pikachu.Groupbuys;
@@ -362,5 +363,7 @@ public class PikachuApplicationAutoMapperProfile : Profile
         CreateMap<VipTierDto, UpdateVipTierDto>();
 
         CreateMap<MemberTag, MemberTagDto>();
+
+        CreateMap<GroupBuyItemsPrice, GroupBuyItemsPriceDto>();
     }
 }

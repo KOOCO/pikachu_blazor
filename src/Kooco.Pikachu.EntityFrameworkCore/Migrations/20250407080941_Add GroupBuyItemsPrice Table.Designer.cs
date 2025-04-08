@@ -4,6 +4,7 @@ using Kooco.Pikachu.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Volo.Abp.EntityFrameworkCore;
 
@@ -12,9 +13,11 @@ using Volo.Abp.EntityFrameworkCore;
 namespace Kooco.Pikachu.Migrations
 {
     [DbContext(typeof(PikachuDbContext))]
-    partial class PikachuDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250407080941_Add GroupBuyItemsPrice Table")]
+    partial class AddGroupBuyItemsPriceTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -807,7 +810,7 @@ namespace Kooco.Pikachu.Migrations
                     b.Property<Guid?>("GroupBuyId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<float>("GroupBuyPrice")
+                    b.Property<float?>("GroupBuyPrice")
                         .HasColumnType("real");
 
                     b.Property<bool>("IsDeleted")
@@ -816,7 +819,7 @@ namespace Kooco.Pikachu.Migrations
                         .HasDefaultValue(false)
                         .HasColumnName("IsDeleted");
 
-                    b.Property<Guid?>("ItemDetailId")
+                    b.Property<Guid>("ItemDetailId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime?>("LastModificationTime")
@@ -1187,12 +1190,6 @@ namespace Kooco.Pikachu.Migrations
                     b.Property<Guid?>("TenantId")
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("TenantId");
-
-                    b.Property<string>("Text")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Title")
-                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -2976,10 +2973,6 @@ namespace Kooco.Pikachu.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("HashKey")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("InstallmentPeriodsJson")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsBankTransferEnabled")

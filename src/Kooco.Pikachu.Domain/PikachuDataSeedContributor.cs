@@ -52,7 +52,7 @@ namespace Kooco.Pikachu
                         null,
                         0,
                         0,
-                        0,
+                        
                         "",
                         "",
                         "",
@@ -84,7 +84,7 @@ namespace Kooco.Pikachu
                         null,
                         0,
                         0,
-                        0,
+                        
                         "",
                         "",
                         "",
@@ -114,7 +114,7 @@ namespace Kooco.Pikachu
                         null,
                         0,
                         0,
-                        0,
+                        
                         "",
                         "",
                         "",
