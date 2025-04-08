@@ -169,7 +169,6 @@ public class PikachuDbContext(DbContextOptions<PikachuDbContext> options) :
 
     public DbSet<VipTierSetting> VipTierSettings { get; set; }
     public DbSet<MemberTag> MemberTags { get; set; }
-    public DbSet<GroupBuyItemsPrice> GroupBuyItemsPriceses { get; set; }
 
     // TenantWallets
     public DbSet<TenantWallet> TenantWallets { get; set; }
@@ -304,14 +303,6 @@ public class PikachuDbContext(DbContextOptions<PikachuDbContext> options) :
             b.HasMany(o => o.Items).WithOne().HasForeignKey(d => d.DeliveryOrderId);
 
             b.HasOne<Order>().WithMany().HasForeignKey(d => d.OrderId);
-
-        });
-        builder.Entity<GroupBuyItemsPrice>(b =>
-        {
-            b.ToTable(PikachuConsts.DbTablePrefix + "GroupBuyItemsPriceses", PikachuConsts.DbSchema, table => table.HasComment(""));
-            b.ConfigureByConvention();
-
-          
 
         });
         builder.Entity<OrderItem>(b =>
