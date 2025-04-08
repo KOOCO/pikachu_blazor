@@ -4,6 +4,8 @@ using Volo.Abp.MultiTenancy;
 using Volo.Abp.Domain.Entities.Auditing;
 using Kooco.Pikachu.EnumValues;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json;
 
 namespace Kooco.Pikachu.GroupBuys;
 
@@ -200,6 +202,19 @@ public class GroupBuy : FullAuditedAggregateRoot<Guid>, IMultiTenant
     public string? ExcludeShippingMethod { get; set; }
     public bool IsDefaultPaymentGateWay { get; set; }
     public string? PaymentMethod { get; set; }
+    public string? InstallmentPeriodsJson { get; set; }
+
+    [NotMapped]
+    public List<string> InstallmentPeriods
+    {
+        get
+        {
+            return !string.IsNullOrWhiteSpace(InstallmentPeriodsJson)
+                ? (JsonSerializer.Deserialize<List<string>>(InstallmentPeriodsJson) ?? [])
+                : [];
+        }
+    }
+
     public string? GroupBuyCondition { get; set; }
     public string? GroupBuyConditionDescription { get; set; }
     public string? CustomerInformation { get; set; }
