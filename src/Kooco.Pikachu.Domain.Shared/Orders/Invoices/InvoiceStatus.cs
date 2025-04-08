@@ -8,15 +8,15 @@ public enum InvoiceStatus
     /// <summary>
     /// 開立中
     /// </summary>
-    Issuing = 0,
+    Issuing,
 
     /// <summary>
     /// 已開立
     /// </summary>
-    Issued = 1,
+    Issued,
 
     /// <summary>
     /// 已作廢
     /// </summary>
-    Voided = 2,
+    Voided,
 }

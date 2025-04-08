@@ -15,12 +15,11 @@ public sealed class OrderInvoiceMap : IEntityTypeConfiguration<OrderInvoice>
             .HasMaxLength(12)
             .IsRequired();
 
+        builder.Property(x => x.UnifiedBusinessNo)
+            .HasMaxLength(8);
+
         builder.Property(x => x.InvoiceType)
             .IsRequired();
-
-        builder.Property(x => x.UnifiedBusinessNo)
-            .IsRequired()
-            .HasMaxLength(8);
 
         builder.Property(x => x.InvoiceStatus)
             .IsRequired();
@@ -42,13 +41,6 @@ public sealed class OrderInvoiceMap : IEntityTypeConfiguration<OrderInvoice>
 
         builder.Property(x => x.CreationType)
             .IsRequired();
-
-        builder.Property(x => x.VoidReason)
-            .HasMaxLength(20);
-
-        builder.Property(x => x.VoidedTime);
-
-        builder.Property(x => x.IssueTime);
 
         builder.HasOne(x => x.Order)
             .WithMany(o => o.OrderInvoices)
