@@ -1,6 +1,7 @@
 ﻿using Kooco.Pikachu.Groupbuys;
 using Kooco.Pikachu.Items.Dtos;
 using Kooco.Pikachu.Orders;
+using Kooco.Pikachu.Orders.Entities;
 using Kooco.Pikachu.Permissions;
 using Kooco.Pikachu.PikachuAccounts;
 using Kooco.Pikachu.ShoppingCredits;

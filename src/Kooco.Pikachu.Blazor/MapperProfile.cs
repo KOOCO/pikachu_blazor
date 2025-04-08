@@ -8,6 +8,7 @@ using Kooco.Pikachu.Items;
 using Kooco.Pikachu.Items.Dtos;
 using Kooco.Pikachu.OrderDeliveries;
 using Kooco.Pikachu.Orders;
+using Kooco.Pikachu.Orders.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;

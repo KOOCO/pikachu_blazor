@@ -8,6 +8,7 @@ using Kooco.Pikachu.LogisticsProviders;
 using Kooco.Pikachu.OrderDeliveries;
 using Kooco.Pikachu.OrderHistories;
 using Kooco.Pikachu.Orders;
+using Kooco.Pikachu.Orders.Entities;
 using Kooco.Pikachu.Response;
 using Kooco.Pikachu.TenantManagement;
 using Microsoft.AspNetCore.Http;

@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Volo.Abp.Domain.Entities.Auditing;
 
-namespace Kooco.Pikachu.Orders
+namespace Kooco.Pikachu.Orders.Entities
 {
     public class OrderMessage:AuditedEntity<Guid>
     {

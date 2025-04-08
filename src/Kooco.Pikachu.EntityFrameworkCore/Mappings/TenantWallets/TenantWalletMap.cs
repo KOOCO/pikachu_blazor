@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Volo.Abp.EntityFrameworkCore.Modeling;
 
 namespace Kooco.Pikachu.Mappings.TenantWallets;
-public class TenantWalletMap : IEntityTypeConfiguration<TenantWallet>
+public sealed class TenantWalletMap : IEntityTypeConfiguration<TenantWallet>
 {
     public void Configure(EntityTypeBuilder<TenantWallet> builder)
     {

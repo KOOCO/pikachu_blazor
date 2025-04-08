@@ -10,7 +10,7 @@ public static class ECPayDefaults
 
     public static string GetMerchantTradeDate(this DateTime time)
     {
-        return time.ToString("yyyy/MM/dd HH:mm:ss", CultureInfo.CurrentCulture);
+        return time.ToString("yyyy/MM/dd HH:mm:ss", CultureInfo.InvariantCulture);
     }
     public static async Task<string> EncryptForECPayAsync(this string text, string key, string iv)
     {

@@ -137,7 +137,15 @@ public static class PikachuPermissions
     public static class ShoppingCredits
     {
         public const string Default = ".ShoppingCredits";
+    }
 
+    public static class Invoices
+    {
+        public const string Default = "Pikachu.Invoices";
+        public const string Create = Default + ".Create";
+        public const string Update = Default + ".Update";
+        public const string Delete = Default + ".Delete";
+        public const string Void = Default + ".Void";
     }
 
     public static class TenantSettings

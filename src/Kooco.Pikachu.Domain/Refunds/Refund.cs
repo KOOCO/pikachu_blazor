@@ -1,5 +1,5 @@
 ﻿using Kooco.Pikachu.EnumValues;
-using Kooco.Pikachu.Orders;
+using Kooco.Pikachu.Orders.Entities;
 using System;
 using System.ComponentModel.DataAnnotations.Schema;
 using Volo.Abp.Domain.Entities.Auditing;

@@ -3,6 +3,7 @@ using Kooco.Pikachu.Groupbuys;
 using Kooco.Pikachu.GroupBuys;
 using Kooco.Pikachu.OrderHistories;
 using Kooco.Pikachu.Orders;
+using Kooco.Pikachu.Orders.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;

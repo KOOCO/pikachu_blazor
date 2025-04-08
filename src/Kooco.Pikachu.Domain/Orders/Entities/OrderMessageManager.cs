@@ -7,7 +7,7 @@ using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Domain.Services;
 using Volo.Abp.Guids;
 
-namespace Kooco.Pikachu.Orders
+namespace Kooco.Pikachu.Orders.Entities
 {
     public class OrderMessageManager(IOrderMessageRepository orderMessageRepository) : DomainService
     {

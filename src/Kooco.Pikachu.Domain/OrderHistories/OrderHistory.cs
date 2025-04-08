@@ -1,4 +1,4 @@
-﻿using Kooco.Pikachu.Orders;
+﻿using Kooco.Pikachu.Orders.Entities;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
