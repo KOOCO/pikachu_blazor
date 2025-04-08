@@ -23,7 +23,6 @@ public partial class CashFlowDealerSettings
     private UpdateChinaTrustDto ChinaTrust { get; set; }
     private UpdateEcPayDto EcPay { get; set; }
     private LoadingIndicator Loading { get; set; }
-    private List<string> InstallmentPeriods { get; } = ["3", "6", "12", "18", "24"];
     #endregion
     #region Constructor
     public CashFlowDealerSettings()

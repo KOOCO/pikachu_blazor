@@ -124,6 +124,8 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
                                                     input.BlackCatDeliveryTime, input.HomeDeliveryDeliveryTime, input.DeliveredByStoreDeliveryTime, input.TaxType, input.ProductType,
                                                     input.ColorSchemeType, input.PrimaryColor, input.SecondaryColor, input.BackgroundColor, input.SecondaryBackgroundColor, input.AlertColor, input.BlockColor, input.ProductDetailsDisplayMethod, input.NotificationBar);
         result.AddOnProduct = input.AddOnProduct;
+        result.InstallmentPeriodsJson = JsonSerializer.Serialize(input.InstallmentPeriods);
+
         if (!input.FacebookLink.IsNullOrEmpty()) result.FacebookLink = input.FacebookLink;
 
         if (!input.InstagramLink.IsNullOrEmpty()) result.InstagramLink = input.InstagramLink;
@@ -185,12 +187,11 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
 
                 await _groupBuyRepository.EnsureCollectionLoadedAsync(groupBuy, x => x.ItemGroups);
                 ObjectMapper.Map(input, groupBuy);
+                groupBuy.InstallmentPeriodsJson = JsonSerializer.Serialize(input.InstallmentPeriods);
 
                 await ProcessItemGroups(groupBuy, input.ItemGroups.ToList());
 
-
                 groupBuy.ItemGroups.RemoveAll(w => w.Id == Guid.Empty);
-
 
                 await _groupBuyRepository.UpdateAsync(groupBuy, true);
 

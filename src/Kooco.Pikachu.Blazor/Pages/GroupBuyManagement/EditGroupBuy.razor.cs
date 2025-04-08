@@ -16,6 +16,7 @@ using Kooco.Pikachu.Items;
 using Kooco.Pikachu.Items.Dtos;
 using Kooco.Pikachu.Localization;
 using Kooco.Pikachu.LogisticsProviders;
+using Kooco.Pikachu.PaymentGateways;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
@@ -128,6 +129,7 @@ public partial class EditGroupBuy
     private readonly ILogisticsProvidersAppService _LogisticsProvidersAppService;
 
     private bool IsColorPickerOpen = false;
+    public List<PaymentGatewayDto> PaymentGateways = [];
     #endregion
 
     private List<string> OrderedDeliveryMethods =
@@ -246,6 +248,8 @@ public partial class EditGroupBuy
 
             if (EditValidationsRef is not null) await EditValidationsRef.ClearAll();
             //
+            PaymentGateways = await PaymentGatewayAppService.GetAllAsync();
+            CheckForDisabledInstallmentOptions();
             StateHasChanged();
             //await Loading.Hide();
         }
@@ -261,13 +265,54 @@ public partial class EditGroupBuy
         }
     }
 
+    void CheckForDisabledInstallmentOptions()
+    {
+        var ecpay = PaymentGateways.Where(x => x.PaymentIntegrationType == PaymentIntegrationType.EcPay).FirstOrDefault();
+        if (ecpay == null || !ecpay.IsCreditCardEnabled || ecpay.InstallmentPeriods.Count == 0)
+        {
+            EditGroupBuyDto.InstallmentPeriods.Clear();
+        }
+        else
+        {
+            EditGroupBuyDto.InstallmentPeriods.RemoveAll(ip => !ecpay.InstallmentPeriods.Contains(ip));
+        }
+    }
+    public bool IsInstallmentPeriodEnabled(string period)
+    {
+        var ecpay = PaymentGateways.Where(x => x.PaymentIntegrationType == PaymentIntegrationType.EcPay).FirstOrDefault();
+        if (!CreditCard || ecpay == null) return true;
+
+        return !ecpay.InstallmentPeriods.Contains(period);
+    }
+
+    void OnInstallmentPeriodChange(bool value, string period)
+    {
+        if (value)
+        {
+            EditGroupBuyDto.InstallmentPeriods.Add(period);
+        }
+        else
+        {
+            EditGroupBuyDto.InstallmentPeriods.Remove(period);
+        }
+    }
+
+    void OnCreditCardCheckedChange(bool value)
+    {
+        CreditCard = value;
+        if (!CreditCard)
+        {
+            EditGroupBuyDto.InstallmentPeriods = [];
+        }
+    }
+
     public void OnEnterPriseChange(bool e)
     {
         EditGroupBuyDto.IsEnterprise = e;
 
         if (EditGroupBuyDto.IsEnterprise)
         {
-            IsCashOnDelivery = true; CreditCard = false; BankTransfer = false;IsLinePay = false;
+            IsCashOnDelivery = true; CreditCard = false; BankTransfer = false; IsLinePay = false;
             OnShippingMethodCheckedChange("SelfPickup", new ChangeEventArgs { Value = false });
             OnShippingMethodCheckedChange("SelfPickup", new ChangeEventArgs { Value = true });
             OnShippingMethodCheckedChange("DeliveredByStore", new ChangeEventArgs { Value = false });
@@ -292,8 +337,8 @@ public partial class EditGroupBuy
 
     private void OnColorSchemeChange(ChangeEventArgs e)
     {
-        string? selectedTheme = e.Value.ToString()!= "Choose Color Theme"? e.Value.ToString() :null;
-       
+        string? selectedTheme = e.Value.ToString() != "Choose Color Theme" ? e.Value.ToString() : null;
+
         EditGroupBuyDto.ColorSchemeType = !selectedTheme.IsNullOrEmpty() ? Enum.Parse<ColorScheme>(selectedTheme) : null;
 
         IsColorPickerOpen = true;
@@ -1653,8 +1698,8 @@ public partial class EditGroupBuy
         var value = (bool)(e?.Value ?? false);
         if (value)
         {
-            if(!BlackCateDeliveryTimeList.Contains(method))
-            BlackCateDeliveryTimeList.Add(method);
+            if (!BlackCateDeliveryTimeList.Contains(method))
+                BlackCateDeliveryTimeList.Add(method);
         }
         else
         {
@@ -2222,7 +2267,7 @@ public partial class EditGroupBuy
                 return;
 
             }
-            if (EditGroupBuyDto.ProductDetailsDisplayMethod == null || EditGroupBuyDto.ProductDetailsDisplayMethod==0)
+            if (EditGroupBuyDto.ProductDetailsDisplayMethod == null || EditGroupBuyDto.ProductDetailsDisplayMethod == 0)
             {
                 await _uiMessageService.Warn(L[PikachuDomainErrorCodes.ProductDetailsDisplayMethodRequired]);
                 await Loading.Hide();
@@ -2448,126 +2493,126 @@ public partial class EditGroupBuy
             try
             {
                 GroupBuyDto result = await _groupBuyAppService.UpdateAsync(Id, EditGroupBuyDto);
-           
 
-            if (EditGroupBuyDto.IsEnterprise) await _OrderAppService.UpdateOrdersIfIsEnterpricePurchaseAsync(Id);
 
-            foreach (List<CreateImageDto> carouselImages in CarouselModules)
-            {
-                foreach (CreateImageDto carouselImage in carouselImages)
+                if (EditGroupBuyDto.IsEnterprise) await _OrderAppService.UpdateOrdersIfIsEnterpricePurchaseAsync(Id);
+
+                foreach (List<CreateImageDto> carouselImages in CarouselModules)
                 {
-                    if ((!ExistingImages.Any(a => a.BlobImageName == carouselImage.BlobImageName)) ||
-                        (ExistingImages.Any(a => a.CarouselStyle != carouselImage.CarouselStyle)))
+                    foreach (CreateImageDto carouselImage in carouselImages)
                     {
-                        if (carouselImage.Id != Guid.Empty)
+                        if ((!ExistingImages.Any(a => a.BlobImageName == carouselImage.BlobImageName)) ||
+                            (ExistingImages.Any(a => a.CarouselStyle != carouselImage.CarouselStyle)))
                         {
-                            await _imageAppService.UpdateImageAsync(carouselImage);
+                            if (carouselImage.Id != Guid.Empty)
+                            {
+                                await _imageAppService.UpdateImageAsync(carouselImage);
+                            }
+
+                            else
+                            {
+                                carouselImage.TargetId = Id;
+
+                                await _imageAppService.CreateAsync(carouselImage);
+                            }
+                        }
+                    }
+                }
+
+                foreach (List<CreateImageDto> bannerImages in BannerModules)
+                {
+                    foreach (CreateImageDto bannerImage in bannerImages)
+                    {
+                        if (!ExistingBannerImages.Any(a => a.BlobImageName == bannerImage.BlobImageName))
+                        {
+                            if (bannerImage.Id != Guid.Empty)
+                            {
+                                await _imageAppService.UpdateImageAsync(bannerImage);
+                            }
+
+                            else
+                            {
+                                bannerImage.TargetId = Id;
+
+                                await _imageAppService.CreateAsync(bannerImage);
+                            }
+                        }
+                    }
+                }
+
+                if (GroupPurchaseOverviewModules is { Count: > 0 })
+                {
+                    foreach (GroupPurchaseOverviewDto groupPurchaseOverview in GroupPurchaseOverviewModules)
+                    {
+                        if (groupPurchaseOverview.Id == Guid.Empty)
+                        {
+                            groupPurchaseOverview.GroupBuyId = result.Id;
+
+                            await _GroupPurchaseOverviewAppService.CreateGroupPurchaseOverviewAsync(groupPurchaseOverview);
+                        }
+
+                        else if (groupPurchaseOverview.Id != Guid.Empty)
+                            await _GroupPurchaseOverviewAppService.UpdateGroupPurchaseOverviewAsync(groupPurchaseOverview);
+                    }
+                }
+
+                if (GroupBuyOrderInstructionModules is { Count: > 0 })
+                {
+                    foreach (GroupBuyOrderInstructionDto groupBuyOrderInstruction in GroupBuyOrderInstructionModules)
+                    {
+                        if (groupBuyOrderInstruction.Id == Guid.Empty)
+                        {
+                            groupBuyOrderInstruction.GroupBuyId = result.Id;
+
+                            await _GroupBuyOrderInstructionAppService.CreateGroupBuyOrderInstructionAsync(groupBuyOrderInstruction);
+                        }
+
+                        else if (groupBuyOrderInstruction.Id != Guid.Empty)
+                            await _GroupBuyOrderInstructionAppService.UpdateGroupPurchaseOverviewAsync(groupBuyOrderInstruction);
+                    }
+                }
+
+                if (ProductRankingCarouselModules is { Count: > 0 })
+                {
+                    foreach (ProductRankingCarouselModule productRankingCarouselModule in ProductRankingCarouselModules)
+                    {
+                        foreach (CreateImageDto image in productRankingCarouselModule.Images)
+                        {
+                            if (image.TargetId == Guid.Empty)
+                            {
+                                image.TargetId = result.Id;
+
+                                await _imageAppService.CreateAsync(image);
+                            }
+
+                        }
+
+                        if (productRankingCarouselModule.Id == Guid.Empty)
+                        {
+                            await _GroupBuyProductRankingAppService.CreateGroupBuyProductRankingAsync(new()
+                            {
+                                GroupBuyId = result.Id,
+                                Title = productRankingCarouselModule.Title,
+                                SubTitle = productRankingCarouselModule.SubTitle,
+                                Content = productRankingCarouselModule.Content,
+                                ModuleNumber = ProductRankingCarouselModules.IndexOf(productRankingCarouselModule) + 1
+                            });
                         }
 
                         else
                         {
-                            carouselImage.TargetId = Id;
-
-                            await _imageAppService.CreateAsync(carouselImage);
+                            await _GroupBuyProductRankingAppService.UpdateGroupBuyProductRankingAsync(new()
+                            {
+                                Id = productRankingCarouselModule.Id,
+                                GroupBuyId = result.Id,
+                                Title = productRankingCarouselModule.Title,
+                                SubTitle = productRankingCarouselModule.SubTitle,
+                                Content = productRankingCarouselModule.Content,
+                                ModuleNumber = ProductRankingCarouselModules.IndexOf(productRankingCarouselModule) + 1
+                            });
                         }
                     }
                 }
-            }
-
-            foreach (List<CreateImageDto> bannerImages in BannerModules)
-            {
-                foreach (CreateImageDto bannerImage in bannerImages)
-                {
-                    if (!ExistingBannerImages.Any(a => a.BlobImageName == bannerImage.BlobImageName))
-                    {
-                        if (bannerImage.Id != Guid.Empty)
-                        {
-                            await _imageAppService.UpdateImageAsync(bannerImage);
-                        }
-
-                        else
-                        {
-                            bannerImage.TargetId = Id;
-
-                            await _imageAppService.CreateAsync(bannerImage);
-                        }
-                    }
-                }
-            }
-
-            if (GroupPurchaseOverviewModules is { Count: > 0 })
-            {
-                foreach (GroupPurchaseOverviewDto groupPurchaseOverview in GroupPurchaseOverviewModules)
-                {
-                    if (groupPurchaseOverview.Id == Guid.Empty)
-                    {
-                        groupPurchaseOverview.GroupBuyId = result.Id;
-
-                        await _GroupPurchaseOverviewAppService.CreateGroupPurchaseOverviewAsync(groupPurchaseOverview);
-                    }
-
-                    else if (groupPurchaseOverview.Id != Guid.Empty)
-                        await _GroupPurchaseOverviewAppService.UpdateGroupPurchaseOverviewAsync(groupPurchaseOverview);
-                }
-            }
-
-            if (GroupBuyOrderInstructionModules is { Count: > 0 })
-            {
-                foreach (GroupBuyOrderInstructionDto groupBuyOrderInstruction in GroupBuyOrderInstructionModules)
-                {
-                    if (groupBuyOrderInstruction.Id == Guid.Empty)
-                    {
-                        groupBuyOrderInstruction.GroupBuyId = result.Id;
-
-                        await _GroupBuyOrderInstructionAppService.CreateGroupBuyOrderInstructionAsync(groupBuyOrderInstruction);
-                    }
-
-                    else if (groupBuyOrderInstruction.Id != Guid.Empty)
-                        await _GroupBuyOrderInstructionAppService.UpdateGroupPurchaseOverviewAsync(groupBuyOrderInstruction);
-                }
-            }
-
-            if (ProductRankingCarouselModules is { Count: > 0 })
-            {
-                foreach (ProductRankingCarouselModule productRankingCarouselModule in ProductRankingCarouselModules)
-                {
-                    foreach (CreateImageDto image in productRankingCarouselModule.Images)
-                    {
-                        if (image.TargetId == Guid.Empty)
-                        {
-                            image.TargetId = result.Id;
-
-                            await _imageAppService.CreateAsync(image);
-                        }
-
-                    }
-
-                    if (productRankingCarouselModule.Id == Guid.Empty)
-                    {
-                        await _GroupBuyProductRankingAppService.CreateGroupBuyProductRankingAsync(new()
-                        {
-                            GroupBuyId = result.Id,
-                            Title = productRankingCarouselModule.Title,
-                            SubTitle = productRankingCarouselModule.SubTitle,
-                            Content = productRankingCarouselModule.Content,
-                            ModuleNumber = ProductRankingCarouselModules.IndexOf(productRankingCarouselModule) + 1
-                        });
-                    }
-
-                    else
-                    {
-                        await _GroupBuyProductRankingAppService.UpdateGroupBuyProductRankingAsync(new()
-                        {
-                            Id = productRankingCarouselModule.Id,
-                            GroupBuyId = result.Id,
-                            Title = productRankingCarouselModule.Title,
-                            SubTitle = productRankingCarouselModule.SubTitle,
-                            Content = productRankingCarouselModule.Content,
-                            ModuleNumber = ProductRankingCarouselModules.IndexOf(productRankingCarouselModule) + 1
-                        });
-                    }
-                }
-            }
             }
             catch (AbpDbConcurrencyException e)
             {
@@ -2743,7 +2788,7 @@ public partial class EditGroupBuy
 
                 //BannerModules.RemoveAll(r => r.Any(w => w.ModuleNumber == moduleNumber));
             }
-            
+
             else if (item.GroupBuyModuleType is GroupBuyModuleType.OrderInstruction)
             {
                 await _groupBuyAppService.GroupBuyItemModuleNoReindexingAsync(Id, GroupBuyModuleType.OrderInstruction);

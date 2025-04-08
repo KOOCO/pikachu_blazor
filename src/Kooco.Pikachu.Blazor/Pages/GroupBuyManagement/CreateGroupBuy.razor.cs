@@ -31,9 +31,7 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Volo.Abp;
 using Volo.Abp.AspNetCore.Components.Messages;
-using Volo.Abp.Domain.Entities;
 
 
 namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement;
@@ -86,6 +84,7 @@ public partial class CreateGroupBuy
     bool BankTransfer { get; set; }
     bool IsCashOnDelivery { get; set; }
     bool IsLinePay { get; set; }
+
     public string _ProductPicture = "Product Picture";
 
     private FilePicker BannerPickerCustom { get; set; }
@@ -532,7 +531,7 @@ public partial class CreateGroupBuy
         {
             return true;
         }
-        else if (!ecpay.IsEnabled) return true;
+        else if (!ecpay.IsCreditCardEnabled) return true;
         else if (ecpay.HashIV.IsNullOrEmpty() || ecpay.HashKey.IsNullOrEmpty() || ecpay.MerchantId.IsNullOrEmpty() || ecpay.TradeDescription.IsNullOrEmpty() || ecpay.CreditCheckCode.IsNullOrEmpty()) return true;
         else
         {
@@ -556,6 +555,36 @@ public partial class CreateGroupBuy
 
         }
     }
+
+    public bool IsInstallmentPeriodEnabled(string period)
+    {
+        var ecpay = PaymentGateways.Where(x => x.PaymentIntegrationType == PaymentIntegrationType.EcPay).FirstOrDefault();
+        if (!CreditCard || ecpay == null) return true;
+
+        return !ecpay.InstallmentPeriods.Contains(period);
+    }
+
+    void OnInstallmentPeriodChange(bool value, string period)
+    {
+        if (value)
+        {
+            CreateGroupBuyDto.InstallmentPeriods.Add(period);
+        }
+        else
+        {
+            CreateGroupBuyDto.InstallmentPeriods.Remove(period);
+        }
+    }
+
+    void OnCreditCardCheckedChange(bool value)
+    {
+        CreditCard = value;
+        if (!CreditCard)
+        {
+            CreateGroupBuyDto.InstallmentPeriods = [];
+        }
+    }
+
     public bool IsInvoiceEnable()
     {
         if (ElectronicInvoiceSetting == null)
@@ -2252,12 +2281,14 @@ public partial class CreateGroupBuy
             if (paymentMethods.Count > 0) CreateGroupBuyDto.PaymentMethod = string.Join(" , ", paymentMethods);
             else CreateGroupBuyDto.PaymentMethod = string.Empty;
 
-            if (CreateGroupBuyDto.ProductType is null)
-            {
-                await _uiMessageService.Warn(L[PikachuDomainErrorCodes.ProductTypeIsRequired]);
-                await Loading.Hide();
-                return;
-            }
+            if (CreditCard)
+
+                if (CreateGroupBuyDto.ProductType is null)
+                {
+                    await _uiMessageService.Warn(L[PikachuDomainErrorCodes.ProductTypeIsRequired]);
+                    await Loading.Hide();
+                    return;
+                }
             if (CreateGroupBuyDto.PaymentMethod.IsNullOrEmpty())
             {
                 await _uiMessageService.Warn(L[PikachuDomainErrorCodes.AtLeastOnePaymentMethodIsRequired]);
