@@ -4,6 +4,7 @@ using Kooco.Pikachu.Freebies;
 using Kooco.Pikachu.Items;
 using Kooco.Pikachu.Members;
 using Kooco.Pikachu.OrderItems;
+using Kooco.Pikachu.Orders.Entities;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;

@@ -20,6 +20,7 @@ using Kooco.Pikachu.Items.Dtos;
 using Kooco.Pikachu.Localization;
 using Kooco.Pikachu.LogisticsProviders;
 using Kooco.Pikachu.Orders;
+using Kooco.Pikachu.Orders.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Microsoft.IdentityModel.Tokens;

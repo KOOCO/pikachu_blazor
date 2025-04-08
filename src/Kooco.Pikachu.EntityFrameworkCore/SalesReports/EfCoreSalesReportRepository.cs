@@ -1,7 +1,7 @@
 ﻿using Kooco.Pikachu.EntityFrameworkCore;
 using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.OrderItems;
-using Kooco.Pikachu.Orders;
+using Kooco.Pikachu.Orders.Entities;
 using Kooco.Pikachu.Reports;
 using Microsoft.EntityFrameworkCore;
 using System;

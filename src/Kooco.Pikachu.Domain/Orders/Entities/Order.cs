@@ -15,7 +15,7 @@ using Volo.Abp.Domain.Entities.Auditing;
 using Volo.Abp.Identity;
 using Volo.Abp.MultiTenancy;
 
-namespace Kooco.Pikachu.Orders;
+namespace Kooco.Pikachu.Orders.Entities;
 
 public class Order : FullAuditedAggregateRoot<Guid>, IMultiTenant
 {
@@ -70,6 +70,7 @@ public class Order : FullAuditedAggregateRoot<Guid>, IMultiTenant
     public OrderReturnStatus? ReturnStatus { get; set; }
     public ICollection<OrderItem> OrderItems { get; set; }
     public ICollection<StoreComment> StoreComments { get; set; }
+    public ICollection<OrderInvoice>? OrderInvoices { get; set; }
     public bool IsRefunded { get; set; }
     public bool IsVoidInvoice { get; set; }
     public DateTime? VoidDate { get; set; }
@@ -322,7 +323,7 @@ public class Order : FullAuditedAggregateRoot<Guid>, IMultiTenant
                 setItemId,
                 freebieId,
                 itemType,
-                this.Id,
+                Id,
                 spec,
                 itemPrice,
                 totalAmount,

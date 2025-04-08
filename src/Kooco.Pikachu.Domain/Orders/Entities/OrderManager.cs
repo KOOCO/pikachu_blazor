@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Domain.Services;
 
-namespace Kooco.Pikachu.Orders;
+namespace Kooco.Pikachu.Orders.Entities;
 
 public class OrderManager : DomainService
 {

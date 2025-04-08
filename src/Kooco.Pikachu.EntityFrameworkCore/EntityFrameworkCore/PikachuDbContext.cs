@@ -20,7 +20,6 @@ using Kooco.Pikachu.Images;
 using Kooco.Pikachu.GroupBuys;
 using Kooco.Pikachu.Groupbuys;
 using Kooco.Pikachu.Freebies;
-using Kooco.Pikachu.Orders;
 using Kooco.Pikachu.OrderItems;
 using Kooco.Pikachu.StoreComments;
 using Kooco.Pikachu.Refunds;
@@ -57,7 +56,7 @@ using Kooco.Pikachu.TierManagement;
 using Kooco.Pikachu.Members;
 using System.Reflection;
 using Kooco.Pikachu.TenantManagement.Entities;
-using Kooco.Pikachu.GroupBuyItemsPriceses;
+using Kooco.Pikachu.Orders.Entities;
 
 namespace Kooco.Pikachu.EntityFrameworkCore;
 
@@ -144,7 +143,10 @@ public class PikachuDbContext(DbContextOptions<PikachuDbContext> options) :
     public DbSet<GroupBuyProductRanking> GroupBuyProductRankings { get; set; }
     public DbSet<ShopCart> ShopCarts { get; set; }
     public DbSet<TenantSettings> TenantSettings { get; set; }
+
+    // Order
     public DbSet<OrderMessage> OrderMessages { get; set; }
+    public DbSet<OrderInvoice> OrderInvoices { get; set; }
 
     public DbSet<WebsiteBasicSetting> WebsiteBasicSettings { get; set; }
     public DbSet<WebsiteSettings> WebsiteSettings { get; set; }
@@ -167,7 +169,6 @@ public class PikachuDbContext(DbContextOptions<PikachuDbContext> options) :
 
     public DbSet<VipTierSetting> VipTierSettings { get; set; }
     public DbSet<MemberTag> MemberTags { get; set; }
-    public DbSet<GroupBuyItemsPrice> GroupBuyItemsPriceses { get; set; }
 
     // TenantWallets
     public DbSet<TenantWallet> TenantWallets { get; set; }
@@ -302,14 +303,6 @@ public class PikachuDbContext(DbContextOptions<PikachuDbContext> options) :
             b.HasMany(o => o.Items).WithOne().HasForeignKey(d => d.DeliveryOrderId);
 
             b.HasOne<Order>().WithMany().HasForeignKey(d => d.OrderId);
-
-        });
-        builder.Entity<GroupBuyItemsPrice>(b =>
-        {
-            b.ToTable(PikachuConsts.DbTablePrefix + "GroupBuyItemsPriceses", PikachuConsts.DbSchema, table => table.HasComment(""));
-            b.ConfigureByConvention();
-
-          
 
         });
         builder.Entity<OrderItem>(b =>

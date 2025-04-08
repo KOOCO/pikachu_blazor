@@ -1,4 +1,4 @@
-﻿using Kooco.Pikachu.Orders;
+﻿using Kooco.Pikachu.Orders.Entities;
 using Microsoft.Extensions.Localization;
 using RestSharp;
 using System;

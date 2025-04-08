@@ -1,5 +1,6 @@
 ﻿using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Members;
+using Kooco.Pikachu.Orders.Entities;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;

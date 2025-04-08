@@ -18,19 +18,16 @@
 
   <ItemGroup>
     <Compile Remove="Inventory\**" />
-    <Compile Remove="Invoices\**" />
     <Compile Remove="PurchaseOrders\**" />
     <Compile Remove="SetItems\**" />
     <Compile Remove="Tenents\**" />
     <Compile Remove="Transactions\**" />
     <EmbeddedResource Remove="Inventory\**" />
-    <EmbeddedResource Remove="Invoices\**" />
     <EmbeddedResource Remove="PurchaseOrders\**" />
     <EmbeddedResource Remove="SetItems\**" />
     <EmbeddedResource Remove="Tenents\**" />
     <EmbeddedResource Remove="Transactions\**" />
     <None Remove="Inventory\**" />
-    <None Remove="Invoices\**" />
     <None Remove="PurchaseOrders\**" />
     <None Remove="SetItems\**" />
     <None Remove="Tenents\**" />
@@ -63,7 +60,6 @@
     <None Remove="Groupbuys\" />
     <None Remove="Orders\" />
     <None Remove="Transactions\" />
-    <None Remove="Invoices\" />
     <None Remove="GroupItems\" />
     <None Remove="SetItems\" />
     <None Remove="Warehouses\" />

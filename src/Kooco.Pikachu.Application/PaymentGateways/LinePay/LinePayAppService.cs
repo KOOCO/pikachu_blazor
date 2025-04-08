@@ -4,6 +4,7 @@ using Kooco.Pikachu.Localization;
 using Kooco.Pikachu.OrderHistories;
 using Kooco.Pikachu.OrderItems;
 using Kooco.Pikachu.Orders;
+using Kooco.Pikachu.Orders.Entities;
 using Kooco.Pikachu.OrderTransactions;
 using Kooco.Pikachu.Refunds;
 using Microsoft.Extensions.Localization;
