@@ -8,15 +8,15 @@ public enum InvoiceTaxType
     /// <summary>
     /// 應稅
     /// </summary>
-    Taxable = 1,
+    Taxable,
 
     /// <summary>
     /// 零稅率
     /// </summary>
-    ZeroTax = 2,
+    ZeroTax,
 
     /// <summary>
     /// 免稅
     /// </summary>
-    DutyFree = 3
+    DutyFree,
 }

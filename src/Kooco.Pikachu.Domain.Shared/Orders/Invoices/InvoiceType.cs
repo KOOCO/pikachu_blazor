@@ -8,15 +8,15 @@ public enum InvoiceType
     /// <summary>
     /// 紙本
     /// </summary>
-    Paper = 0,
+    Paper,
 
     /// <summary>
     /// 載具
     /// </summary>
-    Carrier = 1,
+    Carrier,
 
     /// <summary>
     /// 捐贈
     /// </summary>
-    Donation = 2
+    Donation
 }

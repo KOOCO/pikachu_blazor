@@ -8,15 +8,15 @@ public enum InvoiceCreation
     /// <summary>
     /// 手動建立
     /// </summary>
-    Manual = 0,
+    Manual,
 
     /// <summary>
     /// 依照排程自動建立
     /// </summary>
-    Scheduled = 1,
+    Scheduled,
 
     /// <summary>
     /// 重新開立
     /// </summary>
-    Reopening = 2
+    Reopening
 }
