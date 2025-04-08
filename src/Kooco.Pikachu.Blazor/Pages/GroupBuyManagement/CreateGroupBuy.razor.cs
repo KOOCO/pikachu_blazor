@@ -7,6 +7,7 @@ using Blazorise.LoadingIndicator;
 using Kooco.Pikachu.AzureStorage.Image;
 using Kooco.Pikachu.ElectronicInvoiceSettings;
 using Kooco.Pikachu.EnumValues;
+using Kooco.Pikachu.GroupBuyItemsPriceses;
 using Kooco.Pikachu.GroupBuyOrderInstructions;
 using Kooco.Pikachu.GroupBuyOrderInstructions.Interface;
 using Kooco.Pikachu.GroupBuyProductRankings.Interface;
@@ -30,9 +31,7 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Volo.Abp;
 using Volo.Abp.AspNetCore.Components.Messages;
-using Volo.Abp.Domain.Entities;
 
 
 namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement;
@@ -85,6 +84,7 @@ public partial class CreateGroupBuy
     bool BankTransfer { get; set; }
     bool IsCashOnDelivery { get; set; }
     bool IsLinePay { get; set; }
+
     public string _ProductPicture = "Product Picture";
 
     private FilePicker BannerPickerCustom { get; set; }
@@ -136,6 +136,7 @@ public partial class CreateGroupBuy
     public List<PaymentGatewayDto> PaymentGateways = [];
     private readonly ILogisticsProvidersAppService _LogisticsProvidersAppService;
     private readonly IPaymentGatewayAppService _paymentGatewayAppService;
+    private readonly IGroupBuyItemsPriceAppService _groupBuyItemsPriceAppService;
 
     private bool IsColorPickerOpen = false;
 
@@ -161,7 +162,8 @@ public partial class CreateGroupBuy
         ILogisticsProvidersAppService LogisticsProvidersAppService,
         IGroupBuyProductRankingAppService GroupBuyProductRankingAppService,
         IElectronicInvoiceSettingAppService electronicInvoiceSettingAppService,
-        IPaymentGatewayAppService paymentGatewayAppService
+        IPaymentGatewayAppService paymentGatewayAppService,
+        IGroupBuyItemsPriceAppService groupBuyItemsPriceAppService
     )
     {
         _groupBuyAppService = groupBuyAppService;
@@ -179,6 +181,7 @@ public partial class CreateGroupBuy
         _GroupBuyProductRankingAppService = GroupBuyProductRankingAppService;
         _electronicInvoiceSettingAppService = electronicInvoiceSettingAppService;
         _paymentGatewayAppService = paymentGatewayAppService;
+        _groupBuyItemsPriceAppService = groupBuyItemsPriceAppService;
     }
     #endregion
 
@@ -528,7 +531,7 @@ public partial class CreateGroupBuy
         {
             return true;
         }
-        else if (!ecpay.IsEnabled) return true;
+        else if (!ecpay.IsCreditCardEnabled) return true;
         else if (ecpay.HashIV.IsNullOrEmpty() || ecpay.HashKey.IsNullOrEmpty() || ecpay.MerchantId.IsNullOrEmpty() || ecpay.TradeDescription.IsNullOrEmpty() || ecpay.CreditCheckCode.IsNullOrEmpty()) return true;
         else
         {
@@ -552,6 +555,36 @@ public partial class CreateGroupBuy
 
         }
     }
+
+    public bool IsInstallmentPeriodEnabled(string period)
+    {
+        var ecpay = PaymentGateways.Where(x => x.PaymentIntegrationType == PaymentIntegrationType.EcPay).FirstOrDefault();
+        if (!CreditCard || ecpay == null) return true;
+
+        return !ecpay.InstallmentPeriods.Contains(period);
+    }
+
+    void OnInstallmentPeriodChange(bool value, string period)
+    {
+        if (value)
+        {
+            CreateGroupBuyDto.InstallmentPeriods.Add(period);
+        }
+        else
+        {
+            CreateGroupBuyDto.InstallmentPeriods.Remove(period);
+        }
+    }
+
+    void OnCreditCardCheckedChange(bool value)
+    {
+        CreditCard = value;
+        if (!CreditCard)
+        {
+            CreateGroupBuyDto.InstallmentPeriods = [];
+        }
+    }
+
     public bool IsInvoiceEnable()
     {
         if (ElectronicInvoiceSetting == null)
@@ -2248,12 +2281,14 @@ public partial class CreateGroupBuy
             if (paymentMethods.Count > 0) CreateGroupBuyDto.PaymentMethod = string.Join(" , ", paymentMethods);
             else CreateGroupBuyDto.PaymentMethod = string.Empty;
 
-            if (CreateGroupBuyDto.ProductType is null)
-            {
-                await _uiMessageService.Warn(L[PikachuDomainErrorCodes.ProductTypeIsRequired]);
-                await Loading.Hide();
-                return;
-            }
+            if (CreditCard)
+
+                if (CreateGroupBuyDto.ProductType is null)
+                {
+                    await _uiMessageService.Warn(L[PikachuDomainErrorCodes.ProductTypeIsRequired]);
+                    await Loading.Hide();
+                    return;
+                }
             if (CreateGroupBuyDto.PaymentMethod.IsNullOrEmpty())
             {
                 await _uiMessageService.Warn(L[PikachuDomainErrorCodes.AtLeastOnePaymentMethodIsRequired]);
@@ -2486,14 +2521,66 @@ public partial class CreateGroupBuy
                     {
                         if (itemDetail.Id != Guid.Empty || (item.GroupBuyModuleType == GroupBuyModuleType.IndexAnchor && !itemDetail.Name.IsNullOrEmpty()))
                         {
-                            itemGroup.ItemDetails.Add(new GroupBuyItemGroupDetailCreateUpdateDto
+                            if (item.GroupBuyModuleType == GroupBuyModuleType.ProductGroupModule)
                             {
-                                SortOrder = j++,
-                                ItemId = itemDetail.ItemType == ItemType.Item && itemDetail.Id != Guid.Empty ? itemDetail.Id : null,
-                                SetItemId = itemDetail.ItemType == ItemType.SetItem && itemDetail.Id != Guid.Empty ? itemDetail.Id : null,
-                                ItemType = itemDetail.ItemType,
-                                DisplayText = itemGroup.GroupBuyModuleType == GroupBuyModuleType.IndexAnchor ? itemDetail.Name : null
-                            });
+                                if (itemDetail.ItemType == ItemType.Item)
+                                {
+                                    if (itemDetail.SelectedItemDetailIds == null || !itemDetail.SelectedItemDetailIds.Any())
+                                    {
+                                        await _uiMessageService.Error($"Item '{itemDetail.Name}' must have at least one variant selected.");
+                                        return;
+                                    }
+
+                                    foreach (var detailId in itemDetail.SelectedItemDetailIds)
+                                    {
+                                        if (!itemDetail.ItemDetailsWithPrices.TryGetValue(detailId, out var labelAndPrice))
+                                        {
+                                           await _uiMessageService.Error($"Price missing for one or more item variants in '{itemDetail.Name}'.");
+                                            return;
+                                        }
+
+                                        itemGroup.ItemDetails.Add(new GroupBuyItemGroupDetailCreateUpdateDto
+                                        {
+                                            SortOrder = j++,
+                                            ItemId = itemDetail.ItemType == ItemType.Item ? itemDetail.Id : null,
+                                            SetItemId = itemDetail.ItemType == ItemType.SetItem ? itemDetail.Id : null,
+                                            ItemType = itemDetail.ItemType,
+                                            ItemDetailId = itemDetail.ItemType == ItemType.Item ? detailId : null, // ✅ only for ItemType.Item
+                                            Price = labelAndPrice.Price
+                                        });
+                                    }
+                                }
+                                else {
+
+                                    if (itemDetail.Price is null)
+                                    {
+                                       await  _uiMessageService.Error($"Price missing for one or more item variants in '{itemDetail.Name}'.");
+                                        return;
+                                    }
+                                    itemGroup.ItemDetails.Add(new GroupBuyItemGroupDetailCreateUpdateDto
+                                        {
+                                            SortOrder = j++,
+                                            ItemId = itemDetail.ItemType == ItemType.Item ? itemDetail.Id : null,
+                                            SetItemId = itemDetail.ItemType == ItemType.SetItem ? itemDetail.Id : null,
+                                            ItemType = itemDetail.ItemType,
+
+                                            Price = itemDetail.Price.Value
+                                        });
+                                }
+                            }
+                            else
+                            {
+                                // Existing logic for IndexAnchor and others
+                                itemGroup.ItemDetails.Add(new GroupBuyItemGroupDetailCreateUpdateDto
+                                {
+                                    SortOrder = j++,
+                                    ItemId = itemDetail.ItemType == ItemType.Item && itemDetail.Id != Guid.Empty ? itemDetail.Id : null,
+                                    SetItemId = itemDetail.ItemType == ItemType.SetItem && itemDetail.Id != Guid.Empty ? itemDetail.Id : null,
+                                    ItemType = itemDetail.ItemType,
+                                    DisplayText = itemGroup.GroupBuyModuleType == GroupBuyModuleType.IndexAnchor ? itemDetail.Name : null
+                                });
+                            }
+
                         }
                     }
 
@@ -2654,6 +2741,48 @@ public partial class CreateGroupBuy
         {
             await _uiMessageService.Error(ex.GetType().ToString());
         }
+    }
+    private void UpdatePrice(Guid detailId, ItemWithItemTypeDto selectedItem, double price)
+    {
+        if (selectedItem.ItemDetailsWithPrices.ContainsKey(detailId))
+        {
+            selectedItem.ItemDetailsWithPrices[detailId]=(selectedItem.ItemDetailsWithPrices[detailId].Label,(float)price);
+        }
+    }
+    private void OnSelectedItemDetailsChanged(IEnumerable<Guid> selectedValues, ItemWithItemTypeDto selectedItem)
+    {
+        var itemDetails = selectedItem.Item?.ItemDetails;
+
+        // Remove unselected items
+        var removed = selectedItem.ItemDetailsWithPrices.Keys.Except(selectedValues).ToList();
+        foreach (var key in removed)
+        {
+            selectedItem.ItemDetailsWithPrices.Remove(key);
+        }
+
+        // Add newly selected items
+        foreach (var id in selectedValues)
+        {
+            if (!selectedItem.ItemDetailsWithPrices.ContainsKey(id))
+            {
+                var itemDetail = itemDetails?.FirstOrDefault(x => x.Id == id);
+                if (itemDetail != null)
+                {
+                    var label = itemDetail.Attribute1Value;
+
+                    if (!string.IsNullOrWhiteSpace(itemDetail.Attribute2Value))
+                        label += " / " + itemDetail.Attribute2Value;
+
+                    if (!string.IsNullOrWhiteSpace(itemDetail.Attribute3Value))
+                        label += " / " + itemDetail.Attribute3Value;
+
+                    selectedItem.ItemDetailsWithPrices[id] = (label, 0); // default price
+                }
+            }
+        }
+
+        selectedItem.SelectedItemDetailIds = selectedValues.ToList();
+        StateHasChanged();
     }
 
     private async Task OnSelectedValueChanged(Guid? id, ProductRankingCarouselModule module, ItemWithItemTypeDto? selectedItem = null)

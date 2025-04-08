@@ -45,7 +45,7 @@ public class SetItemAppService : CrudAppService<SetItem, SetItemDto, Guid, Paged
             input.ItemStorageTemperature,
             input.SaleableQuantity
             );
-        setItem.GroupBuyPrice = input.GroupBuyPrice;
+      
         if (input.SetItemDetails.Any())
         {
             input.SetItemDetails.ForEach(item =>
@@ -97,7 +97,7 @@ public class SetItemAppService : CrudAppService<SetItem, SetItemDto, Guid, Paged
         setItem.SetItemMainImageURL = input.SetItemMainImageURL;
         setItem.SetItemStatus = input.SetItemStatus;
         setItem.SetItemPrice = input.SetItemPrice;
-        setItem.GroupBuyPrice = input.GroupBuyPrice;
+       
         setItem.LimitQuantity = input.LimitQuantity;
         setItem.LimitAvaliableTimeStart = input.LimitAvaliableTimeStart;
         setItem.LimitAvaliableTimeEnd = input.LimitAvaliableTimeEnd;

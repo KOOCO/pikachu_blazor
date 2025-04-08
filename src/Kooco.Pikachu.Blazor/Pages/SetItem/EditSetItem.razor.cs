@@ -40,6 +40,8 @@ namespace Kooco.Pikachu.Blazor.Pages.SetItem
         private FilePicker FilePicker { get; set; }
         private CreateUpdateSetItemDto CreateUpdateSetItemDto { get; set; } = new();
         private List<ItemDetailsModel> ItemDetails { get; set; } = new();
+        private List<string> ItemBadgeList { get; set; } = [];
+        private string NewItemBadge { get; set; }
 
         private readonly ISetItemAppService _setItemAppService;
         private readonly IUiMessageService _uiMessageService;
@@ -101,7 +103,7 @@ namespace Kooco.Pikachu.Blazor.Pages.SetItem
 
                             ItemDetails.Add(itemDetail);
                         });
-
+                        ItemBadgeList = await _itemAppService.GetItemBadgesAsync();
                         ItemsList = await _itemAppService.GetItemsLookupAsync();
                         await GetAttributesForSelectedItems();
                         await LoadHtmlContent();
@@ -361,6 +363,16 @@ namespace Kooco.Pikachu.Blazor.Pages.SetItem
                 item.IsSelected = IsAllSelected;
             });
             StateHasChanged();
+        }
+
+        private void AddItem()
+        {
+            if (!string.IsNullOrWhiteSpace(NewItemBadge))
+            {
+                ItemBadgeList.Add(NewItemBadge);
+                CreateUpdateSetItemDto.SetItemBadge = NewItemBadge;
+                NewItemBadge = string.Empty;
+            }
         }
     }
 }

@@ -4,6 +4,7 @@ using Kooco.Pikachu.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Volo.Abp.EntityFrameworkCore;
 
@@ -12,9 +13,11 @@ using Volo.Abp.EntityFrameworkCore;
 namespace Kooco.Pikachu.Migrations
 {
     [DbContext(typeof(PikachuDbContext))]
-    partial class PikachuDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250408033217_Change in GroupbuyItemPrice Table")]
+    partial class ChangeinGroupbuyItemPriceTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1031,9 +1034,6 @@ namespace Kooco.Pikachu.Migrations
                     b.Property<string>("InstagramLink")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("InstallmentPeriodsJson")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("InviteCode")
                         .HasColumnType("nvarchar(max)");
 
@@ -1190,12 +1190,6 @@ namespace Kooco.Pikachu.Migrations
                     b.Property<Guid?>("TenantId")
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("TenantId");
-
-                    b.Property<string>("Text")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Title")
-                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -2493,7 +2487,7 @@ namespace Kooco.Pikachu.Migrations
                     b.ToTable("AppOrderTransactions", (string)null);
                 });
 
-            modelBuilder.Entity("Kooco.Pikachu.Orders.Entities.Order", b =>
+            modelBuilder.Entity("Kooco.Pikachu.Orders.Order", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
@@ -2882,156 +2876,7 @@ namespace Kooco.Pikachu.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Kooco.Pikachu.Orders.Entities.OrderInvoice", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreationTime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("CreationTime");
-
-                    b.Property<int>("CreationType")
-                        .HasColumnType("int");
-
-                    b.Property<Guid?>("CreatorId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("CreatorId");
-
-                    b.Property<Guid?>("DeleterId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("DeleterId");
-
-                    b.Property<DateTime?>("DeletionTime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("DeletionTime");
-
-                    b.Property<string>("InvoiceNo")
-                        .IsRequired()
-                        .HasMaxLength(12)
-                        .HasColumnType("nvarchar(12)");
-
-                    b.Property<int>("InvoiceStatus")
-                        .HasColumnType("int");
-
-                    b.Property<int>("InvoiceType")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false)
-                        .HasColumnName("IsDeleted");
-
-                    b.Property<DateTime>("IssueTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("LastModificationTime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("LastModificationTime");
-
-                    b.Property<Guid?>("LastModifierId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("LastModifierId");
-
-                    b.Property<Guid>("OrderId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<decimal>("ShippingCost")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal>("SubtotalAmount")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal>("TaxAmount")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<int>("TaxType")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("TotalAmount")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("UnifiedBusinessNo")
-                        .IsRequired()
-                        .HasMaxLength(8)
-                        .HasColumnType("nvarchar(8)");
-
-                    b.Property<string>("VoidReason")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
-
-                    b.Property<DateTime>("VoidedTime")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("OrderId");
-
-                    b.ToTable("AppOrderInvoices", (string)null);
-                });
-
-            modelBuilder.Entity("Kooco.Pikachu.Orders.Entities.OrderInvoiceItem", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreationTime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("CreationTime");
-
-                    b.Property<Guid?>("CreatorId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("CreatorId");
-
-                    b.Property<Guid?>("DeleterId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("DeleterId");
-
-                    b.Property<DateTime?>("DeletionTime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("DeletionTime");
-
-                    b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false)
-                        .HasColumnName("IsDeleted");
-
-                    b.Property<DateTime?>("LastModificationTime")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("LastModificationTime");
-
-                    b.Property<Guid?>("LastModifierId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("LastModifierId");
-
-                    b.Property<Guid>("OrderInvoiceId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("ProductName")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
-
-                    b.Property<int>("ProductQty")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("TotalPrice")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal>("UnitPrice")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("OrderInvoiceId");
-
-                    b.ToTable("AppOrderInvoiceItems", (string)null);
-                });
-
-            modelBuilder.Entity("Kooco.Pikachu.Orders.Entities.OrderMessage", b =>
+            modelBuilder.Entity("Kooco.Pikachu.Orders.OrderMessage", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
@@ -7175,7 +7020,7 @@ namespace Kooco.Pikachu.Migrations
 
             modelBuilder.Entity("Kooco.Pikachu.OrderDeliveries.OrderDelivery", b =>
                 {
-                    b.HasOne("Kooco.Pikachu.Orders.Entities.Order", null)
+                    b.HasOne("Kooco.Pikachu.Orders.Order", null)
                         .WithMany()
                         .HasForeignKey("OrderId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -7184,7 +7029,7 @@ namespace Kooco.Pikachu.Migrations
 
             modelBuilder.Entity("Kooco.Pikachu.OrderHistories.OrderHistory", b =>
                 {
-                    b.HasOne("Kooco.Pikachu.Orders.Entities.Order", "Order")
+                    b.HasOne("Kooco.Pikachu.Orders.Order", "Order")
                         .WithMany()
                         .HasForeignKey("OrderId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -7207,7 +7052,7 @@ namespace Kooco.Pikachu.Migrations
                         .WithMany()
                         .HasForeignKey("ItemId");
 
-                    b.HasOne("Kooco.Pikachu.Orders.Entities.Order", null)
+                    b.HasOne("Kooco.Pikachu.Orders.Order", null)
                         .WithMany("OrderItems")
                         .HasForeignKey("OrderId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -7226,7 +7071,7 @@ namespace Kooco.Pikachu.Migrations
 
             modelBuilder.Entity("Kooco.Pikachu.OrderTransactions.OrderTransaction", b =>
                 {
-                    b.HasOne("Kooco.Pikachu.Orders.Entities.Order", "Order")
+                    b.HasOne("Kooco.Pikachu.Orders.Order", "Order")
                         .WithMany("OrderTransactions")
                         .HasForeignKey("OrderId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -7235,7 +7080,7 @@ namespace Kooco.Pikachu.Migrations
                     b.Navigation("Order");
                 });
 
-            modelBuilder.Entity("Kooco.Pikachu.Orders.Entities.Order", b =>
+            modelBuilder.Entity("Kooco.Pikachu.Orders.Order", b =>
                 {
                     b.HasOne("Kooco.Pikachu.UserShoppingCredits.UserShoppingCredit", "CreditDeductionRecord")
                         .WithMany()
@@ -7270,28 +7115,6 @@ namespace Kooco.Pikachu.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Kooco.Pikachu.Orders.Entities.OrderInvoice", b =>
-                {
-                    b.HasOne("Kooco.Pikachu.Orders.Entities.Order", "Order")
-                        .WithMany("OrderInvoices")
-                        .HasForeignKey("OrderId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Order");
-                });
-
-            modelBuilder.Entity("Kooco.Pikachu.Orders.Entities.OrderInvoiceItem", b =>
-                {
-                    b.HasOne("Kooco.Pikachu.Orders.Entities.OrderInvoice", "OrderInvoice")
-                        .WithMany("OrderInvoiceItems")
-                        .HasForeignKey("OrderInvoiceId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("OrderInvoice");
-                });
-
             modelBuilder.Entity("Kooco.Pikachu.ProductCategories.CategoryProduct", b =>
                 {
                     b.HasOne("Kooco.Pikachu.Items.Item", "Item")
@@ -7324,7 +7147,7 @@ namespace Kooco.Pikachu.Migrations
 
             modelBuilder.Entity("Kooco.Pikachu.Refunds.Refund", b =>
                 {
-                    b.HasOne("Kooco.Pikachu.Orders.Entities.Order", "Order")
+                    b.HasOne("Kooco.Pikachu.Orders.Order", "Order")
                         .WithMany()
                         .HasForeignKey("OrderId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -7449,7 +7272,7 @@ namespace Kooco.Pikachu.Migrations
                         .WithMany()
                         .HasForeignKey("CreatorId");
 
-                    b.HasOne("Kooco.Pikachu.Orders.Entities.Order", null)
+                    b.HasOne("Kooco.Pikachu.Orders.Order", null)
                         .WithMany("StoreComments")
                         .HasForeignKey("OrderId");
 
@@ -7852,20 +7675,13 @@ namespace Kooco.Pikachu.Migrations
                     b.Navigation("Items");
                 });
 
-            modelBuilder.Entity("Kooco.Pikachu.Orders.Entities.Order", b =>
+            modelBuilder.Entity("Kooco.Pikachu.Orders.Order", b =>
                 {
-                    b.Navigation("OrderInvoices");
-
                     b.Navigation("OrderItems");
 
                     b.Navigation("OrderTransactions");
 
                     b.Navigation("StoreComments");
-                });
-
-            modelBuilder.Entity("Kooco.Pikachu.Orders.Entities.OrderInvoice", b =>
-                {
-                    b.Navigation("OrderInvoiceItems");
                 });
 
             modelBuilder.Entity("Kooco.Pikachu.ProductCategories.ProductCategory", b =>

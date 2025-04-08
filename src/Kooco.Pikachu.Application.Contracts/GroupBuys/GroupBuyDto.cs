@@ -1,12 +1,13 @@
 ﻿using Kooco.Pikachu.EnumValues;
 using System;
 using System.Collections.Generic;
+using System.Text.Json;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Domain.Entities;
 
 namespace Kooco.Pikachu.GroupBuys;
 
-public class GroupBuyDto: EntityDto<Guid>,IHasConcurrencyStamp
+public class GroupBuyDto : EntityDto<Guid>, IHasConcurrencyStamp
 {
     /// <summary>
     /// 團購編號  GroupBuysNo
@@ -206,6 +207,7 @@ public class GroupBuyDto: EntityDto<Guid>,IHasConcurrencyStamp
     public string? GroupBuyCondition { get; set; }
     public string? CustomerInformation { get; set; }
     public string? PaymentMethod { get; set; }
+    public List<string> InstallmentPeriods { get; set; }
     public bool IsSelected { get; set; } = false;
     public bool IsGroupBuyAvaliable { get; set; }
     public DateTime CreationTime { get; set; }

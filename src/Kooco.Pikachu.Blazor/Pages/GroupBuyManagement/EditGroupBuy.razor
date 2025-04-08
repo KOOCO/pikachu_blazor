@@ -8,6 +8,7 @@
 @using Kooco.Pikachu.Images
 @using Kooco.Pikachu.Items.Dtos;
 @using Kooco.Pikachu.Orders
+@using Kooco.Pikachu.PaymentGateways
 @using Kooco.Pikachu.Tenants
 @using Microsoft.Extensions.Configuration;
 @using Pikachu.Items;
@@ -27,6 +28,7 @@
 @inject IConfiguration _configuration
 @inject IJSRuntime JSRuntime;
 @inject IOrderAppService _OrderAppService;
+@inject IPaymentGatewayAppService PaymentGatewayAppService
 @attribute [Authorize]
 
 <style>
@@ -771,9 +773,22 @@
                 <Div Class="row">
                     <Check TValue="bool"
                            Disabled=@EditGroupBuyDto.IsEnterprise
-                           @bind-Checked="@CreditCard">
+                           Checked="@CreditCard"
+                           CheckedChanged="OnCreditCardCheckedChange">
                         @L["CreditCard"]
                     </Check>
+                    <div class="row justify-content-center mb-2">
+                        <div class="col-12">
+                            @foreach (var period in Constant.InstallmentPeriods)
+                            {
+                                <Check Inline TValue="bool" Checked="@EditGroupBuyDto.InstallmentPeriods.Contains(period)"
+                                       CheckedChanged="(e) => OnInstallmentPeriodChange(e, period)"
+                                       Disabled="IsInstallmentPeriodEnabled(period)">
+                                    @L["InstallmentPeriods." + period]
+                                </Check>
+                            }
+                        </div>
+                    </div>
                     <Check TValue="bool"
                            Disabled=@EditGroupBuyDto.IsEnterprise
                            @bind-Checked="@BankTransfer">
@@ -1682,48 +1697,67 @@
                                                                             <h4 class="text-center mt-2">
                                                                                 <strong>@selectedItem.Name</strong>
                                                                             </h4>
+                                                                                               @if(selectedItem.ItemType == ItemType.SetItem)
+                                                    {
+                                                        <div class="mt-2">
+                                                        <Label>Price</Label>
+                                                        <NumericEdit class="form-control" @bind-Value="selectedItem.Price" />
+                                                    </div>
+                                                    }
                                                                             @if (selectedItem.Item != null)
                                                                             {
                                                                                 var itemDetails = selectedItem.Item?.ItemDetails;
                                                                                 @if (itemDetails != null && itemDetails.Where(x => x.Attribute1Value != null).Count() > 0)
                                                                                 {
                                                                                     <div class="mt-2">
-                                                                                        <select class="form-control dropdown">
-                                                                                            @foreach (var item in itemDetails.DistinctBy(i => i.Attribute1Value))
+                                                                                      <AntDesign.Select Mode="AntDesign.SelectMode.Multiple"
+                                                                                     Placeholder="Please select"
+		                                                                              @bind-Values="@SelectedItemDetails"
+                                                                                    OnSelectedItemsChanged="@(values => OnSelectedItemDetailsChanged(values, selectedItem))"
+
+		                                                                             TItemValue="Guid"
+		                                                                             TItem="Guid"
+		                                                                            AllowClear>
+		                                                                            <SelectOptions>
+                                                                                         @foreach (var item in itemDetails)
+                                                                                        {
+                                                                                            var label = item.Attribute1Value;
+
+                                                                                            if (!string.IsNullOrWhiteSpace(item.Attribute2Value))
                                                                                             {
-                                                                                                <option>
-                                                                                                    @item.Attribute1Value
-                                                                                                </option>
+                                                                                                label += " / " + item.Attribute2Value;
                                                                                             }
-                                                                                        </select>
+
+                                                                                            if (!string.IsNullOrWhiteSpace(item.Attribute3Value))
+                                                                                            {
+                                                                                                label += " / " + item.Attribute3Value;
+                                                                                            }
+
+                                                                                            <AntDesign.SelectOption TItemValue="Guid" TItem="Guid" Value=@item.Id Label=@label/>
+                                                                                        }
+                                                                                                                    </SelectOptions>
+                                                                                        </AntDesign.Select>
                                                                                     </div>
-                                                                                }
-                                                                                @if (itemDetails != null && itemDetails.Where(x => x.Attribute2Value != null).Count() > 0)
+                                                                                          @if (selectedItem.SelectedItemDetailIds != null)
                                                                                 {
-                                                                                    <div class="mt-2">
-                                                                                        <select class="form-control dropdown">
-                                                                                            @foreach (var item in itemDetails.DistinctBy(i => i.Attribute2Value))
-                                                                                            {
-                                                                                                <option>
-                                                                                                    @item.Attribute2Value
-                                                                                                </option>
-                                                                                            }
-                                                                                        </select>
-                                                                                    </div>
+                                                                                    foreach (var detailId in selectedItem.SelectedItemDetailIds)
+                                                                                    {
+                                                                                      @if (selectedItem.ItemDetailsWithPrices.TryGetValue(detailId, out var detailInfo))
+{
+    <div class="mt-2">
+        <label>@(detailInfo.Label + " Price")</label>
+        <input class="form-control"
+         type="number"
+                  
+                     value="@detailInfo.Price"
+                     @onchange="@(e => UpdatePrice(detailId, selectedItem,  Convert.ToDouble(e.Value)))"
+                     />
+    </div>
+}
+                                                                                    }
                                                                                 }
-                                                                                @if (itemDetails != null && itemDetails.Where(x => x.Attribute3Value != null).Count() > 0)
-                                                                                {
-                                                                                    <div class="mt-2">
-                                                                                        <select class="form-control dropdown">
-                                                                                            @foreach (var item in itemDetails.DistinctBy(i => i.Attribute3Value))
-                                                                                            {
-                                                                                                <option>
-                                                                                                    @item.Attribute3Value
-                                                                                                </option>
-                                                                                            }
-                                                                                        </select>
-                                                                                    </div>
                                                                                 }
+                                                                              
                                                                             }
                                                                         </div>
                                                                     }

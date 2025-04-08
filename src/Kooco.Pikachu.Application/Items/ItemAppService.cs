@@ -25,6 +25,7 @@ public class ItemAppService :
 {
     #region Inject
     private readonly IItemRepository _itemRepository;
+    private readonly ISetItemRepository _setItemRepository;
     private readonly ItemManager _itemManager;
     private readonly HtmlSanitizer _htmlSanitizer;
     #endregion
@@ -32,12 +33,13 @@ public class ItemAppService :
     #region Constructor
     public ItemAppService(
         IItemRepository repository,
+        ISetItemRepository setItemRepository,
         ItemManager itemManager
-
     )
         : base(repository)
     {
         _itemRepository = repository;
+        _setItemRepository = setItemRepository;
         _itemManager = itemManager;
         _htmlSanitizer = new HtmlSanitizer();
     }
@@ -114,7 +116,7 @@ public class ItemAppService :
                     itemDetail.StockOnHand,
                     itemDetail.PreOrderableQuantity,
                     itemDetail.SaleablePreOrderQuantity,
-                    itemDetail.GroupBuyPrice,
+
                     itemDetail.InventoryAccount,
                     itemDetail.Attribute1Value,
                     itemDetail.Attribute2Value,
@@ -222,7 +224,7 @@ public class ItemAppService :
                         itemDetail.StockOnHand,
                         itemDetail.PreOrderableQuantity,
                         itemDetail.SaleablePreOrderQuantity,
-                        itemDetail.GroupBuyPrice,
+
                         itemDetail.InventoryAccount,
                         itemDetail.Attribute1Value,
                         itemDetail.Attribute2Value,
@@ -338,7 +340,7 @@ public class ItemAppService :
                     existing.Cost = itemDetail.Cost;
                     existing.PreOrderableQuantity = itemDetail.PreOrderableQuantity;
                     existing.SaleablePreOrderQuantity = itemDetail.SaleablePreOrderQuantity;
-                    existing.GroupBuyPrice = itemDetail.GroupBuyPrice;
+
                     existing.InventoryAccount = itemDetail.InventoryAccount;
                     existing.Attribute1Value = itemDetail.Attribute1Value;
                     existing.Attribute2Value = itemDetail.Attribute2Value;
@@ -361,7 +363,7 @@ public class ItemAppService :
                         itemDetail.StockOnHand,
                         itemDetail.PreOrderableQuantity,
                         itemDetail.SaleablePreOrderQuantity,
-                        itemDetail.GroupBuyPrice,
+
                         itemDetail.InventoryAccount,
                         itemDetail.Attribute1Value,
                         itemDetail.Attribute2Value,
@@ -562,9 +564,21 @@ public class ItemAppService :
     public async Task<List<string>> GetItemBadgesAsync()
     {
         var items = await _itemRepository.GetQueryableAsync();
-        return [.. items.Where(x => !string.IsNullOrWhiteSpace(x.ItemBadge))
+        var setItems = await _setItemRepository.GetQueryableAsync();
+        var itemBadges = items
+            .Where(x => !string.IsNullOrWhiteSpace(x.ItemBadge))
             .Select(x => x.ItemBadge!)
-            .Distinct()];
+            .Distinct()
+            .ToList();
+
+        var setItemBadges = setItems
+            .Where(x => !string.IsNullOrWhiteSpace(x.SetItemBadge))
+            .Select(x => x.SetItemBadge!)
+            .Distinct()
+            .ToList();
+
+        List<string> badges = [.. itemBadges, .. setItemBadges];
+        return [.. badges.Distinct()];
     }
     #endregion
 }

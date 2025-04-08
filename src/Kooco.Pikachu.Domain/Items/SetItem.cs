@@ -25,7 +25,7 @@ namespace Kooco.Pikachu.Items
         public int? SetItemSaleableQuantity { get; set; }
 
         public int SellingPrice { get; set; }
-        public int? GroupBuyPrice { get; set; }
+      
 
         /// <summary>
         /// 可販售數量限制

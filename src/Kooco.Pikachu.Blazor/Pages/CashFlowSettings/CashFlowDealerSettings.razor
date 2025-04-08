@@ -299,7 +299,7 @@
                         @L["InstallmentPeriods"]
                     </div>
                     <div class="col-6">
-                        @foreach (var period in InstallmentPeriods)
+                        @foreach (var period in Constant.InstallmentPeriods)
                         {
                             <Switch Inline TValue="bool" Checked="@EcPay.InstallmentPeriods.Contains(period)"
                                     CheckedChanged="(e) => OnInstallmentPeriodChange(e, period)">@L["InstallmentPeriods." + period]</Switch>

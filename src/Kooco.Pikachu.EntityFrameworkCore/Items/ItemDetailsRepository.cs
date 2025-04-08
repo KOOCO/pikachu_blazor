@@ -57,7 +57,7 @@ public class ItemDetailsRepository : EfCoreRepository<PikachuDbContext, ItemDeta
                         ItemName = item.ItemName,
                         SKU = detailItem.SKU,
                         SellingPrice = detailItem.SellingPrice,
-                        GroupBuyPrice = detailItem.GroupBuyPrice,
+                     
                         SaleableQuantity = detailItem.SaleableQuantity,
                         PreOrderableQuantity = detailItem.PreOrderableQuantity,
                         SaleablePreOrderQuantity = detailItem.SaleablePreOrderQuantity,
@@ -107,7 +107,7 @@ public class ItemDetailsRepository : EfCoreRepository<PikachuDbContext, ItemDeta
                         ItemName = item.ItemName,
                         SKU = detailItem.SKU,
                         SellingPrice = detailItem.SellingPrice,
-                        GroupBuyPrice = detailItem.GroupBuyPrice,
+                       
                         SaleableQuantity = detailItem.SaleableQuantity,
                         PreOrderableQuantity = detailItem.PreOrderableQuantity,
                         SaleablePreOrderQuantity = detailItem.SaleablePreOrderQuantity,

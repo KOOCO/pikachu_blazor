@@ -94,7 +94,7 @@ public class PikachuTestDataSeedContributor : IDataSeedContributor, ITransientDe
                 10,
                 10,
                 10,
-                10,
+                
                 "TEST",
                 "ITEM",
                 null,

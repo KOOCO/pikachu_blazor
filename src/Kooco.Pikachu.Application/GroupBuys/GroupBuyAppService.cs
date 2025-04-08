@@ -6,6 +6,7 @@ using Kooco.Pikachu.Freebies;
 using Kooco.Pikachu.Freebies.Dtos;
 using Kooco.Pikachu.GroupBuyItemGroups;
 using Kooco.Pikachu.GroupBuyItemGroupsDetails;
+using Kooco.Pikachu.GroupBuyItemsPriceses;
 using Kooco.Pikachu.GroupBuyOrderInstructions;
 using Kooco.Pikachu.GroupBuyOrderInstructions.Interface;
 using Kooco.Pikachu.GroupBuyProductRankings;
@@ -51,6 +52,7 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
     private readonly IGroupBuyRepository _groupBuyRepository;
     private readonly IGroupBuyItemGroupsRepository _GroupBuyItemGroupsRepository;
     private readonly GroupBuyManager _groupBuyManager;
+    private readonly GroupBuyItemsPriceManager _groupBuyItemsPriceManager;
     private readonly IRepository<Image, Guid> _imageRepository;
     private readonly ImageContainerManager _imageContainerManager;
     private readonly IFreebieRepository _freebieRepository;
@@ -88,7 +90,8 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
         IImageAppService ImageAppService,
         IGroupBuyProductRankingAppService groupBuyProductRankingAppService,
         UnitOfWorkManager unitOfWorkManager,
-        ILogisticsProvidersAppService logisticsProvidersAppService
+        ILogisticsProvidersAppService logisticsProvidersAppService,
+        GroupBuyItemsPriceManager groupBuyItemsPriceManager
     )
     {
         _groupBuyManager = groupBuyManager;
@@ -109,6 +112,7 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
         _groupBuyProductRankingAppService = groupBuyProductRankingAppService;
         _unitOfWorkManager = unitOfWorkManager;
         _logisticsProvidersAppService = logisticsProvidersAppService;
+        _groupBuyItemsPriceManager = groupBuyItemsPriceManager;
     }
     #endregion
 
@@ -125,6 +129,8 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
                                                     input.BlackCatDeliveryTime, input.HomeDeliveryDeliveryTime, input.DeliveredByStoreDeliveryTime, input.TaxType, input.ProductType,
                                                     input.ColorSchemeType, input.PrimaryColor, input.SecondaryColor, input.BackgroundColor, input.SecondaryBackgroundColor, input.AlertColor, input.BlockColor, input.ProductDetailsDisplayMethod, input.NotificationBar);
         result.AddOnProduct = input.AddOnProduct;
+        result.InstallmentPeriodsJson = JsonSerializer.Serialize(input.InstallmentPeriods);
+
         if (!input.FacebookLink.IsNullOrEmpty()) result.FacebookLink = input.FacebookLink;
 
         if (!input.InstagramLink.IsNullOrEmpty()) result.InstagramLink = input.InstagramLink;
@@ -152,7 +158,7 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
 
                 if (group.ItemDetails != null && group.ItemDetails.Any())
                 {
-                    foreach (var item in group.ItemDetails)
+                    foreach (var item in group.ItemDetails.DistinctBy(x=>x.ItemId))
                     {
                         _groupBuyManager.AddItemGroupDetail(
                             itemGroup,
@@ -163,13 +169,42 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
                             item.DisplayText,
                             item.ModuleNumber
                         );
+                      
                     }
                 }
             }
         }
 
         await _groupBuyRepository.InsertAsync(result);
+        if (input.ItemGroups is not null && input.ItemGroups.Any())
+        {
+            foreach (var group in input.ItemGroups)
+            {
+              
 
+                if (group.ItemDetails != null && group.ItemDetails.Any())
+                {
+                    
+                    foreach (var item in group.ItemDetails.DistinctBy(x=>x.ItemDetailId))
+                    {
+                       
+                        
+                        if (group.GroupBuyModuleType == GroupBuyModuleType.ProductGroupModule)
+                        {
+                            if (item.ItemType == ItemType.Item)
+                            {
+                                await _groupBuyItemsPriceManager.CreateAsync(null, result.Id, item.Price, item.ItemDetailId);
+                            }
+                            else
+                            {
+                                await _groupBuyItemsPriceManager.CreateAsync(item.SetItemId, result.Id, item.Price, null);
+                            }
+
+                        }
+                    }
+                }
+            }
+        }
         return ObjectMapper.Map<GroupBuy, GroupBuyDto>(result);
     }
 
@@ -186,12 +221,11 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
 
                 await _groupBuyRepository.EnsureCollectionLoadedAsync(groupBuy, x => x.ItemGroups);
                 ObjectMapper.Map(input, groupBuy);
+                groupBuy.InstallmentPeriodsJson = JsonSerializer.Serialize(input.InstallmentPeriods);
 
                 await ProcessItemGroups(groupBuy, input.ItemGroups.ToList());
 
-
                 groupBuy.ItemGroups.RemoveAll(w => w.Id == Guid.Empty);
-
 
                 await _groupBuyRepository.UpdateAsync(groupBuy, true);
 

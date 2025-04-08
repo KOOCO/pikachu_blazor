@@ -14,4 +14,6 @@ public class GroupBuyItemGroupDetailCreateUpdateDto
     public int SortOrder { get; set; }
     public string? DisplayText { get; set; }
     public int? ModuleNumber { get; set; }
+    public Guid? ItemDetailId { get; set; }
+    public float Price { get; set; }
 }

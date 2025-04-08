@@ -37,5 +37,7 @@ namespace Kooco.Pikachu
         public static IReadOnlyList<string> Genders = ["Male", "Female", "Other"];
 
         public const string CurrencySymbol = "$";
+
+        public static readonly List<string> InstallmentPeriods = ["3", "6", "12", "18", "24"];
     }
 }

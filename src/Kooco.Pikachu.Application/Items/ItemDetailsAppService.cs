@@ -69,7 +69,7 @@ public class ItemDetailsAppService : CrudAppService<ItemDetails, ItemDetailsDto,
             { headers["ItemName"], x.ItemName },
             { headers["SKU"], x.SKU },
             { headers["SellingPrice"], x.SellingPrice },
-            { headers["GroupBuyPrice"], x.GroupBuyPrice },
+            
             { headers["CurrentStock"], x.StockOnHand },
             { headers["AvailableStock"], x.SaleableQuantity },
             { headers["PreorderQuantity"], x.PreOrderableQuantity },
