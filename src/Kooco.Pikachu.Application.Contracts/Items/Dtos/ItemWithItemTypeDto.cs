@@ -1,5 +1,6 @@
 ﻿using Kooco.Pikachu.EnumValues;
 using System;
+using System.Collections.Generic;
 
 namespace Kooco.Pikachu.Items.Dtos;
 
@@ -11,6 +12,11 @@ public class ItemWithItemTypeDto
     public ItemDto? Item { get; set; }
     public SetItemDto? SetItem { get; set; }
     public bool IsFirstLoad { get; set; }
+    public float? Price { get; set; }
+    public List<Guid> SelectedItemDetailIds { get; set; } = new();
+
+    // Store Label & Price per selected ItemDetailId
+    public Dictionary<Guid, (string Label, float Price)> ItemDetailsWithPrices { get; set; } = new();
     public ItemWithItemTypeDto()
     { 
 

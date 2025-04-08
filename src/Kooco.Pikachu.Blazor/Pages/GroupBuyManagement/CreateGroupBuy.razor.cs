@@ -2490,14 +2490,66 @@ public partial class CreateGroupBuy
                     {
                         if (itemDetail.Id != Guid.Empty || (item.GroupBuyModuleType == GroupBuyModuleType.IndexAnchor && !itemDetail.Name.IsNullOrEmpty()))
                         {
-                            itemGroup.ItemDetails.Add(new GroupBuyItemGroupDetailCreateUpdateDto
+                            if (item.GroupBuyModuleType == GroupBuyModuleType.ProductGroupModule)
                             {
-                                SortOrder = j++,
-                                ItemId = itemDetail.ItemType == ItemType.Item && itemDetail.Id != Guid.Empty ? itemDetail.Id : null,
-                                SetItemId = itemDetail.ItemType == ItemType.SetItem && itemDetail.Id != Guid.Empty ? itemDetail.Id : null,
-                                ItemType = itemDetail.ItemType,
-                                DisplayText = itemGroup.GroupBuyModuleType == GroupBuyModuleType.IndexAnchor ? itemDetail.Name : null
-                            });
+                                if (itemDetail.ItemType == ItemType.Item)
+                                {
+                                    if (itemDetail.SelectedItemDetailIds == null || !itemDetail.SelectedItemDetailIds.Any())
+                                    {
+                                        await _uiMessageService.Error($"Item '{itemDetail.Name}' must have at least one variant selected.");
+                                        return;
+                                    }
+
+                                    foreach (var detailId in itemDetail.SelectedItemDetailIds)
+                                    {
+                                        if (!itemDetail.ItemDetailsWithPrices.TryGetValue(detailId, out var labelAndPrice))
+                                        {
+                                           await _uiMessageService.Error($"Price missing for one or more item variants in '{itemDetail.Name}'.");
+                                            return;
+                                        }
+
+                                        itemGroup.ItemDetails.Add(new GroupBuyItemGroupDetailCreateUpdateDto
+                                        {
+                                            SortOrder = j++,
+                                            ItemId = itemDetail.ItemType == ItemType.Item ? itemDetail.Id : null,
+                                            SetItemId = itemDetail.ItemType == ItemType.SetItem ? itemDetail.Id : null,
+                                            ItemType = itemDetail.ItemType,
+                                            ItemDetailId = itemDetail.ItemType == ItemType.Item ? detailId : null, // ✅ only for ItemType.Item
+                                            Price = labelAndPrice.Price
+                                        });
+                                    }
+                                }
+                                else {
+
+                                    if (itemDetail.Price is null)
+                                    {
+                                       await  _uiMessageService.Error($"Price missing for one or more item variants in '{itemDetail.Name}'.");
+                                        return;
+                                    }
+                                    itemGroup.ItemDetails.Add(new GroupBuyItemGroupDetailCreateUpdateDto
+                                        {
+                                            SortOrder = j++,
+                                            ItemId = itemDetail.ItemType == ItemType.Item ? itemDetail.Id : null,
+                                            SetItemId = itemDetail.ItemType == ItemType.SetItem ? itemDetail.Id : null,
+                                            ItemType = itemDetail.ItemType,
+
+                                            Price = itemDetail.Price.Value
+                                        });
+                                }
+                            }
+                            else
+                            {
+                                // Existing logic for IndexAnchor and others
+                                itemGroup.ItemDetails.Add(new GroupBuyItemGroupDetailCreateUpdateDto
+                                {
+                                    SortOrder = j++,
+                                    ItemId = itemDetail.ItemType == ItemType.Item && itemDetail.Id != Guid.Empty ? itemDetail.Id : null,
+                                    SetItemId = itemDetail.ItemType == ItemType.SetItem && itemDetail.Id != Guid.Empty ? itemDetail.Id : null,
+                                    ItemType = itemDetail.ItemType,
+                                    DisplayText = itemGroup.GroupBuyModuleType == GroupBuyModuleType.IndexAnchor ? itemDetail.Name : null
+                                });
+                            }
+
                         }
                     }
 
@@ -2658,6 +2710,48 @@ public partial class CreateGroupBuy
         {
             await _uiMessageService.Error(ex.GetType().ToString());
         }
+    }
+    private void UpdatePrice(Guid detailId, ItemWithItemTypeDto selectedItem, double price)
+    {
+        if (selectedItem.ItemDetailsWithPrices.ContainsKey(detailId))
+        {
+            selectedItem.ItemDetailsWithPrices[detailId]=(selectedItem.ItemDetailsWithPrices[detailId].Label,(float)price);
+        }
+    }
+    private void OnSelectedItemDetailsChanged(IEnumerable<Guid> selectedValues, ItemWithItemTypeDto selectedItem)
+    {
+        var itemDetails = selectedItem.Item?.ItemDetails;
+
+        // Remove unselected items
+        var removed = selectedItem.ItemDetailsWithPrices.Keys.Except(selectedValues).ToList();
+        foreach (var key in removed)
+        {
+            selectedItem.ItemDetailsWithPrices.Remove(key);
+        }
+
+        // Add newly selected items
+        foreach (var id in selectedValues)
+        {
+            if (!selectedItem.ItemDetailsWithPrices.ContainsKey(id))
+            {
+                var itemDetail = itemDetails?.FirstOrDefault(x => x.Id == id);
+                if (itemDetail != null)
+                {
+                    var label = itemDetail.Attribute1Value;
+
+                    if (!string.IsNullOrWhiteSpace(itemDetail.Attribute2Value))
+                        label += " / " + itemDetail.Attribute2Value;
+
+                    if (!string.IsNullOrWhiteSpace(itemDetail.Attribute3Value))
+                        label += " / " + itemDetail.Attribute3Value;
+
+                    selectedItem.ItemDetailsWithPrices[id] = (label, 0); // default price
+                }
+            }
+        }
+
+        selectedItem.SelectedItemDetailIds = selectedValues.ToList();
+        StateHasChanged();
     }
 
     private async Task OnSelectedValueChanged(Guid? id, ProductRankingCarouselModule module, ItemWithItemTypeDto? selectedItem = null)

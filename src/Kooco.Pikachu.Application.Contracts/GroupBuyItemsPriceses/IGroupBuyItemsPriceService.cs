@@ -14,6 +14,8 @@ namespace Kooco.Pikachu.GroupBuyItemsPriceses
         Task<GroupBuyItemsPriceDto> GetAsync(Guid id);
         Task<List<GroupBuyItemsPriceDto>> GetListAsync();
         Task<List<GroupBuyItemsPriceDto>> GetListByGroupBuyAsync(Guid GroupBuyId);
+        Task<GroupBuyItemsPriceDto> GetByItemIdAndGroupBuyIdAsync(Guid itemDetailId, Guid GroupBuyId);
+        Task<GroupBuyItemsPriceDto> GetBySetItemIdAndGroupBuyIdAsync(Guid SetItemId, Guid GroupBuyId);
         Task DeleteAsync(Guid id);
     }
 }

@@ -4,6 +4,7 @@ using Blazorise;
 using Blazorise.LoadingIndicator;
 using Kooco.Pikachu.AzureStorage.Image;
 using Kooco.Pikachu.EnumValues;
+using Kooco.Pikachu.GroupBuyItemsPriceses;
 using Kooco.Pikachu.GroupBuyOrderInstructions;
 using Kooco.Pikachu.GroupBuyOrderInstructions.Interface;
 using Kooco.Pikachu.GroupBuyProductRankings;
@@ -18,6 +19,7 @@ using Kooco.Pikachu.Localization;
 using Kooco.Pikachu.LogisticsProviders;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
+using Microsoft.Extensions.Azure;
 using Microsoft.JSInterop;
 using Newtonsoft.Json;
 using System;
@@ -97,7 +99,7 @@ public partial class EditGroupBuy
     private LoadingIndicator Loading { get; set; } = new();
     private bool LoadingItems { get; set; } = true;
     private int CurrentIndex { get; set; }
-
+    public IEnumerable<Guid> SelectedItemDetails { get; set; } = new List<Guid>();
     public bool IsUnableToSpecifyDuringPeakPeriodsForSelfPickups = false;
 
     public bool IsUnableToSpecifyDuringPeakPeriodsForHomeDelivery = false;
@@ -119,6 +121,7 @@ public partial class EditGroupBuy
     private readonly IGroupBuyOrderInstructionAppService _GroupBuyOrderInstructionAppService;
 
     private readonly IGroupBuyProductRankingAppService _GroupBuyProductRankingAppService;
+    private readonly IGroupBuyItemsPriceAppService _groupBuyItemsPriceAppService;
 
     private List<GroupBuyTemplateType> TemplateTypes = [GroupBuyTemplateType.PikachuOne, GroupBuyTemplateType.PikachuTwo];
     private List<string> ImageSizes = ["SmallImage", "LargeImage"];
@@ -164,7 +167,8 @@ public partial class EditGroupBuy
         IGroupPurchaseOverviewAppService GroupPurchaseOverviewAppService,
         IGroupBuyOrderInstructionAppService GroupBuyOrderInstructionAppService,
         ILogisticsProvidersAppService LogisticsProvidersAppService,
-        IGroupBuyProductRankingAppService GroupBuyProductRankingAppService
+        IGroupBuyProductRankingAppService GroupBuyProductRankingAppService,
+        IGroupBuyItemsPriceAppService groupBuyItemsPriceAppService
     )
     {
         _groupBuyAppService = groupBuyAppService;
@@ -178,6 +182,7 @@ public partial class EditGroupBuy
         _GroupBuyOrderInstructionAppService = GroupBuyOrderInstructionAppService;
         _LogisticsProvidersAppService = LogisticsProvidersAppService;
         _GroupBuyProductRankingAppService = GroupBuyProductRankingAppService;
+        _groupBuyItemsPriceAppService = groupBuyItemsPriceAppService;
         EditGroupBuyDto = new GroupBuyUpdateDto();
         CarouselImages = [];
         GroupBuy = new();
@@ -872,6 +877,45 @@ public partial class EditGroupBuy
                                 Item = item.Item,
                                 SetItem = item.SetItem
                             };
+                            if (itemGroup.GroupBuyModuleType == GroupBuyModuleType.ProductGroupModule)
+                            {
+                                if (item.ItemType == ItemType.Item)
+                                {
+                                    foreach (var itemdetail in item.Item.ItemDetails)
+                                    {
+                                        var itemPrice = await _groupBuyItemsPriceAppService.GetByItemIdAndGroupBuyIdAsync(itemdetail.Id, GroupBuy.Id);
+
+                                        if (itemPrice is not null)
+                                        {
+
+                                            if (itemdetail != null)
+                                            {
+                                                var label = itemdetail.Attribute1Value;
+
+                                                if (!string.IsNullOrWhiteSpace(itemdetail.Attribute2Value))
+                                                    label += " / " + itemdetail.Attribute2Value;
+
+                                                if (!string.IsNullOrWhiteSpace(itemdetail.Attribute3Value))
+                                                    label += " / " + itemdetail.Attribute3Value;
+                                                itemWithItemType.ItemDetailsWithPrices.Add(itemdetail.Id, (label, itemPrice.GroupBuyPrice));
+                                                SelectedItemDetails = SelectedItemDetails.Append(itemdetail.Id);
+                                            }
+                                        }
+
+                                    }
+                                    itemWithItemType.SelectedItemDetailIds = SelectedItemDetails.ToList();
+                                }
+                                else
+                                {
+                                    var itemPrice = await _groupBuyItemsPriceAppService.GetByItemIdAndGroupBuyIdAsync(item.SetItem.Id, GroupBuy.Id);
+
+                                    if (itemPrice is not null)
+                                    {
+                                        itemWithItemType.Price = itemPrice.GroupBuyPrice;
+                                    }
+
+                                }
+                            }
                             CollapseItem[index].Selected.Add(itemWithItemType);
                         }
 
@@ -1558,7 +1602,13 @@ public partial class EditGroupBuy
 
         StateHasChanged();
     }
-
+    private void UpdatePrice(Guid detailId, ItemWithItemTypeDto selectedItem, double price)
+    {
+        if (selectedItem.ItemDetailsWithPrices.ContainsKey(detailId))
+        {
+            selectedItem.ItemDetailsWithPrices[detailId] = (selectedItem.ItemDetailsWithPrices[detailId].Label,(float)price);
+        }
+    }
     async Task OnBannerUploadAsync(FileChangedEventArgs e)
     {
         if (e.Files.Length > 1)
@@ -2636,7 +2686,41 @@ public partial class EditGroupBuy
             await _uiMessageService.Error(ex.GetType().ToString());
         }
     }
+    private void OnSelectedItemDetailsChanged(IEnumerable<Guid> selectedValues, ItemWithItemTypeDto selectedItem)
+    {
+        var itemDetails = selectedItem.Item?.ItemDetails;
 
+        // Remove unselected items
+        var removed = selectedItem.ItemDetailsWithPrices.Keys.Except(selectedValues).ToList();
+        foreach (var key in removed)
+        {
+            selectedItem.ItemDetailsWithPrices.Remove(key);
+        }
+
+        // Add newly selected items
+        foreach (var id in selectedValues)
+        {
+            if (!selectedItem.ItemDetailsWithPrices.ContainsKey(id))
+            {
+                var itemDetail = itemDetails?.FirstOrDefault(x => x.Id == id);
+                if (itemDetail != null)
+                {
+                    var label = itemDetail.Attribute1Value;
+
+                    if (!string.IsNullOrWhiteSpace(itemDetail.Attribute2Value))
+                        label += " / " + itemDetail.Attribute2Value;
+
+                    if (!string.IsNullOrWhiteSpace(itemDetail.Attribute3Value))
+                        label += " / " + itemDetail.Attribute3Value;
+
+                    selectedItem.ItemDetailsWithPrices[id] = (label, 0); // default price
+                }
+            }
+        }
+
+        selectedItem.SelectedItemDetailIds = selectedValues.ToList();
+        StateHasChanged();
+    }
     private async Task OnSelectedValueChanged(Guid? id, ProductRankingCarouselModule module, ItemWithItemTypeDto? selectedItem = null)
     {
         try

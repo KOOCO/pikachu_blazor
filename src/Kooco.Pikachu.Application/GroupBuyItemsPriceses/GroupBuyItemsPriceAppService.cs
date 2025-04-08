@@ -52,7 +52,16 @@ namespace Kooco.Pikachu.GroupBuyItemsPriceses
             var entity = await _repository.GetAsync(id);
             return ObjectMapper.Map<GroupBuyItemsPrice, GroupBuyItemsPriceDto>(entity);
         }
-
+        public async Task<GroupBuyItemsPriceDto> GetByItemIdAndGroupBuyIdAsync(Guid itemDetailId,Guid GroupBuyId)
+        {
+            var entity = await _repository.FirstOrDefaultAsync(x=>x.ItemDetailId==itemDetailId && x.GroupBuyId==GroupBuyId);
+            return ObjectMapper.Map<GroupBuyItemsPrice, GroupBuyItemsPriceDto>(entity);
+        }
+        public async Task<GroupBuyItemsPriceDto> GetBySetItemIdAndGroupBuyIdAsync(Guid SetItemId, Guid GroupBuyId)
+        {
+            var entity = await _repository.FirstOrDefaultAsync(x => x.SetItemId == SetItemId && x.GroupBuyId == GroupBuyId);
+            return ObjectMapper.Map<GroupBuyItemsPrice, GroupBuyItemsPriceDto>(entity);
+        }
         public async Task<List<GroupBuyItemsPriceDto>> GetListAsync()
         {
             var list = await _repository.GetListAsync();
