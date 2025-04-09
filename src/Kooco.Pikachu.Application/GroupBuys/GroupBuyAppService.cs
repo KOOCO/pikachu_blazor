@@ -16,6 +16,7 @@ using Kooco.Pikachu.Groupbuys.Interface;
 using Kooco.Pikachu.GroupPurchaseOverviews;
 using Kooco.Pikachu.GroupPurchaseOverviews.Interface;
 using Kooco.Pikachu.Images;
+using Kooco.Pikachu.Items;
 using Kooco.Pikachu.Items.Dtos;
 using Kooco.Pikachu.Localization;
 using Kooco.Pikachu.LogisticsProviders;
@@ -68,6 +69,8 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
     private readonly IGroupBuyProductRankingAppService _groupBuyProductRankingAppService;
     private readonly UnitOfWorkManager _unitOfWorkManager;
     private readonly ILogisticsProvidersAppService _logisticsProvidersAppService;
+    private readonly IGroupBuyItemsPriceAppService _groupBuyItemsPriceAppService;
+    private readonly IGroupBuyItemsPriceRepository _groupBuyItemsPriceRepository;
 
     #endregion
 
@@ -91,7 +94,9 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
         IGroupBuyProductRankingAppService groupBuyProductRankingAppService,
         UnitOfWorkManager unitOfWorkManager,
         ILogisticsProvidersAppService logisticsProvidersAppService,
-        GroupBuyItemsPriceManager groupBuyItemsPriceManager
+        GroupBuyItemsPriceManager groupBuyItemsPriceManager,
+        IGroupBuyItemsPriceAppService groupBuyItemsPriceAppService,
+        IGroupBuyItemsPriceRepository groupBuyItemsPriceRepository
     )
     {
         _groupBuyManager = groupBuyManager;
@@ -113,6 +118,8 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
         _unitOfWorkManager = unitOfWorkManager;
         _logisticsProvidersAppService = logisticsProvidersAppService;
         _groupBuyItemsPriceManager = groupBuyItemsPriceManager;
+        _groupBuyItemsPriceRepository = groupBuyItemsPriceRepository;
+        _groupBuyItemsPriceAppService = groupBuyItemsPriceAppService;
     }
     #endregion
 
@@ -158,7 +165,7 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
 
                 if (group.ItemDetails != null && group.ItemDetails.Any())
                 {
-                    foreach (var item in group.ItemDetails.DistinctBy(x => x.ItemId))
+                    foreach (var item in group.ItemDetails.DistinctBy(x=>x.ItemDetailId))
                     {
                         _groupBuyManager.AddItemGroupDetail(
                             itemGroup,
@@ -304,7 +311,7 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
                         if (group.ItemDetails is { Count: > 0 })
                             await _GroupBuyItemGroupDetailsRepository.DeleteAsync(d => d.GroupBuyItemGroupId == itemGroup.Id);
 
-                        ProcessItemDetails(itemGroup, group.ItemDetails);
+                         ProcessItemDetails(itemGroup, group.ItemDetails);
 
                         itemGroup.ItemGroupDetails ??= [];
                         foreach (GroupBuyItemGroupDetails itemGroupDetails in itemGroup.ItemGroupDetails)
@@ -330,7 +337,7 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
 
                     await _GroupBuyItemGroupsRepository.InsertAsync(itemGroup);
 
-                    ProcessItemDetails(itemGroup, group.ItemDetails);
+                     ProcessItemDetails(itemGroup, group.ItemDetails);
 
                     foreach (GroupBuyItemGroupDetails itemGroupDetails in itemGroup.ItemGroupDetails)
                     {
@@ -552,11 +559,44 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
             Items = ObjectMapper.Map<List<GroupBuyList>, List<GroupBuyDto>>(result)
         };
     }
+    public async Task UpdateItemProductPrice(Guid groupbuyId, ICollection<GroupBuyItemGroupDetailCreateUpdateDto> itemDetails)
+    {
 
+       
+     
+
+
+            foreach (var item in itemDetails.DistinctBy(x => x.ItemDetailId))
+            {
+
+
+
+                if (item.ItemType == ItemType.Item)
+                {
+                var existing = await _groupBuyItemsPriceAppService.GetByItemIdAndGroupBuyIdAsync(item.ItemDetailId.Value, groupbuyId);
+                if (existing is not null)
+                    await _groupBuyItemsPriceRepository.DeleteAsync(existing.Id);
+
+                    await _groupBuyItemsPriceManager.CreateAsync(null, groupbuyId, item.Price, item.ItemDetailId);
+                }
+                else
+                {
+                var existing = await _groupBuyItemsPriceAppService.GetBySetItemIdAndGroupBuyIdAsync(item.SetItemId.Value, groupbuyId);
+                if (existing is not null)
+                    await _groupBuyItemsPriceRepository.DeleteAsync(existing.Id);
+
+                await _groupBuyItemsPriceManager.CreateAsync(item.SetItemId, groupbuyId, item.Price, null);
+                }
+
+
+            }
+        
+
+    }
     private void ProcessItemDetails(GroupBuyItemGroup itemGroup, ICollection<GroupBuyItemGroupDetailCreateUpdateDto> itemDetails)
     {
         itemGroup.ItemGroupDetails?.Clear();
-        foreach (var item in itemDetails)
+        foreach (var item in itemDetails.DistinctBy(x=>x.ItemDetailId))
         {
             _groupBuyManager.AddItemGroupDetail(
                 itemGroup,
@@ -568,6 +608,7 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
                 item.ModuleNumber
             );
         }
+       
     }
     public async Task DeleteManyGroupBuyItemsAsync(List<Guid> groupBuyIds)
     {
@@ -823,7 +864,7 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
 
             foreach (GroupBuyItemGroupModuleDetailsDto module in modules)
             {
-                if (module.GroupBuyModuleType is GroupBuyModuleType.ProductGroupModule || module.GroupBuyModuleType is GroupBuyModuleType.ProductRankingCarouselModule)
+                if ( module.GroupBuyModuleType is GroupBuyModuleType.ProductRankingCarouselModule)
                 {
                     foreach (GroupBuyItemGroupDetailsDto itemDetail in module.ItemGroupDetails)
                     {
@@ -909,6 +950,53 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
                     }
                 }
 
+                
+                    if (module.GroupBuyModuleType is GroupBuyModuleType.ProductGroupModule)
+                {
+                    foreach (GroupBuyItemGroupDetailsDto itemDetail in module.ItemGroupDetails)
+                    {
+                        if (itemDetail.ItemType == ItemType.Item)
+                        {
+                            List<ItemDetailsDto> removeItems = new List<ItemDetailsDto>();
+                            foreach (var detailitem in itemDetail.Item?.ItemDetails)
+                            {
+                                var checkPrice = await _groupBuyItemsPriceAppService.GetByItemIdAndGroupBuyIdAsync(detailitem.Id, groupBuyId);
+                                if (checkPrice is not null)
+                                {
+                                    detailitem.GroupBuyPrice = checkPrice.GroupBuyPrice;
+
+                                }
+                                else {
+
+                                    removeItems.Add(detailitem);
+                                }
+                            
+                            }
+                            foreach (var removeItem in removeItems)
+                            {
+                                itemDetail.Item?.ItemDetails.Remove(removeItem);
+                                    }
+                        }
+                        if (itemDetail.ItemType == ItemType.SetItem)
+                        {
+                           
+                                var checkPrice = await _groupBuyItemsPriceAppService.GetBySetItemIdAndGroupBuyIdAsync(itemDetail.SetItemId.Value, groupBuyId);
+                                if (checkPrice is not null)
+                                {
+                                    itemDetail.SetItem.GroupBuyPrice = checkPrice.GroupBuyPrice;
+
+                                }
+                                else
+                                {
+
+                                itemDetail.SetItem = null;
+                                itemDetail.SetItemId = null;
+                                }
+
+                            
+                        }
+                    }
+                }
                 module.GroupBuyModuleTypeName = module.GroupBuyModuleType.ToString();
 
                 if (module.GroupBuyModuleType is GroupBuyModuleType.ProductRankingCarouselModule)

@@ -463,7 +463,7 @@ public partial class EditItem
         // Set sortNo based on the updated list
         int sortNo = ItemDetailsList.Count != 0 ? ItemDetailsList.Max(x => x.SortNo) + 1 : 1;
 
-        foreach (string itemName in validItemNames)
+        foreach (string itemName in validItemNames.Where(x=>x!=""))
         {
             // Add new items that don't already exist
             if (!ItemDetailsList.Any(x => x.ItemName == itemName))

@@ -227,6 +227,7 @@ public partial class CreateGroupBuy
             try
             {
                 await JSRuntime.InvokeVoidAsync("updateDropText");
+                SelectTemplate(new ChangeEventArgs { Value = GroupBuyTemplateType.PikachuTwo });
             }
             catch (Exception ex)
             {
@@ -2489,6 +2490,7 @@ public partial class CreateGroupBuy
                 if (item.Selected.Any(s => s.Id == Guid.Empty && item.GroupBuyModuleType == GroupBuyModuleType.IndexAnchor && s.Name.IsNullOrEmpty()))
                 {
                     await _uiMessageService.Warn(L[PikachuDomainErrorCodes.GroupBuyModuleCannotBeEmpty]);
+                    await Loading.Hide();
                     return;
                 }
 
@@ -2528,6 +2530,7 @@ public partial class CreateGroupBuy
                                     if (itemDetail.SelectedItemDetailIds == null || !itemDetail.SelectedItemDetailIds.Any())
                                     {
                                         await _uiMessageService.Error($"Item '{itemDetail.Name}' must have at least one variant selected.");
+                                        await Loading.Hide();
                                         return;
                                     }
 
@@ -2535,7 +2538,8 @@ public partial class CreateGroupBuy
                                     {
                                         if (!itemDetail.ItemDetailsWithPrices.TryGetValue(detailId, out var labelAndPrice))
                                         {
-                                           await _uiMessageService.Error($"Price missing for one or more item variants in '{itemDetail.Name}'.");
+                                            await _uiMessageService.Error($"Price missing for one or more item variants in '{itemDetail.Name}'.");
+                                            await Loading.Hide();
                                             return;
                                         }
 
@@ -2550,22 +2554,24 @@ public partial class CreateGroupBuy
                                         });
                                     }
                                 }
-                                else {
+                                else
+                                {
 
                                     if (itemDetail.Price is null)
                                     {
-                                       await  _uiMessageService.Error($"Price missing for one or more item variants in '{itemDetail.Name}'.");
+                                        await _uiMessageService.Error($"Price missing for one or more item variants in '{itemDetail.Name}'.");
+                                        await Loading.Hide();
                                         return;
                                     }
                                     itemGroup.ItemDetails.Add(new GroupBuyItemGroupDetailCreateUpdateDto
-                                        {
-                                            SortOrder = j++,
-                                            ItemId = itemDetail.ItemType == ItemType.Item ? itemDetail.Id : null,
-                                            SetItemId = itemDetail.ItemType == ItemType.SetItem ? itemDetail.Id : null,
-                                            ItemType = itemDetail.ItemType,
+                                    {
+                                        SortOrder = j++,
+                                        ItemId = itemDetail.ItemType == ItemType.Item ? itemDetail.Id : null,
+                                        SetItemId = itemDetail.ItemType == ItemType.SetItem ? itemDetail.Id : null,
+                                        ItemType = itemDetail.ItemType,
 
-                                            Price = itemDetail.Price.Value
-                                        });
+                                        Price = itemDetail.Price.Value
+                                    });
                                 }
                             }
                             else
@@ -2746,7 +2752,7 @@ public partial class CreateGroupBuy
     {
         if (selectedItem.ItemDetailsWithPrices.ContainsKey(detailId))
         {
-            selectedItem.ItemDetailsWithPrices[detailId]=(selectedItem.ItemDetailsWithPrices[detailId].Label,(float)price);
+            selectedItem.ItemDetailsWithPrices[detailId] = (selectedItem.ItemDetailsWithPrices[detailId].Label, (float)price);
         }
     }
     private void OnSelectedItemDetailsChanged(IEnumerable<Guid> selectedValues, ItemWithItemTypeDto selectedItem)

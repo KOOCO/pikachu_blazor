@@ -15,66 +15,180 @@
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JSRuntime;
 @attribute [Authorize]
-@if(Loading)
-{ <Skeleton Animation="SkeletonAnimation.Pulse">
-    <div class="row">
-        <div class="col-4">
-                <SkeletonItem ColumnSize="ColumnSize.Is12" Class="mb-2" />
-        </div>
-        <div class="col-8 text-lg-end">
-            <Div Class="d-inline-block">
-                    <SkeletonItem ColumnSize="ColumnSize.Is2" Class="mb-2" />
-            </Div>
-            <div class="custom-check-group me-1">
-                    <SkeletonItem ColumnSize="ColumnSize.Is2" Class="mb-2" />
-            </div>
-                <SkeletonItem ColumnSize="ColumnSize.Is2" Class="mb-2" />
-             <SkeletonItem ColumnSize="ColumnSize.Is2" Class="mb-2" />
-        </div>
-    </div>
-    <Card>
-        <CardBody>
-            <Div Class="form-group">
-                    <SkeletonItem ColumnSize="ColumnSize.Is12" Class="mb-2" />
-            </Div>
-            <Div Class="row">
-                <Div Class="col-3">
-                        <SkeletonItem ColumnSize="ColumnSize.Is12" Class="mb-2" />
-                </Div>
-                <Div Class="col-3">
-                        <SkeletonItem ColumnSize="ColumnSize.Is12" Class="mb-2" />
-                </Div>
-                <Div Class="col-2">
-                        <SkeletonItem ColumnSize="ColumnSize.Is12" Class="mb-2" />
-                </Div>
-                <Div Class="col-2">
-                        <SkeletonItem ColumnSize="ColumnSize.Is12" Class="mb-2" />
-                </Div>
-                <Div Class="col-2 d-flex align-items-end">
-                        <SkeletonItem ColumnSize="ColumnSize.Is6" Class="mb-2" />
-                        <SkeletonItem ColumnSize="ColumnSize.Is6" Class="mb-2" />
-                </Div>
-            </Div>
-        </CardBody>
-    </Card>
-    </Skeleton>
-    <Card>
-        <CardBody>
-            <Skeleton Animation="SkeletonAnimation.Pulse">
-                <!-- For example, 5 horizontal bars to represent the table rows -->
-                <SkeletonTable Rows="10" Columns="7" />
-            </Skeleton>
-        </CardBody>
-    </Card>
+
+<style>
+    .card-view-card {
+        transition: transform 0.2s, box-shadow 0.2s;
+        height: 100%;
+        border-radius: 0.5rem;
+    }
+    
+    .card-view-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    .card-view-header {
+        background-color: #f8f9fa;
+        border-bottom: 1px solid #eaeaea;
+        border-top-left-radius: 0.5rem;
+        border-top-right-radius: 0.5rem;
+        padding: 0.5rem;
+    }
+    
+    .card-view-body {
+        padding: 0.5rem;
+        font-size: 0.85rem;
+    }
+    
+    .card-title {
+        font-weight: 500;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        max-width: 180px;
+        font-size: 0.9rem;
+    }
+    
+    .card-description {
+        min-height: 36px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        margin-bottom: 0.3rem;
+        font-size: 0.85rem;
+        line-height: 1.2;
+    }
+    
+    .text-secondary {
+        color: #6c757d;
+    }
+    
+    .card-label {
+        min-width: 70px;
+        display: inline-block;
+        color: #6c757d;
+    }
+
+    .view-toggle-btn {
+        margin-right: 10px;
+    }
+    
+    .card-image-container {
+        aspect-ratio: 1/1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        padding: 0;
+        background-color: #f8f9fa;
+        border-bottom: 1px solid #eaeaea;
+    }
+    
+    .card-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+    
+    .card-image-contain {
+        object-fit: contain;
+    }
+    
+    .card-image-cover {
+        object-fit: cover;
+    }
+    
+    .no-image-placeholder {
+        height: 120px;
+        width: 120px;
+        background-color: #e9ecef;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 0.25rem;
+    }
+    
+    .no-image-icon {
+        font-size: 3rem;
+        color: #adb5bd;
+    }
+</style>
+
+@if (Loading)
+{
+                                                <Skeleton Animation="SkeletonAnimation.Pulse">
+                                                    <div class="row">
+                                                        <div class="col-4">
+                                                                <SkeletonItem ColumnSize="ColumnSize.Is12" Class="mb-2" />
+                                                        </div>
+                                                        <div class="col-8 text-lg-end">
+                                                            <Div Class="d-inline-block">
+                                                                    <SkeletonItem ColumnSize="ColumnSize.Is2" Class="mb-2" />
+                                                            </Div>
+                                                            <div class="custom-check-group me-1">
+                                                                    <SkeletonItem ColumnSize="ColumnSize.Is2" Class="mb-2" />
+                                                            </div>
+                                                                <SkeletonItem ColumnSize="ColumnSize.Is2" Class="mb-2" />
+                                                             <SkeletonItem ColumnSize="ColumnSize.Is2" Class="mb-2" />
+                                                        </div>
+                                                    </div>
+                                                    <Card>
+                                                        <CardBody>
+                                                            <Div Class="form-group">
+                                                                    <SkeletonItem ColumnSize="ColumnSize.Is12" Class="mb-2" />
+                                                            </Div>
+                                                            <Div Class="row">
+                                                                <Div Class="col-3">
+                                                                        <SkeletonItem ColumnSize="ColumnSize.Is12" Class="mb-2" />
+                                                                </Div>
+                                                                <Div Class="col-3">
+                                                                        <SkeletonItem ColumnSize="ColumnSize.Is12" Class="mb-2" />
+                                                                </Div>
+                                                                <Div Class="col-2">
+                                                                        <SkeletonItem ColumnSize="ColumnSize.Is12" Class="mb-2" />
+                                                                </Div>
+                                                                <Div Class="col-2">
+                                                                        <SkeletonItem ColumnSize="ColumnSize.Is12" Class="mb-2" />
+                                                                </Div>
+                                                                <Div Class="col-2 d-flex align-items-end">
+                                                                        <SkeletonItem ColumnSize="ColumnSize.Is6" Class="mb-2" />
+                                                                        <SkeletonItem ColumnSize="ColumnSize.Is6" Class="mb-2" />
+                                                                </Div>
+                                                            </Div>
+                                                        </CardBody>
+                                                    </Card>
+                                                    </Skeleton>
+                                                    <Card>
+                                                        <CardBody>
+                                                            <Skeleton Animation="SkeletonAnimation.Pulse">
+                                                                <!-- For example, 5 horizontal bars to represent the table rows -->
+                                                                <SkeletonTable Rows="10" Columns="7" />
+                                                            </Skeleton>
+                                                        </CardBody>
+                                                    </Card>
  
 
 }
-<div style="@($"display: {(Loading ? "none" : "block")};" )">
+<div style="@($"display: {(Loading ? "none" : "block")};")">
 <div class="row">
     <div class="col-4">
         <h3>@L["Items"]</h3>
     </div>
     <div class="col-8 text-lg-end">
+        <Div Class="d-inline-block me-2">
+            <ButtonGroup>
+                <Button Size="Size.Small" Color="@(IsCardView? Color.Secondary: Color.Primary)" Clicked="@(() => ToggleViewMode(false))">
+                    <i class="fas fa-table me-1"></i>@L["GridView"]
+                </Button>
+                <Button Size="Size.Small" Color="@(IsCardView? Color.Primary: Color.Secondary)" Clicked="@(() => ToggleViewMode(true))">
+                    <i class="fas fa-th-large me-1"></i>@L["CardView"]
+                </Button>
+            </ButtonGroup>
+        </Div>
         <Div Class="d-inline-block">
             <Span>@L["Display"]</Span>
             <Div Class="d-inline-block">
@@ -108,13 +222,13 @@
         <Div Class="form-group">
             <Label Class="form-label">@L["EnterItemName"]</Label>
             <Autocomplete TItem="KeyValueDto"
-                          TValue="Guid?"
+                          TValue="Guid ?"
                           Data="@ItemLookup"
-                          TextField="@(( item ) => item.Name)"
-                          ValueField="@(( item ) => item.Id)"
+                          TextField="@((item) => item.Name)"
+                          ValueField="@((item) => item.Id)"
                           Placeholder="@L["Search"]"
                           Filter="AutocompleteFilter.StartsWith"
-                          CustomFilter="@(( item, searchValue ) => item.Name.IndexOf( searchValue, 0, StringComparison.CurrentCultureIgnoreCase ) >= 0 )"
+                          CustomFilter="@((item, searchValue) => item.Name.IndexOf(searchValue, 0, StringComparison.CurrentCultureIgnoreCase) >= 0)"
                           Immediate="true"
                           @bind-SelectedValue="Filters.ItemId"
                           @ref="Autocomplete">
@@ -163,72 +277,144 @@
 </Card>
 <Card>
     <CardBody>
-        <DataGrid TItem="ItemListDto"
-                  Data="ItemList"
-                  ReadData="OnDataGridReadAsync"
-                  TotalItems="Total"
-                  ShowPager="true"
-                  PageSize="Filters.MaxResultCount"
-                  SortChanged="OnSortChange"
-                  Hoverable>
-            <DataGridColumns>
-                <DataGridColumn Caption="@L["Select"]" Width="30px">
-                    <DisplayTemplate>
-                        <InputCheckbox class="form-check-input"
-                                       @bind-Value="@context.IsSelected" />
-                    </DisplayTemplate>
-                </DataGridColumn>
-                <DataGridColumn Field="@nameof(ItemListDto.ItemName)"
-                                Caption="@L["ItemName"]">
-                    <DisplayTemplate>
-                        <Button Class="btn-link hyperlink" Clicked="() => OnEditItem(context)">@context.ItemName</Button>
-                    </DisplayTemplate>
-                </DataGridColumn>
-                <DataGridColumn Field="@nameof(ItemListDto.ItemDescriptionTitle)"
-                                Caption="@L["ItemDescription"]">
-                </DataGridColumn>
-                @*    <DataGridColumn Caption="@L["TimeLimitPeriod"]"
+        @if (IsCardView)
+        {
+                                                            <div class="row g-2">
+                                                                @foreach (var item in ItemList)
+                                                                {
+                                                                                                                    <div class="col-6 col-sm-4 col-md-3 col-lg-2 mb-2">
+                                                                                                                        <Card Class="card-view-card">
+                                                                                                                            <CardHeader Class="card-view-header">
+                                                                                                                                <div class="d-flex justify-content-between align-items-center">
+                                                                                                                                    <Button Class="btn-link hyperlink p-0 card-title" Clicked="() => OnEditItem(item)">@item.ItemName</Button>
+                                                                                                                                    <InputCheckbox class="form-check-input" @bind-Value="@item.IsSelected" />
+                                                                                                                                </div>
+                                                                                                                            </CardHeader>
+                                                                                                                            <div class="card-image-container">
+                                                                                                                                @if (ItemImageUrls.ContainsKey(item.Id) && !string.IsNullOrEmpty(ItemImageUrls[item.Id]))
+                                                                                                                                {
+                                                                                                                                                                        <img src="@ItemImageUrls[item.Id]" class="card-image @(UseImageCover ? "card-image-cover" : "card-image-contain")" alt="@item.ItemName" />
+                                                                                                                                }
+                                                                                                                                else
+                                                                                                                                {
+                                                                                                                                                                        <div class="no-image-placeholder">
+                                                                                                                                                                            <i class="fas fa-image no-image-icon"></i>
+                                                                                                                                                                        </div>
+                                                                                                                                }
+                                                                                                                            </div>
+                                                                                                                            <CardBody Class="card-view-body">
+                                                                                                                                <p class="text-muted mb-1 card-description">
+                                                                                                                                    <small class="text-secondary">@L["ItemDescription"]:</small> @item.ItemDescriptionTitle
+                                                                                                                                </p>
+                                                                                                                
+                                                                                                                                <div class="d-flex mb-1">
+                                                                                                                                    <div class="me-2">
+                                                                                                                                        <small class="card-label">@L["CreatedTime"]:</small>
+                                                                                                                                    </div>
+                                                                                                                                    <div>
+                                                                                                                                        <small>@item.CreationTime.ToShortDateString()</small>
+                                                                                                                                    </div>
+                                                                                                                                    @if (item.IsFreeShipping)
+                                                                                                                                    {
+                                                                                                                                                                                    <div class="ms-auto">
+                                                                                                                                                                                        <Badge Color="Color.Success" Size="Size.Small">@L["FreeShipping"]</Badge>
+                                                                                                                                                                                    </div>
+                                                                                                                                    }
+                                                                                                                                </div>
+                                                                                                                
+                                                                                                                                <div class="d-flex mb-1">
+                                                                                                                                    <div class="me-2">
+                                                                                                                                        <small class="card-label">@L["ShareProfit"]:</small>
+                                                                                                                                    </div>
+                                                                                                                                    <div>
+                                                                                                                                        <small>@item.ShareProfit</small>
+                                                                                                                                    </div>
+                                                                                                                                </div>
+                                                                                                                
+                                                                                                                                <div class="d-flex align-items-center">
+                                                                                                                                    <div class="me-2">
+                                                                                                                                        <small class="card-label">@L["Availability"]:</small>
+                                                                                                                                    </div>
+                                                                                                                                    <Switch TValue="bool"
+                                                                                                                                            Checked="@item.IsItemAvaliable"
+                                                                                                                                            CheckedChanged="@(() => OnItemAvaliablityChange(item.Id))" 
+                                                                                                                                            Size="Size.Small" />
+                                                                                                                                </div>
+                                                                                                                            </CardBody>
+                                                                                                                        </Card>
+                                                                                                                    </div>
+                                                                }
+                                                            </div>
+        }
+        else
+        {
+                                                            <DataGrid TItem="ItemListDto"
+                                                                  Data="ItemList"
+                                                                  ReadData="OnDataGridReadAsync"
+                                                                  TotalItems="Total"
+                                                                  ShowPager="true"
+                                                                  PageSize="Filters.MaxResultCount"
+                                                                  SortChanged="OnSortChange"
+                                                                  Hoverable>
+                                                            <DataGridColumns>
+                                                                <DataGridColumn Caption="@L["Select"]" Width="30px">
+                                                                    <DisplayTemplate>
+                                                                        <InputCheckbox class="form-check-input"
+                                                                                       @bind-Value="@context.IsSelected" />
+                                                                    </DisplayTemplate>
+                                                                </DataGridColumn>
+                                                                <DataGridColumn Field="@nameof(ItemListDto.ItemName)"
+                                                                                Caption="@L["ItemName"]">
+                                                                    <DisplayTemplate>
+                                                                        <Button Class="btn-link hyperlink" Clicked="() => OnEditItem(context)">@context.ItemName</Button>
+                                                                    </DisplayTemplate>
+                                                                </DataGridColumn>
+                                                                <DataGridColumn Field="@nameof(ItemListDto.ItemDescriptionTitle)"
+                                                                                Caption="@L["ItemDescription"]">
+                                                                </DataGridColumn>
+                                                                @*    <DataGridColumn Caption="@L["TimeLimitPeriod"]"
                                 Sortable="false">
                     <DisplayTemplate>
                         @context.LimitAvaliableTimeStart.ToShortDateString() - @context.LimitAvaliableTimeEnd.ToShortDateString()
                     </DisplayTemplate>
                 </DataGridColumn> *@
-                <DataGridColumn Field="@nameof(ItemListDto.CreationTime)"
-                                Caption="@L["CreatedTime"]">
-                    <DisplayTemplate>
-                        @context.CreationTime.ToShortDateString()
-                    </DisplayTemplate>
-                </DataGridColumn>
-                <DataGridColumn Field="@nameof(ItemListDto.IsFreeShipping)"
-                                Caption="@L["FreeShipping"]">
-                    <DisplayTemplate>
-                        @if (context.IsFreeShipping)
-                        {
-                            <i class="fa fa-check bg-success text-light p-1"></i>
-                        }
-                        else
-                        {
-                            <i class="fa fa-times bg-danger text-light p-1"></i>
-                        }
-                    </DisplayTemplate>
-                </DataGridColumn>
-                <DataGridColumn Field="@nameof(ItemListDto.ShareProfit)"
-                                Caption="@L["ShareProfit"]">
-                </DataGridColumn>
-                <DataGridColumn Field="@nameof(ItemListDto.IsItemAvaliable)"
-                                Caption="@L["Availability"]">
-                    <DisplayTemplate>
-                        <Switch TValue="bool"
-                                Checked="@context.IsItemAvaliable"
-                                CheckedChanged="@(() => OnItemAvaliablityChange(context.Id))" />
-                    </DisplayTemplate>
-                </DataGridColumn>
-            </DataGridColumns>
-            <FirstPageButtonTemplate>@L[PikachuResource.FirstPage]</FirstPageButtonTemplate>
-            <PreviousPageButtonTemplate>@L[PikachuResource.PrevPage]</PreviousPageButtonTemplate>
-            <NextPageButtonTemplate>@L[PikachuResource.NextPage]</NextPageButtonTemplate>
-            <LastPageButtonTemplate>@L[PikachuResource.LastPage]</LastPageButtonTemplate>
-        </DataGrid>
+                                                                <DataGridColumn Field="@nameof(ItemListDto.CreationTime)"
+                                                                                Caption="@L["CreatedTime"]">
+                                                                    <DisplayTemplate>
+                                                                        @context.CreationTime.ToShortDateString()
+                                                                    </DisplayTemplate>
+                                                                </DataGridColumn>
+                                                                <DataGridColumn Field="@nameof(ItemListDto.IsFreeShipping)"
+                                                                                Caption="@L["FreeShipping"]">
+                                                                    <DisplayTemplate>
+                                                                        @if (context.IsFreeShipping)
+                                                                        {
+                                                                                                                            <i class="fa fa-check bg-success text-light p-1"></i>
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                                                                            <i class="fa fa-times bg-danger text-light p-1"></i>
+                                                                        }
+                                                                    </DisplayTemplate>
+                                                                </DataGridColumn>
+                                                                <DataGridColumn Field="@nameof(ItemListDto.ShareProfit)"
+                                                                                Caption="@L["ShareProfit"]">
+                                                                </DataGridColumn>
+                                                                <DataGridColumn Field="@nameof(ItemListDto.IsItemAvaliable)"
+                                                                                Caption="@L["Availability"]">
+                                                                    <DisplayTemplate>
+                                                                        <Switch TValue="bool"
+                                                                                Checked="@context.IsItemAvaliable"
+                                                                                CheckedChanged="@(() => OnItemAvaliablityChange(context.Id))" />
+                                                                    </DisplayTemplate>
+                                                                </DataGridColumn>
+                                                            </DataGridColumns>
+                                                            <FirstPageButtonTemplate>@L[PikachuResource.FirstPage]</FirstPageButtonTemplate>
+                                                            <PreviousPageButtonTemplate>@L[PikachuResource.PrevPage]</PreviousPageButtonTemplate>
+                                                            <NextPageButtonTemplate>@L[PikachuResource.NextPage]</NextPageButtonTemplate>
+                                                            <LastPageButtonTemplate>@L[PikachuResource.LastPage]</LastPageButtonTemplate>
+                                                        </DataGrid>
+        }
     </CardBody>
 </Card>
 </div>

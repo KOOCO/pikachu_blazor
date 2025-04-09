@@ -45,49 +45,13 @@ public class PikachuMenuContributor : IMenuContributor
             )
         );
 
-        var groupMangment = new ApplicationMenuItem(
-                 PikachuMenus.GroupBuyManagement,
-                 displayName: l["Menu:GroupBuyManagement"],
-                 //"團購管理",
-                 icon: "fas fa-store",
-                 order: 1
-             );
-        context.Menu.AddItem(groupMangment);
-        if (await context.IsGrantedAsync(PikachuPermissions.GroupBuyList))
-        {
-            groupMangment.AddItem(new ApplicationMenuItem(
-            name: "GroupBuyListView",
-            displayName: l["Menu:GroupBuyListView"],
-            //displayName: "團購列表",
-            icon: "fas fa-list",
-            url: "/GroupBuyManagement/GroupBuyList"
-            ));
-        }
-        ;
-        if (await context.IsGrantedAsync(PikachuPermissions.GroupBuyReport))
-        {
-            groupMangment.AddItem(new ApplicationMenuItem(
-                name: "GroupBuyReports",
-                icon: "fas fa-newspaper",
-                displayName: l["Menu:GroupBuyReports"],
-                //displayName: "團購報表",
-                url: "/GroupBuyManagement/GroupBuyReport"
-                ));
-        }
-        groupMangment.AddItem(new ApplicationMenuItem(
-      name: "ReportNotification",
-      icon: "fas fa-envelope-open-text",
-      displayName: l["ReportNotification"],
-      url: "/AutomaticEmailing",
-      requiredPermissionName: PikachuPermissions.ReportNotification)
-      );
         var productmangment =
          new ApplicationMenuItem(
              PikachuMenus.ProductManagement,
              displayName: l["Menu:ProductManagement"],
              //"商品設定",
              icon: "fas fa-tags",
-             order: 2
+             order: 1
          );
         context.Menu.AddItem(productmangment);
         if (await context.IsGrantedAsync(PikachuPermissions.GoodsList))
@@ -139,7 +103,42 @@ public class PikachuMenuContributor : IMenuContributor
             requiredPermissionName: PikachuPermissions.ProductCategories.Default
             ));
 
-
+        var groupMangment = new ApplicationMenuItem(
+                 PikachuMenus.GroupBuyManagement,
+                 displayName: l["Menu:GroupBuyManagement"],
+                 //"團購管理",
+                 icon: "fas fa-store",
+                 order: 2
+             );
+        context.Menu.AddItem(groupMangment);
+        if (await context.IsGrantedAsync(PikachuPermissions.GroupBuyList))
+        {
+            groupMangment.AddItem(new ApplicationMenuItem(
+            name: "GroupBuyListView",
+            displayName: l["Menu:GroupBuyListView"],
+            //displayName: "團購列表",
+            icon: "fas fa-list",
+            url: "/GroupBuyManagement/GroupBuyList"
+            ));
+        }
+        ;
+        if (await context.IsGrantedAsync(PikachuPermissions.GroupBuyReport))
+        {
+            groupMangment.AddItem(new ApplicationMenuItem(
+                name: "GroupBuyReports",
+                icon: "fas fa-newspaper",
+                displayName: l["Menu:GroupBuyReports"],
+                //displayName: "團購報表",
+                url: "/GroupBuyManagement/GroupBuyReport"
+                ));
+        }
+        groupMangment.AddItem(new ApplicationMenuItem(
+      name: "ReportNotification",
+      icon: "fas fa-envelope-open-text",
+      displayName: l["ReportNotification"],
+      url: "/AutomaticEmailing",
+      requiredPermissionName: PikachuPermissions.ReportNotification)
+      );
         var orderMangment = new ApplicationMenuItem(
                PikachuMenus.OrderManagement,
                displayName: l["Menu:OrderManagement"],
