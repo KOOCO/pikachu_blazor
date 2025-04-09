@@ -2,7 +2,7 @@
 using Kooco.Pikachu.Freebies;
 using Kooco.Pikachu.Items;
 using Kooco.Pikachu.Members;
-using Kooco.Pikachu.Orders;
+using Kooco.Pikachu.Orders.Repositories;
 using Kooco.Pikachu.PaymentGateways;
 using Kooco.Pikachu.UserShoppingCredits;
 using Microsoft.Extensions.DependencyInjection;

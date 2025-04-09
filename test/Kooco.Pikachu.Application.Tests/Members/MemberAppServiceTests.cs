@@ -1,7 +1,7 @@
 ﻿using Autofac.Core;
 using Kooco.Pikachu.AzureStorage.Image;
 using Kooco.Pikachu.Groupbuys;
-using Kooco.Pikachu.Orders;
+using Kooco.Pikachu.Orders.Repositories;
 using Kooco.Pikachu.PikachuAccounts;
 using Kooco.Pikachu.ShoppingCredits;
 using Kooco.Pikachu.UserAddresses;

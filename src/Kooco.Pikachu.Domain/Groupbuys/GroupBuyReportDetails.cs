@@ -1,6 +1,6 @@
 ﻿
 using Kooco.Pikachu.GroupBuys;
-using Kooco.Pikachu.OrderItems;
+using Kooco.Pikachu.Orders.Entities;
 using System;
 using System.Collections.Generic;
 

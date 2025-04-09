@@ -1,5 +1,6 @@
 ﻿using AutoMapper.Internal.Mappers;
 using Kooco.Pikachu.Orders.Entities;
+using Kooco.Pikachu.Orders.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using System;
 using System.Collections.Generic;

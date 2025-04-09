@@ -1,15 +1,14 @@
-﻿using System.Threading.Tasks;
+﻿using Kooco.Pikachu.Orders.Entities;
+using Kooco.Pikachu.Orders.Repositories;
+using System.Threading.Tasks;
 using Volo.Abp.Domain.Services;
 
-namespace Kooco.Pikachu.OrderTransactions;
-
+namespace Kooco.Pikachu.Orders.Services;
 public class OrderTransactionManager(IOrderTransactionRepository orderTransactionRepository) : DomainService
 {
-    private readonly IOrderTransactionRepository _orderTransactionRepository = orderTransactionRepository;
-
     public async Task<OrderTransaction> CreateAsync(OrderTransaction orderTransaction)
     {
-        await _orderTransactionRepository.InsertAsync(orderTransaction);
+        await orderTransactionRepository.InsertAsync(orderTransaction);
         return orderTransaction;
     }
 }
