@@ -269,4 +269,9 @@ public class GroupBuyController : AbpController, IGroupBuyAppService
     {
         throw new NotImplementedException();
     }
+    [HttpPost("update-groupbuyItem-price")]
+    public Task UpdateItemProductPrice(Guid groupbuyId, ICollection<GroupBuyItemGroupDetailCreateUpdateDto> itemDetails)
+    {
+        return _groupBuyAppService.UpdateItemProductPrice(groupbuyId, itemDetails);
+    }
 }

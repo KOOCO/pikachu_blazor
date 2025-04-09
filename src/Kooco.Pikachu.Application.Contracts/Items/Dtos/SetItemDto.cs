@@ -61,7 +61,7 @@ public class SetItemDto : FullAuditedEntityDto<Guid>
     /// <summary>
     /// 
     /// </summary>
-    public int? GroupBuyPrice { get; set; }
+    public float? GroupBuyPrice { get; set; }
     public float SetItemPrice { get; set; }
     public int? LimitQuantity { get; set; }
 

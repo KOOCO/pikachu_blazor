@@ -31,7 +31,7 @@ namespace Kooco.Pikachu.GroupBuyItemsPriceses
                 itemDetailId
             );
 
-            return await _repository.InsertAsync(entity, autoSave: true);
+            return await _repository.InsertAsync(entity);
         }
 
         public async Task<GroupBuyItemsPrice> UpdateAsync(
@@ -43,7 +43,7 @@ namespace Kooco.Pikachu.GroupBuyItemsPriceses
         {
             var entity = await _repository.GetAsync(id);
             entity.Update(setItemId, groupBuyId, groupBuyPrice, itemDetailId);
-            return await _repository.UpdateAsync(entity, autoSave: true);
+            return await _repository.UpdateAsync(entity);
         }
     }
 }

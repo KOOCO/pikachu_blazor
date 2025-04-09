@@ -952,7 +952,7 @@ public partial class EditGroupBuy
                                 }
                                 else
                                 {
-                                    var itemPrice = await _groupBuyItemsPriceAppService.GetByItemIdAndGroupBuyIdAsync(item.SetItem.Id, GroupBuy.Id);
+                                    var itemPrice = await _groupBuyItemsPriceAppService.GetBySetItemIdAndGroupBuyIdAsync(item.SetItem.Id, GroupBuy.Id);
 
                                     if (itemPrice is not null)
                                     {
@@ -2488,14 +2488,64 @@ public partial class EditGroupBuy
                         {
                             if (itemDetail.Id != Guid.Empty || (item.GroupBuyModuleType == GroupBuyModuleType.IndexAnchor && !itemDetail.Name.IsNullOrEmpty()))
                             {
-                                itemGroup.ItemDetails.Add(new GroupBuyItemGroupDetailCreateUpdateDto
+                                if (item.GroupBuyModuleType == GroupBuyModuleType.ProductGroupModule)
                                 {
-                                    SortOrder = j++,
-                                    ItemId = itemDetail.ItemType == ItemType.Item && itemDetail.Id != Guid.Empty ? itemDetail.Id : null,
-                                    SetItemId = itemDetail.ItemType == ItemType.SetItem && itemDetail.Id != Guid.Empty ? itemDetail.Id : null,
-                                    ItemType = itemDetail.ItemType,
-                                    DisplayText = itemGroup.GroupBuyModuleType == GroupBuyModuleType.IndexAnchor ? itemDetail.Name : null
-                                });
+                                    if (itemDetail.ItemType == ItemType.Item)
+                                    {
+                                        if (itemDetail.SelectedItemDetailIds == null || !itemDetail.SelectedItemDetailIds.Any())
+                                        {
+                                            await _uiMessageService.Error($"Item '{itemDetail.Name}' must have at least one variant selected.");
+                                            return;
+                                        }
+
+                                        foreach (var detailId in itemDetail.SelectedItemDetailIds)
+                                        {
+                                            if (!itemDetail.ItemDetailsWithPrices.TryGetValue(detailId, out var labelAndPrice))
+                                            {
+                                                await _uiMessageService.Error($"Price missing for one or more item variants in '{itemDetail.Name}'.");
+                                                return;
+                                            }
+
+                                            itemGroup.ItemDetails.Add(new GroupBuyItemGroupDetailCreateUpdateDto
+                                            {
+                                                SortOrder = j++,
+                                                ItemId = itemDetail.ItemType == ItemType.Item ? itemDetail.Id : null,
+                                                SetItemId = itemDetail.ItemType == ItemType.SetItem ? itemDetail.Id : null,
+                                                ItemType = itemDetail.ItemType,
+                                                ItemDetailId = itemDetail.ItemType == ItemType.Item ? detailId : null, // ✅ only for ItemType.Item
+                                                Price = labelAndPrice.Price
+                                            });
+                                        }
+                                    }
+                                    else
+                                    {
+
+                                        if (itemDetail.Price is null)
+                                        {
+                                            await _uiMessageService.Error($"Price missing for one or more item variants in '{itemDetail.Name}'.");
+                                            return;
+                                        }
+                                        itemGroup.ItemDetails.Add(new GroupBuyItemGroupDetailCreateUpdateDto
+                                        {
+                                            SortOrder = j++,
+                                            ItemId = itemDetail.ItemType == ItemType.Item ? itemDetail.Id : null,
+                                            SetItemId = itemDetail.ItemType == ItemType.SetItem ? itemDetail.SetItem.Id : null,
+                                            ItemType = itemDetail.ItemType,
+
+                                            Price = itemDetail.Price.Value
+                                        });
+                                    }
+                                }
+                                else {
+                                    itemGroup.ItemDetails.Add(new GroupBuyItemGroupDetailCreateUpdateDto
+                                    {
+                                        SortOrder = j++,
+                                        ItemId = itemDetail.ItemType == ItemType.Item && itemDetail.Id != Guid.Empty ? itemDetail.Id : null,
+                                        SetItemId = itemDetail.ItemType == ItemType.SetItem && itemDetail.Id != Guid.Empty ? itemDetail.Id : null,
+                                        ItemType = itemDetail.ItemType,
+                                        DisplayText = itemGroup.GroupBuyModuleType == GroupBuyModuleType.IndexAnchor ? itemDetail.Name : null
+                                    });
+                                }
                             }
                         }
                     }
@@ -2546,7 +2596,11 @@ public partial class EditGroupBuy
 
 
                 if (EditGroupBuyDto.IsEnterprise) await _OrderAppService.UpdateOrdersIfIsEnterpricePurchaseAsync(Id);
-
+                var groupItem = EditGroupBuyDto.ItemGroups.Where(x => x.GroupBuyModuleType == GroupBuyModuleType.ProductGroupModule).ToList();
+                foreach (var group in groupItem)
+                {
+                    await _groupBuyAppService.UpdateItemProductPrice(result.Id, group.ItemDetails);
+                        }
                 foreach (List<CreateImageDto> carouselImages in CarouselModules)
                 {
                     foreach (CreateImageDto carouselImage in carouselImages)
@@ -2826,6 +2880,27 @@ public partial class EditGroupBuy
                 Guid GroupBuyId = Guid.Parse(id);
 
                 await _groupBuyAppService.DeleteGroupBuyItemAsync(item.Id.Value, GroupBuyId);
+                foreach (var itemPrice in item.Selected)
+                {
+                    if (itemPrice.ItemType == ItemType.Item)
+                    {
+                        foreach (var itemId in itemPrice.SelectedItemDetailIds)
+                        {
+                            var existingItem = await _groupBuyItemsPriceAppService.GetByItemIdAndGroupBuyIdAsync(itemId, GroupBuyId);
+                            if (existingItem is not null)
+                                await _groupBuyItemsPriceAppService.DeleteAsync(existingItem.Id);
+                        }
+
+                    }
+                    else {
+                      
+                        var existingItem = await _groupBuyItemsPriceAppService.GetBySetItemIdAndGroupBuyIdAsync(itemPrice.SetItem.Id, GroupBuyId);
+                        if (existingItem is not null)
+                            await _groupBuyItemsPriceAppService.DeleteAsync(existingItem.Id);
+
+                    }
+                
+                }
 
                 if (item.GroupBuyModuleType is GroupBuyModuleType.GroupPurchaseOverview)
                     await _GroupPurchaseOverviewAppService.DeleteByGroupIdAsync(GroupBuyId);

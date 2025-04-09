@@ -284,13 +284,13 @@
                                             @L["CopyToAll"]
                                         </Span>
                                     </TableHeaderCell>
-                                    <TableHeaderCell Class="text-center">
+                                  @*   <TableHeaderCell Class="text-center">
                                         @L["GroupBuyPrice"]
                                         <Span Class="d-block pt-1 text-primary cursor-pointer"
                                               @onclick="() => CopyToAll(nameof(CreateItemDetailsDto.GroupBuyPrice))">
                                             @L["CopyToAll"]
                                         </Span>
-                                    </TableHeaderCell>
+                                    </TableHeaderCell> *@
                                     <TableHeaderCell Class="text-center">
                                         @L["ItemCost"]
                                         <Span Class="d-block pt-1 text-primary cursor-pointer"
@@ -363,9 +363,9 @@
                                         <TableRowCell>
                                             <NumericEdit Class="form-control form-control-sm" Style="min-width: 100px;" @bind-Value="@item.SellingPrice"></NumericEdit>
                                         </TableRowCell>
-                                        <TableRowCell>
+                                       @*  <TableRowCell>
                                             <NumericEdit Class="form-control form-control-sm" Style="min-width: 100px;" @bind-Value="@item.GroupBuyPrice"></NumericEdit>
-                                        </TableRowCell>
+                                        </TableRowCell> *@
                                         <TableRowCell>
                                             <NumericEdit Class="form-control form-control-sm" Style="min-width: 100px;" @bind-Value="@item.Cost"></NumericEdit>
                                         </TableRowCell>

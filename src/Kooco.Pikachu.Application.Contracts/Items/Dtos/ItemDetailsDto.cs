@@ -36,7 +36,7 @@ public class ItemDetailsDto : FullAuditedEntityDto<Guid>
     /// <summary>
     /// 商品團購價 Group Buy Price
     /// </summary>
-    public int? GroupBuyPrice { get; set; }
+    public float? GroupBuyPrice { get; set; }
 
     /// <summary>
     /// 可販售數量限制
