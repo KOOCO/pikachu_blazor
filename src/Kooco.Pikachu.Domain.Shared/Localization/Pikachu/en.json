@@ -1392,6 +1392,12 @@
     "InstallmentPeriods.18": "18",
     "InstallmentPeriods.24": "24",
     "EnterANewBadge": "Enter a new badge",
-    "CustomTextModule": "Custom Text Module"
+    "CustomTextModule": "Custom Text Module",
+    "StoreComments": "Store Comments",
+    "StoreCommentsHistory": "Store Comments History",
+    "CustomerService": "Customer Service",
+    "TypeMessage": "Type a message",
+    "Send": "Send",
+    "NoMessages": "No messages yet"
   }
 }
