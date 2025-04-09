@@ -1,4 +1,4 @@
-﻿namespace Kooco.Pikachu.Constants;
+﻿namespace Kooco;
 public readonly ref struct ECPayConstants
 {
     public const string Name = "ECPay";

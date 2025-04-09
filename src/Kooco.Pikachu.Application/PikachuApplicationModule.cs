@@ -1,5 +1,4 @@
-﻿using Kooco.Pikachu.Constants;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Volo.Abp.Account;
 using Volo.Abp.AutoMapper;
 using Volo.Abp.BackgroundJobs;
@@ -21,7 +20,7 @@ namespace Kooco.Pikachu;
     typeof(AbpTenantManagementApplicationModule),
     typeof(AbpFeatureManagementApplicationModule),
     typeof(AbpSettingManagementApplicationModule),
-    typeof(PikachuECPayModule)
+    typeof(ECPayModule)
 )]
 public class PikachuApplicationModule : AbpModule
 {
