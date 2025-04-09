@@ -328,7 +328,7 @@
     "Pending": "待審核",
     "PendingReview": "待審核",
     "Penghu": "澎湖",
-   
+
     "Permission:AddStoreComments": "新增商家備註",
     "Permission:DeliveryTemperatureCost": "廠商統一出貨設定",
     "Permission:E-InvoiceSetting": "電子發票設定",
@@ -336,7 +336,7 @@
     "Permission:OrderList": "訂單列表",
     "Permission:Orders": "訂單管理",
     "Permission:PaymentSetting": "金流商設定",
-   
+
     "Welcome": "歡迎",
     "Permission:GroupBuyManagement": "團購管理",
     "Permission:GroupBuyPageConfig": "團購頁面配置",
@@ -363,11 +363,11 @@
     "SelectAll": "全選",
     "ActivityEndDateWarning": "活動結束日期不能小於活動開始日期",
     "ActivityStartDateWarning": "活動開始日期不能大於活動結束日期",
-  
+
     "EditItem": "編輯商品",
-  
+
     "TurnItemOn": "商品上架",
-   
+
     "PreviewPage": "預覽頁面",
 
     "PriceAndInventory": "價格與庫存",
@@ -419,14 +419,14 @@
     "Pikachu:FilesAreGreaterThanMaxAllowedFileSize": "檔案大小超過最大允許檔案大小",
     "Pikachu:AlreadyUploadMaxAllowedFiles": "已上傳最大允許檔案數",
     "Pikachu:FilesExceedMaxAllowedPerUpload": "檔案超過每次上傳最大允許檔案數",
-   
+
     "Pikachu:EntityWithGivenIdDoesnotExist": "給定 ID 的實體不存在",
-   
+
     "SalesURL": "銷售連結",
     "SalesURL1": "銷售連結 1",
     "SalesURL2": "銷售連結 2",
     "Subject": "主旨",
-    
+
     "ProfitShare": "分潤",
     "SearchProducts": "搜尋商品...",
     "AllCategories": "所有類別",
@@ -1025,7 +1025,7 @@
     "Enum:FooterSettingsType.3": "圖片",
     "Enum:FooterSettingsType.4": "公司與客戶資訊",
 
-   
+
     "OnlyOneB2COrC2CCanBeEnabled711": "7-11 B2C 或 C2C 只能啟用其中一個。",
     "Login:ECommercePlatform": "小商人電商平台",
     "Login:AdministratorLogin": "管理員登入",
@@ -1064,7 +1064,7 @@
     "Miniutes": "分鐘",
     "SelectLogistics": "選擇物流商",
     "SelectDeliveryMethod": "選擇物流方式",
-    "Return&Exchange": "退換貨列表退換貨列表",
+    "Return&Exchange": "退換貨列表",
     "Filters": "篩選器",
     "Active": "上架中",
     "Inactive": "已下架",
@@ -1109,5 +1109,5 @@
     "InstallmentPeriods.18": "18期",
     "InstallmentPeriods.24": "24期",
     "EnterANewBadge": "輸入新徽章"
-}
+  }
 }
