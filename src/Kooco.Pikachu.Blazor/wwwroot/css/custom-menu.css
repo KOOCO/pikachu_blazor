@@ -1,0 +1,77 @@
+/* Custom styles for the sidebar menu - applying #2c3e50 to all sidebar elements */
+
+/* Global approach to target the entire sidebar and its elements */
+aside, 
+aside *:not(.notification-badge):not(.selected):not(:hover),
+.lpx-sidebar,
+.lpx-sidebar *:not(.notification-badge):not(.selected):not(:hover),
+.abp-application-layout aside,
+.abp-application-layout aside *:not(.notification-badge):not(.selected):not(:hover),
+#app div > aside,
+#app div > aside *:not(.notification-badge):not(.selected):not(:hover),
+.navbar.navbar-dark {
+    /* background-color: #2c3e50 !important; */
+}
+
+/* Target specific areas that might be missed */
+.lpx-nav-menu,
+#desktop-sidebar,
+.lpx-inner-menu,
+.lpx-sidebar-container,
+.lpx-sidebar-header,
+.lpx-sidebar-footer,
+.lpx-sidebar-brand,
+.navbar-dark,
+.top-row,
+.lpx-brand,
+#lpx-wrapper,
+.lpx-mobile-topbar-container,
+.lpx-global-container,
+.lpx-sidebar,
+.lpx-logo-container,
+.lpx-wrapper {
+    background-color: #2c3e50 !important;
+}
+
+/* Logo hover effect - more specific selectors */
+.lpx-logo-container:hover,
+.lpx-brand:hover,
+.navbar-brand:hover,
+.lpx-sidebar-brand:hover,
+.lpx-sidebar-header:hover,
+header:hover,
+.lpx-logo:hover,
+.lpx-sidebar .lpx-sidebar-header:hover {
+    background-color: #34495e !important;
+    transition: background-color 0.3s ease;
+}
+
+/* Change the color of text and icons for better contrast */
+.lpx-menu-item-text,
+.lpx-icon,
+.dd-icon,
+.navbar-brand,
+aside a,
+aside span,
+aside i {
+    color: rgba(255, 255, 255, 0.7) !important;
+}
+
+/* Hover state styling */
+.lpx-menu-item-link:hover,
+aside a:hover,
+.lpx-nav .lpx-menu-item-link:hover {
+    background-color: #34495e !important;
+    transition: background-color 0.3s ease;
+}
+
+/* Selected items */
+.selected,
+.lpx-menu-item.selected,
+.lpx-nav .lpx-menu-item.selected {
+    background-color: #30506b !important;
+} 
+
+.lpx-nav-menu .lpx-menu-item-link .lpx-menu-item-text{
+    font-size: 1.25em!important;
+}
