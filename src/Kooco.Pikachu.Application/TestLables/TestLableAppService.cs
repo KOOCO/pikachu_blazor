@@ -1,6 +1,5 @@
 ﻿using Kooco.Pikachu.LogisticsProviders;
-using Kooco.Pikachu.OrderDeliveries;
-using Kooco.Pikachu.Orders;
+using Kooco.Pikachu.Orders.Repositories;
 using Kooco.Pikachu.StoreLogisticOrders;
 using Kooco.Pikachu.TenantEmailing;
 using Microsoft.Extensions.Configuration;

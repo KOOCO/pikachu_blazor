@@ -1,10 +1,10 @@
-﻿using System;
+﻿using Kooco.Pikachu.Orders.Entities;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Volo.Abp.Domain.Repositories;
 
-namespace Kooco.Pikachu.OrderTransactions;
-
+namespace Kooco.Pikachu.Orders.Repositories;
 public interface IOrderTransactionRepository : IRepository<OrderTransaction, Guid>
 {
     Task<long> CountAsync(string? filter);

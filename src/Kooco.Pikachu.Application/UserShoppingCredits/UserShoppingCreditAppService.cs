@@ -1,5 +1,5 @@
 ﻿using Kooco.Pikachu.Emails;
-using Kooco.Pikachu.Orders;
+using Kooco.Pikachu.Orders.Repositories;
 using Kooco.Pikachu.Permissions;
 using Kooco.Pikachu.ShoppingCredits;
 using Kooco.Pikachu.UserCumulativeCredits;

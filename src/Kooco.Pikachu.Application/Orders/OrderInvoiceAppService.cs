@@ -1,4 +1,5 @@
-﻿using Volo.Abp;
+﻿using Kooco.Pikachu.Orders.Repositories;
+using Volo.Abp;
 
 namespace Kooco.Pikachu.Orders;
 

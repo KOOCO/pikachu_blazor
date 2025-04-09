@@ -2,9 +2,9 @@
 using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Groupbuys;
 using Kooco.Pikachu.GroupBuys;
-using Kooco.Pikachu.OrderHistories;
-using Kooco.Pikachu.Orders;
 using Kooco.Pikachu.Orders.Entities;
+using Kooco.Pikachu.Orders.Repositories;
+using Kooco.Pikachu.Orders.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
@@ -46,7 +46,7 @@ public class ElectronicInvoiceAppService : PikachuAppService, IElectronicInvoice
 
         var totalAmount = Convert.ToInt32(order.TotalAmount);
 
-        ECPayCreateInvoiceInput parameters = new()
+        ECPayCreateInvoiceInput input = new()
         {
             MerchantId = setting?.StoreCode ?? string.Empty,
             RelateNo = order.OrderNo,
@@ -67,9 +67,8 @@ public class ElectronicInvoiceAppService : PikachuAppService, IElectronicInvoice
             Vat = "1",
             Items =
             [
-                new ECPayCreateInvoiceInput .Item
+                new ECPayCreateInvoiceInput.Item
                 {
-                    ItemSeq = 1,
                     ItemName = L["Total"],
                     ItemCount = 1,
                     ItemWord = "1",
@@ -81,7 +80,7 @@ public class ElectronicInvoiceAppService : PikachuAppService, IElectronicInvoice
             ]
         };
 
-        var (transCode, result) = await ECPayInvoiceService.CreateInvoiceAsync(setting.HashKey, setting.HashIV, parameters);
+        var (transCode, result) = await ECPayInvoiceService.CreateInvoiceAsync(setting.HashKey, setting.HashIV, input);
 
         // **Get Current User (Editor)**
         var currentUserId = CurrentUser.Id ?? Guid.Empty;
@@ -325,28 +324,6 @@ public class myItem
     public decimal ItemAmount { get; set; }
     public string ItemRemark { get; set; }
 }
-
-//public class Parameters
-//{
-//    public string MerchantID { get; set; }
-//    public string RelateNumber { get; set; }
-//    public string CustomerName { get; set; }
-//    public string CustomerAddr { get; set; }
-//    public string CustomerPhone { get; set; }
-//    public string CustomerEmail { get; set; }
-//    public string ClearanceMark { get; set; }
-//    public string InvoiceRemark { get; set; }
-//    public string CustomerIdentifier { get; set; }
-//    public string Print { get; set; }
-//    public string? CarrierNum { get; set; }
-//    public string? CarrierType { get; set; }
-//    public string Donation { get; set; }
-//    public string TaxType { get; set; }
-//    public decimal SalesAmount { get; set; }
-//    public string InvType { get; set; }
-//    public string vat { get; set; }
-//    public List<myItem> Items { get; set; }
-//}
 public class CreditNoteParameters
 {
     public string MerchantID { get; set; }

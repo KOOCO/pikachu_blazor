@@ -1,14 +1,11 @@
-﻿using Kooco.Pikachu.AddOnProducts;
+﻿using Kooco.Pikachu.Orders.Entities;
+using Kooco.Pikachu.Orders.Repositories;
 using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Domain.Services;
 
-namespace Kooco.Pikachu.OrderHistories
+namespace Kooco.Pikachu.Orders.Services
 {
     public class OrderHistoryManager(IOrderHistoryRepository orderHistoryRepository) : DomainService
     {

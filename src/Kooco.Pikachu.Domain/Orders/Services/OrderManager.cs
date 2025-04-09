@@ -1,100 +1,80 @@
 ﻿using Kooco.Pikachu.EnumValues;
-using Kooco.Pikachu.Freebies;
 using Kooco.Pikachu.Groupbuys;
-using Kooco.Pikachu.Items;
+using Kooco.Pikachu.Orders.Entities;
+using Kooco.Pikachu.Orders.Repositories;
 using System;
-using System.ComponentModel.Design;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Domain.Services;
 
-namespace Kooco.Pikachu.Orders.Entities;
-
-public class OrderManager : DomainService
+namespace Kooco.Pikachu.Orders.Services;
+public class OrderManager(IOrderRepository orderRepository, IGroupBuyRepository groupBuyRepository) : DomainService
 {
-    #region Inject
-    private readonly IOrderRepository _orderRepository;
-    private readonly IGroupBuyRepository _groupBuyRepository;
-    #endregion
-
-    #region Constructor
-    public OrderManager(
-        IOrderRepository orderRepository,
-        IGroupBuyRepository groupBuyRepository
-    )
-    {
-        _orderRepository = orderRepository;
-        _groupBuyRepository = groupBuyRepository;
-    }
-    #endregion
-
-    #region Methods
     public async Task<Order> CreateAsync(
-         Guid groupBuyId,
-         bool isIndividual,
-         string customerName,
-         string customerPhone,
-         string customerEmail,
-         PaymentMethods? paymentMethods,
-         InvoiceType? invoiceType,
-         string invoiceNumber,
-         string uniformNumber,
-         string carrierId,
-         string taxTitle,
-         bool IsAsSameBuyer,
-         string recipientName,
-         string recipientPhone,
-         string recipientEmail,
-         DeliveryMethod? deliveryMethod,
-         string postalCode,
-         string city,
-         string district,
-         string road,
-         string addressDetails,
-         string remarks,
-         ReceivingTime? receivingTime,
-         int totalQuantity,
-         decimal totalAmount,
-         OrderReturnStatus? orderReturnStatus,
-         OrderType? orderType,
-         Guid? splitFromId = null,
-         Guid? userId = null,
-         int creditDeductionAmount = 0,
-         Guid? creditDeductionRecordId = null,
-         decimal creditRefundAmount = 0,
-         Guid? creditRefundRecordId = null,
-         int? discountCodeAmount=null,
-         Guid? discountAmountId=null,
-         string? recipientNameDbsNormal = null,
-         string? recipientNameDbsFreeze = null,
-         string? recipientNameDbsFrozen = null,
-         string? recipientPhoneDbsNormal = null,
-         string? recipientPhoneDbsFreeze = null,
-         string? recipientPhoneDbsFrozen = null,
-         string? postalCodeDbsNormal = null,
-         string? postalCodeDbsFreeze = null,
-         string? postalCodeDbsFrozen = null,
-         string? cityDbsNormal = null,
-         string? cityDbsFreeze = null,
-         string? cityDbsFrozen = null,
-         string? addressDetailsDbsNormal = null,
-         string? addressDetailsDbsFreeze = null,
-         string? addressDetailsDbsFrozen = null,
-         string? remarksDbsNormal = null,
-         string? remarksDbsFreeze = null,
-         string? remarksDbsFrozen = null,
-         string? storeIdNormal = null,
-         string? storeIdFreeze = null,
-         string? storeIdFrozen = null,
-         string? cVSStoreOutSideNormal = null,
-         string? cVSStoreOutSideFreeze = null,
-         string? cVSStoreOutSideFrozen = null,
-         ReceivingTime? receivingTimeNormal = null,
-         ReceivingTime? receivingTimeFreeze = null,
-         ReceivingTime? receivingTimeFrozen = null
-    )
+        Guid groupBuyId,
+        bool isIndividual,
+        string customerName,
+        string customerPhone,
+        string customerEmail,
+        PaymentMethods? paymentMethods,
+        InvoiceType? invoiceType,
+        string invoiceNumber,
+        string uniformNumber,
+        string carrierId,
+        string taxTitle,
+        bool IsAsSameBuyer,
+        string recipientName,
+        string recipientPhone,
+        string recipientEmail,
+        DeliveryMethod? deliveryMethod,
+        string postalCode,
+        string city,
+        string district,
+        string road,
+        string addressDetails,
+        string remarks,
+        ReceivingTime? receivingTime,
+        int totalQuantity,
+        decimal totalAmount,
+        OrderReturnStatus? orderReturnStatus,
+        OrderType? orderType,
+        Guid? splitFromId = null,
+        Guid? userId = null,
+        int creditDeductionAmount = 0,
+        Guid? creditDeductionRecordId = null,
+        decimal creditRefundAmount = 0,
+        Guid? creditRefundRecordId = null,
+        int? discountCodeAmount = null,
+        Guid? discountAmountId = null,
+        string? recipientNameDbsNormal = null,
+        string? recipientNameDbsFreeze = null,
+        string? recipientNameDbsFrozen = null,
+        string? recipientPhoneDbsNormal = null,
+        string? recipientPhoneDbsFreeze = null,
+        string? recipientPhoneDbsFrozen = null,
+        string? postalCodeDbsNormal = null,
+        string? postalCodeDbsFreeze = null,
+        string? postalCodeDbsFrozen = null,
+        string? cityDbsNormal = null,
+        string? cityDbsFreeze = null,
+        string? cityDbsFrozen = null,
+        string? addressDetailsDbsNormal = null,
+        string? addressDetailsDbsFreeze = null,
+        string? addressDetailsDbsFrozen = null,
+        string? remarksDbsNormal = null,
+        string? remarksDbsFreeze = null,
+        string? remarksDbsFrozen = null,
+        string? storeIdNormal = null,
+        string? storeIdFreeze = null,
+        string? storeIdFrozen = null,
+        string? cVSStoreOutSideNormal = null,
+        string? cVSStoreOutSideFreeze = null,
+        string? cVSStoreOutSideFrozen = null,
+        ReceivingTime? receivingTimeNormal = null,
+        ReceivingTime? receivingTimeFreeze = null,
+        ReceivingTime? receivingTimeFrozen = null
+   )
     {
         //string orderNo = await GenerateOrderNoAsync(groupBuyId);
         Guid newGuid = Guid.NewGuid();
@@ -181,7 +161,7 @@ public class OrderManager : DomainService
         decimal itemPrice,
         decimal totalAmount,
         int quantity,
-        string? sku, 
+        string? sku,
         ItemStorageTemperature temperature,
         decimal temperatureCost
     )
@@ -204,7 +184,7 @@ public class OrderManager : DomainService
 
     async Task<string> GenerateOrderNoAsync(Guid groupBuyId)
     {
-        var order = await _orderRepository.MaxByOrderNumberAsync();
+        var order = await orderRepository.MaxByOrderNumberAsync();
 
         long orderNo = 1;
         if (order != null)
@@ -214,7 +194,7 @@ public class OrderManager : DomainService
             orderNo++;
         }
 
-        var groupBuy = await _groupBuyRepository.GetAsync(groupBuyId);
+        var groupBuy = await groupBuyRepository.GetAsync(groupBuyId);
         string tenantIdPrefix = groupBuy.TenantId?.ToString().Substring(0, 2);
 
         return $"{tenantIdPrefix}{DateTime.Now:yy}{orderNo:D9}";
@@ -228,5 +208,4 @@ public class OrderManager : DomainService
         Check.NotNullOrWhiteSpace(comment, nameof(comment));
         order.AddStoreComment(comment);
     }
-    #endregion
 }

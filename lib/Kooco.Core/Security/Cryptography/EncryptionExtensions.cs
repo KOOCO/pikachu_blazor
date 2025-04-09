@@ -45,6 +45,16 @@ public static class EncryptionExtensions
             return Convert.ToBase64String(ms.ToArray());
         }
     }
+    /// <summary>
+    /// Decrypts the given text using AES encryption.
+    /// </summary>
+    /// <param name="text"></param>
+    /// <param name="key"></param>
+    /// <param name="iv"></param>
+    /// <param name="mode"></param>
+    /// <param name="padding"></param>
+    /// <param name="keySize"></param>
+    /// <returns></returns>
     public static async Task<string> AesDecryptAsync(
         this string text,
         string key,
