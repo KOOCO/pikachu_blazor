@@ -2776,6 +2776,90 @@
             </Card>
         </div>
     </div>
+    <div class="row">
+        <!-- Customer Conversation Window -->
+        <div class="col-12 mb-4">
+            <h4>
+                <i class="fas fa-comments me-2"></i> @L["CustomerService"]
+                <button class="btn btn-sm @(IsConversationWindowCollapsed ? "btn-outline-primary" : "btn-outline-secondary") float-end" @onclick="ToggleConversationWindow">
+                    <i class="fas @(IsConversationWindowCollapsed ? "fa-chevron-down" : "fa-chevron-up")"></i>
+                </button>
+            </h4>
+            <Card>
+                @if (!IsConversationWindowCollapsed)
+                {
+                    <CardBody>
+                        <div class="conversation-container" style="height: 300px; overflow-y: auto; border: 1px solid #eee; padding: 10px; border-radius: 5px; margin-bottom: 15px;">
+                            @if (CustomerServiceHistory.Any())
+                            {
+                                @foreach (var message in CustomerServiceHistory)
+                                {
+                                    <div class="d-flex mb-3 @(message.IsMerchant ? "justify-content-end" : "justify-content-start")">
+                                        <div class="message-bubble" data-message-id="@message.Id" style="max-width: 70%; padding: 10px; border-radius: 10px; margin: 5px;
+                                                   @(message.IsMerchant ? "background-color: #dcf8c6;" : "background-color: #f1f0f0;")">
+                                            <div class="message-text">
+                                                @if (editingMessageId == message.Id.ToString())
+                                                {
+                                                    <div class="input-group">
+                                                        <input type="text" class="form-control form-control-sm" @bind="editingMessageText" />
+                                                        <button class="btn btn-sm btn-primary" @onclick="() => SaveMessageEdit(message.Id.ToString())">
+                                                            <i class="fas fa-check"></i>
+                                                        </button>
+                                                        <button class="btn btn-sm btn-secondary" @onclick="CancelMessageEdit">
+                                                            <i class="fas fa-times"></i>
+                                                        </button>
+                                                    </div>
+                                                }
+                                                else
+                                                {
+                                                    @message.Message
+                                                }
+                                            </div>
+                                            <div class="d-flex justify-content-between align-items-center mt-1">
+                                                <div class="message-time" style="font-size: 0.75rem; color: #888;">
+                                                    @(message.Timestamp?.ToLocalTime().ToString("MM/dd HH:mm") ?? "")
+                                                </div>
+                                                @if (message.IsMerchant && editingMessageId != message.Id.ToString())
+                                                {
+                                                    <div class="message-actions" style="font-size: 0.75rem;">
+                                                        <button class="btn btn-link btn-sm p-0 me-2" @onclick="() => StartEditMessage(new ConversationMessage { 
+                                                            Id = message.Id.ToString(),
+                                                            Text = message.Message,
+                                                            IsFromRepresentative = message.IsMerchant,
+                                                            Timestamp = message.Timestamp
+                                                        })">
+                                                            <i class="fas fa-edit text-primary"></i>
+                                                        </button>
+                                                        <button class="btn btn-link btn-sm p-0" @onclick="() => DeleteMessage(message.Id.ToString())">
+                                                            <i class="fas fa-trash text-danger"></i>
+                                                        </button>
+                                                    </div>
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            }
+                            else
+                            {
+                                <div class="text-center text-muted py-4">
+                                    <i class="fas fa-inbox fa-2x mb-2"></i>
+                                    <p>@L["NoMessages"]</p>
+                                </div>
+                            }
+                        </div>
+                        
+                        <div class="input-group">
+                            <input type="text" class="form-control" placeholder="@L["TypeMessage"]" @bind="NewMessage" @onkeydown="@(async (e) => { if (e.Code == "Enter") { await SendMessage(); } })" />
+                            <button class="btn btn-primary" @onclick="SendMessage" type="button">
+                                <i class="fas fa-paper-plane me-1"></i> @L["Send"]
+                            </button>
+                        </div>
+                    </CardBody>
+                }
+            </Card>
+        </div>
+    </div>
   
     </div>
     <Modal @ref="CreateShipmentModal">
@@ -3021,37 +3105,3 @@
             </EditForm>
         </ModalContent>
     </Modal>
-
-
-@code {
-    private Dictionary<Guid, bool> _deliveryCostRendered = new Dictionary<Guid, bool>();
-
-    private decimal CalculateItemTotal(OrderItemDto item, bool includeDeliveryCost)
-    {
-        var itemTotal = item.TotalAmount;
-
-        if (Order.DeliveryMethod == DeliveryMethod.DeliveredByStore)
-        {
-            // Add specific delivery cost based on temperature
-            itemTotal += GetDeliveryCost(item.DeliveryTemperature);
-        }
-        else if (includeDeliveryCost)
-        {
-            // Only add the order-wide delivery cost for the first applicable item
-            itemTotal += OrderDeliveryCost ?? 0.00M;
-        }
-
-        return itemTotal;
-    }
-
-    private bool ShouldDisplayDeliveryCost(Guid itemId)
-    {
-        if (!_deliveryCostRendered.ContainsKey(itemId))
-        {
-            _deliveryCostRendered[itemId] = true;
-            return true;
-        }
-
-        return false;
-    }
-}
