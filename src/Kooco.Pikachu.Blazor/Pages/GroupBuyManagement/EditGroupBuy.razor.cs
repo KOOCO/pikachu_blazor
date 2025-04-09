@@ -1138,6 +1138,19 @@ public partial class EditGroupBuy
             });
         }
 
+        else if (groupBuyModuleType == GroupBuyModuleType.CustomTextModule)
+        {
+            CollapseItem collapseItem = new()
+            {
+                Index = CollapseItem.Count > 0 ? CollapseItem.Count + 1 : 1,
+                SortOrder = CollapseItem.Count > 0 ? CollapseItem.Max(c => c.SortOrder) + 1 : 1,
+                GroupBuyModuleType = groupBuyModuleType,
+                Selected = []
+            };
+
+            CollapseItem.Add(collapseItem);
+        }
+
         else if (groupBuyModuleType is GroupBuyModuleType.CountdownTimer)
         {
             if (!CollapseItem.Any(a => a.GroupBuyModuleType is GroupBuyModuleType.CountdownTimer))
@@ -2560,7 +2573,9 @@ public partial class EditGroupBuy
                         SortOrder = item.SortOrder,
                         GroupBuyModuleType = item.GroupBuyModuleType,
                         AdditionalInfo = item.AdditionalInfo,
-                        ModuleNumber = item.ModuleNumber
+                        ModuleNumber = item.ModuleNumber,
+                        Title = item.Title,
+                        Text = item.Text
                     };
 
                     if (item.GroupBuyModuleType is GroupBuyModuleType.ProductRankingCarouselModule &&
