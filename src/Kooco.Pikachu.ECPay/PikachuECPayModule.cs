@@ -1,25 +1,19 @@
-﻿using Kooco.Pikachu.Constants;
-using Kooco.Pikachu.Interface;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
-using Refit;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Volo.Abp.Http.Client;
 using Volo.Abp.Modularity;
 
 namespace Kooco.Pikachu;
+
+[DependsOn(typeof(AbpHttpClientModule))]
 public sealed class PikachuECPayModule : AbpModule
 {
     public override void ConfigureServices(ServiceConfigurationContext context)
     {
-        context.Services.AddRefitClient<IECPayEinvoice>().ConfigureHttpClient((provider, client) =>
+        context.Services.AddHttpClient(nameof(ECPayConstants.Einvoice), client =>
         {
-            var options = provider.GetService<IOptions<ECPayOptions>>()?.Value;
-            if (options is not null)
-            {
-                client.BaseAddress = options.IsFormalArea ?
-                    new Uri(ECPayConstants.Einvoice.FormalUrl) :
-                    new Uri(ECPayConstants.Einvoice.TestUrl);
-
-            }
+            client.BaseAddress = new(ECPayConstants.Einvoice.FormalUrl);
+            client.DefaultRequestHeaders.Accept.Clear();
+            client.DefaultRequestHeaders.Accept.Add(new(ECPayConstants.MediaType));
         });
     }
 }

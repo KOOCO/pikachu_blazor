@@ -1,12 +1,8 @@
 ﻿using Volo.Abp.Domain.Entities.Auditing;
 
-namespace Kooco.Pikachu.EnumValues
+namespace Kooco.Pikachu.EnumValues;
+public class EnumValue : FullAuditedAggregateRoot<int>
 {
-    public class EnumValue: FullAuditedAggregateRoot<int>
-    {
-        public EnumType EnumType { get; set; }
-        public string Text { get; set; }
-
-      
-    }
+    public EnumType EnumType { get; set; }
+    public string Text { get; set; }
 }

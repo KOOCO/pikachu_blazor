@@ -1,6 +1,8 @@
 ﻿using System.Globalization;
 using System.Net;
 using System.Text;
+using System.Text.Json.Serialization;
+using System.Text.Json;
 
 namespace Kooco.Pikachu;
 public static class ECPayDefaults
@@ -15,7 +17,7 @@ public static class ECPayDefaults
     public static async Task<string> EncryptForECPayAsync(this string text, string key, string iv)
     {
         ArgumentNullException.ThrowIfNull(text);
-       // var result = text.EncodeUrlForECPay();
+        // var result = text.EncodeUrlForECPay();
         return await text.AesEncryptAsync(key, iv).ConfigureAwait(false);
     }
     public static async Task<string> DecryptForECPayAsync(this string text, string key, string iv)
@@ -59,4 +61,9 @@ public static class ECPayDefaults
         return result.ToString();
         static bool ShouldEncode(char c) => !(c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z' || c >= '0' && c <= '9');
     }
+
+    public static JsonSerializerOptions JsonSerializerOptions { get; } = new()
+    {
+        PropertyNameCaseInsensitive = true,
+    };
 }
