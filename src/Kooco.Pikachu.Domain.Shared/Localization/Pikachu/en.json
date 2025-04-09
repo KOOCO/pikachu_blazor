@@ -15,6 +15,10 @@
     "PikachuOne": "Pikachu 1.0",
     "PikachuTwo": "Pikachu 2.0",
     "SelectTemplate": "Select Template",
+    "CardView": "Card View",
+    "GridView": "Grid View",
+    "Fit": "Fit",
+    "Fill": "Fill",
     "TCatDeliveryNormal": "T-Cat Normal",
     "TCatDeliveryFreeze": "T-Cat Freeze",
     "TCatDeliveryFrozen": "T-Cat Frozen",
@@ -78,7 +82,6 @@
     "SelectAll": "Select All",
     "ActivityEndDateWarning": "Activity end date cannot be less than Activity start date",
     "ActivityStartDateWarning": "Activity start date cannot be greater than activity end date",
-    //items
     "ItemBadge": "Item Badge",
     "NewItem": "New Item",
     "EditItem": "Edit Item",
@@ -172,7 +175,6 @@
     "Frozen": "Frozen",
     "DeliveryTemperatureCost": "Delivery Temperature Cost",
 
-    //GroupBuy
     "NewGroupBuy": "New Group Buy",
     "EditGroupBuy": "Edit Group Buy",
     "SalesURL": "Sales Url",
@@ -226,14 +228,12 @@
     "EnterprisePurchase": "Enterprise Purchase",
     "ShortCodePatternDoesnotMatch": "Short Code Pattern Does not Match! Only Letters and Numbers are allowed and Length must be between 4 and 12",
     "Pikachu:GroupBuyShortCodeCannotBeNull": "Group Buy Short Code Can not be null",
-    //SetItem
     "SetItem": "Set Item",
     "AddItem": "Add Item",
     "ChooseItem": "Choose Item",
     "ItemList": "Item List",
     "SetItemPrice": "Set Item Price",
 
-    //Freebie
     "NewFreebie": "New Freebie",
     "EditFreebie": "Edit Freebie",
     "ItemImages": "Item Images",
@@ -260,7 +260,6 @@
     "FreebiesList": "Freebies List",
 
 
-    //Orders
     "Order": "Orders",
     "OrdersList": "Orders List",
     "Menu:Orders": "Orders List",
@@ -349,7 +348,6 @@
     "PickedUp": "Picked Up",
     "CloseOrder": "Close Order",
 
-    //Refund
     "Pikachu:RefundForSameOrderAlreadyExists": "Refund For Same Order Already Exists",
     "Pikachu:RefundIsOnlyAvailableForCreditCardPayments": "Refund Is Only Available For Credit Card Payments",
     "AreYouSureToRefundThisOrder?": "Are You Sure You Want To Refund This Order?",
@@ -376,7 +374,6 @@
     "Enum:TenantStatus.3": "Suspend",
 
 
-    //Groupbuy Report
     "GroupbuyReport": "Groupbuy Report",
     "TotalQuantity": "Total Quantity",
     "TotalAmount": "Total Amount",
@@ -390,7 +387,6 @@
     "DownloadExcel": "Download Excel",
 
 
-    //Cash Flow Settings
     "CashFlowDealerSettings": "Cash Flow Dealer Settings",
     "EcPay": "Ecpay",
     "ChinaTrust": "CTBC Bank Co., Ltd",
@@ -406,7 +402,6 @@
     "TradeDescription": "Trade Description",
 
 
-    //Email Settings
     "EmailSettings": "Email Settings",
     "SenderName": "Sender Name",
     "Greetings": "Greetings",
@@ -431,7 +426,6 @@
     "WeeklyEmailsAreSentOutOnSundaySpecifiedTime": "Weekly Emails Are Sent Out On Sunday Specified Time",
 
 
-    //LogisticsManagement
     "LogisticsProviderSettings": "Logistics Provider Settings",
     "GreenWorldLogistics": "ECPay Convenient Store B2C",
     "GreenWorldLogisticsC2C": "ECPay Convenient Store C2C",
@@ -727,7 +721,6 @@
     "PrivacyPolicy": "Privacy Policy",
 
 
-    //Add On Products
     "AddOnProducts": "Add-on Products",
     "Permission:AddOnProducts": "Add-on Products",
     "Menu:Promotions": "Promotions",

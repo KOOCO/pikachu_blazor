@@ -32,6 +32,14 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
         private readonly IUiMessageService _uiMessageService = messageService;
         private readonly IItemAppService _itemAppService = itemAppService;
 
+        public bool IsCardView { get; set; } = false;
+
+        // Dictionary to store the first image URL for each item
+        public Dictionary<Guid, string> ItemImageUrls { get; set; } = new Dictionary<Guid, string>();
+
+        // Image fit style - true for cover, false for contain
+        public bool UseImageCover { get; } = true;
+
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
             if (firstRender)
@@ -52,11 +60,17 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
         {
             try
             {
-               Loading=true;
+                Loading = true;
                 Filters.SkipCount = PageIndex * Filters.MaxResultCount;
                 var result = await _itemAppService.GetItemsListAsync(Filters);
                 ItemList = result.Items.ToList();
                 Total = (int)result.TotalCount;
+
+                // If card view is active, load images for the updated item list
+                if (IsCardView)
+                {
+                    await LoadItemImagesAsync();
+                }
             }
             catch (Exception ex)
             {
@@ -65,7 +79,7 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
             }
             finally
             {
-                Loading=false;
+                Loading = false;
             }
         }
 
@@ -101,7 +115,7 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
         {
             try
             {
-               Loading=true;
+                Loading = true;
                 var item = ItemList.Where(x => x.Id == id).First();
                 item.IsItemAvaliable = !item.IsItemAvaliable;
                 await _itemAppService.ChangeItemAvailability(id);
@@ -120,7 +134,7 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
             }
             finally
             {
-                Loading=false;
+                Loading = false;
             }
         }
         private void HandleSelectAllChange(ChangeEventArgs e)
@@ -142,7 +156,7 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
                     var confirmed = await _uiMessageService.Confirm(L["AreYouSureToDeleteSelectedItem"]);
                     if (confirmed)
                     {
-                       Loading=true;
+                        Loading = true;
                         await _itemAppService.DeleteManyItemsAsync(itemIds);
                         await UpdateItemList();
                         IsAllSelected = false;
@@ -156,7 +170,7 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
             }
             finally
             {
-                Loading=false;
+                Loading = false;
             }
         }
         public void CreateNewItem()
@@ -173,6 +187,34 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
         {
             Filters.Sorting = e.FieldName + " " + (e.SortDirection != SortDirection.Default ? e.SortDirection : "");
             await UpdateItemList();
+        }
+
+        private async void ToggleViewMode(bool isCardView)
+        {
+            IsCardView = isCardView;
+
+            // If switching to card view, load images for all items
+            if (isCardView)
+            {
+                await LoadItemImagesAsync();
+            }
+
+            StateHasChanged();
+        }
+
+        private async Task LoadItemImagesAsync()
+        {
+            foreach (var item in ItemList)
+            {
+                if (!ItemImageUrls.ContainsKey(item.Id))
+                {
+                    var imageUrl = await _itemAppService.GetFirstImageUrlAsync(item.Id);
+                    if (!string.IsNullOrEmpty(imageUrl))
+                    {
+                        ItemImageUrls[item.Id] = imageUrl;
+                    }
+                }
+            }
         }
     }
 }
