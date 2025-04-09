@@ -57,6 +57,7 @@ using Kooco.Pikachu.Members;
 using System.Reflection;
 using Kooco.Pikachu.TenantManagement.Entities;
 using Kooco.Pikachu.Orders.Entities;
+using Kooco.Pikachu.GroupBuyItemsPriceses;
 
 namespace Kooco.Pikachu.EntityFrameworkCore;
 
@@ -169,6 +170,7 @@ public class PikachuDbContext(DbContextOptions<PikachuDbContext> options) :
 
     public DbSet<VipTierSetting> VipTierSettings { get; set; }
     public DbSet<MemberTag> MemberTags { get; set; }
+    public DbSet<GroupBuyItemsPrice> GroupBuyItemsPriceses { get; set; }
 
     // TenantWallets
     public DbSet<TenantWallet> TenantWallets { get; set; }
@@ -708,6 +710,14 @@ public class PikachuDbContext(DbContextOptions<PikachuDbContext> options) :
         {
             b.ToTable(PikachuConsts.DbTablePrefix + "MemberTags", PikachuConsts.DbSchema);
             b.ConfigureByConvention();
+        });
+        builder.Entity<GroupBuyItemsPrice>(b =>
+        {
+            b.ToTable(PikachuConsts.DbTablePrefix + "GroupBuyItemsPriceses", PikachuConsts.DbSchema, table => table.HasComment(""));
+            b.ConfigureByConvention();
+
+
+
         });
     }
 }

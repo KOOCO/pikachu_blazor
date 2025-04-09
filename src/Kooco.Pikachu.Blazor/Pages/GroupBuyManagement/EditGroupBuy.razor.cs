@@ -2516,6 +2516,7 @@ public partial class EditGroupBuy
                                             if (!itemDetail.ItemDetailsWithPrices.TryGetValue(detailId, out var labelAndPrice))
                                             {
                                                 await _uiMessageService.Error($"Price missing for one or more item variants in '{itemDetail.Name}'.");
+                                                await Loading.Hide();
                                                 return;
                                             }
 
@@ -2536,6 +2537,7 @@ public partial class EditGroupBuy
                                         if (itemDetail.Price is null)
                                         {
                                             await _uiMessageService.Error($"Price missing for one or more item variants in '{itemDetail.Name}'.");
+                                            await Loading.Hide();
                                             return;
                                         }
                                         itemGroup.ItemDetails.Add(new GroupBuyItemGroupDetailCreateUpdateDto
