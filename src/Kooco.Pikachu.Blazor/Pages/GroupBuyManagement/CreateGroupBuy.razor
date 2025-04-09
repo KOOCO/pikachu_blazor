@@ -998,7 +998,8 @@
             <div class="col-3 d-flex gap-2">
                 @if (CollapseItem.Count < 20)
                 {
-                    <Select TValue="GroupBuyTemplateType"
+                    <Select TValue="GroupBuyTemplateType?"
+                            SelectedValue="CreateGroupBuyDto.TemplateType"
                             @onchange="@((e) => SelectTemplate(e))"
                             Style="min-width: 300px;">
                         <option value="0" selected>@L["SelectTemplate"]</option>
