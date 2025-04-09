@@ -1,4 +1,4 @@
-﻿namespace Kooco.Pikachu.Einvoices;
+﻿namespace Kooco.Einvoices;
 public readonly struct ECPayCreateInvoiceResponse
 {
     public int  PlatformID { get; init; }

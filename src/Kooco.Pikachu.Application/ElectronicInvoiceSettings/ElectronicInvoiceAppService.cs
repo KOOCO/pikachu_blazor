@@ -1,4 +1,4 @@
-﻿using Kooco.Pikachu.Einvoices;
+﻿using Kooco.Einvoices;
 using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Groupbuys;
 using Kooco.Pikachu.GroupBuys;

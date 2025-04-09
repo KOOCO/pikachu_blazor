@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Kooco.Pikachu.Einvoices;
+namespace Kooco.Einvoices;
 public sealed class ECPayCreateInvoiceRequest
 {
     [JsonPropertyName("PlatformID")]

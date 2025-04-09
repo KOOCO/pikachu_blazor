@@ -1,7 +1,7 @@
 ﻿using System.Security.Cryptography;
 using System.Text;
 
-namespace Kooco.Pikachu;
+namespace Security.Cryptography;
 public static class EncryptionExtensions
 {
     public static string HmacSHA256(this string message, string key)

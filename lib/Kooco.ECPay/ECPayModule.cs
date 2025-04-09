@@ -2,10 +2,10 @@
 using Volo.Abp.Http.Client;
 using Volo.Abp.Modularity;
 
-namespace Kooco.Pikachu;
+namespace Kooco;
 
 [DependsOn(typeof(AbpHttpClientModule))]
-public sealed class PikachuECPayModule : AbpModule
+public sealed class ECPayModule : AbpModule
 {
     public override void ConfigureServices(ServiceConfigurationContext context)
     {
@@ -13,7 +13,7 @@ public sealed class PikachuECPayModule : AbpModule
         {
             client.BaseAddress = new(ECPayConstants.Einvoice.FormalUrl);
             client.DefaultRequestHeaders.Accept.Clear();
-            client.DefaultRequestHeaders.Accept.Add(new(ECPayConstants.MediaType));
+            client.DefaultRequestHeaders.Accept.Add(new(HttpContentType.ApplicationJson));
         });
     }
 }

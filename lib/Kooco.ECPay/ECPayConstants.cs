@@ -1,8 +1,7 @@
-﻿namespace Kooco.Pikachu;
+﻿namespace Kooco;
 public readonly ref struct ECPayConstants
 {
     public const string Name = "ECPay";
-    public const string MediaType = "application/json";
 
     public readonly ref struct Einvoice
     {

@@ -20,7 +20,7 @@ namespace Kooco.Pikachu;
     typeof(AbpTenantManagementApplicationModule),
     typeof(AbpFeatureManagementApplicationModule),
     typeof(AbpSettingManagementApplicationModule),
-    typeof(PikachuECPayModule)
+    typeof(ECPayModule)
 )]
 public class PikachuApplicationModule : AbpModule
 {

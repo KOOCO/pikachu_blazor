@@ -1,10 +1,11 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Security.Cryptography;
 using System.Text;
-using System.Text.Json;
 using System.Web;
+using Text.Json;
 using Volo.Abp.DependencyInjection;
 
-namespace Kooco.Pikachu.Einvoices;
+namespace Kooco.Einvoices;
 public interface IECPayInvoiceService
 {
     Task<(int transCode, ECPayCreateInvoiceResult result)> CreateInvoiceAsync(string hashKey, string hashIV, ECPayCreateInvoiceInput input);
@@ -15,10 +16,10 @@ file sealed class ECPayInvoiceService : IECPayInvoiceService
 {
     public async Task<(int transCode, ECPayCreateInvoiceResult result)> CreateInvoiceAsync(string hashKey, string hashIV, ECPayCreateInvoiceInput input)
     {
-        var json = JsonSerializer.Serialize(input, ECPayDefaults.JsonSerializerOptions);
+        var json = input.ToJson(ECPayDefaults.JsonSerializerOptions);
         var encryptData = await Uri.EscapeDataString(json).AesEncryptAsync(hashKey, hashIV);
         var client = HttpClientFactory.CreateClient(nameof(ECPayConstants.Einvoice));
-        var payload = JsonSerializer.Serialize(new ECPayCreateInvoiceRequest()
+        StringContent request = new(new ECPayCreateInvoiceRequest
         {
             MerchantId = input.MerchantId,
             RequestHeader = new()
@@ -26,15 +27,14 @@ file sealed class ECPayInvoiceService : IECPayInvoiceService
                 Timestamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
             },
             EncryptData = encryptData,
-        }, ECPayDefaults.JsonSerializerOptions);
-        StringContent request = new(payload, Encoding.UTF8, ECPayConstants.MediaType);
+        }.ToJson(ECPayDefaults.JsonSerializerOptions), Encoding.UTF8, HttpContentType.ApplicationJson);
         var message = await client.PostAsync(ECPayConstants.Einvoice.B2CInvoicePath, request);
         var content = await message.Content.ReadAsStringAsync();
-        var response = JsonSerializer.Deserialize<ECPayCreateInvoiceResponse>(content);
+        var response = content.ToObject<ECPayCreateInvoiceResponse>();
         var result = await response.Data.AesDecryptAsync(hashKey, hashIV);
 
         var data = HttpUtility.UrlDecode(result);
-        return (response.TransCode, JsonSerializer.Deserialize<ECPayCreateInvoiceResult>(data));
+        return (response.TransCode, data.ToObject<ECPayCreateInvoiceResult>());
     }
 
     public required IHttpClientFactory HttpClientFactory { get; init; }

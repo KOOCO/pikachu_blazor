@@ -1,5 +1,4 @@
-﻿namespace Kooco.Pikachu.Einvoices;
-
+﻿namespace Kooco.Einvoices;
 public readonly struct ECPayCreateInvoiceResult
 {
     public int RtnCode { get; init; }
