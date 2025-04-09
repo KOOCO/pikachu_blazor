@@ -30,7 +30,8 @@ public static class GroupBuyExtensions
             GroupBuyModuleType.GroupPurchaseOverview,
             GroupBuyModuleType.CountdownTimer,
             GroupBuyModuleType.OrderInstruction,
-            GroupBuyModuleType.ProductRankingCarouselModule
+            GroupBuyModuleType.ProductRankingCarouselModule,
+            GroupBuyModuleType.CustomTextModule
         ];
     }
 }

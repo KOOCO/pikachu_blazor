@@ -1398,6 +1398,9 @@
     "CustomerService": "Customer Service",
     "TypeMessage": "Type a message",
     "Send": "Send",
-    "NoMessages": "No messages yet"
+    "NoMessages": "No messages",
+    "EnterText": "Please enter text",
+    "Text": "Content",
+    "SelectModule": "Select Module"
   }
 }

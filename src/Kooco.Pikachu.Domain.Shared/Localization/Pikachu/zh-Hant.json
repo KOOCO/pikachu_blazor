@@ -1116,6 +1116,9 @@
     "CustomerService": "客服訊息",
     "TypeMessage": "輸入訊息",
     "Send": "發送",
-    "NoMessages": "尚無訊息"
+    "NoMessages": "尚無訊息",
+    "EnterText": "請輸入文字內容",
+    "Text": "內容",
+    "SelectModule": "選擇模組"
   }
 }
