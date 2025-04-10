@@ -31,11 +31,6 @@ public sealed class OrderInvoice : FullAuditedEntity<Guid>
     public required InvoiceIssuanceMethod IssuanceMethod { get; set; }
 
     /// <summary>
-    /// 發票狀態
-    /// </summary>
-    public required InvoiceStatus InvoiceStatus { get; set; }
-
-    /// <summary>
     /// 小計金額
     /// </summary>
     public required decimal SubtotalAmount { get; set; }
@@ -59,6 +54,21 @@ public sealed class OrderInvoice : FullAuditedEntity<Guid>
     /// 總金額
     /// </summary>
     public required decimal TotalAmount { get; set; }
+
+    /// <summary>
+    /// 序列號
+    /// </summary>
+    public required short SerialNo { get; set; }
+
+    /// <summary>
+    /// 關聯編號
+    /// </summary>
+    public required string RelateNo { get; set; }
+
+    /// <summary>
+    /// 是否作廢
+    /// </summary>
+    public required bool IsVoided { get; set; }
 
     public Guid OrderId { get; set; }
     public Order? Order { get; set; }
