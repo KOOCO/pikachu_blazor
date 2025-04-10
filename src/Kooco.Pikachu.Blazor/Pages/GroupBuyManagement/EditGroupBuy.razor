@@ -1712,7 +1712,7 @@
                                                                                     <div class="mt-2">
                                                                                       <AntDesign.Select Mode="AntDesign.SelectMode.Multiple"
                                                                                      Placeholder="Please select"
-		                                                                              @bind-Values="@SelectedItemDetails"
+		                                                                              @bind-Values="@selectedItem.SelectedItemDetails"
                                                                                     OnSelectedItemsChanged="@(values => OnSelectedItemDetailsChanged(values, selectedItem))"
 
 		                                                                             TItemValue="Guid"

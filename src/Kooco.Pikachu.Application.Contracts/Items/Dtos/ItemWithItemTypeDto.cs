@@ -14,6 +14,7 @@ public class ItemWithItemTypeDto
     public bool IsFirstLoad { get; set; }
     public float? Price { get; set; }
     public List<Guid> SelectedItemDetailIds { get; set; } = new();
+    public IEnumerable<Guid> SelectedItemDetails { get; set; } = new List<Guid>();
 
     // Store Label & Price per selected ItemDetailId
     public Dictionary<Guid, (string Label, float Price)> ItemDetailsWithPrices { get; set; } = new();

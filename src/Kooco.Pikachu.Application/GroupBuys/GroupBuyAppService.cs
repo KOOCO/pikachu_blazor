@@ -165,7 +165,7 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
 
                 if (group.ItemDetails != null && group.ItemDetails.Any())
                 {
-                    foreach (var item in group.ItemDetails.DistinctBy(x=>x.ItemDetailId))
+                    foreach (var item in group.ItemDetails.DistinctBy(x=>x.ItemId))
                     {
                         _groupBuyManager.AddItemGroupDetail(
                             itemGroup,
@@ -596,7 +596,7 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
     private void ProcessItemDetails(GroupBuyItemGroup itemGroup, ICollection<GroupBuyItemGroupDetailCreateUpdateDto> itemDetails)
     {
         itemGroup.ItemGroupDetails?.Clear();
-        foreach (var item in itemDetails.DistinctBy(x=>x.ItemDetailId))
+        foreach (var item in itemDetails.DistinctBy(x=>x.ItemId))
         {
             _groupBuyManager.AddItemGroupDetail(
                 itemGroup,

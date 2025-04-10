@@ -100,7 +100,7 @@ public partial class EditGroupBuy
     private LoadingIndicator Loading { get; set; } = new();
     private bool LoadingItems { get; set; } = true;
     private int CurrentIndex { get; set; }
-    public IEnumerable<Guid> SelectedItemDetails { get; set; } = new List<Guid>();
+    public List<IEnumerable<Guid>> SelectedItemDetails { get; set; } = new List<IEnumerable<Guid>>();
     public bool IsUnableToSpecifyDuringPeakPeriodsForSelfPickups = false;
 
     public bool IsUnableToSpecifyDuringPeakPeriodsForHomeDelivery = false;
@@ -926,6 +926,7 @@ public partial class EditGroupBuy
                             {
                                 if (item.ItemType == ItemType.Item)
                                 {
+                                     IEnumerable<Guid> SelectedItemDetail = new List<Guid>();
                                     foreach (var itemdetail in item.Item.ItemDetails)
                                     {
                                         var itemPrice = await _groupBuyItemsPriceAppService.GetByItemIdAndGroupBuyIdAsync(itemdetail.Id, GroupBuy.Id);
@@ -943,12 +944,13 @@ public partial class EditGroupBuy
                                                 if (!string.IsNullOrWhiteSpace(itemdetail.Attribute3Value))
                                                     label += " / " + itemdetail.Attribute3Value;
                                                 itemWithItemType.ItemDetailsWithPrices.Add(itemdetail.Id, (label, itemPrice.GroupBuyPrice));
-                                                SelectedItemDetails = SelectedItemDetails.Append(itemdetail.Id);
+                                                SelectedItemDetail = SelectedItemDetail.Append(itemdetail.Id);
                                             }
                                         }
 
                                     }
-                                    itemWithItemType.SelectedItemDetailIds = SelectedItemDetails.ToList();
+                                    itemWithItemType.SelectedItemDetailIds = SelectedItemDetail.ToList();
+                                    itemWithItemType.SelectedItemDetails = SelectedItemDetail;
                                 }
                                 else
                                 {
