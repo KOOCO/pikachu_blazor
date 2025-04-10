@@ -414,7 +414,7 @@ public partial class EditItem
 
     void AddAttribute()
     {
-        if (Attributes == null || Attributes.Count < 3)
+        if (Attributes.Count == 0 || (Attributes[0].ItemTags.Count > 0 && Attributes.Count < 3))
         {
             var attribute = Attributes.OrderByDescending(x => x.Id).FirstOrDefault();
             Attributes.Add(new Attributes
@@ -463,7 +463,7 @@ public partial class EditItem
         // Set sortNo based on the updated list
         int sortNo = ItemDetailsList.Count != 0 ? ItemDetailsList.Max(x => x.SortNo) + 1 : 1;
 
-        foreach (string itemName in validItemNames.Where(x=>x!=""))
+        foreach (string itemName in validItemNames)
         {
             // Add new items that don't already exist
             if (!ItemDetailsList.Any(x => x.ItemName == itemName))

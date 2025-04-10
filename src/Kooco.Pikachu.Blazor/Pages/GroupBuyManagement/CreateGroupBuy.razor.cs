@@ -2752,7 +2752,7 @@ public partial class CreateGroupBuy
     {
         if (selectedItem.ItemDetailsWithPrices.ContainsKey(detailId))
         {
-            selectedItem.ItemDetailsWithPrices[detailId] = (selectedItem.ItemDetailsWithPrices[detailId].Label, (float)price);
+            selectedItem.ItemDetailsWithPrices[detailId] = (selectedItem.ItemDetailsWithPrices[detailId].Label??"", (float)price);
         }
     }
     private void OnSelectedItemDetailsChanged(IEnumerable<Guid> selectedValues, ItemWithItemTypeDto selectedItem)

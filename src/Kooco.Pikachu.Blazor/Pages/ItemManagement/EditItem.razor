@@ -243,7 +243,7 @@
                 }
             </div>
         </div>
-        @if (Attributes == null || Attributes.Count < 3)
+        @if (Attributes.Count==0 || (Attributes[0].ItemTags.Count>0 && Attributes.Count < 3))
         {
             <div class="row">
                 <div class="col-2"></div>

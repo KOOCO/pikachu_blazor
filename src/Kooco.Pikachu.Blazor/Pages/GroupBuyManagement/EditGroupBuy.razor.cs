@@ -2619,6 +2619,10 @@ public partial class EditGroupBuy
 
                 if (EditGroupBuyDto.IsEnterprise) await _OrderAppService.UpdateOrdersIfIsEnterpricePurchaseAsync(Id);
                 var groupItem = EditGroupBuyDto.ItemGroups.Where(x => x.GroupBuyModuleType == GroupBuyModuleType.ProductGroupModule).ToList();
+                if (groupItem.Count > 0)
+                {
+                    await _groupBuyItemsPriceAppService.DeleteAllGroupByItemAsync(result.Id);
+                }
                 foreach (var group in groupItem)
                 {
                     await _groupBuyAppService.UpdateItemProductPrice(result.Id, group.ItemDetails);

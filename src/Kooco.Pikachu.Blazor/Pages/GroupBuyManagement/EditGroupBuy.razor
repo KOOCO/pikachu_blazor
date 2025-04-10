@@ -1705,6 +1705,7 @@
                                                                             @if (selectedItem.Item != null)
                                                                             {
                                                                                 var itemDetails = selectedItem.Item?.ItemDetails;
+                                                                                    var firstItem = itemDetails?.FirstOrDefault();
                                                                                 @if (itemDetails != null && itemDetails.Where(x => x.Attribute1Value != null).Count() > 0)
                                                                                 {
                                                                                     <div class="mt-2">
@@ -1755,7 +1756,31 @@
                                                                                     }
                                                                                 }
                                                                                 }
-                                                                              
+                                                                              @if (firstItem != null && firstItem.Attribute1Value.IsNullOrWhiteSpace())
+{
+    if (!selectedItem.SelectedItemDetailIds.Contains(firstItem.Id))
+    {
+        selectedItem.SelectedItemDetailIds.Add(firstItem.Id);
+        selectedItem.ItemDetailsWithPrices[firstItem.Id] = ("", 0);
+    }
+
+    if (selectedItem.SelectedItemDetailIds != null)
+    {
+        foreach (var detailId in selectedItem.SelectedItemDetailIds)
+        {
+            if (selectedItem.ItemDetailsWithPrices.TryGetValue(detailId, out var detailInfo))
+            {
+                <div class="mt-2">
+                    <label>Price</label>
+                    <input class="form-control"
+                           type="number"
+                           value="@detailInfo.Price"
+                           @onchange="@(e => UpdatePrice(detailId, selectedItem, Convert.ToDouble(e.Value)))" />
+                </div>
+            }
+        }
+    }
+}
                                                                             }
                                                                         </div>
                                                                     }

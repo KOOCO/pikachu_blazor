@@ -341,16 +341,16 @@
 
                             <label for="@item" class="form-label me-2">
                                 <input type="checkbox"
-                                       class="form-check-input"
-                                       id="@item"
-                                       disabled="@(((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore")) && item != "DeliveredByStore")||CheckForShippingMethodData(item)||CreateGroupBuyDto.IsEnterprise||!IsShippingMethodEnabled(item))"
-                                       checked="@((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains(item)))"
-                                       @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
+                                class="form-check-input"
+                                id="@item"
+                                disabled="@(((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore")) && item != "DeliveredByStore")||CheckForShippingMethodData(item)||CreateGroupBuyDto.IsEnterprise||!IsShippingMethodEnabled(item))"
+                                checked="@((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains(item)))"
+                                @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
                                 @L[EnumHelper.GetDescription(Enum.Parse<DeliveryMethod>(item))]
                             </label>
 
                             @if (item == Enum.GetName(DeliveryMethod.FamilyMartC2C)
-                           || item == Enum.GetName(DeliveryMethod.BlackCat1))
+                         || item == Enum.GetName(DeliveryMethod.BlackCat1))
                             {
                                 <br />
                                 <Div Class="mt-1"></Div>
@@ -374,16 +374,16 @@
 
                             <label for="@item" class="form-label me-2">
                                 <input type="checkbox"
-                                       class="form-check-input"
-                                       id="@item"
-                                       disabled="@(((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore"))&&item!="DeliveredByStore")||CheckForShippingMethodData(item)||CreateGroupBuyDto.IsEnterprise||!IsShippingMethodEnabled(item))"
-                                       checked="@((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains(item)))"
-                                       @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
+                                class="form-check-input"
+                                id="@item"
+                                disabled="@(((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore"))&&item!="DeliveredByStore")||CheckForShippingMethodData(item)||CreateGroupBuyDto.IsEnterprise||!IsShippingMethodEnabled(item))"
+                                checked="@((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains(item)))"
+                                @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
                                 @L[EnumHelper.GetDescription(Enum.Parse<DeliveryMethod>(item))]
                             </label>
 
                             @if (item == Enum.GetName(DeliveryMethod.FamilyMartC2C)
-                           || item == Enum.GetName(DeliveryMethod.BlackCat1))
+                         || item == Enum.GetName(DeliveryMethod.BlackCat1))
                             {
                                 <br />
                                 <Div Class="mt-1"></Div>
@@ -404,11 +404,11 @@
 
                             <label for="@item" class="form-label me-2">
                                 <input type="checkbox"
-                                       class="form-check-input"
-                                       id="@item"
-                                       disabled="@(((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore")) && item != "DeliveredByStore")||CheckForShippingMethodData(item)||CreateGroupBuyDto.IsEnterprise||!IsShippingMethodEnabled(item))"
-                                       checked="@((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains(item)))"
-                                       @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
+                                class="form-check-input"
+                                id="@item"
+                                disabled="@(((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore")) && item != "DeliveredByStore")||CheckForShippingMethodData(item)||CreateGroupBuyDto.IsEnterprise||!IsShippingMethodEnabled(item))"
+                                checked="@((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains(item)))"
+                                @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
                                 @L[EnumHelper.GetDescription(Enum.Parse<DeliveryMethod>(item))]
                             </label>
 
@@ -426,11 +426,11 @@
 
                             <label for="@item" class="form-label me-2">
                                 <input type="checkbox"
-                                       class="form-check-input"
-                                       id="@item"
-                                       disabled="@(((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore"))&&item!="DeliveredByStore")||CheckForShippingMethodData(item)||CreateGroupBuyDto.IsEnterprise||!IsShippingMethodEnabled(item))"
-                                       checked="@((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains(item)))"
-                                       @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
+                                class="form-check-input"
+                                id="@item"
+                                disabled="@(((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore"))&&item!="DeliveredByStore")||CheckForShippingMethodData(item)||CreateGroupBuyDto.IsEnterprise||!IsShippingMethodEnabled(item))"
+                                checked="@((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains(item)))"
+                                @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
                                 @L[EnumHelper.GetDescription(Enum.Parse<DeliveryMethod>(item))]
                             </label>
 
@@ -450,11 +450,11 @@
 
                             <label for="@item" class="form-label me-2">
                                 <input type="checkbox"
-                                       class="form-check-input"
-                                       id="@item"
-                                       disabled="@(((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore")) && item != "DeliveredByStore")||CheckForShippingMethodData(item)||CreateGroupBuyDto.IsEnterprise||!IsShippingMethodEnabled(item))"
-                                       checked="@((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains(item)))"
-                                       @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
+                                class="form-check-input"
+                                id="@item"
+                                disabled="@(((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore")) && item != "DeliveredByStore")||CheckForShippingMethodData(item)||CreateGroupBuyDto.IsEnterprise||!IsShippingMethodEnabled(item))"
+                                checked="@((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains(item)))"
+                                @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
                                 @L[EnumHelper.GetDescription(Enum.Parse<DeliveryMethod>(item))]
                             </label>
 
@@ -473,11 +473,11 @@
 
                             <label for="@item" class="form-label me-2">
                                 <input type="checkbox"
-                                       class="form-check-input"
-                                       id="@item"
-                                       disabled="@(((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore"))&&item!="DeliveredByStore")||CheckForShippingMethodData(item)||CreateGroupBuyDto.IsEnterprise||!IsShippingMethodEnabled(item))"
-                                       checked="@((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains(item)))"
-                                       @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
+                                class="form-check-input"
+                                id="@item"
+                                disabled="@(((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore"))&&item!="DeliveredByStore")||CheckForShippingMethodData(item)||CreateGroupBuyDto.IsEnterprise||!IsShippingMethodEnabled(item))"
+                                checked="@((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains(item)))"
+                                @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
                                 @L[EnumHelper.GetDescription(Enum.Parse<DeliveryMethod>(item))]
                             </label>
 
@@ -494,11 +494,11 @@
 
                         <label for="@item" class="form-label me-2">
                             <input type="checkbox"
-                                   class="form-check-input"
-                                   id="@item"
-                                   disabled="@((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore")))||CreateGroupBuyDto.IsEnterprise"
-                                   checked="@((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains(item)))"
-                                   @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
+                            class="form-check-input"
+                            id="@item"
+                            disabled="@((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore")))||CreateGroupBuyDto.IsEnterprise"
+                            checked="@((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains(item)))"
+                            @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
                             @L[EnumHelper.GetDescription(Enum.Parse<DeliveryMethod>(item))]
                         </label>
 
@@ -509,11 +509,11 @@
                     {
                         <label for="@item" class="form-label me-2">
                             <input type="checkbox"
-                                   class="form-check-input"
-                                   id="@item"
-                                   disabled="@((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore")) && item != "DeliveredByStore"||(CreateGroupBuyDto.IsEnterprise && item == Enum.GetName(DeliveryMethod.DeliveredByStore)) )"
-                                   checked="@(((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains(item))||( item == Enum.GetName(DeliveryMethod.SelfPickup) &&CreateGroupBuyDto.IsEnterprise)))"
-                                   @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
+                            class="form-check-input"
+                            id="@item"
+                            disabled="@((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore")) && item != "DeliveredByStore"||(CreateGroupBuyDto.IsEnterprise && item == Enum.GetName(DeliveryMethod.DeliveredByStore)) )"
+                            checked="@(((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains(item))||( item == Enum.GetName(DeliveryMethod.SelfPickup) &&CreateGroupBuyDto.IsEnterprise)))"
+                            @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
                             @L[EnumHelper.GetDescription(Enum.Parse<DeliveryMethod>(item))]
                         </label>
                     }
@@ -553,15 +553,15 @@
                     @foreach (string island in DeliveryTimeConts.BlackCat)
                     {
                         @if ((CreateGroupBuyDto.ExcludeShippingMethod is not null) &&
-                       ((CreateGroupBuyDto.ExcludeShippingMethod.Contains("BlackCat1")) ||
-                       (CreateGroupBuyDto.ExcludeShippingMethod.Contains("BlackCatFreeze")) ||
-                       (CreateGroupBuyDto.ExcludeShippingMethod.Contains("BlackCatFrozen")) ||
-                       (CreateGroupBuyDto.ExcludeShippingMethod.Contains("TCatDeliveryNormal")) ||
-                       (CreateGroupBuyDto.ExcludeShippingMethod.Contains("TCatDeliveryFreeze")) ||
-                       (CreateGroupBuyDto.ExcludeShippingMethod.Contains("TCatDeliveryFrozen")) ||
-                       (CreateGroupBuyDto.ExcludeShippingMethod.Contains("TCatDeliverySevenElevenNormal")) ||
-                       (CreateGroupBuyDto.ExcludeShippingMethod.Contains("TCatDeliverySevenElevenFreeze")) ||
-                       (CreateGroupBuyDto.ExcludeShippingMethod.Contains("TCatDeliverySevenElevenFrozen"))))
+                     ((CreateGroupBuyDto.ExcludeShippingMethod.Contains("BlackCat1")) ||
+                     (CreateGroupBuyDto.ExcludeShippingMethod.Contains("BlackCatFreeze")) ||
+                     (CreateGroupBuyDto.ExcludeShippingMethod.Contains("BlackCatFrozen")) ||
+                     (CreateGroupBuyDto.ExcludeShippingMethod.Contains("TCatDeliveryNormal")) ||
+                     (CreateGroupBuyDto.ExcludeShippingMethod.Contains("TCatDeliveryFreeze")) ||
+                     (CreateGroupBuyDto.ExcludeShippingMethod.Contains("TCatDeliveryFrozen")) ||
+                     (CreateGroupBuyDto.ExcludeShippingMethod.Contains("TCatDeliverySevenElevenNormal")) ||
+                     (CreateGroupBuyDto.ExcludeShippingMethod.Contains("TCatDeliverySevenElevenFreeze")) ||
+                     (CreateGroupBuyDto.ExcludeShippingMethod.Contains("TCatDeliverySevenElevenFrozen"))))
                         {
 
                             if (CreateGroupBuyDto.BlackCatDeliveryTime.IsNullOrWhiteSpace() || CreateGroupBuyDto.BlackCatDeliveryTime == "[]") BlackCatDeliveryTimeCheckedChange("Inapplicable", new ChangeEventArgs { Value = true });
@@ -569,10 +569,10 @@
 
                             <label for="@island" class="form-label me-2">
                                 <input type="checkbox"
-                                       class="form-check-input"
-                                       id="@island"
-                                       checked="@(CreateGroupBuyDto.BlackCatDeliveryTime != null && CreateGroupBuyDto.BlackCatDeliveryTime.Contains(island))"
-                                       @onchange="(value) => BlackCatDeliveryTimeCheckedChange(island, value)" />
+                                class="form-check-input"
+                                id="@island"
+                                checked="@(CreateGroupBuyDto.BlackCatDeliveryTime != null && CreateGroupBuyDto.BlackCatDeliveryTime.Contains(island))"
+                                @onchange="(value) => BlackCatDeliveryTimeCheckedChange(island, value)" />
                                 @L[island]
                             </label>
                         }
@@ -582,11 +582,11 @@
 
                             <label for="@island" class="form-label me-2">
                                 <input disabled
-                                       type="checkbox"
-                                       class="form-check-input"
-                                       id="@island"
-                                       checked="@(CreateGroupBuyDto.BlackCatDeliveryTime != null && CreateGroupBuyDto.BlackCatDeliveryTime.Contains(island))"
-                                       @onchange="(value) => BlackCatDeliveryTimeCheckedChange(island, value)" />
+                                type="checkbox"
+                                class="form-check-input"
+                                id="@island"
+                                checked="@(CreateGroupBuyDto.BlackCatDeliveryTime != null && CreateGroupBuyDto.BlackCatDeliveryTime.Contains(island))"
+                                @onchange="(value) => BlackCatDeliveryTimeCheckedChange(island, value)" />
                                 @L[island]
                             </label>
                         }
@@ -607,19 +607,19 @@
                     @foreach (string island in DeliveryTimeConts.HomeDelivery)
                     {
                         @if ((CreateGroupBuyDto.ExcludeShippingMethod is not null) &&
-                       (CreateGroupBuyDto.ExcludeShippingMethod.Contains("HomeDelivery")))
+                     (CreateGroupBuyDto.ExcludeShippingMethod.Contains("HomeDelivery")))
                         {
                             if (CreateGroupBuyDto.HomeDeliveryDeliveryTime.IsNullOrWhiteSpace() || CreateGroupBuyDto.HomeDeliveryDeliveryTime == "[]") CreateGroupBuyDto.HomeDeliveryDeliveryTime = "[\"Inapplicable\"]";
                             <label for="@(island)_HomeDelivery" class="form-label me-2">
                                 <input type="checkbox"
-                                       class="form-check-input"
-                                       id="@island"
-                                       disabled="@(island is not PikachuResource.UnableToSpecifyDuringPeakPeriods ?
+                                class="form-check-input"
+                                id="@island"
+                                disabled="@(island is not PikachuResource.UnableToSpecifyDuringPeakPeriods ?
                                                     IsUnableToSpecifyDuringPeakPeriodsForHomeDelivery :
                                                     false)"
-                                       checked="@(CreateGroupBuyDto.HomeDeliveryDeliveryTime is not null &&
+                                checked="@(CreateGroupBuyDto.HomeDeliveryDeliveryTime is not null &&
                                                   CreateGroupBuyDto.HomeDeliveryDeliveryTime.Contains(island))"
-                                       @onchange="(value) => HomeDeliveryTimeCheckedChange(island, value)" />
+                                @onchange="(value) => HomeDeliveryTimeCheckedChange(island, value)" />
                                 @L[island]
                             </label>
                         }
@@ -628,12 +628,12 @@
                             CreateGroupBuyDto.HomeDeliveryDeliveryTime = null;
                             <label for="@(island)_HomeDelivery" class="form-label me-2">
                                 <input disabled
-                                       type="checkbox"
-                                       class="form-check-input"
-                                       id="@island"
-                                       checked="@(CreateGroupBuyDto.HomeDeliveryDeliveryTime is not null &&
+                                type="checkbox"
+                                class="form-check-input"
+                                id="@island"
+                                checked="@(CreateGroupBuyDto.HomeDeliveryDeliveryTime is not null &&
                                                   CreateGroupBuyDto.HomeDeliveryDeliveryTime.Contains(island))"
-                                       @onchange="(value) => HomeDeliveryTimeCheckedChange(island, value)" />
+                                @onchange="(value) => HomeDeliveryTimeCheckedChange(island, value)" />
                                 @L[island]
                             </label>
                         }
@@ -655,16 +655,16 @@
                     @foreach (string island in DeliveryTimeConts.SelfPickUp)
                     {
                         @if ((CreateGroupBuyDto.ExcludeShippingMethod is not null) &&
-                       (CreateGroupBuyDto.ExcludeShippingMethod.Contains("SelfPickup")))
+                     (CreateGroupBuyDto.ExcludeShippingMethod.Contains("SelfPickup")))
                         {
                             if (CreateGroupBuyDto.SelfPickupDeliveryTime.IsNullOrWhiteSpace() || CreateGroupBuyDto.SelfPickupDeliveryTime == "[]") CreateGroupBuyDto.SelfPickupDeliveryTime = "[\"UnableToSpecifyDuringPeakPeriods\"]";
                             <label for="@(island)_SelfPickUp" class="form-label me-2">
                                 <input type="checkbox"
-                                       class="form-check-input"
-                                       id="@island"
-                                       checked="@(CreateGroupBuyDto.SelfPickupDeliveryTime is not null &&
+                                class="form-check-input"
+                                id="@island"
+                                checked="@(CreateGroupBuyDto.SelfPickupDeliveryTime is not null &&
                                                       CreateGroupBuyDto.SelfPickupDeliveryTime.Contains(island))"
-                                       @onchange="(value) => SelfPickupDeliveryTimeCheckedChange(island, value)" />
+                                @onchange="(value) => SelfPickupDeliveryTimeCheckedChange(island, value)" />
                                 @L[island]
                             </label>
                         }
@@ -673,12 +673,12 @@
                             CreateGroupBuyDto.SelfPickupDeliveryTime = null;
                             <label for="@(island)_SelfPickUp" class="form-label me-2">
                                 <input disabled
-                                       type="checkbox"
-                                       class="form-check-input"
-                                       id="@island"
-                                       checked="@(CreateGroupBuyDto.SelfPickupDeliveryTime is not null &&
+                                type="checkbox"
+                                class="form-check-input"
+                                id="@island"
+                                checked="@(CreateGroupBuyDto.SelfPickupDeliveryTime is not null &&
                                                       CreateGroupBuyDto.SelfPickupDeliveryTime.Contains(island))"
-                                       @onchange="(value) => SelfPickupDeliveryTimeCheckedChange(island, value)" />
+                                @onchange="(value) => SelfPickupDeliveryTimeCheckedChange(island, value)" />
                                 @L[island]
                             </label>
                         }
@@ -699,19 +699,19 @@
                     @foreach (string island in DeliveryTimeConts.DeliveredByStore)
                     {
                         @if ((CreateGroupBuyDto.ExcludeShippingMethod is not null) &&
-                       (CreateGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore")))
+                     (CreateGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore")))
                         {
                             if (CreateGroupBuyDto.DeliveredByStoreDeliveryTime.IsNullOrWhiteSpace() || CreateGroupBuyDto.DeliveredByStoreDeliveryTime == "[]") CreateGroupBuyDto.DeliveredByStoreDeliveryTime = "[\"Inapplicable\"]";
                             <label for="@(island)_DeliveredByStore" class="form-label me-2">
                                 <input type="checkbox"
-                                       class="form-check-input"
-                                       id="@island"
-                                       disabled="@(island is not PikachuResource.UnableToSpecifyDuringPeakPeriods ?
+                                class="form-check-input"
+                                id="@island"
+                                disabled="@(island is not PikachuResource.UnableToSpecifyDuringPeakPeriods ?
                                                     IsUnableToSpecifyDuringPeakPeriodsForDeliveredByStore :
                                                     false)"
-                                       checked="@(CreateGroupBuyDto.DeliveredByStoreDeliveryTime is not null &&
+                                checked="@(CreateGroupBuyDto.DeliveredByStoreDeliveryTime is not null &&
                                                   CreateGroupBuyDto.DeliveredByStoreDeliveryTime.Contains(island))"
-                                       @onchange="(value) => DeliverdByStoreDeliveryTimeCheckedChange(island, value)" />
+                                @onchange="(value) => DeliverdByStoreDeliveryTimeCheckedChange(island, value)" />
                                 @L[island]
                             </label>
                         }
@@ -720,12 +720,12 @@
                             CreateGroupBuyDto.DeliveredByStoreDeliveryTime = null;
                             <label for="@(island)_DeliveredByStore" class="form-label me-2">
                                 <input disabled
-                                       type="checkbox"
-                                       class="form-check-input"
-                                       id="@island"
-                                       checked="@(CreateGroupBuyDto.DeliveredByStoreDeliveryTime is not null &&
+                                type="checkbox"
+                                class="form-check-input"
+                                id="@island"
+                                checked="@(CreateGroupBuyDto.DeliveredByStoreDeliveryTime is not null &&
                                                  CreateGroupBuyDto.DeliveredByStoreDeliveryTime.Contains(island))"
-                                       @onchange="(value) => DeliverdByStoreDeliveryTimeCheckedChange(island, value)" />
+                                @onchange="(value) => DeliverdByStoreDeliveryTimeCheckedChange(island, value)" />
                                 @L[island]
                             </label>
                         }
@@ -739,7 +739,7 @@
             <Div Class="col-2">@L[PikachuResource.ProductType] <span class="text-danger"> *</span></Div>
             <Div Class="col-8">
                 <select class="form-select"
-                        @onchange=OnProductTypeChange>
+                @onchange=OnProductTypeChange>
                     <option></option>
                     @foreach (ProductType value in Enum.GetValues<ProductType>())
                     {
@@ -759,8 +759,8 @@
                 @L["DefaultPaymentGateWay"]
                 </label> *@
                 <Check TValue="bool" Disabled=@(CreateGroupBuyDto.IsEnterprise||isPaymentMethodEnabled())
-                       Checked="@CreditCard"
-                       CheckedChanged="OnCreditCardCheckedChange">
+                Checked="@CreditCard"
+                CheckedChanged="OnCreditCardCheckedChange">
                     @L["CreditCard"]
                 </Check>
                 <div class="row justify-content-center mb-2">
@@ -768,8 +768,8 @@
                         @foreach (var period in Constant.InstallmentPeriods)
                         {
                             <Check Inline TValue="bool" Checked="@CreateGroupBuyDto.InstallmentPeriods.Contains(period)"
-                                   CheckedChanged="(e) => OnInstallmentPeriodChange(e, period)"
-                                   Disabled="IsInstallmentPeriodEnabled(period)">
+                            CheckedChanged="(e) => OnInstallmentPeriodChange(e, period)"
+                            Disabled="IsInstallmentPeriodEnabled(period)">
                                 @L["InstallmentPeriods." + period]
                             </Check>
                         }
@@ -778,7 +778,7 @@
                 <Check TValue="bool" Disabled=@(CreateGroupBuyDto.IsEnterprise||isPaymentMethodEnabled()) @bind-Checked="@BankTransfer">@L["BankTransfer"]</Check>
                 <Check TValue="bool" Disabled=@(CreateGroupBuyDto.IsEnterprise||isLinePayPaymentMethodEnabled()) @bind-Checked="@IsLinePay">@L["LinePay"]</Check>
                 <Check TValue="bool"
-                       @bind-Checked="@IsCashOnDelivery">
+                @bind-Checked="@IsCashOnDelivery">
                     @L[PikachuResource.CashOnDelivery]
                 </Check>
                 @*              <Radio Inline TValue="string" CheckedChanged="@OnCreditCardChecked"   Value="@("CreditCard")">@L["CreditCard"]</Radio>
@@ -837,7 +837,7 @@
             </div>
             <div class="col-5">
                 <Select TValue="TaxType" Class="form-select"
-                        @bind-SelectedValue="@CreateGroupBuyDto.TaxType">
+                @bind-SelectedValue="@CreateGroupBuyDto.TaxType">
                     @foreach (var enumValue in Enum.GetValues(typeof(TaxType)))
                     {
                         <SelectItem Value="@enumValue">@L[enumValue.ToString()]</SelectItem>
@@ -861,9 +861,9 @@
             <div class="col-2 form-label">@L["EnterprisePurchase"]</div>
             <div class="col-4">
                 <Switch TValue="bool"
-                        Checked="@CreateGroupBuyDto.IsEnterprise"
-                        CheckedChanged="OnEnterPriseChange"
-                        CheckedExpression="@(() => CreateGroupBuyDto.IsEnterprise)" />
+                Checked="@CreateGroupBuyDto.IsEnterprise"
+                CheckedChanged="OnEnterPriseChange"
+                CheckedExpression="@(() => CreateGroupBuyDto.IsEnterprise)" />
             </div>
         </div>
         <div class="row">
@@ -924,7 +924,7 @@
             </Div>
             <Div Class="col-8">
                 <select class="form-select"
-                        @onchange=OnColorSchemeChange>
+                @onchange=OnColorSchemeChange>
                     <option value="" selected>@L["ChooseColorTheme"]</option>
                     @foreach (ColorScheme value in Enum.GetValues<ColorScheme>())
                     {
@@ -982,7 +982,7 @@
             <Div Class="col-2">@L["DisplayMethodForProductDetails"]<span class="text-danger"> *</span></Div>
             <Div Class="col-8">
                 <select class="form-select"
-                        @onchange=OnProductDetailsDisplayMethodChange>
+                @onchange=OnProductDetailsDisplayMethodChange>
                     <option value="0" selected>@L["ChooseMethod"]</option>
                     @foreach (ProductDetailsDisplayMethod value in Enum.GetValues<ProductDetailsDisplayMethod>())
                     {
@@ -999,9 +999,9 @@
                 @if (CollapseItem.Count < 20)
                 {
                     <Select TValue="GroupBuyTemplateType?"
-                            SelectedValue="CreateGroupBuyDto.TemplateType"
-                            @onchange="@((e) => SelectTemplate(e))"
-                            Style="min-width: 300px;">
+                    SelectedValue="CreateGroupBuyDto.TemplateType"
+                    @onchange="@((e) => SelectTemplate(e))"
+                    Style="min-width: 300px;">
                         <option value="0" selected>@L["SelectTemplate"]</option>
                         @* <option value="@GroupBuyTemplateType.PikachuOne">@L["PikachuOne"]</option> *@
                         <option value="@GroupBuyTemplateType.PikachuTwo">@L["PikachuTwo"]</option>
@@ -1050,9 +1050,9 @@
                                         @if (module.IsWarnedForInCompatible)
                                         {
                                             <Tooltip Text="@($"Incompatible Module for {L[SelectedTemplate.ToString()]}")"
-                                                     TriggerTargetId="tooltip-custom-target"
-                                                     Inline
-                                                     Style="margin-left: 5px;">
+                                            TriggerTargetId="tooltip-custom-target"
+                                            Inline
+                                            Style="margin-left: 5px;">
                                                 <Badge Color="Color.Warning">
                                                     <i class="fas fa-circle-info" />
                                                 </Badge>
@@ -1094,15 +1094,15 @@
                                                     <Div Class="@(((carouselImages.Count > 0 && carouselImages.Any(a => !a.ImageUrl.IsNullOrEmpty())) ? "has-images" : "") + " container-less-filepicker")">
                                                         <Field>
                                                             <FilePicker @ref="CarouselFilePickers[carouselImages.GroupBy(g => g.ModuleNumber).FirstOrDefault().Key!.Value - 1]"
-                                                                        Disabled="carouselImages.Count >= 5"
-                                                                        Multiple
-                                                                        Changed="@(async (e) => await OnImageModuleUploadAsync(e,
+                                                            Disabled="carouselImages.Count >= 5"
+                                                            Multiple
+                                                            Changed="@(async (e) => await OnImageModuleUploadAsync(e,
                                                                                                                            carouselImages,
                                                                                                                            carouselImages.GroupBy(g => g.ModuleNumber).FirstOrDefault().Key!.Value,
                                                                                                                            CarouselFilePickers[carouselImages.GroupBy(g => g.ModuleNumber).FirstOrDefault().Key!.Value - 1],
                                                                                                                            ImageType.GroupBuyCarouselImage))"
-                                                                        ShowMode="FilePickerShowMode.List"
-                                                                        Accept="@(string.Join(", ", Constant.ValidImageExtensions))">
+                                                            ShowMode="FilePickerShowMode.List"
+                                                            Accept="@(string.Join(", ", Constant.ValidImageExtensions))">
                                                             </FilePicker>
                                                         </Field>
                                                     </Div>
@@ -1117,14 +1117,14 @@
                                                                 <Div Class="d-flex flex-column align-items-center justify-content-center">
                                                                     <Div Class="image-container">
                                                                         <Image class="blur-image" Source="@image.ImageUrl" Text="Carousel Image"
-                                                                               Fluid />
+                                                                        Fluid />
                                                                         <button class="delete-button" @onclick="() => DeleteImageAsync(image.BlobImageName, carouselImages, ImageType.GroupBuyCarouselImage)">
                                                                             <i class="fa fa-trash"></i>
                                                                         </button>
                                                                     </Div>
                                                                     <button type="button"
-                                                                            class="btn btn-sm btn-primary mt-1"
-                                                                            @onclick="() => OpenAddLinkModal(image)">
+                                                                    class="btn btn-sm btn-primary mt-1"
+                                                                    @onclick="() => OpenAddLinkModal(image)">
                                                                         @L["AddLink"]
                                                                     </button>
                                                                 </Div>
@@ -1137,7 +1137,7 @@
                                                 </Div>
                                                 <Div class="col-10 pt-2 pb-4">
                                                     <select class="form-select form-select"
-                                                            @onchange=@((e) => OnStyleCarouselChange(e, carouselImages, carouselImages.GroupBy(g => g.ModuleNumber).FirstOrDefault().Key!.Value))>
+                                                    @onchange=@((e) => OnStyleCarouselChange(e, carouselImages, carouselImages.GroupBy(g => g.ModuleNumber).FirstOrDefault().Key!.Value))>
                                                         <option>Select Style</option>
                                                         @foreach (object? enumValue in Enum.GetValues(typeof(StyleForCarouselImages)))
                                                         {
@@ -1178,13 +1178,13 @@
                                                     <Div Class="@(((bannerImages.Count > 0 && bannerImages.Any(a => !a.ImageUrl.IsNullOrEmpty())) ? "has-images" : "") + " container-less-filepicker")">
                                                         <Field>
                                                             <FilePicker @ref="BannerFilePickers[bannerImages.GroupBy(g => g.ModuleNumber).FirstOrDefault().Key!.Value - 1]"
-                                                                        Changed="@(async (e) => await OnBannerImageModuleUploadAsync(e,
+                                                            Changed="@(async (e) => await OnBannerImageModuleUploadAsync(e,
                                                                                                                            bannerImages,
                                                                                                                            bannerImages.GroupBy(g => g.ModuleNumber).FirstOrDefault().Key!.Value,
                                                                                                                            BannerFilePickers[bannerImages.GroupBy(g => g.ModuleNumber).FirstOrDefault().Key!.Value - 1],
                                                                                                                            ImageType.GroupBuyBannerImage))"
-                                                                        ShowMode="FilePickerShowMode.List"
-                                                                        Accept="@(string.Join(", ", Constant.ValidImageExtensions))">
+                                                            ShowMode="FilePickerShowMode.List"
+                                                            Accept="@(string.Join(", ", Constant.ValidImageExtensions))">
                                                             </FilePicker>
                                                         </Field>
                                                     </Div>
@@ -1206,8 +1206,8 @@
                                                                         </button>
                                                                     </Div>
                                                                     <button type="button"
-                                                                            class="btn btn-sm btn-primary mt-1"
-                                                                            @onclick="() => OpenAddLinkModal(image)">
+                                                                    class="btn btn-sm btn-primary mt-1"
+                                                                    @onclick="() => OpenAddLinkModal(image)">
                                                                         @L["Add Link"]
                                                                     </button>
                                                                 </Div>
@@ -1231,10 +1231,10 @@
                                                     <Div Class="@((!module.Image.IsNullOrEmpty() ? "has-images" : "") + " container-less-filepicker filepicker-sm")">
                                                         <Field>
                                                             <FilePicker @ref="GroupPurchaseOverviewFilePickers[GroupPurchaseOverviewModules.IndexOf(module)]"
-                                                                        FilePickerLocalizer="(key, args) => LocalizeFilePicker(key, args)"
-                                                                        Changed="@(async (e) => await OnImageUploadAsync(e, module, GroupPurchaseOverviewFilePickers[GroupPurchaseOverviewModules.IndexOf(module)]))"
-                                                                        ShowMode="FilePickerShowMode.List"
-                                                                        Accept="@(string.Join(", ", Constant.ValidImageExtensions))">
+                                                            FilePickerLocalizer="(key, args) => LocalizeFilePicker(key, args)"
+                                                            Changed="@(async (e) => await OnImageUploadAsync(e, module, GroupPurchaseOverviewFilePickers[GroupPurchaseOverviewModules.IndexOf(module)]))"
+                                                            ShowMode="FilePickerShowMode.List"
+                                                            Accept="@(string.Join(", ", Constant.ValidImageExtensions))">
                                                             </FilePicker>
                                                         </Field>
                                                     </Div>
@@ -1247,7 +1247,7 @@
                                                                     <Div Class="image-container">
                                                                         <Image Class="blur-image" Source="@module.Image" Text="Logo Image" Fluid />
                                                                         <button class="delete-button"
-                                                                                @onclick="@(async (e) => await DeleteImageAsync(e, module))">
+                                                                        @onclick="@(async (e) => await DeleteImageAsync(e, module))">
                                                                             <i class="fa fa-trash" />
                                                                         </button>
                                                                     </Div>
@@ -1278,7 +1278,7 @@
                                                     <Div Class="col-12 pb-1"></Div>
                                                     <Div Class="col-12 pb-1">
                                                         <Switch TValue="bool"
-                                                                @bind-Checked="@module.IsButtonEnable" />
+                                                        @bind-Checked="@module.IsButtonEnable" />
                                                     </Div>
 
                                                     @if (module.IsButtonEnable)
@@ -1313,11 +1313,11 @@
                                                     <Div Class="@((!module.Image.IsNullOrEmpty() ? "has-images" : "") + " container-less-filepicker filepicker-sm")">
                                                         <Field>
                                                             <FilePicker @ref="GroupBuyOrderInstructionPickers[GroupBuyOrderInstructionModules.IndexOf(module)]"
-                                                                        Changed="@(async (e) => await OnImageUploadAsync(e,
+                                                            Changed="@(async (e) => await OnImageUploadAsync(e,
                                                                                                                          module,
                                                                                                                          GroupBuyOrderInstructionPickers[GroupBuyOrderInstructionModules.IndexOf(module)]))"
-                                                                        ShowMode="FilePickerShowMode.List"
-                                                                        Accept="@(string.Join(", ", Constant.ValidImageExtensions))">
+                                                            ShowMode="FilePickerShowMode.List"
+                                                            Accept="@(string.Join(", ", Constant.ValidImageExtensions))">
                                                             </FilePicker>
                                                         </Field>
                                                     </Div>
@@ -1330,7 +1330,7 @@
                                                                     <Div Class="image-container">
                                                                         <Image Class="blur-image" Source="@module.Image" Text="Logo Image" Fluid />
                                                                         <button class="delete-button"
-                                                                                @onclick="@(async (e) => await DeleteImageAsync(e, module))">
+                                                                        @onclick="@(async (e) => await DeleteImageAsync(e, module))">
                                                                             <i class="fa fa-trash" />
                                                                         </button>
                                                                     </Div>
@@ -1375,20 +1375,20 @@
                                                         @foreach (ItemWithItemTypeDto selectedItem in productModule.Selected)
                                                         {
                                                             <div class="row-cols-12 mt-@(productModule.Selected.IndexOf(selectedItem) > 0 ? "5" : "2")"
-                                                                 style="@(productModule.Selected.IndexOf(selectedItem) > 0 ? "margin-top: 75px !important" : "")">
+                                                            style="@(productModule.Selected.IndexOf(selectedItem) > 0 ? "margin-top: 75px !important" : "")">
                                                                 <label>Products</label>
                                                                 <Autocomplete TItem="ItemWithItemTypeDto"
-                                                                              TValue="Guid?"
-                                                                              Data="@ItemsList"
-                                                                              TextField="@(( item ) => item.Name)"
-                                                                              ValueField="@(( item ) => item.Id)"
-                                                                              Placeholder="Search..."
-                                                                              Filter="AutocompleteFilter.StartsWith"
-                                                                              CustomFilter="@(( item, searchValue ) => item.Name.IndexOf( searchValue, 0, StringComparison.CurrentCultureIgnoreCase ) >= 0 )"
-                                                                              HighlightSearch
-                                                                              Immediate="true"
-                                                                              SelectedValue="selectedItem.Id"
-                                                                              SelectedValueChanged="(id) => OnSelectedValueChanged(id, productModule, selectedItem)">
+                                                                TValue="Guid?"
+                                                                Data="@ItemsList"
+                                                                TextField="@(( item ) => item.Name)"
+                                                                ValueField="@(( item ) => item.Id)"
+                                                                Placeholder="Search..."
+                                                                Filter="AutocompleteFilter.StartsWith"
+                                                                CustomFilter="@(( item, searchValue ) => item.Name.IndexOf( searchValue, 0, StringComparison.CurrentCultureIgnoreCase ) >= 0 )"
+                                                                HighlightSearch
+                                                                Immediate="true"
+                                                                SelectedValue="selectedItem.Id"
+                                                                SelectedValueChanged="(id) => OnSelectedValueChanged(id, productModule, selectedItem)">
                                                                     <NotFoundContent> @L["NotFound"] </NotFoundContent>
                                                                 </Autocomplete>
                                                             </div>
@@ -1422,28 +1422,28 @@
                                                                                         {
                                                                                             <div class="mt-2">
                                                                                                 <select class="form-control dropdown" multiple>
-                                                                                                  @foreach (var item in itemDetails)
-                                                                                            {
-                                                                                                  var label = item.Attribute1Value;
+                                                                                                    @foreach (var item in itemDetails)
+                                                                                                    {
+                                                                                                        var label = item.Attribute1Value;
 
-                                                                                                 if (!string.IsNullOrWhiteSpace(item.Attribute2Value))
-                                                                                                {
-                                                                                                  label += " / " + item.Attribute2Value;
-                                                                                                 }
+                                                                                                        if (!string.IsNullOrWhiteSpace(item.Attribute2Value))
+                                                                                                        {
+                                                                                                            label += " / " + item.Attribute2Value;
+                                                                                                        }
 
-                                                                                                 if (!string.IsNullOrWhiteSpace(item.Attribute3Value))
-                                                                                                 {
-                                                                                                     label += " / " + item.Attribute3Value;
-                                                                                                 }
+                                                                                                        if (!string.IsNullOrWhiteSpace(item.Attribute3Value))
+                                                                                                        {
+                                                                                                            label += " / " + item.Attribute3Value;
+                                                                                                        }
 
-                                                                                                 <option value="@item.Id">@label</option>
-                                                                                              }
-                                                                                            </select>
+                                                                                                        <option value="@item.Id">@label</option>
+                                                                                                    }
+                                                                                                </select>
                                                                                             </div>
-                                                                                        
-                                                                                    
 
-                                                                                    }
+
+
+                                                                                        }
                                                                                     }
                                                                                 </div>
                                                                             }
@@ -1464,15 +1464,15 @@
                                                             <Div Class="@((productModule.Images.Count > 0 ? "has-images" : "") + " container-less-filepicker filepicker-sm")">
                                                                 <Field>
                                                                     <FilePicker @ref="ProductRankingCarouselPickers[ProductRankingCarouselModules.IndexOf(productModule)]"
-                                                                                Disabled="productModule.Images.Count >= 5"
-                                                                                Multiple
-                                                                                Changed="@(async (e) => await OnImageModuleUploadAsync(e,
+                                                                    Disabled="productModule.Images.Count >= 5"
+                                                                    Multiple
+                                                                    Changed="@(async (e) => await OnImageModuleUploadAsync(e,
                                                                                                                                productModule.Images,
                                                                                                                                ProductRankingCarouselModules.IndexOf(productModule) + 1,
                                                                                                                                ProductRankingCarouselPickers[ProductRankingCarouselModules.IndexOf(productModule)],
                                                                                                                                ImageType.GroupBuyProductRankingCarousel))"
-                                                                                ShowMode="FilePickerShowMode.List"
-                                                                                Accept="@(string.Join(", ", Constant.ValidImageExtensions))">
+                                                                    ShowMode="FilePickerShowMode.List"
+                                                                    Accept="@(string.Join(", ", Constant.ValidImageExtensions))">
                                                                     </FilePicker>
                                                                 </Field>
                                                             </Div>
@@ -1564,23 +1564,23 @@
                                                 {
                                                     <Div Class="col-12 mb-2">
                                                         <InputText class="form-control" @bind-Value="selectedItem.Name"
-                                                                   @oninput="(e) => OnSelectedValueChanged(null, module, selectedItem)" />
+                                                        @oninput="(e) => OnSelectedValueChanged(null, module, selectedItem)" />
                                                     </Div>
                                                 }
                                                 else
                                                 {
                                                     <Autocomplete TItem="ItemWithItemTypeDto"
-                                                                  TValue="Guid?"
-                                                                  Data="@ItemsList"
-                                                                  TextField="@(( item ) => item.Name)"
-                                                                  ValueField="@(( item ) => item.Id)"
-                                                                  Placeholder="@L["Search..."]"
-                                                                  Filter="AutocompleteFilter.StartsWith"
-                                                                  CustomFilter="@(( item, searchValue ) => item.Name.IndexOf( searchValue, 0, StringComparison.CurrentCultureIgnoreCase ) >= 0 )"
-                                                                  HighlightSearch
-                                                                  Immediate="true"
-                                                                  SelectedValue="selectedItem.Id"
-                                                                  SelectedValueChanged="(id) => OnSelectedValueChanged(id, module, selectedItem)">
+                                                    TValue="Guid?"
+                                                    Data="@ItemsList"
+                                                    TextField="@(( item ) => item.Name)"
+                                                    ValueField="@(( item ) => item.Id)"
+                                                    Placeholder="@L["Search..."]"
+                                                    Filter="AutocompleteFilter.StartsWith"
+                                                    CustomFilter="@(( item, searchValue ) => item.Name.IndexOf( searchValue, 0, StringComparison.CurrentCultureIgnoreCase ) >= 0 )"
+                                                    HighlightSearch
+                                                    Immediate="true"
+                                                    SelectedValue="selectedItem.Id"
+                                                    SelectedValueChanged="(id) => OnSelectedValueChanged(id, module, selectedItem)">
                                                         <NotFoundContent> @L["NotFound"] </NotFoundContent>
                                                     </Autocomplete>
                                                 }
@@ -1607,68 +1607,95 @@
                                                                             <strong>@selectedItem.Name</strong>
                                                                         </h4>
                                                                         @if(selectedItem.ItemType == ItemType.SetItem)
-                                                    {
-                                                        <div class="mt-2">
-                                                        <Label>Price</Label>
-                                                        <NumericEdit class="form-control" @bind-Value="selectedItem.Price" />
-                                                    </div>
-                                                    }
+                                                                        {
+                                                                            <div class="mt-2">
+                                                                                <Label>Price</Label>
+                                                                                <NumericEdit class="form-control" @bind-Value="selectedItem.Price" />
+                                                                            </div>
+                                                                        }
                                                                         @if (selectedItem.Item != null)
                                                                         {
                                                                             var itemDetails = selectedItem.Item?.ItemDetails;
+                                                                             var firstItem = itemDetails?.FirstOrDefault();
                                                                             @if (itemDetails != null && itemDetails.Where(x => x.Attribute1Value != null).Count() > 0)
                                                                             {
                                                                                 <div class="mt-2">
                                                                                     <AntDesign.Select Mode="AntDesign.SelectMode.Multiple"
-                                                                                     Placeholder="Please select"
-		                                                                              
+                                                                                    Placeholder="Please select"
+
                                                                                     OnSelectedItemsChanged="@(values => OnSelectedItemDetailsChanged(values, selectedItem))"
 
-		                                                                             TItemValue="Guid"
-		                                                                             TItem="Guid"
-		                                                                            AllowClear>
-		                                                                            <SelectOptions>
-                                                                                         @foreach (var item in itemDetails)
-                                                                                        {
-                                                                                            var label = item.Attribute1Value;
-
-                                                                                            if (!string.IsNullOrWhiteSpace(item.Attribute2Value))
+                                                                                    TItemValue="Guid"
+                                                                                    TItem="Guid"
+                                                                                    AllowClear>
+                                                                                        <SelectOptions>
+                                                                                            @foreach (var item in itemDetails)
                                                                                             {
-                                                                                                label += " / " + item.Attribute2Value;
-                                                                                            }
+                                                                                                var label = item.Attribute1Value;
 
-                                                                                            if (!string.IsNullOrWhiteSpace(item.Attribute3Value))
-                                                                                            {
-                                                                                                label += " / " + item.Attribute3Value;
-                                                                                            }
+                                                                                                if (!string.IsNullOrWhiteSpace(item.Attribute2Value))
+                                                                                                {
+                                                                                                    label += " / " + item.Attribute2Value;
+                                                                                                }
 
-                                                                                            <AntDesign.SelectOption TItemValue="Guid" TItem="Guid" Value=@item.Id Label=@label/>
-                                                                                        }
-                                                                                                                    </SelectOptions>
-                                                                                        </AntDesign.Select>
-                                                                                   
+                                                                                                if (!string.IsNullOrWhiteSpace(item.Attribute3Value))
+                                                                                                {
+                                                                                                    label += " / " + item.Attribute3Value;
+                                                                                                }
+
+                                                                                                <AntDesign.SelectOption TItemValue="Guid" TItem="Guid" Value=@item.Id Label=@label/>
+                                                                                            }
+                                                                                        </SelectOptions>
+                                                                                    </AntDesign.Select>
+
                                                                                 </div>
                                                                                 @if (selectedItem.SelectedItemDetailIds != null)
                                                                                 {
                                                                                     foreach (var detailId in selectedItem.SelectedItemDetailIds)
                                                                                     {
-                                                                                     @if (selectedItem.ItemDetailsWithPrices.TryGetValue(detailId, out var detailInfo))
-{
-    <div class="mt-2">
-        <label>@(detailInfo.Label + " Price")</label>
-        <input class="form-control"
-        type="number"
-                     value="@detailInfo.Price"
-                      @onchange="@(e => UpdatePrice(detailId, selectedItem, Convert.ToDouble(e.Value)))"
-                    
- />
-    </div>
-}
+                                                                                        @if (selectedItem.ItemDetailsWithPrices.TryGetValue(detailId, out var detailInfo))
+                                                                                        {
+                                                                                            <div class="mt-2">
+                                                                                                <label>@(detailInfo.Label + " Price")</label>
+                                                                                                <input class="form-control"
+                                                                                                type="number"
+                                                                                                value="@detailInfo.Price"
+                                                                                                @onchange="@(e => UpdatePrice(detailId, selectedItem, Convert.ToDouble(e.Value)))"
+
+                                                                                                />
+                                                                                            </div>
+                                                                                        }
                                                                                     }
                                                                                 }
                                                                             }
-                                                                       
-                                                                        }
+
+@if (firstItem != null && firstItem.Attribute1Value.IsNullOrWhiteSpace())
+{
+    if (!selectedItem.SelectedItemDetailIds.Contains(firstItem.Id))
+    {
+        selectedItem.SelectedItemDetailIds.Add(firstItem.Id);
+        selectedItem.ItemDetailsWithPrices[firstItem.Id] = ("", 0);
+    }
+
+    if (selectedItem.SelectedItemDetailIds != null)
+    {
+        foreach (var detailId in selectedItem.SelectedItemDetailIds)
+        {
+            if (selectedItem.ItemDetailsWithPrices.TryGetValue(detailId, out var detailInfo))
+            {
+                <div class="mt-2">
+                    <label>Price</label>
+                    <input class="form-control"
+                           type="number"
+                           value="@detailInfo.Price"
+                           @onchange="@(e => UpdatePrice(detailId, selectedItem, Convert.ToDouble(e.Value)))" />
+                </div>
+            }
+        }
+    }
+}
+                                                                        
+                                                                   }
                                                                     </div>
                                                                 }
                                                             </div>

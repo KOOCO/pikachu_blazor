@@ -563,28 +563,21 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
     public async Task UpdateItemProductPrice(Guid groupbuyId, ICollection<GroupBuyItemGroupDetailCreateUpdateDto> itemDetails)
     {
 
-       
-     
-
-
             foreach (var item in itemDetails.DistinctBy(x => x.ItemDetailId))
             {
 
-
+           
 
                 if (item.ItemType == ItemType.Item)
                 {
-                var existing = await _groupBuyItemsPriceAppService.GetByItemIdAndGroupBuyIdAsync(item.ItemDetailId.Value, groupbuyId);
-                if (existing is not null)
-                    await _groupBuyItemsPriceRepository.DeleteAsync(existing.Id);
+               
 
                     await _groupBuyItemsPriceManager.CreateAsync(null, groupbuyId, item.Price, item.ItemDetailId);
                 }
                 else
                 {
-                var existing = await _groupBuyItemsPriceAppService.GetBySetItemIdAndGroupBuyIdAsync(item.SetItemId.Value, groupbuyId);
-                if (existing is not null)
-                    await _groupBuyItemsPriceRepository.DeleteAsync(existing.Id);
+               
+                   
 
                 await _groupBuyItemsPriceManager.CreateAsync(item.SetItemId, groupbuyId, item.Price, null);
                 }
@@ -956,7 +949,7 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
                 {
                     foreach (GroupBuyItemGroupDetailsDto itemDetail in module.ItemGroupDetails)
                     {
-                        if (itemDetail.ItemType == ItemType.Item)
+                        if (itemDetail.ItemType == ItemType.Item && itemDetail.ItemId!=null)
                         {
                             List<ItemDetailsDto> removeItems = new List<ItemDetailsDto>();
                             foreach (var detailitem in itemDetail.Item?.ItemDetails)
@@ -978,10 +971,10 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
                                 itemDetail.Item?.ItemDetails.Remove(removeItem);
                                     }
                         }
-                        if (itemDetail.ItemType == ItemType.SetItem)
+                        if (itemDetail.ItemType == ItemType.SetItem && itemDetail.SetItemId!=null)
                         {
-                           
-                                var checkPrice = await _groupBuyItemsPriceAppService.GetBySetItemIdAndGroupBuyIdAsync(itemDetail.SetItemId.Value, groupBuyId);
+                            itemDetail.SetItem.SetItemDetails = [];
+                            var checkPrice = await _groupBuyItemsPriceAppService.GetBySetItemIdAndGroupBuyIdAsync(itemDetail.SetItemId.Value, groupBuyId);
                                 if (checkPrice is not null)
                                 {
                                     itemDetail.SetItem.GroupBuyPrice = checkPrice.GroupBuyPrice;

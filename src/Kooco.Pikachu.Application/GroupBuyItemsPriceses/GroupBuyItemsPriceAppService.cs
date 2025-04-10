@@ -73,6 +73,12 @@ namespace Kooco.Pikachu.GroupBuyItemsPriceses
             var list=query.Where(x=>x.GroupBuyId==GroupBuyId).ToList();
             return ObjectMapper.Map<List<GroupBuyItemsPrice>, List<GroupBuyItemsPriceDto>>(list);
         }
+        public async Task DeleteAllGroupByItemAsync(Guid GroupBuyId)
+        {
+            var query = await _repository.GetQueryableAsync();
+            var list = query.Where(x => x.GroupBuyId == GroupBuyId).ToList();
+            await _repository.DeleteManyAsync(list);
+        }
         public async Task DeleteAsync(Guid id)
         {
             await _repository.DeleteAsync(id);
