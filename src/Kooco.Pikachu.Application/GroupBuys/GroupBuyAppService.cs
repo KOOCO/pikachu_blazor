@@ -164,9 +164,11 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
 
                 itemGroup.ModuleNumber = group.ModuleNumber;
 
+                ProcessImageModules(itemGroup, group.ImageModules);
+
                 if (group.ItemDetails != null && group.ItemDetails.Any())
                 {
-                    foreach (var item in group.ItemDetails.DistinctBy(x=>x.ItemId))
+                    foreach (var item in group.ItemDetails.DistinctBy(x => x.ItemId))
                     {
                         _groupBuyManager.AddItemGroupDetail(
                             itemGroup,
@@ -312,7 +314,8 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
                         if (group.ItemDetails is { Count: > 0 })
                             await _GroupBuyItemGroupDetailsRepository.DeleteAsync(d => d.GroupBuyItemGroupId == itemGroup.Id);
 
-                         ProcessItemDetails(itemGroup, group.ItemDetails);
+                        ProcessItemDetails(itemGroup, group.ItemDetails);
+                        ProcessImageModules(itemGroup, group.ImageModules);
 
                         itemGroup.ItemGroupDetails ??= [];
                         foreach (GroupBuyItemGroupDetails itemGroupDetails in itemGroup.ItemGroupDetails)
@@ -338,7 +341,8 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
 
                     await _GroupBuyItemGroupsRepository.InsertAsync(itemGroup);
 
-                     ProcessItemDetails(itemGroup, group.ItemDetails);
+                    ProcessItemDetails(itemGroup, group.ItemDetails);
+                    ProcessImageModules(itemGroup, group.ImageModules);
 
                     foreach (GroupBuyItemGroupDetails itemGroupDetails in itemGroup.ItemGroupDetails)
                     {
@@ -349,6 +353,42 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
         }
     }
 
+    private void ProcessImageModules(GroupBuyItemGroup itemGroup, ICollection<GroupBuyItemGroupImageModuleDto> imageModules)
+    {
+        foreach (var module in imageModules)
+        {
+            var existing = itemGroup.ImageModules.FirstOrDefault(im => im.Id == module.Id);
+            if (module.Id != Guid.Empty && existing != null)
+            {
+                existing.Images = [.. module.Images
+                    .Select(image => new GroupBuyItemGroupImage(GuidGenerator.Create())
+                    {
+                        GroupBuyItemGroupImageModuleId = existing.Id,
+                        Url = image.Url,
+                        SortNo = image.SortNo,
+                        BlobImageName = image.BlobImageName
+                    })];
+            }
+            else
+            {
+                var newImageModule = new GroupBuyItemGroupImageModule(GuidGenerator.Create())
+                {
+                    GroupBuyItemGroupId = itemGroup.Id
+                };
+
+                newImageModule.Images = [.. module.Images
+                    .Select(image => new GroupBuyItemGroupImage(GuidGenerator.Create())
+                    {
+                        GroupBuyItemGroupImageModuleId = newImageModule.Id,
+                        Url = image.Url,
+                        SortNo = image.SortNo,
+                        BlobImageName = image.BlobImageName
+                    })];
+
+                itemGroup.ImageModules.Add(newImageModule);
+            }
+        }
+    }
 
     public async Task<GroupBuyDto> CopyAsync(Guid Id)
     {
@@ -563,34 +603,34 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
     public async Task UpdateItemProductPrice(Guid groupbuyId, ICollection<GroupBuyItemGroupDetailCreateUpdateDto> itemDetails)
     {
 
-            foreach (var item in itemDetails.DistinctBy(x => x.ItemDetailId))
+        foreach (var item in itemDetails.DistinctBy(x => x.ItemDetailId))
+        {
+
+
+
+            if (item.ItemType == ItemType.Item)
             {
 
-           
 
-                if (item.ItemType == ItemType.Item)
-                {
-               
+                await _groupBuyItemsPriceManager.CreateAsync(null, groupbuyId, item.Price, item.ItemDetailId);
+            }
+            else
+            {
 
-                    await _groupBuyItemsPriceManager.CreateAsync(null, groupbuyId, item.Price, item.ItemDetailId);
-                }
-                else
-                {
-               
-                   
+
 
                 await _groupBuyItemsPriceManager.CreateAsync(item.SetItemId, groupbuyId, item.Price, null);
-                }
-
-
             }
-        
+
+
+        }
+
 
     }
     private void ProcessItemDetails(GroupBuyItemGroup itemGroup, ICollection<GroupBuyItemGroupDetailCreateUpdateDto> itemDetails)
     {
         itemGroup.ItemGroupDetails?.Clear();
-        foreach (var item in itemDetails.DistinctBy(x=>x.ItemId))
+        foreach (var item in itemDetails.DistinctBy(x => x.ItemId))
         {
             _groupBuyManager.AddItemGroupDetail(
                 itemGroup,
@@ -602,7 +642,7 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
                 item.ModuleNumber
             );
         }
-       
+
     }
     public async Task DeleteManyGroupBuyItemsAsync(List<Guid> groupBuyIds)
     {
@@ -691,24 +731,24 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
 
 
                 var providerMapping = new Dictionary<DeliveryMethod, LogisticProviders>
-        {
-            { DeliveryMethod.HomeDelivery, LogisticProviders.HomeDelivery },
-            { DeliveryMethod.PostOffice, LogisticProviders.PostOffice },
-            { DeliveryMethod.FamilyMart1, LogisticProviders.FamilyMart },
-            { DeliveryMethod.SevenToEleven1, LogisticProviders.SevenToEleven },
-            { DeliveryMethod.SevenToElevenFrozen, LogisticProviders.SevenToElevenFrozen },
-            { DeliveryMethod.BlackCat1, LogisticProviders.BNormal },
-            { DeliveryMethod.BlackCatFreeze, LogisticProviders.BFreeze },
-            { DeliveryMethod.BlackCatFrozen, LogisticProviders.BFrozen },
-            { DeliveryMethod.FamilyMartC2C, LogisticProviders.FamilyMartC2C },
-            { DeliveryMethod.SevenToElevenC2C, LogisticProviders.SevenToElevenC2C },
-            { DeliveryMethod.TCatDeliveryNormal, LogisticProviders.TCatNormal },
-            { DeliveryMethod.TCatDeliveryFreeze, LogisticProviders.TCat711Freeze },
-            { DeliveryMethod.TCatDeliveryFrozen, LogisticProviders.TCatFrozen },
-            { DeliveryMethod.TCatDeliverySevenElevenNormal, LogisticProviders.TCat711Normal },
-            { DeliveryMethod.TCatDeliverySevenElevenFreeze, LogisticProviders.TCat711Freeze },
-            { DeliveryMethod.TCatDeliverySevenElevenFrozen, LogisticProviders.TCat711Frozen }
-        };
+                {
+                    { DeliveryMethod.HomeDelivery, LogisticProviders.HomeDelivery },
+                    { DeliveryMethod.PostOffice, LogisticProviders.PostOffice },
+                    { DeliveryMethod.FamilyMart1, LogisticProviders.FamilyMart },
+                    { DeliveryMethod.SevenToEleven1, LogisticProviders.SevenToEleven },
+                    { DeliveryMethod.SevenToElevenFrozen, LogisticProviders.SevenToElevenFrozen },
+                    { DeliveryMethod.BlackCat1, LogisticProviders.BNormal },
+                    { DeliveryMethod.BlackCatFreeze, LogisticProviders.BFreeze },
+                    { DeliveryMethod.BlackCatFrozen, LogisticProviders.BFrozen },
+                    { DeliveryMethod.FamilyMartC2C, LogisticProviders.FamilyMartC2C },
+                    { DeliveryMethod.SevenToElevenC2C, LogisticProviders.SevenToElevenC2C },
+                    { DeliveryMethod.TCatDeliveryNormal, LogisticProviders.TCatNormal },
+                    { DeliveryMethod.TCatDeliveryFreeze, LogisticProviders.TCat711Freeze },
+                    { DeliveryMethod.TCatDeliveryFrozen, LogisticProviders.TCatFrozen },
+                    { DeliveryMethod.TCatDeliverySevenElevenNormal, LogisticProviders.TCat711Normal },
+                    { DeliveryMethod.TCatDeliverySevenElevenFreeze, LogisticProviders.TCat711Freeze },
+                    { DeliveryMethod.TCatDeliverySevenElevenFrozen, LogisticProviders.TCat711Frozen }
+                };
 
                 bool IsMethodEnabled(string method)
                 {
@@ -745,13 +785,20 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
                         {
                             response.ConvenienceStoreType[method] = [string.Empty];
                         }
-
-                        else if (method.Contains("DeliveredByStore"))
+                    }
+                    else if (method.Contains("SelfPickup"))
+                    {
+                        var matchingTimes = selfPickupTimes.Where(t => !string.IsNullOrEmpty(t)).ToList();
+                        response.SelfPickupType[method] = matchingTimes.Count > 0 ? matchingTimes : ["No time preference"];
+                    }
+                    else if (method.Contains("DeliveredByStore"))
+                    {
+                        using (_dataFilter.Enable<IMultiTenant>())
                         {
-                            using (_dataFilter.Enable<IMultiTenant>())
+                            var deliveryTemperatureCosts = await _DeliveryTemperatureCostAppService.GetListAsync();
+                            var enabled = deliveryTemperatureCosts.GroupBy(g => g.IsLogisticProviderActivated).Select(s => s.Key).FirstOrDefault();
+                            if (enabled && item.ExcludeShippingMethod?.Contains("DeliveredByStore") == true)
                             {
-                                var deliveryTemperatureCosts = await _DeliveryTemperatureCostAppService.GetListAsync();
-
                                 foreach (var deliveryCost in deliveryTemperatureCosts)
                                 {
                                     var key = deliveryCost.Temperature.ToString();
@@ -781,16 +828,6 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
                             }
                         }
                     }
-                    else if (method.Contains("SelfPickup"))
-                    {
-                        var matchingTimes = selfPickupTimes.Where(t => !string.IsNullOrEmpty(t)).ToList();
-                        response.SelfPickupType[method] = matchingTimes.Count > 0 ? matchingTimes : ["No time preference"];
-                    }
-                }
-                using (_dataFilter.Enable<IMultiTenant>())
-                {
-                    var temperatureCosts = await _DeliveryTemperatureCostAppService.GetListAsync();
-                    response.DeliveredByStoreEnabled = temperatureCosts.GroupBy(g => g.IsLogisticProviderActivated).Select(s => s.Key).FirstOrDefault();
                 }
                 return response;
             }
@@ -858,7 +895,7 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
 
             foreach (GroupBuyItemGroupModuleDetailsDto module in modules)
             {
-                if ( module.GroupBuyModuleType is GroupBuyModuleType.ProductRankingCarouselModule)
+                if (module.GroupBuyModuleType is GroupBuyModuleType.ProductRankingCarouselModule)
                 {
                     foreach (GroupBuyItemGroupDetailsDto itemDetail in module.ItemGroupDetails)
                     {
@@ -944,12 +981,12 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
                     }
                 }
 
-                
-                    if (module.GroupBuyModuleType is GroupBuyModuleType.ProductGroupModule)
+
+                if (module.GroupBuyModuleType is GroupBuyModuleType.ProductGroupModule)
                 {
                     foreach (GroupBuyItemGroupDetailsDto itemDetail in module.ItemGroupDetails)
                     {
-                        if (itemDetail.ItemType == ItemType.Item && itemDetail.ItemId!=null)
+                        if (itemDetail.ItemType == ItemType.Item && itemDetail.ItemId != null)
                         {
                             List<ItemDetailsDto> removeItems = new List<ItemDetailsDto>();
                             foreach (var detailitem in itemDetail.Item?.ItemDetails)
@@ -960,34 +997,35 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
                                     detailitem.GroupBuyPrice = checkPrice.GroupBuyPrice;
 
                                 }
-                                else {
+                                else
+                                {
 
                                     removeItems.Add(detailitem);
                                 }
-                            
+
                             }
                             foreach (var removeItem in removeItems)
                             {
                                 itemDetail.Item?.ItemDetails.Remove(removeItem);
-                                    }
+                            }
                         }
-                        if (itemDetail.ItemType == ItemType.SetItem && itemDetail.SetItemId!=null)
+                        if (itemDetail.ItemType == ItemType.SetItem && itemDetail.SetItemId != null)
                         {
                             itemDetail.SetItem.SetItemDetails = [];
                             var checkPrice = await _groupBuyItemsPriceAppService.GetBySetItemIdAndGroupBuyIdAsync(itemDetail.SetItemId.Value, groupBuyId);
-                                if (checkPrice is not null)
-                                {
-                                    itemDetail.SetItem.GroupBuyPrice = checkPrice.GroupBuyPrice;
+                            if (checkPrice is not null)
+                            {
+                                itemDetail.SetItem.GroupBuyPrice = checkPrice.GroupBuyPrice;
 
-                                }
-                                else
-                                {
+                            }
+                            else
+                            {
 
                                 itemDetail.SetItem = null;
                                 itemDetail.SetItemId = null;
-                                }
+                            }
 
-                            
+
                         }
                     }
                 }

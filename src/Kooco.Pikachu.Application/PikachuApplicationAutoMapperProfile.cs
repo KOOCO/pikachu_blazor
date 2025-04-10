@@ -365,5 +365,7 @@ public class PikachuApplicationAutoMapperProfile : Profile
         CreateMap<MemberTag, MemberTagDto>();
 
         CreateMap<GroupBuyItemsPrice, GroupBuyItemsPriceDto>();
+        CreateMap<GroupBuyItemGroupImageModule, GroupBuyItemGroupImageModuleDto>();
+        CreateMap<GroupBuyItemGroupImage, GroupBuyItemGroupImageDto>();
     }
 }

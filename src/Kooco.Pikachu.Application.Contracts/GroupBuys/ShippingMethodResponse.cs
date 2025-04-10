@@ -11,7 +11,6 @@ public class ShippingMethodResponse
     public Dictionary<string, List<string>> ConvenienceStoreType { get; set; }
     public Dictionary<string, List<string>> SelfPickupType { get; set; }
     public Dictionary<string, DeliveredByStoreTypeResponse> DeliveredByStoreType { get; set; }
-    public bool DeliveredByStoreEnabled { get; set; }
 
     public ShippingMethodResponse()
     {

@@ -152,6 +152,8 @@ public class EfCoreGroupBuyRepository : EfCoreRepository<PikachuDbContext, Group
             .Include(ig => ig.ItemGroupDetails)
                 .ThenInclude(igd => igd.Item)
                 .ThenInclude(i => i.ItemDetails)
+            .Include(ig => ig.ImageModules)
+                .ThenInclude(im => im.Images)
             .FirstOrDefaultAsync();
     }
 
