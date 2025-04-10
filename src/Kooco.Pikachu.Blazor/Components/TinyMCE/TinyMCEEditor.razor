@@ -1,0 +1,57 @@
+@using Microsoft.JSInterop
+@implements IAsyncDisposable
+
+<div @ref="editorElement">
+    <textarea @ref="textAreaElement" value="@Value" style="@Style"></textarea>
+</div>
+
+@code {
+    private ElementReference editorElement;
+    private ElementReference textAreaElement;
+    private DotNetObjectReference<TinyMCEEditor> objRef;
+    private IJSObjectReference module;
+
+    [Parameter]
+    public string Value { get; set; }
+
+    [Parameter]
+    public EventCallback<string> ValueChanged { get; set; }
+
+    [Parameter]
+    public string Style { get; set; } = "min-height: 300px;";
+
+    [Inject]
+    private IJSRuntime JSRuntime { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            objRef = DotNetObjectReference.Create(this);
+            await JSRuntime.InvokeVoidAsync("initTinyMCE", textAreaElement, objRef);
+        }
+    }
+
+    [JSInvokable]
+    public async Task OnEditorChange(string content)
+    {
+        Value = content;
+        await ValueChanged.InvokeAsync(content);
+    }
+
+    async ValueTask IAsyncDisposable.DisposeAsync()
+    {
+        try
+        {
+            if (module is not null)
+            {
+                await module.DisposeAsync();
+            }
+            objRef?.Dispose();
+        }
+        catch (Exception)
+        {
+            // Ignore
+        }
+    }
+}
