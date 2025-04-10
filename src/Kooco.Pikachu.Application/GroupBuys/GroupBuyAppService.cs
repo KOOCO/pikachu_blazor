@@ -72,7 +72,7 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
     private readonly ILogisticsProvidersAppService _logisticsProvidersAppService;
     private readonly IGroupBuyItemsPriceAppService _groupBuyItemsPriceAppService;
     private readonly IGroupBuyItemsPriceRepository _groupBuyItemsPriceRepository;
-
+    private readonly IRepository<GroupBuyItemGroupImageModule, Guid> _groupBuyItemGroupImageModuleRepository;
     #endregion
 
     #region Constructor
@@ -97,7 +97,8 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
         ILogisticsProvidersAppService logisticsProvidersAppService,
         GroupBuyItemsPriceManager groupBuyItemsPriceManager,
         IGroupBuyItemsPriceAppService groupBuyItemsPriceAppService,
-        IGroupBuyItemsPriceRepository groupBuyItemsPriceRepository
+        IGroupBuyItemsPriceRepository groupBuyItemsPriceRepository,
+        IRepository<GroupBuyItemGroupImageModule, Guid> groupBuyItemGroupImageModuleRepository
     )
     {
         _groupBuyManager = groupBuyManager;
@@ -121,6 +122,7 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
         _groupBuyItemsPriceManager = groupBuyItemsPriceManager;
         _groupBuyItemsPriceRepository = groupBuyItemsPriceRepository;
         _groupBuyItemsPriceAppService = groupBuyItemsPriceAppService;
+        _groupBuyItemGroupImageModuleRepository = groupBuyItemGroupImageModuleRepository;
     }
     #endregion
 
@@ -315,7 +317,7 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
                             await _GroupBuyItemGroupDetailsRepository.DeleteAsync(d => d.GroupBuyItemGroupId == itemGroup.Id);
 
                         ProcessItemDetails(itemGroup, group.ItemDetails);
-                        ProcessImageModules(itemGroup, group.ImageModules);
+                        await ProcessImageModules(itemGroup, group.ImageModules);
 
                         itemGroup.ItemGroupDetails ??= [];
                         foreach (GroupBuyItemGroupDetails itemGroupDetails in itemGroup.ItemGroupDetails)
@@ -342,7 +344,7 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
                     await _GroupBuyItemGroupsRepository.InsertAsync(itemGroup);
 
                     ProcessItemDetails(itemGroup, group.ItemDetails);
-                    ProcessImageModules(itemGroup, group.ImageModules);
+                    await ProcessImageModules(itemGroup, group.ImageModules);
 
                     foreach (GroupBuyItemGroupDetails itemGroupDetails in itemGroup.ItemGroupDetails)
                     {
@@ -353,13 +355,14 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
         }
     }
 
-    private void ProcessImageModules(GroupBuyItemGroup itemGroup, ICollection<GroupBuyItemGroupImageModuleDto> imageModules)
+    private async Task ProcessImageModules(GroupBuyItemGroup itemGroup, ICollection<GroupBuyItemGroupImageModuleDto> imageModules)
     {
         foreach (var module in imageModules)
         {
-            var existing = itemGroup.ImageModules.FirstOrDefault(im => im.Id == module.Id);
+            var existing = await _groupBuyItemGroupImageModuleRepository.FirstOrDefaultAsync(im => im.Id == module.Id);
             if (module.Id != Guid.Empty && existing != null)
             {
+                await _groupBuyItemGroupImageModuleRepository.EnsureCollectionLoadedAsync(existing, e => e.Images);
                 existing.Images = [.. module.Images
                     .Select(image => new GroupBuyItemGroupImage(GuidGenerator.Create())
                     {

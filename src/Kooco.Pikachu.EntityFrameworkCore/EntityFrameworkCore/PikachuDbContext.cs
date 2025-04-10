@@ -171,6 +171,7 @@ public class PikachuDbContext(DbContextOptions<PikachuDbContext> options) :
     // TenantWallets
     public DbSet<TenantWallet> TenantWallets { get; set; }
     public DbSet<TenantWalletTransaction> TenantWalletTransactions { get; set; }
+    public DbSet<GroupBuyItemGroupImageModule> GroupBuyItemGroupImageModules { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -257,6 +258,23 @@ public class PikachuDbContext(DbContextOptions<PikachuDbContext> options) :
             b.ConfigureByConvention();
             b.HasOne(x => x.Item).WithMany().IsRequired(false).HasForeignKey(x => x.ItemId);
             b.HasOne(x => x.SetItem).WithMany().IsRequired(false).HasForeignKey(x => x.SetItemId);
+        });
+
+        builder.Entity<GroupBuyItemGroupImageModule>(b =>
+        {
+            b.ToTable(PikachuConsts.DbTablePrefix + "GroupBuyItemGroupImageModules", PikachuConsts.DbSchema);
+            b.ConfigureByConvention();
+
+            b.HasOne(x => x.GroupBuyItemGroup).WithMany(x => x.ImageModules).HasForeignKey(x => x.GroupBuyItemGroupId);
+            b.HasMany(x => x.Images).WithOne(x => x.GroupBuyItemGroupImageModule).HasForeignKey(x => x.GroupBuyItemGroupImageModuleId);
+        });
+
+        builder.Entity<GroupBuyItemGroupImage>(b =>
+        {
+            b.ToTable(PikachuConsts.DbTablePrefix + "GroupBuyItemGroupImages", PikachuConsts.DbSchema);
+            b.ConfigureByConvention();
+
+            b.HasOne(x => x.GroupBuyItemGroupImageModule).WithMany(x => x.Images).HasForeignKey(x => x.GroupBuyItemGroupImageModuleId);
         });
 
         builder.Entity<Freebie>(b =>
