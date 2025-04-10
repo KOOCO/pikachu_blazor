@@ -100,7 +100,7 @@ public partial class EditGroupBuy
     private LoadingIndicator Loading { get; set; } = new();
     private bool LoadingItems { get; set; } = true;
     private int CurrentIndex { get; set; }
-    public IEnumerable<Guid> SelectedItemDetails { get; set; } = new List<Guid>();
+    public List<IEnumerable<Guid>> SelectedItemDetails { get; set; } = new List<IEnumerable<Guid>>();
     public bool IsUnableToSpecifyDuringPeakPeriodsForSelfPickups = false;
 
     public bool IsUnableToSpecifyDuringPeakPeriodsForHomeDelivery = false;
@@ -860,6 +860,8 @@ public partial class EditGroupBuy
                             GroupBuyModuleType = itemGroup.GroupBuyModuleType,
                             ProductGroupModuleTitle = itemGroup.ProductGroupModuleTitle,
                             ProductGroupModuleImageSize = itemGroup.ProductGroupModuleImageSize,
+                            Title = itemGroup.Title,
+                            Text = itemGroup.Text,
                             Selected = []
                         };
                     }
@@ -926,6 +928,7 @@ public partial class EditGroupBuy
                             {
                                 if (item.ItemType == ItemType.Item)
                                 {
+                                     IEnumerable<Guid> SelectedItemDetail = new List<Guid>();
                                     foreach (var itemdetail in item.Item.ItemDetails)
                                     {
                                         var itemPrice = await _groupBuyItemsPriceAppService.GetByItemIdAndGroupBuyIdAsync(itemdetail.Id, GroupBuy.Id);
@@ -943,12 +946,13 @@ public partial class EditGroupBuy
                                                 if (!string.IsNullOrWhiteSpace(itemdetail.Attribute3Value))
                                                     label += " / " + itemdetail.Attribute3Value;
                                                 itemWithItemType.ItemDetailsWithPrices.Add(itemdetail.Id, (label, itemPrice.GroupBuyPrice));
-                                                SelectedItemDetails = SelectedItemDetails.Append(itemdetail.Id);
+                                                SelectedItemDetail = SelectedItemDetail.Append(itemdetail.Id);
                                             }
                                         }
 
                                     }
-                                    itemWithItemType.SelectedItemDetailIds = SelectedItemDetails.ToList();
+                                    itemWithItemType.SelectedItemDetailIds = SelectedItemDetail.ToList();
+                                    itemWithItemType.SelectedItemDetails = SelectedItemDetail;
                                 }
                                 else
                                 {
@@ -1664,7 +1668,7 @@ public partial class EditGroupBuy
     {
         if (selectedItem.ItemDetailsWithPrices.ContainsKey(detailId))
         {
-            selectedItem.ItemDetailsWithPrices[detailId] = (selectedItem.ItemDetailsWithPrices[detailId].Label,(float)price);
+            selectedItem.ItemDetailsWithPrices[detailId] = (selectedItem.ItemDetailsWithPrices[detailId].Label, (float)price);
         }
     }
     async Task OnBannerUploadAsync(FileChangedEventArgs e)
@@ -2551,7 +2555,8 @@ public partial class EditGroupBuy
                                         });
                                     }
                                 }
-                                else {
+                                else
+                                {
                                     itemGroup.ItemDetails.Add(new GroupBuyItemGroupDetailCreateUpdateDto
                                     {
                                         SortOrder = j++,
@@ -2617,7 +2622,7 @@ public partial class EditGroupBuy
                 foreach (var group in groupItem)
                 {
                     await _groupBuyAppService.UpdateItemProductPrice(result.Id, group.ItemDetails);
-                        }
+                }
                 foreach (List<CreateImageDto> carouselImages in CarouselModules)
                 {
                     foreach (CreateImageDto carouselImage in carouselImages)
@@ -2909,14 +2914,15 @@ public partial class EditGroupBuy
                         }
 
                     }
-                    else {
-                      
+                    else
+                    {
+
                         var existingItem = await _groupBuyItemsPriceAppService.GetBySetItemIdAndGroupBuyIdAsync(itemPrice.SetItem.Id, GroupBuyId);
                         if (existingItem is not null)
                             await _groupBuyItemsPriceAppService.DeleteAsync(existingItem.Id);
 
                     }
-                
+
                 }
 
                 if (item.GroupBuyModuleType is GroupBuyModuleType.GroupPurchaseOverview)

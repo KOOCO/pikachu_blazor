@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Components;
 using System.Threading.Tasks;
 using System;
 
-namespace Kooco.Pikachu.Blazor.Components;
+namespace Kooco.Pikachu.Blazor.Components.Common;
 public partial class FormHeader
 {
     [Parameter] public string? Title { get; set; }
