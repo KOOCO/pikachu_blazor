@@ -651,7 +651,8 @@ public partial class CreateGroupBuy
             GroupBuyModuleType.CountdownTimer,
             GroupBuyModuleType.OrderInstruction,
             GroupBuyModuleType.ProductRankingCarouselModule,
-            GroupBuyModuleType.CustomTextModule
+            GroupBuyModuleType.CustomTextModule,
+            GroupBuyModuleType.PartnershipModule
         ];
     }
 
@@ -1276,6 +1277,85 @@ public partial class CreateGroupBuy
         }
     }
 
+    async Task OnPartnershipImageUploadAsync(FileChangedEventArgs e, MultiImageModuleItem item)
+    {
+        if (e.Files.Length == 0) return;
+
+        try
+        {
+            if (e.Files.Any(file => !ValidFileExtensions.Contains(Path.GetExtension(file.Name))))
+            {
+                await _uiMessageService.Error(L["InvalidFileType"]);
+                return;
+            }
+            if (e.Files.Any(file => file.Size > MaxAllowedFileSize))
+            {
+                await _uiMessageService.Error(L[PikachuDomainErrorCodes.FilesAreGreaterThanMaxAllowedFileSize]);
+                return;
+            }
+
+            foreach (var file in e.Files.Take(5))
+            {
+                if(item.Images.Count >= 5) return;
+                var stream = file.OpenReadStream(long.MaxValue);
+
+                try
+                {
+                    string newFileName = Path.ChangeExtension(
+                      Guid.NewGuid().ToString().Replace("-", ""),
+                      Path.GetExtension(e.Files[0].Name));
+
+                    var memoryStream = new MemoryStream();
+
+                    await stream.CopyToAsync(memoryStream);
+                    memoryStream.Position = 0;
+                    var url = await _imageContainerManager.SaveAsync(newFileName, memoryStream);
+
+                    int sortNo = item.Images.OrderByDescending(i => i.SortNo).Select(i => i.SortNo).FirstOrDefault() + 1;
+                    item.Images.Add(new GroupBuyItemGroupImageDto
+                    {
+                        BlobImageName = newFileName,
+                        Url = url,
+                        SortNo = sortNo
+                    });
+
+                    item.FilePicker?.Clear();
+                }
+                catch
+                {
+                    throw;
+                }
+                finally
+                {
+                    stream.Close();
+                }
+            }
+
+        }
+        catch (Exception exc)
+        {
+            await HandleErrorAsync(exc);
+        }
+    }
+
+    async Task DeletePartnershipImage(MultiImageModuleItem item, GroupBuyItemGroupImageDto image)
+    {
+        try
+        {
+            var confirmed = await _uiMessageService.Confirm(L[PikachuDomainErrorCodes.AreYouSureToDeleteImage]);
+            if (confirmed)
+            {
+                await _imageContainerManager.DeleteAsync(image.BlobImageName);
+                item.Images.Remove(image);
+                StateHasChanged();
+            }
+        }
+        catch (Exception ex)
+        {
+            await HandleErrorAsync(ex);
+        }
+    }
+
     void OnStyleCarouselChange(ChangeEventArgs e, List<CreateImageDto> carouselImages, int carouselModuleNumber)
     {
         if (carouselImages is { Count: 0 })
@@ -1648,6 +1728,20 @@ public partial class CreateGroupBuy
                 SortOrder = CollapseItem.Count > 0 ? CollapseItem.Max(c => c.SortOrder) + 1 : 1,
                 GroupBuyModuleType = groupBuyModuleType,
                 Selected = []
+            };
+
+            CollapseItem.Add(collapseItem);
+        }
+
+        else if (groupBuyModuleType == GroupBuyModuleType.PartnershipModule)
+        {
+            CollapseItem collapseItem = new()
+            {
+                Index = CollapseItem.Count > 0 ? CollapseItem.Count + 1 : 1,
+                SortOrder = CollapseItem.Count > 0 ? CollapseItem.Max(c => c.SortOrder) + 1 : 1,
+                GroupBuyModuleType = groupBuyModuleType,
+                Selected = [],
+                ImageModules = [new MultiImageModuleItem(), new MultiImageModuleItem(), new MultiImageModuleItem()]
             };
 
             CollapseItem.Add(collapseItem);
@@ -2633,15 +2727,25 @@ public partial class CreateGroupBuy
                     CreateGroupBuyDto.ItemGroups.Add(itemGroup);
                 }
 
-                if (item.GroupBuyModuleType == GroupBuyModuleType.CustomTextModule)
+                if (item.GroupBuyModuleType == GroupBuyModuleType.CustomTextModule || item.GroupBuyModuleType == GroupBuyModuleType.PartnershipModule)
                 {
                     GroupBuyItemGroupCreateUpdateDto itemGroup = new()
                     {
                         SortOrder = item.SortOrder,
                         GroupBuyModuleType = item.GroupBuyModuleType,
                         Title = item.Title,
-                        Text = item.Text
+                        Text = item.Text,
+                        ImageModules = []
                     };
+
+                    foreach(var imageModule in item.ImageModules)
+                    {
+                        itemGroup.ImageModules.Add(new()
+                        {
+                            Images = imageModule.Images
+                        });
+                    }
+
                     CreateGroupBuyDto.ItemGroups.Add(itemGroup);
                 }
             }
@@ -2752,7 +2856,7 @@ public partial class CreateGroupBuy
     {
         if (selectedItem.ItemDetailsWithPrices.ContainsKey(detailId))
         {
-            selectedItem.ItemDetailsWithPrices[detailId] = (selectedItem.ItemDetailsWithPrices[detailId].Label??"", (float)price);
+            selectedItem.ItemDetailsWithPrices[detailId] = (selectedItem.ItemDetailsWithPrices[detailId].Label, (float)price);
         }
     }
     private void OnSelectedItemDetailsChanged(IEnumerable<Guid> selectedValues, ItemWithItemTypeDto selectedItem)
@@ -2946,10 +3050,18 @@ public class CollapseItem
     public int? ModuleNumber { get; set; }
     public string? Title { get; set; }
     public string? Text { get; set; }
+    public List<MultiImageModuleItem> ImageModules { get; set; } = [];
     public CollapseItem()
     {
         Selected = [];
     }
+}
+
+public class MultiImageModuleItem
+{
+    public Guid? Id { get; set; }
+    public FilePicker FilePicker { get; set; }
+    public List<GroupBuyItemGroupImageDto> Images { get; set; } = [];
 }
 
 public class ProductRankingCarouselModule

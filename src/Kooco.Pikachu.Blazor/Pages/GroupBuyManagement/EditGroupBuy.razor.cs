@@ -530,7 +530,8 @@ public partial class EditGroupBuy
             GroupBuyModuleType.CountdownTimer,
             GroupBuyModuleType.OrderInstruction,
             GroupBuyModuleType.ProductRankingCarouselModule,
-            GroupBuyModuleType.CustomTextModule
+            GroupBuyModuleType.CustomTextModule,
+            GroupBuyModuleType.PartnershipModule,
         ];
     }
 
@@ -928,7 +929,7 @@ public partial class EditGroupBuy
                             {
                                 if (item.ItemType == ItemType.Item)
                                 {
-                                     IEnumerable<Guid> SelectedItemDetail = new List<Guid>();
+                                    IEnumerable<Guid> SelectedItemDetail = new List<Guid>();
                                     foreach (var itemdetail in item.Item.ItemDetails)
                                     {
                                         var itemPrice = await _groupBuyItemsPriceAppService.GetByItemIdAndGroupBuyIdAsync(itemdetail.Id, GroupBuy.Id);
@@ -970,6 +971,15 @@ public partial class EditGroupBuy
 
                         StateHasChanged();
                     }
+                    
+                    foreach (var imageModule in itemGroup.ImageModules)
+                    {
+                        CollapseItem[index].ImageModules.Add(new MultiImageModuleItem
+                        {
+                            Id = imageModule.Id,
+                            Images = imageModule.Images
+                        });
+                    }
 
                     if (itemGroup.GroupBuyModuleType is not GroupBuyModuleType.ProductDescriptionModule
                         && itemGroup.GroupBuyModuleType is not GroupBuyModuleType.IndexAnchor
@@ -979,6 +989,7 @@ public partial class EditGroupBuy
                         && itemGroup.GroupBuyModuleType is not GroupBuyModuleType.CountdownTimer
                         && itemGroup.GroupBuyModuleType is not GroupBuyModuleType.OrderInstruction
                         && itemGroup.GroupBuyModuleType is not GroupBuyModuleType.CustomTextModule
+                        && itemGroup.GroupBuyModuleType is not GroupBuyModuleType.PartnershipModule
                         && itemGroup.ItemGroupDetails.Count < 3)
                     {
                         for (int x = itemGroup.ItemGroupDetails.Count; x < 3; x++)
@@ -1002,6 +1013,85 @@ public partial class EditGroupBuy
         {
             StateHasChanged();
             await Loading.Hide();
+        }
+    }
+
+    async Task OnPartnershipImageUploadAsync(FileChangedEventArgs e, MultiImageModuleItem item)
+    {
+        if (e.Files.Length == 0) return;
+
+        try
+        {
+            if (e.Files.Any(file => !ValidFileExtensions.Contains(Path.GetExtension(file.Name))))
+            {
+                await _uiMessageService.Error(L["InvalidFileType"]);
+                return;
+            }
+            if (e.Files.Any(file => file.Size > MaxAllowedFileSize))
+            {
+                await _uiMessageService.Error(L[PikachuDomainErrorCodes.FilesAreGreaterThanMaxAllowedFileSize]);
+                return;
+            }
+
+            foreach (var file in e.Files.Take(5))
+            {
+                if (item.Images.Count >= 5) return;
+                var stream = file.OpenReadStream(long.MaxValue);
+
+                try
+                {
+                    string newFileName = Path.ChangeExtension(
+                      Guid.NewGuid().ToString().Replace("-", ""),
+                      Path.GetExtension(e.Files[0].Name));
+
+                    var memoryStream = new MemoryStream();
+
+                    await stream.CopyToAsync(memoryStream);
+                    memoryStream.Position = 0;
+                    var url = await _imageContainerManager.SaveAsync(newFileName, memoryStream);
+
+                    int sortNo = item.Images.OrderByDescending(i => i.SortNo).Select(i => i.SortNo).FirstOrDefault() + 1;
+                    item.Images.Add(new GroupBuyItemGroupImageDto
+                    {
+                        BlobImageName = newFileName,
+                        Url = url,
+                        SortNo = sortNo
+                    });
+
+                    item.FilePicker?.Clear();
+                }
+                catch
+                {
+                    throw;
+                }
+                finally
+                {
+                    stream.Close();
+                }
+            }
+
+        }
+        catch (Exception exc)
+        {
+            await HandleErrorAsync(exc);
+        }
+    }
+
+    async Task DeletePartnershipImage(MultiImageModuleItem item, GroupBuyItemGroupImageDto image)
+    {
+        try
+        {
+            var confirmed = await _uiMessageService.Confirm(L[PikachuDomainErrorCodes.AreYouSureToDeleteImage]);
+            if (confirmed)
+            {
+                await _imageContainerManager.DeleteAsync(image.BlobImageName);
+                item.Images.Remove(image);
+                StateHasChanged();
+            }
+        }
+        catch (Exception ex)
+        {
+            await HandleErrorAsync(ex);
         }
     }
 
@@ -1150,6 +1240,20 @@ public partial class EditGroupBuy
                 SortOrder = CollapseItem.Count > 0 ? CollapseItem.Max(c => c.SortOrder) + 1 : 1,
                 GroupBuyModuleType = groupBuyModuleType,
                 Selected = []
+            };
+
+            CollapseItem.Add(collapseItem);
+        }
+
+        else if (groupBuyModuleType == GroupBuyModuleType.PartnershipModule)
+        {
+            CollapseItem collapseItem = new()
+            {
+                Index = CollapseItem.Count > 0 ? CollapseItem.Count + 1 : 1,
+                SortOrder = CollapseItem.Count > 0 ? CollapseItem.Max(c => c.SortOrder) + 1 : 1,
+                GroupBuyModuleType = groupBuyModuleType,
+                Selected = [],
+                ImageModules = [new MultiImageModuleItem(), new MultiImageModuleItem(), new MultiImageModuleItem()]
             };
 
             CollapseItem.Add(collapseItem);
@@ -2477,6 +2581,18 @@ public partial class EditGroupBuy
                         Text = item.Text
                     };
 
+                    if (item.GroupBuyModuleType == GroupBuyModuleType.PartnershipModule)
+                    {
+                        foreach (var imageModule in item.ImageModules)
+                        {
+                            itemGroup.ImageModules.Add(new()
+                            {
+                                Id = imageModule.Id ?? Guid.Empty,
+                                Images = imageModule.Images
+                            });
+                        }
+                    }
+
                     if (item.GroupBuyModuleType is GroupBuyModuleType.ProductRankingCarouselModule &&
                         ProductRankingCarouselModules is { Count: > 0 })
                     {
@@ -2607,6 +2723,17 @@ public partial class EditGroupBuy
                         }
                     }
 
+                    if (item.GroupBuyModuleType == GroupBuyModuleType.PartnershipModule)
+                    {
+                        foreach (var imageModule in item.ImageModules)
+                        {
+                            itemGroup.ImageModules.Add(new()
+                            {
+                                Images = imageModule.Images
+                            });
+                        }
+                    }
+
                     EditGroupBuyDto.ItemGroups.Add(itemGroup);
                 }
             }
@@ -2619,10 +2746,6 @@ public partial class EditGroupBuy
 
                 if (EditGroupBuyDto.IsEnterprise) await _OrderAppService.UpdateOrdersIfIsEnterpricePurchaseAsync(Id);
                 var groupItem = EditGroupBuyDto.ItemGroups.Where(x => x.GroupBuyModuleType == GroupBuyModuleType.ProductGroupModule).ToList();
-                if (groupItem.Count > 0)
-                {
-                    await _groupBuyItemsPriceAppService.DeleteAllGroupByItemAsync(result.Id);
-                }
                 foreach (var group in groupItem)
                 {
                     await _groupBuyAppService.UpdateItemProductPrice(result.Id, group.ItemDetails);

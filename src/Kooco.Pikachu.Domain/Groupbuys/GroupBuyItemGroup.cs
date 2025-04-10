@@ -4,6 +4,8 @@ using Volo.Abp.Domain.Entities;
 using Kooco.Pikachu.Groupbuys;
 using System.Collections.Generic;
 using Kooco.Pikachu.EnumValues;
+using Kooco.Pikachu.Images;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Kooco.Pikachu.GroupBuys
 { 
@@ -29,6 +31,7 @@ namespace Kooco.Pikachu.GroupBuys
         public string? Title { get; set; }
         public string? Text { get; set; }
         public ICollection<GroupBuyItemGroupDetails> ItemGroupDetails { get; set; }
+        public ICollection<GroupBuyItemGroupImageModule> ImageModules { get; set; } = [];
 
         public GroupBuyItemGroup()
         {

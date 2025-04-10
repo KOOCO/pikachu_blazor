@@ -1543,6 +1543,63 @@
                                         </Div>
                                     }
 
+                                    @if (module.GroupBuyModuleType is GroupBuyModuleType.PartnershipModule)
+                                    {
+                                        <Div Class="row">
+                                            <Div Class="col-2 pb-1">
+                                                <Label>@L["Title"]</Label>
+                                            </Div>
+                                            <Div Class="col-12 pb-1">
+                                                <TextEdit @bind-Text="module.Title" />
+                                            </Div>
+                                        </Div>
+                                        @foreach (var imageModule in module.ImageModules)
+                                        {
+                                            <Div Class="mt-2">
+                                                <Label>
+                                                    @L["Row"] @(module.ImageModules.IndexOf(imageModule) + 1)
+                                                    <Span>
+                                                        <Tooltip Text="Upto 5 Images Allowed." Display="Display.InlineBlock">
+                                                            <Icon Name="IconName.InfoCircle" />
+                                                        </Tooltip>
+                                                    </Span>
+                                                </Label>
+                                                <Div Class="@((imageModule.Images.Count > 0 ? "has-images" : "") + " container-less-filepicker filepicker-sm")">
+                                                    <Field>
+                                                        <FilePicker @ref="imageModule.FilePicker"
+                                                                    Disabled="imageModule.Images.Count >= 5"
+                                                                    Multiple
+                                                                    ShowMode="FilePickerShowMode.List"
+                                                                    Accept="@(string.Join(", ", Constant.ValidImageExtensions))"
+                                                                    Changed="(e) => OnPartnershipImageUploadAsync(e, imageModule)"
+                                                                    MaxFileSize="MaxAllowedFileSize">
+                                                        </FilePicker>
+                                                    </Field>
+                                                </Div>
+                                                @if (imageModule.Images.Count > 0)
+                                                {
+                                                    <Div Class="row">
+                                                        <Div Class="col-12">
+                                                            <Div Class="image-list-container">
+                                                                @foreach (var image in imageModule.Images)
+                                                                {
+                                                                    <Div Class="d-flex flex-wrap">
+                                                                        <Div Class="image-container">
+                                                                            <Image class="blur-image" Source="@image.Url" Text="Carousel Image" Fluid />
+                                                                            <button class="delete-button" @onclick="(() => DeletePartnershipImage(imageModule, image))">
+                                                                                <i class="fa fa-trash"></i>
+                                                                            </button>
+                                                                        </Div>
+                                                                    </Div>
+                                                                }
+                                                            </Div>
+                                                        </Div>
+                                                    </Div>
+                                                }
+                                            </Div>
+                                        }
+                                    }
+
                                     <div class="row mt-2">
                                         @if (module.GroupBuyModuleType is GroupBuyModuleType.ProductGroupModule)
                                         {

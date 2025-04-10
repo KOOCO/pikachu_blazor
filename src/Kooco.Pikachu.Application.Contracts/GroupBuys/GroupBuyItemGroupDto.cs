@@ -21,7 +21,7 @@ namespace Kooco.Pikachu.GroupBuys
         public string? Title { get; set; }
         public string? Text { get; set; }
         public ICollection<GroupBuyItemGroupDetailsDto> ItemGroupDetails { get; set; }
-
+        public ICollection<GroupBuyItemGroupImageModuleDto> ImageModules { get; set; } = [];
         public string? ConcurrencyStamp { get; set; }
     }
 }

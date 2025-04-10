@@ -4,6 +4,7 @@ using Kooco.Pikachu.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Volo.Abp.EntityFrameworkCore;
 
@@ -12,9 +13,11 @@ using Volo.Abp.EntityFrameworkCore;
 namespace Kooco.Pikachu.Migrations
 {
     [DbContext(typeof(PikachuDbContext))]
-    partial class PikachuDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250410064410_AddedGroupBuyItemGroupImageModule")]
+    partial class AddedGroupBuyItemGroupImageModule
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -561,9 +564,6 @@ namespace Kooco.Pikachu.Migrations
                     b.Property<string>("HashKey")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("InvoiceType")
-                        .HasColumnType("int");
 
                     b.Property<bool>("IsDeleted")
                         .ValueGeneratedOnAdd()
@@ -2799,6 +2799,9 @@ namespace Kooco.Pikachu.Migrations
                         .HasColumnType("datetime2")
                         .HasColumnName("CreationTime");
 
+                    b.Property<int>("CreationType")
+                        .HasColumnType("int");
+
                     b.Property<Guid?>("CreatorId")
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("CreatorId");
@@ -2816,6 +2819,9 @@ namespace Kooco.Pikachu.Migrations
                         .HasMaxLength(12)
                         .HasColumnType("nvarchar(12)");
 
+                    b.Property<int>("InvoiceStatus")
+                        .HasColumnType("int");
+
                     b.Property<int>("InvoiceType")
                         .HasColumnType("int");
 
@@ -2824,12 +2830,6 @@ namespace Kooco.Pikachu.Migrations
                         .HasColumnType("bit")
                         .HasDefaultValue(false)
                         .HasColumnName("IsDeleted");
-
-                    b.Property<bool>("IsVoided")
-                        .HasColumnType("bit");
-
-                    b.Property<int>("IssuanceMethod")
-                        .HasColumnType("int");
 
                     b.Property<DateTime?>("LastModificationTime")
                         .HasColumnType("datetime2")
@@ -2841,14 +2841,6 @@ namespace Kooco.Pikachu.Migrations
 
                     b.Property<Guid>("OrderId")
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("RelateNo")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
-
-                    b.Property<short>("SerialNo")
-                        .HasColumnType("smallint");
 
                     b.Property<decimal>("ShippingCost")
                         .HasColumnType("decimal(18,2)");
@@ -2872,8 +2864,6 @@ namespace Kooco.Pikachu.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("OrderId");
-
-                    b.HasIndex("SerialNo", "RelateNo");
 
                     b.ToTable("AppOrderInvoices", (string)null);
                 });
