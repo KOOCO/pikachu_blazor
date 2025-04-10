@@ -76,10 +76,14 @@ public sealed class ECPayCreateInvoiceInput
     /// </summary>
     public string TaxType { get; set; }
 
-    // 銷售金額
+    /// <summary>
+    /// 銷售金額
+    /// </summary>
     public decimal SalesAmount { get; set; }
 
-    // 發票類型
+    /// <summary>
+    /// 發票類型
+    /// </summary>
     public string InvType { get; set; }
 
     [JsonPropertyName("vat")]

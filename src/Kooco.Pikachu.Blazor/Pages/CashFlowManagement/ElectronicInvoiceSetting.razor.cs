@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Volo.Abp.AspNetCore.Components.Messages;
 using Volo.Abp.ObjectMapping;
 
-namespace Kooco.Pikachu.Blazor.Pages.ElectronicInvoiceSettings;
+namespace Kooco.Pikachu.Blazor.Pages.CashFlowManagement;
 public partial class ElectronicInvoiceSetting(IElectronicInvoiceSettingAppService appService, IObjectMapper objectMapper, IUiMessageService uiMessageService)
 {
     private CreateUpdateElectronicInvoiceDto CreateUpdateElectronicInvoiceDto = new();

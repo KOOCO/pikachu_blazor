@@ -23,7 +23,8 @@ public class ElectronicInvoiceSettingAppService(IElectronicInvoiceSettingReposit
             input.StoreCode,
             input.HashKey,
             input.HashIV,
-            input.DisplayInvoiceName, 
+            input.DisplayInvoiceName,
+            input.InvoiceType,
             input.StatusOnInvoiceIssue.Value,
             input.DaysAfterShipmentGenerateInvoice.Value);
         _ = await repository.InsertAsync(setting);
@@ -38,6 +39,7 @@ public class ElectronicInvoiceSettingAppService(IElectronicInvoiceSettingReposit
         setting.StoreCode = input.StoreCode;
         setting.HashKey = input.HashKey;
         setting.HashIV = input.HashIV;
+        setting.InvoiceType = input.InvoiceType;
         setting.DisplayInvoiceName = input.DisplayInvoiceName;
         setting.DaysAfterShipmentGenerateInvoice = input.DaysAfterShipmentGenerateInvoice.Value;
         setting.StatusOnInvoiceIssue = input.StatusOnInvoiceIssue.Value;

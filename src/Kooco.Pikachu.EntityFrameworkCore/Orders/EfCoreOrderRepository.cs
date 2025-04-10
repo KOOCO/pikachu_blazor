@@ -15,16 +15,9 @@ using Volo.Abp.Domain.Repositories.EntityFrameworkCore;
 using Volo.Abp.EntityFrameworkCore;
 
 namespace Kooco.Pikachu.Orders;
-
-public class EfCoreOrderRepository : EfCoreRepository<PikachuDbContext, Order, Guid>, IOrderRepository
+public class EfCoreOrderRepository(IDbContextProvider<PikachuDbContext> dbContextProvider) :
+    EfCoreRepository<PikachuDbContext, Order, Guid>(dbContextProvider), IOrderRepository
 {
-    #region Constructor
-    public EfCoreOrderRepository(IDbContextProvider<PikachuDbContext> dbContextProvider) : base(dbContextProvider)
-    {
-
-    }
-    #endregion
-
     #region Methods
     public async Task<long> CountAsync(string? filter,
                                        Guid? groupBuyId,
@@ -172,7 +165,7 @@ public class EfCoreOrderRepository : EfCoreRepository<PikachuDbContext, Order, G
                     {
                         Id = oi.Id,
                         SKU = oi.SKU,
-                        Name = oi.ItemType == ItemType.Item ? (oi.Item != null ? oi.Item.ItemName : null) 
+                        Name = oi.ItemType == ItemType.Item ? (oi.Item != null ? oi.Item.ItemName : null)
                             : (oi.ItemType == ItemType.SetItem ? (oi.SetItem != null ? oi.SetItem.SetItemName : null) : (oi.Freebie != null ? oi.Freebie.ItemName : null)),
                         Spec = oi.Spec,
                         Quantity = oi.Quantity,
@@ -500,7 +493,7 @@ public class EfCoreOrderRepository : EfCoreRepository<PikachuDbContext, Order, G
     }
     public async Task<long> ReturnOrderNotificationCountAsync()
     {
-        return await ApplyReturnFilters((await GetQueryableAsync()).Include(o => o.GroupBuy),null,null,null).Where(x => (x.OrderStatus == OrderStatus.Returned || x.OrderStatus == OrderStatus.Exchange)&&x.ReturnStatus==OrderReturnStatus.Pending).CountAsync();
+        return await ApplyReturnFilters((await GetQueryableAsync()).Include(o => o.GroupBuy), null, null, null).Where(x => (x.OrderStatus == OrderStatus.Returned || x.OrderStatus == OrderStatus.Exchange) && x.ReturnStatus == OrderReturnStatus.Pending).CountAsync();
     }
 
     public async Task<List<Order>> GetReturnListAsync(int skipCount, int maxResultCount, string? sorting, string? filter, Guid? groupBuyId)

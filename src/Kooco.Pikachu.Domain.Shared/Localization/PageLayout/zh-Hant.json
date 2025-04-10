@@ -1,6 +1,11 @@
 {
   "culture": "zh-Hant",
   "texts": {
+    "Order:InvoiceType": "發票類別",
+
+    "InvoiceType:GeneralTaxAmount": "一般稅額",
+    "InvoiceType:SpecialTaxAmount": "特種稅額",
+
     "TenantWallet:Amount": "金額",
     "TenantWallet:Balance": "餘額",
     "TenantWallet:Remark": "備註",
