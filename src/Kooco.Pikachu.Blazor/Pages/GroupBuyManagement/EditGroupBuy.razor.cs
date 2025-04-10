@@ -860,6 +860,8 @@ public partial class EditGroupBuy
                             GroupBuyModuleType = itemGroup.GroupBuyModuleType,
                             ProductGroupModuleTitle = itemGroup.ProductGroupModuleTitle,
                             ProductGroupModuleImageSize = itemGroup.ProductGroupModuleImageSize,
+                            Title = itemGroup.Title,
+                            Text = itemGroup.Text,
                             Selected = []
                         };
                     }
@@ -1666,7 +1668,7 @@ public partial class EditGroupBuy
     {
         if (selectedItem.ItemDetailsWithPrices.ContainsKey(detailId))
         {
-            selectedItem.ItemDetailsWithPrices[detailId] = (selectedItem.ItemDetailsWithPrices[detailId].Label,(float)price);
+            selectedItem.ItemDetailsWithPrices[detailId] = (selectedItem.ItemDetailsWithPrices[detailId].Label, (float)price);
         }
     }
     async Task OnBannerUploadAsync(FileChangedEventArgs e)
@@ -2553,7 +2555,8 @@ public partial class EditGroupBuy
                                         });
                                     }
                                 }
-                                else {
+                                else
+                                {
                                     itemGroup.ItemDetails.Add(new GroupBuyItemGroupDetailCreateUpdateDto
                                     {
                                         SortOrder = j++,
@@ -2619,7 +2622,7 @@ public partial class EditGroupBuy
                 foreach (var group in groupItem)
                 {
                     await _groupBuyAppService.UpdateItemProductPrice(result.Id, group.ItemDetails);
-                        }
+                }
                 foreach (List<CreateImageDto> carouselImages in CarouselModules)
                 {
                     foreach (CreateImageDto carouselImage in carouselImages)
@@ -2911,14 +2914,15 @@ public partial class EditGroupBuy
                         }
 
                     }
-                    else {
-                      
+                    else
+                    {
+
                         var existingItem = await _groupBuyItemsPriceAppService.GetBySetItemIdAndGroupBuyIdAsync(itemPrice.SetItem.Id, GroupBuyId);
                         if (existingItem is not null)
                             await _groupBuyItemsPriceAppService.DeleteAsync(existingItem.Id);
 
                     }
-                
+
                 }
 
                 if (item.GroupBuyModuleType is GroupBuyModuleType.GroupPurchaseOverview)

@@ -1,7 +1,7 @@
 ﻿using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Groupbuys;
-using Kooco.Pikachu.Orders;
 using Kooco.Pikachu.Orders.Entities;
+using Kooco.Pikachu.Orders.Repositories;
 using Kooco.Pikachu.TenantManagement;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;

@@ -21,9 +21,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\lib\Kooco.ECPay\Kooco.ECPay.csproj" />
     <ProjectReference Include="..\Kooco.Pikachu.Domain\Kooco.Pikachu.Domain.csproj" />
     <ProjectReference Include="..\Kooco.Pikachu.Application.Contracts\Kooco.Pikachu.Application.Contracts.csproj" />
-    <ProjectReference Include="..\Kooco.Pikachu.ECPay\Kooco.Pikachu.ECPay.csproj" />
   </ItemGroup>
 
   <ItemGroup>

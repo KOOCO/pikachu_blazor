@@ -1,6 +1,6 @@
 ﻿using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.LogisticsProviders;
-using Kooco.Pikachu.OrderDeliveries;
+using Kooco.Pikachu.Orders.Repositories;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using RestSharp;

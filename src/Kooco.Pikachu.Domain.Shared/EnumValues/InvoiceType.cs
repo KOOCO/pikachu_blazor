@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Kooco.Pikachu.EnumValues
+﻿namespace Kooco.Pikachu.EnumValues;
+public enum InvoiceType
 {
-    public enum InvoiceType
-    {
-        PersonalInvoice,
-        CellphoneInvoice,
-        BusinessInvoice
-    }
+    PersonalInvoice,
+    CellphoneInvoice,
+    BusinessInvoice
 }

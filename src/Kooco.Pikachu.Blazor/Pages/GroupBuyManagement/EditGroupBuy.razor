@@ -19,6 +19,7 @@
 @using Blazorise.Components
 @using Blazorise.LoadingIndicator;
 @using Kooco.Pikachu.Blazor.Helpers;
+@using Kooco.Pikachu.Blazor.Components
 @inherits PikachuComponentBase
 @inject IMyTenantAppService MyTenantAppService
 @inject IGroupBuyAppService AppService
@@ -128,16 +129,10 @@
                 <label>@L["Subject"]</label>
             </div>
             <div class="col-10">
-                <Addons>
-                    <Addon AddonType="AddonType.Body">
-                        <MemoEdit MaxLength="@MaxtextCount" @bind-Text="@EditGroupBuyDto.SubjectLine" Rows="5" />
-                    </Addon>
-                    <Addon AddonType="AddonType.End">
-                        <AddonLabel Style="background-color: #f5f5f7">
-                            @(string.IsNullOrWhiteSpace(EditGroupBuyDto.SubjectLine) ? 0 : (EditGroupBuyDto.SubjectLine.Count()))/@MaxtextCount
-                        </AddonLabel>
-                    </Addon>
-                </Addons>
+                <TinyMCEEditor 
+                    @bind-Value="@EditGroupBuyDto.SubjectLine"
+                    Style="min-height: 300px;"
+                />
             </div>
         </div>
         <div class="row">
@@ -1612,10 +1607,13 @@
                                                 <TextEdit @bind-Text="module.Title" />
                                             </Div>
                                             <Div Class="col-2 pb-1">
-                                                <Label>@L["Text"]</Label>
+                                                <Label>@L["CustomTextModule"]</Label>
                                             </Div>
                                             <Div Class="col-12 pb-1">
-                                                <TextEdit @bind-Text="@module.Text" />
+                                                <TinyMCEEditor 
+                                                    @bind-Value="@module.Text"
+                                                    Style="min-height: 500px;"
+                                                />
                                             </Div>
                                         </Div>
                                     }

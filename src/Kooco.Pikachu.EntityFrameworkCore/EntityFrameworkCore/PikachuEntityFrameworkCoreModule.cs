@@ -13,7 +13,7 @@ using Volo.Abp.OpenIddict.EntityFrameworkCore;
 using Volo.Abp.PermissionManagement.EntityFrameworkCore;
 using Volo.Abp.SettingManagement.EntityFrameworkCore;
 using Volo.Abp.TenantManagement.EntityFrameworkCore;
-using Kooco.Pikachu.OrderItems;
+using Kooco.Pikachu.Orders.Entities;
 
 namespace Kooco.Pikachu.EntityFrameworkCore;
 

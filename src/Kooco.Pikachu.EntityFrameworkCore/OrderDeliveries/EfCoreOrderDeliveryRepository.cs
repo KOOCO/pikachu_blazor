@@ -1,6 +1,7 @@
 ﻿using Kooco.Pikachu.EntityFrameworkCore;
 using Kooco.Pikachu.EnumValues;
-using Kooco.Pikachu.Orders;
+using Kooco.Pikachu.Orders.Entities;
+using Kooco.Pikachu.Orders.Repositories;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;

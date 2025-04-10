@@ -1109,6 +1109,16 @@
     "InstallmentPeriods.18": "18期",
     "InstallmentPeriods.24": "24期",
     "EnterANewBadge": "輸入新徽章",
-    "CustomTextModule": "文字內容模組"
+    "CustomTextModule": "文字內容模組",
+    "AreYouSureToDeleteThisMessage": "確定要刪除此訊息嗎？",
+    "StoreComments": "商店備註",
+    "StoreCommentsHistory": "商店備註歷史",
+    "CustomerService": "客服訊息",
+    "TypeMessage": "輸入訊息",
+    "Send": "發送",
+    "NoMessages": "尚無訊息",
+    "EnterText": "請輸入文字內容",
+    "Text": "內容",
+    "SelectModule": "選擇模組"
   }
 }

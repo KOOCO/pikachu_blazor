@@ -2,6 +2,7 @@
 using Kooco.Pikachu.Items.Dtos;
 using Kooco.Pikachu.Orders;
 using Kooco.Pikachu.Orders.Entities;
+using Kooco.Pikachu.Orders.Repositories;
 using Kooco.Pikachu.Permissions;
 using Kooco.Pikachu.PikachuAccounts;
 using Kooco.Pikachu.ShoppingCredits;

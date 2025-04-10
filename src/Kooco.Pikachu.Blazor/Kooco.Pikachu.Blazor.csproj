@@ -68,6 +68,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Kooco.Pikachu.Application\Kooco.Pikachu.Application.csproj" />
+    <ProjectReference Include="..\Kooco.Pikachu.Application.Contracts\Kooco.Pikachu.Application.Contracts.csproj" />
     <ProjectReference Include="..\Kooco.Pikachu.HttpApi\Kooco.Pikachu.HttpApi.csproj" />
     <ProjectReference Include="..\Kooco.Pikachu.EntityFrameworkCore\Kooco.Pikachu.EntityFrameworkCore.csproj" />
     <PackageReference Include="Volo.Abp.Autofac" Version="9.0.4" />
