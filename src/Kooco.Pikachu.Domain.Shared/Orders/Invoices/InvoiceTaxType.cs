@@ -1,7 +1,7 @@
 ﻿namespace Kooco.Pikachu.Orders.Invoices;
 
 /// <summary>
-/// 課稅類型
+/// 稅務種類
 /// </summary>
 public enum InvoiceTaxType
 {

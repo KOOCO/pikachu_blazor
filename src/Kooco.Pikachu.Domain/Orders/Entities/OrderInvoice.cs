@@ -4,6 +4,10 @@ using System.Collections.Generic;
 using Volo.Abp.Domain.Entities.Auditing;
 
 namespace Kooco.Pikachu.Orders.Entities;
+
+/// <summary>
+/// 訂單發票
+/// </summary>
 public sealed class OrderInvoice : FullAuditedEntity<Guid>
 {
     /// <summary>
@@ -17,14 +21,14 @@ public sealed class OrderInvoice : FullAuditedEntity<Guid>
     public string? UnifiedBusinessNo { get; set; }
 
     /// <summary>
-    /// 創建方式
-    /// </summary>
-    public required InvoiceCreation CreationType { get; set; }
-
-    /// <summary>
-    /// 發票類型
+    /// 發票類別
     /// </summary>
     public required InvoiceType InvoiceType { get; set; }
+
+    /// <summary>
+    /// 開立方式
+    /// </summary>
+    public required InvoiceIssuanceMethod IssuanceMethod { get; set; }
 
     /// <summary>
     /// 發票狀態
@@ -32,7 +36,7 @@ public sealed class OrderInvoice : FullAuditedEntity<Guid>
     public required InvoiceStatus InvoiceStatus { get; set; }
 
     /// <summary>
-    /// 發票金額
+    /// 小計金額
     /// </summary>
     public required decimal SubtotalAmount { get; set; }
 
@@ -42,14 +46,14 @@ public sealed class OrderInvoice : FullAuditedEntity<Guid>
     public required decimal ShippingCost { get; set; }
 
     /// <summary>
-    /// 稅額
-    /// </summary>
-    public required decimal TaxAmount { get; set; }
-
-    /// <summary>
-    /// 課稅類型
+    /// 稅務種類
     /// </summary>
     public required InvoiceTaxType TaxType { get; set; }
+
+    /// <summary>
+    /// 稅務金額
+    /// </summary>
+    public required decimal TaxAmount { get; set; }
 
     /// <summary>
     /// 總金額

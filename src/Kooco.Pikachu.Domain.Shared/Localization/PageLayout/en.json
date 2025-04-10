@@ -1,6 +1,11 @@
 {
   "culture": "en",
   "texts": {
+    "Order:InvoiceType": "Invoice Type",
+
+    "InvoiceType:GeneralTaxAmount": "General Tax Amount",
+    "InvoiceType:SpecialTaxAmount": "Special Tax Amount",
+
     "TenantWallet:Amount": "Amount",
     "TenantWallet:Balance": "Balance",
     "TenantWallet:Remark": "Remark",

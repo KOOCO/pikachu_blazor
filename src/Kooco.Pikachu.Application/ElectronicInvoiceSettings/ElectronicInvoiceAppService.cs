@@ -34,6 +34,37 @@ public class ElectronicInvoiceAppService : PikachuAppService, IElectronicInvoice
             .ThenInclude(x => x.Freebie)
             .First(x => x.Id == orderId);
 
+        List<ECPayCreateInvoiceInput.Item> invoiceItems = [
+            new ECPayCreateInvoiceInput.Item
+            {
+                ItemName = L["DeliveryFee"],
+                ItemCount = 1,
+                ItemWord = "1",
+                ItemAmount = (decimal)order.DeliveryCost,
+            },
+            new ECPayCreateInvoiceInput.Item
+            {
+                ItemName = L["Discount"],
+                ItemCount = 1,
+                ItemWord = "1",
+                ItemAmount = (decimal)order.DiscountAmount,
+            }
+        ];
+
+        foreach (var orderItem in order.OrderItems)
+        {
+            var taxTypeId = orderItem.Item!.TaxTypeId;
+
+            invoiceItems.Add(new()
+            {
+                ItemName = orderItem.Item.ItemName,
+                ItemCount = orderItem.Quantity,
+                ItemPrice = orderItem.ItemPrice,
+                //ItemTaxType = orderItem.Item.TaxTypeId == TaxType.Taxable ? 1 : 3,
+                //ItemAmount = (decimal)orderItem.Item.Price * orderItem.Quantity,
+            });
+        }
+
         if (!order.InvoiceNumber.IsNullOrEmpty()) return "";
         var groupBuy = await GroupBuyRepository.GetAsync(order.GroupBuyId);
 
@@ -45,6 +76,8 @@ public class ElectronicInvoiceAppService : PikachuAppService, IElectronicInvoice
         var customerAddress = order.AddressDetails.IsNullOrEmpty() ? order.CustomerEmail : order.AddressDetails;
 
         var totalAmount = Convert.ToInt32(order.TotalAmount);
+
+
 
         ECPayCreateInvoiceInput input = new()
         {
@@ -64,20 +97,8 @@ public class ElectronicInvoiceAppService : PikachuAppService, IElectronicInvoice
             SalesAmount = totalAmount,
             CustomerIdentifier = order.UniformNumber,
             InvType = "07",
-            Vat = "1",
-            Items =
-            [
-                new ECPayCreateInvoiceInput.Item
-                {
-                    ItemName = L["Total"],
-                    ItemCount = 1,
-                    ItemWord = "1",
-                    ItemPrice = totalAmount,
-                    ItemTaxType = 1,
-                    ItemAmount = totalAmount,
-                    ItemRemark = ""
-                }
-            ]
+            Vat = "1", // 含稅4:1 => 未稅6:0
+            Items = invoiceItems
         };
 
         var (transCode, result) = await ECPayInvoiceService.CreateInvoiceAsync(setting.HashKey, setting.HashIV, input);

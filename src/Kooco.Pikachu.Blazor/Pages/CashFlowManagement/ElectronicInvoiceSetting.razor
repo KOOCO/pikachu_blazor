@@ -6,10 +6,12 @@
 @using Microsoft.Extensions.Localization;
 @using System.ComponentModel
 @using Blazorise.Components;
-
+@using Kooco.Pikachu.Orders.Invoices;
+@using InvoiceType = Kooco.Pikachu.Orders.Invoices.InvoiceType;
 
 @inject NavigationManager NavigationManager
 @inject IStringLocalizer<PikachuResource> L
+@inject IStringLocalizer<PageLayoutResource> PL
 @inject IMessageService _message
 @attribute [Authorize]
 
@@ -74,7 +76,7 @@
                 <!-- Store Code -->
                 <div class="col-12 row mb-3">
                     <div class="col-3 text-lg-end pt-2">
-                        <label class="form-label required">@L["StoreName"]</label>
+                        <label class="form-label required">@L["MerchantID"]</label>
                     </div>
                     <div class="col-9">
                         <Validation>
@@ -135,6 +137,31 @@
                                     <ValidationError></ValidationError>
                                 </Feedback>
                             </TextEdit>
+                        </Validation>
+                    </div>
+                </div>
+
+                <!-- Display Invoice Type -->
+                <div class="col-12 row mb-3">
+                    <div class="col-3 text-lg-end pt-2">
+                        <label class="form-label required">@PL["Order:InvoiceType"]</label>
+                    </div>
+                    <div class="col-9">
+                        <Validation>
+                            <Select TValue="InvoiceType"
+                                    class="form-control"
+                                    @bind-SelectedValue="@CreateUpdateElectronicInvoiceDto.InvoiceType">
+                                <Feedback>
+                                    <ValidationError></ValidationError>
+                                </Feedback>
+                                <ChildContent>
+                                    <SelectItem Value="0"></SelectItem>
+                                    @foreach (var status in Enum.GetValues<InvoiceType>())
+                                    {
+                                        <SelectItem Value="@status">@PL[$"{nameof(InvoiceType)}:{status.ToString()}"]</SelectItem>
+                                    }
+                                </ChildContent>
+                            </Select>
                         </Validation>
                     </div>
                 </div>

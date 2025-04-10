@@ -21,6 +21,9 @@ public sealed class OrderInvoiceMap : IEntityTypeConfiguration<OrderInvoice>
         builder.Property(x => x.InvoiceType)
             .IsRequired();
 
+        builder.Property(x => x.IssuanceMethod)
+            .IsRequired();
+
         builder.Property(x => x.InvoiceStatus)
             .IsRequired();
 
@@ -37,9 +40,6 @@ public sealed class OrderInvoiceMap : IEntityTypeConfiguration<OrderInvoice>
             .IsRequired();
 
         builder.Property(x => x.TotalAmount)
-            .IsRequired();
-
-        builder.Property(x => x.CreationType)
             .IsRequired();
 
         builder.HasOne(x => x.Order)

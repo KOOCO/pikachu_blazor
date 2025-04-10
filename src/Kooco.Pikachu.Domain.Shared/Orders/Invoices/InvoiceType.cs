@@ -1,22 +1,17 @@
 ﻿namespace Kooco.Pikachu.Orders.Invoices;
 
 /// <summary>
-/// 發票類型
+/// 發票類別
 /// </summary>
 public enum InvoiceType
 {
     /// <summary>
-    /// 紙本
+    /// 一般稅額
     /// </summary>
-    Paper,
+    GeneralTaxAmount,
 
     /// <summary>
-    /// 載具
+    /// 特種稅額
     /// </summary>
-    Carrier,
-
-    /// <summary>
-    /// 捐贈
-    /// </summary>
-    Donation
+    SpecialTaxAmount,
 }
