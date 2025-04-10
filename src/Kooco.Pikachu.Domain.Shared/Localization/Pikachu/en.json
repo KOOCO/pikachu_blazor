@@ -1402,6 +1402,7 @@
     "EnterText": "Please enter text",
     "Text": "Content",
     "SelectModule": "Select Module",
-    "PartnershipModule": "Partnership Module"
+    "PartnershipModule": "Partnership Module",
+    "CarouselModuleStyleCannotBeEmpty": "Carousel Module style can not be empty"
   }
 }

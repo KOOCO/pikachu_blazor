@@ -2572,6 +2572,24 @@ public partial class CreateGroupBuy
                 }
             }
 
+            if (CarouselModules is { Count: > 0 })
+            {
+                foreach (var carouselImages in CarouselModules)
+                {
+                    foreach (var carouselImage in carouselImages)
+                    {
+                        if (carouselImage.CarouselStyle == null)
+                        {
+                            await _uiMessageService.Error(L["CarouselModuleStyleCannotBeEmpty"]);
+
+                            await Loading.Hide();
+
+                            return;
+                        }
+                    }
+                }
+            }
+
             CreateGroupBuyDto.NotifyMessage = await NotifyEmailHtml.GetHTML();
             //CreateGroupBuyDto.GroupBuyConditionDescription = await GroupBuyHtml.GetHTML();
 

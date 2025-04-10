@@ -971,7 +971,7 @@ public partial class EditGroupBuy
 
                         StateHasChanged();
                     }
-                    
+
                     foreach (var imageModule in itemGroup.ImageModules)
                     {
                         CollapseItem[index].ImageModules.Add(new MultiImageModuleItem
@@ -2549,6 +2549,24 @@ public partial class EditGroupBuy
                         await Loading.Hide();
 
                         return;
+                    }
+                }
+            }
+
+            if (CarouselModules is { Count: > 0 })
+            {
+                foreach (var carouselImages in CarouselModules)
+                {
+                    foreach (var carouselImage in carouselImages)
+                    {
+                        if (carouselImage.CarouselStyle == null)
+                        {
+                            await _uiMessageService.Error(L["CarouselModuleStyleCannotBeEmpty"]);
+
+                            await Loading.Hide();
+
+                            return;
+                        }
                     }
                 }
             }
