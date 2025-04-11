@@ -132,8 +132,9 @@ public class EfCoreGroupBuyRepository : EfCoreRepository<PikachuDbContext, Group
             .Include(ig => ig.ItemGroupDetails.OrderBy(i => i.SortOrder))
                 .ThenInclude(igd => igd.Item)
                 .ThenInclude(i => i.ItemDetails)
-            .Include(ig => ig.ItemGroupDetails.OrderBy(i => i.SortOrder));
-
+            .Include(ig => ig.ItemGroupDetails.OrderBy(i => i.SortOrder))
+            .Include(ig => ig.ImageModules)
+                .ThenInclude(im => im.Images.OrderBy(i => i.SortNo));
         return [.. itemGroups];
     }
 
