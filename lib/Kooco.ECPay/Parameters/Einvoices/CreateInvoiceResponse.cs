@@ -1,5 +1,5 @@
-﻿namespace Kooco.Einvoices;
-public readonly struct ECPayCreateInvoiceResponse
+﻿namespace Kooco.Parameters.Einvoices;
+public readonly struct CreateInvoiceResponse
 {
     public int  PlatformID { get; init; }
     public int  MerchantID { get; init; }
