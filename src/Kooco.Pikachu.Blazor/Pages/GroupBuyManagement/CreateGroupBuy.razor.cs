@@ -2530,7 +2530,7 @@ public partial class CreateGroupBuy
                 {
                     if (groupBuyOrderInstruction.Title.IsNullOrEmpty())
                     {
-                        await _uiMessageService.Error("Title Cannot be empty in Group Purchase Overview Module");
+                        await _uiMessageService.Error("Title Cannot be empty in GroupBuy Order Instruction Module");
 
                         await Loading.Hide();
 
@@ -2539,7 +2539,7 @@ public partial class CreateGroupBuy
 
                     if (groupBuyOrderInstruction.Image.IsNullOrEmpty())
                     {
-                        await _uiMessageService.Error("Please Add Image in Group Purchase Overview Module");
+                        await _uiMessageService.Error("Please Add Image in GroupBuy Order Instruction Module");
 
                         await Loading.Hide();
 
@@ -2554,7 +2554,7 @@ public partial class CreateGroupBuy
                 {
                     if (productRankingCarouselModule.Title.IsNullOrEmpty())
                     {
-                        await _uiMessageService.Error("Title Cannot be empty in Group Purchase Overview Module");
+                        await _uiMessageService.Error("Title Cannot be empty in Product Ranking Carousel Module");
 
                         await Loading.Hide();
 
@@ -2563,7 +2563,7 @@ public partial class CreateGroupBuy
 
                     if (productRankingCarouselModule.SubTitle.IsNullOrEmpty())
                     {
-                        await _uiMessageService.Error("SubTitle Cannot be empty in Group Purchase Overview Module");
+                        await _uiMessageService.Error("SubTitle Cannot be empty in Product Ranking Carousel Modules");
 
                         await Loading.Hide();
 
