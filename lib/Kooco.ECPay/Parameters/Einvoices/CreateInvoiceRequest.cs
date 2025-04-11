@@ -1,7 +1,7 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Kooco.Einvoices;
-public sealed class ECPayCreateInvoiceRequest
+namespace Kooco.Parameters.Einvoices;
+public sealed class CreateInvoiceRequest
 {
     [JsonPropertyName("PlatformID")]
     public string? PlatformId { get; set; }

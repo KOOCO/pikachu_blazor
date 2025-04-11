@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
-namespace Kooco.Einvoices;
-public sealed class ECPayCreateInvoiceInput
+namespace Kooco.Parameters.Einvoices;
+public sealed class CreateInvoiceInput
 {
     /// <summary>
     /// 特店編號 String(10)

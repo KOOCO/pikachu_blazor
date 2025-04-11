@@ -1,4 +1,5 @@
-﻿using Kooco.Einvoices;
+﻿using Kooco.Invoices.Interfaces;
+using Kooco.Parameters.Einvoices;
 using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Groupbuys;
 using Kooco.Pikachu.GroupBuys;
@@ -34,36 +35,19 @@ public class ElectronicInvoiceAppService : PikachuAppService, IElectronicInvoice
             .ThenInclude(x => x.Freebie)
             .First(x => x.Id == orderId);
 
-        List<ECPayCreateInvoiceInput.Item> invoiceItems = [
-            new ECPayCreateInvoiceInput.Item
-            {
-                ItemName = L["DeliveryFee"],
-                ItemCount = 1,
-                ItemWord = "1",
-                ItemAmount = (decimal)order.DeliveryCost,
-            },
-            new ECPayCreateInvoiceInput.Item
-            {
-                ItemName = L["Discount"],
-                ItemCount = 1,
-                ItemWord = "1",
-                ItemAmount = (decimal)order.DiscountAmount,
-            }
-        ];
+        //foreach (var orderItem in order.OrderItems)
+        //{
+        //    var taxTypeId = orderItem.Item.TaxTypeId;
 
-        foreach (var orderItem in order.OrderItems)
-        {
-            var taxTypeId = orderItem.Item!.TaxTypeId;
-
-            invoiceItems.Add(new()
-            {
-                ItemName = orderItem.Item.ItemName,
-                ItemCount = orderItem.Quantity,
-                ItemPrice = orderItem.ItemPrice,
-                //ItemTaxType = orderItem.Item.TaxTypeId == TaxType.Taxable ? 1 : 3,
-                //ItemAmount = (decimal)orderItem.Item.Price * orderItem.Quantity,
-            });
-        }
+        //    invoiceItems.Add(new()
+        //    {
+        //        ItemName = orderItem.Item.ItemName,
+        //        ItemCount = orderItem.Quantity,
+        //        ItemPrice = orderItem.ItemPrice,
+        //        //ItemTaxType = orderItem.Item.TaxTypeId == TaxType.Taxable ? 1 : 3,
+        //        //ItemAmount = (decimal)orderItem.Item.Price * orderItem.Quantity,
+        //    });
+        //}
 
         if (!order.InvoiceNumber.IsNullOrEmpty()) return "";
         var groupBuy = await GroupBuyRepository.GetAsync(order.GroupBuyId);
@@ -75,11 +59,34 @@ public class ElectronicInvoiceAppService : PikachuAppService, IElectronicInvoice
         var carrierNumber = carrierType == "3" ? order.CarrierId : null;
         var customerAddress = order.AddressDetails.IsNullOrEmpty() ? order.CustomerEmail : order.AddressDetails;
 
-        var totalAmount = Convert.ToInt32(order.TotalAmount);
+        var salesAmount = Convert.ToInt32(order.TotalAmount + order.DeliveryCost + order.DiscountAmount);
+
+        List<CreateInvoiceInput.Item> invoiceItems = [
+            new CreateInvoiceInput.Item
+            {
+                ItemName = L["DeliveryFee"],
+                ItemCount = 1,
+                ItemWord = "1",
+                ItemAmount = (decimal)order.DeliveryCost,
+            },
+            new CreateInvoiceInput.Item
+            {
+                ItemName = L["Discount"],
+                ItemCount = 1,
+                ItemWord = "1",
+                ItemAmount = (decimal)order.DiscountAmount,
+            },
+            new CreateInvoiceInput.Item
+            {
+                ItemName = L["AmountString"],
+                ItemCount = 1,
+                ItemWord = "1",
+                ItemAmount = order.TotalAmount,
+            }
+        ];
 
 
-
-        ECPayCreateInvoiceInput input = new()
+        CreateInvoiceInput input = new()
         {
             MerchantId = setting?.StoreCode ?? string.Empty,
             RelateNo = order.OrderNo,
@@ -94,7 +101,7 @@ public class ElectronicInvoiceAppService : PikachuAppService, IElectronicInvoice
             Print = print,
             Donation = "0",
             TaxType = "1", //groupBuy.TaxType==TaxType.Taxable?"1":groupBuy.TaxType==TaxType.NonTaxable?"3":"9",
-            SalesAmount = totalAmount,
+            SalesAmount = salesAmount,
             CustomerIdentifier = order.UniformNumber,
             InvType = "07",
             Vat = "1", // 含稅4:1 => 未稅6:0
