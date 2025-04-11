@@ -1,4 +1,5 @@
 ﻿using Kooco.Pikachu.EntityFrameworkCore;
+using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.TierManagement;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -17,6 +18,8 @@ namespace Kooco.Pikachu.Members;
 public class EfCoreMemberRepository(IDbContextProvider<PikachuDbContext> pikachuDbContextProvider,
     IDbContextProvider<IIdentityDbContext> dbContextProvider) : EfCoreIdentityUserRepository(dbContextProvider), IMemberRepository
 {
+    private readonly List<ShippingStatus> CompletedShippingStatus = [ShippingStatus.Completed, ShippingStatus.Closed];
+
     protected virtual Task<PikachuDbContext> GetPikachuDbContextAsync()
     {
         return pikachuDbContextProvider.GetDbContextAsync();
@@ -76,8 +79,8 @@ public class EfCoreMemberRepository(IDbContextProvider<PikachuDbContext> pikachu
                         PhoneNumber = user.PhoneNumber,
                         Email = user.Email,
                         Birthday = (DateTime?)user.GetProperty(Constant.Birthday, null),
-                        TotalOrders = dbContext.Orders.Where(x => x.UserId == user.Id).Count(),
-                        TotalSpent = (int)dbContext.Orders.Where(x => x.UserId == user.Id && (x.OrderStatus != EnumValues.OrderStatus.Exchange && x.OrderStatus != EnumValues.OrderStatus.Refund)).Sum(x => x.TotalAmount),
+                        TotalOrders = dbContext.Orders.Where(x => x.UserId == user.Id && CompletedShippingStatus.Contains(x.ShippingStatus)).Count(),
+                        TotalSpent = (int)dbContext.Orders.Where(x => x.UserId == user.Id && CompletedShippingStatus.Contains(x.ShippingStatus)).Sum(x => x.TotalAmount),
                         LineId = EF.Property<string>(user, Constant.LineId),
                         GoogleId = EF.Property<string>(user, Constant.GoogleId),
                         FacebookId = EF.Property<string>(user, Constant.FacebookId),
@@ -104,7 +107,7 @@ public class EfCoreMemberRepository(IDbContextProvider<PikachuDbContext> pikachu
 
         if (vipTierSettings == null) return default;
 
-        var orders = dbContext.Orders.Where(o => o.UserId == userId);
+        var orders = dbContext.Orders.Where(o => o.UserId == userId && CompletedShippingStatus.Contains(o.ShippingStatus));
 
         var count = await orders.LongCountAsync();
         var amount = await orders.SumAsync(x => x.TotalAmount);
@@ -114,16 +117,16 @@ public class EfCoreMemberRepository(IDbContextProvider<PikachuDbContext> pikachu
         return vipTierSettings switch
         {
             { BasedOnAmount: true, BasedOnCount: true, TierCondition: VipTierCondition.OnlyWhenReachedBoth }
-                => tiers.FirstOrDefault(tier => tier.OrdersAmount < amount && tier.OrdersCount < count),
+                => tiers.FirstOrDefault(tier => tier.OrdersAmount <= amount && tier.OrdersCount <= count),
 
             { BasedOnAmount: true, BasedOnCount: true }
-                => tiers.FirstOrDefault(tier => tier.OrdersAmount < amount || tier.OrdersCount < count),
+                => tiers.FirstOrDefault(tier => tier.OrdersAmount <= amount || tier.OrdersCount <= count),
 
             { BasedOnAmount: true }
-                => tiers.FirstOrDefault(tier => tier.OrdersAmount < amount),
+                => tiers.FirstOrDefault(tier => tier.OrdersAmount <= amount),
 
             { BasedOnCount: true }
-                => tiers.FirstOrDefault(tier => tier.OrdersCount < count),
+                => tiers.FirstOrDefault(tier => tier.OrdersCount <= count),
 
             _ => null
         };
@@ -143,7 +146,7 @@ public class EfCoreMemberRepository(IDbContextProvider<PikachuDbContext> pikachu
             .GroupJoin(dbContext.Orders,
             user => user.Id,
             order => order.UserId,
-            (user, orders) => new { user, orders })
+            (user, orders) => new { user, orders = orders.Where(o => CompletedShippingStatus.Contains(o.ShippingStatus)) })
             .Select(g => new
             {
                 User = g.user,
@@ -162,16 +165,16 @@ public class EfCoreMemberRepository(IDbContextProvider<PikachuDbContext> pikachu
                 var tier = vipTierSettings switch
                 {
                     { BasedOnAmount: true, BasedOnCount: true, TierCondition: VipTierCondition.OnlyWhenReachedBoth }
-                        => tiers.FirstOrDefault(tier => tier.OrdersAmount < member.TotalSpent && tier.OrdersCount < member.TotalOrders),
+                        => tiers.FirstOrDefault(tier => tier.OrdersAmount <= member.TotalSpent && tier.OrdersCount <= member.TotalOrders),
 
                     { BasedOnAmount: true, BasedOnCount: true }
-                        => tiers.FirstOrDefault(tier => tier.OrdersAmount < member.TotalSpent || tier.OrdersCount < member.TotalOrders),
+                        => tiers.FirstOrDefault(tier => tier.OrdersAmount <= member.TotalSpent || tier.OrdersCount <= member.TotalOrders),
 
                     { BasedOnAmount: true }
-                        => tiers.FirstOrDefault(tier => tier.OrdersAmount < member.TotalSpent),
+                        => tiers.FirstOrDefault(tier => tier.OrdersAmount <= member.TotalSpent),
 
                     { BasedOnCount: true }
-                        => tiers.FirstOrDefault(tier => tier.OrdersCount < member.TotalOrders),
+                        => tiers.FirstOrDefault(tier => tier.OrdersCount <= member.TotalOrders),
 
                     _ => null
                 };
