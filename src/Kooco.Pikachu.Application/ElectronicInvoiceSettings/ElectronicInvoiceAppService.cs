@@ -67,6 +67,8 @@ public class ElectronicInvoiceAppService : PikachuAppService, IElectronicInvoice
                 ItemName = L["DeliveryFee"],
                 ItemCount = 1,
                 ItemWord = "1",
+                ItemPrice = (decimal)order.DeliveryCost,
+                ItemTaxType = 1,
                 ItemAmount = (decimal)order.DeliveryCost,
             },
             new CreateInvoiceInput.Item
@@ -74,14 +76,20 @@ public class ElectronicInvoiceAppService : PikachuAppService, IElectronicInvoice
                 ItemName = L["Discount"],
                 ItemCount = 1,
                 ItemWord = "1",
+                ItemPrice = (decimal)order.DiscountAmount,
+                ItemTaxType = 1,
                 ItemAmount = (decimal)order.DiscountAmount,
             },
             new CreateInvoiceInput.Item
             {
-                ItemName = L["AmountString"],
+                ItemSeq = 1,
+                ItemName = L["Total"],
                 ItemCount = 1,
                 ItemWord = "1",
+                ItemPrice = order.TotalAmount,
+                ItemTaxType = 1,
                 ItemAmount = order.TotalAmount,
+                ItemRemark = ""
             }
         ];
 
