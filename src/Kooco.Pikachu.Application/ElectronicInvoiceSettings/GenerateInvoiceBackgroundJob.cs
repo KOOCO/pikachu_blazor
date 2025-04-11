@@ -1,5 +1,4 @@
-﻿
-using Hangfire;
+﻿using Hangfire;
 using Kooco.Pikachu.Orders.Interfaces;
 using System.Threading.Tasks;
 using Volo.Abp.BackgroundJobs;

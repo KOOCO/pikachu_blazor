@@ -1,5 +1,4 @@
-﻿using Kooco.Invoices.Interfaces;
-using Kooco.Parameters.Einvoices;
+﻿using Kooco.Invoices;
 using Kooco.Pikachu.ElectronicInvoiceSettings;
 using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Groupbuys;
@@ -66,8 +65,8 @@ public class OrderInvoiceAppService : PikachuAppService, IOrderInvoiceAppService
 
         var salesAmount = Convert.ToInt32(order.TotalAmount + order.DeliveryCost + order.DiscountAmount);
 
-        List<CreateInvoiceInput.Item> invoiceItems = [
-            new CreateInvoiceInput.Item
+        List<ECPayCreateInvoiceInput.Item> invoiceItems = [
+            new ECPayCreateInvoiceInput.Item
             {
                 ItemSeq = 1,
                 ItemName = L["AmountString"],
@@ -78,7 +77,7 @@ public class OrderInvoiceAppService : PikachuAppService, IOrderInvoiceAppService
                 ItemAmount = order.TotalAmount,
                 ItemRemark = ""
             },
-            new CreateInvoiceInput.Item
+            new ECPayCreateInvoiceInput.Item
             {
                 ItemSeq = 2,
                 ItemName = L["DeliveryFee"],
@@ -88,7 +87,7 @@ public class OrderInvoiceAppService : PikachuAppService, IOrderInvoiceAppService
                 ItemTaxType = 1,
                 ItemAmount = (decimal)order.DeliveryCost,
             },
-            new CreateInvoiceInput.Item
+            new ECPayCreateInvoiceInput.Item
             {
                 ItemSeq = 3,
                 ItemName = L["Discount"],
@@ -103,7 +102,7 @@ public class OrderInvoiceAppService : PikachuAppService, IOrderInvoiceAppService
         var serialNo = await OrderInvoiceRepository.GetInvoiceSerialNoAsync(orderId);
         var relateNo = $"{order.OrderNo}-{serialNo:D3}";
 
-        CreateInvoiceInput input = new()
+        ECPayCreateInvoiceInput input = new()
         {
             MerchantId = setting?.StoreCode ?? string.Empty,
             RelateNo = relateNo,
