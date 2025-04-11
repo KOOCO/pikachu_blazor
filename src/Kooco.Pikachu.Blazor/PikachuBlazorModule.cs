@@ -303,12 +303,10 @@ public class PikachuBlazorModule : AbpModule
 #else
             .MinimumLevel.Information()
 #endif
-            //.MinimumLevel.Override("Microsoft", LogEventLevel.Information)
-            .MinimumLevel.Override("Microsoft.AspNetCore.Authorization", LogEventLevel.Warning)
-            .MinimumLevel.Override("Microsoft.AspNetCore.Mvc.Infrastructure", LogEventLevel.Warning)
-            .MinimumLevel.Override("Microsoft.AspNetCore.Mvc.RazorPages", LogEventLevel.Warning)
-            .MinimumLevel.Override("Microsoft.AspNetCore.Routing", LogEventLevel.Warning)
+            .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
             .MinimumLevel.Override("Microsoft.EntityFrameworkCore", LogEventLevel.Warning)
+            .MinimumLevel.Override("Volo.Abp", LogEventLevel.Warning)
+            .MinimumLevel.Override("Volo.Abp.EntityFrameworkCore", LogEventLevel.Warning)
             .Enrich.FromLogContext()
             .Enrich.WithProperty("ApplicationName", $"{Globals.PikachuConsts.ApplicationName}-{env}")
             .WriteTo.Async(c => c.File(

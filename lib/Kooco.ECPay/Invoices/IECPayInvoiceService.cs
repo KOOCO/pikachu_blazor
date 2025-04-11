@@ -5,22 +5,22 @@ using System.Web;
 using Text.Json;
 using Volo.Abp.DependencyInjection;
 
-namespace Kooco.Parameters.Einvoices;
-internal interface IEinvoiceService
-{
-    Task<(int transCode, CreateInvoiceResult result)> CreateInvoiceAsync(string hashKey, string hashIV, CreateInvoiceInput input);
-}
-
-[Dependency(ServiceLifetime.Singleton)]
-file sealed class EinvoiceService : IEinvoiceService
+namespace Kooco.Invoices;
+public interface IECPayInvoiceService
 {
     /// <summary>
     /// 發票開立
     /// </summary>
-    public async Task<(int transCode, CreateInvoiceResult result)> CreateInvoiceAsync(string hashKey, string hashIV, CreateInvoiceInput input)
+    Task<(int transCode, ECPayCreateInvoiceResult result)> CreateInvoiceAsync(string hashKey, string hashIV, ECPayCreateInvoiceInput input);
+}
+
+[Dependency(ServiceLifetime.Singleton)]
+file sealed class ECPayInvoiceService : IECPayInvoiceService
+{
+    public async Task<(int transCode, ECPayCreateInvoiceResult result)> CreateInvoiceAsync(string hashKey, string hashIV, ECPayCreateInvoiceInput input)
     {
         var json = input.ToJson(ECPayDefaults.JsonSerializerOptions);
-        StringContent request = new(new CreateInvoiceRequest
+        StringContent request = new(new ECPayCreateInvoiceRequest
         {
             MerchantId = input.MerchantId,
             RequestHeader = new()
@@ -33,10 +33,10 @@ file sealed class EinvoiceService : IEinvoiceService
         var client = HttpClientFactory.CreateClient(nameof(ECPayConstants.Einvoice));
         var message = await client.PostAsync(ECPayConstants.Einvoice.B2CInvoicePath, request);
         var content = await message.Content.ReadAsStringAsync();
-        var response = content.ToObject<CreateInvoiceResponse>();
+        var response = content.ToObject<ECPayCreateInvoiceResponse>();
         var result = await response.Data.AesDecryptAsync(hashKey, hashIV);
         var data = HttpUtility.UrlDecode(result);
-        return (response.TransCode, data.ToObject<CreateInvoiceResult>());
+        return (response.TransCode, data.ToObject<ECPayCreateInvoiceResult>());
     }
 
     public required IHttpClientFactory HttpClientFactory { get; init; }
