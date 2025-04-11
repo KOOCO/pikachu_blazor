@@ -14,6 +14,8 @@ public interface ITenantSettingsAppService : IApplicationService
     Task<TenantInformationDto> GetTenantInformationAsync();
     Task<TenantCustomerServiceDto> UpdateTenantCustomerServiceAsync(UpdateTenantCustomerServiceDto input);
     Task<TenantCustomerServiceDto> GetTenantCustomerServiceAsync();
+    Task<string?> UpdateTenantTermsAndConditionsAsync([Required] string termsAndConditions);
+    Task<string?> GetTenantTermsAndConditionsAsync();
     Task<string?> UpdateTenantPrivacyPolicyAsync([Required] string privacyPolicy);
     Task<string?> GetTenantPrivacyPolicyAsync();
     Task<TenantFrontendInformationDto> UpdateTenantFrontendInformationAsync(UpdateTenantFrontendInformationDto input);

@@ -102,6 +102,16 @@ public class TenantSettingsManager(IRepository<TenantSettings, Guid> tenantSetti
         return tenantSettings;
     }
 
+    public async Task<TenantSettings> UpdateTermsAndConditionsAsync(string termsAndConditions)
+    {
+        Check.NotNullOrWhiteSpace(termsAndConditions, nameof(termsAndConditions));
+
+        var tenantSettings = await GetAsync();
+        tenantSettings.SetTermsAndConditions(termsAndConditions);
+        await tenantSettingsRepository.UpdateAsync(tenantSettings);
+        return tenantSettings;
+    }
+
     public async Task<TenantSettings> UpdatePrivacyPolicyAsync(string privacyPolicy)
     {
         Check.NotNullOrWhiteSpace(privacyPolicy, nameof(privacyPolicy));

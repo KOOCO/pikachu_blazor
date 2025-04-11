@@ -55,6 +55,18 @@ public class TenantSettingsController(ITenantSettingsAppService tenantSettingsAp
         return tenantSettingsAppService.GetTenantCustomerServiceAsync();
     }
 
+    [HttpPost("terms-and-conditions")]
+    public Task<string?> UpdateTenantTermsAndConditionsAsync([Required] string termsAndConditions)
+    {
+        return tenantSettingsAppService.UpdateTenantTermsAndConditionsAsync(termsAndConditions);
+    }
+
+    [HttpGet("terms-and-conditions")]
+    public Task<string?> GetTenantTermsAndConditionsAsync()
+    {
+        return tenantSettingsAppService.GetTenantTermsAndConditionsAsync();
+    }
+
     [HttpPost("privacy-policy")]
     public Task<string?> UpdateTenantPrivacyPolicyAsync([Required] string privacyPolicy)
     {

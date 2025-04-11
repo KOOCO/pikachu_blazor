@@ -31,6 +31,7 @@
         <Items>
             <Tab Name="TenantInformation">@L["TenantInformation"]</Tab>
             <Tab Name="CustomerServiceInformation">@L["CustomerServiceInformation"]</Tab>
+            <Tab Name="TermsAndConditions">@L["TermsAndConditions"]</Tab>
             <Tab Name="PrivacyPolicy">@L["PrivacyPolicy"]</Tab>
             <Tab Name="FrontendInformation">@L["FrontendInformation"]</Tab>
             <Tab Name="SocialMedia">@L["SocialMedia"]</Tab>
@@ -42,6 +43,9 @@
             </TabPanel>
             <TabPanel Name="CustomerServiceInformation">
                 <TenantCustomerService AppService="TenantSettingsAppService"></TenantCustomerService>
+            </TabPanel>
+            <TabPanel Name="TermsAndConditions">
+                <TenantTermsAndConditions AppService="TenantSettingsAppService"></TenantTermsAndConditions>
             </TabPanel>
             <TabPanel Name="PrivacyPolicy">
                 <TenantPrivacyPolicy AppService="TenantSettingsAppService"></TenantPrivacyPolicy>

@@ -1406,6 +1406,9 @@
     "Select": "Select",
     "Block": "Block",
     "Composeanepic": "Compose an epic",
-    "OrdersCompleted": "Completed"
+    "OrdersCompleted": "Completed",
+    "TermsAndConditions": "Terms and Conditions",
+    "SpecifyTermsAndConditions": "Please specify terms and conditions",
+    "TermsAndConditionsUpdated": "Terms and Conditions Updated!"
   }
 }

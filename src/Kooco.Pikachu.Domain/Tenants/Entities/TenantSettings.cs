@@ -14,6 +14,7 @@ public class TenantSettings : FullAuditedEntity<Guid>, IMultiTenant
 {
     public string? FaviconUrl { get; private set; }
     public string? WebpageTitle { get; private set; }
+    public string? TermsAndConditions { get; private set; }
     public string? PrivacyPolicy { get; private set; }
     public string? CompanyName { get; private set; }
     public string? Description { get; private set; }
@@ -47,6 +48,7 @@ public class TenantSettings : FullAuditedEntity<Guid>, IMultiTenant
         Guid id,
         string? faviconUrl,
         string? webpageTitle,
+        string? termsAndConditions,
         string? privacyPolicy,
         string? companyName,
         string? businessRegistrationNumber,
@@ -68,6 +70,7 @@ public class TenantSettings : FullAuditedEntity<Guid>, IMultiTenant
     {
         SetFaviconUrl(faviconUrl);
         SetWebpageTitle(webpageTitle);
+        SetTermsAndConditions(termsAndConditions);
         SetPrivacyPolicy(privacyPolicy);
         SetCompanyName(companyName);
         SetBusinessRegistrationNumber(businessRegistrationNumber);
@@ -89,6 +92,12 @@ public class TenantSettings : FullAuditedEntity<Guid>, IMultiTenant
     public TenantSettings SetWebpageTitle(string? webpageTitle)
     {
         WebpageTitle = Check.NotNullOrWhiteSpace(webpageTitle, nameof(WebpageTitle), TenantSettingsConsts.MaxWebpageTitleLength);
+        return this;
+    }
+
+    public TenantSettings SetTermsAndConditions(string? termsAndConditions)
+    {
+        TermsAndConditions = Check.NotNullOrWhiteSpace(termsAndConditions, nameof(TermsAndConditions));
         return this;
     }
 

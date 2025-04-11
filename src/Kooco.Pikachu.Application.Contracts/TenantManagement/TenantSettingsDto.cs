@@ -9,6 +9,7 @@ public class TenantSettingsDto : FullAuditedEntityDto<Guid>
 {
     public string? WebpageTitle { get; set; }
     public string? Description { get; set; }
+    public string? TermsAndConditions { get; set; }
     public string? PrivacyPolicy { get; set; }
     public string? CompanyName { get; set; }
     public string? BusinessRegistrationNumber { get; set; }

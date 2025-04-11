@@ -79,6 +79,21 @@ public class TenantSettingsAppService(TenantSettingsManager tenantSettingsManage
     }
 
     [Authorize(PikachuPermissions.TenantSettings.Edit)]
+    public async Task<string?> UpdateTenantTermsAndConditionsAsync([Required] string termsAndConditions)
+    {
+        var tenantSettings = await tenantSettingsManager.UpdateTermsAndConditionsAsync(termsAndConditions);
+        return tenantSettings.TermsAndConditions;
+    }
+
+    [AllowAnonymous]
+    public async Task<string?> GetTenantTermsAndConditionsAsync()
+    {
+        var tenantSettings = await tenantSettingsManager.GetAsync();
+
+        return tenantSettings.TermsAndConditions;
+    }
+
+    [Authorize(PikachuPermissions.TenantSettings.Edit)]
     public async Task<string?> UpdateTenantPrivacyPolicyAsync([Required] string privacyPolicy)
     {
         var tenantSettings = await tenantSettingsManager.UpdatePrivacyPolicyAsync(privacyPolicy);

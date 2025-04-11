@@ -1129,6 +1129,9 @@
     "ShippingStatus": "物流狀態",
     "Block": "選項底色",
     "Composeanepic": "撰寫",
-    "OrdersCompleted": "已完成"
+    "OrdersCompleted": "已完成",
+    "TermsAndConditions": "條款及條件",
+    "SpecifyTermsAndConditions": "請指定條款及條件",
+    "TermsAndConditionsUpdated": "條款及條件已更新！"
   }
 }
