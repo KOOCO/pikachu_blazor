@@ -338,7 +338,7 @@
                                     <input type="checkbox"
                                            class="form-check-input"
                                            id="@item"
-                                           disabled="@(EditGroupBuyDto.IsEnterprise||!IsShippingMethodEnabled(item))"
+                                           disabled="@(EditGroupBuyDto.IsEnterprise||!IsShippingMethodEnabled(item)||HasDifferentItemTemperatures)"
                                            checked="@((EditGroupBuyDto.ExcludeShippingMethod is not null) &&
                                                       (EditGroupBuyDto.ExcludeShippingMethod.Contains(item)))"
                                            @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
@@ -374,7 +374,7 @@
                                            id="@item"
                                            disabled="@((EditGroupBuyDto.ExcludeShippingMethod is not null) &&
                                                    (EditGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore")) &&
-                                                   item is not "DeliveredByStore"||EditGroupBuyDto.IsEnterprise||!IsShippingMethodEnabled(item))"
+                                                   item is not "DeliveredByStore"||EditGroupBuyDto.IsEnterprise||!IsShippingMethodEnabled(item)||HasDifferentItemTemperatures)"
                                            checked="@((EditGroupBuyDto.ExcludeShippingMethod is not null) &&
                                                   (EditGroupBuyDto.ExcludeShippingMethod.Contains(item)))"
                                            @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
@@ -405,7 +405,7 @@
                                     <input type="checkbox"
                                            class="form-check-input"
                                            id="@item"
-                                           disabled="@(EditGroupBuyDto.IsEnterprise||!IsShippingMethodEnabled(item))"
+                                           disabled="@(EditGroupBuyDto.IsEnterprise||!IsShippingMethodEnabled(item)||HasDifferentItemTemperatures)"
                                            checked="@((EditGroupBuyDto.ExcludeShippingMethod is not null) &&
                                                   (EditGroupBuyDto.ExcludeShippingMethod.Contains(item)))"
                                            @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
@@ -430,7 +430,7 @@
                                            id="@item"
                                            disabled="@((EditGroupBuyDto.ExcludeShippingMethod is not null) &&
                                                        (EditGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore")) &&
-                                                       item is not "DeliveredByStore"||EditGroupBuyDto.IsEnterprise||!IsShippingMethodEnabled(item))"
+                                                       item is not "DeliveredByStore"||EditGroupBuyDto.IsEnterprise||!IsShippingMethodEnabled(item)||HasDifferentItemTemperatures)"
                                            checked="@((EditGroupBuyDto.ExcludeShippingMethod is not null) &&
                                                       (EditGroupBuyDto.ExcludeShippingMethod.Contains(item)))"
                                            @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
@@ -454,7 +454,7 @@
                                 <label for="@item" class="form-label me-2">
                                     <input type="checkbox"
                                            class="form-check-input"
-                                           disabled="@(EditGroupBuyDto.IsEnterprise||!IsShippingMethodEnabled(item))"
+                                           disabled="@(EditGroupBuyDto.IsEnterprise||!IsShippingMethodEnabled(item)||HasDifferentItemTemperatures)"
                                            id="@item"
                                            checked="@((EditGroupBuyDto.ExcludeShippingMethod is not null) &&
                                                   (EditGroupBuyDto.ExcludeShippingMethod.Contains(item)))"
@@ -481,7 +481,7 @@
                                            id="@item"
                                            disabled="@((EditGroupBuyDto.ExcludeShippingMethod is not null) &&
                                                        (EditGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore")) &&
-                                                       item is not "DeliveredByStore"||EditGroupBuyDto.IsEnterprise||!IsShippingMethodEnabled(item))"
+                                                       item is not "DeliveredByStore"||EditGroupBuyDto.IsEnterprise||!IsShippingMethodEnabled(item)||HasDifferentItemTemperatures)"
                                            checked="@((EditGroupBuyDto.ExcludeShippingMethod is not null) &&
                                                       (EditGroupBuyDto.ExcludeShippingMethod.Contains(item)))"
                                            @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />

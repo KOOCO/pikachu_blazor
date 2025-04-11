@@ -139,7 +139,7 @@ public partial class CreateGroupBuy
     private readonly IGroupBuyItemsPriceAppService _groupBuyItemsPriceAppService;
 
     private bool IsColorPickerOpen = false;
-
+    public bool HasDifferentItemTemperatures = false;
 
     private List<IFileEntry> selectedFiles = new List<IFileEntry>(); // List of selected files
     private List<CreateImageDto> uploadedCarouselImages = new List<CreateImageDto>(); // List for storing image data
@@ -2864,6 +2864,18 @@ public partial class CreateGroupBuy
                     collapseItem.Selected[index] = new();
                 }
             }
+            var isDisableShipping = CollapseItem.Where(x => x.GroupBuyModuleType == GroupBuyModuleType.ProductGroupModule).ToList();
+            HasDifferentItemTemperatures = isDisableShipping
+       .SelectMany(x => x.Selected)
+       .Where(x =>
+           (x.ItemType == ItemType.Item && x.Item != null) ||
+           (x.ItemType == ItemType.SetItem && x.SetItem != null))
+       .Select(x => x.ItemType == ItemType.Item
+           ? x.Item.ItemStorageTemperature
+           : x.SetItem.ItemStorageTemperature)
+       .Where(temp => temp != null) // Filter out null temperatures
+       .Distinct()
+       .Count() > 1;
         }
         catch (Exception ex)
         {
