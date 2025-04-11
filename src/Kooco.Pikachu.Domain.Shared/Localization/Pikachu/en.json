@@ -1393,22 +1393,19 @@
     "InstallmentPeriods.24": "24",
     "EnterANewBadge": "Enter a new badge",
     "CustomTextModule": "Custom Text Module",
-    "StoreComments": "Store Comments",
-    "StoreCommentsHistory": "Store Comments History",
     "CustomerService": "Customer Service",
     "TypeMessage": "Type a message",
     "Send": "Send",
     "NoMessages": "No messages",
     "EnterText": "Please enter text",
     "Text": "Content",
-
     "PartnershipModule": "Partnership Module",
     "CarouselModuleStyleCannotBeEmpty": "Carousel Module style can not be empty",
     "SEODescription": "SEO Description",
     "SEODescriptionInfo": "Texts will appear below the preview image when the URL is shared.",
     "Select": "Select",
     "Block": "Block",
-    "Composeanepic": "Compose an epic"
-
+    "Composeanepic": "Compose an epic",
+    "OrdersCompleted": "Completed"
   }
 }

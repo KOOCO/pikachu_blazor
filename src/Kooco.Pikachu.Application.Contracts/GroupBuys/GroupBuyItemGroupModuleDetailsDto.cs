@@ -31,4 +31,5 @@ public class GroupBuyItemGroupModuleDetailsDto
     public GroupBuyProductRankingDto GroupBuyProductRankingModules { get; set; }
     public List<GroupBuyOrderInstructionDto> GetGroupBuyOrderInstructionModules { get; set; }
     public string? ConcurrencyStamp { get; set; }
+    public ICollection<GroupBuyItemGroupImageModuleDto> ImageModules { get; set; } = [];
 }

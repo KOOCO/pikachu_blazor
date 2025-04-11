@@ -24,7 +24,7 @@ public partial class MemberOrdersTab
     private int CurrentPage { get; set; } = 1;
     private string CurrentSorting { get; set; }
     private int TotalCount { get; set; }
-    int Open = 0;
+    int Completed = 0;
     int Exchange = 0;
     int Return = 0;
     private GetOrderListDto OrderFilters { get; set; }
@@ -61,7 +61,7 @@ public partial class MemberOrdersTab
             if (Member != null)
             {
                 CumulativeOrders = await MemberAppService.GetMemberCumulativeOrdersAsync(Member.Id) ?? new();
-                (Open,Exchange,Return)=await OrderAppService.GetOrderStatusCountsAsync(Member.Id);
+                (Completed, Exchange, Return) = await OrderAppService.GetOrderStatusCountsAsync(Member.Id);
             }
         }
         catch (Exception ex)
