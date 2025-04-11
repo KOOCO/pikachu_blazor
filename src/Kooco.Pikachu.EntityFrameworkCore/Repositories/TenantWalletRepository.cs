@@ -1,6 +1,7 @@
 ﻿using Kooco.Pikachu.EntityFrameworkCore;
 using Kooco.Pikachu.TenantManagement;
-using Kooco.Pikachu.TenantManagement.Entities;
+using Kooco.Pikachu.Tenants.Entities;
+using Kooco.Pikachu.Tenants.Repositories;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;

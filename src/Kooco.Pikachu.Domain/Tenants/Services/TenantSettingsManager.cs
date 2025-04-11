@@ -7,8 +7,11 @@ using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Domain.Services;
 using Volo.Abp.TenantManagement;
 using Kooco.Pikachu.Extensions;
+using Kooco.Pikachu.TenantManagement;
+using Kooco.Pikachu.Tenants.Entities;
+using Kooco.Pikachu.Tenants.Exceptions;
 
-namespace Kooco.Pikachu.TenantManagement;
+namespace Kooco.Pikachu.Tenants.Services;
 
 public class TenantSettingsManager(IRepository<TenantSettings, Guid> tenantSettingsRepository, IRepository<Tenant, Guid> tenantRepository) : DomainService
 {

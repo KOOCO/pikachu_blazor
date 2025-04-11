@@ -13,7 +13,6 @@ using System.Linq;
 using System.Threading.Tasks;
 
 namespace Kooco.Pikachu.Blazor.Pages.CashFlowReconciliationStatements;
-
 public partial class CashFlowReconciliationStatement
 {
     #region Inject
@@ -78,7 +77,7 @@ public partial class CashFlowReconciliationStatement
 
     async Task IssueInvoice(Guid orderId)
     {
-        var msg = await _electronicInvoiceAppService.CreateInvoiceAsync(orderId);
+        var msg = await _orderInvoiceAppService.CreateInvoiceAsync(orderId);
         if (!msg.IsNullOrWhiteSpace())
         {
             await _uiMessageService.Error(msg);
@@ -216,13 +215,11 @@ public partial class CashFlowReconciliationStatement
     }
     #endregion
 }
-
 public class VoidReason
 {
     [Required(ErrorMessage = "This Field Is Required")]
     public string? Reason { get; set; }
 }
-
 public class CreditReason
 {
     [Required(ErrorMessage = "This Field Is Required")]

@@ -5,8 +5,10 @@ using Volo.Abp.Domain.Entities.Auditing;
 using Volo.Abp.MultiTenancy;
 using Volo.Abp.TenantManagement;
 using Kooco.Pikachu.Extensions;
+using Kooco.Pikachu.TenantManagement;
+using Kooco.Pikachu.Tenants.Exceptions;
 
-namespace Kooco.Pikachu.TenantManagement;
+namespace Kooco.Pikachu.Tenants.Entities;
 
 public class TenantSettings : FullAuditedEntity<Guid>, IMultiTenant
 {

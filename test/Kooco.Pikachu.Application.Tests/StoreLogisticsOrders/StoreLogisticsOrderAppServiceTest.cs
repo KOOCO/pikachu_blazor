@@ -8,6 +8,7 @@ using Kooco.Pikachu.GroupBuys;
 using Kooco.Pikachu.Localization;
 using Kooco.Pikachu.LogisticsProviders;
 using Kooco.Pikachu.OrderItems;
+using Kooco.Pikachu.Orders.Interfaces;
 using Kooco.Pikachu.Orders.Repositories;
 using Kooco.Pikachu.Orders.Services;
 using Kooco.Pikachu.StoreLogisticOrders;
@@ -46,7 +47,7 @@ namespace Kooco.Pikachu.StoreLogisticsOrders
         private readonly Mock<IGroupBuyAppService> _groupBuyAppServiceMock;
         private readonly Mock<IBackgroundJobManager> _backgroundJobManagerMock;
         private readonly Mock<IElectronicInvoiceSettingRepository> _electronicInvoiceSettingRepositoryMock;
-        private readonly Mock<IElectronicInvoiceAppService> _electronicInvoiceAppServiceMock;
+        private readonly Mock<IOrderInvoiceAppService> _electronicInvoiceAppServiceMock;
         private readonly Mock<IHttpContextAccessor> _httpContextAccessorMock;
         private readonly Mock<IGroupBuyRepository> _groupBuyRepositoryMock;
         private readonly Mock<IEmailSender> _emailSenderMock;
@@ -65,7 +66,7 @@ namespace Kooco.Pikachu.StoreLogisticsOrders
             _groupBuyAppServiceMock = new Mock<IGroupBuyAppService>();
             _backgroundJobManagerMock = new Mock<IBackgroundJobManager>();
             _electronicInvoiceSettingRepositoryMock = new Mock<IElectronicInvoiceSettingRepository>();
-            _electronicInvoiceAppServiceMock = new Mock<IElectronicInvoiceAppService>();
+            _electronicInvoiceAppServiceMock = new Mock<IOrderInvoiceAppService>();
             _httpContextAccessorMock = new Mock<IHttpContextAccessor>();
             _groupBuyRepositoryMock = new Mock<IGroupBuyRepository>();
             _emailSenderMock = new Mock<IEmailSender>();

@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Kooco.Pikachu.Orders.Interfaces;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Threading.Tasks;
 using Volo.Abp.BackgroundJobs;

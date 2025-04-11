@@ -9,7 +9,7 @@ using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Content;
 
-namespace Kooco.Pikachu.Orders
+namespace Kooco.Pikachu.Orders.Interfaces
 {
     public interface IOrderAppService : IApplicationService
     {

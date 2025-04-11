@@ -1,4 +1,5 @@
 ﻿using Kooco.Pikachu.ElectronicInvoiceSettings;
+using Kooco.Pikachu.Orders.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;

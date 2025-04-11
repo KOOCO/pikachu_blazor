@@ -1,18 +1,19 @@
 ﻿@page "/Orders/OrderDetails/{id}"
+@using Blazorise;
+@using Blazorise.LoadingIndicator;
 @using Kooco.Pikachu.Blazor.Pages.LogisticsManagement
 @using Kooco.Pikachu.EnumValues;
 @using Kooco.Pikachu.Localization;
+@using Kooco.Pikachu.LogisticsProviders;
+@using Kooco.Pikachu.OrderDeliveries;
 @using Kooco.Pikachu.OrderItems;
 @using Kooco.Pikachu.Orders;
-@using Kooco.Pikachu.OrderDeliveries;
-@using Kooco.Pikachu.StoreLogisticOrders;
+@using Kooco.Pikachu.Orders.Interfaces
 @using Kooco.Pikachu.Refunds;
+@using Kooco.Pikachu.StoreLogisticOrders;
 @using Microsoft.Extensions.Localization;
-@using Blazorise;
 @using Volo.Abp.AspNetCore.Components.Messages;
 @using Volo.Abp.Users;
-@using Blazorise.LoadingIndicator;
-@using Kooco.Pikachu.LogisticsProviders;
 @attribute [Authorize]
 @inject IJSRuntime JSRuntime;
 @inject NavigationManager NavigationManager;

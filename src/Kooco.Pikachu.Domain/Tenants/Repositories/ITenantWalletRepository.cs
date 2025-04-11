@@ -1,11 +1,11 @@
-﻿using Kooco.Pikachu.TenantManagement.Entities;
+﻿using Kooco.Pikachu.Tenants.Entities;
 using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Volo.Abp.TenantManagement;
 
-namespace Kooco.Pikachu.TenantManagement;
+namespace Kooco.Pikachu.Tenants.Repositories;
 public interface ITenantWalletRepository
 {
     Task InsertAsync(TenantWalletTransaction transaction, CancellationToken ct = default);

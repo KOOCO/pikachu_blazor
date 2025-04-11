@@ -8,6 +8,7 @@ using Kooco.Pikachu.LogisticsProviders;
 using Kooco.Pikachu.OrderDeliveries;
 using Kooco.Pikachu.Orders;
 using Kooco.Pikachu.Orders.Entities;
+using Kooco.Pikachu.Orders.Interfaces;
 using Kooco.Pikachu.Orders.Repositories;
 using Kooco.Pikachu.Orders.Services;
 using Kooco.Pikachu.Response;
@@ -65,7 +66,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
     TCat711NormalCreateUpdate TCat711Normal { get; set; }
     TCat711FreezeCreateUpdateDto TCat711Freeze { get; set; }
     TCat711FrozenCreateUpdateDto TCat711Frozen { get; set; }
-    private readonly IElectronicInvoiceAppService _electronicInvoiceAppService;
+    private readonly IOrderInvoiceAppService _electronicInvoiceAppService;
     private readonly IElectronicInvoiceSettingRepository _electronicInvoiceSettingRepository;
     private readonly IBackgroundJobManager _backgroundJobManager;
     private IStringLocalizer<PikachuResource> _L;
@@ -93,7 +94,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
         IGroupBuyAppService GroupBuyAppService,
         IBackgroundJobManager backgroundJobManager,
         IElectronicInvoiceSettingRepository electronicInvoiceSettingRepository,
-        IElectronicInvoiceAppService electronicInvoiceAppService,
+        IOrderInvoiceAppService electronicInvoiceAppService,
         IHttpContextAccessor httpContextAccessor,
         IGroupBuyRepository GroupBuyRepository,
         IEmailSender emailSender,

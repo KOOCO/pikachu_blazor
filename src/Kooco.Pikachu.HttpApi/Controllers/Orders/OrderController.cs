@@ -5,6 +5,7 @@ using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.GroupBuys;
 using Kooco.Pikachu.OrderItems;
 using Kooco.Pikachu.Orders;
+using Kooco.Pikachu.Orders.Interfaces;
 using Kooco.Pikachu.PaymentGateways;
 using Kooco.Pikachu.Response;
 using Kooco.Pikachu.StoreLogisticOrders;

@@ -11,6 +11,7 @@ using Volo.Abp.TenantManagement.EntityFrameworkCore;
 using Volo.Abp.TenantManagement;
 using Microsoft.Extensions.Hosting;
 using Volo.Abp.Data;
+using Kooco.Pikachu.Tenants.Repositories;
 
 namespace Kooco.Pikachu.TenantManagement
 {
