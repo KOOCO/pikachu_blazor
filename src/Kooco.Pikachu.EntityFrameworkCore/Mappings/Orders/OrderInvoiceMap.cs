@@ -12,7 +12,7 @@ public sealed class OrderInvoiceMap : IEntityTypeConfiguration<OrderInvoice>
         builder.ConfigureByConvention();
 
         builder.Property(x => x.InvoiceNo)
-            .HasMaxLength(12)
+            .HasMaxLength(10)
             .IsRequired();
 
         builder.Property(x => x.UnifiedBusinessNo)

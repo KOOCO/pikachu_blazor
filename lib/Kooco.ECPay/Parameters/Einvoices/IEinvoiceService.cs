@@ -14,11 +14,12 @@ internal interface IEinvoiceService
 [Dependency(ServiceLifetime.Singleton)]
 file sealed class EinvoiceService : IEinvoiceService
 {
+    /// <summary>
+    /// 發票開立
+    /// </summary>
     public async Task<(int transCode, CreateInvoiceResult result)> CreateInvoiceAsync(string hashKey, string hashIV, CreateInvoiceInput input)
     {
         var json = input.ToJson(ECPayDefaults.JsonSerializerOptions);
-        var encryptData = await Uri.EscapeDataString(json).AesEncryptAsync(hashKey, hashIV);
-        var client = HttpClientFactory.CreateClient(nameof(ECPayConstants.Einvoice));
         StringContent request = new(new CreateInvoiceRequest
         {
             MerchantId = input.MerchantId,
@@ -26,13 +27,14 @@ file sealed class EinvoiceService : IEinvoiceService
             {
                 Timestamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
             },
-            EncryptData = encryptData,
+            EncryptData = await Uri.EscapeDataString(json).AesEncryptAsync(hashKey, hashIV),
         }.ToJson(ECPayDefaults.JsonSerializerOptions), Encoding.UTF8, HttpContentType.ApplicationJson);
+
+        var client = HttpClientFactory.CreateClient(nameof(ECPayConstants.Einvoice));
         var message = await client.PostAsync(ECPayConstants.Einvoice.B2CInvoicePath, request);
         var content = await message.Content.ReadAsStringAsync();
         var response = content.ToObject<CreateInvoiceResponse>();
         var result = await response.Data.AesDecryptAsync(hashKey, hashIV);
-
         var data = HttpUtility.UrlDecode(result);
         return (response.TransCode, data.ToObject<CreateInvoiceResult>());
     }
