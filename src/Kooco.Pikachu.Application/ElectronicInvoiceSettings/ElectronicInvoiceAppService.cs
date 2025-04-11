@@ -64,6 +64,18 @@ public class ElectronicInvoiceAppService : PikachuAppService, IElectronicInvoice
         List<CreateInvoiceInput.Item> invoiceItems = [
             new CreateInvoiceInput.Item
             {
+                ItemSeq = 1,
+                ItemName = L["AmountString"],
+                ItemCount = 1,
+                ItemWord = "1",
+                ItemPrice = order.TotalAmount,
+                ItemTaxType = 1,
+                ItemAmount = order.TotalAmount,
+                ItemRemark = ""
+            },
+            new CreateInvoiceInput.Item
+            {
+                ItemSeq = 2,
                 ItemName = L["DeliveryFee"],
                 ItemCount = 1,
                 ItemWord = "1",
@@ -73,6 +85,7 @@ public class ElectronicInvoiceAppService : PikachuAppService, IElectronicInvoice
             },
             new CreateInvoiceInput.Item
             {
+                ItemSeq = 3,
                 ItemName = L["Discount"],
                 ItemCount = 1,
                 ItemWord = "1",
@@ -80,19 +93,7 @@ public class ElectronicInvoiceAppService : PikachuAppService, IElectronicInvoice
                 ItemTaxType = 1,
                 ItemAmount = (decimal)order.DiscountAmount,
             },
-            new CreateInvoiceInput.Item
-            {
-                ItemSeq = 1,
-                ItemName = L["Total"],
-                ItemCount = 1,
-                ItemWord = "1",
-                ItemPrice = order.TotalAmount,
-                ItemTaxType = 1,
-                ItemAmount = order.TotalAmount,
-                ItemRemark = ""
-            }
         ];
-
 
         CreateInvoiceInput input = new()
         {
@@ -116,48 +117,48 @@ public class ElectronicInvoiceAppService : PikachuAppService, IElectronicInvoice
             Items = invoiceItems
         };
 
-        var (transCode, result) = await ECPayInvoiceService.CreateInvoiceAsync(setting.HashKey, setting.HashIV, input);
+        //  var (transCode, result) = await ECPayInvoiceService.CreateInvoiceAsync(setting.HashKey, setting.HashIV, input);
 
         // **Get Current User (Editor)**
         var currentUserId = CurrentUser.Id ?? Guid.Empty;
         var currentUserName = CurrentUser.UserName ?? "System";
-        if (transCode == 1)
-        {
-            if (result.InvoiceNo.IsNullOrWhiteSpace())
-            {
+        //if (transCode == 1)
+        //{
+        //    if (result.InvoiceNo.IsNullOrWhiteSpace())
+        //    {
 
-                order.VoidUser = CurrentUser.Name;
-                order.IssueStatus = IssueInvoiceStatus.Failed;
-                await OrderRepository.UpdateAsync(order);
+        //        order.VoidUser = CurrentUser.Name;
+        //        order.IssueStatus = IssueInvoiceStatus.Failed;
+        //        await OrderRepository.UpdateAsync(order);
 
-                await OrderHistoryManager.AddOrderHistoryAsync(
-                    order.Id,
-                    "InvoiceIssueFailed", // Localization key
-                    [result.RtnMsg], // Dynamic placeholder for the failure reason
-                    currentUserId,
-                    currentUserName
-                );
+        //        await OrderHistoryManager.AddOrderHistoryAsync(
+        //            order.Id,
+        //            "InvoiceIssueFailed", // Localization key
+        //            [result.RtnMsg], // Dynamic placeholder for the failure reason
+        //            currentUserId,
+        //            currentUserName
+        //        );
 
 
-                return result.RtnMsg.ToString();
+        //        return result.RtnMsg.ToString();
 
-            }
-            order.InvoiceNumber = result.InvoiceNo;
-            order.IssueStatus = IssueInvoiceStatus.Succeeded;
-            order.InvoiceStatus = InvoiceStatus.Issued;
-            order.InvoiceDate = DateTime.Parse(result.InvoiceDate);
-            order.VoidUser = CurrentUser.Name;
+        //    }
+        //    order.InvoiceNumber = result.InvoiceNo;
+        //    order.IssueStatus = IssueInvoiceStatus.Succeeded;
+        //    order.InvoiceStatus = InvoiceStatus.Issued;
+        //    order.InvoiceDate = DateTime.Parse(result.InvoiceDate);
+        //    order.VoidUser = CurrentUser.Name;
 
-            await OrderRepository.UpdateAsync(order);
+        //    await OrderRepository.UpdateAsync(order);
 
-            await OrderHistoryManager.AddOrderHistoryAsync(
-                order.Id,
-                "InvoiceIssued", // Localization key
-                [order.InvoiceNumber], // Dynamic placeholders for invoice details
-                currentUserId,
-                currentUserName
-            );
-        }
+        //    await OrderHistoryManager.AddOrderHistoryAsync(
+        //        order.Id,
+        //        "InvoiceIssued", // Localization key
+        //        [order.InvoiceNumber], // Dynamic placeholders for invoice details
+        //        currentUserId,
+        //        currentUserName
+        //    );
+        //}
 
         return "";
     }

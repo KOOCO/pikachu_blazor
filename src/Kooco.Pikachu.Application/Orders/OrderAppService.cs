@@ -265,6 +265,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
             order.DeliveryCostForFreeze = input.DeliveryCostForFreeze;
             order.DeliveryCostForFrozen = input.DeliveryCostForFrozen;
             order.DeliveryCost = input.DeliveryCost;
+            order.DiscountAmount = input.DiscountCodeAmount;
 
             if (input.IsTest)
             {
@@ -617,7 +618,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
     public async Task<Guid> GetOrderIdAsync(string orderNo)
     {
         return await (await _orderRepository.GetQueryableAsync()).Where(x => x.OrderNo == orderNo).Select(x => x.Id).FirstOrDefaultAsync();
-    
+
     }
     public async Task<OrderDto> UpdateOrderPaymentMethodAsync(OrderPaymentMethodRequest request)
     {
