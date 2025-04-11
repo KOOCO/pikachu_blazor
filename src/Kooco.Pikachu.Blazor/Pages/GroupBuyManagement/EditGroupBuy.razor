@@ -1930,7 +1930,7 @@
                     </span>
                     </ToolbarContent>
                     </Blazored.TextEditor.BlazoredTextEditor> *@
-                    <textarea rows="5" @bind="@EditGroupBuyDto.GroupBuyConditionDescription" oninput="enforceLineLimit(this)" class="form-control" />
+                    <textarea rows="7" @bind="@EditGroupBuyDto.GroupBuyConditionDescription" oninput="enforceCharacterLimit(this, 1000)" class="form-control" />
                 </div>
             </div>
         </div>

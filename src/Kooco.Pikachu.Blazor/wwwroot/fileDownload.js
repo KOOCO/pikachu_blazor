@@ -31,3 +31,10 @@ function enforceLineLimit(element) {
         element.value = lines.slice(0, 5).join('\n');
     }
 }
+
+function enforceCharacterLimit(element, maxlength) {
+    let characters = element.value?.length;
+    if (characters > maxlength) {
+        element.value = characters.slice(0, maxlength);
+    }
+}
