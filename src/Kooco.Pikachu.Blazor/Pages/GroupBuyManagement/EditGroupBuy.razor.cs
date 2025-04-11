@@ -133,6 +133,7 @@ public partial class EditGroupBuy
 
     private bool IsColorPickerOpen = false;
     public List<PaymentGatewayDto> PaymentGateways = [];
+    public bool HasDifferentItemTemperatures = false;
     #endregion
 
     private List<string> OrderedDeliveryMethods =
@@ -205,7 +206,7 @@ public partial class EditGroupBuy
             GroupBuy = await _groupBuyAppService.GetWithItemGroupsAsync(Id);
 
             GroupBuy.ItemGroups = await _groupBuyAppService.GetGroupBuyItemGroupsAsync(Id);
-
+       
             EditGroupBuyDto = _objectMapper.Map<GroupBuyDto, GroupBuyUpdateDto>(GroupBuy);
 
             //await LoadHtmlContent();
@@ -765,8 +766,27 @@ public partial class EditGroupBuy
             }
             finally
             {
-                await Loading.Hide();
+               
                 LoadingItems = false;
+                var isDisableShipping = CollapseItem.Where(x => x.GroupBuyModuleType == GroupBuyModuleType.ProductGroupModule).ToList();
+                foreach (var item in isDisableShipping)
+                {
+                   
+                    await OnCollapseVisibleChanged(item, true);
+                  
+                }
+                HasDifferentItemTemperatures = isDisableShipping
+        .SelectMany(x => x.Selected)
+        .Where(x =>
+            (x.ItemType == ItemType.Item && x.Item != null) ||
+            (x.ItemType == ItemType.SetItem && x.SetItem != null))
+        .Select(x => x.ItemType == ItemType.Item
+            ? x.Item.ItemStorageTemperature
+            : x.SetItem.ItemStorageTemperature)
+        .Where(temp => temp != null) // Filter out null temperatures
+        .Distinct()
+        .Count() > 1;
+                Loading.Hide();
             }
         }
     }
@@ -871,6 +891,7 @@ public partial class EditGroupBuy
                 }
             }
         }
+
     }
 
     async Task OnCollapseVisibleChanged(CollapseItem collapseItem, bool isVisible)
@@ -2511,7 +2532,7 @@ public partial class EditGroupBuy
                 {
                     if (groupBuyOrderInstruction.Title.IsNullOrEmpty())
                     {
-                        await _uiMessageService.Error("Title Cannot be empty in Group Purchase Overview Module");
+                        await _uiMessageService.Error("Title Cannot be empty in GroupBuy Order Instruction Module");
 
                         await Loading.Hide();
 
@@ -2520,7 +2541,7 @@ public partial class EditGroupBuy
 
                     if (groupBuyOrderInstruction.Image.IsNullOrEmpty())
                     {
-                        await _uiMessageService.Error("Please Add Image in Group Purchase Overview Module");
+                        await _uiMessageService.Error("Please Add Image in GroupBuy Order Instruction Module");
 
                         await Loading.Hide();
 
@@ -2535,7 +2556,7 @@ public partial class EditGroupBuy
                 {
                     if (productRankingCarouselModule.Title.IsNullOrEmpty())
                     {
-                        await _uiMessageService.Error("Title Cannot be empty in Group Purchase Overview Module");
+                        await _uiMessageService.Error("Title Cannot be empty in Product Ranking Carousel Module");
 
                         await Loading.Hide();
 
@@ -2544,7 +2565,7 @@ public partial class EditGroupBuy
 
                     if (productRankingCarouselModule.SubTitle.IsNullOrEmpty())
                     {
-                        await _uiMessageService.Error("SubTitle Cannot be empty in Group Purchase Overview Module");
+                        await _uiMessageService.Error("SubTitle Cannot be empty in Product Ranking Carousel Module");
 
                         await Loading.Hide();
 
@@ -2946,6 +2967,18 @@ public partial class EditGroupBuy
                 //    collapseItem.Selected[index].IsFirstLoad = false;
                 //}
             }
+            var isDisableShipping = CollapseItem.Where(x => x.GroupBuyModuleType == GroupBuyModuleType.ProductGroupModule).ToList();
+            HasDifferentItemTemperatures = isDisableShipping
+            .SelectMany(x => x.Selected)
+            .Where(x =>
+                (x.ItemType == ItemType.Item && x.Item != null) ||
+                (x.ItemType == ItemType.SetItem && x.SetItem != null))
+            .Select(x => x.ItemType == ItemType.Item
+                ? x.Item.ItemStorageTemperature
+                : x.SetItem.ItemStorageTemperature)
+            .Where(temp => temp != null) // Filter out null temperatures
+            .Distinct()
+            .Count() > 1;
         }
         catch (Exception ex)
         {

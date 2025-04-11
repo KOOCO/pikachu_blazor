@@ -1401,8 +1401,14 @@
     "NoMessages": "No messages",
     "EnterText": "Please enter text",
     "Text": "Content",
-    "SelectModule": "Select Module",
+
     "PartnershipModule": "Partnership Module",
-    "CarouselModuleStyleCannotBeEmpty": "Carousel Module style can not be empty"
+    "CarouselModuleStyleCannotBeEmpty": "Carousel Module style can not be empty",
+    "SEODescription": "SEO Description",
+    "SEODescriptionInfo": "Texts will appear below the preview image when the URL is shared.",
+    "Select": "Select",
+    "Block": "Block",
+    "Composeanepic": "Compose an epic"
+
   }
 }

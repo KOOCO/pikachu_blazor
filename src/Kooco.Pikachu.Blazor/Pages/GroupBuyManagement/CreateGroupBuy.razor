@@ -121,7 +121,13 @@
         </div>
         <div class="row">
             <div class="col-2">
-                <label>@L["Subject"]</label>
+                  <label>@L["SEODescription"]
+                <Span>
+                                                            <Tooltip Text="@L["SEODescriptionInfo"]">
+                                                                <Icon class="fa-question-circle" />
+                                                            </Tooltip>
+                                                        </Span>
+                </label>
             </div>
             <div class="col-10">
                 <Addons>
@@ -343,7 +349,7 @@
                                 <input type="checkbox"
                                 class="form-check-input"
                                 id="@item"
-                                disabled="@(((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore")) && item != "DeliveredByStore")||CheckForShippingMethodData(item)||CreateGroupBuyDto.IsEnterprise||!IsShippingMethodEnabled(item))"
+                                disabled="@(((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore")) && item != "DeliveredByStore")||CheckForShippingMethodData(item)||CreateGroupBuyDto.IsEnterprise||!IsShippingMethodEnabled(item)||HasDifferentItemTemperatures)"
                                 checked="@((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains(item)))"
                                 @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
                                 @L[EnumHelper.GetDescription(Enum.Parse<DeliveryMethod>(item))]
@@ -376,7 +382,7 @@
                                 <input type="checkbox"
                                 class="form-check-input"
                                 id="@item"
-                                disabled="@(((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore"))&&item!="DeliveredByStore")||CheckForShippingMethodData(item)||CreateGroupBuyDto.IsEnterprise||!IsShippingMethodEnabled(item))"
+                                disabled="@(((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore"))&&item!="DeliveredByStore")||CheckForShippingMethodData(item)||CreateGroupBuyDto.IsEnterprise||!IsShippingMethodEnabled(item)||HasDifferentItemTemperatures)"
                                 checked="@((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains(item)))"
                                 @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
                                 @L[EnumHelper.GetDescription(Enum.Parse<DeliveryMethod>(item))]
@@ -406,7 +412,7 @@
                                 <input type="checkbox"
                                 class="form-check-input"
                                 id="@item"
-                                disabled="@(((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore")) && item != "DeliveredByStore")||CheckForShippingMethodData(item)||CreateGroupBuyDto.IsEnterprise||!IsShippingMethodEnabled(item))"
+                                disabled="@(((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore")) && item != "DeliveredByStore")||CheckForShippingMethodData(item)||CreateGroupBuyDto.IsEnterprise||!IsShippingMethodEnabled(item)||HasDifferentItemTemperatures)"
                                 checked="@((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains(item)))"
                                 @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
                                 @L[EnumHelper.GetDescription(Enum.Parse<DeliveryMethod>(item))]
@@ -428,7 +434,7 @@
                                 <input type="checkbox"
                                 class="form-check-input"
                                 id="@item"
-                                disabled="@(((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore"))&&item!="DeliveredByStore")||CheckForShippingMethodData(item)||CreateGroupBuyDto.IsEnterprise||!IsShippingMethodEnabled(item))"
+                                disabled="@(((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore"))&&item!="DeliveredByStore")||CheckForShippingMethodData(item)||CreateGroupBuyDto.IsEnterprise||!IsShippingMethodEnabled(item)||HasDifferentItemTemperatures)"
                                 checked="@((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains(item)))"
                                 @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
                                 @L[EnumHelper.GetDescription(Enum.Parse<DeliveryMethod>(item))]
@@ -452,7 +458,7 @@
                                 <input type="checkbox"
                                 class="form-check-input"
                                 id="@item"
-                                disabled="@(((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore")) && item != "DeliveredByStore")||CheckForShippingMethodData(item)||CreateGroupBuyDto.IsEnterprise||!IsShippingMethodEnabled(item))"
+                                disabled="@(((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore")) && item != "DeliveredByStore")||CheckForShippingMethodData(item)||CreateGroupBuyDto.IsEnterprise||!IsShippingMethodEnabled(item)||HasDifferentItemTemperatures)"
                                 checked="@((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains(item)))"
                                 @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
                                 @L[EnumHelper.GetDescription(Enum.Parse<DeliveryMethod>(item))]
@@ -475,7 +481,7 @@
                                 <input type="checkbox"
                                 class="form-check-input"
                                 id="@item"
-                                disabled="@(((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore"))&&item!="DeliveredByStore")||CheckForShippingMethodData(item)||CreateGroupBuyDto.IsEnterprise||!IsShippingMethodEnabled(item))"
+                                disabled="@(((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore"))&&item!="DeliveredByStore")||CheckForShippingMethodData(item)||CreateGroupBuyDto.IsEnterprise||!IsShippingMethodEnabled(item)||HasDifferentItemTemperatures)"
                                 checked="@((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains(item)))"
                                 @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
                                 @L[EnumHelper.GetDescription(Enum.Parse<DeliveryMethod>(item))]
@@ -1167,11 +1173,11 @@
                                                 <div class="col-2">
                                                     <label>
                                                         @L["BannerImages"]
-                                                        <Span>
+                                                      @*   <Span>
                                                             <Tooltip Class="d-inline-block" Text="@L["uploadUpto5Images"]">
                                                                 <Icon class="fa-question-circle" />
                                                             </Tooltip>
-                                                        </Span>
+                                                        </Span> *@
                                                     </label>
                                                 </div>
                                                 <div class="col-10 ">
@@ -1896,7 +1902,7 @@
                     <TextEdit Placeholder="@L["ExchangePolicy"]" Disabled @bind-Text="@CreateGroupBuyDto.ExchangePolicy" MaxLength="60" ShowCount />
                 </div>
                 <div class="col-12">
-                    <Blazored.TextEditor.BlazoredTextEditor @ref="@ExchangePolicyHtml">
+                    <Blazored.TextEditor.BlazoredTextEditor @ref="@ExchangePolicyHtml" Placeholder="@L["Composeanepic"]">
                         <ToolbarContent>
                             <select class="ql-header">
                                 <option selected=""></option>
@@ -1941,7 +1947,7 @@
             </div>
             <div class="col-10">
                 <div class="col-12">
-                    <Blazored.TextEditor.BlazoredTextEditor @ref="@NotifyEmailHtml">
+                    <Blazored.TextEditor.BlazoredTextEditor @ref="@NotifyEmailHtml" Placeholder="@L["Composeanepic"]">
                         <ToolbarContent>
                             <select class="ql-header">
                                 <option selected=""></option>
