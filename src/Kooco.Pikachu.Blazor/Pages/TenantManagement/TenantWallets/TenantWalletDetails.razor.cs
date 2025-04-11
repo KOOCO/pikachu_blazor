@@ -1,5 +1,5 @@
 ﻿using Kooco.Pikachu.Permissions;
-using Kooco.Pikachu.TenantManagement.Entities;
+using Kooco.Pikachu.Tenants.Entities;
 using Microsoft.AspNetCore.Authorization;
 using System;
 using System.Threading.Tasks;

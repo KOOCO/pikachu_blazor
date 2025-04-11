@@ -1,5 +1,5 @@
 ﻿using Kooco.Pikachu.EnumValues;
-using Kooco.Pikachu.LogisticsProviders;
+using Kooco.Pikachu.LogisticsSettings;
 using Kooco.Pikachu.Orders.Repositories;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;

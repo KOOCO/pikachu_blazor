@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Kooco.Pikachu.Localization;
 using Kooco.Pikachu.MultiTenancy;
-using Kooco.Pikachu.Orders;
+using Kooco.Pikachu.Orders.Interfaces;
 using Kooco.Pikachu.Permissions;
 using Kooco.Pikachu.Refunds;
 using Microsoft.Extensions.DependencyInjection;

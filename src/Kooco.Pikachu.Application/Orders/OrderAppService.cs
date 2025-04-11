@@ -10,6 +10,7 @@ using Kooco.Pikachu.Localization;
 using Kooco.Pikachu.Members;
 using Kooco.Pikachu.OrderItems;
 using Kooco.Pikachu.Orders.Entities;
+using Kooco.Pikachu.Orders.Interfaces;
 using Kooco.Pikachu.Orders.Repositories;
 using Kooco.Pikachu.Orders.Services;
 using Kooco.Pikachu.OrderTransactions;
@@ -66,7 +67,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
     private readonly IStringLocalizer<PikachuResource> _l;
     private readonly IItemRepository _itemRepository;
     private readonly IItemDetailsRepository _itemDetailsRepository;
-    private readonly IElectronicInvoiceAppService _electronicInvoiceAppService;
+    private readonly IOrderInvoiceAppService _electronicInvoiceAppService;
     private readonly IElectronicInvoiceSettingRepository _electronicInvoiceSettingRepository;
     private readonly IFreebieRepository _freebieRepository;
     private readonly IRefundAppService _refundAppService;
@@ -103,7 +104,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         IRepository<OrderDelivery, Guid> orderDeliveryRepository,
         IItemRepository itemRepository,
         IItemDetailsRepository itemDetailsRepository,
-        IElectronicInvoiceAppService electronicInvoiceAppService,
+        IOrderInvoiceAppService electronicInvoiceAppService,
         IFreebieRepository freebieRepository,
         IBackgroundJobManager backgroundJobManager,
         IElectronicInvoiceSettingRepository electronicInvoiceSettingRepository,

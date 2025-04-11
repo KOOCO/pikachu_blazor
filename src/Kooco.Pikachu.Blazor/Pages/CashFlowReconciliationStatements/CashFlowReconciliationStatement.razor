@@ -1,22 +1,23 @@
 ﻿@page "/CashFlowManagement/CashFlowReconciliationStatement"
+@using Blazorise;
+@using Blazorise.LoadingIndicator;
+@using Kooco.Pikachu.ElectronicInvoiceSettings;
 @using Kooco.Pikachu.EnumValues;
 @using Kooco.Pikachu.Items
 @using Kooco.Pikachu.Localization;
 @using Kooco.Pikachu.OrderItems;
 @using Kooco.Pikachu.OrderTransactions
 @using Kooco.Pikachu.Orders;
-@using Kooco.Pikachu.ElectronicInvoiceSettings;
+@using Kooco.Pikachu.Orders.Interfaces
 @using Microsoft.Extensions.Localization;
-@using Blazorise;
 @using Volo.Abp.AspNetCore.Components.Messages;
-@using Blazorise.LoadingIndicator;
 
 @inherits PikachuComponentBase
 @inject IOrderTransactionAppService OrderTransactionAppService
 @inject NavigationManager NavigationManager;
 @inject IUiMessageService _uiMessageService;
 @inject IOrderAppService _orderAppService;
-@inject IElectronicInvoiceAppService _electronicInvoiceAppService;
+@inject IOrderInvoiceAppService _orderInvoiceAppService;
 @inject IItemAppService _ItemAppService;
 @inject IJSRuntime JSRuntime;
 @attribute [Authorize]
@@ -87,13 +88,13 @@
     <Card>
         <CardBody>
             <DataGrid TItem="OrderTransactionDto"
-            Data="OrderTransactions"
-            ReadData="OnDataGridReadAsync"
-            TotalItems="TotalCount"
-            ShowPager="true"
-            PageSize="PageSize"
-            Responsive
-            Hoverable>
+                      Data="OrderTransactions"
+                      ReadData="OnDataGridReadAsync"
+                      TotalItems="TotalCount"
+                      ShowPager="true"
+                      PageSize="PageSize"
+                      Responsive
+                      Hoverable>
                 <DataGridColumns>
                     <DataGridCommandColumn />
                     <DataGridColumn Caption="@L["Select"]" Width="30px">
@@ -102,8 +103,8 @@
                         </DisplayTemplate>
                     </DataGridColumn>
                     <DataGridColumn TItem="OrderTransactionDto"
-                    Field="@nameof(OrderTransactionDto.OrderNo)"
-                    Caption="@L["OrderNo"]">
+                                    Field="@nameof(OrderTransactionDto.OrderNo)"
+                                    Caption="@L["OrderNo"]">
                         <DisplayTemplate>
                             <Button Class="btn-link hyperlink" Clicked="@(() => NavigationManager.NavigateTo("Orders/OrderDetails/" + context.OrderId))">@context.OrderNo</Button>
                         </DisplayTemplate>
@@ -124,7 +125,7 @@
                             @if (context.Order?.IssueStatus == IssueInvoiceStatus.Failed)
                             {
                                 <Button Class="btn-white"
-                                Clicked="@((e) => IssueInvoice(context.OrderId))">
+                                        Clicked="@((e) => IssueInvoice(context.OrderId))">
                                     <i class="fas fa-rotate" />
                                 </Button>
                             }

@@ -1,6 +1,5 @@
 ﻿@page "/Orders"
 @using Blazorise;
-@using Blazorise;
 @using Blazorise.LoadingIndicator;
 @using Kooco.Pikachu.DeliveryTemperatureCosts
 @using Kooco.Pikachu.ElectronicInvoiceSettings
@@ -11,6 +10,7 @@
 @using Kooco.Pikachu.OrderDeliveries
 @using Kooco.Pikachu.OrderItems;
 @using Kooco.Pikachu.Orders;
+@using Kooco.Pikachu.Orders.Interfaces
 @using Kooco.Pikachu.Orders.Repositories
 @using Kooco.Pikachu.StoreLogisticOrders
 @using Microsoft.Extensions.Localization;
@@ -18,7 +18,7 @@
 @inject IStringLocalizer<PikachuResource> L;
 @inject NavigationManager NavigationManager;
 @inject IUiMessageService _uiMessageService;
-@inject IElectronicInvoiceAppService _electronicInvoiceAppService;
+@inject IOrderInvoiceAppService _orderInvoiceAppService;
 @inject IOrderAppService _orderAppService;
 @inject IStoreLogisticsOrderAppService _StoreLogisticsOrderAppService;
 @inject IOrderDeliveryRepository _OrderDeliveryRepository;

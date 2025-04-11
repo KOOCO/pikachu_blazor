@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Volo.Abp.Domain.Entities.Auditing;
 using Volo.Abp.MultiTenancy;
 
-namespace Kooco.Pikachu.TenantManagement.Entities;
+namespace Kooco.Pikachu.Tenants.Entities;
 public sealed class TenantWallet : FullAuditedAggregateRoot<Guid>, IMultiTenant
 {
     public required Guid? TenantId { get; set; }

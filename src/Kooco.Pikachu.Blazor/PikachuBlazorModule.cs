@@ -281,10 +281,8 @@ public class PikachuBlazorModule : AbpModule
 
         context.Services.AddHangfireServer(options =>
         {
-            options.Queues = new[] { "automatic-emails-job", "automatic-issue-invoice" };
+            options.Queues = ["automatic-emails-job", "automatic-issue-invoice"];
         });
-
-
     }
 
     private void ConfigureAuthentication(ServiceConfigurationContext context)

@@ -1,29 +1,31 @@
 ﻿@page "/enterprice-purchase"
+@using Blazorise;
+@using Blazorise.LoadingIndicator;
 @using Kooco.Pikachu.ElectronicInvoiceSettings
 @using Kooco.Pikachu.EnumValues;
+@using Kooco.Pikachu.GroupBuys;
+@using Kooco.Pikachu.Items.Dtos;
 @using Kooco.Pikachu.Localization;
 @using Kooco.Pikachu.OrderDeliveries
 @using Kooco.Pikachu.OrderItems;
-@using Kooco.Pikachu.GroupBuys;
 @using Kooco.Pikachu.Orders;
+@using Kooco.Pikachu.Orders.Interfaces
 @using Microsoft.Extensions.Localization;
-@using Blazorise;
 @using Volo.Abp.AspNetCore.Components.Messages;
-@using Blazorise.LoadingIndicator;
-@using Kooco.Pikachu.Items.Dtos;
 @inject IStringLocalizer<PikachuResource> L;
 @attribute [Authorize]
 @inject NavigationManager NavigationManager;
 @inject IUiMessageService _uiMessageService;
-@inject IElectronicInvoiceAppService _electronicInvoiceAppService;
+@inject IOrderInvoiceAppService _orderInvoiceAppService;
 @inject IOrderAppService _orderAppService;
 @inject IOrderDeliveryAppService _OrderDeliveryAppService;
 @inject IGroupBuyAppService _groupBuyAppService;
 @using Microsoft.JSInterop;
 @inject IJSRuntime JSRuntime;
-  @if(loading)
-    {
-     <Skeleton Animation="SkeletonAnimation.Pulse">
+
+@if (loading)
+{
+    <Skeleton Animation="SkeletonAnimation.Pulse">
         <div class="row">
             <!-- Left column for the OrdersList heading -->
             <div class="col-3">
@@ -41,16 +43,16 @@
             </div>
         </div>
 
-        <!-- If the selected tab is ToBeShipped, you’d normally show counts. 
-             We add a second row with a single skeleton line. 
+        <!-- If the selected tab is ToBeShipped, you’d normally show counts.
+             We add a second row with a single skeleton line.
         -->
         <div class="row mt-3">
             <div class="col-12 text-lg-end">
                 <SkeletonItem ColumnSize="ColumnSize.Is4" />
             </div>
         </div>
-         </Skeleton>
-         <Card>
+    </Skeleton>
+    <Card>
         <CardBody>
             <!-- A skeleton with pulse animation -->
             <Skeleton Animation="SkeletonAnimation.Pulse">
@@ -84,7 +86,7 @@
             </Skeleton>
         </CardBody>
     </Card>
-     <div class="mb-3">
+    <div class="mb-3">
         <Skeleton Animation="SkeletonAnimation.Pulse">
             <div class="d-flex gap-3">
                 <SkeletonItem ColumnSize="ColumnSize.Is2" Class="mb-2" />
@@ -99,11 +101,11 @@
     <!-- Also show a skeleton for the data grid area in the default tab (e.g., "All") -->
     <Skeleton Animation="SkeletonAnimation.Pulse">
         <!-- For example, 5 horizontal bars to represent the table rows -->
-      <SkeletonTable Rows="5" Columns="8" />
+        <SkeletonTable Rows="5" Columns="8" />
     </Skeleton>
-   
-    }
-    <div style="@($"display: {(loading ? "none" : "block")};" )">
+
+}
+<div style="@($"display: {(loading ? "none" : "block")};" )">
     <div class="row">
         <div class="col-3">
             <h3>@L["EnterpricePurchase"]</h3>
@@ -543,4 +545,4 @@
             </Column>
         }
     </Row>
-    </div>
+</div>

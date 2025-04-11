@@ -104,9 +104,9 @@ public partial class Order
     }
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-      
-            await JSRuntime.InvokeVoidAsync("attachResizerListeners");
-        
+
+        await JSRuntime.InvokeVoidAsync("attachResizerListeners");
+
     }
     public async Task OnSeparatePrintShippedLabel(MouseEventArgs e)
     {
@@ -136,7 +136,7 @@ public partial class Order
     {
         loading = true;
 
-        List<Guid> orderIds = Orders.Where(w => w.IsSelected && 
+        List<Guid> orderIds = Orders.Where(w => w.IsSelected &&
                                                 w.ShippingStatus is ShippingStatus.ToBeShipped)
                                     .Select(s => s.OrderId)
                                     .ToList();
@@ -600,7 +600,7 @@ public partial class Order
                                         ColorMode = ColorMode.Color,
                                         Orientation = DinkToPdf.Orientation.Portrait,
                                         PaperSize = PaperKind.A6,
-                                        
+
                                         Margins = new MarginSettings { Top = 3, Left = 0, Bottom = 5, Right = 0 },
                                         Out = pdfFilePath
                                     },
@@ -610,7 +610,7 @@ public partial class Order
                                     {
                                         Page = htmlFilePath,
                                         LoadSettings = new LoadSettings { JSDelay = 5000 },
-                                        
+
                                         WebSettings = new WebSettings
                                         {
                                             EnableJavascript = true,
@@ -1352,8 +1352,9 @@ public partial class Order
 
             OrderDeliveriesByOrderId[order.OrderId] = OrderDeliveries;
         }
-        else {
-            OrderDeliveries= OrderDeliveriesByOrderId[order.OrderId];
+        else
+        {
+            OrderDeliveries = OrderDeliveriesByOrderId[order.OrderId];
 
 
         }
@@ -1735,7 +1736,7 @@ public partial class Order
 
     public async Task ShippingStatusChange()
     {
-       loading=true;
+        loading = true;
 
         List<Guid> orderIds = [.. Orders.Where(w => w.IsSelected).Select(s => s.OrderId)];
 
@@ -1744,7 +1745,7 @@ public partial class Order
             await _OrderDeliveryAppService.ChangeShippingStatus(orderId);
         }
 
-        loading=false;
+        loading = false;
 
         if (SelectedTabName is "All") await UpdateItemList();
 
@@ -1753,7 +1754,7 @@ public partial class Order
 
     private async void OrderItemShipped()
     {
-       loading=true;
+        loading = true;
         var selectedOrders = OrdersSelected;
         foreach (var selectedOrder in selectedOrders)
         {
@@ -1771,7 +1772,7 @@ public partial class Order
 
         await InvokeAsync(StateHasChanged);
 
-        loading=false;
+        loading = false;
     }
     private decimal GetDeliveryCost(OrderDto order, ItemStorageTemperature item)
     {
@@ -1792,7 +1793,7 @@ public partial class Order
     }
     private async void OrderItemDelivered()
     {
-       loading=true;
+        loading = true;
 
         List<Guid> orderIds = [.. Orders.Where(w => w.IsSelected).Select(s => s.OrderId)];
 
@@ -1801,7 +1802,7 @@ public partial class Order
             await _OrderDeliveryAppService.UpdateDeliveredStatus(orderId);
         }
 
-        loading=false;
+        loading = false;
 
         if (SelectedTabName is "All") await UpdateItemList();
 
@@ -1810,7 +1811,7 @@ public partial class Order
 
     private async void OrderItemPickedUp()
     {
-       loading=true;
+        loading = true;
 
         List<Guid> orderIds = [.. Orders.Where(w => w.IsSelected).Select(s => s.OrderId)];
 
@@ -1819,7 +1820,7 @@ public partial class Order
             await _OrderDeliveryAppService.UpdatePickedUpStatus(orderId);
         }
 
-        loading=false;
+        loading = false;
 
         if (SelectedTabName is "All") await UpdateItemList();
 
@@ -1830,23 +1831,24 @@ public partial class Order
     {
         try
         {
-           loading=true;
+            loading = true;
             var messages = new List<string>();
             var selectedOrders = Orders.Where(x => x.IsSelected).ToList();
 
             foreach (var selectedOrder in selectedOrders)
             {
-             var msg = await _electronicInvoiceAppService.CreateInvoiceAsync(selectedOrder.OrderId);
+                var msg = await _orderInvoiceAppService.CreateInvoiceAsync(selectedOrder.OrderId);
                 if (!msg.IsNullOrEmpty())
                 {
                     messages.Add($"Order No: {selectedOrder.OrderNo} - {msg}");
                 }
-                else {
+                else
+                {
                     messages.Add($"Order No: {selectedOrder.OrderNo} - {L["InvoiceIssueSuccessfully"]}");
 
                 }
             }
-            loading=false;
+            loading = false;
             // Show a single message with all order numbers and their respective messages
             await _uiMessageService.Info(string.Join("\n", messages));
             await UpdateItemList();
@@ -1855,7 +1857,7 @@ public partial class Order
         }
         catch (Exception ex)
         {
-            loading=false;
+            loading = false;
             await _uiMessageService.Error(ex.Message.ToString());
 
 

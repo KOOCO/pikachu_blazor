@@ -1,4 +1,4 @@
-﻿using Kooco.Pikachu.TenantManagement;
+﻿using Kooco.Pikachu.Tenants.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Configuration;
 using System;

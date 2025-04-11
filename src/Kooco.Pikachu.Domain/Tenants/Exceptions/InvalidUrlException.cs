@@ -1,6 +1,6 @@
 ﻿using Volo.Abp;
 
-namespace Kooco.Pikachu.TenantManagement;
+namespace Kooco.Pikachu.Tenants.Exceptions;
 
 public class InvalidUrlException : BusinessException
 {

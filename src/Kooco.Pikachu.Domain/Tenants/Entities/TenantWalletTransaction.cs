@@ -1,7 +1,8 @@
-﻿using System;
+﻿using Kooco.Pikachu.TenantManagement;
+using System;
 using Volo.Abp.Domain.Entities.Auditing;
 
-namespace Kooco.Pikachu.TenantManagement.Entities;
+namespace Kooco.Pikachu.Tenants.Entities;
 public sealed class TenantWalletTransaction : FullAuditedEntity<Guid>
 {
     public required WalletDeductionStatus DeductionStatus { get; set; }

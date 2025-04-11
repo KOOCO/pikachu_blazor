@@ -6,7 +6,7 @@ using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 using static Kooco.Pikachu.Permissions.PikachuPermissions;
 
-namespace Kooco.Pikachu.Orders
+namespace Kooco.Pikachu.Orders.Interfaces
 {
     public interface IOrderMessageAppService:IApplicationService
     {

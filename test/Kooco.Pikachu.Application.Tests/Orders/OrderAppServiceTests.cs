@@ -1,6 +1,7 @@
 ﻿using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Items;
 using Kooco.Pikachu.OrderItems;
+using Kooco.Pikachu.Orders.Interfaces;
 using Shouldly;
 using System;
 using System.Threading.Tasks;

@@ -1,11 +1,12 @@
 ﻿@page "/TenantBillingReport/TenantBillingReportDetails/{Id}"
+@using Blazorise.LoadingIndicator;
 @using Kooco.Pikachu.EnumValues;
 @using Kooco.Pikachu.GroupBuys;
 @using Kooco.Pikachu.Localization;
 @using Kooco.Pikachu.Orders;
+@using Kooco.Pikachu.Orders.Interfaces
 @using Microsoft.Extensions.Localization;
 @using Volo.Abp.AspNetCore.Components.Messages;
-@using Blazorise.LoadingIndicator;
 
 @inject IStringLocalizer<PikachuResource> L;
 @inject IGroupBuyAppService _groupBuyAppService;

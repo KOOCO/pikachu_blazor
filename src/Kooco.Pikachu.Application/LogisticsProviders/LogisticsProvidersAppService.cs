@@ -13,6 +13,7 @@ using System.Linq;
 using Microsoft.Extensions.Configuration;
 using System.Text.Json.Nodes;
 using Kooco.Pikachu.DeliveryTemperatureCosts;
+using Kooco.Pikachu.LogisticsSettings;
 
 namespace Kooco.Pikachu.LogisticsProviders;
 

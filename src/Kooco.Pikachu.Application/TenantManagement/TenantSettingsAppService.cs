@@ -1,5 +1,7 @@
 ﻿using Kooco.Pikachu.AzureStorage.Image;
 using Kooco.Pikachu.Permissions;
+using Kooco.Pikachu.Tenants.Entities;
+using Kooco.Pikachu.Tenants.Services;
 using Microsoft.AspNetCore.Authorization;
 using System;
 using System.ComponentModel.DataAnnotations;

@@ -5,6 +5,7 @@ using Kooco.Pikachu.Items.Dtos;
 using Kooco.Pikachu.OrderDeliveries;
 using Kooco.Pikachu.OrderItems;
 using Kooco.Pikachu.Orders;
+using Kooco.Pikachu.Orders.Interfaces;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using Newtonsoft.Json;
@@ -114,9 +115,9 @@ public partial class EnterpricePurchaseOrder
 
     private async Task GetGroupBuyList()
     {
-        loading=true;
+        loading = true;
         GroupBuyList = await _groupBuyAppService.GetGroupBuyLookupAsync();
-        loading=false;
+        loading = false;
 
     }
 
@@ -124,7 +125,7 @@ public partial class EnterpricePurchaseOrder
     {
         try
         {
-            loading=true;
+            loading = true;
             int skipCount = PageIndex * PageSize;
             var result = await _orderAppService.GetListAsync(new GetOrderListDto
             {
@@ -140,11 +141,11 @@ public partial class EnterpricePurchaseOrder
             Orders = result?.Items.ToList() ?? new List<OrderDto>();
             TotalCount = (int?)result?.TotalCount ?? 0;
 
-            loading=false;
+            loading = false;
         }
         catch (Exception ex)
         {
-            loading=false;
+            loading = false;
             await _uiMessageService.Error(ex.GetType().ToString());
             Console.WriteLine(ex.ToString());
         }
@@ -165,7 +166,7 @@ public partial class EnterpricePurchaseOrder
     {
         try
         {
-            loading=true;
+            loading = true;
 
             int skipCount = PageIndex * PageSize;
 
@@ -188,11 +189,11 @@ public partial class EnterpricePurchaseOrder
 
             TotalCount = (int?)result?.TotalCount ?? 0;
 
-            loading=false;
+            loading = false;
         }
         catch (Exception ex)
         {
-            loading=false;
+            loading = false;
 
             await _uiMessageService.Error(ex.GetType().ToString());
         }
@@ -256,12 +257,12 @@ public partial class EnterpricePurchaseOrder
 
     public async void NavigateToOrderDetails(OrderDto e)
     {
-        loading=true;
+        loading = true;
 
         var id = e.OrderId;
         NavigationManager.NavigateTo($"Orders/OrderDetails/{id}");
 
-        loading=false;
+        loading = false;
     }
 
     bool ShowCombineButton()
@@ -353,10 +354,10 @@ public partial class EnterpricePurchaseOrder
     {
         try
         {
-            loading=true;
+            loading = true;
             var selectedOrder = Orders.SingleOrDefault(x => x.IsSelected);
-            await _electronicInvoiceAppService.CreateInvoiceAsync(selectedOrder.Id);
-            loading=false;
+            await _orderInvoiceAppService.CreateInvoiceAsync(selectedOrder.Id);
+            loading = false;
             await _uiMessageService.Success(L["InvoiceIssueSuccessfully"]);
             await UpdateItemList();
 
@@ -364,7 +365,7 @@ public partial class EnterpricePurchaseOrder
         }
         catch (Exception ex)
         {
-            loading=false;
+            loading = false;
             await _uiMessageService.Error(ex.Message.ToString());
 
 
