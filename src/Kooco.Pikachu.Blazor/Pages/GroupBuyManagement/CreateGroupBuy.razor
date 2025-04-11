@@ -121,7 +121,13 @@
         </div>
         <div class="row">
             <div class="col-2">
-                <label>@L["Subject"]</label>
+                  <label>@L["SEODescription"]
+                <Span>
+                                                            <Tooltip Text="@L["SEODescriptionInfo"]">
+                                                                <Icon class="fa-question-circle" />
+                                                            </Tooltip>
+                                                        </Span>
+                </label>
             </div>
             <div class="col-10">
                 <Addons>
@@ -1896,7 +1902,7 @@
                     <TextEdit Placeholder="@L["ExchangePolicy"]" Disabled @bind-Text="@CreateGroupBuyDto.ExchangePolicy" MaxLength="60" ShowCount />
                 </div>
                 <div class="col-12">
-                    <Blazored.TextEditor.BlazoredTextEditor @ref="@ExchangePolicyHtml">
+                    <Blazored.TextEditor.BlazoredTextEditor @ref="@ExchangePolicyHtml" Placeholder="@L["Composeanepic"]">
                         <ToolbarContent>
                             <select class="ql-header">
                                 <option selected=""></option>
@@ -1941,7 +1947,7 @@
             </div>
             <div class="col-10">
                 <div class="col-12">
-                    <Blazored.TextEditor.BlazoredTextEditor @ref="@NotifyEmailHtml">
+                    <Blazored.TextEditor.BlazoredTextEditor @ref="@NotifyEmailHtml" Placeholder="@L["Composeanepic"]">
                         <ToolbarContent>
                             <select class="ql-header">
                                 <option selected=""></option>

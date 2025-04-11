@@ -860,10 +860,10 @@
     "Enum:ColorScheme.4": "甜甜奶白",
     "Enum:ColorScheme.5": "甜點日暮",
     "DisplayMethodForProductDetails": "商品內容顯示方式",
-    "ChooseMethod": "選擇顯示方式",
-    "PureImage_LeftRightSlide": "存顯示圖片（左右滑動）",
-    "PureImage_VerticalSlide": "存顯示圖片（垂直滑動）",
-    "SpecificationIntroduction": "特訂指示 (圖片在左, 文字敘述在右)",
+    "ChooseMethod": "商品內容顯示方式 選項有錯字",
+    "PureImage_LeftRightSlide": "純顯示圖片（左右滑動",
+    "PureImage_VerticalSlide": "純顯示圖片（垂直滑動）",
+    "SpecificationIntroduction": "特定指示（圖片在左，文字敘述在右）",
     "SelectStyle": "選擇樣式",
     "SmallImage": "小圖",
     "LargeImage": "大圖",
@@ -1121,6 +1121,14 @@
     "Text": "內容",
     "SelectModule": "選擇模組",
     "PartnershipModule": "合作廠商模組",
-    "CarouselModuleStyleCannotBeEmpty": "「輪播模組樣式不可為空」"
+    "CarouselModuleStyleCannotBeEmpty": "「輪播模組樣式不可為空」",
+    "SEODescription": "SEO 團購敘述",
+    "SEODescriptionInfo": "分享連結時會出現在預覽圖下方的描述文字",
+    "EnterpricePurchase": "企業採購",
+    "Select": "勾選",
+    "ShippingStatus": "物流狀態",
+    "Block": "選項底色",
+    "Composeanepic": "撰寫"
+
   }
 }
