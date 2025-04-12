@@ -343,6 +343,16 @@
     margin: auto;
 }
 
+#AbpPageAlerts {
+    max-width: 28rem;
+    margin: auto;
+}
+
+.alert {
+    z-index: 10;
+    color: white;
+}
+
 .card-body {
     color: white;
     padding: 2rem !important;
