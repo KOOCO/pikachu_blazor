@@ -97,13 +97,6 @@ namespace Kooco.Pikachu.Blazor.Pages.Identity.UsersManagement
             await GetCategorizedListAsync();
         }
 
-        private async Task OnUserTypesChanged(UserTypes? value)
-        {
-            Filters.UserTypes = value;
-            CurrentPage = 1;
-            await GetCategorizedListAsync();
-        }
-
         private async Task GetCategorizedListAsync()
         {
             try
@@ -115,7 +108,7 @@ namespace Kooco.Pikachu.Blazor.Pages.Identity.UsersManagement
                         MaxResultCount = PageSize,
                         Sorting = CurrentSorting,
                         Filter = Filters.Filter,
-                        UserTypes = Filters.UserTypes,
+                        UserTypes = UserTypes.Backend
                     });
                 Entities = data.Items;
                 TotalCount = (int)data.TotalCount;

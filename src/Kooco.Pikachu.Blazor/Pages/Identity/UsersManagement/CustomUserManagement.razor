@@ -44,17 +44,7 @@
                     Toolbar="@Toolbar" />
     </CardHeader>
     <CardBody class="row">
-        <Column ColumnSize="ColumnSize.Is4">
-        </Column>
-        <Column ColumnSize="ColumnSize.Is4" class="form-group row" style="text-align:right;">
-            <label for="inputPassword" class="col-sm-3 col-form-label pt-1">  @l["UserTypes"] </label>
-            <div class="col-sm-9">
-                <Select Class="form-select-sm" TValue="UserTypes?" SelectedValue="Filters.UserTypes" SelectedValueChanged="@OnUserTypesChanged">
-                    <SelectItem Value="UserTypes.All">@l["Enum:UserTypes." + (int)UserTypes.All]</SelectItem>
-                    <SelectItem Value="UserTypes.Frontend">@l["Enum:UserTypes." + (int)UserTypes.Frontend]</SelectItem>
-                    <SelectItem Value="UserTypes.Backend">@l["Enum:UserTypes." + (int)UserTypes.Backend]</SelectItem>
-                </Select>
-            </div>
+        <Column ColumnSize="ColumnSize.Is8">
         </Column>
         <Column ColumnSize="ColumnSize.Is4" class="form-group row" style="text-align:right;">
             <label for="inputPassword" class="col-sm-2 col-form-label pt-1">  @L["Search"] </label>
