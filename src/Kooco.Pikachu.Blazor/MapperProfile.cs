@@ -13,40 +13,38 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Kooco.Pikachu.Blazor
+namespace Kooco.Pikachu.Blazor;
+public class MapperProfile : Profile
 {
-    public class MapperProfile : Profile
+    public MapperProfile()
     {
-        public MapperProfile()
-        {
-            CreateMap<Item, ItemDto>();
-            CreateMap<ItemDto, UpdateItemDto>();
-            CreateMap<ItemDetailsDto, CreateItemDetailsDto>();
+        CreateMap<Item, ItemDto>();
+        CreateMap<ItemDto, UpdateItemDto>();
+        CreateMap<ItemDetailsDto, CreateItemDetailsDto>();
 
-            CreateMap<ImageDto, CreateImageDto>();
-            
-            CreateMap<SetItem, SetItemDto>();
-            CreateMap<SetItemDetails, SetItemDetailsDto>();
-            CreateMap<SetItemDto, CreateUpdateSetItemDto>();
-            CreateMap<SetItemDetailsDto, CreateUpdateSetItemDetailsDto>();
-            CreateMap<FreebieDto, UpdateFreebieDto>()
-                .ForMember(dest => dest.FreebieGroupBuys, opt => opt.MapFrom<FreebieGroupBuysResolver>());
+        CreateMap<ImageDto, CreateImageDto>();
 
-            CreateMap<FreebieGroupBuysDto, CreateFreebieGroupBuysDto>();
-            CreateMap<Order, OrderDto>();
-            CreateMap<OrderDto, CreateOrderDto>();
-            CreateMap<GroupBuyReport, GroupBuyReportDto>();
+        CreateMap<SetItem, SetItemDto>();
+        CreateMap<SetItemDetails, SetItemDetailsDto>();
+        CreateMap<SetItemDto, CreateUpdateSetItemDto>();
+        CreateMap<SetItemDetailsDto, CreateUpdateSetItemDetailsDto>();
+        CreateMap<FreebieDto, UpdateFreebieDto>()
+            .ForMember(dest => dest.FreebieGroupBuys, opt => opt.MapFrom<FreebieGroupBuysResolver>());
 
-            CreateMap<OrderDeliveryDto, OrderDelivery>().ReverseMap();
-        }
-        
+        CreateMap<FreebieGroupBuysDto, CreateFreebieGroupBuysDto>();
+        CreateMap<Order, OrderDto>();
+        CreateMap<OrderDto, CreateOrderDto>();
+        CreateMap<GroupBuyReport, GroupBuyReportDto>();
+
+        CreateMap<OrderDeliveryDto, OrderDelivery>().ReverseMap();
     }
 
-    public class FreebieGroupBuysResolver : IValueResolver<FreebieDto, UpdateFreebieDto, List<Guid>>
+}
+
+public class FreebieGroupBuysResolver : IValueResolver<FreebieDto, UpdateFreebieDto, List<Guid>>
+{
+    public List<Guid> Resolve(FreebieDto source, UpdateFreebieDto destination, List<Guid> destMember, ResolutionContext context)
     {
-        public List<Guid> Resolve(FreebieDto source, UpdateFreebieDto destination, List<Guid> destMember, ResolutionContext context)
-        {
-            return source.FreebieGroupBuys.Select(x => x.GroupBuyId).ToList();
-        }
+        return source.FreebieGroupBuys.Select(x => x.GroupBuyId).ToList();
     }
 }

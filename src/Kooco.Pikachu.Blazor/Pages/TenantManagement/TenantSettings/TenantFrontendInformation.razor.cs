@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using Kooco.Pikachu.Extensions;
 using Microsoft.Extensions.Logging;
+using Kooco.Pikachu.Tenants;
 
 namespace Kooco.Pikachu.Blazor.Pages.TenantManagement.TenantSettings;
 

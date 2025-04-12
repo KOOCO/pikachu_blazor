@@ -1,5 +1,5 @@
 ﻿using Kooco.Pikachu.Permissions;
-using Kooco.Pikachu.TenantManagement;
+using Kooco.Pikachu.Tenants;
 using Kooco.Pikachu.Validators;
 using Microsoft.AspNetCore.Authorization;
 using System.Linq;

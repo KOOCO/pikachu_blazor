@@ -1,7 +1,7 @@
 ﻿using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Identity;
 using Kooco.Pikachu.PikachuAccounts.ExternalUsers;
-using Kooco.Pikachu.TenantManagement;
+using Kooco.Pikachu.Tenants;
 using Kooco.Pikachu.Users;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Caching.Memory;

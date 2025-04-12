@@ -2,7 +2,7 @@
 using Kooco.Pikachu.Groupbuys;
 using Kooco.Pikachu.Orders.Entities;
 using Kooco.Pikachu.Orders.Repositories;
-using Kooco.Pikachu.TenantManagement;
+using Kooco.Pikachu.Tenants;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;

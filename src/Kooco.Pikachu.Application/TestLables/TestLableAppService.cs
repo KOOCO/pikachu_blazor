@@ -1,10 +1,7 @@
 ﻿using Kooco.Pikachu.LogisticsProviders;
 using Kooco.Pikachu.Orders.Repositories;
-using Kooco.Pikachu.StoreLogisticOrders;
-using Kooco.Pikachu.TenantEmailing;
 using Microsoft.Extensions.Configuration;
 using RestSharp;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;

@@ -1,5 +1,5 @@
 using Blazorise;
-using Kooco.Pikachu.TenantManagement;
+using Kooco.Pikachu.Tenants;
 using Microsoft.AspNetCore.Components;
 using System;
 using System.Threading.Tasks;

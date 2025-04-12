@@ -1,8 +1,8 @@
 using Blazored.TextEditor;
-using Kooco.Pikachu.TenantManagement;
 using Microsoft.AspNetCore.Components;
 using System.Threading.Tasks;
 using System;
+using Kooco.Pikachu.Tenants;
 
 namespace Kooco.Pikachu.Blazor.Pages.TenantManagement.TenantSettings;
 

@@ -1,9 +1,9 @@
 using Blazorise;
-using Kooco.Pikachu.TenantManagement;
 using Microsoft.AspNetCore.Components;
 using System.Threading.Tasks;
 using System;
 using System.ComponentModel.DataAnnotations;
+using Kooco.Pikachu.Tenants;
 
 namespace Kooco.Pikachu.Blazor.Pages.TenantManagement.TenantSettings;
 
