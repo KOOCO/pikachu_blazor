@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Kooco.Pikachu.Localization;
+﻿using Kooco.Pikachu.Localization;
 using Volo.Abp.Application.Services;
 
 namespace Kooco.Pikachu;

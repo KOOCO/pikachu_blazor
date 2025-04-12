@@ -1,11 +1,11 @@
 ﻿@page "/EmailSettings"
 
+@using Blazorise.LoadingIndicator;
 @using Kooco.Pikachu.Localization;
-@using Kooco.Pikachu.TenantEmailing;
+@using Kooco.Pikachu.Tenants
 @using Microsoft.Extensions.Localization;
 @using Volo.Abp.AspNetCore.Components.Messages;
 @using Volo.Abp.ObjectMapping;
-@using Blazorise.LoadingIndicator;
 
 @inject ITenantEmailSettingsAppService _tenantEmailSettingsAppService;
 @inject IUiMessageService _uiMessageService;

@@ -1,4 +1,4 @@
-﻿using Kooco.Pikachu.TenantManagement;
+﻿using Kooco.Pikachu.Tenants;
 using System;
 using System.Collections.Generic;
 using Volo.Abp.Domain.Entities;

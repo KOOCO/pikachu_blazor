@@ -3,15 +3,13 @@ using Kooco.Pikachu.ElectronicInvoiceSettings;
 using Kooco.Pikachu.GroupBuys;
 using Kooco.Pikachu.Images;
 
-namespace Kooco.Pikachu.Blazor
+namespace Kooco.Pikachu.Blazor;
+public class PikachuBlazorAutoMapperProfile : Profile
 {
-    public class PikachuBlazorAutoMapperProfile:Profile
+    public PikachuBlazorAutoMapperProfile()
     {
-        public PikachuBlazorAutoMapperProfile()
-        {
-            CreateMap<GroupBuyDto, GroupBuyUpdateDto>();
-            CreateMap<ImageDto, CreateImageDto>();
-            CreateMap<ElectronicInvoiceSettingDto, CreateUpdateElectronicInvoiceDto>();
-        }
+        CreateMap<GroupBuyDto, GroupBuyUpdateDto>();
+        CreateMap<ImageDto, CreateImageDto>();
+        CreateMap<ElectronicInvoiceSettingDto, CreateUpdateElectronicInvoiceDto>();
     }
 }

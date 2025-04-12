@@ -18,7 +18,7 @@ using Kooco.Pikachu.PaymentGateways;
 using Kooco.Pikachu.Permissions;
 using Kooco.Pikachu.Refunds;
 using Kooco.Pikachu.Response;
-using Kooco.Pikachu.TenantManagement;
+using Kooco.Pikachu.Tenants;
 using Kooco.Pikachu.UserCumulativeCredits;
 using Kooco.Pikachu.UserShoppingCredits;
 using Microsoft.AspNetCore.Authorization;

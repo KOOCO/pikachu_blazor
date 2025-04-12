@@ -1,108 +1,96 @@
-﻿using AutoMapper.Internal.Mappers;
-using Kooco.Pikachu.Orders.Entities;
+﻿using Kooco.Pikachu.Orders.Entities;
 using Kooco.Pikachu.Orders.Interfaces;
 using Kooco.Pikachu.Orders.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
-using Volo.Abp.Guids;
 
-namespace Kooco.Pikachu.Orders
+namespace Kooco.Pikachu.Orders;
+
+[AllowAnonymous]
+public class OrderMessageAppService(IOrderMessageRepository orderMessageRepository) : ApplicationService, IOrderMessageAppService
 {
-    [AllowAnonymous]
-    public class OrderMessageAppService : ApplicationService, IOrderMessageAppService
+    // Retrieve an OrderMessage by ID
+    public async Task<OrderMessageDto> GetAsync(Guid id)
     {
-        private readonly IOrderMessageRepository _orderMessageRepository;
+        var orderMessage = await orderMessageRepository.GetAsync(id);
+        return ObjectMapper.Map<OrderMessage, OrderMessageDto>(orderMessage);
+    }
 
-        public OrderMessageAppService(IOrderMessageRepository orderMessageRepository)
+    // Retrieve a paginated list of OrderMessages with filtering and sorting
+    public async Task<PagedResultDto<OrderMessageDto>> GetListAsync(GetOrderMessageListDto input)
+    {
+        if (input.Sorting.IsNullOrEmpty())
         {
-            _orderMessageRepository = orderMessageRepository;
+            input.Sorting = nameof(OrderMessage.CreationTime) + " DESC";
+
         }
+        var totalCount = await orderMessageRepository.GetCountAsync(
+            input.Filter,
+            input.OrderId,
+            input.SenderId,
+            input.IsMerchant,
+            input.Timestamp);
 
-        // Retrieve an OrderMessage by ID
-        public async Task<OrderMessageDto> GetAsync(Guid id)
-        {
-            var orderMessage = await _orderMessageRepository.GetAsync(id);
-            return ObjectMapper.Map<OrderMessage, OrderMessageDto>(orderMessage);
-        }
+        var orderMessages = await orderMessageRepository.GetListAsync(
+            input.SkipCount,
+            input.MaxResultCount,
+            input.Sorting,
+            input.Filter,
+            input.OrderId,
+            input.SenderId,
+            input.IsMerchant,
+            input.Timestamp);
 
-        // Retrieve a paginated list of OrderMessages with filtering and sorting
-        public async Task<PagedResultDto<OrderMessageDto>> GetListAsync(GetOrderMessageListDto input)
-        {
-            if (input.Sorting.IsNullOrEmpty())
-            {
-                input.Sorting = nameof(OrderMessage.CreationTime) + " DESC";
+        return new PagedResultDto<OrderMessageDto>(
+            totalCount,
+            ObjectMapper.Map<List<OrderMessage>, List<OrderMessageDto>>(orderMessages)
+        );
+    }
 
-            }
-            var totalCount = await _orderMessageRepository.GetCountAsync(
-                input.Filter,
-                input.OrderId,
-                input.SenderId,
-                input.IsMerchant,
-                input.Timestamp);
+    public async Task<List<OrderMessageDto>> GetOrderMessagesAsync(Guid orderId)
+    {
+        return ObjectMapper.Map<List<OrderMessage>, List<OrderMessageDto>>(
+            await orderMessageRepository.GetOrderMessagesAsync(orderId)
+        );
+    }
 
-            var orderMessages = await _orderMessageRepository.GetListAsync(
-                input.SkipCount,
-                input.MaxResultCount,
-                input.Sorting,
-                input.Filter,
-                input.OrderId,
-                input.SenderId,
-                input.IsMerchant,
-                input.Timestamp);
+    // Create a new OrderMessage
+    public async Task<OrderMessageDto> CreateAsync(CreateUpdateOrderMessageDto input)
+    {
+        var orderMessage = new OrderMessage(
+            GuidGenerator.Create(),
+            input.OrderId,
+            input.SenderId,
+            input.Message,
+            input.IsMerchant);
 
-            return new PagedResultDto<OrderMessageDto>(
-                totalCount,
-                ObjectMapper.Map<List<OrderMessage>, List<OrderMessageDto>>(orderMessages)
-            );
-        }
+        await orderMessageRepository.InsertAsync(orderMessage);
 
-        public async Task<List<OrderMessageDto>> GetOrderMessagesAsync(Guid orderId)
-        {
-            return ObjectMapper.Map<List<OrderMessage>, List<OrderMessageDto>>(
-                await _orderMessageRepository.GetOrderMessagesAsync(orderId)
-            );
-        }
+        return ObjectMapper.Map<OrderMessage, OrderMessageDto>(orderMessage);
+    }
 
-        // Create a new OrderMessage
-        public async Task<OrderMessageDto> CreateAsync(CreateUpdateOrderMessageDto input)
-        {
-            var orderMessage = new OrderMessage(
-                GuidGenerator.Create(),
-                input.OrderId,
-                input.SenderId,
-                input.Message,
-                input.IsMerchant);
+    // Update an existing OrderMessage
+    public async Task<OrderMessageDto> UpdateAsync(Guid id, CreateUpdateOrderMessageDto input)
+    {
+        var orderMessage = await orderMessageRepository.GetAsync(id);
 
-            await _orderMessageRepository.InsertAsync(orderMessage);
+        orderMessage.Message = input.Message;
+        orderMessage.IsMerchant = input.IsMerchant;
+        orderMessage.SenderId = input.SenderId;
+        orderMessage.OrderId = input.OrderId;
 
-            return ObjectMapper.Map<OrderMessage, OrderMessageDto>(orderMessage);
-        }
+        await orderMessageRepository.UpdateAsync(orderMessage);
 
-        // Update an existing OrderMessage
-        public async Task<OrderMessageDto> UpdateAsync(Guid id, CreateUpdateOrderMessageDto input)
-        {
-            var orderMessage = await _orderMessageRepository.GetAsync(id);
+        return ObjectMapper.Map<OrderMessage, OrderMessageDto>(orderMessage);
+    }
 
-            orderMessage.Message = input.Message;
-            orderMessage.IsMerchant = input.IsMerchant;
-            orderMessage.SenderId = input.SenderId;
-            orderMessage.OrderId = input.OrderId;
-
-            await _orderMessageRepository.UpdateAsync(orderMessage);
-
-            return ObjectMapper.Map<OrderMessage, OrderMessageDto>(orderMessage);
-        }
-
-        // Delete an OrderMessage by ID
-        public async Task DeleteAsync(Guid id)
-        {
-            await _orderMessageRepository.DeleteAsync(id);
-        }
+    // Delete an OrderMessage by ID
+    public async Task DeleteAsync(Guid id)
+    {
+        await orderMessageRepository.DeleteAsync(id);
     }
 }

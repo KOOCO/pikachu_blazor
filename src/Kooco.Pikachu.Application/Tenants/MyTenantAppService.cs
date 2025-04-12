@@ -7,59 +7,47 @@ using Volo.Abp;
 using Volo.Abp.Application.Services;
 using Volo.Abp.TenantManagement;
 
-namespace Kooco.Pikachu.Tenants
+namespace Kooco.Pikachu.Tenants;
+
+[RemoteService(IsEnabled = false)]
+public class MyTenantAppService(ITenantRepository tenantRepository, ICustomTenantRepository customTenantRepository, IConfiguration configuration) : ApplicationService, IMyTenantAppService
 {
-    [RemoteService(IsEnabled = false)]
-    public class MyTenantAppService : ApplicationService, IMyTenantAppService
+    public async Task<bool> CheckShortCodeForCreateAsync(string shortCode)
     {
-        private readonly ITenantRepository _tenantRepository;
-        private readonly ICustomTenantRepository _customTenantRepository;
-        private readonly IConfiguration _configuration;
+        return await customTenantRepository.CheckShortCodeForCreate(shortCode);
+    }
 
-        public MyTenantAppService(ITenantRepository tenantRepository, ICustomTenantRepository customTenantRepository, IConfiguration configuration)
-        {
-            _tenantRepository = tenantRepository;
-            _customTenantRepository = customTenantRepository;
-            _configuration = configuration;
-        }
+    public async Task<bool> CheckShortCodeForUpdate(string shortCode, Guid Id)
+    {
+        return await customTenantRepository.CheckShortCodeForUpdate(shortCode, Id);
+    }
 
-        public async Task<bool> CheckShortCodeForCreateAsync(string shortCode)
-        {
-            return await _customTenantRepository.CheckShortCodeForCreate(shortCode);
-        }
+    public async Task<TenantDto?> FindByNameAsync(string name)
+    {
+        var tenant = await tenantRepository.FindByNameAsync(name);
+        return ObjectMapper.Map<Tenant?, TenantDto?>(tenant);
+    }
 
-        public async Task<bool> CheckShortCodeForUpdate(string shortCode, Guid Id)
-        {
-            return await _customTenantRepository.CheckShortCodeForUpdate(shortCode, Id);
-        }
+    [AllowAnonymous]
 
-        public async Task<TenantDto?> FindByNameAsync(string name)
-        {
-            var tenant = await _tenantRepository.FindByNameAsync(name);
-            return ObjectMapper.Map<Tenant?, TenantDto?>(tenant);
-        }
+    public async Task<TenantDto> GetTenantAsync(string shortCode)
+    {
+        var tenant = await customTenantRepository.FindByShortCodeAsync(shortCode);
+        return ObjectMapper.Map<Tenant, TenantDto>(tenant);
+    }
 
-        [AllowAnonymous]
+    [AllowAnonymous]
+    public async Task<string?> FindTenantDomainAsync(Guid? id)
+    {
+        var domain = await customTenantRepository.FindTenantDomainAsync(id);
+        domain ??= configuration["EntryUrl"];
+        return domain;
+    }
 
-        public async Task<TenantDto> GetTenantAsync(string shortCode)
-        {
-            var tenant = await _customTenantRepository.FindByShortCodeAsync(shortCode);
-            return ObjectMapper.Map<Tenant, TenantDto>(tenant);
-        }
-
-        [AllowAnonymous]
-        public async Task<string?> FindTenantDomainAsync(Guid? id)
-        {
-            var domain = await _customTenantRepository.FindTenantDomainAsync(id);
-            domain ??= _configuration["EntryUrl"];
-            return domain;
-        }
-
-        [AllowAnonymous]
-        public async Task<string?> FindTenantUrlAsync(Guid? id)
-        {
-            var tenantUrl = await _customTenantRepository.FindTenantUrlAsync(id);
-            return tenantUrl;
-        }
+    [AllowAnonymous]
+    public async Task<string?> FindTenantUrlAsync(Guid? id)
+    {
+        var tenantUrl = await customTenantRepository.FindTenantUrlAsync(id);
+        return tenantUrl;
     }
 }

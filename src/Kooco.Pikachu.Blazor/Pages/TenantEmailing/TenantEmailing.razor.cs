@@ -1,5 +1,5 @@
 ﻿using Blazorise.LoadingIndicator;
-using Kooco.Pikachu.TenantEmailing;
+using Kooco.Pikachu.Tenants;
 using Microsoft.JSInterop;
 using System;
 using System.Threading.Tasks;
