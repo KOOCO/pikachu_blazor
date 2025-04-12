@@ -18,14 +18,8 @@ using Volo.Abp.Uow;
 namespace Kooco.Pikachu.BackgroundWorkers;
 public class OrderStatusCheckerWorker : AsyncPeriodicBackgroundWorkerBase
 {
-    public OrderStatusCheckerWorker(
-        AbpAsyncTimer timer,
-        IServiceScopeFactory serviceScopeFactory
-        )
-        : base(timer, serviceScopeFactory)
+    public OrderStatusCheckerWorker(AbpAsyncTimer timer, IServiceScopeFactory serviceScopeFactory) : base(timer, serviceScopeFactory)
     {
-
-
         // Set the period for how frequently you want the task to run
         Timer.Period = 600000; // 10 minutes in milliseconds (adjust as necessary)
     }
@@ -39,81 +33,81 @@ public class OrderStatusCheckerWorker : AsyncPeriodicBackgroundWorkerBase
             var _paymentGatewayRepository = workerContext
         .ServiceProvider
         .GetRequiredService<IRepository<PaymentGateway, Guid>>();
-        var _orderRepository = workerContext
-          .ServiceProvider
-          .GetRequiredService<IOrderRepository>();
-        var _itemDetailsRepository = workerContext
-        .ServiceProvider
-        .GetRequiredService<IItemDetailsRepository>();
-        var _freebieRepository = workerContext
-        .ServiceProvider
-        .GetRequiredService<IFreebieRepository>();
-        var _dataFilter = workerContext
-       .ServiceProvider
-       .GetRequiredService<IDataFilter>();
-        // Resolve the necessary service dependencies
-        var validitySettings = (await _paymentGatewayRepository.GetQueryableAsync()).Where(x => x.PaymentIntegrationType == PaymentIntegrationType.OrderValidatePeriod).FirstOrDefault();
+            var _orderRepository = workerContext
+              .ServiceProvider
+              .GetRequiredService<IOrderRepository>();
+            var _itemDetailsRepository = workerContext
+            .ServiceProvider
+            .GetRequiredService<IItemDetailsRepository>();
+            var _freebieRepository = workerContext
+            .ServiceProvider
+            .GetRequiredService<IFreebieRepository>();
+            var _dataFilter = workerContext
+           .ServiceProvider
+           .GetRequiredService<IDataFilter>();
+            // Resolve the necessary service dependencies
+            var validitySettings = (await _paymentGatewayRepository.GetQueryableAsync()).Where(x => x.PaymentIntegrationType == PaymentIntegrationType.OrderValidatePeriod).FirstOrDefault();
 
-        var orders = (await _orderRepository.GetQueryableAsync())
-                            .Where(order => order.ShippingStatus == ShippingStatus.WaitingForPayment).ToList();
+            var orders = (await _orderRepository.GetQueryableAsync())
+                                .Where(order => order.ShippingStatus == ShippingStatus.WaitingForPayment).ToList();
 
-        foreach (var order in orders)
-        {
-            DateTime? expirationTime = null;
-
-            if (validitySettings.Unit == "Days")
+            foreach (var order in orders)
             {
-                expirationTime = order.CreationTime.AddDays(validitySettings.Period.Value);
-            }
-            else if (validitySettings.Unit == "Hours")
-            {
-                expirationTime = order.CreationTime.AddHours(validitySettings.Period.Value);
-            }
-            else if (validitySettings.Unit == "Minutes")
-            {
-                expirationTime = order.CreationTime.AddMinutes(validitySettings.Period.Value);
-            }
+                DateTime? expirationTime = null;
 
-            if (expirationTime.HasValue && expirationTime.Value < DateTime.Now)
-            {
-                order.OrderStatus = OrderStatus.Closed;
-                order.ShippingStatus = ShippingStatus.Closed;
-
-                foreach (var orderItem in order.OrderItems)
+                if (validitySettings.Unit == "Days")
                 {
-                    using (_dataFilter.Disable<IMultiTenant>())
+                    expirationTime = order.CreationTime.AddDays(validitySettings.Period.Value);
+                }
+                else if (validitySettings.Unit == "Hours")
+                {
+                    expirationTime = order.CreationTime.AddHours(validitySettings.Period.Value);
+                }
+                else if (validitySettings.Unit == "Minutes")
+                {
+                    expirationTime = order.CreationTime.AddMinutes(validitySettings.Period.Value);
+                }
+
+                if (expirationTime.HasValue && expirationTime.Value < DateTime.Now)
+                {
+                    order.OrderStatus = OrderStatus.Closed;
+                    order.ShippingStatus = ShippingStatus.Closed;
+
+                    foreach (var orderItem in order.OrderItems)
                     {
-                        var details = await _itemDetailsRepository.FirstOrDefaultAsync(x => x.ItemId == orderItem.ItemId && x.ItemName == orderItem.Spec);
-
-                        if (details != null)
+                        using (_dataFilter.Disable<IMultiTenant>())
                         {
-                            details.SaleableQuantity += orderItem.Quantity;
-                            details.StockOnHand += orderItem.Quantity;
+                            var details = await _itemDetailsRepository.FirstOrDefaultAsync(x => x.ItemId == orderItem.ItemId && x.ItemName == orderItem.Spec);
 
-                            await _itemDetailsRepository.UpdateAsync(details);
-                        }
-
-                        if (orderItem.FreebieId != null)
-                        {
-                            var freebie = await _freebieRepository.FirstOrDefaultAsync(x => x.Id == orderItem.FreebieId);
-
-                            if (freebie != null)
+                            if (details != null)
                             {
-                                freebie.FreebieAmount += orderItem.Quantity;
-                                await _freebieRepository.UpdateAsync(freebie);
+                                details.SaleableQuantity += orderItem.Quantity;
+                                details.StockOnHand += orderItem.Quantity;
+
+                                await _itemDetailsRepository.UpdateAsync(details);
+                            }
+
+                            if (orderItem.FreebieId != null)
+                            {
+                                var freebie = await _freebieRepository.FirstOrDefaultAsync(x => x.Id == orderItem.FreebieId);
+
+                                if (freebie != null)
+                                {
+                                    freebie.FreebieAmount += orderItem.Quantity;
+                                    await _freebieRepository.UpdateAsync(freebie);
+                                }
                             }
                         }
                     }
-                }
 
-                await _orderRepository.UpdateAsync(order);
+                    await _orderRepository.UpdateAsync(order);
+                }
             }
         }
+
+        Logger.LogInformation("Completed: Order status check and updates.");
     }
 
-    Logger.LogInformation("Completed: Order status check and updates.");
-        }
-
-    }
+}
 
 

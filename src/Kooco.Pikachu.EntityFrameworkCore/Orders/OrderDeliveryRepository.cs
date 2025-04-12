@@ -6,30 +6,15 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Volo.Abp.Domain.Repositories.EntityFrameworkCore;
 using Volo.Abp.EntityFrameworkCore;
 
-namespace Kooco.Pikachu.OrderDeliveries;
-
-public class EfCoreOrderDeliveryRepository : 
-    EfCoreRepository<
-        PikachuDbContext, 
-        OrderDelivery, 
-        Guid
-    >, IOrderDeliveryRepository
+namespace Kooco.Pikachu.Orders;
+public class OrderDeliveryRepository(IDbContextProvider<PikachuDbContext> dbContextProvider) :
+    EfCoreRepository<PikachuDbContext, OrderDelivery, Guid>(dbContextProvider), IOrderDeliveryRepository
 {
-    #region Constructor
-    public EfCoreOrderDeliveryRepository(
-        IDbContextProvider<PikachuDbContext> dbContextProvider
-    ) : base(dbContextProvider)
-    {
-
-    }
-    #endregion
-
-    #region Methods
     public async Task<List<OrderDelivery>> GetWithDetailsAsync(Guid id)
     {
         try
@@ -54,20 +39,18 @@ public class EfCoreOrderDeliveryRepository :
 
             orderDeliveries =
             [
-                .. orderDeliveries
-                            .OrderBy<OrderDelivery, ItemStorageTemperature>(od => od.Items is { Count: > 0 }
-                                ? od.Items.Min(oi => oi.DeliveryTemperature) : ItemStorageTemperature.Normal)
+                .. orderDeliveries.OrderBy(od => od.Items is { Count: > 0 }
+                    ? od.Items.Min(oi => oi.DeliveryTemperature) :
+                    ItemStorageTemperature.Normal)
             ];
 
             return orderDeliveries;
         }
         catch (Exception ex)
         {
-
             throw;
         }
     }
-
     public async Task<Guid> GetOrderIdByAllPayLogisticsId(string AllPayLogisticsId)
     {
         return (await GetQueryableAsync())
@@ -76,5 +59,10 @@ public class EfCoreOrderDeliveryRepository :
                             .FirstOrDefault();
     }
 
-    #endregion
+    public async Task<List<OrderDelivery>> GetByTenantIdAsync(Guid tenantId, CancellationToken ct)
+    {
+        return await (await GetQueryableAsync())
+            .Where(od => od.TenantId == tenantId)
+            .ToListAsync(cancellationToken: ct);
+    }
 }

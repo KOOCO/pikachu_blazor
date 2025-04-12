@@ -1,5 +1,4 @@
 ﻿using Kooco.Invoices;
-using Kooco.Pikachu.ElectronicInvoiceSettings;
 using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Groupbuys;
 using Kooco.Pikachu.GroupBuys;
@@ -7,6 +6,8 @@ using Kooco.Pikachu.Orders.Entities;
 using Kooco.Pikachu.Orders.Interfaces;
 using Kooco.Pikachu.Orders.Repositories;
 using Kooco.Pikachu.Orders.Services;
+using Kooco.Pikachu.Tenants.Entities;
+using Kooco.Pikachu.Tenants.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
@@ -124,8 +125,6 @@ public class OrderInvoiceAppService : PikachuAppService, IOrderInvoiceAppService
             Items = invoiceItems
         };
 
-
-
         var (transCode, result) = await ECPayInvoiceService.CreateInvoiceAsync(setting.HashKey, setting.HashIV, input);
 
         // **Get Current User (Editor)**
@@ -148,9 +147,7 @@ public class OrderInvoiceAppService : PikachuAppService, IOrderInvoiceAppService
                     currentUserName
                 );
 
-
                 return result.RtnMsg.ToString();
-
             }
             order.InvoiceNumber = result.InvoiceNo;
             order.IssueStatus = IssueInvoiceStatus.Succeeded;
@@ -189,7 +186,7 @@ public class OrderInvoiceAppService : PikachuAppService, IOrderInvoiceAppService
     }
     public async Task CreateCreditNoteAsync(Guid orderId)
     {
-        ElectronicInvoiceSetting? setting = await ElectronicInvoiceSettingRepository.FirstOrDefaultAsync();
+        TenantTripartite? setting = await ElectronicInvoiceSettingRepository.FirstOrDefaultAsync();
 
         Order order = await OrderRepository.GetWithDetailsAsync(orderId);
 
@@ -260,7 +257,7 @@ public class OrderInvoiceAppService : PikachuAppService, IOrderInvoiceAppService
     {
         Order order = await OrderRepository.GetWithDetailsAsync(orderId);
 
-        ElectronicInvoiceSetting? setting = await ElectronicInvoiceSettingRepository.FirstOrDefaultAsync();
+        TenantTripartite? setting = await ElectronicInvoiceSettingRepository.FirstOrDefaultAsync();
 
         RestClientOptions options = new() { MaxTimeout = -1 };
 
@@ -319,7 +316,7 @@ public class OrderInvoiceAppService : PikachuAppService, IOrderInvoiceAppService
     public required IOrderInvoiceRepository OrderInvoiceRepository { get; init; }
     public required IGroupBuyRepository GroupBuyRepository { get; init; }
     public required IECPayInvoiceService ECPayInvoiceService { get; init; }
-    public required IElectronicInvoiceSettingRepository ElectronicInvoiceSettingRepository { get; init; }
+    public required ITenantTripartiteRepository ElectronicInvoiceSettingRepository { get; init; }
     public required OrderHistoryManager OrderHistoryManager { get; init; }
 }
 public class myItem

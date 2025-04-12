@@ -1,6 +1,7 @@
 ﻿using Kooco.Pikachu.EntityFrameworkCore;
 using Kooco.Pikachu.Orders.Entities;
 using Kooco.Pikachu.Orders.Repositories;
+using Kooco.Pikachu.OrderTransactions;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -10,11 +11,11 @@ using System.Threading.Tasks;
 using Volo.Abp.Domain.Repositories.EntityFrameworkCore;
 using Volo.Abp.EntityFrameworkCore;
 
-namespace Kooco.Pikachu.OrderTransactions;
+namespace Kooco.Pikachu.Orders;
 
-public class EfCoreOrderTransactionRepository : EfCoreRepository<PikachuDbContext, OrderTransaction, Guid>, IOrderTransactionRepository
+public class OrderTransactionRepository : EfCoreRepository<PikachuDbContext, OrderTransaction, Guid>, IOrderTransactionRepository
 {
-    public EfCoreOrderTransactionRepository(IDbContextProvider<PikachuDbContext> dbContextProvider) : base(dbContextProvider)
+    public OrderTransactionRepository(IDbContextProvider<PikachuDbContext> dbContextProvider) : base(dbContextProvider)
     {
     }
 
@@ -40,6 +41,6 @@ public class EfCoreOrderTransactionRepository : EfCoreRepository<PikachuDbContex
         return queryable
             .Include(q => q.Order)
             .WhereIf(!string.IsNullOrWhiteSpace(filter), x => x.OrderId.ToString() == filter
-            || x.OrderNo.Contains(filter) || (x.FailedReason != null && x.FailedReason.Contains(filter)));
+            || x.OrderNo.Contains(filter) || x.FailedReason != null && x.FailedReason.Contains(filter));
     }
 }

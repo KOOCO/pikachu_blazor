@@ -100,29 +100,7 @@ public class OrderItem : Entity<Guid>
     /// </summary>
     public Guid? DeliveryOrderId { get; set; }
 
-    /// <summary>
-    /// 預設建構函式
-    /// </summary>
     public OrderItem() { }
-
-    /// <summary>
-    /// 建立訂單項目的建構函式
-    /// </summary>
-    /// <param name="id">訂單項目識別碼</param>
-    /// <param name="itemId">商品識別碼</param>
-    /// <param name="setItemId">組合商品識別碼</param>
-    /// <param name="freebieId">贈品識別碼</param>
-    /// <param name="itemType">項目類型</param>
-    /// <param name="orderId">訂單識別碼</param>
-    /// <param name="spec">規格</param>
-    /// <param name="itemPrice">商品單價</param>
-    /// <param name="totalAmount">總金額</param>
-    /// <param name="quantity">數量</param>
-    /// <param name="sku">庫存單位</param>
-    /// <param name="itemStorageTemperature">商品儲存溫層</param>
-    /// <param name="temperatureCost">溫層費用</param>
-    /// <param name="discountPercentage">折扣百分比</param>
-    /// <param name="deliveryOrderId">配送訂單識別碼</param>
     public OrderItem(
         Guid id,
         Guid? itemId,

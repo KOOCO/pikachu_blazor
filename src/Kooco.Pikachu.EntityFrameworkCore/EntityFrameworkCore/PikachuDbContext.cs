@@ -23,7 +23,6 @@ using Kooco.Pikachu.Freebies;
 using Kooco.Pikachu.StoreComments;
 using Kooco.Pikachu.Refunds;
 using Kooco.Pikachu.PaymentGateways;
-using Kooco.Pikachu.ElectronicInvoiceSettings;
 using Kooco.Pikachu.AutomaticEmails;
 using Kooco.Pikachu.DeliveryTempratureCosts;
 using Kooco.Pikachu.UserAddresses;
@@ -109,8 +108,6 @@ public class PikachuDbContext(DbContextOptions<PikachuDbContext> options) :
     public DbSet<StoreComment> StoreComments { get; set; }
     public DbSet<Refund> Refunds { get; set; }
     public DbSet<PaymentGateway> PaymentGateways { get; set; }
-    public DbSet<ElectronicInvoiceSetting> ElectronicInvoiceSettings { get; set; }
-    public DbSet<TenantEmailSettings> TenantEmailSettings { get; set; }
     public DbSet<AutomaticEmail> AutomaticEmails { get; set; }
     public DbSet<AutomaticEmailGroupBuys> AutomaticEmailGroupBuys { get; set; }
     public DbSet<LogisticsProviderSettings> LogisticsProviderSettings { get; set; }
@@ -166,7 +163,9 @@ public class PikachuDbContext(DbContextOptions<PikachuDbContext> options) :
     public DbSet<MemberTag> MemberTags { get; set; }
     public DbSet<GroupBuyItemsPrice> GroupBuyItemsPriceses { get; set; }
 
-    // TenantWallets
+    // Tenant
+    public DbSet<TenantTripartite> TenantTripartites { get; set; }
+    public DbSet<TenantEmailSettings> TenantEmailSettings { get; set; }
     public DbSet<TenantWallet> TenantWallets { get; set; }
     public DbSet<TenantWalletTransaction> TenantWalletTransactions { get; set; }
     public DbSet<GroupBuyItemGroupImageModule> GroupBuyItemGroupImageModules { get; set; }
@@ -348,12 +347,6 @@ public class PikachuDbContext(DbContextOptions<PikachuDbContext> options) :
         builder.Entity<PaymentGateway>(b =>
         {
             b.ToTable(PikachuConsts.DbTablePrefix + "PaymentGateways", PikachuConsts.DbSchema, table => table.HasComment(""));
-            b.ConfigureByConvention();
-        });
-
-        builder.Entity<ElectronicInvoiceSetting>(b =>
-        {
-            b.ToTable(PikachuConsts.DbTablePrefix + "ElectronicInvoiceSettings", PikachuConsts.DbSchema, table => table.HasComment(""));
             b.ConfigureByConvention();
         });
 

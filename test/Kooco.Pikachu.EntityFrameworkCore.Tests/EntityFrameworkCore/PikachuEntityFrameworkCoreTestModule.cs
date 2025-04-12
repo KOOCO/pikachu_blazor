@@ -17,7 +17,7 @@ namespace Kooco.Pikachu.EntityFrameworkCore;
     typeof(PikachuEntityFrameworkCoreModule),
     typeof(PikachuTestBaseModule),
     typeof(AbpEntityFrameworkCoreSqliteModule)
-    )]
+)]
 public class PikachuEntityFrameworkCoreTestModule : AbpModule
 {
     private SqliteConnection? _sqliteConnection;

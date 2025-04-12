@@ -1,6 +1,5 @@
 ﻿using Autofac.Core;
 using Castle.Core.Smtp;
-using Kooco.Pikachu.ElectronicInvoiceSettings;
 using Kooco.Pikachu.Emails;
 using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Groupbuys;
@@ -13,6 +12,7 @@ using Kooco.Pikachu.Orders.Repositories;
 using Kooco.Pikachu.Orders.Services;
 using Kooco.Pikachu.StoreLogisticOrders;
 using Kooco.Pikachu.Tenants;
+using Kooco.Pikachu.Tenants.Repositories;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Localization;
@@ -46,7 +46,7 @@ namespace Kooco.Pikachu.StoreLogisticsOrders
         private readonly Mock<IStringLocalizer<PikachuResource>> _localizerMock;
         private readonly Mock<IGroupBuyAppService> _groupBuyAppServiceMock;
         private readonly Mock<IBackgroundJobManager> _backgroundJobManagerMock;
-        private readonly Mock<IElectronicInvoiceSettingRepository> _electronicInvoiceSettingRepositoryMock;
+        private readonly Mock<ITenantTripartiteRepository> _electronicInvoiceSettingRepositoryMock;
         private readonly Mock<IOrderInvoiceAppService> _electronicInvoiceAppServiceMock;
         private readonly Mock<IHttpContextAccessor> _httpContextAccessorMock;
         private readonly Mock<IGroupBuyRepository> _groupBuyRepositoryMock;
@@ -65,7 +65,7 @@ namespace Kooco.Pikachu.StoreLogisticsOrders
             _localizerMock = new Mock<IStringLocalizer<PikachuResource>>();
             _groupBuyAppServiceMock = new Mock<IGroupBuyAppService>();
             _backgroundJobManagerMock = new Mock<IBackgroundJobManager>();
-            _electronicInvoiceSettingRepositoryMock = new Mock<IElectronicInvoiceSettingRepository>();
+            _electronicInvoiceSettingRepositoryMock = new Mock<ITenantTripartiteRepository>();
             _electronicInvoiceAppServiceMock = new Mock<IOrderInvoiceAppService>();
             _httpContextAccessorMock = new Mock<IHttpContextAccessor>();
             _groupBuyRepositoryMock = new Mock<IGroupBuyRepository>();

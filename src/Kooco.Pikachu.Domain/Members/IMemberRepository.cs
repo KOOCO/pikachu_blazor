@@ -7,7 +7,6 @@ using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Identity;
 
 namespace Kooco.Pikachu.Members;
-
 public interface IMemberRepository : IIdentityUserRepository, IRepository<IdentityUser, Guid>
 {
     Task<MemberModel> GetMemberAsync(Guid memberId);
