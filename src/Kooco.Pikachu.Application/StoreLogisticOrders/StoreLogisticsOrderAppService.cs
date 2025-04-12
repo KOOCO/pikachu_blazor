@@ -13,6 +13,7 @@ using Kooco.Pikachu.Orders.Repositories;
 using Kooco.Pikachu.Orders.Services;
 using Kooco.Pikachu.Response;
 using Kooco.Pikachu.Tenants;
+using Kooco.Pikachu.Tenants.Repositories;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -67,7 +68,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
     TCat711FreezeCreateUpdateDto TCat711Freeze { get; set; }
     TCat711FrozenCreateUpdateDto TCat711Frozen { get; set; }
     private readonly IOrderInvoiceAppService _electronicInvoiceAppService;
-    private readonly IElectronicInvoiceSettingRepository _electronicInvoiceSettingRepository;
+    private readonly ITenantTripartiteRepository _electronicInvoiceSettingRepository;
     private readonly IBackgroundJobManager _backgroundJobManager;
     private IStringLocalizer<PikachuResource> _L;
 
@@ -93,7 +94,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
         IStringLocalizer<PikachuResource> L,
         IGroupBuyAppService GroupBuyAppService,
         IBackgroundJobManager backgroundJobManager,
-        IElectronicInvoiceSettingRepository electronicInvoiceSettingRepository,
+        ITenantTripartiteRepository electronicInvoiceSettingRepository,
         IOrderInvoiceAppService electronicInvoiceAppService,
         IHttpContextAccessor httpContextAccessor,
         IGroupBuyRepository GroupBuyRepository,

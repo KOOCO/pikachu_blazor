@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Kooco.Pikachu.Tenants.Entities;
+using Kooco.Pikachu.Tenants.Repositories;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Volo.Abp;
@@ -7,17 +9,17 @@ using Volo.Abp.Application.Services;
 namespace Kooco.Pikachu.ElectronicInvoiceSettings;
 
 [RemoteService(IsEnabled = false)]
-public class ElectronicInvoiceSettingAppService(IElectronicInvoiceSettingRepository repository) : ApplicationService, IElectronicInvoiceSettingAppService
+public class ElectronicInvoiceSettingAppService(ITenantTripartiteRepository repository) : ApplicationService, IElectronicInvoiceSettingAppService
 {
     public async Task<ElectronicInvoiceSettingDto> GetSettingAsync()
     {
         var query = await repository.GetQueryableAsync();
-        return ObjectMapper.Map<ElectronicInvoiceSetting, ElectronicInvoiceSettingDto>(query.FirstOrDefault());
+        return ObjectMapper.Map<TenantTripartite, ElectronicInvoiceSettingDto>(query.FirstOrDefault());
     }
 
     public async Task<ElectronicInvoiceSettingDto> CreateAsyc(CreateUpdateElectronicInvoiceDto input)
     {
-        var setting = new ElectronicInvoiceSetting(
+        var setting = new TenantTripartite(
             Guid.NewGuid(),
             input.IsEnable,
             input.StoreCode,
@@ -28,7 +30,7 @@ public class ElectronicInvoiceSettingAppService(IElectronicInvoiceSettingReposit
             input.StatusOnInvoiceIssue.Value,
             input.DaysAfterShipmentGenerateInvoice.Value);
         _ = await repository.InsertAsync(setting);
-        return ObjectMapper.Map<ElectronicInvoiceSetting, ElectronicInvoiceSettingDto>(setting);
+        return ObjectMapper.Map<TenantTripartite, ElectronicInvoiceSettingDto>(setting);
     }
 
     public async Task<ElectronicInvoiceSettingDto> UpdateAsyc(Guid Id, CreateUpdateElectronicInvoiceDto input)
@@ -44,6 +46,6 @@ public class ElectronicInvoiceSettingAppService(IElectronicInvoiceSettingReposit
         setting.DaysAfterShipmentGenerateInvoice = input.DaysAfterShipmentGenerateInvoice.Value;
         setting.StatusOnInvoiceIssue = input.StatusOnInvoiceIssue.Value;
         var result = await repository.UpdateAsync(setting);
-        return ObjectMapper.Map<ElectronicInvoiceSetting, ElectronicInvoiceSettingDto>(setting);
+        return ObjectMapper.Map<TenantTripartite, ElectronicInvoiceSettingDto>(setting);
     }
 }

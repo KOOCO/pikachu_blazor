@@ -132,7 +132,7 @@ public class PikachuApplicationAutoMapperProfile : Profile
         CreateMap<PaymentGatewayDto, UpdateEcPayDto>();
         CreateMap<PaymentGatewayDto, UpdateOrderValidityDto>();
 
-        CreateMap<ElectronicInvoiceSetting, ElectronicInvoiceSettingDto>();
+        CreateMap<TenantTripartite, ElectronicInvoiceSettingDto>();
         CreateMap<ElectronicInvoiceSettingDto, CreateUpdateElectronicInvoiceDto>();
 
         CreateMap<TenantEmailSettings, TenantEmailSettingsDto>();

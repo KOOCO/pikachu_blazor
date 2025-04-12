@@ -15,7 +15,7 @@ using Volo.Abp.EntityFrameworkCore;
 using Volo.Abp.MultiTenancy;
 using Volo.Abp.TenantManagement;
 
-namespace Kooco.Pikachu.Repositories;
+namespace Kooco.Pikachu.Tenants;
 public class TenantWalletRepository(IDbContextProvider<PikachuDbContext> dbContextProvider) :
     EfCoreRepository<PikachuDbContext, TenantWallet, Guid>(dbContextProvider), ITenantWalletRepository
 {

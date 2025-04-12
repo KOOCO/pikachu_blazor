@@ -6,7 +6,6 @@ using Kooco.Pikachu.Freebies;
 using Kooco.Pikachu.Groupbuys;
 using Kooco.Pikachu.GroupBuys;
 using Kooco.Pikachu.Items;
-using Kooco.Pikachu.Localization;
 using Kooco.Pikachu.Members;
 using Kooco.Pikachu.OrderItems;
 using Kooco.Pikachu.Orders.Entities;
@@ -18,12 +17,11 @@ using Kooco.Pikachu.PaymentGateways;
 using Kooco.Pikachu.Permissions;
 using Kooco.Pikachu.Refunds;
 using Kooco.Pikachu.Response;
-using Kooco.Pikachu.Tenants;
+using Kooco.Pikachu.Tenants.Repositories;
 using Kooco.Pikachu.UserCumulativeCredits;
 using Kooco.Pikachu.UserShoppingCredits;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using MiniExcelLibs;
 using Newtonsoft.Json;
@@ -37,13 +35,11 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Application.Dtos;
-using Volo.Abp.Application.Services;
 using Volo.Abp.BackgroundJobs;
 using Volo.Abp.Content;
 using Volo.Abp.Data;
 using Volo.Abp.Domain.Entities;
 using Volo.Abp.Domain.Repositories;
-using Volo.Abp.Emailing;
 using Volo.Abp.Identity;
 using Volo.Abp.MultiTenancy;
 using Volo.Abp.Security.Encryption;
@@ -51,119 +47,8 @@ using Volo.Abp.Security.Encryption;
 namespace Kooco.Pikachu.Orders;
 
 [RemoteService(IsEnabled = false)]
-public class OrderAppService : ApplicationService, IOrderAppService
+public class OrderAppService : PikachuAppService, IOrderAppService
 {
-    #region Inject
-    private readonly IOrderRepository _orderRepository;
-    private readonly OrderManager _orderManager;
-    private readonly IDataFilter _dataFilter;
-    private readonly IRepository<OrderDelivery, Guid> _orderDeliveryRepository;
-    private readonly IGroupBuyRepository _groupBuyRepository;
-    private readonly IEmailSender _emailSender;
-    private readonly IBackgroundJobManager _backgroundJobManager;
-    private readonly IRepository<PaymentGateway, Guid> _paymentGatewayRepository;
-    private readonly IStringEncryptionService _stringEncryptionService;
-    private readonly IRepository<OrderItem, Guid> _orderItemRepository;
-    private readonly IStringLocalizer<PikachuResource> _l;
-    private readonly IItemRepository _itemRepository;
-    private readonly IItemDetailsRepository _itemDetailsRepository;
-    private readonly IOrderInvoiceAppService _electronicInvoiceAppService;
-    private readonly IElectronicInvoiceSettingRepository _electronicInvoiceSettingRepository;
-    private readonly IFreebieRepository _freebieRepository;
-    private readonly IRefundAppService _refundAppService;
-    private readonly IRefundRepository _refundRepository;
-    private readonly IDiscountCodeRepository _discountCodeRepository;
-    private readonly ITenantSettingsAppService _tenantSettingsAppService;
-    private readonly IUserShoppingCreditAppService _userShoppingCreditAppService;
-    private readonly IUserShoppingCreditRepository _userShoppingCreditRepository;
-    private readonly IEmailAppService _emailAppService;
-    private readonly IOrderMessageAppService _OrderMessageAppService;
-    private readonly ISetItemRepository _setItemRepository;
-    private readonly IUserCumulativeCreditAppService _userCumulativeCreditAppService;
-    private readonly IUserCumulativeCreditRepository _userCumulativeCreditRepository;
-    private readonly IIdentityUserRepository _userRepository;
-    private readonly OrderHistoryManager _orderHistoryManager;
-    private readonly IOrderHistoryRepository _orderHistoryRepository;
-    private readonly OrderTransactionManager _orderTransactionManager;
-    private readonly MemberTagManager _memberTagManager;
-    private readonly IMemberRepository _memberRepository;
-
-    #endregion
-
-    #region Constructor
-    public OrderAppService(
-        IOrderRepository orderRepository,
-        OrderManager orderManager,
-        IDataFilter dataFilter,
-        IGroupBuyRepository groupBuyRepository,
-        IEmailSender emailSender,
-        IRepository<PaymentGateway, Guid> paymentGatewayRepository,
-        IStringEncryptionService stringEncryptionService,
-        IStringLocalizer<PikachuResource> l,
-        IRepository<OrderItem, Guid> orderItemRepository,
-        IRepository<OrderDelivery, Guid> orderDeliveryRepository,
-        IItemRepository itemRepository,
-        IItemDetailsRepository itemDetailsRepository,
-        IOrderInvoiceAppService electronicInvoiceAppService,
-        IFreebieRepository freebieRepository,
-        IBackgroundJobManager backgroundJobManager,
-        IElectronicInvoiceSettingRepository electronicInvoiceSettingRepository,
-        IRefundAppService refundAppService,
-        IRefundRepository refundRepository,
-        ITenantSettingsAppService tenantSettingsAppService,
-        IDiscountCodeRepository discountCodeRepository,
-        IUserShoppingCreditAppService userShoppingCreditAppService,
-        IUserShoppingCreditRepository userShoppingCreditRepository,
-        IEmailAppService emailAppService,
-        IOrderMessageAppService OrderMessageAppService,
-        ISetItemRepository setItemRepository,
-        IUserCumulativeCreditAppService userCumulativeCreditAppService,
-        IUserCumulativeCreditRepository userCumulativeCreditRepository,
-        IIdentityUserRepository userRepository,
-        OrderHistoryManager orderHistoryManager,
-        IOrderHistoryRepository orderHistoryRepository,
-        OrderTransactionManager orderTransactionManager,
-        MemberTagManager memberTagManager,
-        IMemberRepository memberRepository
-    )
-    {
-        _orderRepository = orderRepository;
-        _orderManager = orderManager;
-        _dataFilter = dataFilter;
-        _groupBuyRepository = groupBuyRepository;
-        _emailSender = emailSender;
-        _paymentGatewayRepository = paymentGatewayRepository;
-        _stringEncryptionService = stringEncryptionService;
-        _orderItemRepository = orderItemRepository;
-        _orderDeliveryRepository = orderDeliveryRepository;
-        _l = l;
-        _itemRepository = itemRepository;
-        _orderItemRepository = orderItemRepository;
-        _itemDetailsRepository = itemDetailsRepository;
-        _electronicInvoiceAppService = electronicInvoiceAppService;
-        _freebieRepository = freebieRepository;
-        _backgroundJobManager = backgroundJobManager;
-        _electronicInvoiceSettingRepository = electronicInvoiceSettingRepository;
-        _refundAppService = refundAppService;
-        _refundRepository = refundRepository;
-        _tenantSettingsAppService = tenantSettingsAppService;
-        _discountCodeRepository = discountCodeRepository;
-        _userShoppingCreditAppService = userShoppingCreditAppService;
-        _userShoppingCreditRepository = userShoppingCreditRepository;
-        _emailAppService = emailAppService;
-        _OrderMessageAppService = OrderMessageAppService;
-        _setItemRepository = setItemRepository;
-        _userCumulativeCreditAppService = userCumulativeCreditAppService;
-        _userRepository = userRepository;
-        _orderHistoryManager = orderHistoryManager;
-        _orderHistoryRepository = orderHistoryRepository;
-        _orderTransactionManager = orderTransactionManager;
-        _memberTagManager = memberTagManager;
-        _memberRepository = memberRepository;
-    }
-    #endregion
-
-    #region Methods
     /// <summary>
     /// Create Order
     /// </summary>
@@ -175,26 +60,26 @@ public class OrderAppService : ApplicationService, IOrderAppService
         GroupBuy groupBuy = new();
         IdentityUser? user = null;
 
-        using (_dataFilter.Disable<IMultiTenant>())
+        using (DataFilter.Disable<IMultiTenant>())
         {
             if (input.UserId.HasValue)
             {
-                user = await _userRepository.FindAsync(input.UserId.Value);
+                user = await UserRepository.FindAsync(input.UserId.Value);
                 if (user != null)
                 {
-                    var blacklisted = await _memberTagManager.IsBlacklistedAsync(user.Id);
+                    var blacklisted = await MemberTagManager.IsBlacklistedAsync(user.Id);
                     if (blacklisted)
                     {
                         throw new UserFriendlyException("該用戶已被列入黑名單，無法下單 - This user is blacklisted and can not place an order");
                     }
                 }
             }
-            groupBuy = await _groupBuyRepository.GetAsync(input.GroupBuyId);
+            groupBuy = await GroupBuyRepository.GetAsync(input.GroupBuyId);
         }
 
         using (CurrentTenant.Change(groupBuy?.TenantId))
         {
-            Order order = await _orderManager.CreateAsync(
+            Order order = await OrderManager.CreateAsync(
                 input.GroupBuyId,
                 input.IsIndividual,
                 input.CustomerName,
@@ -279,7 +164,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
                 foreach (CreateUpdateOrderItemDto item in input.OrderItems)
                 {
-                    _orderManager.AddOrderItem(
+                    OrderManager.AddOrderItem(
                         order,
                         item.ItemId,
                         item.SetItemId,
@@ -295,9 +180,9 @@ public class OrderAppService : ApplicationService, IOrderAppService
                         0
                     );
 
-                    using (_dataFilter.Disable<IMultiTenant>())
+                    using (DataFilter.Disable<IMultiTenant>())
                     {
-                        ItemDetails? details = await _itemDetailsRepository.FirstOrDefaultAsync(x => x.ItemId == item.ItemId && x.ItemName == item.SKU);
+                        ItemDetails? details = await ItemDetailsRepository.FirstOrDefaultAsync(x => x.ItemId == item.ItemId && x.ItemName == item.SKU);
 
                         if (details != null)
                         {
@@ -313,13 +198,13 @@ public class OrderAppService : ApplicationService, IOrderAppService
                                 details.SaleableQuantity = details.SaleableQuantity - item.Quantity;
                                 details.StockOnHand = details.StockOnHand - item.Quantity;
 
-                                await _itemDetailsRepository.UpdateAsync(details);
+                                await ItemDetailsRepository.UpdateAsync(details);
                             }
                         }
 
                         if (item.SetItemId.HasValue)
                         {
-                            var setItem = await _setItemRepository.GetWithDetailsAsync(item.SetItemId.Value);
+                            var setItem = await SetItemRepository.GetWithDetailsAsync(item.SetItemId.Value);
                             if (setItem != null)
                             {
                                 if (setItem.SaleableQuantity < item.Quantity)
@@ -328,12 +213,12 @@ public class OrderAppService : ApplicationService, IOrderAppService
                                 }
                                 else
                                 {
-                                    setItem.SaleableQuantity = setItem.SaleableQuantity - item.Quantity;
+                                    setItem.SaleableQuantity -= item.Quantity;
 
                                     foreach (var setItemDetail in setItem.SetItemDetails)
                                     {
                                         var totalOrderQuantity = setItemDetail.Quantity * item.Quantity;
-                                        var detail = await _itemDetailsRepository.FirstOrDefaultAsync(x => x.ItemId == setItemDetail.ItemId
+                                        var detail = await ItemDetailsRepository.FirstOrDefaultAsync(x => x.ItemId == setItemDetail.ItemId
                                                     && x.Attribute1Value == setItemDetail.Attribute1Value && x.Attribute2Value == setItemDetail.Attribute2Value
                                                     && x.Attribute3Value == setItemDetail.Attribute3Value);
                                         if (detail != null)
@@ -350,7 +235,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                                                 detail.SaleableQuantity -= totalOrderQuantity;
                                                 detail.StockOnHand -= totalOrderQuantity;
 
-                                                await _itemDetailsRepository.UpdateAsync(detail);
+                                                await ItemDetailsRepository.UpdateAsync(detail);
                                             }
                                         }
                                     }
@@ -361,12 +246,12 @@ public class OrderAppService : ApplicationService, IOrderAppService
                         // Handle Freebies if applicable
                         if (item.FreebieId != null)
                         {
-                            Freebie? freebie = await _freebieRepository.FirstOrDefaultAsync(x => x.Id == item.FreebieId);
+                            Freebie? freebie = await FreebieRepository.FirstOrDefaultAsync(x => x.Id == item.FreebieId);
 
                             if (freebie != null && freebie.FreebieAmount > 0)
                             {
                                 freebie.FreebieAmount -= 1;
-                                await _freebieRepository.UpdateAsync(freebie);
+                                await FreebieRepository.UpdateAsync(freebie);
                             }
                             else
                             {
@@ -385,32 +270,32 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 }
             }
 
-            await _orderRepository.InsertAsync(order);
+            await OrderRepository.InsertAsync(order);
 
             await UnitOfWorkManager.Current.SaveChangesAsync();
 
             if (order.PaymentMethod is PaymentMethods.CashOnDelivery && order.ShippingStatus is ShippingStatus.PrepareShipment)
             {
-                Order newOrder = await _orderRepository.GetWithDetailsAsync(order.Id);
+                Order newOrder = await OrderRepository.GetWithDetailsAsync(order.Id);
 
                 if (newOrder.OrderItems.Any(x => x.Item?.IsFreeShipping == true))
                 {
                     if (newOrder.OrderItems.Where(x => x.DeliveryTemperature == ItemStorageTemperature.Normal && (x.Item != null || x.Item?.IsFreeShipping == true)).Any())
                     {
                         var OrderDelivery = new OrderDelivery(Guid.NewGuid(), newOrder.DeliveryMethod.Value, DeliveryStatus.Processing, null, "", newOrder.Id);
-                        OrderDelivery = await _orderDeliveryRepository.InsertAsync(OrderDelivery);
+                        OrderDelivery = await OrderDeliveryRepository.InsertAsync(OrderDelivery);
                         newOrder.UpdateOrderItem(newOrder.OrderItems.Where(x => (x.DeliveryTemperature == ItemStorageTemperature.Normal && x.Item?.IsFreeShipping == true)).ToList(), OrderDelivery.Id);
                     }
                     if (newOrder.OrderItems.Where(x => x.DeliveryTemperature == ItemStorageTemperature.Freeze && x.Item?.IsFreeShipping == true).Any())
                     {
                         var OrderDelivery = new OrderDelivery(Guid.NewGuid(), newOrder.DeliveryMethod.Value, DeliveryStatus.Processing, null, "", newOrder.Id);
-                        OrderDelivery = await _orderDeliveryRepository.InsertAsync(OrderDelivery);
+                        OrderDelivery = await OrderDeliveryRepository.InsertAsync(OrderDelivery);
                         newOrder.UpdateOrderItem(newOrder.OrderItems.Where(x => x.DeliveryTemperature == ItemStorageTemperature.Freeze && x.Item?.IsFreeShipping == true).ToList(), OrderDelivery.Id);
                     }
                     if (newOrder.OrderItems.Where(x => x.DeliveryTemperature == ItemStorageTemperature.Frozen && x.Item?.IsFreeShipping == true).Any())
                     {
                         var OrderDelivery = new OrderDelivery(Guid.NewGuid(), newOrder.DeliveryMethod.Value, DeliveryStatus.Processing, null, "", newOrder.Id);
-                        OrderDelivery = await _orderDeliveryRepository.InsertAsync(OrderDelivery);
+                        OrderDelivery = await OrderDeliveryRepository.InsertAsync(OrderDelivery);
                         newOrder.UpdateOrderItem(newOrder.OrderItems.Where(x => x.DeliveryTemperature == ItemStorageTemperature.Frozen && x.Item?.IsFreeShipping == true).ToList(), OrderDelivery.Id);
                     }
                 }
@@ -419,19 +304,19 @@ public class OrderAppService : ApplicationService, IOrderAppService
                     if (newOrder.OrderItems.Where(x => x.DeliveryTemperature == ItemStorageTemperature.Normal && x.Item?.IsFreeShipping == false).Any())
                     {
                         var OrderDelivery = new OrderDelivery(Guid.NewGuid(), newOrder.DeliveryMethod.Value, DeliveryStatus.Processing, null, "", newOrder.Id);
-                        OrderDelivery = await _orderDeliveryRepository.InsertAsync(OrderDelivery);
+                        OrderDelivery = await OrderDeliveryRepository.InsertAsync(OrderDelivery);
                         newOrder.UpdateOrderItem(newOrder.OrderItems.Where(x => x.DeliveryTemperature == ItemStorageTemperature.Normal && x.Item?.IsFreeShipping == false).ToList(), OrderDelivery.Id);
                     }
                     if (newOrder.OrderItems.Where(x => x.DeliveryTemperature == ItemStorageTemperature.Freeze && x.Item?.IsFreeShipping == false).Any())
                     {
                         var OrderDelivery = new OrderDelivery(Guid.NewGuid(), newOrder.DeliveryMethod.Value, DeliveryStatus.Processing, null, "", newOrder.Id);
-                        OrderDelivery = await _orderDeliveryRepository.InsertAsync(OrderDelivery);
+                        OrderDelivery = await OrderDeliveryRepository.InsertAsync(OrderDelivery);
                         newOrder.UpdateOrderItem(newOrder.OrderItems.Where(x => x.DeliveryTemperature == ItemStorageTemperature.Freeze && x.Item?.IsFreeShipping == false).ToList(), OrderDelivery.Id);
                     }
                     if (newOrder.OrderItems.Where(x => x.DeliveryTemperature == ItemStorageTemperature.Frozen && x.Item?.IsFreeShipping == false).Any())
                     {
                         var OrderDelivery = new OrderDelivery(Guid.NewGuid(), newOrder.DeliveryMethod.Value, DeliveryStatus.Processing, null, "", newOrder.Id);
-                        OrderDelivery = await _orderDeliveryRepository.InsertAsync(OrderDelivery);
+                        OrderDelivery = await OrderDeliveryRepository.InsertAsync(OrderDelivery);
                         newOrder.UpdateOrderItem(newOrder.OrderItems.Where(x => x.DeliveryTemperature == ItemStorageTemperature.Frozen && x.Item?.IsFreeShipping == false).ToList(), OrderDelivery.Id);
                     }
 
@@ -447,18 +332,18 @@ public class OrderAppService : ApplicationService, IOrderAppService
                     if (temperatureOrderItems.Any(x => x.SetItem?.IsFreeShipping == true))
                     {
                         var OrderDelivery = new OrderDelivery(Guid.NewGuid(), newOrder.DeliveryMethod.Value, DeliveryStatus.Processing, null, "", newOrder.Id);
-                        OrderDelivery = await _orderDeliveryRepository.InsertAsync(OrderDelivery);
+                        OrderDelivery = await OrderDeliveryRepository.InsertAsync(OrderDelivery);
                         newOrder.UpdateOrderItem(temperatureOrderItems.Where(x => x.SetItem?.IsFreeShipping == true).ToList(), OrderDelivery.Id);
                     }
                     if (temperatureOrderItems.Any(x => x.SetItem?.IsFreeShipping == false))
                     {
                         var OrderDelivery = new OrderDelivery(Guid.NewGuid(), newOrder.DeliveryMethod.Value, DeliveryStatus.Processing, null, "", newOrder.Id);
-                        OrderDelivery = await _orderDeliveryRepository.InsertAsync(OrderDelivery);
+                        OrderDelivery = await OrderDeliveryRepository.InsertAsync(OrderDelivery);
                         newOrder.UpdateOrderItem(temperatureOrderItems.Where(x => x.SetItem?.IsFreeShipping == false).ToList(), OrderDelivery.Id);
                     }
                 }
 
-                OrderDelivery? orderDelivery = await _orderDeliveryRepository.FirstOrDefaultAsync(x => x.OrderId == newOrder.Id);
+                OrderDelivery? orderDelivery = await OrderDeliveryRepository.FirstOrDefaultAsync(x => x.OrderId == newOrder.Id);
 
                 if (newOrder.OrderItems.Any(x => x.FreebieId != null))
                 {
@@ -469,9 +354,9 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
             if (order.DiscountCodeId != null)
             {
-                var discountCode = await _discountCodeRepository.GetAsync(order.DiscountCodeId.Value);
+                var discountCode = await DiscountCodeRepository.GetAsync(order.DiscountCodeId.Value);
                 discountCode.AvailableQuantity = discountCode.AvailableQuantity - 1;
-                await _discountCodeRepository.EnsureCollectionLoadedAsync(discountCode, x => x.DiscountCodeUsages);
+                await DiscountCodeRepository.EnsureCollectionLoadedAsync(discountCode, x => x.DiscountCodeUsages);
 
                 if (discountCode.DiscountCodeUsages != null && discountCode.DiscountCodeUsages.Count > 0)
                 {
@@ -485,7 +370,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                     discountCode.DiscountCodeUsages.Add(newusage);
                 }
 
-                await _discountCodeRepository.UpdateAsync(discountCode);
+                await DiscountCodeRepository.UpdateAsync(discountCode);
                 await CurrentUnitOfWork.SaveChangesAsync();
             }
             if (order.UserId != null && order.UserId != Guid.Empty)
@@ -493,7 +378,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 if (order.cashback_amount > 0)
                 {
 
-                    var newcashback = await _userShoppingCreditAppService.RecordShoppingCreditAsync(new RecordUserShoppingCreditDto
+                    var newcashback = await UserShoppingCreditAppService.RecordShoppingCreditAsync(new RecordUserShoppingCreditDto
                     {
                         Amount = (int)order.cashback_amount,
                         ExpirationDate = null,
@@ -505,15 +390,15 @@ public class OrderAppService : ApplicationService, IOrderAppService
                     order.cashback_amount = newcashback.Amount;
                     order.cashback_record_id = newcashback.Id;
 
-                    var userCumulativeCredits = await _userCumulativeCreditRepository.FirstOrDefaultAsync(x => x.UserId == order.UserId);
+                    var userCumulativeCredits = await UserCumulativeCreditRepository.FirstOrDefaultAsync(x => x.UserId == order.UserId);
                     if (userCumulativeCredits is null)
                     {
-                        await _userCumulativeCreditAppService.CreateAsync(new CreateUserCumulativeCreditDto { TotalAmount = (int)order.cashback_amount, TotalDeductions = 0, TotalRefunds = 0, UserId = order.UserId });
+                        await UserCumulativeCreditAppService.CreateAsync(new CreateUserCumulativeCreditDto { TotalAmount = (int)order.cashback_amount, TotalDeductions = 0, TotalRefunds = 0, UserId = order.UserId });
                     }
                     else
                     {
                         userCumulativeCredits.ChangeTotalAmount((int)(userCumulativeCredits.TotalAmount + order.cashback_amount));
-                        await _userCumulativeCreditRepository.UpdateAsync(userCumulativeCredits);
+                        await UserCumulativeCreditRepository.UpdateAsync(userCumulativeCredits);
                     }
                 }
 
@@ -523,7 +408,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 if (order.CreditDeductionAmount > 0)
                 {
 
-                    var newdeduction = await _userShoppingCreditAppService.RecordShoppingCreditAsync(new RecordUserShoppingCreditDto
+                    var newdeduction = await UserShoppingCreditAppService.RecordShoppingCreditAsync(new RecordUserShoppingCreditDto
                     {
                         Amount = (int)order.CreditDeductionAmount,
                         ExpirationDate = null,
@@ -535,33 +420,34 @@ public class OrderAppService : ApplicationService, IOrderAppService
                     order.CreditDeductionAmount = newdeduction.Amount;
                     order.CreditDeductionRecordId = newdeduction.Id;
 
-                    var userCumulativeCredits = await _userCumulativeCreditRepository.FirstOrDefaultAsync(x => x.UserId == order.UserId);
+                    var userCumulativeCredits = await UserCumulativeCreditRepository.FirstOrDefaultAsync(x => x.UserId == order.UserId);
                     if (userCumulativeCredits is null)
                     {
-                        await _userCumulativeCreditAppService.CreateAsync(new CreateUserCumulativeCreditDto { TotalAmount = 0, TotalDeductions = order.CreditDeductionAmount, TotalRefunds = 0, UserId = order.UserId });
+                        await UserCumulativeCreditAppService.CreateAsync(new CreateUserCumulativeCreditDto { TotalAmount = 0, TotalDeductions = order.CreditDeductionAmount, TotalRefunds = 0, UserId = order.UserId });
                     }
                     else
                     {
                         userCumulativeCredits.ChangeTotalDeductions((int)(userCumulativeCredits.TotalDeductions + order.CreditDeductionAmount));
-                        await _userCumulativeCreditRepository.UpdateAsync(userCumulativeCredits);
+                        await UserCumulativeCreditRepository.UpdateAsync(userCumulativeCredits);
                     }
                 }
 
             }
             // **ADD ORDER HISTORY LOG**
             Guid? editorUserId = order.UserId != null && order.UserId != Guid.Empty ? order.UserId : null;
-            string editorUserName = editorUserId != null ? (await _userRepository.GetAsync(editorUserId.Value))?.UserName ?? "System" : "System";
+            string editorUserName = editorUserId != null ? (await UserRepository.GetAsync(editorUserId.Value))?.UserName ?? "System" : "System";
 
-            await _orderHistoryManager.AddOrderHistoryAsync(
-     order.Id,
-     "OrderCreated", // Localization key instead of hardcoded text
-     new object[] { order.OrderNo }, // Dynamic placeholders
-     editorUserId,
-     editorUserName
- );
-            await _orderRepository.UpdateAsync(order);
+            await OrderHistoryManager.AddOrderHistoryAsync(
+                order.Id,
+                "OrderCreated", // Localization key instead of hardcoded text
+                new object[] { order.OrderNo }, // Dynamic placeholders
+                editorUserId,
+                editorUserName
+            );
+
+            await OrderRepository.UpdateAsync(order);
             await SendEmailAsync(order.Id);
-            var validitySettings = (await _paymentGatewayRepository.GetQueryableAsync()).Where(x => x.PaymentIntegrationType == PaymentIntegrationType.OrderValidatePeriod).FirstOrDefault();
+            var validitySettings = (await PaymentGatewayRepository.GetQueryableAsync()).Where(x => x.PaymentIntegrationType == PaymentIntegrationType.OrderValidatePeriod).FirstOrDefault();
             DateTime expirationTime = DateTime.Now.AddMinutes(10);
             if (validitySettings is not null)
             {
@@ -579,18 +465,18 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 }
 
                 ExpireOrderBackgroundJobArgs args = new ExpireOrderBackgroundJobArgs { OrderId = order.Id };
-                var jobid = await _backgroundJobManager.EnqueueAsync(args, BackgroundJobPriority.High, (expirationTime - order.CreationTime));
+                var jobid = await BackgroundJobManager.EnqueueAsync(args, BackgroundJobPriority.High, (expirationTime - order.CreationTime));
             }
 
             if (user != null)
             {
                 using (CurrentTenant.Change(user.TenantId))
                 {
-                    await _memberTagManager.AddExistingAsync(user.Id);
-                    var vipTier = await _memberRepository.CheckForVipTierAsync(user.Id);
+                    await MemberTagManager.AddExistingAsync(user.Id);
+                    var vipTier = await MemberRepository.CheckForVipTierAsync(user.Id);
                     if (vipTier != null)
                     {
-                        await _memberTagManager.AddVipTierAsync(user.Id, vipTier.TierName, vipTier.Id);
+                        await MemberTagManager.AddVipTierAsync(user.Id, vipTier.TierName, vipTier.Id);
                     }
                 }
             }
@@ -609,29 +495,29 @@ public class OrderAppService : ApplicationService, IOrderAppService
     public async Task<OrderDto> GetOrderAsync(Guid groupBuyId, string orderNo, string extraInfo)
     {
         OrderDto order = ObjectMapper.Map<Order, OrderDto>(
-            await _orderRepository.GetOrderAsync(groupBuyId, orderNo, extraInfo)
+            await OrderRepository.GetOrderAsync(groupBuyId, orderNo, extraInfo)
         );
 
-        order.StoreCustomerServiceMessages = await _OrderMessageAppService.GetOrderMessagesAsync(order.Id);
+        order.StoreCustomerServiceMessages = await OrderMessageAppService.GetOrderMessagesAsync(order.Id);
 
         return order;
     }
     public async Task<Guid> GetOrderIdAsync(string orderNo)
     {
-        return await (await _orderRepository.GetQueryableAsync()).Where(x => x.OrderNo == orderNo).Select(x => x.Id).FirstOrDefaultAsync();
+        return await (await OrderRepository.GetQueryableAsync()).Where(x => x.OrderNo == orderNo).Select(x => x.Id).FirstOrDefaultAsync();
 
     }
     public async Task<OrderDto> UpdateOrderPaymentMethodAsync(OrderPaymentMethodRequest request)
     {
-        Order order = await _orderRepository.GetAsync(request.OrderId);
+        Order order = await OrderRepository.GetAsync(request.OrderId);
         var oldPaymentMethod = order.PaymentMethod;
         order.PaymentMethod = request.PaymentMethod;
         // Determine EditorUserId (set to null if third-party)
         Guid? editorUserId = order.UserId != null && order.UserId != Guid.Empty ? order.UserId : null;
-        string editorUserName = editorUserId != null ? (await _userRepository.GetAsync(editorUserId.Value))?.UserName ?? "System" : "System";
+        string editorUserName = editorUserId != null ? (await UserRepository.GetAsync(editorUserId.Value))?.UserName ?? "System" : "System";
 
         // Log Order History
-        await _orderHistoryManager.AddOrderHistoryAsync(
+        await OrderHistoryManager.AddOrderHistoryAsync(
                                     order.Id,
                                     "PaymentMethodUpdated", // Localization key instead of raw text
                                     new object[] { oldPaymentMethod, order.PaymentMethod }, // Dynamic placeholders
@@ -639,21 +525,21 @@ public class OrderAppService : ApplicationService, IOrderAppService
                                     editorUserName);
 
         return ObjectMapper.Map<Order, OrderDto>(
-            await _orderRepository.UpdateAsync(order)
+            await OrderRepository.UpdateAsync(order)
         );
     }
 
     public async Task<OrderDto> UpdateMerchantTradeNoAsync(OrderPaymentMethodRequest request)
     {
-        Order order = await _orderRepository.GetAsync(request.OrderId);
+        Order order = await OrderRepository.GetAsync(request.OrderId);
         var oldMerchantTradeNo = order.MerchantTradeNo;
         order.MerchantTradeNo = request.MerchantTradeNo;
         // Determine EditorUserId (set to null if third-party)
         Guid? editorUserId = order.UserId != null && order.UserId != Guid.Empty ? order.UserId : null;
-        string editorUserName = editorUserId != null ? (await _userRepository.GetAsync(editorUserId.Value))?.UserName ?? "System" : "System";
+        string editorUserName = editorUserId != null ? (await UserRepository.GetAsync(editorUserId.Value))?.UserName ?? "System" : "System";
 
         // Log Order History
-        await _orderHistoryManager.AddOrderHistoryAsync(
+        await OrderHistoryManager.AddOrderHistoryAsync(
     order.Id,
     "MerchantTradeNoUpdated", // Localization key
     new object[] { oldMerchantTradeNo, order.MerchantTradeNo }, // Dynamic placeholders
@@ -662,26 +548,26 @@ public class OrderAppService : ApplicationService, IOrderAppService
     );
 
         return ObjectMapper.Map<Order, OrderDto>(
-            await _orderRepository.UpdateAsync(order)
+            await OrderRepository.UpdateAsync(order)
         );
     }
 
     public async Task<OrderDto> GetAsync(Guid id)
     {
-        return ObjectMapper.Map<Order, OrderDto>(await _orderRepository.GetAsync(id));
+        return ObjectMapper.Map<Order, OrderDto>(await OrderRepository.GetAsync(id));
     }
 
     public async Task<OrderDto> MergeOrdersAsync(List<Guid> Ids)
     {
         decimal TotalAmount = 0; int TotalQuantity = 0;
 
-        Order ord = await _orderRepository.GetWithDetailsAsync(Ids[0]);
+        Order ord = await OrderRepository.GetWithDetailsAsync(Ids[0]);
         string OrderNo = "";
         GroupBuy groupBuy = new();
         List<decimal> DeliveriesCost = new();
-        using (_dataFilter.Disable<IMultiTenant>())
+        using (DataFilter.Disable<IMultiTenant>())
         {
-            groupBuy = await _groupBuyRepository.GetAsync(ord.GroupBuyId);
+            groupBuy = await GroupBuyRepository.GetAsync(ord.GroupBuyId);
         }
 
         List<OrderItemsCreateDto> orderItems = [];
@@ -690,7 +576,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         {
             foreach (Guid id in Ids)
             {
-                Order order = await _orderRepository.GetWithDetailsAsync(id);
+                Order order = await OrderRepository.GetWithDetailsAsync(id);
                 OrderNo += order.OrderNo + ",";
                 TotalAmount += order.TotalAmount;
                 TotalQuantity += order.TotalQuantity;
@@ -767,7 +653,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
             orderItems = [.. orderItems.OrderBy(o => o.ItemType)];
 
-            Order order1 = await _orderManager.CreateAsync(
+            Order order1 = await OrderManager.CreateAsync(
                 ord.GroupBuyId,
                 ord.IsIndividual,
                 ord.CustomerName,
@@ -803,7 +689,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
             foreach (OrderItemsCreateDto item in orderItems)
             {
-                _orderManager.AddOrderItem(
+                OrderManager.AddOrderItem(
                     order1,
                     item.ItemId,
                     item.SetItemId,
@@ -821,7 +707,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
             }
             if (DeliveriesCost.Count > 0)
                 order1.DeliveryCost = DeliveriesCost.Max();
-            await _orderRepository.InsertAsync(order1);
+            await OrderRepository.InsertAsync(order1);
             await UnitOfWorkManager.Current.SaveChangesAsync();
 
             if (order1.ShippingStatus is ShippingStatus.PrepareShipment)
@@ -831,19 +717,19 @@ public class OrderAppService : ApplicationService, IOrderAppService
                     if (order1.OrderItems.Where(x => x.DeliveryTemperature == ItemStorageTemperature.Normal && (x.Item != null || x.Item?.IsFreeShipping == true)).Any())
                     {
                         var OrderDelivery = new OrderDelivery(Guid.NewGuid(), order1.DeliveryMethod.Value, DeliveryStatus.Processing, null, "", order1.Id);
-                        OrderDelivery = await _orderDeliveryRepository.InsertAsync(OrderDelivery);
+                        OrderDelivery = await OrderDeliveryRepository.InsertAsync(OrderDelivery);
                         order1.UpdateOrderItem(order1.OrderItems.Where(x => (x.DeliveryTemperature == ItemStorageTemperature.Normal && x.Item?.IsFreeShipping == true)).ToList(), OrderDelivery.Id);
                     }
                     if (order1.OrderItems.Where(x => x.DeliveryTemperature == ItemStorageTemperature.Freeze && x.Item?.IsFreeShipping == true).Any())
                     {
                         var OrderDelivery = new OrderDelivery(Guid.NewGuid(), order1.DeliveryMethod.Value, DeliveryStatus.Processing, null, "", order1.Id);
-                        OrderDelivery = await _orderDeliveryRepository.InsertAsync(OrderDelivery);
+                        OrderDelivery = await OrderDeliveryRepository.InsertAsync(OrderDelivery);
                         order1.UpdateOrderItem(order1.OrderItems.Where(x => x.DeliveryTemperature == ItemStorageTemperature.Freeze && x.Item?.IsFreeShipping == true).ToList(), OrderDelivery.Id);
                     }
                     if (order1.OrderItems.Where(x => x.DeliveryTemperature == ItemStorageTemperature.Frozen && x.Item?.IsFreeShipping == true).Any())
                     {
                         var OrderDelivery = new OrderDelivery(Guid.NewGuid(), order1.DeliveryMethod.Value, DeliveryStatus.Processing, null, "", order1.Id);
-                        OrderDelivery = await _orderDeliveryRepository.InsertAsync(OrderDelivery);
+                        OrderDelivery = await OrderDeliveryRepository.InsertAsync(OrderDelivery);
                         order1.UpdateOrderItem(order1.OrderItems.Where(x => x.DeliveryTemperature == ItemStorageTemperature.Frozen && x?.Item.IsFreeShipping == true).ToList(), OrderDelivery.Id);
                     }
                 }
@@ -852,19 +738,19 @@ public class OrderAppService : ApplicationService, IOrderAppService
                     if (order1.OrderItems.Where(x => x.DeliveryTemperature == ItemStorageTemperature.Normal && x.Item?.IsFreeShipping == false).Any())
                     {
                         var OrderDelivery = new OrderDelivery(Guid.NewGuid(), order1.DeliveryMethod.Value, DeliveryStatus.Processing, null, "", order1.Id);
-                        OrderDelivery = await _orderDeliveryRepository.InsertAsync(OrderDelivery);
+                        OrderDelivery = await OrderDeliveryRepository.InsertAsync(OrderDelivery);
                         order1.UpdateOrderItem(order1.OrderItems.Where(x => x.DeliveryTemperature == ItemStorageTemperature.Normal && x.Item?.IsFreeShipping == false).ToList(), OrderDelivery.Id);
                     }
                     if (order1.OrderItems.Where(x => x.DeliveryTemperature == ItemStorageTemperature.Freeze && x.Item?.IsFreeShipping == false).Any())
                     {
                         var OrderDelivery = new OrderDelivery(Guid.NewGuid(), order1.DeliveryMethod.Value, DeliveryStatus.Processing, null, "", order1.Id);
-                        OrderDelivery = await _orderDeliveryRepository.InsertAsync(OrderDelivery);
+                        OrderDelivery = await OrderDeliveryRepository.InsertAsync(OrderDelivery);
                         order1.UpdateOrderItem(order1.OrderItems.Where(x => x.DeliveryTemperature == ItemStorageTemperature.Freeze && x.Item?.IsFreeShipping == false).ToList(), OrderDelivery.Id);
                     }
                     if (order1.OrderItems.Where(x => x.DeliveryTemperature == ItemStorageTemperature.Frozen && x.Item?.IsFreeShipping == false).Any())
                     {
                         var OrderDelivery = new OrderDelivery(Guid.NewGuid(), order1.DeliveryMethod.Value, DeliveryStatus.Processing, null, "", order1.Id);
-                        OrderDelivery = await _orderDeliveryRepository.InsertAsync(OrderDelivery);
+                        OrderDelivery = await OrderDeliveryRepository.InsertAsync(OrderDelivery);
                         order1.UpdateOrderItem(order1.OrderItems.Where(x => x.DeliveryTemperature == ItemStorageTemperature.Frozen && x.Item?.IsFreeShipping == false).ToList(), OrderDelivery.Id);
                     }
                 }
@@ -872,11 +758,11 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
                 if (order1.OrderItems.Any(x => x.FreebieId != null))
                 {
-                    var OrderDelivery1 = await _orderDeliveryRepository.FirstOrDefaultAsync(x => x.OrderId == order1.Id);
+                    var OrderDelivery1 = await OrderDeliveryRepository.FirstOrDefaultAsync(x => x.OrderId == order1.Id);
                     order1.UpdateOrderItem(order1.OrderItems.Where(x => x.FreebieId != null).ToList(), OrderDelivery1.Id);
                 }
 
-                await _orderRepository.UpdateAsync(order1);
+                await OrderRepository.UpdateAsync(order1);
                 await UnitOfWorkManager.Current.SaveChangesAsync();
             }
             // **Get Current User (Editor)**
@@ -884,7 +770,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
             var currentUserName = CurrentUser.UserName ?? "System";
             OrderNo = OrderNo.TrimEnd(',');
             // **Log Order History for Merge**
-            await _orderHistoryManager.AddOrderHistoryAsync(
+            await OrderHistoryManager.AddOrderHistoryAsync(
     order1.Id,
     "OrderMerge", // Localization key
     new object[] { OrderNo, order1.OrderNo }, // Dynamic placeholders
@@ -894,7 +780,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
             foreach (Guid id in Ids)
             {
-                Order ord1 = await _orderRepository.GetWithDetailsAsync(id);
+                Order ord1 = await OrderRepository.GetWithDetailsAsync(id);
 
                 ord1.OrderType = OrderType.MargeToNew;
 
@@ -908,9 +794,9 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 }
 
 
-                await _orderRepository.UpdateAsync(ord1, autoSave: true);
+                await OrderRepository.UpdateAsync(ord1, autoSave: true);
                 // Log old order closure in OrderHistory
-                await _orderHistoryManager.AddOrderHistoryAsync(
+                await OrderHistoryManager.AddOrderHistoryAsync(
      ord1.Id,
      "OrderMergedToNew", // Localization key
      new object[] { ord1.OrderNo, order1.OrderNo }, // Dynamic placeholders
@@ -921,7 +807,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
             }
             await UnitOfWorkManager.Current.SaveChangesAsync();
 
-            await _emailAppService.SendMergeOrderEmailAsync(Ids, order1.Id);
+            await EmailAppService.SendMergeOrderEmailAsync(Ids, order1.Id);
 
             return ObjectMapper.Map<Order, OrderDto>(order1);
         }
@@ -931,15 +817,15 @@ public class OrderAppService : ApplicationService, IOrderAppService
     {
         Order newOrder = new();
 
-        Order ord = await _orderRepository.GetWithDetailsAsync(OrderId);
+        Order ord = await OrderRepository.GetWithDetailsAsync(OrderId);
 
         decimal TotalAmount = ord.TotalAmount; int TotalQuantity = ord.TotalQuantity;
 
         GroupBuy groupBuy = new();
 
-        using (_dataFilter.Disable<IMultiTenant>())
+        using (DataFilter.Disable<IMultiTenant>())
         {
-            groupBuy = await _groupBuyRepository.GetAsync(ord.GroupBuyId);
+            groupBuy = await GroupBuyRepository.GetAsync(ord.GroupBuyId);
         }
 
         List<OrderItemsCreateDto> orderItems = [];
@@ -957,9 +843,9 @@ public class OrderAppService : ApplicationService, IOrderAppService
                     TotalAmount -= item.TotalAmount;
                     TotalQuantity -= item.Quantity;
 
-                    await _orderItemRepository.DeleteAsync(item.Id);
+                    await OrderItemRepository.DeleteAsync(item.Id);
 
-                    Order order1 = await _orderManager.CreateAsync(
+                    Order order1 = await OrderManager.CreateAsync(
                         ord.GroupBuyId,
                         ord.IsIndividual,
                         ord.CustomerName,
@@ -992,7 +878,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                     splitOrderId = order1.Id;
                     order1.ShippingStatus = ord.ShippingStatus;
 
-                    _orderManager.AddOrderItem(
+                    OrderManager.AddOrderItem(
                         order1,
                         orderItem.ItemId,
                         orderItem.SetItemId,
@@ -1008,7 +894,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                         orderItem.DeliveryTemperatureCost
                     );
 
-                    await _orderRepository.InsertAsync(order1);
+                    await OrderRepository.InsertAsync(order1);
                     await UnitOfWorkManager.Current.SaveChangesAsync();
 
                     newOrder = order1;
@@ -1019,7 +905,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                     {
                         OrderDelivery oD = new(Guid.NewGuid(), order1.DeliveryMethod.Value, DeliveryStatus.Processing, null, string.Empty, order1.Id);
 
-                        oD = await _orderDeliveryRepository.InsertAsync(oD);
+                        oD = await OrderDeliveryRepository.InsertAsync(oD);
 
                         order1.UpdateOrderItem(
                             [.. order1.OrderItems.Where(w => w.DeliveryTemperature == orderItem1?.DeliveryTemperature &&
@@ -1027,7 +913,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                             oD.Id
                         );
 
-                        await _orderRepository.UpdateAsync(order1);
+                        await OrderRepository.UpdateAsync(order1);
                     }
                 }
 
@@ -1035,7 +921,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
             if (ord.OrderItems.Count <= 0)
             {
                 newOrder.TotalAmount += TotalAmount;
-                await _orderRepository.UpdateAsync(newOrder);
+                await OrderRepository.UpdateAsync(newOrder);
                 ord.TotalAmount = 0;
                 ord.TotalQuantity = 0;
             }
@@ -1047,13 +933,13 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
             ord.OrderType = OrderType.SplitToNew;
 
-            await _orderRepository.UpdateAsync(ord);
+            await OrderRepository.UpdateAsync(ord);
             // **Get Current User (Editor)**
             var currentUserId = CurrentUser.Id ?? Guid.Empty;
             var currentUserName = CurrentUser.UserName ?? "System";
 
             // **Log Order History for Split Order**
-            await _orderHistoryManager.AddOrderHistoryAsync(
+            await OrderHistoryManager.AddOrderHistoryAsync(
      splitOrderId,
      "OrderSplit", // Localization key
      new object[] { ord.OrderNo, newOrder.OrderNo }, // Dynamic placeholders
@@ -1062,7 +948,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
  );
 
             // **Log Update to Original Order**
-            await _orderHistoryManager.AddOrderHistoryAsync(
+            await OrderHistoryManager.AddOrderHistoryAsync(
                 ord.Id,
                 "OrderSplitFrom",
                 new object[] { ord.OrderNo, newOrder.OrderNo },
@@ -1072,7 +958,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
             await UnitOfWorkManager.Current.SaveChangesAsync();
 
-            await _emailAppService.SendSplitOrderEmailAsync(OrderId, splitOrderId);
+            await EmailAppService.SendSplitOrderEmailAsync(OrderId, splitOrderId);
 
             return ObjectMapper.Map<Order, OrderDto>(ord);
         }
@@ -1083,7 +969,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
         string? returnedOrderItemIds = null;
 
-        Order ord = await _orderRepository.GetWithDetailsAsync(OrderId);
+        Order ord = await OrderRepository.GetWithDetailsAsync(OrderId);
 
         decimal TotalAmount = ord.TotalAmount;
 
@@ -1091,16 +977,16 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
         GroupBuy groupBuy = new();
 
-        using (_dataFilter.Disable<IMultiTenant>())
+        using (DataFilter.Disable<IMultiTenant>())
         {
-            groupBuy = await _groupBuyRepository.GetAsync(ord.GroupBuyId);
+            groupBuy = await GroupBuyRepository.GetAsync(ord.GroupBuyId);
         }
 
         List<OrderItemsCreateDto> orderItems = [];
 
         using (CurrentTenant.Change(groupBuy?.TenantId))
         {
-            Order order1 = await _orderManager.CreateAsync(
+            Order order1 = await OrderManager.CreateAsync(
                 ord.GroupBuyId,
                 ord.IsIndividual,
                 ord.CustomerName,
@@ -1171,9 +1057,9 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
                     //ord.TotalAmount = ord.TotalAmount - item.TotalAmount;
                     ord.TotalQuantity = ord.TotalQuantity - item.Quantity;
-                    //await _orderItemRepository.DeleteAsync(item.Id);
+                    //await OrderItemRepository.DeleteAsync(item.Id);
 
-                    _orderManager.AddOrderItem(
+                    OrderManager.AddOrderItem(
                         order1,
                         orderItem.ItemId,
                         orderItem.SetItemId,
@@ -1194,15 +1080,15 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 }
             }
 
-            await _orderRepository.InsertAsync(order1);
-            await _orderRepository.UpdateAsync(ord);
+            await OrderRepository.InsertAsync(order1);
+            await OrderRepository.UpdateAsync(ord);
             await UnitOfWorkManager.Current.SaveChangesAsync();
             newOrder = order1;
 
             newOrder.TotalAmount = newOrder.OrderItems.Sum(x => x.TotalAmount);
             newOrder.TotalQuantity = newOrder.OrderItems.Sum(x => x.Quantity);
-            var OrderDelivery1 = await _orderDeliveryRepository.FirstOrDefaultAsync(x => x.OrderId == ord.Id);
-            await _orderDeliveryRepository.DeleteAsync(OrderDelivery1.Id);
+            var OrderDelivery1 = await OrderDeliveryRepository.FirstOrDefaultAsync(x => x.OrderId == ord.Id);
+            await OrderDeliveryRepository.DeleteAsync(OrderDelivery1.Id);
             foreach (var item in ord.OrderItems.Where(x => x.ItemPrice >= 0))
             {
                 if (ord.ShippingStatus == ShippingStatus.PrepareShipment)
@@ -1215,19 +1101,19 @@ public class OrderAppService : ApplicationService, IOrderAppService
                             if (orderItem.DeliveryTemperature == ItemStorageTemperature.Normal && orderItem.Item != null || orderItem.Item?.IsFreeShipping == true)
                             {
                                 var OrderDelivery = new OrderDelivery(Guid.NewGuid(), ord.DeliveryMethod.Value, DeliveryStatus.Processing, null, "", ord.Id);
-                                OrderDelivery = await _orderDeliveryRepository.InsertAsync(OrderDelivery);
+                                OrderDelivery = await OrderDeliveryRepository.InsertAsync(OrderDelivery);
                                 ord.UpdateOrderItem(ord.OrderItems.Where(x => (x.DeliveryTemperature == ItemStorageTemperature.Normal && x.Item?.IsFreeShipping == true)).ToList(), OrderDelivery.Id);
                             }
                             if (orderItem.DeliveryTemperature == ItemStorageTemperature.Freeze && orderItem.Item?.IsFreeShipping == true)
                             {
                                 var OrderDelivery = new OrderDelivery(Guid.NewGuid(), ord.DeliveryMethod.Value, DeliveryStatus.Processing, null, "", ord.Id);
-                                OrderDelivery = await _orderDeliveryRepository.InsertAsync(OrderDelivery);
+                                OrderDelivery = await OrderDeliveryRepository.InsertAsync(OrderDelivery);
                                 ord.UpdateOrderItem(ord.OrderItems.Where(x => x.DeliveryTemperature == ItemStorageTemperature.Freeze && x.Item?.IsFreeShipping == true).ToList(), OrderDelivery.Id);
                             }
                             if (orderItem.DeliveryTemperature == ItemStorageTemperature.Frozen && orderItem.Item?.IsFreeShipping == true)
                             {
                                 var OrderDelivery = new OrderDelivery(Guid.NewGuid(), order1.DeliveryMethod.Value, DeliveryStatus.Processing, null, "", ord.Id);
-                                OrderDelivery = await _orderDeliveryRepository.InsertAsync(OrderDelivery);
+                                OrderDelivery = await OrderDeliveryRepository.InsertAsync(OrderDelivery);
                                 ord.UpdateOrderItem(ord.OrderItems.Where(x => x.DeliveryTemperature == ItemStorageTemperature.Frozen && x?.Item.IsFreeShipping == true).ToList(), OrderDelivery.Id);
                             }
                         }
@@ -1236,24 +1122,24 @@ public class OrderAppService : ApplicationService, IOrderAppService
                             if (orderItem.DeliveryTemperature == ItemStorageTemperature.Normal && orderItem.Item?.IsFreeShipping == false)
                             {
                                 var OrderDelivery = new OrderDelivery(Guid.NewGuid(), ord.DeliveryMethod.Value, DeliveryStatus.Processing, null, "", order1.Id);
-                                OrderDelivery = await _orderDeliveryRepository.InsertAsync(OrderDelivery);
+                                OrderDelivery = await OrderDeliveryRepository.InsertAsync(OrderDelivery);
                                 ord.UpdateOrderItem(ord.OrderItems.Where(x => x.DeliveryTemperature == ItemStorageTemperature.Normal && x.Item?.IsFreeShipping == false).ToList(), OrderDelivery.Id);
                             }
                             if (orderItem.DeliveryTemperature == ItemStorageTemperature.Freeze && orderItem.Item?.IsFreeShipping == false)
                             {
                                 var OrderDelivery = new OrderDelivery(Guid.NewGuid(), ord.DeliveryMethod.Value, DeliveryStatus.Processing, null, "", order1.Id);
-                                OrderDelivery = await _orderDeliveryRepository.InsertAsync(OrderDelivery);
+                                OrderDelivery = await OrderDeliveryRepository.InsertAsync(OrderDelivery);
                                 ord.UpdateOrderItem(ord.OrderItems.Where(x => x.DeliveryTemperature == ItemStorageTemperature.Freeze && x.Item?.IsFreeShipping == false).ToList(), OrderDelivery.Id);
                             }
                             if (orderItem.DeliveryTemperature == ItemStorageTemperature.Frozen && orderItem.Item?.IsFreeShipping == false)
                             {
                                 var OrderDelivery = new OrderDelivery(Guid.NewGuid(), ord.DeliveryMethod.Value, DeliveryStatus.Processing, null, "", ord.Id);
-                                OrderDelivery = await _orderDeliveryRepository.InsertAsync(OrderDelivery);
+                                OrderDelivery = await OrderDeliveryRepository.InsertAsync(OrderDelivery);
                                 ord.UpdateOrderItem(ord.OrderItems.Where(x => x.DeliveryTemperature == ItemStorageTemperature.Frozen && x.Item?.IsFreeShipping == false).ToList(), OrderDelivery.Id);
                             }
 
                         }
-                        await _orderRepository.UpdateAsync(ord);
+                        await OrderRepository.UpdateAsync(ord);
                     }
                 }
             }
@@ -1262,17 +1148,17 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
             ord.ReturnedOrderItemIds = returnedOrderItemIds;
 
-            await _orderRepository.UpdateAsync(ord);
+            await OrderRepository.UpdateAsync(ord);
 
             await UnitOfWorkManager.Current.SaveChangesAsync();
 
-            await _refundAppService.CreateAsync(newOrder.Id);
+            await RefundAppService.CreateAsync(newOrder.Id);
             // **Get Current User (Editor)**
             var currentUserId = CurrentUser.Id ?? Guid.Empty;
             var currentUserName = CurrentUser.UserName ?? "System";
 
             // **Log Order History for Refund Request**
-            await _orderHistoryManager.AddOrderHistoryAsync(
+            await OrderHistoryManager.AddOrderHistoryAsync(
      ord.Id,
      "RefundRequested", // Localization key
      new object[] { newOrder.TotalAmount.ToString("C", new CultureInfo("en-US")) }, // Format currency correctly before passing
@@ -1282,7 +1168,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
 
             // **Log the creation of the new refunded order**
-            await _orderHistoryManager.AddOrderHistoryAsync(
+            await OrderHistoryManager.AddOrderHistoryAsync(
        newOrder.Id,
        "RefundOrderCreated", // Localization key
        new object[] { newOrder.OrderNo, ord.OrderNo }, // Dynamic placeholders
@@ -1294,20 +1180,20 @@ public class OrderAppService : ApplicationService, IOrderAppService
     }
     public async Task<OrderDto> ChangeOrderStatus(Guid id, ShippingStatus status)
     {
-        var order = await _orderRepository.GetWithDetailsAsync(id);
+        var order = await OrderRepository.GetWithDetailsAsync(id);
         // Store the old status before updating
         var oldStatus = order.ShippingStatus;
         order.ShippingStatus = status;
         //order.ClosedBy = CurrentUser.Name;
         order.CancellationDate = DateTime.Now;
 
-        await _orderRepository.UpdateAsync(order);
+        await OrderRepository.UpdateAsync(order);
         await UnitOfWorkManager.Current.SaveChangesAsync();
         await SendEmailAsync(order.Id);
         var returnResult = ObjectMapper.Map<Order, OrderDto>(order);
         if (status == ShippingStatus.Delivered)
         {
-            var invoiceSetting = await _electronicInvoiceSettingRepository.FirstOrDefaultAsync();
+            var invoiceSetting = await ElectronicInvoiceSettingRepository.FirstOrDefaultAsync();
             if (order.InvoiceNumber.IsNullOrEmpty())
             {
                 if (invoiceSetting.StatusOnInvoiceIssue == DeliveryStatus.Delivered)
@@ -1316,11 +1202,11 @@ public class OrderAppService : ApplicationService, IOrderAppService
                     {
                         order.IssueStatus = IssueInvoiceStatus.SentToBackStage;
                         await UnitOfWorkManager.Current.SaveChangesAsync();
-                        //var invoiceSetting = await _electronicInvoiceSettingRepository.FirstOrDefaultAsync();
+                        //var invoiceSetting = await ElectronicInvoiceSettingRepository.FirstOrDefaultAsync();
                         var invoiceDely = invoiceSetting.DaysAfterShipmentGenerateInvoice;
                         if (invoiceDely == 0)
                         {
-                            var result = await _electronicInvoiceAppService.CreateInvoiceAsync(order.Id);
+                            var result = await ElectronicInvoiceAppService.CreateInvoiceAsync(order.Id);
                             returnResult.InvoiceMsg = result;
 
 
@@ -1329,7 +1215,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                         {
                             var delay = DateTime.Now.AddDays(invoiceDely) - DateTime.Now;
                             GenerateInvoiceBackgroundJobArgs args = new GenerateInvoiceBackgroundJobArgs { OrderId = order.Id };
-                            var jobid = await _backgroundJobManager.EnqueueAsync(args, BackgroundJobPriority.High, delay);
+                            var jobid = await BackgroundJobManager.EnqueueAsync(args, BackgroundJobPriority.High, delay);
                         }
                     }
                 }
@@ -1340,10 +1226,10 @@ public class OrderAppService : ApplicationService, IOrderAppService
         var currentUserName = CurrentUser.UserName ?? "System";
 
         // **Log Order History for Status Change**
-        await _orderHistoryManager.AddOrderHistoryAsync(
+        await OrderHistoryManager.AddOrderHistoryAsync(
             order.Id,
             "StatusChanged",
-            new object[] { _l[oldStatus.ToString()]?.Value, _l[status.ToString()]?.Value },
+            new object[] { L[oldStatus.ToString()]?.Value, L[status.ToString()]?.Value },
             currentUserId,
             currentUserName
         );
@@ -1353,20 +1239,20 @@ public class OrderAppService : ApplicationService, IOrderAppService
     }
     public async Task RefundAmountAsync(double amount, Guid OrderId)
     {
-        Order ord = await _orderRepository.GetWithDetailsAsync(OrderId);
+        Order ord = await OrderRepository.GetWithDetailsAsync(OrderId);
 
         ord.RefundAmount += (decimal)amount;
 
         GroupBuy groupBuy = new();
 
-        using (_dataFilter.Disable<IMultiTenant>())
+        using (DataFilter.Disable<IMultiTenant>())
         {
-            groupBuy = await _groupBuyRepository.GetAsync(ord.GroupBuyId);
+            groupBuy = await GroupBuyRepository.GetAsync(ord.GroupBuyId);
         }
 
         using (CurrentTenant.Change(groupBuy?.TenantId))
         {
-            Order order1 = await _orderManager.CreateAsync(
+            Order order1 = await OrderManager.CreateAsync(
                 ord.GroupBuyId,
                 ord.IsIndividual,
                 ord.CustomerName,
@@ -1415,19 +1301,19 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 order1.SetProperty(extraProp.Key, extraProp.Value);
             }
 
-            await _orderRepository.InsertAsync(order1);
+            await OrderRepository.InsertAsync(order1);
 
-            await _orderRepository.UpdateAsync(ord);
+            await OrderRepository.UpdateAsync(ord);
 
             await UnitOfWorkManager.Current.SaveChangesAsync();
 
-            await _refundAppService.CreateAsync(order1.Id);
+            await RefundAppService.CreateAsync(order1.Id);
             // **Get Current User (Editor)**
             var currentUserId = CurrentUser.Id ?? Guid.Empty;
             var currentUserName = CurrentUser.UserName ?? "System";
 
             // **Log Refund Action in Order History**
-            await _orderHistoryManager.AddOrderHistoryAsync(
+            await OrderHistoryManager.AddOrderHistoryAsync(
       ord.Id,
       "RefundProcessed", // Localization key
       new object[] { ((decimal)amount).ToString("C", new CultureInfo("en-US")), ord.OrderNo }, // Format currency correctly before passing
@@ -1436,7 +1322,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
   );
 
             // **Log New Refund Order Creation**
-            await _orderHistoryManager.AddOrderHistoryAsync(
+            await OrderHistoryManager.AddOrderHistoryAsync(
        order1.Id,
        "RefundAmountCreated", // Localization key
        new object[] { order1.OrderNo, ((decimal)amount).ToString("C", new CultureInfo("en-US")), ord.OrderNo }, // Format currency correctly
@@ -1448,13 +1334,13 @@ public class OrderAppService : ApplicationService, IOrderAppService
     }
     public async Task<OrderDto> GetWithDetailsAsync(Guid id)
     {
-        Order order = await _orderRepository.GetWithDetailsAsync(id);
+        Order order = await OrderRepository.GetWithDetailsAsync(id);
 
         return ObjectMapper.Map<Order, OrderDto>(order);
     }
     public async Task<List<OrderHistoryDto>> GetOrderLogsAsync(Guid orderId)
     {
-        var result = await _orderHistoryRepository.GetAllHistoryByOrderIdAsync(orderId);
+        var result = await OrderHistoryRepository.GetAllHistoryByOrderIdAsync(orderId);
 
         return ObjectMapper.Map<List<OrderHistory>, List<OrderHistoryDto>>(result);
 
@@ -1463,7 +1349,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
     {
         if (input.Sorting.IsNullOrEmpty()) input.Sorting = $"{nameof(Order.CreationTime)} desc";
 
-        long totalCount = await _orderRepository.CountAsync(input.Filter,
+        long totalCount = await OrderRepository.CountAsync(input.Filter,
                                                             input.GroupBuyId,
                                                             input.StartDate,
                                                             input.EndDate,
@@ -1471,7 +1357,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                                                             input.ShippingStatus,
                                                             input.DeliveryMethod);
 
-        List<Order> items = await _orderRepository.GetListAsync(input.SkipCount,
+        List<Order> items = await OrderRepository.GetListAsync(input.SkipCount,
                                                                 input.MaxResultCount,
                                                                 input.Sorting,
                                                                 input.Filter,
@@ -1489,7 +1375,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
             if (hideCredentials)
             {
-                GroupBuy groupbuy = await _groupBuyRepository.GetAsync(input.GroupBuyId.Value);
+                GroupBuy groupbuy = await GroupBuyRepository.GetAsync(input.GroupBuyId.Value);
 
                 if (groupbuy.ProtectPrivacyData) dtos.HideCredentials();
             }
@@ -1513,13 +1399,13 @@ public class OrderAppService : ApplicationService, IOrderAppService
             input.Sorting = $"{nameof(GroupBuyReportOrderModel.CreationTime)} desc";
         }
 
-        var data = await _orderRepository.GetReportListAsync(input.SkipCount, input.MaxResultCount, input.Sorting, input.Filter, input.GroupBuyId, input.OrderIds, input.StartDate, input.EndDate, input.OrderStatus);
+        var data = await OrderRepository.GetReportListAsync(input.SkipCount, input.MaxResultCount, input.Sorting, input.Filter, input.GroupBuyId, input.OrderIds, input.StartDate, input.EndDate, input.OrderStatus);
 
         var dtos = ObjectMapper.Map<List<GroupBuyReportOrderModel>, List<GroupBuyReportOrderDto>>(data.Items);
 
         if (hideCredentials)
         {
-            var groupbuy = await _groupBuyRepository.GetAsync(input.GroupBuyId.Value);
+            var groupbuy = await GroupBuyRepository.GetAsync(input.GroupBuyId.Value);
             if (groupbuy.ProtectPrivacyData)
             {
                 dtos.HideCredentials();
@@ -1535,16 +1421,16 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
     public async Task<PagedResultDto<OrderDto>> GetTenantOrderListAsync(GetOrderListDto input)
     {
-        using (_dataFilter.Disable<IMultiTenant>())
+        using (DataFilter.Disable<IMultiTenant>())
         {
             if (input.Sorting.IsNullOrEmpty())
             {
                 input.Sorting = $"{nameof(Order.CreationTime)} desc";
             }
 
-            var totalCount = await _orderRepository.CountAsync(input.Filter, input.GroupBuyId);
+            var totalCount = await OrderRepository.CountAsync(input.Filter, input.GroupBuyId);
 
-            var items = await _orderRepository.GetListAsync(input.SkipCount, input.MaxResultCount, input.Sorting, input.Filter, input.GroupBuyId, input.OrderIds);
+            var items = await OrderRepository.GetListAsync(input.SkipCount, input.MaxResultCount, input.Sorting, input.Filter, input.GroupBuyId, input.OrderIds);
 
             return new PagedResultDto<OrderDto>
             {
@@ -1556,7 +1442,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
     public async Task<long> GetReturnOrderNotificationCount()
     {
-        var totalCount = await _orderRepository.ReturnOrderNotificationCountAsync();
+        var totalCount = await OrderRepository.ReturnOrderNotificationCountAsync();
         return totalCount;
     }
     public async Task<PagedResultDto<OrderDto>> GetReturnListAsync(GetOrderListDto input)
@@ -1566,9 +1452,9 @@ public class OrderAppService : ApplicationService, IOrderAppService
             input.Sorting = $"{nameof(Order.CreationTime)} desc";
         }
 
-        var totalCount = await _orderRepository.ReturnOrderCountAsync(input.Filter, input.GroupBuyId);
+        var totalCount = await OrderRepository.ReturnOrderCountAsync(input.Filter, input.GroupBuyId);
 
-        var items = await _orderRepository.GetReturnListAsync(input.SkipCount, input.MaxResultCount, input.Sorting, input.Filter, input.GroupBuyId);
+        var items = await OrderRepository.GetReturnListAsync(input.SkipCount, input.MaxResultCount, input.Sorting, input.Filter, input.GroupBuyId);
 
         return new PagedResultDto<OrderDto>
         {
@@ -1584,9 +1470,9 @@ public class OrderAppService : ApplicationService, IOrderAppService
             input.Sorting = $"{nameof(Order.LastModificationTime)} desc";
         }
 
-        var totalCount = await _orderRepository.CountReconciliationAsync(input.Filter, input.GroupBuyId, input.StartDate, input.EndDate);
+        var totalCount = await OrderRepository.CountReconciliationAsync(input.Filter, input.GroupBuyId, input.StartDate, input.EndDate);
 
-        var items = await _orderRepository.GetReconciliationListAsync(input.SkipCount, input.MaxResultCount, input.Sorting, input.Filter, input.GroupBuyId, input.OrderIds, input.StartDate, input.EndDate);
+        var items = await OrderRepository.GetReconciliationListAsync(input.SkipCount, input.MaxResultCount, input.Sorting, input.Filter, input.GroupBuyId, input.OrderIds, input.StartDate, input.EndDate);
 
         return new PagedResultDto<OrderDto>
         {
@@ -1601,9 +1487,9 @@ public class OrderAppService : ApplicationService, IOrderAppService
             input.Sorting = $"{nameof(Order.CreationTime)} desc";
         }
 
-        var totalCount = await _orderRepository.CountVoidAsync(input.Filter, input.GroupBuyId, input.StartDate, input.EndDate);
+        var totalCount = await OrderRepository.CountVoidAsync(input.Filter, input.GroupBuyId, input.StartDate, input.EndDate);
 
-        var items = await _orderRepository.GetVoidListAsync(input.SkipCount, input.MaxResultCount, input.Sorting, input.Filter, input.GroupBuyId, input.OrderIds, input.StartDate, input.EndDate);
+        var items = await OrderRepository.GetVoidListAsync(input.SkipCount, input.MaxResultCount, input.Sorting, input.Filter, input.GroupBuyId, input.OrderIds, input.StartDate, input.EndDate);
 
         return new PagedResultDto<OrderDto>
         {
@@ -1614,16 +1500,16 @@ public class OrderAppService : ApplicationService, IOrderAppService
     [Authorize(PikachuPermissions.Orders.AddStoreComment)]
     public async Task AddStoreCommentAsync(Guid id, string comment)
     {
-        var order = await _orderRepository.GetAsync(id);
-        await _orderRepository.EnsureCollectionLoadedAsync(order, o => o.StoreComments);
-        _orderManager.AddStoreComment(order, comment);
+        var order = await OrderRepository.GetAsync(id);
+        await OrderRepository.EnsureCollectionLoadedAsync(order, o => o.StoreComments);
+        OrderManager.AddStoreComment(order, comment);
     }
 
     [Authorize(PikachuPermissions.Orders.AddStoreComment)]
     public async Task UpdateStoreCommentAsync(Guid id, Guid commentId, string comment)
     {
-        var order = await _orderRepository.GetAsync(id);
-        await _orderRepository.EnsureCollectionLoadedAsync(order, o => o.StoreComments);
+        var order = await OrderRepository.GetAsync(id);
+        await OrderRepository.EnsureCollectionLoadedAsync(order, o => o.StoreComments);
         var storeComment = order.StoreComments.First(c => c.Id == commentId);
         if (storeComment.CreatorId != CurrentUser.Id)
         {
@@ -1634,7 +1520,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
     public async Task<OrderDto> UpdateAsync(Guid id, CreateOrderDto input)
     {
-        var order = await _orderRepository.GetAsync(id);
+        var order = await OrderRepository.GetAsync(id);
         // **Get Current User (Editor)**
         var currentUserId = CurrentUser.Id ?? Guid.Empty;
         var currentUserName = CurrentUser.UserName ?? "System";
@@ -1643,7 +1529,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
         if (order.RecipientName != input.RecipientName)
         {
-            await _orderHistoryManager.AddOrderHistoryAsync(
+            await OrderHistoryManager.AddOrderHistoryAsync(
  order.Id,
  "RecipientNameChanged", // Localization key for ActionType
  new object[] { order.RecipientName, input.RecipientName }, // Pass localized changes as an array
@@ -1656,7 +1542,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
         if (order.RecipientPhone != input.RecipientPhone)
         {
-            await _orderHistoryManager.AddOrderHistoryAsync(
+            await OrderHistoryManager.AddOrderHistoryAsync(
  order.Id,
  "RecipientPhoneChanged", // Localization key for ActionType
  new object[] { order.RecipientPhone, input.RecipientPhone }, // Pass localized changes as an array
@@ -1669,7 +1555,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
         if (order.PostalCode != input.PostalCode)
         {
-            await _orderHistoryManager.AddOrderHistoryAsync(
+            await OrderHistoryManager.AddOrderHistoryAsync(
  order.Id,
  "PostalCodeChanged", // Localization key for ActionType
  new object[] { order.PostalCode, input.PostalCode }, // Pass localized changes as an array
@@ -1682,7 +1568,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
         if (order.District != input.District)
         {
-            await _orderHistoryManager.AddOrderHistoryAsync(
+            await OrderHistoryManager.AddOrderHistoryAsync(
  order.Id,
  "DistrictChanged", // Localization key for ActionType
  new object[] { order.District, input.District }, // Pass localized changes as an array
@@ -1695,7 +1581,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
         if (order.City != input.City)
         {
-            await _orderHistoryManager.AddOrderHistoryAsync(
+            await OrderHistoryManager.AddOrderHistoryAsync(
  order.Id,
  "CityChanged", // Localization key for ActionType
  new object[] { order.City, input.City }, // Pass localized changes as an array
@@ -1708,7 +1594,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
         if (order.Road != input.Road)
         {
-            await _orderHistoryManager.AddOrderHistoryAsync(
+            await OrderHistoryManager.AddOrderHistoryAsync(
  order.Id,
  "RoadChanged", // Localization key for ActionType
  new object[] { order.Road, input.Road }, // Pass localized changes as an array
@@ -1721,7 +1607,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
         if (order.AddressDetails != input.AddressDetails)
         {
-            await _orderHistoryManager.AddOrderHistoryAsync(
+            await OrderHistoryManager.AddOrderHistoryAsync(
  order.Id,
  "AddressDetailsChanged", // Localization key for ActionType
  new object[] { order.AddressDetails, input.AddressDetails }, // Pass localized changes as an array
@@ -1734,7 +1620,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
         if (order.OrderStatus != input.OrderStatus)
         {
-            await _orderHistoryManager.AddOrderHistoryAsync(
+            await OrderHistoryManager.AddOrderHistoryAsync(
  order.Id,
  "OrderStatusChanged", // Localization key for ActionType
  new object[] { order.OrderStatus, input.OrderStatus }, // Pass localized changes as an array
@@ -1747,7 +1633,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
         if (order.StoreId != input.StoreId)
         {
-            await _orderHistoryManager.AddOrderHistoryAsync(
+            await OrderHistoryManager.AddOrderHistoryAsync(
  order.Id,
  "StoreIdChanged", // Localization key for ActionType
  new object[] { order.StoreId, input.StoreId }, // Pass localized changes as an array
@@ -1760,7 +1646,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
         if (order.CVSStoreOutSide != input.CVSStoreOutSide)
         {
-            await _orderHistoryManager.AddOrderHistoryAsync(
+            await OrderHistoryManager.AddOrderHistoryAsync(
  order.Id,
  "CVSStoreChanged", // Localization key for ActionType
  new object[] { order.CVSStoreOutSide, input.CVSStoreOutSide }, // Pass localized changes as an array
@@ -1805,12 +1691,12 @@ public class OrderAppService : ApplicationService, IOrderAppService
         order.CVSStoreOutSideFreeze = input.CVSStoreOutSideFreeze;
         order.CVSStoreOutSideFrozen = input.CVSStoreOutSideFrozen;
 
-        await _orderRepository.UpdateAsync(order);
+        await OrderRepository.UpdateAsync(order);
 
         if (input.ShouldSendEmail)
         {
             await UnitOfWorkManager.Current.SaveChangesAsync();
-            await _emailAppService.SendOrderUpdateEmailAsync(order.Id);
+            await EmailAppService.SendOrderUpdateEmailAsync(order.Id);
         }
 
 
@@ -1821,7 +1707,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
     public async Task ChangeReturnStatusAsync(Guid id, OrderReturnStatus? orderReturnStatus, bool isRefund)
     {
-        var order = await _orderRepository.GetAsync(id);
+        var order = await OrderRepository.GetAsync(id);
         // Capture old status before updating
         var oldReturnStatus = order.ReturnStatus;
         order.ReturnStatus = orderReturnStatus;
@@ -1839,14 +1725,14 @@ public class OrderAppService : ApplicationService, IOrderAppService
         }
         if (orderReturnStatus == OrderReturnStatus.Succeeded && order.OrderStatus == OrderStatus.Returned && isRefund)
         {
-            await _refundAppService.CreateAsync(id);
-            var refund = (await _refundRepository.GetQueryableAsync()).Where(x => x.OrderId == order.Id).FirstOrDefault();
-            await _refundAppService.UpdateRefundReviewAsync(refund.Id, RefundReviewStatus.Proccessing);
-            await _refundAppService.SendRefundRequestAsync(refund.Id);
+            await RefundAppService.CreateAsync(id);
+            var refund = (await RefundRepository.GetQueryableAsync()).Where(x => x.OrderId == order.Id).FirstOrDefault();
+            await RefundAppService.UpdateRefundReviewAsync(refund.Id, RefundReviewStatus.Proccessing);
+            await RefundAppService.SendRefundRequestAsync(refund.Id);
 
             var orderTransaction = new OrderTransaction(GuidGenerator.Create(), order.Id, order.OrderNo,
                 order.TotalAmount, TransactionType.Returned, TransactionStatus.Successful, order.PaymentMethod?.GetPaymentChannel());
-            await _orderTransactionManager.CreateAsync(orderTransaction);
+            await OrderTransactionManager.CreateAsync(orderTransaction);
         }
         if (orderReturnStatus == OrderReturnStatus.Succeeded && order.OrderStatus == OrderStatus.Exchange)
         {
@@ -1856,18 +1742,18 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
             var orderTransaction = new OrderTransaction(GuidGenerator.Create(), order.Id, order.OrderNo,
                 order.TotalAmount, TransactionType.Exchange, TransactionStatus.Successful, order.PaymentMethod?.GetPaymentChannel());
-            await _orderTransactionManager.CreateAsync(orderTransaction);
+            await OrderTransactionManager.CreateAsync(orderTransaction);
         }
-        await _orderRepository.UpdateAsync(order);
+        await OrderRepository.UpdateAsync(order);
         // **Get Current User (Editor)**
         var currentUserId = CurrentUser.Id ?? Guid.Empty;
         var currentUserName = CurrentUser.UserName ?? "System";
 
         // **Log Order History for Return Status Change**
-        await _orderHistoryManager.AddOrderHistoryAsync(
+        await OrderHistoryManager.AddOrderHistoryAsync(
      order.Id,
      "ReturnStatusChanged", // Localization key
-     new object[] { _l[oldReturnStatus.ToString()]?.Value, _l[orderReturnStatus.ToString()]?.Value }, // Dynamic placeholders
+     new object[] { L[oldReturnStatus.ToString()]?.Value, L[orderReturnStatus.ToString()]?.Value }, // Dynamic placeholders
      currentUserId,
      currentUserName
  );
@@ -1876,7 +1762,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         // **Log Additional Details for Refund or Exchange**
         if (orderReturnStatus == OrderReturnStatus.Approve && order.OrderStatus == OrderStatus.Returned)
         {
-            await _orderHistoryManager.AddOrderHistoryAsync(
+            await OrderHistoryManager.AddOrderHistoryAsync(
                  order.Id,
                  "RefundInitiated", // Localization key
                  new object[] { order.OrderNo }, // Dynamic placeholders
@@ -1888,7 +1774,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
         if (orderReturnStatus == OrderReturnStatus.Succeeded && order.OrderStatus == OrderStatus.Exchange)
         {
-            await _orderHistoryManager.AddOrderHistoryAsync(
+            await OrderHistoryManager.AddOrderHistoryAsync(
                  order.Id,
                  "OrderExchanged", // Localization key
                  new object[] { order.OrderNo }, // Format date properly
@@ -1900,28 +1786,28 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
     public async Task ExchangeOrderAsync(Guid id)
     {
-        var order = await _orderRepository.GetAsync(id);
+        var order = await OrderRepository.GetAsync(id);
         // Capture old statuses before updating
         var oldReturnStatus = order.ReturnStatus;
         var oldOrderStatus = order.OrderStatus;
         order.ReturnStatus = OrderReturnStatus.Pending;
         order.OrderStatus = OrderStatus.Exchange;
 
-        await _orderRepository.UpdateAsync(order);
+        await OrderRepository.UpdateAsync(order);
         // **Get Current User (Editor)**
         var currentUserId = CurrentUser.Id ?? Guid.Empty;
         var currentUserName = CurrentUser.UserName ?? "System";
 
         // **Log Order History for Exchange**
-        await _orderHistoryManager.AddOrderHistoryAsync(
+        await OrderHistoryManager.AddOrderHistoryAsync(
      order.Id,
      "OrderExchangeInitiated", // Localization key
      new object[]
      {
-        _l[oldReturnStatus.ToString()]?.Value,
-        _l[order.ReturnStatus.ToString()]?.Value,
-        _l[oldOrderStatus.ToString()]?.Value,
-        _l[order.OrderStatus.ToString()]?.Value
+        L[oldReturnStatus.ToString()]?.Value,
+        L[order.ReturnStatus.ToString()]?.Value,
+        L[oldOrderStatus.ToString()]?.Value,
+        L[order.OrderStatus.ToString()]?.Value
      }, // Dynamic placeholders for localized statuses
      currentUserId,
      currentUserName
@@ -1932,28 +1818,28 @@ public class OrderAppService : ApplicationService, IOrderAppService
     }
     public async Task ReturnOrderAsync(Guid id)
     {
-        var order = await _orderRepository.GetAsync(id);
+        var order = await OrderRepository.GetAsync(id);
         // Capture old statuses before updating
         var oldReturnStatus = order.ReturnStatus;
         var oldOrderStatus = order.OrderStatus;
         order.ReturnStatus = OrderReturnStatus.Pending;
         order.OrderStatus = OrderStatus.Returned;
 
-        await _orderRepository.UpdateAsync(order);
+        await OrderRepository.UpdateAsync(order);
         // **Get Current User (Editor)**
         var currentUserId = CurrentUser.Id ?? Guid.Empty;
         var currentUserName = CurrentUser.UserName ?? "System";
 
         // **Log Order History for Return**
-        await _orderHistoryManager.AddOrderHistoryAsync(
+        await OrderHistoryManager.AddOrderHistoryAsync(
        order.Id,
        "OrderReturnInitiated", // Localization key
        new object[]
        {
-        _l[oldReturnStatus.ToString()].Name,
-        _l[order.ReturnStatus.ToString()].Name,
-        _l[oldOrderStatus.ToString()].Name,
-        _l[order.OrderStatus.ToString()].Name
+        L[oldReturnStatus.ToString()].Name,
+        L[order.ReturnStatus.ToString()].Name,
+        L[oldOrderStatus.ToString()].Name,
+        L[order.OrderStatus.ToString()].Name
        }, // Dynamic placeholders for localized statuses
        currentUserId,
        currentUserName
@@ -1963,7 +1849,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
     }
     public async Task UpdateOrderItemsAsync(Guid id, List<UpdateOrderItemDto> orderItems)
     {
-        var order = await _orderRepository.GetWithDetailsAsync(id);
+        var order = await OrderRepository.GetWithDetailsAsync(id);
 
 
         // **Get Current User (Editor)**
@@ -1994,7 +1880,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
             // Capture changes for logging
             if (orderItem.Quantity != item.Quantity)
             {
-                await _orderHistoryManager.AddOrderHistoryAsync(
+                await OrderHistoryManager.AddOrderHistoryAsync(
                   order.Id,
                   "ItemQuantityChanged", // Localization key
                   new object[] { itemName, orderItem.Quantity, item.Quantity }, // Join localized changes as a single string
@@ -2006,7 +1892,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
             if (orderItem.ItemPrice != item.ItemPrice)
             {
-                await _orderHistoryManager.AddOrderHistoryAsync(
+                await OrderHistoryManager.AddOrderHistoryAsync(
                   order.Id,
                   "ItemPriceChanged", // Localization key
                   new object[] { itemName, orderItem.ItemPrice.ToString("C", new CultureInfo("en-US")), item.ItemPrice.ToString("C", new CultureInfo("en-US")) }, // Join localized changes as a single string
@@ -2018,7 +1904,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
             if (orderItem.TotalAmount != item.TotalAmount)
             {
-                await _orderHistoryManager.AddOrderHistoryAsync(
+                await OrderHistoryManager.AddOrderHistoryAsync(
                   order.Id,
                   "ItemTotalAmountChanged", // Localization key
                   new object[] { itemName, orderItem.TotalAmount.ToString("C", new CultureInfo("en-US")), item.TotalAmount.ToString("C", new CultureInfo("en-US")) }, // Join localized changes as a single string
@@ -2037,19 +1923,19 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
         order.TotalQuantity = order.OrderItems.Sum(o => o.Quantity);
         order.TotalAmount = (order.OrderItems.Sum(o => o.TotalAmount) + (decimal)order.DeliveryCost);
-        await _orderRepository.UpdateAsync(order);
+        await OrderRepository.UpdateAsync(order);
 
 
 
     }
     public async Task CancelOrderAsync(Guid id)
     {
-        var order = await _orderRepository.GetWithDetailsAsync(id);
+        var order = await OrderRepository.GetWithDetailsAsync(id);
         // Capture the old status before updating
         var oldOrderStatus = order.OrderStatus;
         order.OrderStatus = OrderStatus.Closed;
         order.CancellationDate = DateTime.Now;
-        await _orderRepository.UpdateAsync(order);
+        await OrderRepository.UpdateAsync(order);
         await UnitOfWorkManager.Current.SaveChangesAsync();
         await SendEmailAsync(order.Id, OrderStatus.Closed);
         // **Get Current User (Editor)**
@@ -2057,10 +1943,10 @@ public class OrderAppService : ApplicationService, IOrderAppService
         var currentUserName = CurrentUser.UserName ?? "System";
 
         // **Log Order History for Cancellation**
-        await _orderHistoryManager.AddOrderHistoryAsync(
+        await OrderHistoryManager.AddOrderHistoryAsync(
      order.Id,
      "OrderCancelled", // Localization key
-     new object[] { _l[oldOrderStatus.ToString()].Name }, // Localized previous status
+     new object[] { L[oldOrderStatus.ToString()].Name }, // Localized previous status
      currentUserId,
      currentUserName
  );
@@ -2068,7 +1954,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
     }
     public async Task VoidInvoice(Guid id, string reason)
     {
-        var order = await _orderRepository.GetAsync(id);
+        var order = await OrderRepository.GetAsync(id);
         // Capture old invoice status before voiding
         var oldInvoiceStatus = order.InvoiceStatus;
         order.IsVoidInvoice = true;
@@ -2078,17 +1964,17 @@ public class OrderAppService : ApplicationService, IOrderAppService
         order.InvoiceStatus = InvoiceStatus.InvoiceVoided;
         order.LastModificationTime = DateTime.Now;
         order.LastModifierId = CurrentUser.Id;
-        await _orderRepository.UpdateAsync(order);
-        await _electronicInvoiceAppService.CreateVoidInvoiceAsync(id, reason);
+        await OrderRepository.UpdateAsync(order);
+        await ElectronicInvoiceAppService.CreateVoidInvoiceAsync(id, reason);
         // **Get Current User (Editor)**
         var currentUserId = CurrentUser.Id ?? Guid.Empty;
         var currentUserName = CurrentUser.UserName ?? "System";
 
         // **Log Order History for Invoice Voiding**
-        await _orderHistoryManager.AddOrderHistoryAsync(
+        await OrderHistoryManager.AddOrderHistoryAsync(
      order.Id,
      "InvoiceVoided", // Localization key
-     new object[] { _l[oldInvoiceStatus.ToString()].Name, reason }, // Localized invoice status & reason
+     new object[] { L[oldInvoiceStatus.ToString()].Name, reason }, // Localized invoice status & reason
      currentUserId,
      currentUserName
  );
@@ -2097,7 +1983,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
     }
     public async Task CreditNoteInvoice(Guid id, string reason)
     {
-        Order order = await _orderRepository.GetAsync(id);
+        Order order = await OrderRepository.GetAsync(id);
         // Capture old invoice status before issuing the credit note
         var oldInvoiceStatus = order.InvoiceStatus;
         order.IsVoidInvoice = true;
@@ -2106,25 +1992,25 @@ public class OrderAppService : ApplicationService, IOrderAppService
         order.CreditNoteDate = DateTime.Now;
         order.InvoiceStatus = InvoiceStatus.CreditNote;
 
-        await _orderRepository.UpdateAsync(order);
+        await OrderRepository.UpdateAsync(order);
 
-        await _electronicInvoiceAppService.CreateCreditNoteAsync(id);
+        await ElectronicInvoiceAppService.CreateCreditNoteAsync(id);
         // **Get Current User (Editor)**
         var currentUserId = CurrentUser.Id ?? Guid.Empty;
         var currentUserName = CurrentUser.UserName ?? "System";
 
         // **Log Order History for Credit Note Issuance**
-        await _orderHistoryManager.AddOrderHistoryAsync(
+        await OrderHistoryManager.AddOrderHistoryAsync(
      order.Id,
      "CreditNoteIssued", // Localization key
-     new object[] { _l[oldInvoiceStatus.ToString()].Name, reason }, // Localized previous status & reason
+     new object[] { L[oldInvoiceStatus.ToString()].Name, reason }, // Localized previous status & reason
      currentUserId,
      currentUserName
  );
     }
     public async Task<OrderDto> UpdateShippingDetails(Guid id, CreateOrderDto input)
     {
-        var order = await _orderRepository.GetWithDetailsAsync(id);
+        var order = await OrderRepository.GetWithDetailsAsync(id);
 
         // Capture old shipping details before updating
         var oldDeliveryMethod = order.DeliveryMethod;
@@ -2136,27 +2022,27 @@ public class OrderAppService : ApplicationService, IOrderAppService
         order.ShippedBy = CurrentUser.Name;
         order.ShippingDate = DateTime.Now;
 
-        await _orderRepository.UpdateAsync(order);
+        await OrderRepository.UpdateAsync(order);
         await UnitOfWorkManager.Current.SaveChangesAsync();
         if (order.InvoiceNumber.IsNullOrEmpty())
         {
-            var invoiceSetting = await _electronicInvoiceSettingRepository.FirstOrDefaultAsync();
+            var invoiceSetting = await ElectronicInvoiceSettingRepository.FirstOrDefaultAsync();
             if (invoiceSetting.StatusOnInvoiceIssue == DeliveryStatus.Shipped)
             {
                 if (order.GroupBuy.IssueInvoice)
                 {
                     order.IssueStatus = IssueInvoiceStatus.SentToBackStage;
-                    //var invoiceSetting = await _electronicInvoiceSettingRepository.FirstOrDefaultAsync();
+                    //var invoiceSetting = await ElectronicInvoiceSettingRepository.FirstOrDefaultAsync();
                     var invoiceDely = invoiceSetting.DaysAfterShipmentGenerateInvoice;
                     if (invoiceDely == 0)
                     {
-                        await _electronicInvoiceAppService.CreateInvoiceAsync(order.Id);
+                        await ElectronicInvoiceAppService.CreateInvoiceAsync(order.Id);
                     }
                     else
                     {
                         var delay = DateTime.Now.AddDays(invoiceDely) - DateTime.Now;
                         GenerateInvoiceBackgroundJobArgs args = new GenerateInvoiceBackgroundJobArgs { OrderId = order.Id };
-                        var jobid = await _backgroundJobManager.EnqueueAsync(args, BackgroundJobPriority.High, delay);
+                        var jobid = await BackgroundJobManager.EnqueueAsync(args, BackgroundJobPriority.High, delay);
                     }
                 }
             }
@@ -2170,17 +2056,17 @@ public class OrderAppService : ApplicationService, IOrderAppService
         var currentUserName = CurrentUser.UserName ?? "System";
 
         // **Log Order History for Shipping Update**
-        await _orderHistoryManager.AddOrderHistoryAsync(
+        await OrderHistoryManager.AddOrderHistoryAsync(
      order.Id,
      "ShippingDetailsUpdated", // Localization key
      new object[]
      {
-        _l[oldDeliveryMethod.ToString()].Name,
-        _l[order.DeliveryMethod.ToString()].Name,
+        L[oldDeliveryMethod.ToString()].Name,
+        L[order.DeliveryMethod.ToString()].Name,
         oldShippingNumber,
         order.ShippingNumber,
-        _l[oldShippingStatus.ToString()].Name,
-        _l[order.ShippingStatus.ToString()].Name
+        L[oldShippingStatus.ToString()].Name,
+        L[order.ShippingStatus.ToString()].Name
      }, // Dynamic placeholders for localized statuses and tracking numbers
      currentUserId,
      currentUserName
@@ -2190,7 +2076,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
     }
     public async Task<OrderDto> OrderShipped(Guid id)
     {
-        var order = await _orderRepository.GetWithDetailsAsync(id);
+        var order = await OrderRepository.GetWithDetailsAsync(id);
         // Capture old shipping status before updating
         var oldShippingStatus = order.ShippingStatus;
 
@@ -2198,24 +2084,24 @@ public class OrderAppService : ApplicationService, IOrderAppService
         order.ShippedBy = CurrentUser.Name;
         order.ShippingDate = DateTime.Now;
 
-        await _orderRepository.UpdateAsync(order);
+        await OrderRepository.UpdateAsync(order);
         await UnitOfWorkManager.Current.SaveChangesAsync();
-        await _emailAppService.SendLogisticsEmailAsync(order.Id);
+        await EmailAppService.SendLogisticsEmailAsync(order.Id);
         await SendEmailAsync(order.Id);
         var returnOrder = ObjectMapper.Map<Order, OrderDto>(order);
         if (order.InvoiceNumber.IsNullOrEmpty())
         {
-            var invoiceSetting = await _electronicInvoiceSettingRepository.FirstOrDefaultAsync();
+            var invoiceSetting = await ElectronicInvoiceSettingRepository.FirstOrDefaultAsync();
             if (invoiceSetting.StatusOnInvoiceIssue == DeliveryStatus.Shipped)
             {
                 if (order.GroupBuy.IssueInvoice)
                 {
                     order.IssueStatus = IssueInvoiceStatus.SentToBackStage;
-                    //var invoiceSetting = await _electronicInvoiceSettingRepository.FirstOrDefaultAsync();
+                    //var invoiceSetting = await ElectronicInvoiceSettingRepository.FirstOrDefaultAsync();
                     var invoiceDely = invoiceSetting.DaysAfterShipmentGenerateInvoice;
                     if (invoiceDely == 0)
                     {
-                        string result = await _electronicInvoiceAppService.CreateInvoiceAsync(order.Id);
+                        string result = await ElectronicInvoiceAppService.CreateInvoiceAsync(order.Id);
 
                         returnOrder.InvoiceMsg = result;
                     }
@@ -2223,7 +2109,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                     {
                         var delay = DateTime.Now.AddDays(invoiceDely) - DateTime.Now;
                         GenerateInvoiceBackgroundJobArgs args = new GenerateInvoiceBackgroundJobArgs { OrderId = order.Id };
-                        var jobid = await _backgroundJobManager.EnqueueAsync(args, BackgroundJobPriority.High, delay);
+                        var jobid = await BackgroundJobManager.EnqueueAsync(args, BackgroundJobPriority.High, delay);
                     }
                 }
             }
@@ -2233,65 +2119,65 @@ public class OrderAppService : ApplicationService, IOrderAppService
         var currentUserName = CurrentUser.UserName ?? "System";
 
         // **Log Order History for Shipping**
-        await _orderHistoryManager.AddOrderHistoryAsync(
+        await OrderHistoryManager.AddOrderHistoryAsync(
       order.Id,
       "OrderShipped", // Localization key
-      new object[] { _l[oldShippingStatus.ToString()].Name, _l[order.ShippingStatus.ToString()].Name }, // Dynamic placeholders for localized statuses
+      new object[] { L[oldShippingStatus.ToString()].Name, L[order.ShippingStatus.ToString()].Name }, // Dynamic placeholders for localized statuses
       currentUserId,
       currentUserName
   );
 
         return returnOrder;
-        // await _electronicInvoiceAppService.CreateInvoiceAsync(order.Id);
+        // await ElectronicInvoiceAppService.CreateInvoiceAsync(order.Id);
 
     }
     public async Task<OrderDto> OrderToBeShipped(Guid id)
     {
-        var order = await _orderRepository.GetWithDetailsAsync(id);
+        var order = await OrderRepository.GetWithDetailsAsync(id);
         // Capture old shipping status before updating
         var oldShippingStatus = order.ShippingStatus;
         order.ShippingStatus = ShippingStatus.ToBeShipped;
         order.ShippedBy = CurrentUser.Name;
         order.ShippingDate = DateTime.Now;
 
-        await _orderRepository.UpdateAsync(order);
+        await OrderRepository.UpdateAsync(order);
         await UnitOfWorkManager.Current.SaveChangesAsync();
         await SendEmailAsync(order.Id);
         var returnOrder = ObjectMapper.Map<Order, OrderDto>(order);
         if (order.InvoiceNumber.IsNullOrEmpty())
         {
-            var invoiceSetting = await _electronicInvoiceSettingRepository.FirstOrDefaultAsync();
+            var invoiceSetting = await ElectronicInvoiceSettingRepository.FirstOrDefaultAsync();
             if (invoiceSetting.StatusOnInvoiceIssue == DeliveryStatus.ToBeShipped)
             {
                 if (order.GroupBuy.IssueInvoice)
                 {
                     order.IssueStatus = IssueInvoiceStatus.SentToBackStage;
-                    //var invoiceSetting = await _electronicInvoiceSettingRepository.FirstOrDefaultAsync();
+                    //var invoiceSetting = await ElectronicInvoiceSettingRepository.FirstOrDefaultAsync();
                     var invoiceDely = invoiceSetting.DaysAfterShipmentGenerateInvoice;
                     if (invoiceDely == 0)
                     {
-                        var result = await _electronicInvoiceAppService.CreateInvoiceAsync(order.Id);
+                        var result = await ElectronicInvoiceAppService.CreateInvoiceAsync(order.Id);
                         returnOrder.InvoiceMsg = result;
                     }
                     else
                     {
                         var delay = DateTime.Now.AddDays(invoiceDely) - DateTime.Now;
                         GenerateInvoiceBackgroundJobArgs args = new GenerateInvoiceBackgroundJobArgs { OrderId = order.Id };
-                        var jobid = await _backgroundJobManager.EnqueueAsync(args, BackgroundJobPriority.High, delay);
+                        var jobid = await BackgroundJobManager.EnqueueAsync(args, BackgroundJobPriority.High, delay);
                     }
                 }
             }
         }
-        // await _electronicInvoiceAppService.CreateInvoiceAsync(order.Id);
+        // await ElectronicInvoiceAppService.CreateInvoiceAsync(order.Id);
         // **Get Current User (Editor)**
         var currentUserId = CurrentUser.Id ?? Guid.Empty;
         var currentUserName = CurrentUser.UserName ?? "System";
 
         // **Log Order History for Shipping Status Change**
-        await _orderHistoryManager.AddOrderHistoryAsync(
+        await OrderHistoryManager.AddOrderHistoryAsync(
      order.Id,
      "OrderToBeShipped", // Localization key
-     new object[] { _l[oldShippingStatus.ToString()].Name, _l[order.ShippingStatus.ToString()].Name }, // Localized placeholders
+     new object[] { L[oldShippingStatus.ToString()].Name, L[order.ShippingStatus.ToString()].Name }, // Localized placeholders
      currentUserId,
      currentUserName
  );
@@ -2301,14 +2187,14 @@ public class OrderAppService : ApplicationService, IOrderAppService
     }
     public async Task<OrderDto> OrderClosed(Guid id)
     {
-        var order = await _orderRepository.GetWithDetailsAsync(id);
+        var order = await OrderRepository.GetWithDetailsAsync(id);
         // Capture old shipping status before updating
         var oldShippingStatus = order.ShippingStatus;
         order.ShippingStatus = ShippingStatus.Closed;
         order.ClosedBy = CurrentUser.Name;
         order.CancellationDate = DateTime.Now;
 
-        await _orderRepository.UpdateAsync(order);
+        await OrderRepository.UpdateAsync(order);
         await UnitOfWorkManager.Current.SaveChangesAsync();
         await SendEmailAsync(order.Id);
         // **Get Current User (Editor)**
@@ -2316,10 +2202,10 @@ public class OrderAppService : ApplicationService, IOrderAppService
         var currentUserName = CurrentUser.UserName ?? "System";
 
         // **Log Order History for Order Closure**
-        await _orderHistoryManager.AddOrderHistoryAsync(
+        await OrderHistoryManager.AddOrderHistoryAsync(
      order.Id,
      "OrderClosed", // Localization key
-     new object[] { _l[oldShippingStatus.ToString()].Name, _l[order.ShippingStatus.ToString()].Name }, // Localized placeholders
+     new object[] { L[oldShippingStatus.ToString()].Name, L[order.ShippingStatus.ToString()].Name }, // Localized placeholders
      currentUserId,
      currentUserName
  );
@@ -2328,31 +2214,31 @@ public class OrderAppService : ApplicationService, IOrderAppService
     }
     public async Task<OrderDto> OrderComplete(Guid id)
     {
-        var order = await _orderRepository.GetWithDetailsAsync(id);
+        var order = await OrderRepository.GetWithDetailsAsync(id);
         // Capture old shipping status before updating
         var oldShippingStatus = order.ShippingStatus;
         order.ShippingStatus = ShippingStatus.Completed;
         order.CompletedBy = CurrentUser.Name;
         order.CompletionTime = DateTime.Now;
 
-        await _orderRepository.UpdateAsync(order);
+        await OrderRepository.UpdateAsync(order);
         await UnitOfWorkManager.Current.SaveChangesAsync();
         await SendEmailAsync(order.Id);
         var returnResult = ObjectMapper.Map<Order, OrderDto>(order);
         if (order.InvoiceNumber.IsNullOrEmpty())
         {
-            var invoiceSetting = await _electronicInvoiceSettingRepository.FirstOrDefaultAsync();
+            var invoiceSetting = await ElectronicInvoiceSettingRepository.FirstOrDefaultAsync();
             if (invoiceSetting.StatusOnInvoiceIssue == DeliveryStatus.Completed)
             {
                 if (order.GroupBuy.IssueInvoice)
                 {
                     order.IssueStatus = IssueInvoiceStatus.SentToBackStage;
                     await UnitOfWorkManager.Current.SaveChangesAsync();
-                    //var invoiceSetting = await _electronicInvoiceSettingRepository.FirstOrDefaultAsync();
+                    //var invoiceSetting = await ElectronicInvoiceSettingRepository.FirstOrDefaultAsync();
                     var invoiceDely = invoiceSetting.DaysAfterShipmentGenerateInvoice;
                     if (invoiceDely == 0)
                     {
-                        var result = await _electronicInvoiceAppService.CreateInvoiceAsync(order.Id);
+                        var result = await ElectronicInvoiceAppService.CreateInvoiceAsync(order.Id);
                         returnResult.InvoiceMsg = result;
 
                     }
@@ -2360,7 +2246,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                     {
                         var delay = DateTime.Now.AddDays(invoiceDely) - DateTime.Now;
                         GenerateInvoiceBackgroundJobArgs args = new GenerateInvoiceBackgroundJobArgs { OrderId = order.Id };
-                        var jobid = await _backgroundJobManager.EnqueueAsync(args, BackgroundJobPriority.High, delay);
+                        var jobid = await BackgroundJobManager.EnqueueAsync(args, BackgroundJobPriority.High, delay);
                     }
                 }
             }
@@ -2370,10 +2256,10 @@ public class OrderAppService : ApplicationService, IOrderAppService
         var currentUserName = CurrentUser.UserName ?? "System";
 
         // **Log Order History for Order Completion**
-        await _orderHistoryManager.AddOrderHistoryAsync(
+        await OrderHistoryManager.AddOrderHistoryAsync(
      order.Id,
      "OrderCompleted", // Localization key
-     new object[] { _l[oldShippingStatus.ToString()].Name, _l[order.ShippingStatus.ToString()].Name }, // Localized placeholders
+     new object[] { L[oldShippingStatus.ToString()].Name, L[order.ShippingStatus.ToString()].Name }, // Localized placeholders
      currentUserId,
      currentUserName
  );
@@ -2384,14 +2270,14 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
     private async Task SendEmailAsync(Guid id, OrderStatus? orderStatus = null)
     {
-        await _emailAppService.SendOrderStatusEmailAsync(id);
+        await EmailAppService.SendOrderStatusEmailAsync(id);
     }
 
     public async Task AddValuesAsync(Guid id, string checkMacValue, string merchantTradeNo, PaymentMethods? paymentMethod = null)
     {
-        using (_dataFilter.Disable<IMultiTenant>())
+        using (DataFilter.Disable<IMultiTenant>())
         {
-            Order order = await _orderRepository.GetAsync(id);
+            Order order = await OrderRepository.GetAsync(id);
 
             order.MerchantTradeNo = merchantTradeNo;
 
@@ -2399,34 +2285,34 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
             if (paymentMethod.HasValue) order.PaymentMethod = paymentMethod;
 
-            await _orderRepository.UpdateAsync(order);
+            await OrderRepository.UpdateAsync(order);
         }
     }
 
     [AllowAnonymous]
     public async Task AddValuesAsync(Guid id, string checkMacValue, string merchantTradeNo)
     {
-        using (_dataFilter.Disable<IMultiTenant>())
+        using (DataFilter.Disable<IMultiTenant>())
         {
-            Order order = await _orderRepository.GetAsync(id);
+            Order order = await OrderRepository.GetAsync(id);
 
             order.MerchantTradeNo = merchantTradeNo;
 
             order.CheckMacValue = checkMacValue;
 
-            await _orderRepository.UpdateAsync(order);
+            await OrderRepository.UpdateAsync(order);
         }
     }
 
     [AllowAnonymous]
     public async Task AddCheckMacValueAsync(Guid id, string checkMacValue)
     {
-        using (_dataFilter.Disable<IMultiTenant>())
+        using (DataFilter.Disable<IMultiTenant>())
         {
-            var order = await _orderRepository.GetAsync(id);
+            var order = await OrderRepository.GetAsync(id);
             order.CheckMacValue = checkMacValue;
 
-            await _orderRepository.UpdateAsync(order);
+            await OrderRepository.UpdateAsync(order);
         }
     }
 
@@ -2445,7 +2331,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
     public async Task UpdateLogisticStatusAsync(string merchantTradeNo, string rtnMsg, int rtnCode = 0)
     {
-        Order order = await _orderRepository.GetOrderByMerchantTradeNoAsync(merchantTradeNo);
+        Order order = await OrderRepository.GetOrderByMerchantTradeNoAsync(merchantTradeNo);
         // Capture old logistics status and shipping status before updating
         var oldLogisticsStatus = order.EcpayLogisticsStatus;
         var oldShippingStatus = order.ShippingStatus;
@@ -2458,7 +2344,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
         var currentUserName = CurrentUser.UserName ?? "EcPay Logistic Update";
 
         // **Log Order History for Logistic Status Update**
-        await _orderHistoryManager.AddOrderHistoryAsync(
+        await OrderHistoryManager.AddOrderHistoryAsync(
              order.Id,
              "LogisticStatusUpdated",
              new object[] { oldLogisticsStatus, order.EcpayLogisticsStatus },
@@ -2546,24 +2432,24 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 order.ShippingStatus = ShippingStatus.Return;
             }
 
-            await _orderHistoryManager.AddOrderHistoryAsync(
+            await OrderHistoryManager.AddOrderHistoryAsync(
                 order.Id,
                 "ShippingStatusUpdated", // Localization key
-                new object[] { _l[oldShippingStatus.ToString()].Name, _l[order.ShippingStatus.ToString()].Name },
+                new object[] { L[oldShippingStatus.ToString()].Name, L[order.ShippingStatus.ToString()].Name },
                 currentUserId,
                 currentUserName
             );
         }
 
-        await _orderRepository.UpdateAsync(order);
+        await OrderRepository.UpdateAsync(order);
     }
 
     [AllowAnonymous]
     public async Task CloseOrdersAsync()
     {
-        using (_dataFilter.Disable<IMultiTenant>())
+        using (DataFilter.Disable<IMultiTenant>())
         {
-            var ordersToClose = await _orderRepository.GetOrdersToCloseAsync();
+            var ordersToClose = await OrderRepository.GetOrdersToCloseAsync();
             Logger.LogInformation("{BackgroundJob}: Found {orderCount} orders that need to be closed.", nameof(CloseOrderBackgroundJob), ordersToClose.Count);
 
             List<OrderHistory> orderHistoryList = [];
@@ -2591,7 +2477,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 }
             }
 
-            await _orderHistoryRepository.InsertManyAsync(orderHistoryList);
+            await OrderHistoryRepository.InsertManyAsync(orderHistoryList);
         }
     }
 
@@ -2601,16 +2487,16 @@ public class OrderAppService : ApplicationService, IOrderAppService
         if (paymentResult.SimulatePaid is 0)
         {
             Order order = new();
-            var invoiceSetting = await _electronicInvoiceSettingRepository.FirstOrDefaultAsync();
-            using (_dataFilter.Disable<IMultiTenant>())
+            var invoiceSetting = await ElectronicInvoiceSettingRepository.FirstOrDefaultAsync();
+            using (DataFilter.Disable<IMultiTenant>())
             {
                 if (paymentResult.OrderId is null)
                 {
-                    order = await _orderRepository
+                    order = await OrderRepository
                                    .FirstOrDefaultAsync(o => o.MerchantTradeNo == paymentResult.MerchantTradeNo)
                                    ?? throw new EntityNotFoundException();
 
-                    order = await _orderRepository.GetWithDetailsAsync(order.Id);
+                    order = await OrderRepository.GetWithDetailsAsync(order.Id);
 
                     if (paymentResult.CustomField1 != order.CheckMacValue) throw new Exception();
 
@@ -2618,10 +2504,10 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 }
                 else
                 {
-                    order = await _orderRepository
+                    order = await OrderRepository
                                       .FirstOrDefaultAsync(o => o.Id == paymentResult.OrderId)
                                       ?? throw new EntityNotFoundException();
-                    order = await _orderRepository.GetWithDetailsAsync(order.Id);
+                    order = await OrderRepository.GetWithDetailsAsync(order.Id);
                 }
             }
             var oldShippingStatus = order.ShippingStatus;
@@ -2635,10 +2521,10 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 var currentUserName = CurrentUser.UserName ?? "System";
 
                 // **Log Order History for Payment Processing**
-                await _orderHistoryManager.AddOrderHistoryAsync(
+                await OrderHistoryManager.AddOrderHistoryAsync(
                       order.Id,
                       "PaymentProcessed", // Localization key
-                      new object[] { _l[oldShippingStatus.ToString()].Name, _l[order.ShippingStatus.ToString()].Name }, // Localized placeholders
+                      new object[] { L[oldShippingStatus.ToString()].Name, L[order.ShippingStatus.ToString()].Name }, // Localized placeholders
                       currentUserId,
                       currentUserName
                   );
@@ -2648,26 +2534,26 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
                 var orderTransaction = new OrderTransaction(GuidGenerator.Create(), order.Id, order.OrderNo,
                     order.TotalAmount, TransactionType.Payment, TransactionStatus.Successful, PaymentChannel.EcPay);
-                await _orderTransactionManager.CreateAsync(orderTransaction);
+                await OrderTransactionManager.CreateAsync(orderTransaction);
 
                 if (order.OrderItems.Any(x => x.Item?.IsFreeShipping == true))
                 {
                     if (order.OrderItems.Where(x => x.DeliveryTemperature == ItemStorageTemperature.Normal && (x.Item != null || x.Item?.IsFreeShipping == true)).Any())
                     {
                         var OrderDelivery = new OrderDelivery(Guid.NewGuid(), order.DeliveryMethod.Value, DeliveryStatus.Processing, null, "", order.Id);
-                        OrderDelivery = await _orderDeliveryRepository.InsertAsync(OrderDelivery);
+                        OrderDelivery = await OrderDeliveryRepository.InsertAsync(OrderDelivery);
                         order.UpdateOrderItem(order.OrderItems.Where(x => (x.DeliveryTemperature == ItemStorageTemperature.Normal && x.Item?.IsFreeShipping == true)).ToList(), OrderDelivery.Id);
                     }
                     if (order.OrderItems.Where(x => x.DeliveryTemperature == ItemStorageTemperature.Freeze && x.Item?.IsFreeShipping == true).Any())
                     {
                         var OrderDelivery = new OrderDelivery(Guid.NewGuid(), order.DeliveryMethod.Value, DeliveryStatus.Processing, null, "", order.Id);
-                        OrderDelivery = await _orderDeliveryRepository.InsertAsync(OrderDelivery);
+                        OrderDelivery = await OrderDeliveryRepository.InsertAsync(OrderDelivery);
                         order.UpdateOrderItem(order.OrderItems.Where(x => x.DeliveryTemperature == ItemStorageTemperature.Freeze && x.Item?.IsFreeShipping == true).ToList(), OrderDelivery.Id);
                     }
                     if (order.OrderItems.Where(x => x.DeliveryTemperature == ItemStorageTemperature.Frozen && x.Item?.IsFreeShipping == true).Any())
                     {
                         var OrderDelivery = new OrderDelivery(Guid.NewGuid(), order.DeliveryMethod.Value, DeliveryStatus.Processing, null, "", order.Id);
-                        OrderDelivery = await _orderDeliveryRepository.InsertAsync(OrderDelivery);
+                        OrderDelivery = await OrderDeliveryRepository.InsertAsync(OrderDelivery);
                         order.UpdateOrderItem(order.OrderItems.Where(x => x.DeliveryTemperature == ItemStorageTemperature.Frozen && x.Item?.IsFreeShipping == true).ToList(), OrderDelivery.Id);
                     }
                 }
@@ -2676,19 +2562,19 @@ public class OrderAppService : ApplicationService, IOrderAppService
                     if (order.OrderItems.Where(x => x.DeliveryTemperature == ItemStorageTemperature.Normal && x.Item?.IsFreeShipping == false).Any())
                     {
                         var OrderDelivery = new OrderDelivery(Guid.NewGuid(), order.DeliveryMethod.Value, DeliveryStatus.Processing, null, "", order.Id);
-                        OrderDelivery = await _orderDeliveryRepository.InsertAsync(OrderDelivery);
+                        OrderDelivery = await OrderDeliveryRepository.InsertAsync(OrderDelivery);
                         order.UpdateOrderItem(order.OrderItems.Where(x => x.DeliveryTemperature == ItemStorageTemperature.Normal && x.Item?.IsFreeShipping == false).ToList(), OrderDelivery.Id);
                     }
                     if (order.OrderItems.Where(x => x.DeliveryTemperature == ItemStorageTemperature.Freeze && x.Item?.IsFreeShipping == false).Any())
                     {
                         var OrderDelivery = new OrderDelivery(Guid.NewGuid(), order.DeliveryMethod.Value, DeliveryStatus.Processing, null, "", order.Id);
-                        OrderDelivery = await _orderDeliveryRepository.InsertAsync(OrderDelivery);
+                        OrderDelivery = await OrderDeliveryRepository.InsertAsync(OrderDelivery);
                         order.UpdateOrderItem(order.OrderItems.Where(x => x.DeliveryTemperature == ItemStorageTemperature.Freeze && x.Item?.IsFreeShipping == false).ToList(), OrderDelivery.Id);
                     }
                     if (order.OrderItems.Where(x => x.DeliveryTemperature == ItemStorageTemperature.Frozen && x.Item?.IsFreeShipping == false).Any())
                     {
                         var OrderDelivery = new OrderDelivery(Guid.NewGuid(), order.DeliveryMethod.Value, DeliveryStatus.Processing, null, "", order.Id);
-                        OrderDelivery = await _orderDeliveryRepository.InsertAsync(OrderDelivery);
+                        OrderDelivery = await OrderDeliveryRepository.InsertAsync(OrderDelivery);
                         order.UpdateOrderItem(order.OrderItems.Where(x => x.DeliveryTemperature == ItemStorageTemperature.Frozen && x.Item?.IsFreeShipping == false).ToList(), OrderDelivery.Id);
                     }
 
@@ -2703,18 +2589,18 @@ public class OrderAppService : ApplicationService, IOrderAppService
                     if (temperatureOrderItems.Any(x => x.SetItem?.IsFreeShipping == true))
                     {
                         var OrderDelivery = new OrderDelivery(Guid.NewGuid(), order.DeliveryMethod.Value, DeliveryStatus.Processing, null, "", order.Id);
-                        OrderDelivery = await _orderDeliveryRepository.InsertAsync(OrderDelivery);
+                        OrderDelivery = await OrderDeliveryRepository.InsertAsync(OrderDelivery);
                         order.UpdateOrderItem(temperatureOrderItems.Where(x => x.SetItem?.IsFreeShipping == true).ToList(), OrderDelivery.Id);
                     }
                     if (temperatureOrderItems.Any(x => x.SetItem?.IsFreeShipping == false))
                     {
                         var OrderDelivery = new OrderDelivery(Guid.NewGuid(), order.DeliveryMethod.Value, DeliveryStatus.Processing, null, "", order.Id);
-                        OrderDelivery = await _orderDeliveryRepository.InsertAsync(OrderDelivery);
+                        OrderDelivery = await OrderDeliveryRepository.InsertAsync(OrderDelivery);
                         order.UpdateOrderItem(temperatureOrderItems.Where(x => x.SetItem?.IsFreeShipping == false).ToList(), OrderDelivery.Id);
                     }
                 }
 
-                OrderDelivery? orderDelivery = await _orderDeliveryRepository.FirstOrDefaultAsync(x => x.OrderId == order.Id);
+                OrderDelivery? orderDelivery = await OrderDeliveryRepository.FirstOrDefaultAsync(x => x.OrderId == order.Id);
 
                 if (order.OrderItems.Any(x => x.FreebieId != null))
                 {
@@ -2722,7 +2608,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                         order.UpdateOrderItem(order.OrderItems.Where(x => x.FreebieId != null).ToList(), orderDelivery.Id);
                 }
 
-                await _orderRepository.UpdateAsync(order);
+                await OrderRepository.UpdateAsync(order);
                 await SendEmailAsync(order.Id);
                 await UnitOfWorkManager.Current.SaveChangesAsync();
                 if (order.InvoiceNumber.IsNullOrEmpty())
@@ -2732,12 +2618,12 @@ public class OrderAppService : ApplicationService, IOrderAppService
                         if (order.GroupBuy.IssueInvoice)
                         {
                             order.IssueStatus = IssueInvoiceStatus.SentToBackStage;
-                            //var invoiceSetting = await _electronicInvoiceSettingRepository.FirstOrDefaultAsync();
+                            //var invoiceSetting = await ElectronicInvoiceSettingRepository.FirstOrDefaultAsync();
                             var invoiceDely = invoiceSetting.DaysAfterShipmentGenerateInvoice;
                             if (invoiceDely == 0)
                             {
-                                string invoiceMsg = await _electronicInvoiceAppService.CreateInvoiceAsync(order.Id);
-                                await _orderRepository.UpdateAsync(order);
+                                string invoiceMsg = await ElectronicInvoiceAppService.CreateInvoiceAsync(order.Id);
+                                await OrderRepository.UpdateAsync(order);
                                 await UnitOfWorkManager.Current.SaveChangesAsync();
                                 return invoiceMsg;
                             }
@@ -2745,7 +2631,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
                             {
                                 var delay = DateTime.Now.AddDays(invoiceDely) - DateTime.Now;
                                 GenerateInvoiceBackgroundJobArgs args = new GenerateInvoiceBackgroundJobArgs { OrderId = order.Id };
-                                var jobid = await _backgroundJobManager.EnqueueAsync(args, BackgroundJobPriority.High, delay);
+                                var jobid = await BackgroundJobManager.EnqueueAsync(args, BackgroundJobPriority.High, delay);
                             }
                         }
                     }
@@ -2764,13 +2650,13 @@ public class OrderAppService : ApplicationService, IOrderAppService
     public async Task<PaymentGatewayDto> GetPaymentGatewayConfigurationsAsync(Guid id)
     {
         GroupBuy groupBuy = new();
-        using (_dataFilter.Disable<IMultiTenant>())
+        using (DataFilter.Disable<IMultiTenant>())
         {
-            groupBuy = await _groupBuyRepository.GetAsync(id);
+            groupBuy = await GroupBuyRepository.GetAsync(id);
         }
         using (CurrentTenant.Change(groupBuy.TenantId))
         {
-            PaymentGateway? paymentGateway = await _paymentGatewayRepository.FirstOrDefaultAsync(x => x.PaymentIntegrationType == PaymentIntegrationType.EcPay);
+            PaymentGateway? paymentGateway = await PaymentGatewayRepository.FirstOrDefaultAsync(x => x.PaymentIntegrationType == PaymentIntegrationType.EcPay);
 
             PaymentGatewayDto paymentGatewayDto = ObjectMapper.Map<PaymentGateway, PaymentGatewayDto>(paymentGateway);
 
@@ -2784,7 +2670,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
                     if (!string.IsNullOrEmpty(value))
                     {
-                        var decryptedValue = _stringEncryptionService.Decrypt(value);
+                        var decryptedValue = StringEncryptionService.Decrypt(value);
                         property.SetValue(paymentGatewayDto, decryptedValue);
                     }
                 }
@@ -2796,26 +2682,26 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
     public async Task<IRemoteStreamContent> GetListAsExcelFileAsync(GetOrderListDto input)
     {
-        var items = await _orderRepository.GetListAsync(0, int.MaxValue, input.Sorting, input.Filter, input.GroupBuyId, input.OrderIds);
+        var items = await OrderRepository.GetListAsync(0, int.MaxValue, input.Sorting, input.Filter, input.GroupBuyId, input.OrderIds);
         var Results = ObjectMapper.Map<List<Order>, List<OrderDto>>(items);
 
         // Create a dictionary for localized headers
         var headers = new Dictionary<string, string>
         {
-            { "OrderNumber", _l["OrderNo"] },
-            { "OrderDate", _l["OrderDate"] },
-            { "CustomerName", _l["CustomerName"] },
-            { "Email", _l["Email"] },
-            { "RecipientInformation", _l["RecipientInformation"] },
-            { "ShippingMethod", _l["ShippingMethod"] },
-            { "Address", _l["Address"] },
-            { "Notes", _l["Notes"] },
-            { "MerchantNotes", _l["MerchantNotes"] },
-            { "OrderedItems", _l["OrderedItems"] },
-            { "InvoiceStatus", _l["InvoiceStatus"] },
-            { "ShippingStatus", _l["ShippingStatus"] },
-            { "PaymentMethod", _l["PaymentMethod"] },
-            { "CheckoutAmount", _l["CheckoutAmount"] }
+            { "OrderNumber", L["OrderNo"] },
+            { "OrderDate", L["OrderDate"] },
+            { "CustomerName", L["CustomerName"] },
+            { "Email", L["Email"] },
+            { "RecipientInformation", L["RecipientInformation"] },
+            { "ShippingMethod", L["ShippingMethod"] },
+            { "Address", L["Address"] },
+            { "Notes", L["Notes"] },
+            { "MerchantNotes", L["MerchantNotes"] },
+            { "OrderedItems", L["OrderedItems"] },
+            { "InvoiceStatus", L["InvoiceStatus"] },
+            { "ShippingStatus", L["ShippingStatus"] },
+            { "PaymentMethod", L["PaymentMethod"] },
+            { "CheckoutAmount", L["CheckoutAmount"] }
         };
 
         var excelContent = Results.Select(x => new Dictionary<string, object>
@@ -2825,7 +2711,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
             { headers["CustomerName"], x.CustomerName },
             { headers["Email"], x.CustomerEmail },
             { headers["RecipientInformation"], x.RecipientName + "/" + x.RecipientPhone },
-            { headers["ShippingMethod"], _l[x.DeliveryMethod.ToString()] },
+            { headers["ShippingMethod"], L[x.DeliveryMethod.ToString()] },
             { headers["Address"], x.AddressDetails },
             { headers["Notes"], x.Remarks },
             { headers["MerchantNotes"], x.Remarks },
@@ -2834,9 +2720,9 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 (item.ItemType == ItemType.SetItem) ? $"{item.SetItem?.SetItemName} x {item.Quantity}" :
                 (item.ItemType == ItemType.Freebie) ? $"{item.Freebie?.ItemName} x {item.Quantity}" : "")
             )},
-            { headers["InvoiceStatus"], _l[x.InvoiceStatus.ToString()] },
-            { headers["ShippingStatus"], _l[x.ShippingStatus.ToString()] },
-            { headers["PaymentMethod"], _l[x.PaymentMethod.ToString()] },
+            { headers["InvoiceStatus"], L[x.InvoiceStatus.ToString()] },
+            { headers["ShippingStatus"], L[x.ShippingStatus.ToString()] },
+            { headers["PaymentMethod"], L[x.PaymentMethod.ToString()] },
             { headers["CheckoutAmount"], "$ " + x.TotalAmount.ToString("N2") }
         });
 
@@ -2848,27 +2734,27 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
     public async Task<IRemoteStreamContent> GetReconciliationListAsExcelFileAsync(GetOrderListDto input)
     {
-        var items = await _orderRepository.GetReconciliationListAsync(0, int.MaxValue, input.Sorting, input.Filter, input.GroupBuyId, input.OrderIds);
+        var items = await OrderRepository.GetReconciliationListAsync(0, int.MaxValue, input.Sorting, input.Filter, input.GroupBuyId, input.OrderIds);
         var Results = ObjectMapper.Map<List<Order>, List<OrderDto>>(items);
 
         // Create a dictionary for localized headers
         var headers = new Dictionary<string, string>
         {
-            { "OrderNumber", _l["OrderNo"] },
-            { "OrderDate", _l["OrderDate"] },
-            { "CustomerName", _l["CustomerName"] },
-            { "Email", _l["Email"] },
-            { "RecipientInformation", _l["RecipientInformation"] },
-            { "ShippingMethod", _l["ShippingMethod"] },
-            { "Address", _l["Address"] },
-            { "Notes", _l["Notes"] },
-            { "MerchantNotes", _l["MerchantNotes"] },
-            { "OrderedItems", _l["OrderedItems"] },
-            { "InvoiceStatus", _l["InvoiceStatus"] },
-            { "ShippingStatus", _l["ShippingStatus"] },
-            { "PaymentMethod", _l["PaymentMethod"] },
-            { "CheckoutAmount", _l["CheckoutAmount"] },
-            { "DeliveryMethod", _l["DeliveryMethod"] }
+            { "OrderNumber", L["OrderNo"] },
+            { "OrderDate", L["OrderDate"] },
+            { "CustomerName", L["CustomerName"] },
+            { "Email", L["Email"] },
+            { "RecipientInformation", L["RecipientInformation"] },
+            { "ShippingMethod", L["ShippingMethod"] },
+            { "Address", L["Address"] },
+            { "Notes", L["Notes"] },
+            { "MerchantNotes", L["MerchantNotes"] },
+            { "OrderedItems", L["OrderedItems"] },
+            { "InvoiceStatus", L["InvoiceStatus"] },
+            { "ShippingStatus", L["ShippingStatus"] },
+            { "PaymentMethod", L["PaymentMethod"] },
+            { "CheckoutAmount", L["CheckoutAmount"] },
+            { "DeliveryMethod", L["DeliveryMethod"] }
         };
 
         var excelContent = Results.Select(x => new Dictionary<string, object>
@@ -2878,7 +2764,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
             { headers["CustomerName"], x.CustomerName },
             { headers["Email"], x.CustomerEmail },
             { headers["RecipientInformation"], x.RecipientName + "/" + x.RecipientPhone },
-            { headers["ShippingMethod"], _l[x.DeliveryMethod.ToString()] },
+            { headers["ShippingMethod"], L[x.DeliveryMethod.ToString()] },
             { headers["Address"], x.AddressDetails },
             { headers["Notes"], x.Remarks },
             { headers["MerchantNotes"], x.Remarks },
@@ -2887,11 +2773,11 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 (item.ItemType == ItemType.SetItem) ? $"{item.SetItem?.SetItemName} x {item.Quantity}" :
                 (item.ItemType == ItemType.Freebie) ? $"{item.Freebie?.ItemName} x {item.Quantity}" : "")
             )},
-            { headers["InvoiceStatus"], _l[x.InvoiceStatus.ToString()] },
-            { headers["ShippingStatus"], _l[x.ShippingStatus.ToString()] },
-            { headers["PaymentMethod"], _l[x.PaymentMethod.ToString()] },
+            { headers["InvoiceStatus"], L[x.InvoiceStatus.ToString()] },
+            { headers["ShippingStatus"], L[x.ShippingStatus.ToString()] },
+            { headers["PaymentMethod"], L[x.PaymentMethod.ToString()] },
             { headers["CheckoutAmount"], "$ " + x.TotalAmount.ToString("N2") },
-            { headers["DeliveryMethod"], _l[x.DeliveryMethod.ToString()] }
+            { headers["DeliveryMethod"], L[x.DeliveryMethod.ToString()] }
         });
 
         var memoryStream = new MemoryStream();
@@ -2902,18 +2788,18 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
     public async Task UpdateOrdersIfIsEnterpricePurchaseAsync(Guid groupBuyId)
     {
-        await _orderRepository.UpdateOrdersIfIsEnterpricePurchaseAsync(groupBuyId);
+        await OrderRepository.UpdateOrdersIfIsEnterpricePurchaseAsync(groupBuyId);
     }
 
     public async Task<(int normalCount, int freezeCount, int frozenCount)> GetTotalDeliveryTemperatureCountsAsync()
     {
-        return await _orderRepository.GetTotalDeliveryTemperatureCountsAsync();
+        return await OrderRepository.GetTotalDeliveryTemperatureCountsAsync();
     }
 
     public async Task<(decimal PaidAmount, decimal UnpaidAmount, decimal RefundedAmount)> GetOrderStatusAmountsAsync(Guid userId)
     {
         // Sum of Paid orders
-        var paidAmount = (await _orderRepository.GetQueryableAsync())
+        var paidAmount = (await OrderRepository.GetQueryableAsync())
             .Where(order => order.UserId == userId && (
                 (order.PaymentMethod != PaymentMethods.CashOnDelivery &&
                     (order.ShippingStatus == ShippingStatus.PrepareShipment ||
@@ -2928,7 +2814,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
             .Sum(order => order.TotalAmount);
 
         // Sum of Unpaid/Due orders
-        var unpaidAmount = (await _orderRepository.GetQueryableAsync())
+        var unpaidAmount = (await OrderRepository.GetQueryableAsync())
             .Where(order => order.UserId == userId && (
                 (order.PaymentMethod == PaymentMethods.CashOnDelivery &&
                     (order.ShippingStatus == ShippingStatus.WaitingForPayment ||
@@ -2941,7 +2827,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
             .Sum(order => order.TotalAmount);
 
         // Sum of Refunded orders
-        var refundedAmount = (await _orderRepository.GetQueryableAsync())
+        var refundedAmount = (await OrderRepository.GetQueryableAsync())
             .Where(order => order.UserId == userId && order.IsRefunded)
             .Sum(order => order.RefundAmount);
 
@@ -2951,7 +2837,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
     public async Task<(int Open, int Exchange, int Return)> GetOrderStatusCountsAsync(Guid userId)
     {
         // Sum of Paid orders
-        var paidAmount = (await _orderRepository.GetQueryableAsync())
+        var paidAmount = (await OrderRepository.GetQueryableAsync())
             .Where(order =>
                 (order.OrderStatus == OrderStatus.Open)
                     && order.UserId == userId
@@ -2960,14 +2846,14 @@ public class OrderAppService : ApplicationService, IOrderAppService
             .Count();
 
         // Sum of Unpaid/Due orders
-        var unpaidAmount = (await _orderRepository.GetQueryableAsync())
+        var unpaidAmount = (await OrderRepository.GetQueryableAsync())
             .Where(order =>
                 (order.OrderStatus == OrderStatus.Exchange)
                      && order.UserId == userId)
             .Count();
 
         // Sum of Refunded orders
-        var refundedAmount = (await _orderRepository.GetQueryableAsync())
+        var refundedAmount = (await OrderRepository.GetQueryableAsync())
             .Where(order => order.OrderStatus == OrderStatus.Exchange && order.UserId == userId)
             .Count();
 
@@ -2976,9 +2862,9 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
     public async Task ExpireOrderAsync(Guid OrderId)
     {
-        using (_dataFilter.Disable<IMultiTenant>())
+        using (DataFilter.Disable<IMultiTenant>())
         {
-            var order = await _orderRepository.GetWithDetailsAsync(OrderId);
+            var order = await OrderRepository.GetWithDetailsAsync(OrderId);
             if (order.ShippingStatus == ShippingStatus.WaitingForPayment)
             {
                 // Capture previous order status before updating
@@ -2991,78 +2877,75 @@ public class OrderAppService : ApplicationService, IOrderAppService
                 foreach (var orderItem in order.OrderItems)
                 {
 
-                    var details = await _itemDetailsRepository.FirstOrDefaultAsync(x => x.ItemId == orderItem.ItemId && x.ItemName == orderItem.Spec);
+                    var details = await ItemDetailsRepository.FirstOrDefaultAsync(x => x.ItemId == orderItem.ItemId && x.ItemName == orderItem.Spec);
 
                     if (details != null)
                     {
                         details.SaleableQuantity += orderItem.Quantity;
                         details.StockOnHand += orderItem.Quantity;
 
-                        await _itemDetailsRepository.UpdateAsync(details);
+                        await ItemDetailsRepository.UpdateAsync(details);
                     }
 
                     if (orderItem.FreebieId != null)
                     {
-                        var freebie = await _freebieRepository.FirstOrDefaultAsync(x => x.Id == orderItem.FreebieId);
+                        var freebie = await FreebieRepository.FirstOrDefaultAsync(x => x.Id == orderItem.FreebieId);
 
                         if (freebie != null)
                         {
                             freebie.FreebieAmount += orderItem.Quantity;
-                            await _freebieRepository.UpdateAsync(freebie);
+                            await FreebieRepository.UpdateAsync(freebie);
                         }
                     }
 
                 }
 
-                await _orderRepository.UpdateAsync(order);
+                await OrderRepository.UpdateAsync(order);
                 // **Get Current User (Editor)**
                 var currentUserId = CurrentUser.Id ?? Guid.Empty;
                 var currentUserName = CurrentUser.UserName ?? "System";
 
                 // **Log Order History for Order Expiration**
-                await _orderHistoryManager.AddOrderHistoryAsync(
-    order.Id,
-    "OrderExpired", // Localization key
-    new object[]
-    {
-        _l[oldOrderStatus.ToString()].Name,
-        _l[order.OrderStatus.ToString()].Name,
-        _l[oldShippingStatus.ToString()].Name,
-        _l[order.ShippingStatus.ToString()].Name,
-        order.OrderItems.Count
-    }, // Dynamic placeholders
-    currentUserId,
-    currentUserName
-);
-
+                await OrderHistoryManager.AddOrderHistoryAsync(
+                    order.Id,
+                    "OrderExpired", // Localization key
+                    [
+                        L[oldOrderStatus.ToString()].Name,
+                        L[order.OrderStatus.ToString()].Name,
+                        L[oldShippingStatus.ToString()].Name,
+                        L[order.ShippingStatus.ToString()].Name,
+                        order.OrderItems.Count
+                    ], // Dynamic placeholders
+                    currentUserId,
+                    currentUserName
+                );
             }
         }
-
     }
 
     [AllowAnonymous]
     public async Task CreateOrderDeliveriesAndInvoiceAsync(Guid orderId)
     {
-        var order = await _orderRepository.GetWithDetailsAsync(orderId);
+        var order = await OrderRepository.GetWithDetailsAsync(orderId);
 
         if (order.OrderItems.Any(x => x.Item?.IsFreeShipping == true))
         {
             if (order.OrderItems.Where(x => x.DeliveryTemperature == ItemStorageTemperature.Normal && (x.Item != null || x.Item?.IsFreeShipping == true)).Any())
             {
                 var OrderDelivery = new OrderDelivery(Guid.NewGuid(), order.DeliveryMethod.Value, DeliveryStatus.Processing, null, "", order.Id);
-                OrderDelivery = await _orderDeliveryRepository.InsertAsync(OrderDelivery);
+                OrderDelivery = await OrderDeliveryRepository.InsertAsync(OrderDelivery);
                 order.UpdateOrderItem(order.OrderItems.Where(x => (x.DeliveryTemperature == ItemStorageTemperature.Normal && x.Item?.IsFreeShipping == true)).ToList(), OrderDelivery.Id);
             }
             if (order.OrderItems.Where(x => x.DeliveryTemperature == ItemStorageTemperature.Freeze && x.Item?.IsFreeShipping == true).Any())
             {
                 var OrderDelivery = new OrderDelivery(Guid.NewGuid(), order.DeliveryMethod.Value, DeliveryStatus.Processing, null, "", order.Id);
-                OrderDelivery = await _orderDeliveryRepository.InsertAsync(OrderDelivery);
+                OrderDelivery = await OrderDeliveryRepository.InsertAsync(OrderDelivery);
                 order.UpdateOrderItem(order.OrderItems.Where(x => x.DeliveryTemperature == ItemStorageTemperature.Freeze && x.Item?.IsFreeShipping == true).ToList(), OrderDelivery.Id);
             }
             if (order.OrderItems.Where(x => x.DeliveryTemperature == ItemStorageTemperature.Frozen && x.Item?.IsFreeShipping == true).Any())
             {
                 var OrderDelivery = new OrderDelivery(Guid.NewGuid(), order.DeliveryMethod.Value, DeliveryStatus.Processing, null, "", order.Id);
-                OrderDelivery = await _orderDeliveryRepository.InsertAsync(OrderDelivery);
+                OrderDelivery = await OrderDeliveryRepository.InsertAsync(OrderDelivery);
                 order.UpdateOrderItem(order.OrderItems.Where(x => x.DeliveryTemperature == ItemStorageTemperature.Frozen && x.Item?.IsFreeShipping == true).ToList(), OrderDelivery.Id);
             }
         }
@@ -3071,19 +2954,19 @@ public class OrderAppService : ApplicationService, IOrderAppService
             if (order.OrderItems.Where(x => x.DeliveryTemperature == ItemStorageTemperature.Normal && x.Item?.IsFreeShipping == false).Any())
             {
                 var OrderDelivery = new OrderDelivery(Guid.NewGuid(), order.DeliveryMethod.Value, DeliveryStatus.Processing, null, "", order.Id);
-                OrderDelivery = await _orderDeliveryRepository.InsertAsync(OrderDelivery);
+                OrderDelivery = await OrderDeliveryRepository.InsertAsync(OrderDelivery);
                 order.UpdateOrderItem(order.OrderItems.Where(x => x.DeliveryTemperature == ItemStorageTemperature.Normal && x.Item?.IsFreeShipping == false).ToList(), OrderDelivery.Id);
             }
             if (order.OrderItems.Where(x => x.DeliveryTemperature == ItemStorageTemperature.Freeze && x.Item?.IsFreeShipping == false).Any())
             {
                 var OrderDelivery = new OrderDelivery(Guid.NewGuid(), order.DeliveryMethod.Value, DeliveryStatus.Processing, null, "", order.Id);
-                OrderDelivery = await _orderDeliveryRepository.InsertAsync(OrderDelivery);
+                OrderDelivery = await OrderDeliveryRepository.InsertAsync(OrderDelivery);
                 order.UpdateOrderItem(order.OrderItems.Where(x => x.DeliveryTemperature == ItemStorageTemperature.Freeze && x.Item?.IsFreeShipping == false).ToList(), OrderDelivery.Id);
             }
             if (order.OrderItems.Where(x => x.DeliveryTemperature == ItemStorageTemperature.Frozen && x.Item?.IsFreeShipping == false).Any())
             {
                 var OrderDelivery = new OrderDelivery(Guid.NewGuid(), order.DeliveryMethod.Value, DeliveryStatus.Processing, null, "", order.Id);
-                OrderDelivery = await _orderDeliveryRepository.InsertAsync(OrderDelivery);
+                OrderDelivery = await OrderDeliveryRepository.InsertAsync(OrderDelivery);
                 order.UpdateOrderItem(order.OrderItems.Where(x => x.DeliveryTemperature == ItemStorageTemperature.Frozen && x.Item?.IsFreeShipping == false).ToList(), OrderDelivery.Id);
             }
         }
@@ -3097,18 +2980,18 @@ public class OrderAppService : ApplicationService, IOrderAppService
             if (temperatureOrderItems.Any(x => x.SetItem?.IsFreeShipping == true))
             {
                 var OrderDelivery = new OrderDelivery(Guid.NewGuid(), order.DeliveryMethod.Value, DeliveryStatus.Processing, null, "", order.Id);
-                OrderDelivery = await _orderDeliveryRepository.InsertAsync(OrderDelivery);
+                OrderDelivery = await OrderDeliveryRepository.InsertAsync(OrderDelivery);
                 order.UpdateOrderItem(temperatureOrderItems.Where(x => x.SetItem?.IsFreeShipping == true).ToList(), OrderDelivery.Id);
             }
             if (temperatureOrderItems.Any(x => x.SetItem?.IsFreeShipping == false))
             {
                 var OrderDelivery = new OrderDelivery(Guid.NewGuid(), order.DeliveryMethod.Value, DeliveryStatus.Processing, null, "", order.Id);
-                OrderDelivery = await _orderDeliveryRepository.InsertAsync(OrderDelivery);
+                OrderDelivery = await OrderDeliveryRepository.InsertAsync(OrderDelivery);
                 order.UpdateOrderItem(temperatureOrderItems.Where(x => x.SetItem?.IsFreeShipping == false).ToList(), OrderDelivery.Id);
             }
         }
 
-        OrderDelivery? orderDelivery = await _orderDeliveryRepository.FirstOrDefaultAsync(x => x.OrderId == order.Id);
+        OrderDelivery? orderDelivery = await OrderDeliveryRepository.FirstOrDefaultAsync(x => x.OrderId == order.Id);
 
         if (order.OrderItems.Any(x => x.FreebieId != null))
         {
@@ -3120,7 +3003,7 @@ public class OrderAppService : ApplicationService, IOrderAppService
 
         if (order.InvoiceNumber.IsNullOrEmpty())
         {
-            var invoiceSetting = await _electronicInvoiceSettingRepository.FirstOrDefaultAsync();
+            var invoiceSetting = await ElectronicInvoiceSettingRepository.FirstOrDefaultAsync();
 
             if (invoiceSetting?.StatusOnInvoiceIssue == DeliveryStatus.Processing)
             {
@@ -3131,17 +3014,44 @@ public class OrderAppService : ApplicationService, IOrderAppService
                     var invoiceDelay = invoiceSetting.DaysAfterShipmentGenerateInvoice;
                     if (invoiceDelay == 0)
                     {
-                        await _electronicInvoiceAppService.CreateInvoiceAsync(order.Id);
+                        await ElectronicInvoiceAppService.CreateInvoiceAsync(order.Id);
                     }
                     else
                     {
                         var delay = DateTime.Now.AddDays(invoiceDelay) - DateTime.Now;
                         GenerateInvoiceBackgroundJobArgs args = new() { OrderId = order.Id };
-                        var jobid = await _backgroundJobManager.EnqueueAsync(args, BackgroundJobPriority.High, delay);
+                        var jobid = await BackgroundJobManager.EnqueueAsync(args, BackgroundJobPriority.High, delay);
                     }
                 }
             }
         }
     }
+
+    public required MemberTagManager MemberTagManager { get; init; }
+    public required OrderManager OrderManager { get; init; }
+    public required OrderHistoryManager OrderHistoryManager { get; init; }
+    public required OrderTransactionManager OrderTransactionManager { get; init; }
+    public required IRepository<OrderItem, Guid> OrderItemRepository { get; init; }
+    public required IRepository<OrderDelivery, Guid> OrderDeliveryRepository { get; init; }
+    public required IRepository<PaymentGateway, Guid> PaymentGatewayRepository { get; init; }
+    public required IOrderRepository OrderRepository { get; init; }
+    public required IGroupBuyRepository GroupBuyRepository { get; init; }
+    public required IBackgroundJobManager BackgroundJobManager { get; init; }
+    public required IStringEncryptionService StringEncryptionService { get; init; }
+    public required IItemDetailsRepository ItemDetailsRepository { get; init; }
+    public required IOrderInvoiceAppService ElectronicInvoiceAppService { get; init; }
+    public required IFreebieRepository FreebieRepository { get; init; }
+    public required IRefundAppService RefundAppService { get; init; }
+    public required IRefundRepository RefundRepository { get; init; }
+    public required IDiscountCodeRepository DiscountCodeRepository { get; init; }
+    public required IUserShoppingCreditAppService UserShoppingCreditAppService { get; init; }
+    public required IEmailAppService EmailAppService { get; init; }
+    public required IOrderMessageAppService OrderMessageAppService { get; init; }
+    public required ISetItemRepository SetItemRepository { get; init; }
+    public required IUserCumulativeCreditAppService UserCumulativeCreditAppService { get; init; }
+    public required IUserCumulativeCreditRepository UserCumulativeCreditRepository { get; init; }
+    public required IIdentityUserRepository UserRepository { get; init; }
+    public required IOrderHistoryRepository OrderHistoryRepository { get; init; }
+    public required IMemberRepository MemberRepository { get; init; }
+    public required ITenantTripartiteRepository ElectronicInvoiceSettingRepository { get; init; }
 }
-#endregion

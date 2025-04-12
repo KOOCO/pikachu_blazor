@@ -22,6 +22,11 @@ public class OrderDelivery : FullAuditedAggregateRoot<Guid>, IMultiTenant
     public DeliveryStatus DeliveryStatus { get; set; }
 
     /// <summary>
+    /// 實際配送方式
+    /// </summary>
+    public DeliveryMethod? ActualDeliveryMethod { get; set; }
+
+    /// <summary>
     /// 配送編號
     /// </summary>
     public string? DeliveryNo { get; set; }
@@ -47,21 +52,6 @@ public class OrderDelivery : FullAuditedAggregateRoot<Guid>, IMultiTenant
     public string? FileNo { get; set; }
 
     /// <summary>
-    /// 訂單識別碼
-    /// </summary>
-    public Guid OrderId { get; set; }
-
-    /// <summary>
-    /// 訂單項目集合
-    /// </summary>
-    public ICollection<OrderItem> Items { get; set; }
-
-    /// <summary>
-    /// 租戶識別碼
-    /// </summary>
-    public Guid? TenantId { get; set; }
-
-    /// <summary>
     /// 歐付寶物流識別碼
     /// </summary>
     public string AllPayLogisticsID { get; set; }
@@ -71,25 +61,12 @@ public class OrderDelivery : FullAuditedAggregateRoot<Guid>, IMultiTenant
     /// </summary>
     public string Editor { get; set; }
 
-    /// <summary>
-    /// 實際配送方式
-    /// </summary>
-    public DeliveryMethod? ActualDeliveryMethod { get; set; }
+    public Guid? TenantId { get; set; }
 
-    /// <summary>
-    /// 預設建構函式
-    /// </summary>
+    public Guid OrderId { get; set; }
+    public ICollection<OrderItem> Items { get; set; }
+
     public OrderDelivery() { }
-
-    /// <summary>
-    /// 建立訂單配送的建構函式
-    /// </summary>
-    /// <param name="id">訂單配送識別碼</param>
-    /// <param name="deliveryMethod">配送方式</param>
-    /// <param name="deliveryStatus">配送狀態</param>
-    /// <param name="deliveryNo">配送編號</param>
-    /// <param name="allPayLogisticsID">歐付寶物流識別碼</param>
-    /// <param name="orderId">訂單識別碼</param>
     public OrderDelivery(
         Guid id,
         DeliveryMethod deliveryMethod,

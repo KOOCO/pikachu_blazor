@@ -1,14 +1,8 @@
-﻿using Kooco.Pikachu.ElectronicInvoiceSettings;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Kooco.Pikachu.DeliveryTempratureCosts;
 using Volo.Abp.Domain.Repositories;
 
-namespace Kooco.Pikachu.DeliveryTempratureCosts
+namespace Kooco.Pikachu.DeliveryTemperatureCosts;
+public interface IDeliveryTemperatureCostRepository : IRepository<DeliveryTemperatureCost>
 {
-    public interface IDeliveryTemperatureCostRepository : IRepository<DeliveryTemperatureCost>
-    {
-    }
+
 }

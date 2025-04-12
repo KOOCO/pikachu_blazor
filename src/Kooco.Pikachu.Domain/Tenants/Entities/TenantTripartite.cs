@@ -5,12 +5,12 @@ using Volo.Abp.Domain.Entities.Auditing;
 using Volo.Abp.MultiTenancy;
 using InvoiceType = Kooco.Pikachu.Orders.Invoices.InvoiceType;
 
-namespace Kooco.Pikachu.ElectronicInvoiceSettings;
+namespace Kooco.Pikachu.Tenants.Entities;
 
 /// <summary>
-/// 電子發票設定
+/// 租戶三方
 /// </summary>
-public class ElectronicInvoiceSetting : FullAuditedAggregateRoot<Guid>, IMultiTenant
+public class TenantTripartite : FullAuditedEntity<Guid>, IMultiTenant
 {
     /// <summary>
     /// 租戶的唯一識別碼
@@ -57,8 +57,8 @@ public class ElectronicInvoiceSetting : FullAuditedAggregateRoot<Guid>, IMultiTe
     /// </summary>
     public int DaysAfterShipmentGenerateInvoice { get; set; }
 
-    public ElectronicInvoiceSetting() { }
-    public ElectronicInvoiceSetting(
+    public TenantTripartite() { }
+    public TenantTripartite(
         [NotNull] Guid id,
         bool isEnable,
         string storeCode,
