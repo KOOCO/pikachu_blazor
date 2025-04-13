@@ -1,5 +1,4 @@
 ﻿using Kooco.Pikachu.DiscountCodes;
-using Kooco.Pikachu.ElectronicInvoiceSettings;
 using Kooco.Pikachu.Emails;
 using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Freebies;
@@ -17,6 +16,7 @@ using Kooco.Pikachu.PaymentGateways;
 using Kooco.Pikachu.Permissions;
 using Kooco.Pikachu.Refunds;
 using Kooco.Pikachu.Response;
+using Kooco.Pikachu.Tenants.ElectronicInvoiceSettings;
 using Kooco.Pikachu.Tenants.Repositories;
 using Kooco.Pikachu.UserCumulativeCredits;
 using Kooco.Pikachu.UserShoppingCredits;
@@ -1191,9 +1191,14 @@ public class OrderAppService : PikachuAppService, IOrderAppService
         await UnitOfWorkManager.Current.SaveChangesAsync();
         await SendEmailAsync(order.Id);
         var returnResult = ObjectMapper.Map<Order, OrderDto>(order);
+
+        // **Get Current User (Editor)**
+        var currentUserId = CurrentUser.Id ?? Guid.Empty;
+        var currentUserName = CurrentUser.UserName ?? "System";
+
         if (status == ShippingStatus.Delivered)
         {
-            var invoiceSetting = await ElectronicInvoiceSettingRepository.FirstOrDefaultAsync();
+            var invoiceSetting = await TenantTripartiteRepository.FindByTenantAsync(currentUserId);
             if (order.InvoiceNumber.IsNullOrEmpty())
             {
                 if (invoiceSetting.StatusOnInvoiceIssue == DeliveryStatus.Delivered)
@@ -1213,17 +1218,15 @@ public class OrderAppService : PikachuAppService, IOrderAppService
                         }
                         else
                         {
-                            var delay = DateTime.Now.AddDays(invoiceDely) - DateTime.Now;
-                            GenerateInvoiceBackgroundJobArgs args = new GenerateInvoiceBackgroundJobArgs { OrderId = order.Id };
-                            var jobid = await BackgroundJobManager.EnqueueAsync(args, BackgroundJobPriority.High, delay);
+                            //var delay = DateTime.Now.AddDays(invoiceDely) - DateTime.Now;
+                            //GenerateInvoiceBackgroundJobArgs args = new GenerateInvoiceBackgroundJobArgs { OrderId = order.Id };
+                            //var jobid = await BackgroundJobManager.EnqueueAsync(args, BackgroundJobPriority.High, delay);
                         }
                     }
                 }
             }
         }
-        // **Get Current User (Editor)**
-        var currentUserId = CurrentUser.Id ?? Guid.Empty;
-        var currentUserName = CurrentUser.UserName ?? "System";
+
 
         // **Log Order History for Status Change**
         await OrderHistoryManager.AddOrderHistoryAsync(
@@ -2026,7 +2029,7 @@ public class OrderAppService : PikachuAppService, IOrderAppService
         await UnitOfWorkManager.Current.SaveChangesAsync();
         if (order.InvoiceNumber.IsNullOrEmpty())
         {
-            var invoiceSetting = await ElectronicInvoiceSettingRepository.FirstOrDefaultAsync();
+            var invoiceSetting = await TenantTripartiteRepository.FindByTenantAsync(CurrentTenant.Id.Value);
             if (invoiceSetting.StatusOnInvoiceIssue == DeliveryStatus.Shipped)
             {
                 if (order.GroupBuy.IssueInvoice)
@@ -2040,9 +2043,9 @@ public class OrderAppService : PikachuAppService, IOrderAppService
                     }
                     else
                     {
-                        var delay = DateTime.Now.AddDays(invoiceDely) - DateTime.Now;
-                        GenerateInvoiceBackgroundJobArgs args = new GenerateInvoiceBackgroundJobArgs { OrderId = order.Id };
-                        var jobid = await BackgroundJobManager.EnqueueAsync(args, BackgroundJobPriority.High, delay);
+                        //var delay = DateTime.Now.AddDays(invoiceDely) - DateTime.Now;
+                        //GenerateInvoiceBackgroundJobArgs args = new GenerateInvoiceBackgroundJobArgs { OrderId = order.Id };
+                        //var jobid = await BackgroundJobManager.EnqueueAsync(args, BackgroundJobPriority.High, delay);
                     }
                 }
             }
@@ -2091,7 +2094,7 @@ public class OrderAppService : PikachuAppService, IOrderAppService
         var returnOrder = ObjectMapper.Map<Order, OrderDto>(order);
         if (order.InvoiceNumber.IsNullOrEmpty())
         {
-            var invoiceSetting = await ElectronicInvoiceSettingRepository.FirstOrDefaultAsync();
+            var invoiceSetting = await TenantTripartiteRepository.FindByTenantAsync(CurrentUser.Id.Value);
             if (invoiceSetting.StatusOnInvoiceIssue == DeliveryStatus.Shipped)
             {
                 if (order.GroupBuy.IssueInvoice)
@@ -2107,9 +2110,9 @@ public class OrderAppService : PikachuAppService, IOrderAppService
                     }
                     else
                     {
-                        var delay = DateTime.Now.AddDays(invoiceDely) - DateTime.Now;
-                        GenerateInvoiceBackgroundJobArgs args = new GenerateInvoiceBackgroundJobArgs { OrderId = order.Id };
-                        var jobid = await BackgroundJobManager.EnqueueAsync(args, BackgroundJobPriority.High, delay);
+                        //var delay = DateTime.Now.AddDays(invoiceDely) - DateTime.Now;
+                        //GenerateInvoiceBackgroundJobArgs args = new GenerateInvoiceBackgroundJobArgs { OrderId = order.Id };
+                        //var jobid = await BackgroundJobManager.EnqueueAsync(args, BackgroundJobPriority.High, delay);
                     }
                 }
             }
@@ -2146,7 +2149,7 @@ public class OrderAppService : PikachuAppService, IOrderAppService
         var returnOrder = ObjectMapper.Map<Order, OrderDto>(order);
         if (order.InvoiceNumber.IsNullOrEmpty())
         {
-            var invoiceSetting = await ElectronicInvoiceSettingRepository.FirstOrDefaultAsync();
+            var invoiceSetting = await TenantTripartiteRepository.FindByTenantAsync(CurrentTenant.Id.Value);
             if (invoiceSetting.StatusOnInvoiceIssue == DeliveryStatus.ToBeShipped)
             {
                 if (order.GroupBuy.IssueInvoice)
@@ -2161,9 +2164,9 @@ public class OrderAppService : PikachuAppService, IOrderAppService
                     }
                     else
                     {
-                        var delay = DateTime.Now.AddDays(invoiceDely) - DateTime.Now;
-                        GenerateInvoiceBackgroundJobArgs args = new GenerateInvoiceBackgroundJobArgs { OrderId = order.Id };
-                        var jobid = await BackgroundJobManager.EnqueueAsync(args, BackgroundJobPriority.High, delay);
+                        //var delay = DateTime.Now.AddDays(invoiceDely) - DateTime.Now;
+                        //GenerateInvoiceBackgroundJobArgs args = new GenerateInvoiceBackgroundJobArgs { OrderId = order.Id };
+                        //var jobid = await BackgroundJobManager.EnqueueAsync(args, BackgroundJobPriority.High, delay);
                     }
                 }
             }
@@ -2227,7 +2230,7 @@ public class OrderAppService : PikachuAppService, IOrderAppService
         var returnResult = ObjectMapper.Map<Order, OrderDto>(order);
         if (order.InvoiceNumber.IsNullOrEmpty())
         {
-            var invoiceSetting = await ElectronicInvoiceSettingRepository.FirstOrDefaultAsync();
+            var invoiceSetting = await TenantTripartiteRepository.FindByTenantAsync(CurrentTenant.Id.Value);
             if (invoiceSetting.StatusOnInvoiceIssue == DeliveryStatus.Completed)
             {
                 if (order.GroupBuy.IssueInvoice)
@@ -2244,9 +2247,9 @@ public class OrderAppService : PikachuAppService, IOrderAppService
                     }
                     else
                     {
-                        var delay = DateTime.Now.AddDays(invoiceDely) - DateTime.Now;
-                        GenerateInvoiceBackgroundJobArgs args = new GenerateInvoiceBackgroundJobArgs { OrderId = order.Id };
-                        var jobid = await BackgroundJobManager.EnqueueAsync(args, BackgroundJobPriority.High, delay);
+                        //var delay = DateTime.Now.AddDays(invoiceDely) - DateTime.Now;
+                        //GenerateInvoiceBackgroundJobArgs args = new GenerateInvoiceBackgroundJobArgs { OrderId = order.Id };
+                        //var jobid = await BackgroundJobManager.EnqueueAsync(args, BackgroundJobPriority.High, delay);
                     }
                 }
             }
@@ -2487,7 +2490,7 @@ public class OrderAppService : PikachuAppService, IOrderAppService
         if (paymentResult.SimulatePaid is 0)
         {
             Order order = new();
-            var invoiceSetting = await ElectronicInvoiceSettingRepository.FirstOrDefaultAsync();
+            var invoiceSetting = await TenantTripartiteRepository.FindByTenantAsync(CurrentTenant.Id.Value);
             using (DataFilter.Disable<IMultiTenant>())
             {
                 if (paymentResult.OrderId is null)
@@ -2629,9 +2632,9 @@ public class OrderAppService : PikachuAppService, IOrderAppService
                             }
                             else
                             {
-                                var delay = DateTime.Now.AddDays(invoiceDely) - DateTime.Now;
-                                GenerateInvoiceBackgroundJobArgs args = new GenerateInvoiceBackgroundJobArgs { OrderId = order.Id };
-                                var jobid = await BackgroundJobManager.EnqueueAsync(args, BackgroundJobPriority.High, delay);
+                                //var delay = DateTime.Now.AddDays(invoiceDely) - DateTime.Now;
+                                //GenerateInvoiceBackgroundJobArgs args = new GenerateInvoiceBackgroundJobArgs { OrderId = order.Id };
+                                //var jobid = await BackgroundJobManager.EnqueueAsync(args, BackgroundJobPriority.High, delay);
                             }
                         }
                     }
@@ -3003,7 +3006,7 @@ public class OrderAppService : PikachuAppService, IOrderAppService
 
         if (order.InvoiceNumber.IsNullOrEmpty())
         {
-            var invoiceSetting = await ElectronicInvoiceSettingRepository.FirstOrDefaultAsync();
+            var invoiceSetting = await TenantTripartiteRepository.FindByTenantAsync(CurrentTenant.Id.Value);
 
             if (invoiceSetting?.StatusOnInvoiceIssue == DeliveryStatus.Processing)
             {
@@ -3018,9 +3021,9 @@ public class OrderAppService : PikachuAppService, IOrderAppService
                     }
                     else
                     {
-                        var delay = DateTime.Now.AddDays(invoiceDelay) - DateTime.Now;
-                        GenerateInvoiceBackgroundJobArgs args = new() { OrderId = order.Id };
-                        var jobid = await BackgroundJobManager.EnqueueAsync(args, BackgroundJobPriority.High, delay);
+                        //var delay = DateTime.Now.AddDays(invoiceDelay) - DateTime.Now;
+                        //GenerateInvoiceBackgroundJobArgs args = new() { OrderId = order.Id };
+                        //var jobid = await BackgroundJobManager.EnqueueAsync(args, BackgroundJobPriority.High, delay);
                     }
                 }
             }
@@ -3053,5 +3056,5 @@ public class OrderAppService : PikachuAppService, IOrderAppService
     public required IIdentityUserRepository UserRepository { get; init; }
     public required IOrderHistoryRepository OrderHistoryRepository { get; init; }
     public required IMemberRepository MemberRepository { get; init; }
-    public required ITenantTripartiteRepository ElectronicInvoiceSettingRepository { get; init; }
+    public required ITenantTripartiteRepository TenantTripartiteRepository { get; init; }
 }

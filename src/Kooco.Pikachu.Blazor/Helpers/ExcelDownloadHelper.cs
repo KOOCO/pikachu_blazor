@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Volo.Abp.Content;
 
 namespace Kooco.Pikachu.Blazor.Helpers;
-
 public class ExcelDownloadHelper(IJSRuntime JSRuntime)
 {
     public async Task DownloadExcelAsync(IRemoteStreamContent remoteStreamContent)
@@ -28,7 +27,6 @@ public class ExcelDownloadHelper(IJSRuntime JSRuntime)
             ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         });
     }
-
     public async Task DownloadExcelAsync(byte[] excelData, string fileName)
     {
         await JSRuntime.InvokeVoidAsync("downloadFile", new
@@ -38,7 +36,6 @@ public class ExcelDownloadHelper(IJSRuntime JSRuntime)
             ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         });
     }
-
     public async Task DownloadExcelAsync<T>(List<T> dataList, string fileName)
     {
         using var memoryStream = new MemoryStream();

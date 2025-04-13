@@ -4,7 +4,7 @@ using Volo.Abp.Application.Dtos;
 using Volo.Abp.MultiTenancy;
 using InvoiceType = Kooco.Pikachu.Orders.Invoices.InvoiceType;
 
-namespace Kooco.Pikachu.ElectronicInvoiceSettings;
+namespace Kooco.Pikachu.Tenants.ElectronicInvoiceSettings;
 public class ElectronicInvoiceSettingDto : FullAuditedEntityDto<Guid>, IMultiTenant
 {
     public Guid? TenantId { get; set; }

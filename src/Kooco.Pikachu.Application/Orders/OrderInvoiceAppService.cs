@@ -31,7 +31,7 @@ public class OrderInvoiceAppService : PikachuAppService, IOrderInvoiceAppService
             throw new InvalidOperationException("訂單已有未作廢發票，不能重複建立");
         }
 
-        var setting = await ElectronicInvoiceSettingRepository.GetAsync(x => x.TenantId == CurrentTenant.Id.Value);
+        var setting = await TenantTripartiteRepository.FindByTenantAsync(CurrentTenant.Id.Value);
 
         var order = (await OrderRepository.GetQueryableAsync())
             .Include(x => x.OrderItems)
@@ -186,7 +186,7 @@ public class OrderInvoiceAppService : PikachuAppService, IOrderInvoiceAppService
     }
     public async Task CreateCreditNoteAsync(Guid orderId)
     {
-        TenantTripartite? setting = await ElectronicInvoiceSettingRepository.FirstOrDefaultAsync();
+        TenantTripartite? setting = await TenantTripartiteRepository.FindByTenantAsync(CurrentTenant.Id.Value);
 
         Order order = await OrderRepository.GetWithDetailsAsync(orderId);
 
@@ -257,7 +257,7 @@ public class OrderInvoiceAppService : PikachuAppService, IOrderInvoiceAppService
     {
         Order order = await OrderRepository.GetWithDetailsAsync(orderId);
 
-        TenantTripartite? setting = await ElectronicInvoiceSettingRepository.FirstOrDefaultAsync();
+        TenantTripartite? setting = await TenantTripartiteRepository.FindByTenantAsync(CurrentTenant.Id.Value);
 
         RestClientOptions options = new() { MaxTimeout = -1 };
 
@@ -316,7 +316,7 @@ public class OrderInvoiceAppService : PikachuAppService, IOrderInvoiceAppService
     public required IOrderInvoiceRepository OrderInvoiceRepository { get; init; }
     public required IGroupBuyRepository GroupBuyRepository { get; init; }
     public required IECPayInvoiceService ECPayInvoiceService { get; init; }
-    public required ITenantTripartiteRepository ElectronicInvoiceSettingRepository { get; init; }
+    public required ITenantTripartiteRepository TenantTripartiteRepository { get; init; }
     public required OrderHistoryManager OrderHistoryManager { get; init; }
 }
 public class myItem

@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using Volo.Abp.Domain.Repositories.EntityFrameworkCore;
 using Volo.Abp.EntityFrameworkCore;
 
-namespace Kooco.Pikachu.Orders;
+namespace Kooco.Pikachu.Repositories.Orders;
 public class OrderHistoryRepository(IDbContextProvider<PikachuDbContext> dbContextProvider) :
     EfCoreRepository<PikachuDbContext, OrderHistory, Guid>(dbContextProvider), IOrderHistoryRepository
 {

@@ -1,9 +1,4 @@
-﻿using Kooco.Pikachu.ElectronicInvoiceSettings;
-using Kooco.Pikachu.Orders.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using Kooco.Pikachu.Orders.Interfaces;
 using System.Threading.Tasks;
 using Volo.Abp.BackgroundJobs;
 using Volo.Abp.DependencyInjection;

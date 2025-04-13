@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using System.Data;
+using Volo.Abp.Data;
 using Volo.Abp.Guids;
 using Volo.Abp.ObjectMapping;
 using Volo.Abp.Settings;
@@ -63,6 +64,7 @@ public abstract class HostedServiceBase<TDerived>(TimeSpan period = default, boo
     }
     protected abstract Task ExecutionAsync(IServiceProvider provider, CancellationToken ct);
     public required IClock Clock { get; init; }
+    public required IDataFilter DataFilter { get; init; }
     public required ILogger<TDerived> Logger { get; init; }
     public required IObjectMapper ObjectMapper { get; init; }
     public required IGuidGenerator GuidGenerator { get; init; }

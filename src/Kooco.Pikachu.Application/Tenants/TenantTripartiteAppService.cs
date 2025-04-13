@@ -1,22 +1,21 @@
-﻿using Kooco.Pikachu.Tenants.Entities;
+﻿using Kooco.Pikachu.Tenants.ElectronicInvoiceSettings;
+using Kooco.Pikachu.Tenants.Entities;
 using Kooco.Pikachu.Tenants.Repositories;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Volo.Abp;
-using Volo.Abp.Application.Services;
 
-namespace Kooco.Pikachu.ElectronicInvoiceSettings;
+namespace Kooco.Pikachu.Tenants;
 
 [RemoteService(IsEnabled = false)]
-public class ElectronicInvoiceSettingAppService(ITenantTripartiteRepository repository) : ApplicationService, IElectronicInvoiceSettingAppService
+public class TenantTripartiteAppService(ITenantTripartiteRepository repository) : PikachuAppService, ITenantTripartiteAppService
 {
     public async Task<ElectronicInvoiceSettingDto> GetSettingAsync()
     {
-        var query = await repository.GetQueryableAsync();
-        return ObjectMapper.Map<TenantTripartite, ElectronicInvoiceSettingDto>(query.FirstOrDefault());
+        var query = await repository.FindByTenantAsync(CurrentUser.Id.Value);
+        return ObjectMapper.Map<TenantTripartite, ElectronicInvoiceSettingDto>(query);
     }
-
     public async Task<ElectronicInvoiceSettingDto> CreateAsyc(CreateUpdateElectronicInvoiceDto input)
     {
         var setting = new TenantTripartite(
@@ -32,11 +31,10 @@ public class ElectronicInvoiceSettingAppService(ITenantTripartiteRepository repo
         _ = await repository.InsertAsync(setting);
         return ObjectMapper.Map<TenantTripartite, ElectronicInvoiceSettingDto>(setting);
     }
-
     public async Task<ElectronicInvoiceSettingDto> UpdateAsyc(Guid Id, CreateUpdateElectronicInvoiceDto input)
     {
-        var query = await repository.GetQueryableAsync();
-        var setting = query.Where(x => x.Id == Id).First();
+        var query = await repository.FindByTenantAsync(CurrentUser.Id.Value);
+        var setting = query;
         setting.IsEnable = input.IsEnable;
         setting.StoreCode = input.StoreCode;
         setting.HashKey = input.HashKey;

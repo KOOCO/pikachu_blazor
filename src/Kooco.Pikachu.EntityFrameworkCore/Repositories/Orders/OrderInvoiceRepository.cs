@@ -9,7 +9,7 @@ using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Domain.Repositories.EntityFrameworkCore;
 using Volo.Abp.EntityFrameworkCore;
 
-namespace Kooco.Pikachu.Orders;
+namespace Kooco.Pikachu.Repositories.Orders;
 public class OrderInvoiceRepository(IDbContextProvider<PikachuDbContext> dbContextProvider) :
     EfCoreRepository<PikachuDbContext, OrderInvoice, Guid>(dbContextProvider), IOrderInvoiceRepository
 {

@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
-using Kooco.Pikachu.ElectronicInvoiceSettings;
 using Kooco.Pikachu.GroupBuys;
 using Kooco.Pikachu.Images;
+using Kooco.Pikachu.Tenants.ElectronicInvoiceSettings;
 
 namespace Kooco.Pikachu.Blazor;
 public class PikachuBlazorAutoMapperProfile : Profile

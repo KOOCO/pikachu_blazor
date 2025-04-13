@@ -5,7 +5,6 @@ using Blazorise.Cropper;
 using Blazorise.Extensions;
 using Blazorise.LoadingIndicator;
 using Kooco.Pikachu.AzureStorage.Image;
-using Kooco.Pikachu.ElectronicInvoiceSettings;
 using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.GroupBuyItemsPriceses;
 using Kooco.Pikachu.GroupBuyOrderInstructions;
@@ -20,6 +19,8 @@ using Kooco.Pikachu.Items.Dtos;
 using Kooco.Pikachu.Localization;
 using Kooco.Pikachu.LogisticsProviders;
 using Kooco.Pikachu.PaymentGateways;
+using Kooco.Pikachu.Tenants;
+using Kooco.Pikachu.Tenants.ElectronicInvoiceSettings;
 using Microsoft.AspNetCore.Components;
 
 using Microsoft.AspNetCore.Components.Web;
@@ -129,7 +130,7 @@ public partial class CreateGroupBuy
     private readonly IGroupBuyOrderInstructionAppService _GroupBuyOrderInstructionAppService;
 
     private readonly IGroupBuyProductRankingAppService _GroupBuyProductRankingAppService;
-    private readonly IElectronicInvoiceSettingAppService _electronicInvoiceSettingAppService;
+    private readonly ITenantTripartiteAppService _electronicInvoiceSettingAppService;
 
     public List<LogisticsProviderSettingsDto> LogisticsProviders = [];
     public ElectronicInvoiceSettingDto ElectronicInvoiceSetting = new ElectronicInvoiceSettingDto();
@@ -161,7 +162,7 @@ public partial class CreateGroupBuy
         IGroupBuyOrderInstructionAppService GroupBuyOrderInstructionAppService,
         ILogisticsProvidersAppService LogisticsProvidersAppService,
         IGroupBuyProductRankingAppService GroupBuyProductRankingAppService,
-        IElectronicInvoiceSettingAppService electronicInvoiceSettingAppService,
+        ITenantTripartiteAppService electronicInvoiceSettingAppService,
         IPaymentGatewayAppService paymentGatewayAppService,
         IGroupBuyItemsPriceAppService groupBuyItemsPriceAppService
     )

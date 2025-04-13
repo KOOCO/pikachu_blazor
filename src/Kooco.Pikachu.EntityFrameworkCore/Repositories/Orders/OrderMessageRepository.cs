@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 using Volo.Abp.Domain.Repositories.EntityFrameworkCore;
 using Volo.Abp.EntityFrameworkCore;
 
-namespace Kooco.Pikachu.Orders;
+namespace Kooco.Pikachu.Repositories.Orders;
 public class OrderMessageRepository(IDbContextProvider<PikachuDbContext> dbContextProvider) :
     EfCoreRepository<PikachuDbContext, OrderMessage, Guid>(dbContextProvider), IOrderMessageRepository
 {

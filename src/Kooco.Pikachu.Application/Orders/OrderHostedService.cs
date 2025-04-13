@@ -1,4 +1,5 @@
-﻿using Kooco.Pikachu.Orders.Repositories;
+﻿using Kooco.Pikachu.Orders.Interfaces;
+using Kooco.Pikachu.Orders.Repositories;
 using Kooco.Pikachu.Tenants.Repositories;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -16,19 +17,33 @@ internal sealed class OrderHostedService : HostedServiceBase<OrderHostedService>
     {
         var tenantRepository = provider.GetRequiredService<ITenantRepository>();
         var orderDeliveryRepository = provider.GetRequiredService<IOrderDeliveryRepository>();
-        var orderDeliverdyRepository = provider.GetRequiredService<ITenantTripartiteRepository>();
+        var tenantTripartiteRepository = provider.GetRequiredService<ITenantTripartiteRepository>();
+        var orderInvoiceRepository = provider.GetRequiredService<IOrderInvoiceRepository>();
+        var orderInvoiceAppService = provider.GetRequiredService<IOrderInvoiceAppService>();
 
         var tenants = await tenantRepository.GetListAsync(cancellationToken: ct);
         foreach (var tenant in tenants)
         {
-            var orderDeliveries = await orderDeliveryRepository.GetByTenantIdAsync(tenant.Id, ct: ct);
-            foreach (var orderDelivery in orderDeliveries)
+            using (DataFilter.Disable<IMultiTenant>())
             {
+                var tripartite = await tenantTripartiteRepository.FindAsync(x => x.TenantId == tenant.Id);
+                if (tripartite is null) continue;
 
+                var orderDeliveries = await orderDeliveryRepository.GetByStatusAsync(
+                    tenant.Id, tripartite.StatusOnInvoiceIssue, ct: ct);
+
+                foreach (var orderDelivery in orderDeliveries)
+                {
+                    if (!await orderInvoiceRepository.HasNonVoidedInvoiceAsync(orderDelivery.OrderId))
+                    {
+                        var openingTime = orderDelivery.CreationTime.AddDays(tripartite.DaysAfterShipmentGenerateInvoice);
+                        if (Clock.Now >= openingTime)
+                        {
+                            await orderInvoiceAppService.CreateInvoiceAsync(orderDelivery.OrderId);
+                        }
+                    }
+                }
             }
-            //var electronicInvoiceSetting = await orderDeliverdyRepository.GetByTenantIdAsync(tenant.Id, cancellationToken: ct);
-            // Perform operations with orderDelivery and electronicInvoiceSetting
-            // ...
         }
     }
 }
