@@ -3,6 +3,7 @@ using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Freebies;
 using Kooco.Pikachu.Items;
 using Kooco.Pikachu.Members;
+using Kooco.Pikachu.Orders;
 using Kooco.Pikachu.Orders.Entities;
 using Kooco.Pikachu.Orders.Repositories;
 using Microsoft.EntityFrameworkCore;
@@ -15,7 +16,7 @@ using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Domain.Repositories.EntityFrameworkCore;
 using Volo.Abp.EntityFrameworkCore;
 
-namespace Kooco.Pikachu.Orders;
+namespace Kooco.Pikachu.Repositories.Orders;
 public class OrderRepository(IDbContextProvider<PikachuDbContext> dbContextProvider) :
     EfCoreRepository<PikachuDbContext, Order, Guid>(dbContextProvider), IOrderRepository
 {
@@ -166,8 +167,8 @@ public class OrderRepository(IDbContextProvider<PikachuDbContext> dbContextProvi
                     {
                         Id = oi.Id,
                         SKU = oi.SKU,
-                        Name = oi.ItemType == ItemType.Item ? (oi.Item != null ? oi.Item.ItemName : null)
-                            : (oi.ItemType == ItemType.SetItem ? (oi.SetItem != null ? oi.SetItem.SetItemName : null) : (oi.Freebie != null ? oi.Freebie.ItemName : null)),
+                        Name = oi.ItemType == ItemType.Item ? oi.Item != null ? oi.Item.ItemName : null
+                            : oi.ItemType == ItemType.SetItem ? oi.SetItem != null ? oi.SetItem.SetItemName : null : oi.Freebie != null ? oi.Freebie.ItemName : null,
                         Spec = oi.Spec,
                         Quantity = oi.Quantity,
                         ItemType = oi.ItemType
@@ -279,8 +280,8 @@ public class OrderRepository(IDbContextProvider<PikachuDbContext> dbContextProvi
             .WhereIf(groupBuyId.HasValue, x => x.GroupBuyId == groupBuyId)
             .WhereIf(!filter.IsNullOrWhiteSpace(),
             x => x.OrderNo.Contains(filter)
-            || (x.CustomerName != null && x.CustomerName.Contains(filter))
-            || (x.CustomerEmail != null && x.CustomerEmail.Contains(filter))
+            || x.CustomerName != null && x.CustomerName.Contains(filter)
+            || x.CustomerEmail != null && x.CustomerEmail.Contains(filter)
             ).WhereIf(orderIds != null && orderIds.Any(), x => orderIds.Contains(x.Id))
             .WhereIf(startDate.HasValue, x => x.CreationTime.Date >= startDate.Value.Date)
             .WhereIf(endDate.HasValue, x => x.CreationTime.Date <= endDate.Value.Date)
@@ -304,8 +305,8 @@ public class OrderRepository(IDbContextProvider<PikachuDbContext> dbContextProvi
             .WhereIf(groupBuyId.HasValue, x => x.GroupBuyId == groupBuyId)
             .WhereIf(!filter.IsNullOrWhiteSpace(),
                 x => x.OrderNo.Contains(filter)
-                || (x.CustomerName != null && x.CustomerName.Contains(filter))
-                || (x.CustomerEmail != null && x.CustomerEmail.Contains(filter))
+                || x.CustomerName != null && x.CustomerName.Contains(filter)
+                || x.CustomerEmail != null && x.CustomerEmail.Contains(filter)
                 )
             .WhereIf(orderIds != null && orderIds.Any(), x => orderIds.Contains(x.Id))
             .WhereIf(startDate.HasValue, x => x.CreationTime.Date >= startDate.Value.Date)
@@ -329,8 +330,8 @@ public class OrderRepository(IDbContextProvider<PikachuDbContext> dbContextProvi
             .WhereIf(groupBuyId.HasValue, x => x.GroupBuyId == groupBuyId)
             .WhereIf(!filter.IsNullOrWhiteSpace(),
             x => x.OrderNo.Contains(filter)
-            || (x.CustomerName != null && x.CustomerName.Contains(filter))
-            || (x.CustomerEmail != null && x.CustomerEmail.Contains(filter))
+            || x.CustomerName != null && x.CustomerName.Contains(filter)
+            || x.CustomerEmail != null && x.CustomerEmail.Contains(filter)
             ).WhereIf(orderIds != null && orderIds.Any(), x => orderIds.Contains(x.Id))
             .WhereIf(startDate.HasValue, x => x.CreationTime.Date >= startDate.Value.Date)
             .WhereIf(endDate.HasValue, x => x.CreationTime.Date <= endDate.Value.Date)
@@ -350,8 +351,8 @@ public class OrderRepository(IDbContextProvider<PikachuDbContext> dbContextProvi
             .WhereIf(groupBuyId.HasValue, x => x.GroupBuyId == groupBuyId)
             .WhereIf(!filter.IsNullOrWhiteSpace(),
             x => x.OrderNo.Contains(filter)
-            || (x.CustomerName != null && x.CustomerName.Contains(filter))
-            || (x.CustomerEmail != null && x.CustomerEmail.Contains(filter))
+            || x.CustomerName != null && x.CustomerName.Contains(filter)
+            || x.CustomerEmail != null && x.CustomerEmail.Contains(filter)
             ).WhereIf(orderIds != null && orderIds.Any(), x => orderIds.Contains(x.Id))
             .WhereIf(startDate.HasValue, x => x.CreationTime.Date >= startDate.Value.Date)
             .WhereIf(endDate.HasValue, x => x.CreationTime.Date <= endDate.Value.Date)
@@ -370,8 +371,8 @@ public class OrderRepository(IDbContextProvider<PikachuDbContext> dbContextProvi
             .WhereIf(groupBuyId.HasValue, x => x.GroupBuyId == groupBuyId)
             .WhereIf(!filter.IsNullOrWhiteSpace(),
             x => x.OrderNo.Contains(filter)
-            || (x.CustomerName != null && x.CustomerName.Contains(filter))
-            || (x.CustomerEmail != null && x.CustomerEmail.Contains(filter))
+            || x.CustomerName != null && x.CustomerName.Contains(filter)
+            || x.CustomerEmail != null && x.CustomerEmail.Contains(filter)
             ).WhereIf(orderIds != null && orderIds.Any(), x => orderIds.Contains(x.Id))
             .WhereIf(startDate.HasValue, x => x.CreationTime.Date >= startDate.Value.Date)
             .WhereIf(endDate.HasValue, x => x.CreationTime.Date <= endDate.Value.Date)

@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using InvoiceType = Kooco.Pikachu.Orders.Invoices.InvoiceType;
 
-namespace Kooco.Pikachu.ElectronicInvoiceSettings;
+namespace Kooco.Pikachu.Tenants.ElectronicInvoiceSettings;
 public class CreateUpdateElectronicInvoiceDto
 {
     public bool IsEnable { get; set; }

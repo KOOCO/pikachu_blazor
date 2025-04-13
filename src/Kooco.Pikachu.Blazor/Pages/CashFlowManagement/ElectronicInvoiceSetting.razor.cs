@@ -1,12 +1,13 @@
 ﻿using Blazorise;
-using Kooco.Pikachu.ElectronicInvoiceSettings;
+using Kooco.Pikachu.Tenants;
+using Kooco.Pikachu.Tenants.ElectronicInvoiceSettings;
 using System;
 using System.Threading.Tasks;
 using Volo.Abp.AspNetCore.Components.Messages;
 using Volo.Abp.ObjectMapping;
 
 namespace Kooco.Pikachu.Blazor.Pages.CashFlowManagement;
-public partial class ElectronicInvoiceSetting(IElectronicInvoiceSettingAppService appService, IObjectMapper objectMapper, IUiMessageService uiMessageService)
+public partial class ElectronicInvoiceSetting(ITenantTripartiteAppService appService, IObjectMapper objectMapper, IUiMessageService uiMessageService)
 {
     private CreateUpdateElectronicInvoiceDto CreateUpdateElectronicInvoiceDto = new();
     protected Validations CreateValidationsRef;

@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 using Volo.Abp.Domain.Repositories.EntityFrameworkCore;
 using Volo.Abp.EntityFrameworkCore;
 
-namespace Kooco.Pikachu.Orders;
+namespace Kooco.Pikachu.Repositories.Orders;
 public class OrderDeliveryRepository(IDbContextProvider<PikachuDbContext> dbContextProvider) :
     EfCoreRepository<PikachuDbContext, OrderDelivery, Guid>(dbContextProvider), IOrderDeliveryRepository
 {
@@ -58,11 +58,12 @@ public class OrderDeliveryRepository(IDbContextProvider<PikachuDbContext> dbCont
                             .Select(s => s.OrderId)
                             .FirstOrDefault();
     }
-
-    public async Task<List<OrderDelivery>> GetByTenantIdAsync(Guid tenantId, CancellationToken ct)
+    public async Task<List<OrderDelivery>> GetByStatusAsync(Guid tenantId, DeliveryStatus status, CancellationToken ct)
     {
         return await (await GetQueryableAsync())
-            .Where(od => od.TenantId == tenantId)
+            .Where(od =>
+                od.TenantId == tenantId &&
+                od.DeliveryStatus == status)
             .ToListAsync(cancellationToken: ct);
     }
 }

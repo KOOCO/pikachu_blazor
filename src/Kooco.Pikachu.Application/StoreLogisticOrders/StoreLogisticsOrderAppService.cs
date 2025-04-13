@@ -1,5 +1,4 @@
-﻿using Kooco.Pikachu.ElectronicInvoiceSettings;
-using Kooco.Pikachu.Emails;
+﻿using Kooco.Pikachu.Emails;
 using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Groupbuys;
 using Kooco.Pikachu.GroupBuys;
@@ -13,6 +12,7 @@ using Kooco.Pikachu.Orders.Repositories;
 using Kooco.Pikachu.Orders.Services;
 using Kooco.Pikachu.Response;
 using Kooco.Pikachu.Tenants;
+using Kooco.Pikachu.Tenants.ElectronicInvoiceSettings;
 using Kooco.Pikachu.Tenants.Repositories;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
@@ -156,7 +156,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
       currentUserName
   );
 
-            var invoiceSetting = await _electronicInvoiceSettingRepository.FirstOrDefaultAsync();
+            var invoiceSetting = await _electronicInvoiceSettingRepository.FindByTenantAsync(CurrentUser.Id.Value);
             if (invoiceSetting.StatusOnInvoiceIssue == DeliveryStatus.ToBeShipped)
             {
 
@@ -172,9 +172,9 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
                     }
                     else
                     {
-                        var delay = DateTime.Now.AddDays(invoiceDely) - DateTime.Now;
-                        GenerateInvoiceBackgroundJobArgs args = new GenerateInvoiceBackgroundJobArgs { OrderId = orderId };
-                        var jobid = await _backgroundJobManager.EnqueueAsync(args, BackgroundJobPriority.High, delay);
+                        //var delay = DateTime.Now.AddDays(invoiceDely) - DateTime.Now;
+                        //GenerateInvoiceBackgroundJobArgs args = new GenerateInvoiceBackgroundJobArgs { OrderId = orderId };
+                        //var jobid = await _backgroundJobManager.EnqueueAsync(args, BackgroundJobPriority.High, delay);
                     }
                 }
             }

@@ -1,4 +1,5 @@
-﻿using Kooco.Pikachu.Orders.Entities;
+﻿using Kooco.Pikachu.EnumValues;
+using Kooco.Pikachu.Orders.Entities;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -27,8 +28,7 @@ public interface IOrderDeliveryRepository : IRepository<OrderDelivery, Guid>
     Task<Guid> GetOrderIdByAllPayLogisticsId(string allPayLogisticsId);
 
     /// <summary>
-    /// 根據租戶識別碼取得訂單配送列表
+    /// 按出貨狀態取得所有出貨訂單
     /// </summary>
-    /// <returns></returns>
-    Task<List<OrderDelivery>> GetByTenantIdAsync(Guid tenantId, CancellationToken ct);
+    Task<List<OrderDelivery>> GetByStatusAsync(Guid tenantId, DeliveryStatus status, CancellationToken ct);
 }

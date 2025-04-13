@@ -1,5 +1,6 @@
 ﻿using Asp.Versioning;
-using Kooco.Pikachu.ElectronicInvoiceSettings;
+using Kooco.Pikachu.Tenants;
+using Kooco.Pikachu.Tenants.ElectronicInvoiceSettings;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Threading.Tasks;
@@ -13,8 +14,8 @@ namespace Kooco.Pikachu.Controllers.ElectronicInvoiceSettings;
 [Area("app")]
 [Route("api/app/electronic-invoice-settings")]
 public class ElectronicInvoiceSettingsController(
-    IElectronicInvoiceSettingAppService _electronicInvoiceSettingAppService
-    ) : AbpController, IElectronicInvoiceSettingAppService
+    ITenantTripartiteAppService _electronicInvoiceSettingAppService
+    ) : AbpController, ITenantTripartiteAppService
 {
     [HttpPost]
     public Task<ElectronicInvoiceSettingDto> CreateAsyc(CreateUpdateElectronicInvoiceDto input)
