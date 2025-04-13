@@ -1,28 +1,28 @@
 ﻿window.removeSelectClass = function (elementId) {
-        var element = document.getElementById(elementId);
-        if (element) {
-            element.classList.remove("form-select");
-        }
+    var element = document.getElementById(elementId);
+    if (element) {
+        element.classList.remove("form-select");
+    }
 };
 window.reloadOrderPage = function () {
     window.location.reload();
 };
-    window.removeInputClass = function (elementId) {
-        var element = document.getElementById(elementId);
-        if (element) {
-            element.classList.remove("form-control");
-        }
-    };
-    window.downloadFile = function (data) {
-        debugger;
-        var blob = new Blob([new Uint8Array(data.byteArray)], { type: data.contentType });
-        var url = window.URL.createObjectURL(blob);
-        var a = document.createElement('a');
-        a.href = url;
-        a.download = data.fileName;
-        document.body.appendChild(a);
-        a.click();
-        window.URL.revokeObjectURL(url);
+window.removeInputClass = function (elementId) {
+    var element = document.getElementById(elementId);
+    if (element) {
+        element.classList.remove("form-control");
+    }
+};
+window.downloadFile = function (data) {
+    debugger;
+    var blob = new Blob([new Uint8Array(data.byteArray)], { type: data.contentType });
+    var url = window.URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = data.fileName;
+    document.body.appendChild(a);
+    a.click();
+    window.URL.revokeObjectURL(url);
 }
 
 window.downloadPdfFile = function (filePath, mimeType, fileName) {
@@ -51,7 +51,7 @@ window.executeScript = function (script) {
         // Execute the function
         func();
     } catch (error) {
-       
+
     }
 };
 window.setCookie = function (name, value, sameSite, secure) {
@@ -265,19 +265,23 @@ window.updatePanelVisibility = function (isOpen) {
 function updateFilePickerText() {
     let dropTextElements = document.querySelectorAll(".b-text-drop");
 
+    let onlyAccepts = window.localization?.onlyAccepts || "Only Accepts";
+    let maxFileSize = window.localization?.maxFileSize || "Max File Size";
+
     dropTextElements.forEach(dropText => {
         dropText.innerHTML = "";
 
         let line1 = document.createElement("span");
-        line1.innerHTML = "Only Accepts <br />[JPG, JPEG, PNG, WEBP, SVG]";
+        line1.innerHTML = `${onlyAccepts} <br />[JPG, JPEG, PNG, WEBP, SVG]`;
 
         let line2 = document.createElement("span");
-        line2.textContent = "Max Image Size: 10MB";
+        line2.textContent = `${maxFileSize}: 10MB`;
 
         dropText.appendChild(line1);
         dropText.appendChild(line2);
     });
 }
+
 window.updateDropText = () => {
     updateFilePickerText();
 
@@ -285,6 +289,7 @@ window.updateDropText = () => {
         updateFilePickerText();
     }, 100)
 };
+
 window.logToConsole = (message) => {
     console.log(message);
 };

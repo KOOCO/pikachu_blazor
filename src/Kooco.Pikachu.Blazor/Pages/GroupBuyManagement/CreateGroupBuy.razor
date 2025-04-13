@@ -1089,8 +1089,9 @@
                                             <div class="row">
                                                 <div class="col-2">
                                                     <label>
-                                                        @L["CarouselImages"]<Span>
-                                                            <Tooltip Text="@L["uploadUpto5Images"]">
+                                                        @L["CarouselImages"]
+                                                        <Span>
+                                                            <Tooltip Display="Display.InlineBlock" Text="@L["uploadUpto5Images"]">
                                                                 <Icon class="fa-question-circle" />
                                                             </Tooltip>
                                                         </Span>
@@ -1382,7 +1383,7 @@
                                                         {
                                                             <div class="row-cols-12 mt-@(productModule.Selected.IndexOf(selectedItem) > 0 ? "5" : "2")"
                                                             style="@(productModule.Selected.IndexOf(selectedItem) > 0 ? "margin-top: 75px !important" : "")">
-                                                                <label>Products</label>
+                                                                <label>@L["Products"]</label>
                                                                 <Autocomplete TItem="ItemWithItemTypeDto"
                                                                 TValue="Guid?"
                                                                 Data="@ItemsList"
@@ -1465,7 +1466,13 @@
                                                     <Div Class="row">
                                                         <Div Class="col-12">
                                                             <Div Class="col-2 pb-1">
-                                                                <Label>@L["Carousel"] <Span Class="text-danger">*</Span></Label>
+                                                                <Label>@L["Carousel"] <Span Class="text-danger">*</Span>
+                                                                    <Span>
+                                                                        <Tooltip Display="Display.InlineBlock" Text="@L["uploadUpto5Images"]">
+                                                                            <Icon class="fa-question-circle" />
+                                                                        </Tooltip>
+                                                                    </Span>
+                                                                </Label>
                                                             </Div>
                                                             <Div Class="@((productModule.Images.Count > 0 ? "has-images" : "") + " container-less-filepicker filepicker-sm")">
                                                                 <Field>

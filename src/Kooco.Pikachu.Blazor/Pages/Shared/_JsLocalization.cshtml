@@ -1,0 +1,15 @@
+﻿@using System.Text.Json
+@using Kooco.Pikachu.Localization
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<PikachuResource> L
+
+@{
+    var localization = new
+    {
+        onlyAccepts = L["FilePicker:OnlyAccepts"].Value,
+        maxFileSize = L["FilePicker:MaxFileSize"].Value
+    };
+}
+<script>
+    window.localization = @Html.Raw(JsonSerializer.Serialize(localization));
+</script>

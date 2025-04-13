@@ -220,7 +220,7 @@
     "InvalidFileType": "Invalid File Type",
     "Pikachu:CanNotAddMoreThan20Modules": "Can not add more than 20 modules",
     "GroupBuyList": "Group Buy List",
-    "uploadUpto5Images": "Upload upto 5 images",
+    "uploadUpto5Images": "Upload up to 5 images.",
     "ThisDeleteActionCannotBeReverted": "This Action Cannot Be Reverted. Are You Sure To Delete It?",
     "EnableDragDrop": "Enable Drag Drop",
     "SaveSortOrder": "Save Sort Order",
@@ -1409,6 +1409,8 @@
     "OrdersCompleted": "Completed",
     "TermsAndConditions": "Terms and Conditions",
     "SpecifyTermsAndConditions": "Please specify terms and conditions",
-    "TermsAndConditionsUpdated": "Terms and Conditions Updated!"
+    "TermsAndConditionsUpdated": "Terms and Conditions Updated!",
+    "FilePicker:OnlyAccepts": "Only Accepts",
+    "FilePicker:MaxFileSize": "Max File Size"
   }
 }

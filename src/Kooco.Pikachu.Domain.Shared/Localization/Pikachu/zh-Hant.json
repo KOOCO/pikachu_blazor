@@ -1132,6 +1132,10 @@
     "OrdersCompleted": "已完成",
     "TermsAndConditions": "條款及條件",
     "SpecifyTermsAndConditions": "請指定條款及條件",
-    "TermsAndConditionsUpdated": "條款及條件已更新！"
+    "TermsAndConditionsUpdated": "條款及條件已更新！",
+    "uploadUpto5Images": "最多上傳5張圖片",
+    "FilePicker:OnlyAccepts": "只接受以下檔案",
+    "FilePicker:MaxFileSize": "檔案最大上限",
+    "Carousel": "輪播圖"
   }
 }
