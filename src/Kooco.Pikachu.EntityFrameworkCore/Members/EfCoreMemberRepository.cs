@@ -45,15 +45,23 @@ public class EfCoreMemberRepository(IDbContextProvider<PikachuDbContext> pikachu
         };
     }
 
-    public async Task<long> GetCountAsync(string? filter = null, string? memberType = null, IEnumerable<string>? selectedMemberTags = null)
+    public async Task<long> GetCountAsync(string? filter = null, string? memberType = null, IEnumerable<string>? selectedMemberTags = null,
+        DateTime? minCreationTime = null, DateTime? maxCreationTime = null, int? minOrderCount = null, int? maxOrderCount = null,
+        int? minSpent = null, int? maxSpent = null)
     {
-        var queryable = await GetFilteredQueryableAsync(filter, memberType, selectedMemberTags);
+        var queryable = await GetFilteredQueryableAsync(filter, memberType, selectedMemberTags, minCreationTime, maxCreationTime,
+            minOrderCount, maxOrderCount, minSpent, maxSpent);
+
         return await queryable.LongCountAsync();
     }
 
-    public async Task<List<MemberModel>> GetListAsync(int skipCount, int maxResultCount, string sorting, string? filter = null, string? memberType = null, IEnumerable<string>? selectedMemberTags = null)
+    public async Task<List<MemberModel>> GetListAsync(int skipCount, int maxResultCount, string sorting, string? filter = null, string? memberType = null,
+        IEnumerable<string>? selectedMemberTags = null, DateTime? minCreationTime = null, DateTime? maxCreationTime = null,
+        int? minOrderCount = null, int? maxOrderCount = null, int? minSpent = null, int? maxSpent = null)
     {
-        var query = await GetFilteredQueryableAsync(filter, memberType, selectedMemberTags);
+        var query = await GetFilteredQueryableAsync(filter, memberType, selectedMemberTags, minCreationTime, maxCreationTime,
+            minOrderCount, maxOrderCount, minSpent, maxSpent);
+
         var members = await query
                         .OrderBy(sorting)
                         .Skip(skipCount)
@@ -63,12 +71,18 @@ public class EfCoreMemberRepository(IDbContextProvider<PikachuDbContext> pikachu
         return members;
     }
 
-    private async Task<IQueryable<MemberModel>> GetFilteredQueryableAsync(string? filter, string? memberType, IEnumerable<string>? selectedMemberTags = null)
+    private async Task<IQueryable<MemberModel>> GetFilteredQueryableAsync(string? filter, string? memberType, IEnumerable<string>? selectedMemberTags = null,
+        DateTime? minCreationTime = null, DateTime? maxCreationTime = null, int? minOrderCount = null, int? maxOrderCount = null,
+        int? minSpent = null, int? maxSpent = null)
     {
         selectedMemberTags ??= [];
+        minCreationTime = minCreationTime?.Date;
+        maxCreationTime = maxCreationTime?.Date;
+
         var dbContext = await GetPikachuDbContextAsync();
         var memberRole = await dbContext.Roles.FirstOrDefaultAsync(x => x.Name == MemberConsts.Role);
         var queryable = dbContext.Users
+                    .AsNoTracking()
                     .Include(user => user.Roles)
                     .Where(user => memberRole != null && user.Roles.Any(role => role.RoleId == memberRole.Id))
                     .Select(user => new MemberModel
@@ -78,6 +92,7 @@ public class EfCoreMemberRepository(IDbContextProvider<PikachuDbContext> pikachu
                         Name = user.Name,
                         PhoneNumber = user.PhoneNumber,
                         Email = user.Email,
+                        CreationTime = user.CreationTime,
                         Birthday = (DateTime?)user.GetProperty(Constant.Birthday, null),
                         TotalOrders = dbContext.Orders.Where(x => x.UserId == user.Id && CompletedShippingStatus.Contains(x.ShippingStatus)).Count(),
                         TotalSpent = (int)dbContext.Orders.Where(x => x.UserId == user.Id && CompletedShippingStatus.Contains(x.ShippingStatus)).Sum(x => x.TotalAmount),
@@ -89,7 +104,13 @@ public class EfCoreMemberRepository(IDbContextProvider<PikachuDbContext> pikachu
                     .WhereIf(!string.IsNullOrWhiteSpace(filter), member => member.MemberTags.Contains(filter) || member.UserName.Contains(filter)
                     || member.PhoneNumber.Contains(filter) || member.Email.Contains(filter))
                     .WhereIf(selectedMemberTags.Any(), member => selectedMemberTags.Any(tier => member.MemberTags.Contains(tier)))
-                    .WhereIf(!string.IsNullOrWhiteSpace(memberType), member => member.MemberTags.Contains(memberType));
+                    .WhereIf(!string.IsNullOrWhiteSpace(memberType), member => member.MemberTags.Contains(memberType))
+                    .WhereIf(minCreationTime.HasValue, member => member.CreationTime.Date >= minCreationTime)
+                    .WhereIf(maxCreationTime.HasValue, member => member.CreationTime.Date <= maxCreationTime)
+                    .WhereIf(minOrderCount.HasValue, member => member.TotalOrders >= minOrderCount)
+                    .WhereIf(maxOrderCount.HasValue, member => member.TotalOrders <= maxOrderCount)
+                    .WhereIf(minSpent.HasValue, member => member.TotalSpent >= minSpent)
+                    .WhereIf(maxSpent.HasValue, member => member.TotalSpent <= maxSpent);
 
         return queryable;
     }
@@ -97,7 +118,9 @@ public class EfCoreMemberRepository(IDbContextProvider<PikachuDbContext> pikachu
     public async Task<long> CountOrdersAsync(Guid memberId)
     {
         var dbContext = await GetPikachuDbContextAsync();
-        return await dbContext.Orders.Where(x => x.UserId == memberId).LongCountAsync();
+        return await dbContext.Orders
+            .Where(x => x.UserId == memberId && CompletedShippingStatus.Contains(x.ShippingStatus))
+            .LongCountAsync();
     }
 
     public async Task<VipTier?> CheckForVipTierAsync(Guid userId)

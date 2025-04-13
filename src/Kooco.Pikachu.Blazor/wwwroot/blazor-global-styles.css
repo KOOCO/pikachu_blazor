@@ -339,6 +339,9 @@
     --pk-primary: #6366F1;
     --pk-primary-light: #6366F190;
     --pk-primary-dark: #4549ED;
+    --pk-secondary: #C026D3;
+    --pk-secondary-light: #C026D390;
+    --pk-secondary-dark: #A21CAF;
     --pk-success-light: #F0FDF9;
     --pk-warning: #F59E0B;
     --pk-warning-light: #F59E0B90;
@@ -350,7 +353,7 @@
     --pk-bg-danger-light: #FEF3F2;
     --pk-light: #FFF;
     --pk-semi-light: #FFFFFF80;
-    --pk-dark: #000;
+    --pk-dark: #111827;
     --pk-semi-dark: #00000080;
     --pk-lightgrey: #E9E9E9;
 }
@@ -369,6 +372,7 @@
     font-size: 15px;
     padding: 0.75rem 1rem;
     color: #000;
+    transition: all 0.2s ease-in-out;
 }
 
     .pk-btn:disabled {
@@ -403,6 +407,26 @@
     .pk-btn-primary:disabled {
         background-color: var(--pk-primary-light);
         color: var(--pk-light);
+    }
+
+.pk-btn-secondary {
+    background-color: var(--pk-secondary);
+    color: var(--pk-light);
+    border: 1px solid var(--pk-secondary-dark);
+}
+
+    .pk-btn-secondary:hover {
+        background-color: var(--pk-secondary-dark);
+    }
+
+    .pk-btn-secondary:active {
+        background-color: var(--pk-secondary);
+    }
+
+    .pk-btn-secondary:disabled {
+        background-color: var(--pk-secondary-light);
+        color: var(--pk-light);
+        border-color: var(--pk-secondary-light);
     }
 
 .pk-btn-outline-primary {
@@ -703,8 +727,13 @@
     }
 
 .ant-picker,
-.ant-select {
+.ant-select,
+.ant-input-number {
     width: 100%;
+}
+
+.no-stepper .ant-input-number-handler-wrap {
+    display: none;
 }
 
 .pk-badge {

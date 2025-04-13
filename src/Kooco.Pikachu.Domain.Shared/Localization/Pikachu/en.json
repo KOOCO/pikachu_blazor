@@ -1411,6 +1411,15 @@
     "SpecifyTermsAndConditions": "Please specify terms and conditions",
     "TermsAndConditionsUpdated": "Terms and Conditions Updated!",
     "FilePicker:OnlyAccepts": "Only Accepts",
-    "FilePicker:MaxFileSize": "Max File Size"
+    "FilePicker:MaxFileSize": "Max File Size",
+    "RegistrationDate": "Registration Date",
+    "MinRegistrationDate": "Min Registration Date",
+    "MaxRegistrationDate": "Max Registration Date",
+    "MinOrders": "Min Orders",
+    "MaxOrders": "Max Orders",
+    "MinSpent": "Min Spent",
+    "MaxSpent": "Max Spent",
+    "AddTags": "Add Tags",
+    "AddTag": "Add Tag"
   }
 }

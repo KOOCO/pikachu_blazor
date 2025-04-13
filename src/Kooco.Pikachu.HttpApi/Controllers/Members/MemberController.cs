@@ -185,4 +185,10 @@ public class MemberController(IMemberAppService memberAppService, IPikachuAccoun
     {
         return memberAppService.SetBlacklistedAsync(memberId, blacklisted);
     }
+
+    [HttpPost("members-tags")]
+    public Task AddTagsToMembersAsync(List<Guid> memberIds, List<string> tags)
+    {
+        return memberAppService.AddTagsToMembersAsync(memberIds, tags);
+    }
 }

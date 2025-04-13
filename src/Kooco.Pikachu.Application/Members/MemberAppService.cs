@@ -54,8 +54,12 @@ public class MemberAppService(IObjectMapper objectMapper, IMemberRepository memb
             input.Sorting = nameof(IdentityUser.UserName);
         }
 
-        var totalCount = await memberRepository.GetCountAsync(input.Filter, input.MemberType, input.SelectedMemberTags);
-        var items = await memberRepository.GetListAsync(input.SkipCount, input.MaxResultCount, input.Sorting, input.Filter, input.MemberType, input.SelectedMemberTags);
+        var totalCount = await memberRepository.GetCountAsync(input.Filter, input.MemberType, input.SelectedMemberTags,
+            input.MinCreationTime, input.MaxCreationTime, input.MinOrderCount, input.MaxOrderCount, input.MinSpent, input.MaxSpent);
+
+        var items = await memberRepository.GetListAsync(input.SkipCount, input.MaxResultCount, input.Sorting, input.Filter, input.MemberType, input.SelectedMemberTags,
+            input.MinCreationTime, input.MaxCreationTime, input.MinOrderCount, input.MaxOrderCount, input.MinSpent, input.MaxSpent);
+
         return new PagedResultDto<MemberDto>
         {
             TotalCount = totalCount,
@@ -239,6 +243,19 @@ public class MemberAppService(IObjectMapper objectMapper, IMemberRepository memb
 
         var orders = await orderRepository.GetMemberOrdersByGroupBuyAsync(CurrentUser.Id.Value, groupBuyId);
         return base.ObjectMapper.Map<List<MemberOrderInfoModel>, List<MemberOrderInfoDto>>(orders);
+    }
+
+    public async Task AddTagsToMembersAsync(List<Guid> memberIds, List<string> tags)
+    {
+        if (memberIds.Count == 0 || tags.Count == 0)
+        {
+            return;
+        }
+
+        foreach(var memberId in memberIds)
+        {
+            await memberTagManager.AddTagsForUserAsync(memberId, tags);
+        }
     }
 
     public async Task SetBlacklistedAsync(Guid memberId, bool blacklisted)

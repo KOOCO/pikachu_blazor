@@ -2,6 +2,7 @@ using AngleSharp.Common;
 using Blazorise;
 using Blazorise.DataGrid;
 using Kooco.Pikachu.Members;
+using Microsoft.AspNetCore.Components;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,11 +27,17 @@ public partial class Members
     private bool FiltersVisible { get; set; } = false;
     private bool IsExporting { get; set; }
 
+    private Modal TagModal;
+    private string TagInputValue { get; set; } = "";
+    private List<string> TagsList { get; set; } = [];
+    private bool AddingTags { get; set; } = false;
+
     public Members()
     {
         MembersList = [];
         MemberTagOptions = [];
         Filters = new();
+        SelectedMembers = [];
     }
 
     protected override async Task OnInitializedAsync()
@@ -67,7 +74,13 @@ public partial class Members
                     Sorting = CurrentSorting,
                     Filter = Filters.Filter,
                     MemberType = Filters.MemberType,
-                    SelectedMemberTags = Filters.SelectedMemberTags
+                    SelectedMemberTags = Filters.SelectedMemberTags,
+                    MinCreationTime = Filters.MinCreationTime,
+                    MaxCreationTime = Filters.MaxCreationTime,
+                    MinOrderCount = Filters.MinOrderCount,
+                    MaxOrderCount = Filters.MaxOrderCount,
+                    MinSpent = Filters.MinSpent,
+                    MaxSpent = Filters.MaxSpent
                 }
             );
 
@@ -141,6 +154,70 @@ public partial class Members
         await GetMembersAsync();
 
         await InvokeAsync(StateHasChanged);
+    }
+
+    void OnClose(string item)
+    {
+        TagsList.Remove(item);
+    }
+
+    void HandleInputConfirm()
+    {
+        if (string.IsNullOrEmpty(TagInputValue))
+        {
+            CancelInput();
+            return;
+        }
+
+        string? res = TagsList.Find(s => s == TagInputValue);
+
+        if (string.IsNullOrEmpty(res))
+        {
+            TagsList.Add(TagInputValue);
+        }
+
+        CancelInput();
+    }
+
+    void CancelInput()
+    {
+        TagInputValue = "";
+    }
+
+    void OpenTagModal()
+    {
+        TagsList = [];
+        TagModal?.Show();
+    }
+
+    void CloseTagModal()
+    {
+        TagModal?.Hide();
+    }
+
+    async Task AddTagsToMembersAsync()
+    {
+        try
+        {
+            if (SelectedMembers.Count == 0 || TagsList.Count == 0)
+            {
+                return;
+            }
+
+            AddingTags = true;
+            
+            var selectedIds = SelectedMembers.Select(member => member.Id).ToList();
+            await MemberAppService.AddTagsToMembersAsync(selectedIds, TagsList);
+            
+            CloseTagModal();
+
+            AddingTags = false;
+        }
+        catch(Exception ex)
+        {
+            AddingTags = false;
+            await HandleErrorAsync(ex);
+        }
     }
 
     private static bool RowSelectableHandler(RowSelectableEventArgs<MemberDto> rowSelectableEventArgs)

@@ -27,6 +27,10 @@
                 <Icon Name="IconName.FileDownload" Display="IsExporting ? Display.None : Display.InlineBlock"></Icon>
                 @L["ExportAll"]
             </PikachuButton>
+            <PikachuButton Class="pk-btn-sm pk-btn-secondary ms-2" Clicked="OpenTagModal" IconClass="fas fa-add"
+                           Disabled="SelectedMembers == null || SelectedMembers.Count == 0">
+                @L["AddTags"]
+            </PikachuButton>
         </Column>
     </Row>
 </Div>
@@ -51,7 +55,7 @@
         </Row>
         @if (FiltersVisible)
         {
-            <Row Class="mt-2">
+            <Row Class="mt-2" VerticalGutter="10">
                 <Column ColumnSize="ColumnSize.Is3">
                     <Label>@L["MemberType"]</Label>
                     <AntDesign.Select @bind-Value="@Filters.MemberType"
@@ -84,7 +88,39 @@
                     </AntDesign.Select>
                 </Column>
                 <Column ColumnSize="ColumnSize.Is3">
-                    <Div Class="d-flex align-items-end gap-1 h-100">
+                    <Label>@L["MinRegistrationDate"]</Label>
+                    <AntDesign.DatePicker TValue="DateTime?" Picker="AntDesign.DatePickerType.Date" @bind-Value="Filters.MinCreationTime" />
+                </Column>
+                <Column ColumnSize="ColumnSize.Is3">
+                    <Label>@L["MaxRegistrationDate"]</Label>
+                    <AntDesign.DatePicker TValue="DateTime?" Picker="AntDesign.DatePickerType.Date" @bind-Value="Filters.MaxCreationTime" />
+                </Column>
+                <Column ColumnSize="ColumnSize.Is3">
+                    <Label>@L["MinOrders"]</Label>
+                    <AntDesign.InputNumber Class="no-stepper" @bind-Value="Filters.MinOrderCount" Min="0" />
+                </Column>
+                <Column ColumnSize="ColumnSize.Is3">
+                    <Label>@L["MaxOrders"]</Label>
+                    <AntDesign.InputNumber Class="no-stepper" @bind-Value="Filters.MaxOrderCount" Min="0" />
+                </Column>
+                <Column ColumnSize="ColumnSize.Is3">
+                    <Label>@L["MinSpent"]</Label>
+                    <AntDesign.InputNumber Class="no-stepper"
+                                           @bind-Value="Filters.MinSpent" Min="0"
+                                           Formatter="AntHelper.FormatAmount"
+                                           Parser="AntHelper.ParseAmount">
+                    </AntDesign.InputNumber>
+                </Column>
+                <Column ColumnSize="ColumnSize.Is3">
+                    <Label>@L["MaxSpent"]</Label>
+                    <AntDesign.InputNumber Class="no-stepper"
+                                           @bind-Value="Filters.MaxSpent" Min="0"
+                                           Formatter="AntHelper.FormatAmount"
+                                           Parser="AntHelper.ParseAmount">
+                    </AntDesign.InputNumber>
+                </Column>
+                <Column ColumnSize="ColumnSize.Is12">
+                    <Div Class="d-flex justify-content-end gap-1 w-100">
                         <Button Class="btn-sm btn-outline-primary" Clicked="ResetFilters">
                             <Icon Name="IconName.Undo"></Icon>
                             @L["Reset"]
@@ -193,16 +229,26 @@
                 </DataGridColumn>
                 <DataGridColumn TItem="MemberDto"
                                 Field="@nameof(MemberDto.TotalOrders)"
-                                Caption="@L["Orders"]">
+                                Caption="@L["Orders"]"
+                                TextAlignment="TextAlignment.Center">
                     <DisplayTemplate>
                         @context.TotalOrders.ToString("N0")
                     </DisplayTemplate>
                 </DataGridColumn>
                 <DataGridColumn TItem="MemberDto"
                                 Field="@nameof(MemberDto.TotalSpent)"
-                                Caption="@L["Spent"]">
+                                Caption="@L["Spent"]"
+                                TextAlignment="TextAlignment.End">
                     <DisplayTemplate>
-                        $ @context.TotalSpent.ToString("N2")
+                        <Span Class="text-nowrap">$ @context.TotalSpent.ToString("N2")</Span>
+                    </DisplayTemplate>
+                </DataGridColumn>
+                <DataGridColumn TItem="MemberDto"
+                                Field="@nameof(MemberDto.CreationTime)"
+                                Caption="@L["RegistrationDate"]"
+                                TextAlignment="TextAlignment.Center">
+                    <DisplayTemplate>
+                        @context.CreationTime.ToString("MMM dd, yyyy")
                     </DisplayTemplate>
                 </DataGridColumn>
             </DataGridColumns>
@@ -211,3 +257,35 @@
 </Card>
 
 
+<Modal @ref="TagModal">
+    <ModalContent IsCentered="true">
+        <ModalHeader>
+            <ModalTitle>@L["AddTags"]</ModalTitle>
+            <CloseButton Clicked="CloseTagModal" />
+        </ModalHeader>
+        <ModalBody>
+            <div>
+                <Field>
+                    <AntDesign.Input @bind-Value="TagInputValue" Size="AntDesign.InputSize.Large"
+                                     OnBlur="HandleInputConfirm" OnPressEnter="HandleInputConfirm"
+                                     AutoFocus Placeholder="@L["AddTag"]">
+                    </AntDesign.Input>
+                </Field>
+                @foreach (var item in TagsList)
+                {
+                    <AntDesign.Tag Color="AntDesign.TagColor.Blue" @key="item" Closable OnClose="() => OnClose(item)">
+                        @item
+                    </AntDesign.Tag>
+                }
+            </div>
+        </ModalBody>
+        <ModalFooter>
+            <PikachuButton Class="pk-btn-primary"
+                           Disabled="SelectedMembers.Count == 0 || TagsList.Count == 0"
+                           Clicked="AddTagsToMembersAsync"
+                           Loading="AddingTags">
+                @L["AddTags"]
+            </PikachuButton>
+        </ModalFooter>
+    </ModalContent>
+</Modal>

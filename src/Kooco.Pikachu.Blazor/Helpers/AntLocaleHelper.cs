@@ -1,5 +1,6 @@
 ﻿using AntDesign;
 using System.Globalization;
+using System.Text.RegularExpressions;
 
 namespace Kooco.Pikachu.Blazor.Helpers;
 
@@ -31,5 +32,18 @@ public class AntLocaleHelper
     public static string GetFormat()
     {
         return CultureInfo.CurrentUICulture.Name == "zh-Hant" ? "yyyy年MM月dd日" : "yyyy-MM-dd";
+    }
+}
+
+public class AntHelper
+{
+    public static string FormatAmount(int? value)
+    {
+        return "$ " + value?.ToString("n0");
+    }
+
+    public static string ParseAmount(string value)
+    {
+        return Regex.Replace(value, @"\$\s?|(,*)", "");
     }
 }
