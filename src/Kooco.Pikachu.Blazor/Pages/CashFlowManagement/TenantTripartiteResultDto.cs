@@ -2,8 +2,8 @@
 using System.ComponentModel.DataAnnotations;
 using InvoiceType = Kooco.Pikachu.Orders.Invoices.InvoiceType;
 
-namespace Kooco.Pikachu.Tenants.ElectronicInvoiceSettings;
-public class CreateUpdateElectronicInvoiceDto
+namespace Kooco.Pikachu.Blazor.Pages.CashFlowManagement;
+public class TenantTripartiteResultDto
 {
     public bool IsEnable { get; set; }
 
@@ -23,8 +23,8 @@ public class CreateUpdateElectronicInvoiceDto
     public InvoiceType InvoiceType { get; set; }
 
     [Required]
-    public int? DaysAfterShipmentGenerateInvoice { get; set; }
+    public DeliveryStatus StatusOnInvoiceIssue { get; set; }
 
     [Required]
-    public DeliveryStatus? StatusOnInvoiceIssue { get; set; }
+    public int DaysAfterShipmentGenerateInvoice { get; set; }
 }

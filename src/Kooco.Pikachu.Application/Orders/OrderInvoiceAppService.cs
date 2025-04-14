@@ -31,6 +31,8 @@ public class OrderInvoiceAppService : PikachuAppService, IOrderInvoiceAppService
             throw new InvalidOperationException("訂單已有未作廢發票，不能重複建立");
         }
 
+        if(CurrentTenant?.Id == null) return "";
+
         var setting = await TenantTripartiteRepository.FindByTenantAsync(CurrentTenant.Id.Value);
 
         var order = (await OrderRepository.GetQueryableAsync())

@@ -1,13 +1,11 @@
 ﻿using Kooco.Pikachu.EnumValues;
 using System;
 using Volo.Abp.Application.Dtos;
-using Volo.Abp.MultiTenancy;
 using InvoiceType = Kooco.Pikachu.Orders.Invoices.InvoiceType;
 
-namespace Kooco.Pikachu.Tenants.ElectronicInvoiceSettings;
-public class ElectronicInvoiceSettingDto : FullAuditedEntityDto<Guid>, IMultiTenant
+namespace Kooco.Pikachu.Tenants.Responses;
+public class TenantTripartiteDto : CreationAuditedEntityDto<Guid>
 {
-    public Guid? TenantId { get; set; }
     public bool IsEnable { get; set; }
     public string StoreCode { get; set; }
     public string HashKey { get; set; }

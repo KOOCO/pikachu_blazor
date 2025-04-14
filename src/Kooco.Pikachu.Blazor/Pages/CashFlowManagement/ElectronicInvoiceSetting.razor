@@ -47,14 +47,14 @@
     </div>
     <Card>
         <CardBody>
-            <Validations @ref="@CreateValidationsRef" Model="@CreateUpdateElectronicInvoiceDto" ValidateOnLoad="false">
+            <Validations @ref="@CreateValidationsRef" Model="@ResultDto" ValidateOnLoad="false">
                 <!-- Use ECPay electronic receipt -->
                 <div class="col-12 row mb-3">
                     <div class="col-3 text-lg-end">
                         <FieldLabel>@L["UseECPayelectronicreceipt"]</FieldLabel>
                     </div>
                     <div class="col-9">
-                        <Switch TValue="bool" Disabled="@(!CanSave)" @bind-Checked="@CreateUpdateElectronicInvoiceDto.IsEnable"></Switch>
+                        <Switch TValue="bool" Disabled="@(!CanSave)" @bind-Checked="@ResultDto.IsEnable"></Switch>
                         @if (!CanSave)
                         {
                             <AntDesign.Alert Type="@AntDesign.AlertType.Error"
@@ -80,7 +80,7 @@
                     <div class="col-9">
                         <Validation>
                             <TextEdit class="form-control"
-                                      @bind-Text="@CreateUpdateElectronicInvoiceDto.StoreCode">
+                                      @bind-Text="@ResultDto.StoreCode">
                                 <Feedback>
                                     <ValidationError></ValidationError>
                                 </Feedback>
@@ -97,7 +97,7 @@
                     <div class="col-9">
                         <Validation>
                             <TextEdit class="form-control"
-                                      @bind-Text="@CreateUpdateElectronicInvoiceDto.HashKey">
+                                      @bind-Text="@ResultDto.HashKey">
                                 <Feedback>
                                     <ValidationError></ValidationError>
                                 </Feedback>
@@ -114,7 +114,7 @@
                     <div class="col-9">
                         <Validation>
                             <TextEdit class="form-control"
-                                      @bind-Text="@CreateUpdateElectronicInvoiceDto.HashIV">
+                                      @bind-Text="@ResultDto.HashIV">
                                 <Feedback>
                                     <ValidationError></ValidationError>
                                 </Feedback>
@@ -131,7 +131,7 @@
                     <div class="col-9">
                         <Validation>
                             <TextEdit class="form-control"
-                                      @bind-Text="@CreateUpdateElectronicInvoiceDto.DisplayInvoiceName">
+                                      @bind-Text="@ResultDto.DisplayInvoiceName">
                                 <Feedback>
                                     <ValidationError></ValidationError>
                                 </Feedback>
@@ -149,7 +149,7 @@
                         <Validation>
                             <Select TValue="InvoiceType"
                                     class="form-control"
-                                    @bind-SelectedValue="@CreateUpdateElectronicInvoiceDto.InvoiceType">
+                                    @bind-SelectedValue="@ResultDto.InvoiceType">
                                 <Feedback>
                                     <ValidationError></ValidationError>
                                 </Feedback>
@@ -172,11 +172,11 @@
                     </div>
                     <div class="col-9">
                         <Validation>
-                            <NumericEdit TValue="int?"
+                            <NumericEdit TValue="int"
                                          Min="0"
                                          Max="90"
                                          class="form-control"
-                                         @bind-Value="@CreateUpdateElectronicInvoiceDto.DaysAfterShipmentGenerateInvoice">
+                                         @bind-Value="@ResultDto.DaysAfterShipmentGenerateInvoice">
                                 <Feedback>
                                     <ValidationError></ValidationError>
                                 </Feedback>
@@ -192,9 +192,9 @@
                     </div>
                     <div class="col-9">
                         <Validation>
-                            <Select TValue="DeliveryStatus?"
+                            <Select TValue="DeliveryStatus"
                                     class="form-control"
-                                    @bind-SelectedValue="@CreateUpdateElectronicInvoiceDto.StatusOnInvoiceIssue">
+                                    @bind-SelectedValue="@ResultDto.StatusOnInvoiceIssue">
                                 <Feedback>
                                     <ValidationError></ValidationError>
                                 </Feedback>
@@ -227,21 +227,21 @@
 </div>
 
 @code {
-    private bool CanSave => IsValid();
+    private bool CanSave => true; //IsValid()
 
-    private bool IsValid()
-    {
-        // Ensure all required fields are not null or empty and match validation rules.
-        var result = !string.IsNullOrWhiteSpace(CreateUpdateElectronicInvoiceDto.StoreCode)
-            && !string.IsNullOrWhiteSpace(CreateUpdateElectronicInvoiceDto.HashKey)
-            && !string.IsNullOrWhiteSpace(CreateUpdateElectronicInvoiceDto.HashIV)
-            && !string.IsNullOrWhiteSpace(CreateUpdateElectronicInvoiceDto.DisplayInvoiceName)
-            && (CreateUpdateElectronicInvoiceDto.DaysAfterShipmentGenerateInvoice.HasValue && CreateUpdateElectronicInvoiceDto.DaysAfterShipmentGenerateInvoice > -1)
-            && (CreateUpdateElectronicInvoiceDto.StatusOnInvoiceIssue.HasValue && Enum.IsDefined(typeof(DeliveryStatus), CreateUpdateElectronicInvoiceDto.StatusOnInvoiceIssue));
-        if (!result)
-        {
-            CreateUpdateElectronicInvoiceDto.IsEnable = false;
-        }
-        return result;
-    }
+    // private bool IsValid()
+    // {
+    //     // Ensure all required fields are not null or empty and match validation rules.
+    //     var result = !string.IsNullOrWhiteSpace(ResultDto.StoreCode)
+    //         && !string.IsNullOrWhiteSpace(ResultDto.HashKey)
+    //         && !string.IsNullOrWhiteSpace(ResultDto.HashIV)
+    //         && !string.IsNullOrWhiteSpace(ResultDto.DisplayInvoiceName)
+    //         && (ResultDto.DaysAfterShipmentGenerateInvoice && ResultDto.DaysAfterShipmentGenerateInvoice > -1)
+    //         && (ResultDto.StatusOnInvoiceIssue && Enum.IsDefined(typeof(DeliveryStatus), ResultDto.StatusOnInvoiceIssue));
+    //     if (!result)
+    //     {
+    //         ResultDto.IsEnable = false;
+    //     }
+    //     return result;
+    // }
 }

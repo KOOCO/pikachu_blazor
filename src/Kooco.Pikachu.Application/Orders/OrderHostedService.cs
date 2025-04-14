@@ -6,7 +6,6 @@ using Microsoft.Extensions.Hosting;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Volo.Abp.Data;
 using Volo.Abp.MultiTenancy;
 using Volo.Abp.TenantManagement;
 
@@ -26,7 +25,7 @@ internal sealed class OrderHostedService : HostedServiceBase<OrderHostedService>
         {
             using (DataFilter.Disable<IMultiTenant>())
             {
-                var tripartite = await tenantTripartiteRepository.FindAsync(x => x.TenantId == tenant.Id);
+                var tripartite = await tenantTripartiteRepository.FindByTenantAsync(tenant.Id, ct: ct);
                 if (tripartite is null) continue;
 
                 var orderDeliveries = await orderDeliveryRepository.GetByStatusAsync(

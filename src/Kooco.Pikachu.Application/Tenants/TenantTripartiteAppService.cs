@@ -1,49 +1,58 @@
-﻿using Kooco.Pikachu.Tenants.ElectronicInvoiceSettings;
+﻿using AutoMapper;
 using Kooco.Pikachu.Tenants.Entities;
 using Kooco.Pikachu.Tenants.Repositories;
-using System;
-using System.Linq;
+using Kooco.Pikachu.Tenants.Requests;
+using Kooco.Pikachu.Tenants.Responses;
 using System.Threading.Tasks;
 using Volo.Abp;
+using Volo.Abp.Domain.Repositories;
 
 namespace Kooco.Pikachu.Tenants;
 
 [RemoteService(IsEnabled = false)]
-public class TenantTripartiteAppService(ITenantTripartiteRepository repository) : PikachuAppService, ITenantTripartiteAppService
+public class TenantTripartiteAppService : PikachuAppService, ITenantTripartiteAppService
 {
-    public async Task<ElectronicInvoiceSettingDto> GetSettingAsync()
+    public async Task<TenantTripartiteDto?> FindAsync()
     {
-        var query = await repository.FindByTenantAsync(CurrentUser.Id.Value);
-        return ObjectMapper.Map<TenantTripartite, ElectronicInvoiceSettingDto>(query);
+        var tenantId = CurrentTenant.Id.Value;
+        var query = await TenantTripartiteRepository.FindByTenantAsync(tenantId);
+        if (query is not null) return ObjectMapper.Map<TenantTripartite, TenantTripartiteDto>(query);
+        return default;
     }
-    public async Task<ElectronicInvoiceSettingDto> CreateAsyc(CreateUpdateElectronicInvoiceDto input)
+    public async Task<TenantTripartiteDto> AddAsync(CreateTenantTripartiteDto input)
     {
-        var setting = new TenantTripartite(
-            Guid.NewGuid(),
-            input.IsEnable,
-            input.StoreCode,
-            input.HashKey,
-            input.HashIV,
-            input.DisplayInvoiceName,
-            input.InvoiceType,
-            input.StatusOnInvoiceIssue.Value,
-            input.DaysAfterShipmentGenerateInvoice.Value);
-        _ = await repository.InsertAsync(setting);
-        return ObjectMapper.Map<TenantTripartite, ElectronicInvoiceSettingDto>(setting);
+        var tenantId = CurrentTenant.Id.Value;
+        if (await TenantTripartiteRepository.AnyAsync(x => x.TenantId == tenantId))
+        {
+            throw new UserFriendlyException("已存在租戶三方資料，無法重複新增");
+        }
+
+        input.TenantId = tenantId;
+        var entity = ObjectMapper.Map<CreateTenantTripartiteDto, TenantTripartite>(input);
+        var result = await TenantTripartiteRepository.InsertAsync(entity);
+        return ObjectMapper.Map<TenantTripartite, TenantTripartiteDto>(result);
     }
-    public async Task<ElectronicInvoiceSettingDto> UpdateAsyc(Guid Id, CreateUpdateElectronicInvoiceDto input)
+    public async Task<TenantTripartiteDto> PutAsync(UpdateTenantTripartiteDto input)
     {
-        var query = await repository.FindByTenantAsync(CurrentUser.Id.Value);
-        var setting = query;
-        setting.IsEnable = input.IsEnable;
-        setting.StoreCode = input.StoreCode;
-        setting.HashKey = input.HashKey;
-        setting.HashIV = input.HashIV;
-        setting.InvoiceType = input.InvoiceType;
-        setting.DisplayInvoiceName = input.DisplayInvoiceName;
-        setting.DaysAfterShipmentGenerateInvoice = input.DaysAfterShipmentGenerateInvoice.Value;
-        setting.StatusOnInvoiceIssue = input.StatusOnInvoiceIssue.Value;
-        var result = await repository.UpdateAsync(setting);
-        return ObjectMapper.Map<TenantTripartite, ElectronicInvoiceSettingDto>(setting);
+        var tenantId = CurrentTenant.Id.Value;
+        var entity = await TenantTripartiteRepository.FindByTenantAsync(tenantId)
+            ?? throw new UserFriendlyException("不存在租戶三方資料，無法更新");
+
+        input.TenantId = tenantId;
+        ObjectMapper.Map(input, entity);
+        var result = await TenantTripartiteRepository.UpsertAsync(entity);
+        return ObjectMapper.Map<TenantTripartite, TenantTripartiteDto>(result);
     }
+
+    public class AppProfile : Profile
+    {
+        public AppProfile()
+        {
+            CreateMap<CreateTenantTripartiteDto, TenantTripartite>();
+            CreateMap<UpdateTenantTripartiteDto, TenantTripartite>();
+            CreateMap<TenantTripartite, TenantTripartiteDto>();
+        }
+    }
+
+    public required ITenantTripartiteRepository TenantTripartiteRepository { get; init; }
 }

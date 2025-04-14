@@ -1,7 +1,7 @@
 ﻿using Kooco.Pikachu.TenantManagement;
 using System;
 
-namespace Kooco.Pikachu.Tenants.TenantWallet.Request;
+namespace Kooco.Pikachu.Tenants.Requests;
 public class CreateWalletTransactionDto
 {
     public required Guid TenantWalletId { get; set; }

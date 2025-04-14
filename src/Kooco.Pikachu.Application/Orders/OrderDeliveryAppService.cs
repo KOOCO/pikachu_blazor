@@ -5,7 +5,6 @@ using Kooco.Pikachu.Orders.Entities;
 using Kooco.Pikachu.Orders.Interfaces;
 using Kooco.Pikachu.Orders.Repositories;
 using Kooco.Pikachu.Orders.Services;
-using Kooco.Pikachu.Tenants.ElectronicInvoiceSettings;
 using Kooco.Pikachu.Tenants.Repositories;
 using System;
 using System.Collections.Generic;
@@ -13,7 +12,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.BackgroundJobs;
-using Volo.Abp.Domain.Repositories;
 
 namespace Kooco.Pikachu.Orders;
 

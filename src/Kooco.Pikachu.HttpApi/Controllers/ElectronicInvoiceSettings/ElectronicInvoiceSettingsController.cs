@@ -1,8 +1,8 @@
 ﻿using Asp.Versioning;
 using Kooco.Pikachu.Tenants;
-using Kooco.Pikachu.Tenants.ElectronicInvoiceSettings;
+using Kooco.Pikachu.Tenants.Requests;
+using Kooco.Pikachu.Tenants.Responses;
 using Microsoft.AspNetCore.Mvc;
-using System;
 using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.AspNetCore.Mvc;
@@ -13,25 +13,25 @@ namespace Kooco.Pikachu.Controllers.ElectronicInvoiceSettings;
 [ControllerName("ElectronicInvoiceSettings")]
 [Area("app")]
 [Route("api/app/electronic-invoice-settings")]
-public class ElectronicInvoiceSettingsController(
-    ITenantTripartiteAppService _electronicInvoiceSettingAppService
-    ) : AbpController, ITenantTripartiteAppService
+public class ElectronicInvoiceSettingsController : AbpController
 {
     [HttpPost]
-    public Task<ElectronicInvoiceSettingDto> CreateAsyc(CreateUpdateElectronicInvoiceDto input)
+    public Task<TenantTripartiteDto> CreateAsyc(CreateTenantTripartiteDto input)
     {
-        return _electronicInvoiceSettingAppService.CreateAsyc(input);
+        return TenantTripartiteAppService.AddAsync(input);
     }
 
     [HttpGet]
-    public Task<ElectronicInvoiceSettingDto> GetSettingAsync()
+    public Task<TenantTripartiteDto> GetSettingAsync()
     {
-        return _electronicInvoiceSettingAppService.GetSettingAsync();
+        return TenantTripartiteAppService.FindAsync();
     }
 
     [HttpPut]
-    public Task<ElectronicInvoiceSettingDto> UpdateAsyc(Guid Id, CreateUpdateElectronicInvoiceDto input)
+    public Task<TenantTripartiteDto> UpdateAsyc(UpdateTenantTripartiteDto input)
     {
-        return _electronicInvoiceSettingAppService.UpdateAsyc(Id, input);
+        return TenantTripartiteAppService.PutAsync(input);
     }
+
+    public required ITenantTripartiteAppService TenantTripartiteAppService { get; init; }
 }
