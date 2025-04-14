@@ -1,14 +1,12 @@
-﻿using Kooco.Pikachu.Tenants.ElectronicInvoiceSettings;
-using System;
+﻿using Kooco.Pikachu.Tenants.Requests;
+using Kooco.Pikachu.Tenants.Responses;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Services;
 
-namespace Kooco.Pikachu.Tenants
+namespace Kooco.Pikachu.Tenants;
+public interface ITenantTripartiteAppService : IApplicationService
 {
-    public interface ITenantTripartiteAppService : IApplicationService
-    {
-        Task<ElectronicInvoiceSettingDto> GetSettingAsync();
-        Task<ElectronicInvoiceSettingDto> CreateAsyc(CreateUpdateElectronicInvoiceDto input);
-        Task<ElectronicInvoiceSettingDto> UpdateAsyc(Guid Id, CreateUpdateElectronicInvoiceDto input);
-    }
+    Task<TenantTripartiteDto?> FindAsync();
+    Task<TenantTripartiteDto> AddAsync(CreateTenantTripartiteDto input);
+    Task<TenantTripartiteDto> PutAsync(UpdateTenantTripartiteDto input);
 }

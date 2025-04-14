@@ -1,37 +1,41 @@
 ﻿using Blazorise;
 using Kooco.Pikachu.Tenants;
-using Kooco.Pikachu.Tenants.ElectronicInvoiceSettings;
+using Kooco.Pikachu.Tenants.Responses;
 using System;
 using System.Threading.Tasks;
 using Volo.Abp.AspNetCore.Components.Messages;
-using Volo.Abp.ObjectMapping;
 
 namespace Kooco.Pikachu.Blazor.Pages.CashFlowManagement;
-public partial class ElectronicInvoiceSetting(ITenantTripartiteAppService appService, IObjectMapper objectMapper, IUiMessageService uiMessageService)
+public partial class ElectronicInvoiceSetting
 {
-    private CreateUpdateElectronicInvoiceDto CreateUpdateElectronicInvoiceDto = new();
     protected Validations CreateValidationsRef;
-
-    public Guid Id { get; set; }
     protected override async Task OnInitializedAsync()
     {
         try
         {
-            var setting = await appService.GetSettingAsync();
+            var tripartiteDto = await TenantTripartiteAppService.FindAsync();
 
-            if (setting != null)
+            if (tripartiteDto != null)
             {
-                Id = (Guid)(setting?.Id);
-                CreateUpdateElectronicInvoiceDto = setting != null ?
-                    objectMapper.Map<ElectronicInvoiceSettingDto, CreateUpdateElectronicInvoiceDto>(setting) :
-                    new();
+                Id = tripartiteDto.Id;
+                ResultDto = new()
+                {
+                    IsEnable = tripartiteDto.IsEnable,
+                    StoreCode = tripartiteDto.StoreCode,
+                    StatusOnInvoiceIssue = tripartiteDto.StatusOnInvoiceIssue,
+                    InvoiceType = tripartiteDto.InvoiceType,
+                    HashKey = tripartiteDto.HashKey,
+                    HashIV = tripartiteDto.HashIV,
+                    DisplayInvoiceName = tripartiteDto.DisplayInvoiceName,
+                    DaysAfterShipmentGenerateInvoice = tripartiteDto.DaysAfterShipmentGenerateInvoice,
+                };
 
                 StateHasChanged();
             }
         }
         catch (Exception ex)
         {
-            await uiMessageService.Error(ex.GetType().ToString());
+            await UiMessageService.Error(ex.GetType().ToString());
         }
     }
     protected virtual async Task CreateEntityAsync()
@@ -43,23 +47,56 @@ public partial class ElectronicInvoiceSetting(ITenantTripartiteAppService appSer
         }
         if (validate)
         {
-            if (Id == Guid.Empty)
+            TenantTripartiteDto tripartiteDto;
+            var tripartite = await TenantTripartiteAppService.FindAsync();
+            if (tripartite is null)
             {
-                var result = await appService.CreateAsyc(CreateUpdateElectronicInvoiceDto);
-                CreateUpdateElectronicInvoiceDto = objectMapper.Map<ElectronicInvoiceSettingDto, CreateUpdateElectronicInvoiceDto>(result);
-                StateHasChanged();
-
-                await uiMessageService.Success(L["Setting Update Successfully"]);
+                tripartiteDto = await TenantTripartiteAppService.AddAsync(new()
+                {
+                    DisplayInvoiceName = ResultDto.DisplayInvoiceName,
+                    HashIV = ResultDto.HashIV,
+                    HashKey = ResultDto.HashKey,
+                    InvoiceType = ResultDto.InvoiceType,
+                    IsEnable = ResultDto.IsEnable,
+                    StatusOnInvoiceIssue = ResultDto.StatusOnInvoiceIssue,
+                    StoreCode = ResultDto.StoreCode,
+                    DaysAfterShipmentGenerateInvoice = ResultDto.DaysAfterShipmentGenerateInvoice,
+                });
             }
             else
             {
-
-                var result = await appService.UpdateAsyc(Id, CreateUpdateElectronicInvoiceDto);
-                CreateUpdateElectronicInvoiceDto = objectMapper.Map<ElectronicInvoiceSettingDto, CreateUpdateElectronicInvoiceDto>(result);
-                StateHasChanged();
-
-                await uiMessageService.Success(L["Setting Update Successfully"]);
+                tripartiteDto = await TenantTripartiteAppService.PutAsync(new()
+                {
+                    DaysAfterShipmentGenerateInvoice = ResultDto.DaysAfterShipmentGenerateInvoice,
+                    DisplayInvoiceName = ResultDto.DisplayInvoiceName,
+                    HashIV = ResultDto.HashIV,
+                    HashKey = ResultDto.HashKey,
+                    InvoiceType = ResultDto.InvoiceType,
+                    IsEnable = ResultDto.IsEnable,
+                    StatusOnInvoiceIssue = ResultDto.StatusOnInvoiceIssue,
+                    StoreCode = ResultDto.StoreCode,
+                    Id = tripartite.Id,
+                });
             }
+
+            ResultDto = new()
+            {
+                StoreCode = tripartiteDto.StoreCode,
+                StatusOnInvoiceIssue = tripartiteDto.StatusOnInvoiceIssue,
+                IsEnable = tripartiteDto.IsEnable,
+                InvoiceType = tripartiteDto.InvoiceType,
+                HashIV = tripartiteDto.HashIV,
+                DisplayInvoiceName = tripartiteDto.DisplayInvoiceName,
+                DaysAfterShipmentGenerateInvoice = tripartiteDto.DaysAfterShipmentGenerateInvoice,
+                HashKey = tripartiteDto.HashKey,
+            };
+            await UiMessageService.Success(L["Setting Update Successfully"]);
+            StateHasChanged();
         }
     }
+
+    public Guid Id { get; set; }
+    public TenantTripartiteResultDto ResultDto { get; set; } = new();
+    public required IUiMessageService UiMessageService { get; init; }
+    public required ITenantTripartiteAppService TenantTripartiteAppService { get; init; }
 }

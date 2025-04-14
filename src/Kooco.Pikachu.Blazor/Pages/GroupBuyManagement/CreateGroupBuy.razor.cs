@@ -20,7 +20,8 @@ using Kooco.Pikachu.Localization;
 using Kooco.Pikachu.LogisticsProviders;
 using Kooco.Pikachu.PaymentGateways;
 using Kooco.Pikachu.Tenants;
-using Kooco.Pikachu.Tenants.ElectronicInvoiceSettings;
+using Kooco.Pikachu.Tenants.Requests;
+using Kooco.Pikachu.Tenants.Responses;
 using Microsoft.AspNetCore.Components;
 
 using Microsoft.AspNetCore.Components.Web;
@@ -133,7 +134,7 @@ public partial class CreateGroupBuy
     private readonly ITenantTripartiteAppService _electronicInvoiceSettingAppService;
 
     public List<LogisticsProviderSettingsDto> LogisticsProviders = [];
-    public ElectronicInvoiceSettingDto ElectronicInvoiceSetting = new ElectronicInvoiceSettingDto();
+    public TenantTripartiteDto TenantTripartiteDto = new();
     public List<PaymentGatewayDto> PaymentGateways = [];
     private readonly ILogisticsProvidersAppService _LogisticsProvidersAppService;
     private readonly IPaymentGatewayAppService _paymentGatewayAppService;
@@ -217,7 +218,7 @@ public partial class CreateGroupBuy
         ItemsList.AddRange(SetItemList);
 
         LogisticsProviders = await _LogisticsProvidersAppService.GetAllAsync();
-        ElectronicInvoiceSetting = await _electronicInvoiceSettingAppService.GetSettingAsync();
+        TenantTripartiteDto = await _electronicInvoiceSettingAppService.FindAsync();
         PaymentGateways = await _paymentGatewayAppService.GetAllAsync();
     }
 
@@ -589,11 +590,11 @@ public partial class CreateGroupBuy
 
     public bool IsInvoiceEnable()
     {
-        if (ElectronicInvoiceSetting == null)
+        if (TenantTripartiteDto == null)
         {
             return true;
         }
-        return !ElectronicInvoiceSetting.IsEnable;
+        return !TenantTripartiteDto.IsEnable;
 
 
     }

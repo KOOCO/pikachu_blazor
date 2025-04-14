@@ -10,5 +10,8 @@ public sealed class TenantTripartiteMap : IEntityTypeConfiguration<TenantTripart
     {
         builder.ToTable(typeof(TenantTripartite).ToDatabaseName());
         builder.ConfigureByConvention();
+
+        builder.HasIndex(x => x.TenantId)
+            .IsUnique();
     }
 }

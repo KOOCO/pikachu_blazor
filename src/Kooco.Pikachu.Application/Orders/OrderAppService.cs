@@ -16,7 +16,6 @@ using Kooco.Pikachu.PaymentGateways;
 using Kooco.Pikachu.Permissions;
 using Kooco.Pikachu.Refunds;
 using Kooco.Pikachu.Response;
-using Kooco.Pikachu.Tenants.ElectronicInvoiceSettings;
 using Kooco.Pikachu.Tenants.Repositories;
 using Kooco.Pikachu.UserCumulativeCredits;
 using Kooco.Pikachu.UserShoppingCredits;

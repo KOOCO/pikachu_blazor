@@ -35,7 +35,6 @@ using Kooco.Pikachu.ShopCarts;
 using Kooco.Pikachu.ShoppingCredits;
 using Kooco.Pikachu.StoreComments;
 using Kooco.Pikachu.Tenants;
-using Kooco.Pikachu.Tenants.ElectronicInvoiceSettings;
 using Kooco.Pikachu.Tenants.Entities;
 using Kooco.Pikachu.TierManagement;
 using Kooco.Pikachu.UserAddresses;
@@ -131,9 +130,6 @@ public class PikachuApplicationAutoMapperProfile : Profile
         CreateMap<PaymentGatewayDto, UpdateChinaTrustDto>();
         CreateMap<PaymentGatewayDto, UpdateEcPayDto>();
         CreateMap<PaymentGatewayDto, UpdateOrderValidityDto>();
-
-        CreateMap<TenantTripartite, ElectronicInvoiceSettingDto>();
-        CreateMap<ElectronicInvoiceSettingDto, CreateUpdateElectronicInvoiceDto>();
 
         CreateMap<TenantEmailSettings, TenantEmailSettingsDto>();
         CreateMap<TenantEmailSettingsDto, CreateUpdateTenantEmailSettingsDto>();
