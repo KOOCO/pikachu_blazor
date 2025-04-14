@@ -161,12 +161,13 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
                     group.ProductGroupModuleTitle,
                     group.ProductGroupModuleImageSize,
                     group.Title,
-                    group.Text
+                    group.Text,
+                    group.Url
                 );
 
                 itemGroup.ModuleNumber = group.ModuleNumber;
 
-                ProcessImageModules(itemGroup, group.ImageModules);
+                await ProcessImageModules(itemGroup, group.ImageModules);
 
                 if (group.ItemDetails != null && group.ItemDetails.Any())
                 {
@@ -307,6 +308,7 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
                         itemGroup.ModuleNumber = group.ModuleNumber;
                         itemGroup.Title = group.Title;
                         itemGroup.Text = group.Text;
+                        itemGroup.Url = group.Url;
                         itemGroup.TenantId = CurrentTenant.Id;
 
                         if (group.ItemDetails.Count is 0) groupBuy.ItemGroups.Remove(itemGroup);
@@ -336,7 +338,8 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
                         group.ProductGroupModuleTitle,
                         group.ProductGroupModuleImageSize,
                         group.Title,
-                        group.Text
+                        group.Text,
+                        group.Url
                     );
 
                     itemGroup.ModuleNumber = group.ModuleNumber;
@@ -423,7 +426,8 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
                    group.ProductGroupModuleTitle,
                    group.ProductGroupModuleImageSize,
                    group.Title,
-                   group.Text
+                   group.Text,
+                   group.Url
                );
 
                 itemGroup.ModuleNumber = group.ModuleNumber;

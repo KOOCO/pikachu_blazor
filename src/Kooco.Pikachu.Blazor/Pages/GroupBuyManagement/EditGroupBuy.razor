@@ -1645,6 +1645,34 @@
                                         </Div>
                                     }
 
+                                    @if (module.GroupBuyModuleType is GroupBuyModuleType.VideoUpload)
+                                    {
+                                        <Div Class="row mb-2">
+                                            <Div Class="col-2">
+                                                <Label>@L["Title"]</Label>
+                                            </Div>
+                                            <Div Class="col-12">
+                                                <TinyMCEEditor @bind-Value="@module.Title" Style="min-height: 500px;" />
+                                            </Div>
+                                        </Div>
+                                        <Div Class="row mb-2">
+                                            <Div Class="col-2">
+                                                <Label>@L["Description"]</Label>
+                                            </Div>
+                                            <Div Class="col-12">
+                                                <TinyMCEEditor @bind-Value="@module.Text" Style="min-height: 500px;" />
+                                            </Div>
+                                        </Div>
+                                        <Div Class="row mb-2">
+                                            <Div Class="col-2">
+                                                <Label>@L["VideoUrl"]</Label>
+                                            </Div>
+                                            <Div Class="col-12">
+                                                <TextEdit @bind-Text="@module.Url" />
+                                            </Div>
+                                        </Div>
+                                    }
+
                                     @if (module.GroupBuyModuleType is GroupBuyModuleType.PartnershipModule)
                                     {
                                         <Div Class="row">

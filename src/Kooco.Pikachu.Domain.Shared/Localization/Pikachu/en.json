@@ -1426,6 +1426,8 @@
     "BannerImagesSuggestedSize": "Suggested Image Size: 1200*600px",
     "GroupPurchaseOverviewSuggestedSize": "Suggested Image Size: 786*594px",
     "OrderInstructionsSuggestedSize": "Suggested Image Size: 1200*480px",
-    "ProductRankingCarouselSuggestedSize": "<br />Suggested Image Size: 800*800px"
+    "ProductRankingCarouselSuggestedSize": "<br />Suggested Image Size: 800*800px",
+    "VideoUpload": "Video Upload",
+    "VideoUrl": "Video Url"
   }
 }

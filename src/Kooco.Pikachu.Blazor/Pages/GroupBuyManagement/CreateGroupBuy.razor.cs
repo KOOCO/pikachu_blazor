@@ -654,7 +654,8 @@ public partial class CreateGroupBuy
             GroupBuyModuleType.OrderInstruction,
             GroupBuyModuleType.ProductRankingCarouselModule,
             GroupBuyModuleType.CustomTextModule,
-            GroupBuyModuleType.PartnershipModule
+            GroupBuyModuleType.PartnershipModule,
+            GroupBuyModuleType.VideoUpload
         ];
     }
 
@@ -1722,7 +1723,7 @@ public partial class CreateGroupBuy
             };
         }
 
-        else if (groupBuyModuleType == GroupBuyModuleType.CustomTextModule)
+        else if (groupBuyModuleType == GroupBuyModuleType.CustomTextModule || groupBuyModuleType == GroupBuyModuleType.VideoUpload)
         {
             CollapseItem collapseItem = new()
             {
@@ -2747,7 +2748,9 @@ public partial class CreateGroupBuy
                     CreateGroupBuyDto.ItemGroups.Add(itemGroup);
                 }
 
-                if (item.GroupBuyModuleType == GroupBuyModuleType.CustomTextModule || item.GroupBuyModuleType == GroupBuyModuleType.PartnershipModule)
+                if (item.GroupBuyModuleType == GroupBuyModuleType.CustomTextModule 
+                    || item.GroupBuyModuleType == GroupBuyModuleType.PartnershipModule
+                    || item.GroupBuyModuleType == GroupBuyModuleType.VideoUpload)
                 {
                     GroupBuyItemGroupCreateUpdateDto itemGroup = new()
                     {
@@ -2755,6 +2758,7 @@ public partial class CreateGroupBuy
                         GroupBuyModuleType = item.GroupBuyModuleType,
                         Title = item.Title,
                         Text = item.Text,
+                        Url = item.Url,
                         ImageModules = []
                     };
 
@@ -3082,6 +3086,7 @@ public class CollapseItem
     public int? ModuleNumber { get; set; }
     public string? Title { get; set; }
     public string? Text { get; set; }
+    public string? Url { get; set; }
     public List<MultiImageModuleItem> ImageModules { get; set; } = [];
     public CollapseItem()
     {

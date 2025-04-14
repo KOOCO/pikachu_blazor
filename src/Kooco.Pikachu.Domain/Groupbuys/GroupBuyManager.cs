@@ -151,7 +151,8 @@ public class GroupBuyManager : DomainService
         string? productGroupModuleTitle,
         string? productGroupModuleImageSize,
         string? title,
-        string? text
+        string? text,
+        string? url
     )
     {
         return groupBuy.AddItemGroup(
@@ -163,7 +164,8 @@ public class GroupBuyManager : DomainService
             productGroupModuleTitle,
             productGroupModuleImageSize,
             title,
-            text
+            text,
+            url
         );
     }
     #endregion

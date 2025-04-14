@@ -30,6 +30,7 @@ namespace Kooco.Pikachu.GroupBuys
         public int? ModuleNumber { get; set; }
         public string? Title { get; set; }
         public string? Text { get; set; }
+        public string? Url { get; set; }
         public ICollection<GroupBuyItemGroupDetails> ItemGroupDetails { get; set; }
         public ICollection<GroupBuyItemGroupImageModule> ImageModules { get; set; } = [];
 
@@ -47,7 +48,8 @@ namespace Kooco.Pikachu.GroupBuys
             string? productGroupModuleTitle,
             string? productGroupModuleImageSize,
             string? title,
-            string? text
+            string? text,
+            string? url
         ) : base(id)
         {
             GroupBuyId = groupBuyId;
@@ -58,6 +60,7 @@ namespace Kooco.Pikachu.GroupBuys
             ProductGroupModuleImageSize = productGroupModuleImageSize;
             Title = title;
             Text = text;
+            Url = url;
             ItemGroupDetails = new List<GroupBuyItemGroupDetails>();
         }
 

@@ -13,5 +13,6 @@ public enum GroupBuyModuleType
     OrderInstruction,
     ProductRankingCarouselModule,
     CustomTextModule,
-    PartnershipModule
+    PartnershipModule,
+    VideoUpload
 }

@@ -533,6 +533,7 @@ public partial class EditGroupBuy
             GroupBuyModuleType.ProductRankingCarouselModule,
             GroupBuyModuleType.CustomTextModule,
             GroupBuyModuleType.PartnershipModule,
+            GroupBuyModuleType.VideoUpload
         ];
     }
 
@@ -920,6 +921,7 @@ public partial class EditGroupBuy
 
                     CollapseItem[index].Title = itemGroup.Title;
                     CollapseItem[index].Text = itemGroup.Text;
+                    CollapseItem[index].Url = itemGroup.Url;
 
                     foreach (var item in itemGroup.ItemGroupDetails.OrderBy(x => x.SortOrder))
                     {
@@ -1011,6 +1013,7 @@ public partial class EditGroupBuy
                         && itemGroup.GroupBuyModuleType is not GroupBuyModuleType.OrderInstruction
                         && itemGroup.GroupBuyModuleType is not GroupBuyModuleType.CustomTextModule
                         && itemGroup.GroupBuyModuleType is not GroupBuyModuleType.PartnershipModule
+                        && itemGroup.GroupBuyModuleType is not GroupBuyModuleType.VideoUpload
                         && itemGroup.ItemGroupDetails.Count < 3)
                     {
                         for (int x = itemGroup.ItemGroupDetails.Count; x < 3; x++)
@@ -1253,7 +1256,7 @@ public partial class EditGroupBuy
             });
         }
 
-        else if (groupBuyModuleType == GroupBuyModuleType.CustomTextModule)
+        else if (groupBuyModuleType == GroupBuyModuleType.CustomTextModule || groupBuyModuleType == GroupBuyModuleType.VideoUpload)
         {
             CollapseItem collapseItem = new()
             {
@@ -2617,7 +2620,8 @@ public partial class EditGroupBuy
                         ProductGroupModuleImageSize = item.ProductGroupModuleImageSize,
                         ModuleNumber = item.ModuleNumber,
                         Title = item.Title,
-                        Text = item.Text
+                        Text = item.Text,
+                        Url = item.Url
                     };
 
                     if (item.GroupBuyModuleType == GroupBuyModuleType.PartnershipModule)
@@ -2737,7 +2741,8 @@ public partial class EditGroupBuy
                         AdditionalInfo = item.AdditionalInfo,
                         ModuleNumber = item.ModuleNumber,
                         Title = item.Title,
-                        Text = item.Text
+                        Text = item.Text,
+                        Url = item.Url
                     };
 
                     if (item.GroupBuyModuleType is GroupBuyModuleType.ProductRankingCarouselModule &&

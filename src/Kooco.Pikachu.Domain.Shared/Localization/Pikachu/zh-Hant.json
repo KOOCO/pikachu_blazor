@@ -1142,6 +1142,9 @@
     "BannerImagesSuggestedSize": "圖片建議尺寸: 1200*600px",
     "GroupPurchaseOverviewSuggestedSize": "圖片建議尺寸: 786*594px",
     "OrderInstructionsSuggestedSize": "圖片建議尺寸: 1200*480px",
-    "ProductRankingCarouselSuggestedSize": "<br />圖片建議尺寸: 800*800px"
+    "ProductRankingCarouselSuggestedSize": "<br />圖片建議尺寸: 800*800px",
+    "VideoUpload": "影片上傳",
+    "VideoUrl": "影片網址"
+
   }
 }

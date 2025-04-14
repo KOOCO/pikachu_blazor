@@ -23,6 +23,7 @@ public class GroupBuyItemGroupModuleDetailsDto
     public int? ModuleNumber { get; set; }
     public string? Title { get; set; }
     public string? Text { get; set; }
+    public string? Url { get; set; }
     public ICollection<GroupBuyItemGroupDetailsDto> ItemGroupDetails { get; set; }
     public List<string> CarouselModulesImages { get; set; }
     public string? CarouselModuleStyle { get; set; }
