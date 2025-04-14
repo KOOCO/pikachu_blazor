@@ -605,6 +605,7 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
     }
     public async Task UpdateItemProductPrice(Guid groupbuyId, ICollection<GroupBuyItemGroupDetailCreateUpdateDto> itemDetails)
     {
+        await _groupBuyItemsPriceAppService.DeleteAllGroupByItemAsync(groupbuyId);
 
         foreach (var item in itemDetails.DistinctBy(x => x.ItemDetailId))
         {
