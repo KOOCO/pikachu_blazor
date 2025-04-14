@@ -884,10 +884,10 @@
         <div class="row">
             <div class="col-2"></div>
             <div class="col-2">
-                <label>@L["ProfitShare"]</label>
+                <label>@L["ProfitShare"] %</label>
             </div>
             <div class="col-5">
-                <InputNumber class="form-control" @bind-Value="@CreateGroupBuyDto.ProfitShare" />
+                <InputNumber class="form-control" @bind-Value="@CreateGroupBuyDto.ProfitShare" max="100" />
             </div>
         </div>
 

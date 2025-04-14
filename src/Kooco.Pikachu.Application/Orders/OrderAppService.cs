@@ -2841,7 +2841,7 @@ public class OrderAppService : PikachuAppService, IOrderAppService
         // Sum of Paid orders
         var paidAmount = (await OrderRepository.GetQueryableAsync())
             .Where(order =>
-                (order.OrderStatus == OrderStatus.Open)
+                (order.ShippingStatus == ShippingStatus.Completed || order.ShippingStatus == ShippingStatus.Closed)
                     && order.UserId == userId
                     )
 

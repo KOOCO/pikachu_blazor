@@ -1,6 +1,7 @@
 ﻿using Kooco.Pikachu.EnumValues;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Text;
 using Volo.Abp.Domain.Entities;
 
@@ -143,6 +144,7 @@ public class GroupBuyUpdateDto :  IHasConcurrencyStamp
     /// <summary>
     /// 分潤 ShareProfit
     /// </summary>
+    [Range(0, 100, ErrorMessage = "Profit share must be between 0 and 100.")]
     public int ProfitShare { get; set; }
 
     /// <summary>

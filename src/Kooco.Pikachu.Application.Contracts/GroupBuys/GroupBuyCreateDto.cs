@@ -2,6 +2,7 @@
 using Kooco.Pikachu.Items.Dtos;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.SymbolStore;
 using System.Text;
 
@@ -142,6 +143,7 @@ namespace Kooco.Pikachu.GroupBuys
         /// <summary>
         /// 分潤 ShareProfit
         /// </summary>
+        [Range(0, 100, ErrorMessage = "Profit share must be between 0 and 100.")]
         public int ProfitShare { get; set; }
 
         /// <summary>

@@ -114,7 +114,7 @@
     "StartDate": "Start Date",
     "EndDate": "End Date",
     "LimitQuantity": "Limit Quantity",
-    "ShareProfit": "Share Profit",
+    "ShareProfit": "Profit Share",
     "FreeShipping": "Free Shipping",
     "Returnable": "Returnable",
     "ShippingMethod": "Shipping Method",
@@ -1420,6 +1420,8 @@
     "MinSpent": "Min Spent",
     "MaxSpent": "Max Spent",
     "AddTags": "Add Tags",
-    "AddTag": "Add Tag"
+    "AddTag": "Add Tag",
+    "Limited": "Limited",
+   
   }
 }
