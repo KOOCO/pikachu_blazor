@@ -49,7 +49,7 @@
                         </Column>
                     <Column TextAlignment="TextAlignment.End" ColumnSize="ColumnSize.Is4">
                         <h5 class="text-success">@Earn.RegistrationEarnedPoints.ToString("N")</h5>
-                        <Span>@Earn.RegistrationUsagePeriodType</Span>
+                            <Span>@(Earn?.RegistrationUsagePeriodType!=null?L[Earn?.RegistrationUsagePeriodType]:"")</Span>
                     </Column>
                     <Column Class="d-flex flex-row-reverse"  ColumnSize="ColumnSize.Is4">
                        <Switch Color="Color.Primary" TValue="bool" @bind-Checked="Earn.RegistrationBonusEnabled"></Switch>
@@ -62,7 +62,7 @@
                     </Column>
                     <Column TextAlignment="TextAlignment.End" ColumnSize="ColumnSize.Is4">
                             <h5 class="text-success">@Earn.BirthdayEarnedPoints.ToString("N")</h5>
-                        <Span>@Earn.BirthdayUsagePeriodType</Span>
+                            <Span>@(Earn?.BirthdayUsagePeriodType!=null?L[Earn?.BirthdayUsagePeriodType]:"")</Span>
                     </Column>
                     <Column Class="d-flex flex-row-reverse" ColumnSize="ColumnSize.Is4">
                         <Switch Color="Color.Primary"  TValue="bool" @bind-Checked="Earn.BirthdayBonusEnabled"></Switch>
@@ -75,7 +75,7 @@
                     </Column>
                     <Column TextAlignment="TextAlignment.End" ColumnSize="ColumnSize.Is4">
                             <h5 class="text-success">@Earn.CashbackUnifiedMaxDeductiblePoints.ToString("N")</h5>
-                        <Span>@Earn.CashbackUsagePeriodType</Span>
+                            <Span>@(Earn?.CashbackUsagePeriodType!=null?L[Earn?.CashbackUsagePeriodType]:"")</Span>
                     </Column>
                     <Column Class="d-flex flex-row-reverse" ColumnSize="ColumnSize.Is4">
                         <Switch Color="Color.Primary" TValue="bool" @bind-Checked="Earn.CashbackEnabled"></Switch>
@@ -119,9 +119,9 @@
                     </Column>
                    
                     <Column Class="d-flex flex-row-reverse" ColumnSize="ColumnSize.Is6">
-                           
-                               
-                               <h6>@Usage.DeductionMethod</h6>
+
+
+                            <h6>@(Usage?.DeductionMethod!=null?L[Usage?.DeductionMethod]:"")</h6>
                             
                     </Column>
                 </Row>
@@ -134,7 +134,7 @@
                         <Column Class="d-flex flex-row-reverse" ColumnSize="ColumnSize.Is6">
 
 
-                            <h6>@Usage.UsableGroupbuysScope</h6>
+                            <h6>@(Usage?.UsableGroupbuysScope!=null?L[Usage?.UsableGroupbuysScope]:"")</h6>
 
                         </Column>
                 </Row>
@@ -147,7 +147,7 @@
                         <Column Class="d-flex flex-row-reverse" ColumnSize="ColumnSize.Is6">
 
 
-                            <h6>@Usage.UsableProductsScope</h6>
+                            <h6>@(Usage?.UsableProductsScope!=null?L[Usage?.UsableProductsScope]:"")</h6>
 
                         </Column>
                     </Row>

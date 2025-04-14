@@ -1420,6 +1420,8 @@
     "MinSpent": "Min Spent",
     "MaxSpent": "Max Spent",
     "AddTags": "Add Tags",
-    "AddTag": "Add Tag"
+    "AddTag": "Add Tag",
+    "Limited": "Limited",
+   
   }
 }
