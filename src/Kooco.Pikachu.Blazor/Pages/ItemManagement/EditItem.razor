@@ -557,14 +557,14 @@
                         <Switch TValue="bool" @bind-Checked="@UpdateItemDto.IsFreeShipping"></Switch>
                     </div>
                 </div>
-                <div class="row">
+               @*  <div class="row">
                     <div class="col-2 text-end">
-                        <label class="pt-2">@L["ShareProfit"]</label>
+                        <label class="pt-2">@L["ShareProfit"] %</label>
                     </div>
                     <div class="col-4">
-                        <InputNumber class="form-control" TValue="float" @bind-Value="@UpdateItemDto.ShareProfit" />
+                        <InputNumber class="form-control" TValue="float" @bind-Value="@UpdateItemDto.ShareProfit" max="100" />
                     </div>
-                </div>
+                </div> *@
                 <div class="row">
                     <div class="col-2 text-end">
                         <label class="pt-2">@L["TaxType"]</label>
