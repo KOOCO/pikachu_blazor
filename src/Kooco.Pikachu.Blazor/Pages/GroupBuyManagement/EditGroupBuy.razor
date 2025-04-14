@@ -127,19 +127,18 @@
         </div>
         <div class="row">
             <div class="col-2">
-                <label>@L["SEODescription"]
-                <Span>
-                                                            <Tooltip Text="@L["SEODescriptionInfo"]">
-                                                                <Icon class="fa-question-circle" />
-                                                            </Tooltip>
-                                                        </Span>
+                <label>
+                    @L["SEODescription"]
+                    <Span>
+                        <Tooltip Text="@L["SEODescriptionInfo"]">
+                            <Icon class="fa-question-circle" />
+                        </Tooltip>
+                    </Span>
                 </label>
             </div>
             <div class="col-10">
-                <TinyMCEEditor 
-                    @bind-Value="@EditGroupBuyDto.SubjectLine"
-                    Style="min-height: 300px;"
-                />
+                <TinyMCEEditor @bind-Value="@EditGroupBuyDto.SubjectLine"
+                               Style="min-height: 300px;" />
             </div>
         </div>
         <div class="row">
@@ -340,18 +339,18 @@
                         item == Enum.GetName(DeliveryMethod.SevenToElevenC2C) ||
                         item == Enum.GetName(DeliveryMethod.SevenToEleven1))
                         {
-                           
-                                <label for="@item" class="form-label me-2">
-                                    <input type="checkbox"
-                                           class="form-check-input"
-                                           id="@item"
-                                           disabled="@(EditGroupBuyDto.IsEnterprise||!IsShippingMethodEnabled(item)||HasDifferentItemTemperatures)"
-                                           checked="@((EditGroupBuyDto.ExcludeShippingMethod is not null) &&
+
+                            <label for="@item" class="form-label me-2">
+                                <input type="checkbox"
+                                       class="form-check-input"
+                                       id="@item"
+                                       disabled="@(EditGroupBuyDto.IsEnterprise||!IsShippingMethodEnabled(item)||HasDifferentItemTemperatures)"
+                                       checked="@((EditGroupBuyDto.ExcludeShippingMethod is not null) &&
                                                       (EditGroupBuyDto.ExcludeShippingMethod.Contains(item)))"
-                                           @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
-                                    @L[EnumHelper.GetDescription(Enum.Parse<DeliveryMethod>(item))]
-                                </label>
-                            
+                                       @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
+                                @L[EnumHelper.GetDescription(Enum.Parse<DeliveryMethod>(item))]
+                            </label>
+
                             @if (item == Enum.GetName(DeliveryMethod.FamilyMartC2C)
                            || item == Enum.GetName(DeliveryMethod.BlackCat1))
                             {
@@ -374,20 +373,20 @@
                         item == Enum.GetName(DeliveryMethod.FamilyMartC2C) ||
                         item == Enum.GetName(DeliveryMethod.TCatDeliverySevenElevenNormal))
                         {
-                            
-                                <label for="@item" class="form-label me-2">
-                                    <input type="checkbox"
-                                           class="form-check-input"
-                                           id="@item"
-                                           disabled="@((EditGroupBuyDto.ExcludeShippingMethod is not null) &&
+
+                            <label for="@item" class="form-label me-2">
+                                <input type="checkbox"
+                                       class="form-check-input"
+                                       id="@item"
+                                       disabled="@((EditGroupBuyDto.ExcludeShippingMethod is not null) &&
                                                    (EditGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore")) &&
                                                    item is not "DeliveredByStore"||EditGroupBuyDto.IsEnterprise||!IsShippingMethodEnabled(item)||HasDifferentItemTemperatures)"
-                                           checked="@((EditGroupBuyDto.ExcludeShippingMethod is not null) &&
+                                       checked="@((EditGroupBuyDto.ExcludeShippingMethod is not null) &&
                                                   (EditGroupBuyDto.ExcludeShippingMethod.Contains(item)))"
-                                           @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
-                                    @L[EnumHelper.GetDescription(Enum.Parse<DeliveryMethod>(item))]
-                                </label>
-                            
+                                       @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
+                                @L[EnumHelper.GetDescription(Enum.Parse<DeliveryMethod>(item))]
+                            </label>
+
                             @if (item == Enum.GetName(DeliveryMethod.FamilyMartC2C)
                            || item == Enum.GetName(DeliveryMethod.BlackCat1))
                             {
@@ -407,18 +406,18 @@
                         if (item == Enum.GetName(DeliveryMethod.BlackCatFreeze) ||
                         item == Enum.GetName(DeliveryMethod.TCatDeliveryFreeze))
                         {
-                          
-                                <label for="@item" class="form-label me-2">
-                                    <input type="checkbox"
-                                           class="form-check-input"
-                                           id="@item"
-                                           disabled="@(EditGroupBuyDto.IsEnterprise||!IsShippingMethodEnabled(item)||HasDifferentItemTemperatures)"
-                                           checked="@((EditGroupBuyDto.ExcludeShippingMethod is not null) &&
+
+                            <label for="@item" class="form-label me-2">
+                                <input type="checkbox"
+                                       class="form-check-input"
+                                       id="@item"
+                                       disabled="@(EditGroupBuyDto.IsEnterprise||!IsShippingMethodEnabled(item)||HasDifferentItemTemperatures)"
+                                       checked="@((EditGroupBuyDto.ExcludeShippingMethod is not null) &&
                                                   (EditGroupBuyDto.ExcludeShippingMethod.Contains(item)))"
-                                           @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
-                                    @L[EnumHelper.GetDescription(Enum.Parse<DeliveryMethod>(item))]
-                                </label>
-                            
+                                       @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
+                                @L[EnumHelper.GetDescription(Enum.Parse<DeliveryMethod>(item))]
+                            </label>
+
                         }
                     }
                 }
@@ -430,20 +429,20 @@
                         item == Enum.GetName(DeliveryMethod.TCatDeliveryFreeze) ||
                         item == Enum.GetName(DeliveryMethod.TCatDeliverySevenElevenFreeze))
                         {
-                          
-                                <label for="@item" class="form-label me-2">
-                                    <input type="checkbox"
-                                           class="form-check-input"
-                                           id="@item"
-                                           disabled="@((EditGroupBuyDto.ExcludeShippingMethod is not null) &&
+
+                            <label for="@item" class="form-label me-2">
+                                <input type="checkbox"
+                                       class="form-check-input"
+                                       id="@item"
+                                       disabled="@((EditGroupBuyDto.ExcludeShippingMethod is not null) &&
                                                        (EditGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore")) &&
                                                        item is not "DeliveredByStore"||EditGroupBuyDto.IsEnterprise||!IsShippingMethodEnabled(item)||HasDifferentItemTemperatures)"
-                                           checked="@((EditGroupBuyDto.ExcludeShippingMethod is not null) &&
+                                       checked="@((EditGroupBuyDto.ExcludeShippingMethod is not null) &&
                                                       (EditGroupBuyDto.ExcludeShippingMethod.Contains(item)))"
-                                           @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
-                                    @L[EnumHelper.GetDescription(Enum.Parse<DeliveryMethod>(item))]
-                                </label>
-                            
+                                       @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
+                                @L[EnumHelper.GetDescription(Enum.Parse<DeliveryMethod>(item))]
+                            </label>
+
                         }
                     }
                 }
@@ -457,18 +456,18 @@
                         if (item == Enum.GetName(DeliveryMethod.BlackCatFrozen) ||
                         item == Enum.GetName(DeliveryMethod.TCatDeliveryFrozen))
                         {
-                          
-                                <label for="@item" class="form-label me-2">
-                                    <input type="checkbox"
-                                           class="form-check-input"
-                                           disabled="@(EditGroupBuyDto.IsEnterprise||!IsShippingMethodEnabled(item)||HasDifferentItemTemperatures)"
-                                           id="@item"
-                                           checked="@((EditGroupBuyDto.ExcludeShippingMethod is not null) &&
+
+                            <label for="@item" class="form-label me-2">
+                                <input type="checkbox"
+                                       class="form-check-input"
+                                       disabled="@(EditGroupBuyDto.IsEnterprise||!IsShippingMethodEnabled(item)||HasDifferentItemTemperatures)"
+                                       id="@item"
+                                       checked="@((EditGroupBuyDto.ExcludeShippingMethod is not null) &&
                                                   (EditGroupBuyDto.ExcludeShippingMethod.Contains(item)))"
-                                           @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
-                                    @L[EnumHelper.GetDescription(Enum.Parse<DeliveryMethod>(item))]
-                                </label>
-                            
+                                       @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
+                                @L[EnumHelper.GetDescription(Enum.Parse<DeliveryMethod>(item))]
+                            </label>
+
                         }
                     }
                 }
@@ -481,20 +480,20 @@
                         item == Enum.GetName(DeliveryMethod.SevenToElevenFrozen) ||
                         item == Enum.GetName(DeliveryMethod.TCatDeliverySevenElevenFrozen))
                         {
-                           
-                                <label for="@item" class="form-label me-2">
-                                    <input type="checkbox"
-                                           class="form-check-input"
-                                           id="@item"
-                                           disabled="@((EditGroupBuyDto.ExcludeShippingMethod is not null) &&
+
+                            <label for="@item" class="form-label me-2">
+                                <input type="checkbox"
+                                       class="form-check-input"
+                                       id="@item"
+                                       disabled="@((EditGroupBuyDto.ExcludeShippingMethod is not null) &&
                                                        (EditGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore")) &&
                                                        item is not "DeliveredByStore"||EditGroupBuyDto.IsEnterprise||!IsShippingMethodEnabled(item)||HasDifferentItemTemperatures)"
-                                           checked="@((EditGroupBuyDto.ExcludeShippingMethod is not null) &&
+                                       checked="@((EditGroupBuyDto.ExcludeShippingMethod is not null) &&
                                                       (EditGroupBuyDto.ExcludeShippingMethod.Contains(item)))"
-                                           @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
-                                    @L[EnumHelper.GetDescription(Enum.Parse<DeliveryMethod>(item))]
-                                </label>
-                            
+                                       @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
+                                @L[EnumHelper.GetDescription(Enum.Parse<DeliveryMethod>(item))]
+                            </label>
+
                         }
                     }
                 }
@@ -505,18 +504,18 @@
                 {
                     if (item == Enum.GetName(DeliveryMethod.HomeDelivery))
                     {
-                        
-                            <label for="@item" class="form-label me-2">
-                                <input type="checkbox"
-                                       class="form-check-input"
-                                       id="@item"
-                                       disabled="@(EditGroupBuyDto.IsEnterprise)"
-                                       checked="@((EditGroupBuyDto.ExcludeShippingMethod is not null) &&
+
+                        <label for="@item" class="form-label me-2">
+                            <input type="checkbox"
+                                   class="form-check-input"
+                                   id="@item"
+                                   disabled="@(EditGroupBuyDto.IsEnterprise)"
+                                   checked="@((EditGroupBuyDto.ExcludeShippingMethod is not null) &&
                                                           (EditGroupBuyDto.ExcludeShippingMethod.Contains(item)))"
-                                       @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
-                                @L[EnumHelper.GetDescription(Enum.Parse<DeliveryMethod>(item))]
-                            </label>
-                        
+                                   @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
+                            @L[EnumHelper.GetDescription(Enum.Parse<DeliveryMethod>(item))]
+                        </label>
+
                     }
                     if (item == Enum.GetName(DeliveryMethod.DeliveredByStore) ||
                     item == Enum.GetName(DeliveryMethod.SelfPickup))
@@ -880,23 +879,23 @@
                 <InputNumber class="form-control" @bind-Value="@EditGroupBuyDto.ProfitShare" max="100" />
             </div>
         </div>
-         <div class="row">
-          <div class="col-2"></div>
-        <div class="col-2">
-        <label>@L["FaceBookPixelID"]</label>
-        </div>
-        <div class="col-5">
+        <div class="row">
+            <div class="col-2"></div>
+            <div class="col-2">
+                <label>@L["FaceBookPixelID"]</label>
+            </div>
+            <div class="col-5">
                 <TextEdit class="form-control" @bind-Text="@EditGroupBuyDto.FBID" />
+            </div>
         </div>
-        </div>
-          <div class="row">
-        <div class="col-2"></div>
-        <div class="col-2">
-        <label>@L["GAID"]</label>
-        </div>
-        <div class="col-5">
-        <TextEdit  @bind-Text="@EditGroupBuyDto.GAID" />
-        </div>
+        <div class="row">
+            <div class="col-2"></div>
+            <div class="col-2">
+                <label>@L["GAID"]</label>
+            </div>
+            <div class="col-5">
+                <TextEdit @bind-Text="@EditGroupBuyDto.GAID" />
+            </div>
         </div>
         @*    <div class="row">
         <div class="col-2"></div>
@@ -934,7 +933,7 @@
         <TextEdit  @bind-Text="@EditGroupBuyDto.LineID" />
         </div>
         </div>
-      
+
         <div class="row">
         <div class="col-2"></div>
         <div class="col-2">
@@ -1144,7 +1143,7 @@
                                                     <label>
                                                         @L["CarouselImages"]
                                                         <Span>
-                                                            <Tooltip Display="Display.InlineBlock" Text="@L["uploadUpto5Images"]">
+                                                            <Tooltip Display="Display.InlineBlock" Text="@(L["uploadUpto5Images"] + L["CarouselImagesSuggestedSize"])">
                                                                 <Icon class="fa-question-circle" />
                                                             </Tooltip>
                                                         </Span>
@@ -1228,11 +1227,11 @@
                                                 <div class="col-2">
                                                     <label>
                                                         @L["BannerImages"]
-                                                      @*   <Span>
-                                                            <Tooltip Text="@L["uploadUpto5Images"]">
+                                                        <Span>
+                                                            <Tooltip Display="Display.InlineBlock" Text="@(L["BannerImagesSuggestedSize"])">
                                                                 <Icon class="fa-question-circle" />
                                                             </Tooltip>
-                                                        </Span> *@
+                                                        </Span>
                                                     </label>
                                                 </div>
                                                 <div class="col-10">
@@ -1287,7 +1286,14 @@
                                             <Div Class="row d-flex">
                                                 <Div Class="col-6 pb-1">
                                                     <Div Class="col-2 pb-1">
-                                                        <Label>@L["Image"] <Span Class="text-danger">*</Span></Label>
+                                                        <Label>
+                                                            @L["Image"] <Span Class="text-danger">*</Span>
+                                                            <Span>
+                                                                <Tooltip Display="Display.InlineBlock" Text="@(L["GroupPurchaseOverviewSuggestedSize"])">
+                                                                    <Icon class="fa-question-circle" />
+                                                                </Tooltip>
+                                                            </Span>
+                                                        </Label>
                                                     </Div>
                                                     <Div Class="@((!module.Image.IsNullOrEmpty() ? "has-images" : "") + " container-less-filepicker filepicker-sm")">
                                                         <Field>
@@ -1368,7 +1374,14 @@
                                             <Div Class="row d-flex">
                                                 <Div Class="col-6 pb-1">
                                                     <Div Class="col-2 pb-1">
-                                                        <Label>@L["Image"] <Span Class="text-danger">*</Span></Label>
+                                                        <Label>
+                                                            @L["Image"] <Span Class="text-danger">*</Span>
+                                                            <Span>
+                                                                <Tooltip Display="Display.InlineBlock" Text="@(L["OrderInstructionsSuggestedSize"])">
+                                                                    <Icon class="fa-question-circle" />
+                                                                </Tooltip>
+                                                            </Span>
+                                                        </Label>
                                                     </Div>
                                                     <Div Class="@((!module.Image.IsNullOrEmpty() ? "has-images" : "") + " container-less-filepicker filepicker-sm")">
                                                         <Field>
@@ -1538,10 +1551,11 @@
                                                 <Div Class="col-6">
                                                     <Div Class="row">
                                                         <Div Class="col-12">
-                                                            <Div Class="col-2 pb-1">
-                                                                <Label>@L["Carousel"] <Span Class="text-danger">*</Span>
+                                                            <Div Class="col-12 pb-1">
+                                                                <Label>
+                                                                    @L["Carousel"] <Span Class="text-danger">*</Span>
                                                                     <Span>
-                                                                        <Tooltip Display="Display.InlineBlock" Text="@L["uploadUpto5Images"]">
+                                                                        <Tooltip Display="Display.InlineBlock" Text="@(L["uploadUpto5Images"] + L["ProductRankingCarouselSuggestedSize"])">
                                                                             <Icon class="fa-question-circle" />
                                                                         </Tooltip>
                                                                     </Span>
@@ -1625,10 +1639,8 @@
                                                 <Label>@L["CustomTextModule"]</Label>
                                             </Div>
                                             <Div Class="col-12 pb-1">
-                                                <TinyMCEEditor 
-                                                    @bind-Value="@module.Text"
-                                                    Style="min-height: 500px;"
-                                                />
+                                                <TinyMCEEditor @bind-Value="@module.Text"
+                                                               Style="min-height: 500px;" />
                                             </Div>
                                         </Div>
                                     }
@@ -1767,92 +1779,89 @@
                                                                             <h4 class="text-center mt-2">
                                                                                 <strong>@selectedItem.Name</strong>
                                                                             </h4>
-                                                                                               @if(selectedItem.ItemType == ItemType.SetItem)
-                                                    {
-                                                        <div class="mt-2">
-                                                        <Label>Price</Label>
-                                                        <NumericEdit class="form-control" @bind-Value="selectedItem.Price" />
-                                                    </div>
-                                                    }
+                                                                            @if (selectedItem.ItemType == ItemType.SetItem)
+                                                                            {
+                                                                                <div class="mt-2">
+                                                                                    <Label>Price</Label>
+                                                                                    <NumericEdit class="form-control" @bind-Value="selectedItem.Price" />
+                                                                                </div>
+                                                                            }
                                                                             @if (selectedItem.Item != null)
                                                                             {
                                                                                 var itemDetails = selectedItem.Item?.ItemDetails;
-                                                                                    var firstItem = itemDetails?.FirstOrDefault();
+                                                                                var firstItem = itemDetails?.FirstOrDefault();
                                                                                 @if (itemDetails != null && itemDetails.Where(x => x.Attribute1Value != null).Count() > 0)
                                                                                 {
                                                                                     <div class="mt-2">
-                                                                                      <AntDesign.Select Mode="AntDesign.SelectMode.Multiple"
-                                                                                     Placeholder="Please select"
-		                                                                              @bind-Values="@selectedItem.SelectedItemDetails"
-                                                                                    OnSelectedItemsChanged="@(values => OnSelectedItemDetailsChanged(values, selectedItem))"
+                                                                                        <AntDesign.Select Mode="AntDesign.SelectMode.Multiple"
+                                                                                                          Placeholder="Please select"
+                                                                                                          @bind-Values="@selectedItem.SelectedItemDetails"
+                                                                                                          OnSelectedItemsChanged="@(values => OnSelectedItemDetailsChanged(values, selectedItem))"
+                                                                                                          TItemValue="Guid"
+                                                                                                          TItem="Guid"
+                                                                                                          AllowClear>
+                                                                                            <SelectOptions>
+                                                                                                @foreach (var item in itemDetails)
+                                                                                                {
+                                                                                                    var label = item.Attribute1Value;
 
-		                                                                             TItemValue="Guid"
-		                                                                             TItem="Guid"
-		                                                                            AllowClear>
-		                                                                            <SelectOptions>
-                                                                                         @foreach (var item in itemDetails)
-                                                                                        {
-                                                                                            var label = item.Attribute1Value;
+                                                                                                    if (!string.IsNullOrWhiteSpace(item.Attribute2Value))
+                                                                                                    {
+                                                                                                        label += " / " + item.Attribute2Value;
+                                                                                                    }
 
-                                                                                            if (!string.IsNullOrWhiteSpace(item.Attribute2Value))
-                                                                                            {
-                                                                                                label += " / " + item.Attribute2Value;
-                                                                                            }
+                                                                                                    if (!string.IsNullOrWhiteSpace(item.Attribute3Value))
+                                                                                                    {
+                                                                                                        label += " / " + item.Attribute3Value;
+                                                                                                    }
 
-                                                                                            if (!string.IsNullOrWhiteSpace(item.Attribute3Value))
-                                                                                            {
-                                                                                                label += " / " + item.Attribute3Value;
-                                                                                            }
-
-                                                                                            <AntDesign.SelectOption TItemValue="Guid" TItem="Guid" Value=@item.Id Label=@label/>
-                                                                                        }
-                                                                                                                    </SelectOptions>
+                                                                                                    <AntDesign.SelectOption TItemValue="Guid" TItem="Guid" Value=@item.Id Label=@label />
+                                                                                                }
+                                                                                            </SelectOptions>
                                                                                         </AntDesign.Select>
                                                                                     </div>
-                                                                                          @if (selectedItem.SelectedItemDetailIds != null)
-                                                                                {
-                                                                                    foreach (var detailId in selectedItem.SelectedItemDetailIds)
+                                                                                    @if (selectedItem.SelectedItemDetailIds != null)
                                                                                     {
-                                                                                      @if (selectedItem.ItemDetailsWithPrices.TryGetValue(detailId, out var detailInfo))
-{
-    <div class="mt-2">
-        <label>@(detailInfo.Label + " Price")</label>
-        <input class="form-control"
-         type="number"
-                  
-                     value="@detailInfo.Price"
-                     @onchange="@(e => UpdatePrice(detailId, selectedItem,  Convert.ToDouble(e.Value)))"
-                     />
-    </div>
-}
+                                                                                        foreach (var detailId in selectedItem.SelectedItemDetailIds)
+                                                                                        {
+                                                                                            @if (selectedItem.ItemDetailsWithPrices.TryGetValue(detailId, out var detailInfo))
+                                                                                            {
+                                                                                                <div class="mt-2">
+                                                                                                    <label>@(detailInfo.Label + " Price")</label>
+                                                                                                    <input class="form-control"
+                                                                                                           type="number"
+                                                                                                           value="@detailInfo.Price"
+                                                                                                           @onchange="@(e => UpdatePrice(detailId, selectedItem,  Convert.ToDouble(e.Value)))" />
+                                                                                                </div>
+                                                                                            }
+                                                                                        }
                                                                                     }
                                                                                 }
-                                                                                }
-                                                                              @if (firstItem != null && firstItem.Attribute1Value.IsNullOrWhiteSpace())
-{
-    if (!selectedItem.SelectedItemDetailIds.Contains(firstItem.Id))
-    {
-        selectedItem.SelectedItemDetailIds.Add(firstItem.Id);
-        selectedItem.ItemDetailsWithPrices[firstItem.Id] = ("", 0);
-    }
+                                                                                @if (firstItem != null && firstItem.Attribute1Value.IsNullOrWhiteSpace())
+                                                                                {
+                                                                                    if (!selectedItem.SelectedItemDetailIds.Contains(firstItem.Id))
+                                                                                    {
+                                                                                        selectedItem.SelectedItemDetailIds.Add(firstItem.Id);
+                                                                                        selectedItem.ItemDetailsWithPrices[firstItem.Id] = ("", 0);
+                                                                                    }
 
-    if (selectedItem.SelectedItemDetailIds != null)
-    {
-        foreach (var detailId in selectedItem.SelectedItemDetailIds)
-        {
-            if (selectedItem.ItemDetailsWithPrices.TryGetValue(detailId, out var detailInfo))
-            {
-                <div class="mt-2">
-                    <label>Price</label>
-                    <input class="form-control"
-                           type="number"
-                           value="@detailInfo.Price"
-                           @onchange="@(e => UpdatePrice(detailId, selectedItem, Convert.ToDouble(e.Value)))" />
-                </div>
-            }
-        }
-    }
-}
+                                                                                    if (selectedItem.SelectedItemDetailIds != null)
+                                                                                    {
+                                                                                        foreach (var detailId in selectedItem.SelectedItemDetailIds)
+                                                                                        {
+                                                                                            if (selectedItem.ItemDetailsWithPrices.TryGetValue(detailId, out var detailInfo))
+                                                                                            {
+                                                                                                <div class="mt-2">
+                                                                                                    <label>Price</label>
+                                                                                                    <input class="form-control"
+                                                                                                           type="number"
+                                                                                                           value="@detailInfo.Price"
+                                                                                                           @onchange="@(e => UpdatePrice(detailId, selectedItem, Convert.ToDouble(e.Value)))" />
+                                                                                                </div>
+                                                                                            }
+                                                                                        }
+                                                                                    }
+                                                                                }
                                                                             }
                                                                         </div>
                                                                     }

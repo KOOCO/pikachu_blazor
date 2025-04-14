@@ -1422,6 +1422,10 @@
     "AddTags": "Add Tags",
     "AddTag": "Add Tag",
     "Limited": "Limited",
-   
+    "CarouselImagesSuggestedSize": "<br />Suggested Image Size: <br /><ol><li>Not full width with rounded corners: 1440*720px</li><li>Not full width with sharp corners: 1200*675px</li><li>Full width: 1920*1080px</li></ol>",
+    "BannerImagesSuggestedSize": "Suggested Image Size: 1200*600px",
+    "GroupPurchaseOverviewSuggestedSize": "Suggested Image Size: 786*594px",
+    "OrderInstructionsSuggestedSize": "Suggested Image Size: 1200*480px",
+    "ProductRankingCarouselSuggestedSize": "<br />Suggested Image Size: 800*800px"
   }
 }

@@ -1091,7 +1091,7 @@
                                                     <label>
                                                         @L["CarouselImages"]
                                                         <Span>
-                                                            <Tooltip Display="Display.InlineBlock" Text="@L["uploadUpto5Images"]">
+                                                            <Tooltip Display="Display.InlineBlock" Text="@(L["uploadUpto5Images"] + L["CarouselImagesSuggestedSize"])">
                                                                 <Icon class="fa-question-circle" />
                                                             </Tooltip>
                                                         </Span>
@@ -1174,11 +1174,11 @@
                                                 <div class="col-2">
                                                     <label>
                                                         @L["BannerImages"]
-                                                      @*   <Span>
-                                                            <Tooltip Class="d-inline-block" Text="@L["uploadUpto5Images"]">
+                                                        <Span>
+                                                            <Tooltip Display="Display.InlineBlock" Text="@(L["BannerImagesSuggestedSize"])">
                                                                 <Icon class="fa-question-circle" />
                                                             </Tooltip>
-                                                        </Span> *@
+                                                        </Span>
                                                     </label>
                                                 </div>
                                                 <div class="col-10 ">
@@ -1233,7 +1233,13 @@
                                             <Div Class="row d-flex">
                                                 <Div Class="col-6 pb-1">
                                                     <Div Class="col-2 pb-1">
-                                                        <Label>@L["Image"] <Span Class="text-danger">*</Span></Label>
+                                                        <Label>@L["Image"] <Span Class="text-danger">*</Span>
+                                                            <Span>
+                                                                <Tooltip Display="Display.InlineBlock" Text="@(L["GroupPurchaseOverviewSuggestedSize"])">
+                                                                    <Icon class="fa-question-circle" />
+                                                                </Tooltip>
+                                                            </Span>
+                                                        </Label>
                                                     </Div>
                                                     <Div Class="@((!module.Image.IsNullOrEmpty() ? "has-images" : "") + " container-less-filepicker filepicker-sm")">
                                                         <Field>
@@ -1315,7 +1321,13 @@
                                             <Div Class="row d-flex">
                                                 <Div Class="col-6 pb-1">
                                                     <Div Class="col-2 pb-1">
-                                                        <Label>@L["Image"] <Span Class="text-danger">*</Span></Label>
+                                                        <Label>@L["Image"] <Span Class="text-danger">*</Span>
+                                                            <Span>
+                                                                <Tooltip Display="Display.InlineBlock" Text="@(L["OrderInstructionsSuggestedSize"])">
+                                                                    <Icon class="fa-question-circle" />
+                                                                </Tooltip>
+                                                            </Span>
+                                                        </Label>
                                                     </Div>
                                                     <Div Class="@((!module.Image.IsNullOrEmpty() ? "has-images" : "") + " container-less-filepicker filepicker-sm")">
                                                         <Field>
@@ -1465,10 +1477,10 @@
                                                 <Div Class="col-6">
                                                     <Div Class="row">
                                                         <Div Class="col-12">
-                                                            <Div Class="col-2 pb-1">
+                                                            <Div Class="col-12 pb-1">
                                                                 <Label>@L["Carousel"] <Span Class="text-danger">*</Span>
                                                                     <Span>
-                                                                        <Tooltip Display="Display.InlineBlock" Text="@L["uploadUpto5Images"]">
+                                                                        <Tooltip Display="Display.InlineBlock" Text="@(L["uploadUpto5Images"] + L["ProductRankingCarouselSuggestedSize"])">
                                                                             <Icon class="fa-question-circle" />
                                                                         </Tooltip>
                                                                     </Span>

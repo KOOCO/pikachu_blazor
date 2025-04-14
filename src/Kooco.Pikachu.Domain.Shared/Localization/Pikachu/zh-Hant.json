@@ -1137,6 +1137,11 @@
     "FilePicker:OnlyAccepts": "只接受以下檔案",
     "FilePicker:MaxFileSize": "檔案最大上限",
     "Carousel": "輪播圖",
-    "Limited": "限制有效天數"
+    "Limited": "限制有效天數",
+    "CarouselImagesSuggestedSize": "<br />圖片建議尺寸: <br /><ol><li>圓角無全寬: 1440*720px</li><li>直角無全寬: 1200*675px</li><li>全寬大圖: 1920*1080px</li></ol>",
+    "BannerImagesSuggestedSize": "圖片建議尺寸: 1200*600px",
+    "GroupPurchaseOverviewSuggestedSize": "圖片建議尺寸: 786*594px",
+    "OrderInstructionsSuggestedSize": "圖片建議尺寸: 1200*480px",
+    "ProductRankingCarouselSuggestedSize": "<br />圖片建議尺寸: 800*800px"
   }
 }
