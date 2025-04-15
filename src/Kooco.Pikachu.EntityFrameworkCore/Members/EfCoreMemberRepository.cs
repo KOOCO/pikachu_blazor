@@ -1,5 +1,6 @@
 ﻿using Kooco.Pikachu.EntityFrameworkCore;
 using Kooco.Pikachu.EnumValues;
+using Kooco.Pikachu.Members.MemberTags;
 using Kooco.Pikachu.TierManagement;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -71,7 +72,7 @@ public class EfCoreMemberRepository(IDbContextProvider<PikachuDbContext> pikachu
         return members;
     }
 
-    private async Task<IQueryable<MemberModel>> GetFilteredQueryableAsync(string? filter, string? memberType, IEnumerable<string>? selectedMemberTags = null,
+    public async Task<IQueryable<MemberModel>> GetFilteredQueryableAsync(string? filter = null, string? memberType = null, IEnumerable<string>? selectedMemberTags = null,
         DateTime? minCreationTime = null, DateTime? maxCreationTime = null, int? minOrderCount = null, int? maxOrderCount = null,
         int? minSpent = null, int? maxSpent = null)
     {
@@ -204,17 +205,17 @@ public class EfCoreMemberRepository(IDbContextProvider<PikachuDbContext> pikachu
 
                 if (tier != null)
                 {
-                    dbContext.MemberTags.Add(new MemberTag(GuidGenerator.Create(), member.User.Id, tier.TierName, tier.Id));
+                    dbContext.MemberTags.Add(new MemberTag(GuidGenerator.Create(), member.User.Id, tier.TierName, true, true, tier.Id));
                 }
             }
 
             if (member.TotalOrders == 0)
             {
-                dbContext.MemberTags.Add(new MemberTag(GuidGenerator.Create(), member.User.Id, MemberConsts.MemberTags.New));
+                dbContext.MemberTags.Add(new MemberTag(GuidGenerator.Create(), member.User.Id, MemberConsts.MemberTags.New, true, true));
             }
             else
             {
-                dbContext.MemberTags.Add(new MemberTag(GuidGenerator.Create(), member.User.Id, MemberConsts.MemberTags.Existing));
+                dbContext.MemberTags.Add(new MemberTag(GuidGenerator.Create(), member.User.Id, MemberConsts.MemberTags.Existing, true, true));
             }
         }
     }

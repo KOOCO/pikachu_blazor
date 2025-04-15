@@ -45,12 +45,12 @@ using Kooco.Pikachu.WebsiteManagement.WebsiteSettingsModules;
 using Kooco.Pikachu.WebsiteManagement.FooterSettings;
 using Kooco.Pikachu.WebsiteManagement.TopbarSettings;
 using Kooco.Pikachu.TierManagement;
-using Kooco.Pikachu.Members;
 using System.Reflection;
 using Kooco.Pikachu.Orders.Entities;
 using Kooco.Pikachu.GroupBuyItemsPriceses;
 using Kooco.Pikachu.LogisticsSettings;
 using Kooco.Pikachu.Tenants.Entities;
+using Kooco.Pikachu.Members.MemberTags;
 
 namespace Kooco.Pikachu.EntityFrameworkCore;
 

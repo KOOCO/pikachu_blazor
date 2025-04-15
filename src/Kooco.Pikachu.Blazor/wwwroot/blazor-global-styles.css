@@ -480,6 +480,28 @@
         color: var(--pk-semi-dark);
     }
 
+.pk-btn-danger,
+.table .pk-btn-danger {
+    border-color: var(--pk-danger-light);
+    color: var(--pk-light);
+    background: var(--pk-danger);
+}
+
+    .pk-btn-danger:hover {
+        background-color: var(--pk-danger-dark);
+        color: var(--pk-light);
+    }
+
+    .pk-btn-danger:active {
+        background-color: var(--pk-danger-dark);
+        color: var(--pk-light);
+    }
+
+    .pk-btn-danger:disabled {
+        color: var(--pk-danger-light);
+        background-color: transparent;
+    }
+
 .pk-btn-outline-danger,
 .table .pk-btn-outline-danger {
     border-color: var(--pk-danger-light);

@@ -1,5 +1,6 @@
 ﻿using Kooco.Pikachu.Groupbuys;
 using Kooco.Pikachu.Items.Dtos;
+using Kooco.Pikachu.Members.MemberTags;
 using Kooco.Pikachu.Orders;
 using Kooco.Pikachu.Orders.Entities;
 using Kooco.Pikachu.Orders.Repositories;
@@ -243,19 +244,6 @@ public class MemberAppService(IObjectMapper objectMapper, IMemberRepository memb
 
         var orders = await orderRepository.GetMemberOrdersByGroupBuyAsync(CurrentUser.Id.Value, groupBuyId);
         return base.ObjectMapper.Map<List<MemberOrderInfoModel>, List<MemberOrderInfoDto>>(orders);
-    }
-
-    public async Task AddTagsToMembersAsync(List<Guid> memberIds, List<string> tags)
-    {
-        if (memberIds.Count == 0 || tags.Count == 0)
-        {
-            return;
-        }
-
-        foreach(var memberId in memberIds)
-        {
-            await memberTagManager.AddTagsForUserAsync(memberId, tags);
-        }
     }
 
     public async Task SetBlacklistedAsync(Guid memberId, bool blacklisted)

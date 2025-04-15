@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Volo.Abp;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Domain.Services;
 
-namespace Kooco.Pikachu.Members;
+namespace Kooco.Pikachu.Members.MemberTags;
 
 public class MemberTagManager : DomainService
 {
@@ -16,7 +17,7 @@ public class MemberTagManager : DomainService
         _repository = repository;
     }
 
-    private async Task<MemberTag> AddTagAsync(Guid userId, string tagName, bool clearNewExisting = false)
+    private async Task<MemberTag> AddTagAsync(Guid userId, string tagName, bool isSystemAssigned, bool clearNewExisting = false)
     {
         if (clearNewExisting)
         {
@@ -28,12 +29,12 @@ public class MemberTagManager : DomainService
             await DeleteTagAsync(userId, tagName);
         }
 
-        return await CreateTagAsync(userId, tagName);
+        return await CreateTagAsync(userId, tagName, true, isSystemAssigned);
     }
 
-    private async Task<MemberTag> CreateTagAsync(Guid userId, string tagName, Guid? vipTierId = null, bool autoSave = true)
+    private async Task<MemberTag> CreateTagAsync(Guid userId, string tagName, bool isEnabled, bool isSystemAssigned, Guid? vipTierId = null, bool autoSave = true)
     {
-        var tag = new MemberTag(GuidGenerator.Create(), userId, tagName, vipTierId);
+        var tag = new MemberTag(GuidGenerator.Create(), userId, tagName, isEnabled, isSystemAssigned, vipTierId);
         if (autoSave)
         {
             await _repository.InsertAsync(tag);
@@ -55,9 +56,9 @@ public class MemberTagManager : DomainService
         }
     }
 
-    public Task<MemberTag> AddNewAsync(Guid userId) => AddTagAsync(userId, MemberConsts.MemberTags.New, true);
-    public Task<MemberTag> AddExistingAsync(Guid userId) => AddTagAsync(userId, MemberConsts.MemberTags.Existing, true);
-    public Task<MemberTag> AddBlacklistedAsync(Guid userId) => AddTagAsync(userId, MemberConsts.MemberTags.Blacklisted);
+    public Task<MemberTag> AddNewAsync(Guid userId) => AddTagAsync(userId, MemberConsts.MemberTags.New, true, true);
+    public Task<MemberTag> AddExistingAsync(Guid userId) => AddTagAsync(userId, MemberConsts.MemberTags.Existing, true, true);
+    public Task<MemberTag> AddBlacklistedAsync(Guid userId) => AddTagAsync(userId, MemberConsts.MemberTags.Blacklisted, true);
 
     public Task<bool> IsNewAsync(Guid userId) => TagExistsAsync(userId, MemberConsts.MemberTags.New);
     public Task<bool> IsExistingAsync(Guid userId) => TagExistsAsync(userId, MemberConsts.MemberTags.Existing);
@@ -73,18 +74,16 @@ public class MemberTagManager : DomainService
     {
         var tags = await _repository.GetListAsync(tag => tag.UserId == userId && tag.VipTierId.HasValue);
         await _repository.DeleteManyAsync(tags);
-        await CreateTagAsync(userId, name, vipTierId);
+        await CreateTagAsync(userId, name, true, true, vipTierId);
     }
 
-    public async Task AddTagsForUserAsync(Guid userId, List<string> tags)
+    public async Task AddTagForUsersAsync(string name, List<Guid> userIds)
     {
-        var existing = await _repository.GetListAsync(tag => tag.UserId == userId);
-        var nonExistingTags = tags.Where(tag => !existing.Any(e => e.Name == tag)).ToList();
-
         List<MemberTag> tagsToAdd = [];
-        foreach (var tag in nonExistingTags)
+
+        foreach (var userId in userIds)
         {
-            tagsToAdd.Add(await CreateTagAsync(userId, tag, autoSave: false));
+            tagsToAdd.Add(await CreateTagAsync(userId, name, true, false, autoSave: false));
         }
 
         await _repository.InsertManyAsync(tagsToAdd);

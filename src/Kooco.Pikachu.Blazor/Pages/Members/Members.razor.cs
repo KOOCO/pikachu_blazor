@@ -1,6 +1,7 @@
 using AngleSharp.Common;
 using Blazorise;
 using Blazorise.DataGrid;
+using Kooco.Pikachu.Blazor.Pages.Members.MemberTags;
 using Kooco.Pikachu.Members;
 using Microsoft.AspNetCore.Components;
 using System;
@@ -26,11 +27,6 @@ public partial class Members
     private List<MemberDto> SelectedMembers { get; set; }
     private bool FiltersVisible { get; set; } = false;
     private bool IsExporting { get; set; }
-
-    private Modal TagModal;
-    private string TagInputValue { get; set; } = "";
-    private List<string> TagsList { get; set; } = [];
-    private bool AddingTags { get; set; } = false;
 
     public Members()
     {
@@ -154,70 +150,6 @@ public partial class Members
         await GetMembersAsync();
 
         await InvokeAsync(StateHasChanged);
-    }
-
-    void OnClose(string item)
-    {
-        TagsList.Remove(item);
-    }
-
-    void HandleInputConfirm()
-    {
-        if (string.IsNullOrEmpty(TagInputValue))
-        {
-            CancelInput();
-            return;
-        }
-
-        string? res = TagsList.Find(s => s == TagInputValue);
-
-        if (string.IsNullOrEmpty(res))
-        {
-            TagsList.Add(TagInputValue);
-        }
-
-        CancelInput();
-    }
-
-    void CancelInput()
-    {
-        TagInputValue = "";
-    }
-
-    void OpenTagModal()
-    {
-        TagsList = [];
-        TagModal?.Show();
-    }
-
-    void CloseTagModal()
-    {
-        TagModal?.Hide();
-    }
-
-    async Task AddTagsToMembersAsync()
-    {
-        try
-        {
-            if (SelectedMembers.Count == 0 || TagsList.Count == 0)
-            {
-                return;
-            }
-
-            AddingTags = true;
-            
-            var selectedIds = SelectedMembers.Select(member => member.Id).ToList();
-            await MemberAppService.AddTagsToMembersAsync(selectedIds, TagsList);
-            
-            CloseTagModal();
-
-            AddingTags = false;
-        }
-        catch(Exception ex)
-        {
-            AddingTags = false;
-            await HandleErrorAsync(ex);
-        }
     }
 
     private static bool RowSelectableHandler(RowSelectableEventArgs<MemberDto> rowSelectableEventArgs)

@@ -6,6 +6,7 @@ using Kooco.Pikachu.Groupbuys;
 using Kooco.Pikachu.GroupBuys;
 using Kooco.Pikachu.Items;
 using Kooco.Pikachu.Members;
+using Kooco.Pikachu.Members.MemberTags;
 using Kooco.Pikachu.OrderItems;
 using Kooco.Pikachu.Orders.Entities;
 using Kooco.Pikachu.Orders.Interfaces;

@@ -1,6 +1,5 @@
 ﻿@page "/Members"
 @attribute [Authorize(PikachuPermissions.Members.Default)]
-@using Kooco.Pikachu.Blazor.Helpers
 @using Kooco.Pikachu.Localization
 @using Kooco.Pikachu.Members
 @using Kooco.Pikachu.Permissions
@@ -26,10 +25,6 @@
             <PikachuButton Class="pk-btn-sm pk-btn-primary" Clicked="ExportAllAsync" Loading="IsExporting">
                 <Icon Name="IconName.FileDownload" Display="IsExporting ? Display.None : Display.InlineBlock"></Icon>
                 @L["ExportAll"]
-            </PikachuButton>
-            <PikachuButton Class="pk-btn-sm pk-btn-secondary ms-2" Clicked="OpenTagModal" IconClass="fas fa-add"
-                           Disabled="SelectedMembers == null || SelectedMembers.Count == 0">
-                @L["AddTags"]
             </PikachuButton>
         </Column>
     </Row>
@@ -255,37 +250,3 @@
         </DataGrid>
     </CardBody>
 </Card>
-
-
-<Modal @ref="TagModal">
-    <ModalContent IsCentered="true">
-        <ModalHeader>
-            <ModalTitle>@L["AddTags"]</ModalTitle>
-            <CloseButton Clicked="CloseTagModal" />
-        </ModalHeader>
-        <ModalBody>
-            <div>
-                <Field>
-                    <AntDesign.Input @bind-Value="TagInputValue" Size="AntDesign.InputSize.Large"
-                                     OnBlur="HandleInputConfirm" OnPressEnter="HandleInputConfirm"
-                                     AutoFocus Placeholder="@L["AddTag"]">
-                    </AntDesign.Input>
-                </Field>
-                @foreach (var item in TagsList)
-                {
-                    <AntDesign.Tag Color="AntDesign.TagColor.Blue" @key="item" Closable OnClose="() => OnClose(item)">
-                        @item
-                    </AntDesign.Tag>
-                }
-            </div>
-        </ModalBody>
-        <ModalFooter>
-            <PikachuButton Class="pk-btn-primary"
-                           Disabled="SelectedMembers.Count == 0 || TagsList.Count == 0"
-                           Clicked="AddTagsToMembersAsync"
-                           Loading="AddingTags">
-                @L["AddTags"]
-            </PikachuButton>
-        </ModalFooter>
-    </ModalContent>
-</Modal>

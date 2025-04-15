@@ -28,7 +28,6 @@ public interface IMemberAppService : IApplicationService
     Task<UserAddressDto> CreateMemberAddressAsync(Guid id, CreateUpdateMemberAddressDto input);
     Task<UserAddressDto> UpdateMemberAddressAsync(Guid id, Guid addressId, CreateUpdateMemberAddressDto input);
     Task<List<UserAddressDto>> GetMemberAddressListAsync(Guid id);
-    Task AddTagsToMembersAsync(List<Guid> memberIds, List<string> tags);
     Task SetBlacklistedAsync(Guid memberId, bool blacklisted);
     Task<MemberLoginResponseDto> LoginAsync(MemberLoginInputDto input);
     Task<MemberDto> RegisterAsync(CreateMemberDto input);

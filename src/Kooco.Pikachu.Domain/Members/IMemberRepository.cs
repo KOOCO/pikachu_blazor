@@ -19,6 +19,10 @@ public interface IMemberRepository : IIdentityUserRepository, IRepository<Identi
         IEnumerable<string>? selectedMemberTags = null, DateTime? minCreationTime = null, DateTime? maxCreationTime = null, int? minOrderCount = null,
         int? maxOrderCount = null, int? minSpent = null, int? maxSpent = null);
 
+    Task<IQueryable<MemberModel>> GetFilteredQueryableAsync(string? filter = null, string? memberType = null, IEnumerable<string>? selectedMemberTags = null,
+        DateTime? minCreationTime = null, DateTime? maxCreationTime = null, int? minOrderCount = null, int? maxOrderCount = null,
+        int? minSpent = null, int? maxSpent = null);
+
     Task<long> CountOrdersAsync(Guid memberId);
 
     Task<VipTier?> CheckForVipTierAsync(Guid userId);

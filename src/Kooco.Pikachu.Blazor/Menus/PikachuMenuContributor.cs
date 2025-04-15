@@ -230,6 +230,13 @@ public class PikachuMenuContributor : IMenuContributor
             icon: "fas fa-user-tag",
             url: "/Members/Tier-Management"
             ).RequireAuthenticated());
+        membersMenu.AddItem(new ApplicationMenuItem(
+            name: PikachuMenus.MemberTags,
+            displayName: l["Menu:MemberTags"],
+            icon: "fas fa-user-tag",
+            url: "/Members/Member-Tags",
+            requiredPermissionName: PikachuPermissions.Members.Default
+            ).RequireAuthenticated());
         context.Menu.AddItem(membersMenu);
 
         var promotions =

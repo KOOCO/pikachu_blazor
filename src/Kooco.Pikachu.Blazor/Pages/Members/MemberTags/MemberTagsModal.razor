@@ -1,0 +1,102 @@
+﻿@using Kooco.Pikachu.Members
+@using System.Globalization
+@using Kooco.Pikachu.Members.MemberTags
+@inherits PikachuComponentBase
+@inject IMemberTagAppService MemberTagAppService
+@inject IMemberAppService MemberAppService
+
+<Modal @ref="TagModal" Closing="@OnModalClosing">
+    <ModalContent Size="ModalSize.Large" IsCentered="true">
+        <ModalHeader>
+            <ModalTitle></ModalTitle>
+            <CloseButton Clicked="CloseTagModal" />
+        </ModalHeader>
+        <ModalBody>
+            <Row>
+                <Column ColumnSize="ColumnSize.Is3">
+                    <h5 class="text-dark">@L["TagName"]<Span Class="text-danger">*</Span></h5>
+                </Column>
+                <Column ColumnSize="ColumnSize.Is9">
+                    <Field>
+                        <AntDesign.Input @bind-Value="Input.Name" Size="AntDesign.InputSize.Large"
+                                         AutoFocus>
+                        </AntDesign.Input>
+                    </Field>
+                </Column>
+            </Row>
+            <Divider></Divider>
+            <Row>
+                <Column ColumnSize="ColumnSize.Is3">
+                    <h5 class="text-dark">@L["Conditions"]</h5>
+                </Column>
+                <Column ColumnSize="ColumnSize.Is9">
+                    <Field>
+                        <Label>@L["MemberType"]</Label>
+                        <AntDesign.Select Mode="AntDesign.SelectMode.Multiple"
+                                          @bind-Values="@Input.MemberTypes"
+                                          MaxTagCount="AntDesign.Select.ResponsiveTag.Responsive"
+                                          HideSelected
+                                          AllowClear
+                                          TItem="string"
+                                          TItemValue="string">
+                            <SelectOptions>
+                                @foreach (var tagName in MemberConsts.MemberTags.Names)
+                                {
+                                    <AntDesign.SelectOption TItemValue="string" TItem="string" Value=@tagName Label=@L[tagName] />
+                                }
+                            </SelectOptions>
+                        </AntDesign.Select>
+                    </Field>
+                    <Field>
+                        <Label>@L["MemberTags"]</Label>
+                        <AntDesign.Select Mode="AntDesign.SelectMode.Multiple"
+                                          @bind-Values="@Input.MemberTags"
+                                          MaxTagCount="AntDesign.Select.ResponsiveTag.Responsive"
+                                          HideSelected
+                                          AllowClear
+                                          TItem="string"
+                                          TItemValue="string">
+                            <SelectOptions>
+                                @foreach (var item in MemberTagOptions)
+                                {
+                                    <AntDesign.SelectOption TItemValue="string" TItem="string" Value=@item Label=@item />
+                                }
+                            </SelectOptions>
+                        </AntDesign.Select>
+                    </Field>
+                    <Field>
+                        <Label>@L["AmountSpent"]</Label>
+                        <AntDesign.InputNumber Class="no-stepper"
+                                               @bind-Value="Input.AmountSpent" Min="0"
+                                               Formatter="AntHelper.FormatAmount"
+                                               Parser="AntHelper.ParseAmount">
+                        </AntDesign.InputNumber>
+                    </Field>
+                    <Field>
+                        <Label>@L["OrderCountCompleted"]</Label>
+                        <AntDesign.InputNumber Class="no-stepper" @bind-Value="Input.OrdersCompleted" Min="0" />
+                    </Field>
+                    <Field>
+                        <Label>@L["RegistrationDate"]</Label>
+                        <AntDesign.RangePicker TValue="DateTime?[]"
+                                               Format="@AntLocaleHelper.GetFormat()"
+                                               Locale="AntLocaleHelper.GetLocale()"
+                                               CultureInfo="@CultureInfo.CurrentCulture" />
+                    </Field>
+                </Column>
+            </Row>
+        </ModalBody>
+        <ModalFooter>
+            <PikachuButton Class="pk-btn-sm pk-btn-danger"
+                           Clicked="CloseTagModal" Disabled="Loading">
+                @L["Cancel"]
+            </PikachuButton>
+            <PikachuButton Class="pk-btn-sm pk-btn-primary"
+                           Clicked="AddTagsToMembersAsync" Loading="Loading"
+                           IconClass="fas fa-check"
+                           Disabled="string.IsNullOrWhiteSpace(Input.Name)">
+                @L["Save"]
+            </PikachuButton>
+        </ModalFooter>
+    </ModalContent>
+</Modal>

@@ -1,0 +1,92 @@
+﻿@page "/Members/Member-Tags"
+@using Kooco.Pikachu.Members
+@using Kooco.Pikachu.Members.MemberTags
+@attribute [Authorize(PikachuPermissions.Members.Default)]
+@inherits PikachuComponentBase
+@inject IMemberTagAppService MemberTagAppService
+@inject IMemberAppService MemberAppService
+
+<Div>
+    <Row>
+        <Column ColumnSize="ColumnSize.Is6">
+            <h3 class="text-dark">@L["MemberTags"]</h3>
+        </Column>
+        <Column ColumnSize="ColumnSize.Is6" TextAlignment="TextAlignment.End">
+            <PikachuButton Class="pk-btn-sm pk-btn-danger" IconClass="fas fa-trash"
+                           Loading="IsDeleting"
+                           Clicked="DeleteAsync"
+                           Disabled="SelectedMemberTags.Count ==0">
+                @L["Delete"]
+            </PikachuButton>
+            <PikachuButton Class="pk-btn-sm pk-btn-primary" IconClass="fas fa-add" Clicked="() => TagModal?.Show()">
+                @L["AddTag"]
+            </PikachuButton>
+        </Column>
+    </Row>
+</Div>
+<Card>
+    <CardBody>
+        <Row>
+            <Column ColumnSize="ColumnSize.Is12">
+                <Div Class="input-group">
+                    <TextEdit @bind-Text="Filter" Style="border-radius: 0.5rem 0 0 0.5rem;" />
+                    <Button Color="Color.Primary" Clicked="ApplyFilters"
+                            Style="border-radius: 0 0.5rem 0.5rem 0;">
+                        <Icon Class="fas fa-search"></Icon>
+                    </Button>
+                </Div>
+            </Column>
+        </Row>
+    </CardBody>
+</Card>
+<Card>
+    <CardBody>
+        <DataGrid TItem="MemberTagDto"
+                  Data="MemberTagList"
+                  ReadData="OnDataGridReadAsync"
+                  TotalItems="TotalCount"
+                  ShowPager="true"
+                  PageSize="PageSize"
+                  CurrentPage="CurrentPage"
+                  Hoverable
+                  Narrow
+                  Responsive
+                  SelectionMode="DataGridSelectionMode.Multiple"
+                  @bind-SelectedRows="SelectedMemberTags"
+                  RowSelectable="RowSelectableHandler">
+            <DataGridColumns>
+                <DataGridMultiSelectColumn TItem="MemberTagDto" Width="30px"></DataGridMultiSelectColumn>
+                <DataGridCommandColumn TItem="MemberTagDto" />
+                <DataGridColumn TItem="MemberTagDto"
+                                Field="@nameof(MemberTagDto.Name)"
+                                Caption="@L["Name"]">
+                </DataGridColumn>
+                <DataGridColumn TItem="MemberTagDto"
+                                Field="@nameof(MemberTagDto.CreationTime)"
+                                Caption="@L["CreationTime"]"
+                                TextAlignment="TextAlignment.Center">
+                    <DisplayTemplate>
+                        @context.CreationTime.ToString("MMM dd, yyyy")
+                    </DisplayTemplate>
+                </DataGridColumn>
+                <DataGridColumn TItem="MemberTagDto"
+                                TextAlignment="TextAlignment.Center">
+                    <DisplayTemplate>
+                        <Button Class="btn-link">@L["Edit"]</Button>
+                    </DisplayTemplate>
+                </DataGridColumn>
+                <DataGridColumn TItem="MemberTagDto"
+                                Field="@nameof(MemberTagDto.IsEnabled)"
+                                Caption="@L["Enabled"]"
+                                Width="100px">
+                    <DisplayTemplate>
+                        <Div Class="d-flex justify-content-center w-100">
+                            <Switch TValue="bool" Checked="context.IsEnabled" CheckedChanged="(e) => OnCheckedChanged(context, e)"  Class="p-0"></Switch>
+                        </Div>
+                    </DisplayTemplate>
+                </DataGridColumn>
+            </DataGridColumns>
+        </DataGrid>
+    </CardBody>
+</Card>
+<MemberTagsModal @ref="TagModal" OnTagAdded="() => GetMemberTagsAsync()"></MemberTagsModal>

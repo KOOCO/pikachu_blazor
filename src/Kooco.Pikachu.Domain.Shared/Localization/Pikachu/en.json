@@ -1383,7 +1383,7 @@
     "MemberTags": "Member Tags",
     "MemberStatus": "Member Status",
     "VipTier": "Vip Tier",
-    "CreationTime": "創建時間",
+    "CreationTime": "Creation Time",
     "Permission:VipTierSettings": "Tier Management",
     "InstallmentPeriods": "Installment Periods",
     "InstallmentPeriods.3": "3",
@@ -1428,6 +1428,12 @@
     "OrderInstructionsSuggestedSize": "Suggested Image Size: 1200*480px",
     "ProductRankingCarouselSuggestedSize": "<br />Suggested Image Size: 800*800px",
     "VideoUpload": "Video Upload",
-    "VideoUrl": "Video Url"
+    "VideoUrl": "Video Url",
+    "Menu:MemberTags": "Member Tags",
+    "TagName": "Tag Name",
+    "OrderCountCompleted": "Orders Completed",
+    "PleaseProvideTagName": "Please provide Tag Name",
+    "AmountSpent": "Amount Spent",
+    "AreYouSureToDeleteSelectedMemberTags": "Are you sure you want to delete the selected member tags?"
   }
 }

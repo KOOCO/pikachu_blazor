@@ -23,6 +23,7 @@ public class PikachuMenus
     public const string MembersList = Prefix + ".MembersList";
     public const string LoginConfigurations = Prefix + ".LoginConfigurations";
     public const string TierManagement = Prefix + ".TierManagement";
+    public const string MemberTags = Prefix + ".MemberTags";
 
     public const string TenantSettings = Prefix + ".TenantSettings";
     public const string TenantWallets = Prefix + ".TenantWallets";

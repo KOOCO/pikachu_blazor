@@ -21,6 +21,7 @@ using Kooco.Pikachu.LoginConfigurations;
 using Kooco.Pikachu.LogisticsProviders;
 using Kooco.Pikachu.LogisticsSettings;
 using Kooco.Pikachu.Members;
+using Kooco.Pikachu.Members.MemberTags;
 using Kooco.Pikachu.OrderDeliveries;
 using Kooco.Pikachu.OrderItems;
 using Kooco.Pikachu.Orders;
