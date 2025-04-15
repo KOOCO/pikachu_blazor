@@ -49,6 +49,10 @@ namespace Kooco.Pikachu.Blazor.Pages.AddOnProducts
             editContext = new(CreateAddOnProduct);
             messageStore = new(editContext);
         }
+        private void NavigateToList()
+        {
+            NavigationManager.NavigateTo("/add-on-products");
+        }
         protected override async Task OnInitializedAsync()
         {
             try

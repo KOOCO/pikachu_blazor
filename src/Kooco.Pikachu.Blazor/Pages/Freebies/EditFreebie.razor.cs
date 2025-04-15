@@ -62,6 +62,10 @@ public partial class EditFreebie
     #endregion
 
     #region Methods
+    private void NavigateToList()
+    {
+        NavigationManager.NavigateTo("/Freebie/FreebieList");
+    }
     protected override async Task OnAfterRenderAsync(bool isFirstRender)
     {
         if (isFirstRender)

@@ -13,7 +13,7 @@
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JSRuntime
 @attribute [Authorize]
-<h3>@L["NewFreebie"]</h3>
+<Heading Size="HeadingSize.Is3" @onclick="NavigateToList" style="cursor: pointer;">@L["NewFreebie"]</Heading>
 <Card>
     <CardBody>
         <div class="card-body">

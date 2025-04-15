@@ -55,7 +55,10 @@ namespace Kooco.Pikachu.Blazor.Pages.SetItem
             _itemAppService = itemAppService;
             _setItemAppService = setItemAppService;
         }
-
+        private void NavigateToItemList()
+        {
+            NavigationManager.NavigateTo("/SetItem");
+        }
         protected override async Task OnInitializedAsync()
         {
             ItemsList = await _itemAppService.GetItemsLookupAsync();

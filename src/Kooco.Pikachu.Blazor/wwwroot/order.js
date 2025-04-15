@@ -4,6 +4,9 @@
         element.classList.remove("form-select");
     }
 };
+window.historyBack = function () {
+    history.back();
+};
 window.reloadOrderPage = function () {
     window.location.reload();
 };

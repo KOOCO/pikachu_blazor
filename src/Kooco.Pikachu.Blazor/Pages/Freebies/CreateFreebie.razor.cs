@@ -49,7 +49,10 @@ namespace Kooco.Pikachu.Blazor.Pages.Freebies
             _groupBuyAppService = groupBuyAppService;
             ImageList = new List<CreateImageDto>();
         }
-
+        private void NavigateToList()
+        {
+            NavigationManager.NavigateTo("/Freebie/FreebieList");
+        }
         protected override async Task OnInitializedAsync()
         {
             try

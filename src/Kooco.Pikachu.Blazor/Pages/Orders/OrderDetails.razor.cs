@@ -93,7 +93,10 @@ public partial class OrderDetails
     {
         IsConversationWindowCollapsed = !IsConversationWindowCollapsed;
     }
-
+     async void NavigateToList()
+    {
+        await JSRuntime.InvokeVoidAsync("historyBack");
+    }
     private async Task SendMessage()
     {
         if (string.IsNullOrWhiteSpace(NewMessage))

@@ -21,10 +21,10 @@
         <Column ColumnSize="ColumnSize.Is6">
             @if(Id!=Guid.Empty)
             {
-                <h3 class="text-dark">@L["UpdateAddOnProducts"]</h3>                
+               <Heading Size="HeadingSize.Is3" @onclick="NavigateToList" style="cursor: pointer;">@L["UpdateAddOnProducts"]</Heading>                
             }
             else{
-                <h3 class="text-dark">@L["NewAddOnProducts"]</h3>
+                <Heading Size="HeadingSize.Is3" @onclick="NavigateToList" style="cursor: pointer;">@L["NewAddOnProducts"]</Heading>
             }
         </Column>
 

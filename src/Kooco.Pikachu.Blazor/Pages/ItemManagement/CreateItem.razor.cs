@@ -80,6 +80,10 @@ public partial class CreateItem
     #endregion
 
     #region Methods
+    private void NavigateToItemList()
+    {
+        NavigationManager.NavigateTo("/items");
+    }
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();

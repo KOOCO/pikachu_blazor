@@ -93,6 +93,10 @@ public partial class EditItem
     #endregion
 
     #region Methods
+    private void NavigateToItemList()
+    {
+        NavigationManager.NavigateTo("/items");
+    }
     protected override async Task OnAfterRenderAsync(bool isFirstRender)
     {
         if (isFirstRender)

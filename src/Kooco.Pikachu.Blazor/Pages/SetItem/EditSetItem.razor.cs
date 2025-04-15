@@ -60,7 +60,10 @@ namespace Kooco.Pikachu.Blazor.Pages.SetItem
             _imageContainerManager = imageContainerManager;
             _itemAppService = itemAppService;
         }
-
+        private void NavigateToItemList()
+        {
+            NavigationManager.NavigateTo("/SetItem");
+        }
         protected override async Task OnAfterRenderAsync(bool isFirstRender)
         {
             if (isFirstRender)

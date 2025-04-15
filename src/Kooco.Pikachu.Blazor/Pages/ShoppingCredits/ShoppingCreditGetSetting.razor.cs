@@ -43,6 +43,10 @@ namespace Kooco.Pikachu.Blazor.Pages.ShoppingCredits
             messageStore = new(editContext);
             stagedSettings.Add(new StagedSetting());
         }
+        private void NavigateToList()
+        {
+            NavigationManager.NavigateTo("/shopping-credit");
+        }
         protected override async Task OnInitializedAsync()
         {
             try

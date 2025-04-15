@@ -44,6 +44,10 @@ namespace Kooco.Pikachu.Blazor.Pages.DiscountCodes
             editContext = new(CreateDiscountCode);
             messageStore = new(editContext);
         }
+        private void NavigateToList()
+        {
+            NavigationManager.NavigateTo("/discount-code");
+        }
         protected override async Task OnInitializedAsync()
         {
             try

@@ -195,6 +195,10 @@ public partial class EditGroupBuy
     #endregion
 
     #region Methods
+    private void NavigateToGroupBuyList()
+    {
+        NavigationManager.NavigateTo("/GroupBuyManagement/GroupBuyList");
+    }
     protected override async Task OnInitializedAsync()
     {
         try

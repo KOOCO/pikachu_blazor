@@ -49,7 +49,11 @@
         height: 9.55rem;
     }
 </style>
-<h3>@L["NewGroupBuy"]</h3>
+
+       <Heading Size="HeadingSize.Is3" @onclick="NavigateToGroupBuyList" style="cursor: pointer;">
+       
+        @L["NewGroupBuy"]
+    </Heading>
 <LoadingIndicator @ref="Loading" FullScreen FadeIn></LoadingIndicator>
 <Card>
     <CardBody>

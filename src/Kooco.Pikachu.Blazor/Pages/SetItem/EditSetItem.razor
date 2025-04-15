@@ -12,7 +12,7 @@
 @inject IItemAppService ItemAppService
 @inject IJSRuntime JSRuntime
 @attribute [Authorize]
-<h3>@L["EditSetItem"]</h3>
+ <Heading Size="HeadingSize.Is3" @onclick="NavigateToItemList" style="cursor: pointer;">@L["EditSetItem"]</Heading>
 
 <Card>
     <CardBody>

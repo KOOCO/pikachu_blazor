@@ -210,6 +210,10 @@ public partial class CreateGroupBuy
     ];
 
     #region Methods
+    private void NavigateToGroupBuyList()
+    {
+        NavigationManager.NavigateTo("/GroupBuyManagement/GroupBuyList");
+    }
     protected override async Task OnInitializedAsync()
     {
         CreateGroupBuyDto.EntryURL = (await MyTenantAppService.FindTenantUrlAsync(CurrentTenant.Id)) + "groupBuy/";
