@@ -1019,12 +1019,15 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
                         }
                         if (itemDetail.ItemType == ItemType.SetItem && itemDetail.SetItemId != null)
                         {
-                            itemDetail.SetItem.SetItemDetails = [];
+                            
                             var checkPrice = await _groupBuyItemsPriceAppService.GetBySetItemIdAndGroupBuyIdAsync(itemDetail.SetItemId.Value, groupBuyId);
                             if (checkPrice is not null)
                             {
                                 itemDetail.SetItem.GroupBuyPrice = checkPrice.GroupBuyPrice;
-
+                                foreach (var detail in itemDetail.SetItem.SetItemDetails)
+                                {
+                                    detail.Item = null;
+                                }
                             }
                             else
                             {
