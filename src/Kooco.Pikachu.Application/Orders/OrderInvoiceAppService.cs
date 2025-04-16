@@ -19,7 +19,6 @@ using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
 using System.Web;
-using Volo.Abp.Domain.Repositories;
 
 namespace Kooco.Pikachu.Orders;
 public class OrderInvoiceAppService : PikachuAppService, IOrderInvoiceAppService
@@ -31,7 +30,7 @@ public class OrderInvoiceAppService : PikachuAppService, IOrderInvoiceAppService
             throw new InvalidOperationException("訂單已有未作廢發票，不能重複建立");
         }
 
-        if(CurrentTenant?.Id == null) return "";
+        if (CurrentTenant?.Id == null) return "";
 
         var setting = await TenantTripartiteRepository.FindByTenantAsync(CurrentTenant.Id.Value);
 
@@ -41,6 +40,7 @@ public class OrderInvoiceAppService : PikachuAppService, IOrderInvoiceAppService
             .Include(x => x.OrderItems)
             .ThenInclude(x => x.Freebie)
             .First(x => x.Id == orderId);
+
 
         //foreach (var orderItem in order.OrderItems)
         //{
@@ -66,7 +66,10 @@ public class OrderInvoiceAppService : PikachuAppService, IOrderInvoiceAppService
         var carrierNumber = carrierType == "3" ? order.CarrierId : null;
         var customerAddress = order.AddressDetails.IsNullOrEmpty() ? order.CustomerEmail : order.AddressDetails;
 
-        var salesAmount = Convert.ToInt32(order.TotalAmount + order.DeliveryCost + order.DiscountAmount);
+        var amount = order.OrderItems.Sum(x => x.TotalAmount);
+        var salesAmount = Convert.ToInt32(amount + order.DeliveryCost + order.DiscountAmount + order.cashback_amount);
+
+        if (amount <= 0) return "";
 
         List<ECPayCreateInvoiceInput.Item> invoiceItems = [
             new ECPayCreateInvoiceInput.Item
@@ -75,9 +78,9 @@ public class OrderInvoiceAppService : PikachuAppService, IOrderInvoiceAppService
                 ItemName = L["AmountString"],
                 ItemCount = 1,
                 ItemWord = "1",
-                ItemPrice = order.TotalAmount,
+                ItemPrice = amount,
                 ItemTaxType = 1,
-                ItemAmount = order.TotalAmount,
+                ItemAmount = amount,
                 ItemRemark = ""
             },
             new ECPayCreateInvoiceInput.Item
@@ -99,6 +102,16 @@ public class OrderInvoiceAppService : PikachuAppService, IOrderInvoiceAppService
                 ItemPrice = (decimal)order.DiscountAmount,
                 ItemTaxType = 1,
                 ItemAmount = (decimal)order.DiscountAmount,
+            },
+            new ECPayCreateInvoiceInput.Item
+            {
+                ItemSeq = 4,
+                ItemName = L["ShoppingCredits"],
+                ItemCount = 1,
+                ItemWord = "1",
+                ItemPrice = order.cashback_amount,
+                ItemTaxType = 1,
+                ItemAmount = order.cashback_amount,
             },
         ];
 
