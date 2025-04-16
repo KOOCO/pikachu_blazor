@@ -415,7 +415,7 @@ public class OrderAppService : PikachuAppService, IOrderAppService
                         IsActive = true,
                         TransactionDescription = "購物折抵：訂單 #" + order.OrderNo,
                         UserId = order.UserId.Value,
-                        ShoppingCreditType = UserShoppingCreditType.Grant
+                        ShoppingCreditType = UserShoppingCreditType.Deduction
                     });
                     order.CreditDeductionAmount = newdeduction.Amount;
                     order.CreditDeductionRecordId = newdeduction.Id;
@@ -2803,17 +2803,8 @@ public class OrderAppService : PikachuAppService, IOrderAppService
     {
         // Sum of Paid orders
         var paidAmount = (await OrderRepository.GetQueryableAsync())
-            .Where(order => order.UserId == userId && (
-                (order.PaymentMethod != PaymentMethods.CashOnDelivery &&
-                    (order.ShippingStatus == ShippingStatus.PrepareShipment ||
-                     order.ShippingStatus == ShippingStatus.ToBeShipped ||
-                     order.ShippingStatus == ShippingStatus.Shipped ||
-                     order.ShippingStatus == ShippingStatus.Delivered)) ||
-                (order.PaymentMethod == PaymentMethods.CashOnDelivery &&
-                    order.ShippingStatus == ShippingStatus.Delivered)
-
-                    ))
-
+            .Where(order => order.UserId == userId 
+                    && OrderConsts.CompletedShippingStatus.Contains(order.ShippingStatus))
             .Sum(order => order.TotalAmount);
 
         // Sum of Unpaid/Due orders
@@ -2842,7 +2833,7 @@ public class OrderAppService : PikachuAppService, IOrderAppService
         // Sum of Paid orders
         var paidAmount = (await OrderRepository.GetQueryableAsync())
             .Where(order =>
-                (order.ShippingStatus == ShippingStatus.Completed || order.ShippingStatus == ShippingStatus.Closed)
+                    OrderConsts.CompletedShippingStatus.Contains(order.ShippingStatus)
                     && order.UserId == userId
                     )
 
