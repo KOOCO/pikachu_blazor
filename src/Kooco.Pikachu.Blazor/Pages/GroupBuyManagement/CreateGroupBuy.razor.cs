@@ -1,4 +1,5 @@
 ﻿using AngleSharp.Dom;
+using AntDesign;
 using Blazored.TextEditor;
 using Blazorise;
 using Blazorise.Cropper;
@@ -34,6 +35,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Volo.Abp.AspNetCore.Components.Messages;
+using Modal = Blazorise.Modal;
 
 
 namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement;
@@ -46,8 +48,13 @@ public partial class CreateGroupBuy
     private CreateImageDto SelectedImageDto = new();
     private const int maxtextCount = 60;
     private Modal CropperModal;
+    private Modal BannerCropperModal;
     private Modal CarouselCropperModal;
+    private Modal PurchaseOverviewCropperModal;
     private Cropper LogoCropper;
+    private Cropper BannerCropper;
+    private Cropper CarouselCropper;
+    private Cropper PurchaseOverviewCropper;
     private FilePicker LogoPickerCustom;
     private string imageToCrop;
     private IFileEntry selectedFile;
@@ -147,8 +154,13 @@ public partial class CreateGroupBuy
     private List<CreateImageDto> uploadedCarouselImages = new List<CreateImageDto>(); // List for storing image data
     private int CurrentFileIndex = 0;
     FilePicker CarouselPicker = new FilePicker();
+    FilePicker BannerPicker = new FilePicker();
     ImageType ImageType;
     int CarouselModuleNumber;
+    int BannerModuleNumber;
+    private List<CreateImageDto> uploadBannerImages = new List<CreateImageDto>(); // List for storing image data
+    public GroupPurchaseOverviewDto GroupPurchaseOverviewModule = new GroupPurchaseOverviewDto();
+    FilePicker PurchaseOverviewPicker = new FilePicker();
     #endregion
 
     #region Constructor
@@ -618,16 +630,38 @@ public partial class CreateGroupBuy
 
         await InvokeAsync(StateHasChanged);
     }
-    private Task OnModalClosing(ModalClosingEventArgs e)
+    private Task OnModalClosing(Blazorise.ModalClosingEventArgs e)
     {
         return Task.CompletedTask;
     }
+    
+ 
     private async Task CloseCropModal()
     {
         await LogoPickerCustom.Clear();
         await CropperModal.Hide();
-        await CarouselPicker.Clear();
+
+       
         await CarouselCropperModal.Hide();
+    }
+    private async Task ClosePurchaseOverviewCropModal()
+    {
+        await PurchaseOverviewCropperModal.Hide();
+        imageToCrop = "";
+        PurchaseOverviewCropper.Source = "";
+        await PurchaseOverviewCropper.ResetSelection();
+        await PurchaseOverviewPicker.Clear();
+    }
+    private async Task CloseBannerCropModal()
+    {
+        
+        await BannerCropperModal.Hide();
+        imageToCrop = "";
+         BannerCropper.Source = "";
+        await BannerCropper.ResetSelection();
+        await BannerPicker.Clear();
+
+
     }
     private string LocalizeFilePicker(string key, object[] args)
     {
@@ -1071,6 +1105,36 @@ public partial class CreateGroupBuy
         }
     }
 
+    private Task OnCarouselSelectionChanged(CropperSelectionChangedEventArgs eventArgs)
+    {
+        if (eventArgs.Width != 0)
+        {
+            cropButtonDisabled = false;
+
+            return InvokeAsync(StateHasChanged);
+        }
+
+        return Task.CompletedTask;
+    }
+    private async Task ResetCarouselSelection()
+    {
+        cropButtonDisabled = true;
+        croppedImage = "";
+        await CarouselCropper.ResetSelection();
+    }
+    private async Task GetCarouselCroppedImage()
+    {
+        var options = new CropperCropOptions
+        {
+            Width = 300,       // Set desired width of the cropped image
+            Height = 300,      // Set desired height of the cropped image
+            ImageQuality = 0.9, // Set image quality (if using JPEG)
+            ImageType = "image/png" // Specify the image format (use PNG in this case)
+        };
+        var base64Image = await CarouselCropper.CropAsBase64ImageAsync(options);
+        croppedImage = base64Image;
+
+    }
     // Show the cropper for the selected file
     private async Task ShowCropperForFileAsync(int fileIndex, List<CreateImageDto> carouselImages, int carouselModuleNumber, FilePicker carouselPicker, ImageType imageType)
     {
@@ -1179,7 +1243,7 @@ public partial class CreateGroupBuy
             }
 
             // Move to the next image in the list, if any
-            if (CurrentFileIndex <= selectedFiles.Count - 1)
+            if (CurrentFileIndex < selectedFiles.Count - 1)
             {
                 CurrentFileIndex++;
                 await ShowCropperForFileAsync(CurrentFileIndex, carouselImages, carouselModuleNumber, carouselPicker, imageType);
@@ -1202,24 +1266,99 @@ public partial class CreateGroupBuy
         finally
         {
             // Reset cropper and picker
-            await LogoCropper.ResetSelection();
-            //await carouselPicker.Clear();
+            await CarouselCropper.ResetSelection();
+            await carouselPicker.Clear();
 
         }
     }
-    async Task OnBannerImageModuleUploadAsync(
-        FileChangedEventArgs e,
-        List<CreateImageDto> bannerImages,
-        int carouselModuleNumber,
-        FilePicker bannerPicker,
-        ImageType imageType
-    )
-    {
+    //async Task OnBannerImageModuleUploadAsync(
+    //    FileChangedEventArgs e,
+    //    List<CreateImageDto> bannerImages,
+    //    int carouselModuleNumber,
+    //    FilePicker bannerPicker,
+    //    ImageType imageType
+    //)
+    //{
 
+    //    if (e.Files.Length > 1)
+    //    {
+    //        await _uiMessageService.Error("Select Only 1 Banner to Upload");
+    //        await LogoPickerCustom.Clear();
+    //        return;
+    //    }
+    //    if (e.Files.Length == 0)
+    //    {
+    //        return;
+    //    }
+
+    //    int count = 0;
+    //    try
+    //    {
+    //        if (!ValidFileExtensions.Contains(Path.GetExtension(e.Files[0].Name)))
+    //        {
+    //            await _uiMessageService.Error(L["InvalidFileType"]);
+    //            await LogoPickerCustom.Clear();
+    //            return;
+    //        }
+    //        if (e.Files[0].Size > MaxAllowedFileSize)
+    //        {
+    //            await LogoPickerCustom.RemoveFile(e.Files[0]);
+    //            await _uiMessageService.Error(L[PikachuDomainErrorCodes.FilesAreGreaterThanMaxAllowedFileSize]);
+    //            return;
+    //        }
+    //        string newFileName = Path.ChangeExtension(
+    //                  Guid.NewGuid().ToString().Replace("-", ""),
+    //                  Path.GetExtension(e.Files[0].Name));
+    //        var stream = e.Files[0].OpenReadStream(long.MaxValue);
+    //        try
+    //        {
+    //            var memoryStream = new MemoryStream();
+
+    //            await stream.CopyToAsync(memoryStream);
+    //            memoryStream.Position = 0;
+    //            var url = await _imageContainerManager.SaveAsync(newFileName, memoryStream);
+
+    //            int sortNo = bannerImages[0].SortNo is 0 ? bannerImages[0].SortNo + 1 : 1;
+
+    //            bannerImages[0].Name = e.Files[0].Name;
+    //            bannerImages[0].BlobImageName = newFileName;
+    //            bannerImages[0].ImageUrl = url;
+    //            bannerImages[0].ImageType = imageType;
+    //            bannerImages[0].SortNo = sortNo;
+    //            bannerImages[0].ModuleNumber = carouselModuleNumber;
+
+    //            SelectedImageDto.Link = string.Empty;
+
+    //            await bannerPicker.Clear();
+    //        }
+    //        finally
+    //        {
+    //            stream.Close();
+    //        }
+
+    //        if (count > 0)
+    //        {
+    //            await _uiMessageService.Error(count + ' ' + L[PikachuDomainErrorCodes.FilesAreGreaterThanMaxAllowedFileSize]);
+    //        }
+    //    }
+    //    catch (Exception exc)
+    //    {
+    //        Console.WriteLine(exc.Message);
+    //        await _uiMessageService.Error(L[PikachuDomainErrorCodes.SomethingWrongWhileFileUpload]);
+    //    }
+    //}
+    async Task OnBannerImageModuleUploadAsync(
+    FileChangedEventArgs e,
+    List<CreateImageDto> bannerImages,
+    int carouselModuleNumber,
+    FilePicker bannerPicker,
+    ImageType imageType
+)
+    {
         if (e.Files.Length > 1)
         {
             await _uiMessageService.Error("Select Only 1 Banner to Upload");
-            await LogoPickerCustom.Clear();
+            await bannerPicker.Clear();
             return;
         }
         if (e.Files.Length == 0)
@@ -1227,63 +1366,115 @@ public partial class CreateGroupBuy
             return;
         }
 
-        int count = 0;
+        // Handle the selected file
+        selectedFile = e.Files[0];
+
+        if (!ValidFileExtensions.Contains(Path.GetExtension(selectedFile.Name)))
+        {
+            await _uiMessageService.Error(L["InvalidFileType"]);
+            await bannerPicker.Clear();
+            return;
+        }
+        if (selectedFile.Size > MaxAllowedFileSize)
+        {
+            await bannerPicker.RemoveFile(selectedFile);
+            await _uiMessageService.Error(L[PikachuDomainErrorCodes.FilesAreGreaterThanMaxAllowedFileSize]);
+            return;
+        }
+
+        // Convert the selected file to base64 for preview in the cropper
+        using var stream = selectedFile.OpenReadStream(long.MaxValue);
+        using var memoryStream = new MemoryStream();
+        await stream.CopyToAsync(memoryStream);
+        var base64 = Convert.ToBase64String(memoryStream.ToArray());
+        var fileExt = Path.GetExtension(selectedFile.Name).ToLowerInvariant().TrimStart('.');
+        imageToCrop = $"data:image/{fileExt};base64,{base64}";
+        BannerModuleNumber = carouselModuleNumber;
+        BannerPicker = bannerPicker;
+        uploadBannerImages = bannerImages;
+        ImageType = imageType;
+        croppedImage = ""; // Reset cropped image
+        cropButtonDisabled = true; // Disable crop button until selection is made
+
+        // Show the cropper modal for cropping
+        await BannerCropperModal.Show();
+    }
+    private Task OnBannerSelectionChanged(CropperSelectionChangedEventArgs eventArgs)
+    {
+        if (eventArgs.Width != 0)
+        {
+            cropButtonDisabled = false;
+
+            return InvokeAsync(StateHasChanged);
+        }
+
+        return Task.CompletedTask;
+    }
+    private async Task ResetBannerSelection()
+    {
+        cropButtonDisabled = true;
+        croppedImage = "";
+        await BannerCropper.ResetSelection();
+    }
+    private async Task GetBannerCroppedImage()
+    {
+        var options = new CropperCropOptions
+        {
+            Width = 300,       // Set desired width of the cropped image
+            Height = 300,      // Set desired height of the cropped image
+            ImageQuality = 0.9, // Set image quality (if using JPEG)
+            ImageType = "image/png" // Specify the image format (use PNG in this case)
+        };
+        var base64Image = await BannerCropper.CropAsBase64ImageAsync(options);
+        croppedImage = base64Image;
+
+    }
+      // Handle cropping and uploading the image after cropping
+    private async Task CropBannerImageAsync(List<CreateImageDto> bannerImages, int bannerModuleNumber, FilePicker bannerPicker, ImageType imageType)
+    {
         try
         {
-            if (!ValidFileExtensions.Contains(Path.GetExtension(e.Files[0].Name)))
-            {
-                await _uiMessageService.Error(L["InvalidFileType"]);
-                await LogoPickerCustom.Clear();
-                return;
-            }
-            if (e.Files[0].Size > MaxAllowedFileSize)
-            {
-                await LogoPickerCustom.RemoveFile(e.Files[0]);
-                await _uiMessageService.Error(L[PikachuDomainErrorCodes.FilesAreGreaterThanMaxAllowedFileSize]);
-                return;
-            }
-            string newFileName = Path.ChangeExtension(
-                      Guid.NewGuid().ToString().Replace("-", ""),
-                      Path.GetExtension(e.Files[0].Name));
-            var stream = e.Files[0].OpenReadStream(long.MaxValue);
-            try
-            {
-                var memoryStream = new MemoryStream();
+            // Strip the base64 prefix
+            var base64Data = croppedImage.Substring(croppedImage.IndexOf(",") + 1);
 
-                await stream.CopyToAsync(memoryStream);
-                memoryStream.Position = 0;
-                var url = await _imageContainerManager.SaveAsync(newFileName, memoryStream);
+            // Convert base64 string to byte array
+            var croppedBytes = Convert.FromBase64String(base64Data);
 
-                int sortNo = bannerImages[0].SortNo is 0 ? bannerImages[0].SortNo + 1 : 1;
+            // Generate a new unique file name for the cropped image
+            string newFileName = $"{Guid.NewGuid().ToString().Replace("-", "")}.png";
 
-                bannerImages[0].Name = e.Files[0].Name;
-                bannerImages[0].BlobImageName = newFileName;
-                bannerImages[0].ImageUrl = url;
-                bannerImages[0].ImageType = imageType;
-                bannerImages[0].SortNo = sortNo;
-                bannerImages[0].ModuleNumber = carouselModuleNumber;
+            // Save the cropped image to the server
+            using var croppedStream = new MemoryStream(croppedBytes);
+            var url = await _imageContainerManager.SaveAsync(newFileName, croppedStream);
 
-                SelectedImageDto.Link = string.Empty;
+            // Determine the sort number for the banner images
+            int sortNo = bannerImages.FirstOrDefault()?.SortNo ?? 0;
 
-                await bannerPicker.Clear();
-            }
-            finally
-            {
-                stream.Close();
-            }
+            // Update the banner image list
+            bannerImages[0].Name = selectedFile.Name;
+            bannerImages[0].BlobImageName = newFileName;
+            bannerImages[0].ImageUrl = url;
+            bannerImages[0].ImageType = imageType;
+            bannerImages[0].SortNo = sortNo + 1;
+            bannerImages[0].ModuleNumber = bannerModuleNumber;
 
-            if (count > 0)
-            {
-                await _uiMessageService.Error(count + ' ' + L[PikachuDomainErrorCodes.FilesAreGreaterThanMaxAllowedFileSize]);
-            }
+            // Clear the picker after uploading the image
+            await bannerPicker.Clear();
+
+            await _uiMessageService.Success("Banner image cropped and uploaded successfully!");
         }
-        catch (Exception exc)
+        catch (Exception ex)
         {
-            Console.WriteLine(exc.Message);
-            await _uiMessageService.Error(L[PikachuDomainErrorCodes.SomethingWrongWhileFileUpload]);
+            await _uiMessageService.Error("Something went wrong during cropping/upload.");
+            Console.WriteLine(ex);
+        }
+        finally
+        {
+            // Reset the selection in the cropper and hide the modal
+            await BannerCropper.ResetSelection();
+            await BannerCropperModal.Hide();
         }
     }
-
     async Task OnPartnershipImageUploadAsync(FileChangedEventArgs e, MultiImageModuleItem item)
     {
         if (e.Files.Length == 0) return;
@@ -2144,6 +2335,67 @@ public partial class CreateGroupBuy
         }
     }
 
+    //public async Task OnImageUploadAsync(
+    //    FileChangedEventArgs e,
+    //    GroupPurchaseOverviewDto module,
+    //    FilePicker filePicker
+    //)
+    //{
+    //    try
+    //    {
+    //        if (e.Files.Length is 0) return;
+
+    //        if (e.Files.Length > 1)
+    //        {
+    //            await _uiMessageService.Error("Cannot add more 1 image.");
+
+    //            await filePicker.Clear();
+
+    //            return;
+    //        }
+
+    //        if (!ValidFileExtensions.Contains(Path.GetExtension(e.Files[0].Name)))
+    //        {
+    //            await _uiMessageService.Error(L["InvalidFileType"]);
+
+    //            await filePicker.Clear();
+
+    //            return;
+    //        }
+
+    //        string newFileName = Path.ChangeExtension(
+    //            Guid.NewGuid().ToString().Replace("-", ""),
+    //            Path.GetExtension(e.Files[0].Name)
+    //        );
+
+    //        Stream stream = e.Files[0].OpenReadStream(long.MaxValue);
+
+    //        try
+    //        {
+    //            MemoryStream memoryStream = new();
+
+    //            await stream.CopyToAsync(memoryStream);
+
+    //            memoryStream.Position = 0;
+
+    //            string url = await _imageContainerManager.SaveAsync(newFileName, memoryStream);
+
+    //            module.Image = url;
+
+    //            await filePicker.Clear();
+    //        }
+    //        finally
+    //        {
+    //            stream.Close();
+    //        }
+    //    }
+    //    catch (Exception ex)
+    //    {
+    //        Console.WriteLine(ex.Message);
+
+    //        await _uiMessageService.Error(L[PikachuDomainErrorCodes.SomethingWrongWhileFileUpload]);
+    //    }
+    //}
     public async Task OnImageUploadAsync(
         FileChangedEventArgs e,
         GroupPurchaseOverviewDto module,
@@ -2152,60 +2404,115 @@ public partial class CreateGroupBuy
     {
         try
         {
-            if (e.Files.Length is 0) return;
+            if (e.Files.Length == 0) return;
 
             if (e.Files.Length > 1)
             {
-                await _uiMessageService.Error("Cannot add more 1 image.");
-
+                await _uiMessageService.Error("Cannot add more than 1 image.");
                 await filePicker.Clear();
-
                 return;
             }
 
-            if (!ValidFileExtensions.Contains(Path.GetExtension(e.Files[0].Name)))
+            selectedFile = e.Files[0];
+
+            // Validate file type
+            if (!ValidFileExtensions.Contains(Path.GetExtension(selectedFile.Name)))
             {
                 await _uiMessageService.Error(L["InvalidFileType"]);
-
                 await filePicker.Clear();
-
                 return;
             }
 
-            string newFileName = Path.ChangeExtension(
-                Guid.NewGuid().ToString().Replace("-", ""),
-                Path.GetExtension(e.Files[0].Name)
-            );
+            // Convert the selected file to base64 for preview in the cropper
+            using var stream = selectedFile.OpenReadStream(long.MaxValue);
+            using var memoryStream = new MemoryStream();
+            await stream.CopyToAsync(memoryStream);
+            var base64 = Convert.ToBase64String(memoryStream.ToArray());
+            var fileExt = Path.GetExtension(selectedFile.Name).ToLowerInvariant().TrimStart('.');
+            imageToCrop = $"data:image/{fileExt};base64,{base64}";
 
-            Stream stream = e.Files[0].OpenReadStream(long.MaxValue);
-
-            try
-            {
-                MemoryStream memoryStream = new();
-
-                await stream.CopyToAsync(memoryStream);
-
-                memoryStream.Position = 0;
-
-                string url = await _imageContainerManager.SaveAsync(newFileName, memoryStream);
-
-                module.Image = url;
-
-                await filePicker.Clear();
-            }
-            finally
-            {
-                stream.Close();
-            }
+            croppedImage = ""; // Reset cropped image
+            cropButtonDisabled = true; // Disable crop button until selection is made
+            GroupPurchaseOverviewModule = module;
+            PurchaseOverviewPicker = filePicker;
+            // Show the cropper modal for cropping
+            await PurchaseOverviewCropperModal.Show();
         }
         catch (Exception ex)
         {
             Console.WriteLine(ex.Message);
-
             await _uiMessageService.Error(L[PikachuDomainErrorCodes.SomethingWrongWhileFileUpload]);
         }
     }
+    // Handle the cropper selection changed event
+    private Task OnPurchaseOverviewSelectionChanged(CropperSelectionChangedEventArgs eventArgs)
+    {
+        if (eventArgs.Width != 0)
+        {
+            cropButtonDisabled = false;
+            return InvokeAsync(StateHasChanged);
+        }
 
+        return Task.CompletedTask;
+    }
+    // Reset the cropper selection
+    private async Task ResetPurchaseOverviewSelection()
+    {
+        cropButtonDisabled = true;
+        croppedImage = "";
+        await PurchaseOverviewCropper.ResetSelection();
+    }
+    // Get the cropped image in base64 format
+    private async Task GetPurchaseOverviewCroppedImage()
+    {
+        var options = new CropperCropOptions
+        {
+            Width = 300,       // Set desired width of the cropped image
+            Height = 300,      // Set desired height of the cropped image
+            ImageQuality = 0.9, // Set image quality (if using JPEG)
+            ImageType = "image/png" // Specify the image format (use PNG in this case)
+        };
+        var base64Image = await PurchaseOverviewCropper.CropAsBase64ImageAsync(options);
+        croppedImage = base64Image;
+    }
+    // Crops the image and uploads it
+    private async Task CropPurchaseOverviewImageAsync(GroupPurchaseOverviewDto module, FilePicker filePicker)
+    {
+        try
+        {
+            // Strip the prefix from the base64 string
+            var base64Data = croppedImage.Substring(croppedImage.IndexOf(",") + 1);
+
+            // Convert base64 string to byte array
+            var croppedBytes = Convert.FromBase64String(base64Data);
+
+            // Generate a new unique file name for the cropped image
+            string newFileName = $"{Guid.NewGuid().ToString().Replace("-", "")}.png";
+
+            // Save the cropped image to the server
+            using var croppedStream = new MemoryStream(croppedBytes);
+            var url = await _imageContainerManager.SaveAsync(newFileName, croppedStream);
+
+            // Update the module with the image URL
+            module.Image = url;
+
+            // Clear the picker after uploading the image
+            await filePicker.Clear();
+
+            await _uiMessageService.Success("Banner image cropped and uploaded successfully!");
+        }
+        catch (Exception ex)
+        {
+            await _uiMessageService.Error("Something went wrong during cropping/upload.");
+            Console.WriteLine(ex);
+        }
+        finally
+        {
+            // Reset the selection in the cropper and hide the modal
+            await PurchaseOverviewCropper.ResetSelection();
+            await PurchaseOverviewCropperModal.Hide();
+        }
+    }
     public async Task DeleteImageAsync(MouseEventArgs e, GroupPurchaseOverviewDto module)
     {
         bool confirmed = await _uiMessageService.Confirm(L[PikachuDomainErrorCodes.AreYouSureToDeleteImage]);

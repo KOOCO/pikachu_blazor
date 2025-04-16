@@ -2118,13 +2118,13 @@
 <Modal @ref="CarouselCropperModal">
     <ModalContent Size="ModalSize.Large">
         <ModalHeader>
-            <ModalTitle>@L["Cropper"]</ModalTitle>
+            <ModalTitle>@L["CarouselCropper"]</ModalTitle>
             <CloseButton Clicked="@CloseCropModal" />
         </ModalHeader>
         <ModalBody>
             <Row>
                 <Column ColumnSize="ColumnSize.Is6">
-                    <Cropper @ref="LogoCropper"
+                    <Cropper @ref="CarouselCropper"
                              Source="@imageToCrop"
                              Style="aspect-ratio: 16 / 9;"
                              SelectionChanged="@OnSelectionChanged"
@@ -2132,8 +2132,8 @@
                 </Column>
                 <Column ColumnSize="ColumnSize.Is6">
                     <Div Margin="Margin.Is2.FromBottom">
-                        <Button Color="Color.Primary" Clicked="@GetCroppedImage" Disabled="@cropButtonDisabled">Get Cropped Image</Button>
-                        <Button Color="Color.Secondary" Clicked="@ResetSelection" Disabled="@cropButtonDisabled">Reset Selection</Button>
+                        <Button Color="Color.Primary" Clicked="@GetCarouselCroppedImage" Disabled="@cropButtonDisabled">Get Cropped Image</Button>
+                        <Button Color="Color.Secondary" Clicked="@ResetCarouselSelection" Disabled="@cropButtonDisabled">Reset Selection</Button>
                     </Div>
                     <Image Source="@croppedImage" Border="Border.Is1" Style="width: 300px; height: 300px;" />
 
@@ -2145,6 +2145,72 @@
 
             <Button Color="Color.Secondary" Clicked="@CloseCropModal">@L["Cancel"]</Button>
             <Button Color="Color.Primary" Disabled="@croppedImage.IsNullOrWhiteSpace()" Clicked="()=>CropImageAsync(uploadedCarouselImages,CarouselModuleNumber,CarouselPicker,ImageType)">@L["Save"]</Button>
+        </ModalFooter>
+    </ModalContent>
+</Modal>
+<Modal @ref="BannerCropperModal">
+    <ModalContent Size="ModalSize.Large">
+        <ModalHeader>
+            <ModalTitle>@L["BannerCropper"]</ModalTitle>
+            <CloseButton Clicked="@CloseBannerCropModal" />
+        </ModalHeader>
+        <ModalBody>
+            <Row>
+                <Column ColumnSize="ColumnSize.Is6">
+                    <Cropper @ref="BannerCropper"
+                             Source="@imageToCrop"
+                             Style="aspect-ratio: 16 / 9;"
+                             SelectionChanged="@OnBannerSelectionChanged"
+                             ShowBackground="true" />
+                </Column>
+                <Column ColumnSize="ColumnSize.Is6">
+                    <Div Margin="Margin.Is2.FromBottom">
+                        <Button Color="Color.Primary" Clicked="GetBannerCroppedImage" Disabled="@cropButtonDisabled">Get Cropped Image</Button>
+                        <Button Color="Color.Secondary" Clicked="@ResetBannerSelection" Disabled="@cropButtonDisabled">Reset Selection</Button>
+                    </Div>
+                    <Image Source="@croppedImage" Border="Border.Is1" Style="width: 300px; height: 300px;" />
+
+                </Column>
+            </Row>
+
+        </ModalBody>
+        <ModalFooter>
+
+            <Button Color="Color.Secondary" Clicked="@CloseBannerCropModal">@L["Cancel"]</Button>
+            <Button Color="Color.Primary" Disabled="@croppedImage.IsNullOrWhiteSpace()" Clicked="()=>CropBannerImageAsync(uploadBannerImages,BannerModuleNumber,BannerPicker,ImageType)">@L["Save"]</Button>
+        </ModalFooter>
+    </ModalContent>
+</Modal>
+<Modal @ref="PurchaseOverviewCropperModal">
+    <ModalContent Size="ModalSize.Large">
+        <ModalHeader>
+            <ModalTitle>@L["PurchaseOverviewCropper"]</ModalTitle>
+            <CloseButton Clicked="@ClosePurchaseOverviewCropModal" />
+        </ModalHeader>
+        <ModalBody>
+            <Row>
+                <Column ColumnSize="ColumnSize.Is6">
+                    <Cropper @ref="PurchaseOverviewCropper"
+                             Source="@imageToCrop"
+                             Style="aspect-ratio: 16 / 9;"
+                             SelectionChanged="@OnPurchaseOverviewSelectionChanged"
+                             ShowBackground="true" />
+                </Column>
+                <Column ColumnSize="ColumnSize.Is6">
+                    <Div Margin="Margin.Is2.FromBottom">
+                        <Button Color="Color.Primary" Clicked="GetPurchaseOverviewCroppedImage" Disabled="@cropButtonDisabled">Get Cropped Image</Button>
+                        <Button Color="Color.Secondary" Clicked="@ResetPurchaseOverviewSelection" Disabled="@cropButtonDisabled">Reset Selection</Button>
+                    </Div>
+                    <Image Source="@croppedImage" Border="Border.Is1" Style="width: 300px; height: 300px;" />
+
+                </Column>
+            </Row>
+
+        </ModalBody>
+        <ModalFooter>
+
+            <Button Color="Color.Secondary" Clicked="@ClosePurchaseOverviewCropModal">@L["Cancel"]</Button>
+            <Button Color="Color.Primary" Disabled="@croppedImage.IsNullOrWhiteSpace()" Clicked="()=>CropPurchaseOverviewImageAsync(GroupPurchaseOverviewModule,PurchaseOverviewPicker)">@L["Save"]</Button>
         </ModalFooter>
     </ModalContent>
 </Modal>
