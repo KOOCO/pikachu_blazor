@@ -1,11 +1,14 @@
 ﻿using Kooco.Pikachu.Permissions;
+using Kooco.Pikachu.TierManagement;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Application.Dtos;
+using Volo.Abp.Domain.Entities;
 using Volo.Abp.Domain.Repositories;
 
 namespace Kooco.Pikachu.Members.MemberTags;
@@ -17,40 +20,52 @@ public class MemberTagAppService : PikachuAppService, IMemberTagAppService
     private readonly MemberTagManager _memberTagManager;
     private readonly IMemberTagRepository _memberTagRepository;
     private readonly IMemberRepository _memberRepository;
+    private readonly IRepository<VipTierSetting, Guid> _vipTierSettingRepository;
 
     public MemberTagAppService(
         IMemberTagRepository memberTagRepository,
         IMemberRepository memberRepository,
-        MemberTagManager memberTagManager
+        MemberTagManager memberTagManager,
+        IRepository<VipTierSetting, Guid> vipTierSettingRepository
         )
     {
         _memberTagRepository = memberTagRepository;
         _memberRepository = memberRepository;
         _memberTagManager = memberTagManager;
+        _vipTierSettingRepository = vipTierSettingRepository;
     }
 
     public async Task AddTagForUsersAsync(AddTagForUsersDto input)
     {
-        if (!input.IsEdit)
+        if (input.EditingId.HasValue)
         {
-            var existing = await _memberTagRepository.FirstOrDefaultAsync(tag => tag.Name == input.Name);
+            var existingTag = await _memberTagRepository.FirstOrDefaultAsync(tag => tag.Id == input.EditingId)
+                ?? throw new EntityNotFoundException(typeof(MemberTag), input.EditingId);
 
-            if (existing != null)
-            {
-                throw new UserFriendlyException("Member Tag with same name already exists");
-            }
+            var allExistingTags = await _memberTagRepository.GetListAsync(tag => tag.Name == existingTag.Name);
+            await _memberTagRepository.DeleteManyAsync(allExistingTags);
+
+            await CurrentUnitOfWork!.SaveChangesAsync();
         }
 
-        var queryable = await _memberRepository.GetFilteredQueryableAsync(minOrderCount: input.OrdersCompleted, minSpent: input.AmountSpent,
-            selectedMemberTags: input.TypesAndTags, minCreationTime: input.MinRegistrationDate, maxCreationTime: input.MaxRegistrationDate);
+        var existing = await _memberTagRepository.FirstOrDefaultAsync(tag => tag.Name == input.Name);
+
+        if (existing != null)
+        {
+            throw new UserFriendlyException(L["MemberTagWithSameNameAlreadyExists"].Value);
+        }
+
+        var queryable = await GetForTagsAsync(input);
 
         var memberIds = await queryable.Select(member => member.Id).ToListAsync();
 
-        var existingTags = await _memberTagRepository.GetListAsync(tag => tag.Name == input.Name);
-
-        await _memberTagRepository.DeleteManyAsync(existingTags);
-
         await _memberTagManager.AddTagForUsersAsync(input.Name, memberIds);
+    }
+
+    public async Task<long> CountMembersAsync(AddTagForUsersDto input)
+    {
+        var queryable = await GetForTagsAsync(input);
+        return await queryable.LongCountAsync();
     }
 
     public async Task<PagedResultDto<MemberTagDto>> GetListAsync(GetMemberTagsListDto input)
@@ -76,5 +91,34 @@ public class MemberTagAppService : PikachuAppService, IMemberTagAppService
     public async Task SetIsEnabledAsync(string name, bool isEnabled)
     {
         await _memberTagRepository.SetIsEnabledAsync(name, isEnabled);
+    }
+
+    public async Task<List<string>> GetMemberTagNamesAsync()
+    {
+        var queryable = await _memberTagRepository.GetFilteredQueryableAsync(isSystemGenerated: false);
+        var tagNames = await queryable.Select(q => q.Name).OrderBy(x => x).ToListAsync();
+
+        var vipTiers = await _vipTierSettingRepository.FirstOrDefaultAsync();
+        if (vipTiers != null)
+        {
+            await _vipTierSettingRepository.EnsureCollectionLoadedAsync(vipTiers, tier => tier.Tiers);
+        }
+
+        var vipTierNames = vipTiers?.Tiers.Select(t => t.TierName!).ToList();
+
+        return [.. tagNames
+            .Concat(vipTierNames)
+            .Concat(MemberConsts.MemberTags.Names)
+            .Distinct()
+            .OrderBy(x => x)];
+    }
+
+    private async Task<IQueryable<MemberModel>> GetForTagsAsync(AddTagForUsersDto input)
+    {
+        var queryable = await _memberRepository.GetFilteredQueryableAsync(minOrderCount: input.OrdersCompleted, minSpent: input.AmountSpent,
+            selectedMemberTags: input.MemberTags, selectedMemberTypes: input.MemberTypes, minCreationTime: input.MinRegistrationDate,
+            maxCreationTime: input.MaxRegistrationDate);
+
+        return queryable;
     }
 }

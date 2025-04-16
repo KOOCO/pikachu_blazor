@@ -48,20 +48,20 @@ public class EfCoreMemberRepository(IDbContextProvider<PikachuDbContext> pikachu
 
     public async Task<long> GetCountAsync(string? filter = null, string? memberType = null, IEnumerable<string>? selectedMemberTags = null,
         DateTime? minCreationTime = null, DateTime? maxCreationTime = null, int? minOrderCount = null, int? maxOrderCount = null,
-        int? minSpent = null, int? maxSpent = null)
+        int? minSpent = null, int? maxSpent = null, bool? isSystemAssigned = null)
     {
         var queryable = await GetFilteredQueryableAsync(filter, memberType, selectedMemberTags, minCreationTime, maxCreationTime,
-            minOrderCount, maxOrderCount, minSpent, maxSpent);
+            minOrderCount, maxOrderCount, minSpent, maxSpent, isSystemAssigned);
 
         return await queryable.LongCountAsync();
     }
 
     public async Task<List<MemberModel>> GetListAsync(int skipCount, int maxResultCount, string sorting, string? filter = null, string? memberType = null,
         IEnumerable<string>? selectedMemberTags = null, DateTime? minCreationTime = null, DateTime? maxCreationTime = null,
-        int? minOrderCount = null, int? maxOrderCount = null, int? minSpent = null, int? maxSpent = null)
+        int? minOrderCount = null, int? maxOrderCount = null, int? minSpent = null, int? maxSpent = null, bool? isSystemAssigned = null)
     {
         var query = await GetFilteredQueryableAsync(filter, memberType, selectedMemberTags, minCreationTime, maxCreationTime,
-            minOrderCount, maxOrderCount, minSpent, maxSpent);
+            minOrderCount, maxOrderCount, minSpent, maxSpent, isSystemAssigned);
 
         var members = await query
                         .OrderBy(sorting)
@@ -74,9 +74,10 @@ public class EfCoreMemberRepository(IDbContextProvider<PikachuDbContext> pikachu
 
     public async Task<IQueryable<MemberModel>> GetFilteredQueryableAsync(string? filter = null, string? memberType = null, IEnumerable<string>? selectedMemberTags = null,
         DateTime? minCreationTime = null, DateTime? maxCreationTime = null, int? minOrderCount = null, int? maxOrderCount = null,
-        int? minSpent = null, int? maxSpent = null)
+        int? minSpent = null, int? maxSpent = null, bool? isSystemAssigned = null, IEnumerable<string>? selectedMemberTypes = null)
     {
         selectedMemberTags ??= [];
+        selectedMemberTypes ??= [];
         minCreationTime = minCreationTime?.Date;
         maxCreationTime = maxCreationTime?.Date;
 
@@ -100,7 +101,7 @@ public class EfCoreMemberRepository(IDbContextProvider<PikachuDbContext> pikachu
                         LineId = EF.Property<string>(user, Constant.LineId),
                         GoogleId = EF.Property<string>(user, Constant.GoogleId),
                         FacebookId = EF.Property<string>(user, Constant.FacebookId),
-                        MemberTags = dbContext.MemberTags.AsNoTracking().Where(x => x.UserId == user.Id).Select(x => x.Name).ToList(),
+                        MemberTags = dbContext.MemberTags.AsNoTracking().Where(x => x.UserId == user.Id && (!isSystemAssigned.HasValue || x.IsSystemAssigned == isSystemAssigned)).Select(x => x.Name).ToList(),
                     })
                     .WhereIf(!string.IsNullOrWhiteSpace(filter), member => member.MemberTags.Contains(filter) || member.UserName.Contains(filter)
                     || member.PhoneNumber.Contains(filter) || member.Email.Contains(filter))
@@ -111,7 +112,8 @@ public class EfCoreMemberRepository(IDbContextProvider<PikachuDbContext> pikachu
                     .WhereIf(minOrderCount.HasValue, member => member.TotalOrders >= minOrderCount)
                     .WhereIf(maxOrderCount.HasValue, member => member.TotalOrders <= maxOrderCount)
                     .WhereIf(minSpent.HasValue, member => member.TotalSpent >= minSpent)
-                    .WhereIf(maxSpent.HasValue, member => member.TotalSpent <= maxSpent);
+                    .WhereIf(maxSpent.HasValue, member => member.TotalSpent <= maxSpent)
+                    .WhereIf(selectedMemberTypes.Any(), member => selectedMemberTypes.Any(tag => member.MemberTags.Contains(tag)));
 
         return queryable;
     }

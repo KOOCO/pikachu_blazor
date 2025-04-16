@@ -31,7 +31,7 @@ public class EfCoreMemberTagRepository : EfCoreRepository<PikachuDbContext, Memb
             .ToListAsync();
     }
 
-    public async Task<IQueryable<MemberTag>> GetFilteredQueryableAsync(string? filter, bool? isSystemGenerated = null)
+    public async Task<IQueryable<MemberTag>> GetFilteredQueryableAsync(string? filter = null, bool? isSystemGenerated = null)
     {
         var queryable = await GetQueryableAsync();
 

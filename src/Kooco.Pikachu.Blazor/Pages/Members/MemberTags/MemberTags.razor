@@ -18,7 +18,7 @@
                            Disabled="SelectedMemberTags.Count ==0">
                 @L["Delete"]
             </PikachuButton>
-            <PikachuButton Class="pk-btn-sm pk-btn-primary" IconClass="fas fa-add" Clicked="() => TagModal?.Show()">
+            <PikachuButton Class="pk-btn-sm pk-btn-primary" IconClass="fas fa-add" Clicked="() => TagModal?.Create()">
                 @L["AddTag"]
             </PikachuButton>
         </Column>
@@ -72,7 +72,7 @@
                 <DataGridColumn TItem="MemberTagDto"
                                 TextAlignment="TextAlignment.Center">
                     <DisplayTemplate>
-                        <Button Class="btn-link">@L["Edit"]</Button>
+                        <Button Class="btn-link" Clicked="() => TagModal?.Edit(context.Id, context.Name)">@L["Edit"]</Button>
                     </DisplayTemplate>
                 </DataGridColumn>
                 <DataGridColumn TItem="MemberTagDto"
@@ -81,7 +81,7 @@
                                 Width="100px">
                     <DisplayTemplate>
                         <Div Class="d-flex justify-content-center w-100">
-                            <Switch TValue="bool" Checked="context.IsEnabled" CheckedChanged="(e) => OnCheckedChanged(context, e)"  Class="p-0"></Switch>
+                            <Switch TValue="bool" Checked="context.IsEnabled" CheckedChanged="(e) => OnCheckedChanged(context, e)" Class="p-0"></Switch>
                         </Div>
                     </DisplayTemplate>
                 </DataGridColumn>

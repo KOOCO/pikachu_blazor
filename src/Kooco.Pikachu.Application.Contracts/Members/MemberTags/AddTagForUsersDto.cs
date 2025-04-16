@@ -6,7 +6,8 @@ namespace Kooco.Pikachu.Members.MemberTags;
 
 public class AddTagForUsersDto
 {
-    [Required]
+    public Guid? EditingId { get; set; }
+
     [MaxLength(MemberTagConsts.MemberTagNameMaxLength)]
     public string Name { get; set; } = "";
 
@@ -14,9 +15,7 @@ public class AddTagForUsersDto
     public IEnumerable<string> MemberTags { get; set; } = [];
     public int? AmountSpent { get; set; }
     public int? OrdersCompleted { get; set; }
-    public DateTime[]? RegistrationDateRange { get; set; } = [];
-    public bool IsEdit { get; set; }
-    public List<string> TypesAndTags { get { return [.. MemberTypes, .. MemberTags]; } }
+    public DateTime?[] RegistrationDateRange { get; set; } = [null, null];
     public DateTime? MinRegistrationDate { get { return RegistrationDateRange?.Length > 0 ? RegistrationDateRange[0] : null; } }
     public DateTime? MaxRegistrationDate { get { return RegistrationDateRange?.Length > 1 ? RegistrationDateRange[1] : null; } }
 }

@@ -1144,7 +1144,17 @@
     "OrderInstructionsSuggestedSize": "圖片建議尺寸: 1200*480px",
     "ProductRankingCarouselSuggestedSize": "<br />圖片建議尺寸: 800*800px",
     "VideoUpload": "影片上傳",
-    "VideoUrl": "影片網址"
-
+    "VideoUrl": "影片網址",
+    "Menu:MemberTags": "會員標籤",
+    "TagName": "標籤名稱",
+    "OrderCountCompleted": "已完成訂單數",
+    "PleaseProvideTagName": "請輸入標籤名稱",
+    "AmountSpent": "消費金額",
+    "AreYouSureToDeleteSelectedMemberTags": "確定要刪除所選的會員標籤嗎？",
+    "TotalMembers": "會員總數",
+    "PleaseAdjustFiltersToApplyTag": "目前條件下沒有符合的會員，請調整篩選條件後再試一次。",
+    "MemberTagWithSameNameAlreadyExists": "已有相同名稱的會員標籤存在。",
+    "RegistrationDate": "註冊日期",
+    "AddTag": "新增標籤"
   }
 }

@@ -1,14 +1,16 @@
 ﻿@using Kooco.Pikachu.Members
 @using System.Globalization
 @using Kooco.Pikachu.Members.MemberTags
+@using Kooco.Pikachu.TierManagement
 @inherits PikachuComponentBase
 @inject IMemberTagAppService MemberTagAppService
 @inject IMemberAppService MemberAppService
+@inject IVipTierSettingAppService VipTierSettingAppService
 
 <Modal @ref="TagModal" Closing="@OnModalClosing">
     <ModalContent Size="ModalSize.Large" IsCentered="true">
         <ModalHeader>
-            <ModalTitle></ModalTitle>
+            <ModalTitle>@(Input.EditingId.HasValue ? L["Edit"] : L["New"])</ModalTitle>
             <CloseButton Clicked="CloseTagModal" />
         </ModalHeader>
         <ModalBody>
@@ -35,10 +37,10 @@
                         <AntDesign.Select Mode="AntDesign.SelectMode.Multiple"
                                           @bind-Values="@Input.MemberTypes"
                                           MaxTagCount="AntDesign.Select.ResponsiveTag.Responsive"
-                                          HideSelected
                                           AllowClear
                                           TItem="string"
-                                          TItemValue="string">
+                                          TItemValue="string"
+                                          OnSelectedItemsChanged="@(() => CountMembersAsync())">
                             <SelectOptions>
                                 @foreach (var tagName in MemberConsts.MemberTags.Names)
                                 {
@@ -52,10 +54,11 @@
                         <AntDesign.Select Mode="AntDesign.SelectMode.Multiple"
                                           @bind-Values="@Input.MemberTags"
                                           MaxTagCount="AntDesign.Select.ResponsiveTag.Responsive"
-                                          HideSelected
                                           AllowClear
+                                          EnableSearch
                                           TItem="string"
-                                          TItemValue="string">
+                                          TItemValue="string"
+                                          OnSelectedItemsChanged="@(() => CountMembersAsync())">
                             <SelectOptions>
                                 @foreach (var item in MemberTagOptions)
                                 {
@@ -67,22 +70,40 @@
                     <Field>
                         <Label>@L["AmountSpent"]</Label>
                         <AntDesign.InputNumber Class="no-stepper"
-                                               @bind-Value="Input.AmountSpent" Min="0"
+                                               TValue="int?"
+                                               @bind-Value="Input.AmountSpent"
+                                               Min="0"
                                                Formatter="AntHelper.FormatAmount"
-                                               Parser="AntHelper.ParseAmount">
+                                               Parser="AntHelper.ParseAmount"
+                                               OnChange="@((e) => CountMembersAsync())">
                         </AntDesign.InputNumber>
                     </Field>
                     <Field>
                         <Label>@L["OrderCountCompleted"]</Label>
-                        <AntDesign.InputNumber Class="no-stepper" @bind-Value="Input.OrdersCompleted" Min="0" />
+                        <AntDesign.InputNumber Class="no-stepper"
+                                               TValue="int?"
+                                               @bind-Value="Input.OrdersCompleted"
+                                               Min="0"
+                                               OnChange="@((e) => CountMembersAsync())" />
                     </Field>
                     <Field>
                         <Label>@L["RegistrationDate"]</Label>
                         <AntDesign.RangePicker TValue="DateTime?[]"
+                                               Value="Input.RegistrationDateRange"
                                                Format="@AntLocaleHelper.GetFormat()"
                                                Locale="AntLocaleHelper.GetLocale()"
-                                               CultureInfo="@CultureInfo.CurrentCulture" />
+                                               CultureInfo="@CultureInfo.CurrentCulture"
+                                               OnChange="OnRangeChange" />
                     </Field>
+                </Column>
+            </Row>
+            <Divider></Divider>
+            <Row>
+                <Column ColumnSize="ColumnSize.Is3">
+                    <h5 class="text-dark">@L["TotalMembers"]</h5>
+                </Column>
+                <Column ColumnSize="ColumnSize.Is9">
+                    <Label>@TotalMembers</Label>
                 </Column>
             </Row>
         </ModalBody>

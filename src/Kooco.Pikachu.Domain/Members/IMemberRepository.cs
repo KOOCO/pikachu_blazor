@@ -13,15 +13,15 @@ public interface IMemberRepository : IIdentityUserRepository, IRepository<Identi
 
     Task<long> GetCountAsync(string? filter = null, string? memberType = null, IEnumerable<string>? selectedMemberTags = null,
         DateTime? minCreationTime = null, DateTime? maxCreationTime = null, int? minOrderCount = null, int? maxOrderCount = null,
-        int? minSpent = null, int? maxSpent = null);
+        int? minSpent = null, int? maxSpent = null, bool? isSystemAssigned = null);
 
     Task<List<MemberModel>> GetListAsync(int skipCount, int maxResultCount, string sorting, string? filter = null, string? memberType = null,
         IEnumerable<string>? selectedMemberTags = null, DateTime? minCreationTime = null, DateTime? maxCreationTime = null, int? minOrderCount = null,
-        int? maxOrderCount = null, int? minSpent = null, int? maxSpent = null);
+        int? maxOrderCount = null, int? minSpent = null, int? maxSpent = null, bool? isSystemAssigned = null);
 
     Task<IQueryable<MemberModel>> GetFilteredQueryableAsync(string? filter = null, string? memberType = null, IEnumerable<string>? selectedMemberTags = null,
         DateTime? minCreationTime = null, DateTime? maxCreationTime = null, int? minOrderCount = null, int? maxOrderCount = null,
-        int? minSpent = null, int? maxSpent = null);
+        int? minSpent = null, int? maxSpent = null, bool? isSystemAssigned = null, IEnumerable<string>? selectedMemberTypes = null);
 
     Task<long> CountOrdersAsync(Guid memberId);
 

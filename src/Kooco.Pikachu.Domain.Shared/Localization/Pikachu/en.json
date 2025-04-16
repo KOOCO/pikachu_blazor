@@ -1434,6 +1434,9 @@
     "OrderCountCompleted": "Orders Completed",
     "PleaseProvideTagName": "Please provide Tag Name",
     "AmountSpent": "Amount Spent",
-    "AreYouSureToDeleteSelectedMemberTags": "Are you sure you want to delete the selected member tags?"
+    "AreYouSureToDeleteSelectedMemberTags": "Are you sure you want to delete the selected member tags?",
+    "TotalMembers": "Total Members",
+    "PleaseAdjustFiltersToApplyTag": "There is no member with current conditions. Please adjust filters and try again.",
+    "MemberTagWithSameNameAlreadyExists": "Member Tag with same name already exists."
   }
 }
