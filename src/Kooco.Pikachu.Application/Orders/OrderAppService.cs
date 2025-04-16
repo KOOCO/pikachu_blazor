@@ -415,7 +415,7 @@ public class OrderAppService : PikachuAppService, IOrderAppService
                         IsActive = true,
                         TransactionDescription = "購物折抵：訂單 #" + order.OrderNo,
                         UserId = order.UserId.Value,
-                        ShoppingCreditType = UserShoppingCreditType.Grant
+                        ShoppingCreditType = UserShoppingCreditType.Deduction
                     });
                     order.CreditDeductionAmount = newdeduction.Amount;
                     order.CreditDeductionRecordId = newdeduction.Id;
