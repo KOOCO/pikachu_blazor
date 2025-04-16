@@ -1,6 +1,7 @@
 ﻿using Kooco.Pikachu.EntityFrameworkCore;
 using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Members.MemberTags;
+using Kooco.Pikachu.Orders;
 using Kooco.Pikachu.TierManagement;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -19,7 +20,6 @@ namespace Kooco.Pikachu.Members;
 public class EfCoreMemberRepository(IDbContextProvider<PikachuDbContext> pikachuDbContextProvider,
     IDbContextProvider<IIdentityDbContext> dbContextProvider) : EfCoreIdentityUserRepository(dbContextProvider), IMemberRepository
 {
-    private readonly List<ShippingStatus> CompletedShippingStatus = [ShippingStatus.Completed, ShippingStatus.Closed];
 
     protected virtual Task<PikachuDbContext> GetPikachuDbContextAsync()
     {
@@ -95,8 +95,8 @@ public class EfCoreMemberRepository(IDbContextProvider<PikachuDbContext> pikachu
                         Email = user.Email,
                         CreationTime = user.CreationTime,
                         Birthday = (DateTime?)user.GetProperty(Constant.Birthday, null),
-                        TotalOrders = dbContext.Orders.Where(x => x.UserId == user.Id && CompletedShippingStatus.Contains(x.ShippingStatus)).Count(),
-                        TotalSpent = (int)dbContext.Orders.Where(x => x.UserId == user.Id && CompletedShippingStatus.Contains(x.ShippingStatus)).Sum(x => x.TotalAmount),
+                        TotalOrders = dbContext.Orders.Where(x => x.UserId == user.Id && OrderConsts.CompletedShippingStatus.Contains(x.ShippingStatus)).Count(),
+                        TotalSpent = (int)dbContext.Orders.Where(x => x.UserId == user.Id && OrderConsts.CompletedShippingStatus.Contains(x.ShippingStatus)).Sum(x => x.TotalAmount),
                         LineId = EF.Property<string>(user, Constant.LineId),
                         GoogleId = EF.Property<string>(user, Constant.GoogleId),
                         FacebookId = EF.Property<string>(user, Constant.FacebookId),
@@ -120,7 +120,7 @@ public class EfCoreMemberRepository(IDbContextProvider<PikachuDbContext> pikachu
     {
         var dbContext = await GetPikachuDbContextAsync();
         return await dbContext.Orders
-            .Where(x => x.UserId == memberId && CompletedShippingStatus.Contains(x.ShippingStatus))
+            .Where(x => x.UserId == memberId && OrderConsts.CompletedShippingStatus.Contains(x.ShippingStatus))
             .LongCountAsync();
     }
 
@@ -131,7 +131,7 @@ public class EfCoreMemberRepository(IDbContextProvider<PikachuDbContext> pikachu
 
         if (vipTierSettings == null) return default;
 
-        var orders = dbContext.Orders.Where(o => o.UserId == userId && CompletedShippingStatus.Contains(o.ShippingStatus));
+        var orders = dbContext.Orders.Where(o => o.UserId == userId && OrderConsts.CompletedShippingStatus.Contains(o.ShippingStatus));
 
         var count = await orders.LongCountAsync();
         var amount = await orders.SumAsync(x => x.TotalAmount);
@@ -170,7 +170,7 @@ public class EfCoreMemberRepository(IDbContextProvider<PikachuDbContext> pikachu
             .GroupJoin(dbContext.Orders,
             user => user.Id,
             order => order.UserId,
-            (user, orders) => new { user, orders = orders.Where(o => CompletedShippingStatus.Contains(o.ShippingStatus)) })
+            (user, orders) => new { user, orders = orders.Where(o => OrderConsts.CompletedShippingStatus.Contains(o.ShippingStatus)) })
             .Select(g => new
             {
                 User = g.user,
