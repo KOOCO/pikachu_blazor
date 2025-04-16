@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Kooco.Pikachu.Members.MemberTags;
+using System;
 using System.Collections.Generic;
 using Volo.Abp.Data;
 
@@ -18,5 +19,5 @@ public class MemberModel
     public string? LineId { get; set; }
     public string? GoogleId { get; set; }
     public string? FacebookId { get; set; }
-    public List<string> MemberTags { get; set; }
+    public List<MemberTag> MemberTags { get; set; }
 }

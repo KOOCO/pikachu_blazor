@@ -16,7 +16,7 @@
                     <Div Class="mt-1">
                         @foreach (var tag in Member.MemberTags)
                         {
-                            <MemberTagComponent Tag="@tag" Margin="true" />
+                            <MemberTagComponent Tag="@tag.Name" IsSystemAssigned="@tag.IsSystemAssigned" Margin="true" />
                         }
                     </Div>
                 </Div>

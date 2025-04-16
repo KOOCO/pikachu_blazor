@@ -12,10 +12,10 @@
             <h3 class="text-dark">@L["MemberTags"]</h3>
         </Column>
         <Column ColumnSize="ColumnSize.Is6" TextAlignment="TextAlignment.End">
-            <PikachuButton Class="pk-btn-sm pk-btn-danger" IconClass="fas fa-trash"
+            <PikachuButton Class="pk-btn-sm pk-btn-danger me-1" IconClass="fas fa-trash"
                            Loading="IsDeleting"
                            Clicked="DeleteAsync"
-                           Disabled="SelectedMemberTags.Count ==0">
+                           Disabled="SelectedMemberTags.Count == 0">
                 @L["Delete"]
             </PikachuButton>
             <PikachuButton Class="pk-btn-sm pk-btn-primary" IconClass="fas fa-add" Clicked="() => TagModal?.Create()">

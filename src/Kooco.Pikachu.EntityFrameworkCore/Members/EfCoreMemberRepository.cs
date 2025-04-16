@@ -42,7 +42,11 @@ public class EfCoreMemberRepository(IDbContextProvider<PikachuDbContext> pikachu
             Birthday = (DateTime?)user.GetProperty(Constant.Birthday, null),
             TotalOrders = dbContext.Orders.Where(x => x.UserId == user.Id).Count(),
             TotalSpent = (int)dbContext.Orders.Where(x => x.UserId == user.Id && (x.OrderStatus != EnumValues.OrderStatus.Exchange && x.OrderStatus != EnumValues.OrderStatus.Refund)).Sum(x => x.TotalAmount),
-            MemberTags = [.. dbContext.MemberTags.AsNoTracking().Where(x => x.UserId == user.Id).Select(x => x.Name)]
+            MemberTags = [.. dbContext.MemberTags.AsNoTracking()
+                .Where(x => x.UserId == user.Id)
+                .OrderBy(tag => !MemberConsts.MemberTags.Names.Contains(tag.Name))
+                .ThenBy(tag => !tag.VipTierId.HasValue)
+                .ThenBy(tag => tag.Name)]
         };
     }
 
@@ -101,19 +105,24 @@ public class EfCoreMemberRepository(IDbContextProvider<PikachuDbContext> pikachu
                         LineId = EF.Property<string>(user, Constant.LineId),
                         GoogleId = EF.Property<string>(user, Constant.GoogleId),
                         FacebookId = EF.Property<string>(user, Constant.FacebookId),
-                        MemberTags = dbContext.MemberTags.AsNoTracking().Where(x => x.UserId == user.Id && (!isSystemAssigned.HasValue || x.IsSystemAssigned == isSystemAssigned)).Select(x => x.Name).ToList(),
+                        MemberTags = dbContext.MemberTags.AsNoTracking()
+                            .Where(x => x.UserId == user.Id && (!isSystemAssigned.HasValue || x.IsSystemAssigned == isSystemAssigned))
+                            .OrderBy(tag => !MemberConsts.MemberTags.Names.Contains(tag.Name))
+                            .ThenBy(tag => !tag.VipTierId.HasValue)
+                            .ThenBy(tag => tag.Name)
+                            .ToList(),
                     })
-                    .WhereIf(!string.IsNullOrWhiteSpace(filter), member => member.MemberTags.Contains(filter) || member.UserName.Contains(filter)
+                    .WhereIf(!string.IsNullOrWhiteSpace(filter), member => member.MemberTags.Any(tag => tag.Name == filter) || member.UserName.Contains(filter)
                     || member.PhoneNumber.Contains(filter) || member.Email.Contains(filter))
-                    .WhereIf(selectedMemberTags.Any(), member => selectedMemberTags.Any(tier => member.MemberTags.Contains(tier)))
-                    .WhereIf(!string.IsNullOrWhiteSpace(memberType), member => member.MemberTags.Contains(memberType))
+                    .WhereIf(selectedMemberTags.Any(), member => selectedMemberTags.Any(tier => member.MemberTags.Any(tag => tag.Name == tier)))
+                    .WhereIf(!string.IsNullOrWhiteSpace(memberType), member => member.MemberTags.Any(tag => tag.Name == memberType))
                     .WhereIf(minCreationTime.HasValue, member => member.CreationTime.Date >= minCreationTime)
                     .WhereIf(maxCreationTime.HasValue, member => member.CreationTime.Date <= maxCreationTime)
                     .WhereIf(minOrderCount.HasValue, member => member.TotalOrders >= minOrderCount)
                     .WhereIf(maxOrderCount.HasValue, member => member.TotalOrders <= maxOrderCount)
                     .WhereIf(minSpent.HasValue, member => member.TotalSpent >= minSpent)
                     .WhereIf(maxSpent.HasValue, member => member.TotalSpent <= maxSpent)
-                    .WhereIf(selectedMemberTypes.Any(), member => selectedMemberTypes.Any(tag => member.MemberTags.Contains(tag)));
+                    .WhereIf(selectedMemberTypes.Any(), member => selectedMemberTypes.Any(type => member.MemberTags.Any(tag => tag.Name == type)));
 
         return queryable;
     }
@@ -184,7 +193,8 @@ public class EfCoreMemberRepository(IDbContextProvider<PikachuDbContext> pikachu
 
         foreach (var member in members)
         {
-            dbContext.MemberTags.RemoveRange(member.MemberTags.Where(mt => mt.Name != MemberConsts.MemberTags.Blacklisted));
+            var tagsToDelete = member.MemberTags.Where(mt => mt.IsSystemAssigned && mt.Name != MemberConsts.MemberTags.Blacklisted);
+            dbContext.MemberTags.RemoveRange(tagsToDelete);
 
             if (tiers.Any())
             {

@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Kooco.Pikachu.Members.MemberTags;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Kooco.Pikachu.Members;
 
@@ -19,7 +21,20 @@ public class MemberDto
     public string? GoogleId { get; set; }
     public string? FacebookId { get; set; }
     public DateTime CreationTime { get; set; }
-    public List<string> MemberTags { get; set; }
-    public bool IsNew { get { return MemberTags?.Contains(MemberConsts.MemberTags.New) ?? false; } }
-    public bool IsBlacklisted { get { return MemberTags?.Contains(MemberConsts.MemberTags.Blacklisted) ?? false; } }
+    public List<MemberTagDto> MemberTags { get; set; }
+    public bool IsNew
+    {
+        get
+        {
+            return MemberTags?.Any(tag => tag.Name == MemberConsts.MemberTags.New) ?? false;
+        }
+    }
+
+    public bool IsBlacklisted
+    {
+        get
+        {
+            return MemberTags?.Any(tag => tag.Name == MemberConsts.MemberTags.Blacklisted) ?? false;
+        }
+    }
 }

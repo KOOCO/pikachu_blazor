@@ -216,9 +216,9 @@
                                 Caption="@L["VipTier"]"
                                 TextAlignment="TextAlignment.Center">
                     <DisplayTemplate>
-                        @foreach (var tag in context.MemberTags.Where(tag => !MemberConsts.MemberTags.Names.Contains(tag)))
+                        @foreach (var tag in context.MemberTags.Where(tag => tag.VipTierId.HasValue))
                         {
-                            <MemberTagComponent Tag="@tag" Margin />
+                            <MemberTagComponent Tag="@tag.Name" Margin />
                         }
                     </DisplayTemplate>
                 </DataGridColumn>
