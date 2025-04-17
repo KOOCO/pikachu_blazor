@@ -2330,6 +2330,16 @@
                                     </td>
                                     <td>$@(!Order.DiscountAmount.HasValue ? "0" : Order.DiscountAmount?.ToString("N2"))</td>
                                 </tr>
+                                <tr>
+                                    <td colspan="2" class="text-end">
+                                        @L["ShoppingCreditsDiscount"]
+                                    </td>
+                                    <td>
+                                    </td>
+                                    <td>
+                                    </td>
+                                    <td>$@Order.CreditDeductionAmount.ToString("N2")</td>
+                                </tr>
                                 @if (Order.RefundAmount > 0)
                                 {
                                     <tr>

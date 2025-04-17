@@ -673,6 +673,7 @@
     "Pikachu:ExpirationDateCannotBePast": "The Expiration Date for User Shopping Credits can not be in the past.",
     "GrantShoppingCredits": "Grant Shopping Credits",
     "ShoppingCredits": "Shopping Credits",
+    "ShoppingCreditsDiscount": "Shopping Credits Discount",
     "GrantedAmount": "Granted Amount",
     "SelectionRequired": "Selection is required.",
     "Limited,ValidTo": "Limited, valid to",

@@ -542,6 +542,7 @@
     "Pikachu:ExpirationDateCannotBePast": "到期日不能早於今天",
     "GrantShoppingCredits": "發放購物金",
     "ShoppingCredits": "購物金",
+    "ShoppingCreditsDiscount": "購物金折抵",
     "GrantedAmount": "發放金額",
     "SelectionRequired": "請選擇",
     "Limited,ValidTo": "限制,有效至",

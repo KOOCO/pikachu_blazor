@@ -67,7 +67,7 @@ public class OrderInvoiceAppService : PikachuAppService, IOrderInvoiceAppService
         var customerAddress = order.AddressDetails.IsNullOrEmpty() ? order.CustomerEmail : order.AddressDetails;
 
         var amount = order.OrderItems.Sum(x => x.TotalAmount);
-        var salesAmount = Convert.ToInt32(amount + order.DeliveryCost + order.DiscountAmount + order.cashback_amount);
+        var salesAmount = Convert.ToInt32(amount + order.DeliveryCost + order.DiscountAmount + order.CreditDeductionAmount);
 
         if (amount <= 0) return "";
 
@@ -109,9 +109,9 @@ public class OrderInvoiceAppService : PikachuAppService, IOrderInvoiceAppService
                 ItemName = L["ShoppingCredits"],
                 ItemCount = 1,
                 ItemWord = "1",
-                ItemPrice = order.cashback_amount,
+                ItemPrice = order.CreditDeductionAmount,
                 ItemTaxType = 1,
-                ItemAmount = order.cashback_amount,
+                ItemAmount = order.CreditDeductionAmount,
             },
         ];
 
