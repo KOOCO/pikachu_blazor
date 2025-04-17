@@ -2794,9 +2794,9 @@ public partial class EditGroupBuy
 
 
                 if (EditGroupBuyDto.IsEnterprise) await _OrderAppService.UpdateOrdersIfIsEnterpricePurchaseAsync(Id);
-                await _groupBuyItemsPriceAppService.DeleteAllGroupByItemAsync(result.Id);
+                
                 var groupItem = EditGroupBuyDto.ItemGroups.Where(x => x.GroupBuyModuleType == GroupBuyModuleType.ProductGroupModule).ToList();
-               
+                await _groupBuyItemsPriceAppService.DeleteAllGroupByItemAsync(result.Id);
                 foreach (List<CreateImageDto> carouselImages in CarouselModules)
                 {
                     foreach (CreateImageDto carouselImage in carouselImages)
@@ -2811,9 +2811,12 @@ public partial class EditGroupBuy
 
                             else
                             {
-                                carouselImage.TargetId = Id;
+                                if (!carouselImage.BlobImageName.IsNullOrWhiteSpace())
+                                {
+                                    carouselImage.TargetId = Id;
 
-                                await _imageAppService.CreateAsync(carouselImage);
+                                    await _imageAppService.CreateAsync(carouselImage);
+                                }
                             }
                         }
                     }
@@ -2832,9 +2835,12 @@ public partial class EditGroupBuy
 
                             else
                             {
-                                bannerImage.TargetId = Id;
+                                if (!bannerImage.BlobImageName.IsNullOrWhiteSpace())
+                                {
+                                    bannerImage.TargetId = Id;
 
-                                await _imageAppService.CreateAsync(bannerImage);
+                                    await _imageAppService.CreateAsync(bannerImage);
+                                }
                             }
                         }
                     }
