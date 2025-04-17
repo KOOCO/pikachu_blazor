@@ -2315,7 +2315,7 @@ public partial class EditGroupBuy
     {
         PaymentMethodTags.Remove(item);
     }
-    
+   
     protected virtual async Task UpdateEntityAsync()
     {
         try
@@ -2921,7 +2921,10 @@ public partial class EditGroupBuy
                 }
                 foreach (var group in groupItem)
                 {
-                    await _groupBuyAppService.UpdateItemProductPrice(result.Id, group.ItemDetails);
+                    foreach (var item in group.ItemDetails.DistinctBy(x => x.ItemDetailId))
+                    {
+                        await _groupBuyAppService.UpdateItemProductPrice(result.Id, item);
+                    }
                 }
             }
             catch (AbpDbConcurrencyException e)

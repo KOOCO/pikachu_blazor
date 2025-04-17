@@ -608,13 +608,12 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
         };
     }
   
-    public async Task UpdateItemProductPrice(Guid groupbuyId, ICollection<GroupBuyItemGroupDetailCreateUpdateDto> itemDetails)
+    public async Task UpdateItemProductPrice(Guid groupbuyId, GroupBuyItemGroupDetailCreateUpdateDto item)
     {
        
      
 
-        foreach (var item in itemDetails.DistinctBy(x => x.ItemDetailId))
-        {
+       
             if (item.ItemType == ItemType.Item)
             {
                 await _groupBuyItemsPriceManager.CreateAsync(null, groupbuyId, item.Price, item.ItemDetailId);
@@ -623,7 +622,7 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
             {
                 await _groupBuyItemsPriceManager.CreateAsync(item.SetItemId, groupbuyId, item.Price, null);
             }
-        }
+        
     }
     private void ProcessItemDetails(GroupBuyItemGroup itemGroup, ICollection<GroupBuyItemGroupDetailCreateUpdateDto> itemDetails)
     {
