@@ -2675,6 +2675,7 @@ public partial class EditGroupBuy
                                         if (itemDetail.SelectedItemDetailIds == null || !itemDetail.SelectedItemDetailIds.Any())
                                         {
                                             await _uiMessageService.Error($"Item '{itemDetail.Name}' must have at least one variant selected.");
+                                            await Loading.Hide();
                                             return;
                                         }
 
@@ -2793,11 +2794,9 @@ public partial class EditGroupBuy
 
 
                 if (EditGroupBuyDto.IsEnterprise) await _OrderAppService.UpdateOrdersIfIsEnterpricePurchaseAsync(Id);
+                await _groupBuyItemsPriceAppService.DeleteAllGroupByItemAsync(result.Id);
                 var groupItem = EditGroupBuyDto.ItemGroups.Where(x => x.GroupBuyModuleType == GroupBuyModuleType.ProductGroupModule).ToList();
-                foreach (var group in groupItem)
-                {
-                    await _groupBuyAppService.UpdateItemProductPrice(result.Id, group.ItemDetails);
-                }
+               
                 foreach (List<CreateImageDto> carouselImages in CarouselModules)
                 {
                     foreach (CreateImageDto carouselImage in carouselImages)
@@ -2913,6 +2912,10 @@ public partial class EditGroupBuy
                             });
                         }
                     }
+                }
+                foreach (var group in groupItem)
+                {
+                    await _groupBuyAppService.UpdateItemProductPrice(result.Id, group.ItemDetails);
                 }
             }
             catch (AbpDbConcurrencyException e)

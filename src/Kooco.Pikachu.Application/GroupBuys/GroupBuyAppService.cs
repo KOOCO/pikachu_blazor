@@ -607,33 +607,23 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
             Items = ObjectMapper.Map<List<GroupBuyList>, List<GroupBuyDto>>(result)
         };
     }
+  
     public async Task UpdateItemProductPrice(Guid groupbuyId, ICollection<GroupBuyItemGroupDetailCreateUpdateDto> itemDetails)
     {
-        await _groupBuyItemsPriceAppService.DeleteAllGroupByItemAsync(groupbuyId);
+       
+     
 
         foreach (var item in itemDetails.DistinctBy(x => x.ItemDetailId))
         {
-
-
-
             if (item.ItemType == ItemType.Item)
             {
-
-
                 await _groupBuyItemsPriceManager.CreateAsync(null, groupbuyId, item.Price, item.ItemDetailId);
             }
             else
             {
-
-
-
                 await _groupBuyItemsPriceManager.CreateAsync(item.SetItemId, groupbuyId, item.Price, null);
             }
-
-
         }
-
-
     }
     private void ProcessItemDetails(GroupBuyItemGroup itemGroup, ICollection<GroupBuyItemGroupDetailCreateUpdateDto> itemDetails)
     {

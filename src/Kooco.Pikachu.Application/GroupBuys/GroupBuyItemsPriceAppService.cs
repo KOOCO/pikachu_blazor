@@ -78,7 +78,7 @@ namespace Kooco.Pikachu.GroupBuys
         {
             var query = await _repository.GetQueryableAsync();
             var list = query.Where(x => x.GroupBuyId == GroupBuyId).ToList();
-            await _repository.DeleteManyAsync(list);
+            await _repository.DeleteManyAsync(list,autoSave:true);
         }
         public async Task DeleteAsync(Guid id)
         {
