@@ -323,7 +323,7 @@
     "OuterIslandFreight": "離島運費",
     "OuterIslands": "外島",
     "PaidAmount": "付款金額",
-    "Payment": "是否代收款",
+    "Payment": "訂單總金額",
     "PaymentMethod": "付款方式",
     "Pending": "待審核",
     "PendingReview": "待審核",
@@ -1156,6 +1156,9 @@
     "PleaseAdjustFiltersToApplyTag": "目前條件下沒有符合的會員，請調整篩選條件後再試一次。",
     "MemberTagWithSameNameAlreadyExists": "已有相同名稱的會員標籤存在。",
     "RegistrationDate": "註冊日期",
-    "AddTag": "新增標籤"
+    "AddTag": "新增標籤",
+    "CurrentBalance": "購物金餘額",
+    "TotalEarned": "已獲得購物金",
+    "TotalDeduction": "已扣除購物金"
   }
 }

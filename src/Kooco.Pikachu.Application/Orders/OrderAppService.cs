@@ -400,6 +400,8 @@ public class OrderAppService : PikachuAppService, IOrderAppService
                         userCumulativeCredits.ChangeTotalAmount((int)(userCumulativeCredits.TotalAmount + order.cashback_amount));
                         await UserCumulativeCreditRepository.UpdateAsync(userCumulativeCredits);
                     }
+
+                    await CurrentUnitOfWork!.SaveChangesAsync();
                 }
 
             }

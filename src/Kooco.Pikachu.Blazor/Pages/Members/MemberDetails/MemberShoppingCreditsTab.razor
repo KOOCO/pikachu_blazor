@@ -2,6 +2,7 @@
 @using Kooco.Pikachu.UserShoppingCredits
 @inherits PikachuComponentBase
 @inject IMemberAppService MemberAppService
+@inject IUserShoppingCreditAppService UserShoppingCreditAppService
 @inject NavigationManager NavigationManager
 
 <Card>
@@ -13,16 +14,19 @@
                 <PikachuButton Class="pk-btn-sm pk-btn-outline-primary" Clicked="GrantShoppingCredits">@L["GrantShoppingCredits"]</PikachuButton>
             }
         </Div>
-        <Row HorizontalGutter="10">
-            <Column ColumnSize="ColumnSize.Is6">
-                <PikachuCard Type="success" Title="@L["Amount"]" Amount="CumulativeCredits?.TotalAmount" AmountVisible="true"></PikachuCard>
+        <Row Gutter="(10, 10)">
+            <Column ColumnSize="ColumnSize.Is12.Is4.OnDesktop">
+                <PikachuCard Type="success" Title="@L["CurrentBalance"]" Amount="RemainingCredits"
+                             AmountVisible IconClass="fa-wallet" />
             </Column>
-            <Column ColumnSize="ColumnSize.Is6">
-                <PikachuCard Type="warning" Title="@L["Deductions"]" Amount="CumulativeCredits?.TotalDeductions" AmountVisible="true"></PikachuCard>
+            <Column ColumnSize="ColumnSize.Is12.Is4.OnDesktop">
+                <PikachuCard Type="warning" Title="@L["TotalEarned"]" Amount="CumulativeCredits?.TotalAmount"
+                             AmountVisible IconClass="fa-arrow-trend-up" />
             </Column>
-            @*     <Column ColumnSize="ColumnSize.Is4">
-                <PikachuCard Type="danger" Title="@L["Refunds"]" Amount="CumulativeCredits?.TotalRefunds" AmountVisible="true"></PikachuCard>
-            </Column> *@
+            <Column ColumnSize="ColumnSize.Is12.Is4.OnDesktop">
+                <PikachuCard Type="danger" Title="@L["TotalDeduction"]" Amount="CumulativeCredits?.TotalDeductions"
+                             AmountVisible IconClass="fa-arrow-trend-down" />
+            </Column>
         </Row>
     </CardBody>
 </Card>

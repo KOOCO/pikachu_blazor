@@ -1,9 +1,15 @@
-﻿<div class="pk-card bg-@Type-light @Class">
+﻿<div class="pk-card bg-@Type-light @Type @Class">
     <Div Class="pk-card-inner">
-        @if (!ImageHidden)
+        @if (!ImageHidden && string.IsNullOrWhiteSpace(IconClass))
         {
             <Div>
                 <img src="/images/icons/icon-@Type-light.png" />
+            </Div>
+        }
+        @if (!string.IsNullOrWhiteSpace(IconClass))
+        {
+            <Div>
+                <Icon Class="@IconClass"></Icon>
             </Div>
         }
         <Div>
@@ -53,4 +59,7 @@
 
     [Parameter]
     public RenderFragment ChildContent { get; set; }
+
+    [Parameter]
+    public string? IconClass { get; set; }
 }

@@ -19,6 +19,7 @@ public partial class MemberShoppingCreditsTab
     public MemberDto? Member { get; set; }
     public bool CanCreateShoppingCredits { get; set; }
     private UserCumulativeCreditDto CumulativeCredits { get; set; }
+    public int RemainingCredits { get; set; }
     private IReadOnlyList<MemberCreditRecordDto> MemberCreditRecords { get; set; }
     private int PageSize { get; } = LimitedResultRequestDto.DefaultMaxResultCount;
     private int CurrentPage { get; set; } = 1;
@@ -48,6 +49,7 @@ public partial class MemberShoppingCreditsTab
             try
             {
                 CumulativeCredits = await MemberAppService.GetMemberCumulativeCreditsAsync(Member.Id);
+                RemainingCredits = await UserShoppingCreditAppService.GetMemberCurrentShoppingCreditAsync(Member.Id);
                 await GetMemberCreditRecordsAsync();
                 StateHasChanged();
             }

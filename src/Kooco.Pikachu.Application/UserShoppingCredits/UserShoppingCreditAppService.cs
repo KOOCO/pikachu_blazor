@@ -200,6 +200,8 @@ public class UserShoppingCreditAppService(UserShoppingCreditManager userShopping
                     {
                         userCumulativeCredit.ChangeTotalDeductions(userCumulativeCredit.TotalDeductions + remainingAmount);
                     }
+
+                    await CurrentUnitOfWork!.SaveChangesAsync();
                 }
             });
 
