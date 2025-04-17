@@ -2315,7 +2315,7 @@ public partial class EditGroupBuy
     {
         PaymentMethodTags.Remove(item);
     }
-
+    
     protected virtual async Task UpdateEntityAsync()
     {
         try
@@ -2936,6 +2936,7 @@ public partial class EditGroupBuy
         catch (Exception ex)
         {
             await Loading.Hide();
+            
             await HandleErrorAsync(ex);
         }
     }
