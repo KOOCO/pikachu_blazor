@@ -15,6 +15,7 @@ public class ItemDto : FullAuditedEntityDto<Guid>
     public string ItemName { get; set; } //商品名稱/ItemName
     [MaxLength(4)]
     public string ItemBadge { get; set; } //商品名稱/ItemName
+    public string? ItemBadgeColor { get; set; }
     public string ItemDescriptionTitle { get; set; }
     public string? ItemDescription { get; set; }
     public DateTime LimitAvaliableTimeStart { get; set; }

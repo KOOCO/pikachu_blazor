@@ -40,7 +40,7 @@ namespace Kooco.Pikachu.Blazor.Pages.SetItem
         private readonly IItemAppService _itemAppService;
         private readonly ISetItemAppService _setItemAppService;
 
-        private List<string> ItemBadgeList { get; set; } = [];
+        private List<ItemBadgeDto> ItemBadgeList { get; set; } = [];
         private string NewItemBadge { get; set; }
 
         public CreateSetItem(
@@ -297,7 +297,7 @@ namespace Kooco.Pikachu.Blazor.Pages.SetItem
         {
             if (!string.IsNullOrWhiteSpace(NewItemBadge))
             {
-                ItemBadgeList.Add(NewItemBadge);
+                //ItemBadgeList.Add(NewItemBadge);
                 CreateUpdateSetItemDto.SetItemBadge = NewItemBadge;
                 NewItemBadge = string.Empty;
             }

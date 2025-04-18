@@ -35,6 +35,9 @@ public class Item : FullAuditedAggregateRoot<Guid>, IMultiTenant
     [MaxLength(4)]
     public string? ItemBadge { get; set; }
 
+    [MaxLength(16)]
+    public string? ItemBadgeColor { get; set; }
+
     /// <summary>
     /// 商品敘述抬頭，用於描述商品的標題。
     /// </summary>
@@ -267,6 +270,7 @@ public class Item : FullAuditedAggregateRoot<Guid>, IMultiTenant
         Guid id,
         [NotNull] string itemName,
         string? itemBadge,
+        string? itemBadgeColor,
         string? itemDescriptionTitle,
         string? itemDescription,
         string? itemTags,
@@ -320,6 +324,7 @@ public class Item : FullAuditedAggregateRoot<Guid>, IMultiTenant
         ShippingMethodId = shippingMethodId;
         TaxTypeId = taxTypeId;
         SetItemBadge(itemBadge);
+        ItemBadgeColor = itemBadgeColor;
         CustomField1Value = customField1Value;
         CustomField1Name = customField1Name;
         CustomField2Value = customField2Value;

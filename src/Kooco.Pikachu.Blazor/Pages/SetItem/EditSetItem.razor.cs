@@ -40,7 +40,7 @@ namespace Kooco.Pikachu.Blazor.Pages.SetItem
         private FilePicker FilePicker { get; set; }
         private CreateUpdateSetItemDto CreateUpdateSetItemDto { get; set; } = new();
         private List<ItemDetailsModel> ItemDetails { get; set; } = new();
-        private List<string> ItemBadgeList { get; set; } = [];
+        private List<ItemBadgeDto> ItemBadgeList { get; set; } = [];
         private string NewItemBadge { get; set; }
 
         private readonly ISetItemAppService _setItemAppService;
@@ -372,7 +372,7 @@ namespace Kooco.Pikachu.Blazor.Pages.SetItem
         {
             if (!string.IsNullOrWhiteSpace(NewItemBadge))
             {
-                ItemBadgeList.Add(NewItemBadge);
+                //ItemBadgeList.Add(NewItemBadge);
                 CreateUpdateSetItemDto.SetItemBadge = NewItemBadge;
                 NewItemBadge = string.Empty;
             }

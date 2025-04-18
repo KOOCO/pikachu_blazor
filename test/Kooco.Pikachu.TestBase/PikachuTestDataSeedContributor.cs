@@ -43,6 +43,7 @@ public class PikachuTestDataSeedContributor : IDataSeedContributor, ITransientDe
                 TestData.Item1Id,
                 "Sample Item Name",
                 "123",
+                "#1F1F1F",
                 "Sample Description Title",
                 "This is a detailed item description.",
                 "Tag1, Tag2, Tag3",

@@ -826,3 +826,22 @@
     width: 100%;
     min-height: 250px;
 }
+
+.dropdown-badge {
+    padding: 3px 15px;
+    border-radius: 4px;
+}
+
+.dropdown-picker {
+    padding: 6px;
+    width: 70px;
+    height: 40px;
+}
+
+.dropdown-btn {
+    background: transparent;
+    border: transparent;
+    color: var(--pk-danger);
+    font-size: 18px;
+    padding: 0;
+}

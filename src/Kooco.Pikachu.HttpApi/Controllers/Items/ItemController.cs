@@ -140,8 +140,14 @@ public class ItemController(
     }
 
     [HttpGet("get-item-badges")]
-    public Task<List<string>> GetItemBadgesAsync()
+    public Task<List<ItemBadgeDto>> GetItemBadgesAsync()
     {
         return _itemAppService.GetItemBadgesAsync();
+    }
+
+    [HttpDelete("item-badge")]
+    public Task DeleteItemBadgeAsync(ItemBadgeDto input)
+    {
+        return _itemAppService.DeleteItemBadgeAsync(input);
     }
 }

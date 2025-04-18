@@ -28,6 +28,7 @@ namespace Kooco.Pikachu.Items
         public async Task<Item> CreateAsync(
             [NotNull] string itemName,
             string? itemBadge,
+            string? itemBadgeColor,
             string? itemDescriptionTitle,
             string? itemDescription,
             string? itemTags,
@@ -85,6 +86,7 @@ namespace Kooco.Pikachu.Items
                 GuidGenerator.Create(),
                 itemName,
                 itemBadge,
+                itemBadgeColor,
                 itemDescriptionTitle,
                 itemDescription,
                 itemTags,

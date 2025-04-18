@@ -73,8 +73,9 @@ public partial class EditItem
     private string SelectedAutoCompleteText { get; set; }
     private Dictionary<CreateItemDetailsDto, string> ValidationErrors = new();
     private const int MaxBadgeTextCount = 4;
-    private List<string> ItemBadgeList { get; set; } = [];
-    private string NewItemBadge { get; set; }
+    private List<ItemBadgeDto> ItemBadgeList { get; set; } = [];
+    private ItemBadgeDto NewItemBadge { get; set; } = new();
+    private bool SelectOpen { get; set; } = false;
     #endregion
 
     #region Constructor
@@ -107,7 +108,7 @@ public partial class EditItem
                 await JS.InvokeVoidAsync("updateDropText");
                 EditingId = Guid.Parse(Id);
                 ExistingItem = await _itemAppService.GetAsync(EditingId, true);
-                ItemBadgeList = await _itemAppService.GetItemBadgesAsync();
+                await GetItemBadgeListAsync();
                 var enumValues = (await _enumValueService.GetEnums(new List<EnumType> {
                                                          EnumType.ShippingMethod,
                                                          EnumType.TaxType
@@ -119,6 +120,7 @@ public partial class EditItem
                 var mapper = config.CreateMapper();
                 // Map ItemDto to UpdateItemDto
                 UpdateItemDto = mapper.Map<UpdateItemDto>(ExistingItem);
+                UpdateItemDto.ItemBadgeDto = new ItemBadgeDto { ItemBadge = ExistingItem.ItemBadge, ItemBadgeColor = ExistingItem.ItemBadgeColor };
                 UpdateItemDto.Images = UpdateItemDto.Images.OrderBy(x => x.SortNo).ToList();
                 ItemDetailsList = mapper.Map<List<CreateItemDetailsDto>>(ExistingItem.ItemDetails);
                 foreach (var item in ItemDetailsList.Where(x => x.StockOnHand < x.SaleableQuantity))
@@ -1138,12 +1140,37 @@ public partial class EditItem
 
     private void AddItem()
     {
-        if (!string.IsNullOrWhiteSpace(NewItemBadge))
+        if (!string.IsNullOrWhiteSpace(NewItemBadge?.ItemBadge))
         {
-            ItemBadgeList.Add(NewItemBadge);
-            UpdateItemDto.ItemBadge = NewItemBadge;
-            NewItemBadge = string.Empty;
+            var newItemBadge = new ItemBadgeDto { ItemBadge = NewItemBadge.ItemBadge, ItemBadgeColor = NewItemBadge.ItemBadgeColor };
+            ItemBadgeList.Add(newItemBadge);
+            UpdateItemDto.ItemBadgeDto = newItemBadge;
+            NewItemBadge = new();
         }
+    }
+
+    async Task DeleteItemBadge(ItemBadgeDto itemBadge)
+    {
+        try
+        {
+            var confirmation = await Message.Confirm(L["AreYouSureToDeleteThisBadge"]);
+            if (confirmation)
+            {
+                await _itemAppService.DeleteItemBadgeAsync(itemBadge);
+                await GetItemBadgeListAsync();
+            }
+
+            SelectOpen = true;
+        }
+        catch (Exception ex)
+        {
+            await HandleErrorAsync(ex);
+        }
+    }
+
+    async Task GetItemBadgeListAsync()
+    {
+        ItemBadgeList = await _itemAppService.GetItemBadgesAsync();
     }
     #endregion
 }

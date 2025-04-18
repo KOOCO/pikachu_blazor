@@ -21,6 +21,9 @@ namespace Kooco.Pikachu.Items
         public string? SetItemMainImageURL { get; set; }
         [MaxLength(4)]
         public string? SetItemBadge { get; set; }
+
+        [MaxLength(16)]
+        public string? SetItemBadgeColor { get; set; }
         public string? SetItemStatus { get; set; }
         public int? SetItemSaleableQuantity { get; set; }
 

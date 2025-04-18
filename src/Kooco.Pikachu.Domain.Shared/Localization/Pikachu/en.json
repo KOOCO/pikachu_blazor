@@ -1442,6 +1442,6 @@
     "CurrentBalance": "Current Balance",
     "TotalEarned": "Total Earned",
     "TotalDeduction": "Total Deduction",
-    
+    "AreYouSureToDeleteThisBadge": "This action can not be undone.\nThis badge will be deleted from all the items and set items."
   }
 }
