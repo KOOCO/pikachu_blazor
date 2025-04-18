@@ -67,53 +67,52 @@ public class OrderInvoiceAppService : PikachuAppService, IOrderInvoiceAppService
         var customerAddress = order.AddressDetails.IsNullOrEmpty() ? order.CustomerEmail : order.AddressDetails;
 
         var amount = order.OrderItems.Sum(x => x.TotalAmount);
-        var salesAmount = Convert.ToInt32(amount + order.DeliveryCost + order.DiscountAmount + order.CreditDeductionAmount);
-
-        if (amount <= 0) return "";
+        var salesAmount = Convert.ToInt32(amount + order.DeliveryCost - order.DiscountAmount - order.CreditDeductionAmount);
+        if (salesAmount <= 0) return "";
 
         List<ECPayCreateInvoiceInput.Item> invoiceItems = [
             new ECPayCreateInvoiceInput.Item
-            {
-                ItemSeq = 1,
-                ItemName = L["AmountString"],
-                ItemCount = 1,
-                ItemWord = "1",
-                ItemPrice = amount,
-                ItemTaxType = 1,
-                ItemAmount = amount,
-                ItemRemark = ""
-            },
-            new ECPayCreateInvoiceInput.Item
-            {
-                ItemSeq = 2,
-                ItemName = L["DeliveryFee"],
-                ItemCount = 1,
-                ItemWord = "1",
-                ItemPrice = (decimal)order.DeliveryCost,
-                ItemTaxType = 1,
-                ItemAmount = (decimal)order.DeliveryCost,
-            },
-            new ECPayCreateInvoiceInput.Item
-            {
-                ItemSeq = 3,
-                ItemName = L["Discount"],
-                ItemCount = 1,
-                ItemWord = "1",
-                ItemPrice = (decimal)order.DiscountAmount,
-                ItemTaxType = 1,
-                ItemAmount = (decimal)order.DiscountAmount,
-            },
-            new ECPayCreateInvoiceInput.Item
-            {
-                ItemSeq = 4,
-                ItemName = L["ShoppingCredits"],
-                ItemCount = 1,
-                ItemWord = "1",
-                ItemPrice = order.CreditDeductionAmount,
-                ItemTaxType = 1,
-                ItemAmount = order.CreditDeductionAmount,
-            },
-        ];
+         {
+             ItemSeq = 1,
+             ItemName = L["AmountString"],
+             ItemCount = 1,
+             ItemWord = "1",
+             ItemPrice = amount,
+             ItemTaxType = 1,
+             ItemAmount = amount,
+             ItemRemark = ""
+         },
+         new ECPayCreateInvoiceInput.Item
+         {
+             ItemSeq = 2,
+             ItemName = L["DeliveryFee"],
+             ItemCount = 1,
+             ItemWord = "1",
+             ItemPrice = (decimal)order.DeliveryCost,
+             ItemTaxType = 1,
+             ItemAmount = (decimal)order.DeliveryCost,
+         },
+         new ECPayCreateInvoiceInput.Item
+         {
+             ItemSeq = 3,
+             ItemName = L["DiscountAmount"],
+             ItemCount = 1,
+             ItemWord = "1",
+             ItemPrice = -(decimal)order.DiscountAmount,
+             ItemTaxType = 1,
+             ItemAmount = -(decimal)order.DiscountAmount,
+         },
+         new ECPayCreateInvoiceInput.Item
+         {
+             ItemSeq = 4,
+             ItemName = L["ShoppingCreditsDiscount"],
+             ItemCount = 1,
+             ItemWord = "1",
+             ItemPrice = -order.CreditDeductionAmount,
+             ItemTaxType = 1,
+             ItemAmount = -order.CreditDeductionAmount,
+         },
+     ];
 
         var serialNo = await OrderInvoiceRepository.GetInvoiceSerialNoAsync(orderId);
         var relateNo = $"{order.OrderNo}-{serialNo:D3}";
