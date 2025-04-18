@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
+using Volo.Abp.Uow;
 
 namespace Kooco.Pikachu.GroupBuys
 {
@@ -14,13 +15,15 @@ namespace Kooco.Pikachu.GroupBuys
     {
         private readonly IGroupBuyItemsPriceRepository _repository;
         private readonly GroupBuyItemsPriceManager _manager;
+        private readonly IUnitOfWorkManager _unitOfWorkManager;
 
         public GroupBuyItemsPriceAppService(
             IGroupBuyItemsPriceRepository repository,
-            GroupBuyItemsPriceManager manager)
+            GroupBuyItemsPriceManager manager, IUnitOfWorkManager unitOfWorkManager)
         {
             _repository = repository;
             _manager = manager;
+            _unitOfWorkManager = unitOfWorkManager;
         }
 
         public async Task<GroupBuyItemsPriceDto> CreateAsync(CreateUpdateGroupBuyItemsPriceDto input)
@@ -74,11 +77,14 @@ namespace Kooco.Pikachu.GroupBuys
             var list=query.Where(x=>x.GroupBuyId==GroupBuyId).ToList();
             return ObjectMapper.Map<List<GroupBuyItemsPrice>, List<GroupBuyItemsPriceDto>>(list);
         }
+       
         public async Task DeleteAllGroupByItemAsync(Guid GroupBuyId)
         {
-            var query = await _repository.GetQueryableAsync();
-            var list = query.Where(x => x.GroupBuyId == GroupBuyId).ToList();
-            await _repository.HardDeleteAsync(list);
+            using (var retryUow = _unitOfWorkManager.Begin(requiresNew: true, isTransactional: true))
+            {
+                await _repository.HardDeleteAsync(x => x.GroupBuyId == GroupBuyId);
+                await retryUow.CompleteAsync();
+            }
         }
         public async Task DeleteAsync(Guid id)
         {

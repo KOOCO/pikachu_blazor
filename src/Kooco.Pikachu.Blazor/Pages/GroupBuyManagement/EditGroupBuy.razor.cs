@@ -34,6 +34,7 @@ using Volo.Abp.AspNetCore.Components.Messages;
 using Volo.Abp.Data;
 using Volo.Abp.MultiTenancy;
 using Volo.Abp.ObjectMapping;
+using Volo.Abp.Uow;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement;
 
@@ -2315,7 +2316,7 @@ public partial class EditGroupBuy
     {
         PaymentMethodTags.Remove(item);
     }
-   
+ 
     protected virtual async Task UpdateEntityAsync()
     {
         try
@@ -2796,7 +2797,7 @@ public partial class EditGroupBuy
                 if (EditGroupBuyDto.IsEnterprise) await _OrderAppService.UpdateOrdersIfIsEnterpricePurchaseAsync(Id);
                 
                 var groupItem = EditGroupBuyDto.ItemGroups.Where(x => x.GroupBuyModuleType == GroupBuyModuleType.ProductGroupModule).ToList();
-                await _groupBuyItemsPriceAppService.DeleteAllGroupByItemAsync(result.Id);
+               
                 foreach (List<CreateImageDto> carouselImages in CarouselModules)
                 {
                     foreach (CreateImageDto carouselImage in carouselImages)
@@ -2919,6 +2920,7 @@ public partial class EditGroupBuy
                         }
                     }
                 }
+                await _groupBuyItemsPriceAppService.DeleteAllGroupByItemAsync(result.Id);
                 foreach (var group in groupItem)
                 {
                     foreach (var item in group.ItemDetails.DistinctBy(x => x.ItemDetailId))
@@ -2929,6 +2931,8 @@ public partial class EditGroupBuy
             }
             catch (AbpDbConcurrencyException e)
             {
+                var groupItem = EditGroupBuyDto.ItemGroups.Where(x => x.GroupBuyModuleType == GroupBuyModuleType.ProductGroupModule).ToList();
+                await HandelPriceUpdateException(groupItem);
                 await Loading.Hide();
                 NavigationManager.NavigateTo("/GroupBuyManagement/GroupBuyList/Edit/" + id);
             }
@@ -2965,6 +2969,9 @@ public partial class EditGroupBuy
                         catch (Exception exp)
                         {
                             await Loading.Hide();
+                            await _uiMessageService.Error("Some thing happend wrong Product module is not Save.Please add Product Price and attribute again and save it.");
+                           
+                            return;
 
                         }
 
@@ -2977,6 +2984,7 @@ public partial class EditGroupBuy
             await HandleErrorAsync(ex);
         }
     }
+    [UnitOfWork]
      async Task HandelPriceUpdateException(List<GroupBuyItemGroupCreateUpdateDto> groupItem)
     {
        

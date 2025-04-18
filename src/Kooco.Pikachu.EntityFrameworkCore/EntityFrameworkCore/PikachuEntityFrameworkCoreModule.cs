@@ -52,9 +52,12 @@ public class PikachuEntityFrameworkCoreModule : AbpModule
 
         Configure<AbpDbContextOptions>(options =>
         {
-                /* The main point to change your DBMS.
-                 * See also PikachuMigrationsDbContextFactory for EF Core tooling. */
-            options.UseSqlServer();
+            /* The main point to change your DBMS.
+             * See also PikachuMigrationsDbContextFactory for EF Core tooling. */
+            options.UseSqlServer(options => {
+                options.CommandTimeout(300);
+            
+            });
            
         });
 

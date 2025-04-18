@@ -616,12 +616,13 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
        
             if (item.ItemType == ItemType.Item)
             {
-                await _groupBuyItemsPriceManager.CreateAsync(null, groupbuyId, item.Price, item.ItemDetailId);
-            }
+               
+            await _groupBuyItemsPriceAppService.CreateAsync(new CreateUpdateGroupBuyItemsPriceDto { ItemDetailId=item.ItemDetailId,GroupBuyId=groupbuyId,GroupBuyPrice=item.Price });
+        }
             else
             {
-                await _groupBuyItemsPriceManager.CreateAsync(item.SetItemId, groupbuyId, item.Price, null);
-            }
+            await _groupBuyItemsPriceAppService.CreateAsync(new CreateUpdateGroupBuyItemsPriceDto { SetItemId = item.SetItemId, GroupBuyId = groupbuyId, GroupBuyPrice = item.Price });
+        }
         
     }
     private void ProcessItemDetails(GroupBuyItemGroup itemGroup, ICollection<GroupBuyItemGroupDetailCreateUpdateDto> itemDetails)
