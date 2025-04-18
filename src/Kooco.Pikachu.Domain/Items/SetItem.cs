@@ -114,6 +114,7 @@ namespace Kooco.Pikachu.Items
             Guid? tenantId,
             string setItemName,
             string? setItemBadge,
+            string? setItemBadgeColor,
             string? setItemDescriptionTitle,
             string? description,
             string? setItemMainImageURL,
@@ -130,6 +131,7 @@ namespace Kooco.Pikachu.Items
             TenantId = tenantId;
             SetItemName = setItemName;
             SetItemBadge = setItemBadge;
+            SetItemBadgeColor = setItemBadgeColor;
             SetItemDescriptionTitle = setItemDescriptionTitle;
             Description = description;
             SetItemMainImageURL = setItemMainImageURL;

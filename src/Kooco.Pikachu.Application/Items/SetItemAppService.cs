@@ -32,7 +32,8 @@ public class SetItemAppService : CrudAppService<SetItem, SetItemDto, Guid, Paged
             GuidGenerator.Create(),
             CurrentTenant?.Id,
             input.SetItemName,
-            input.SetItemBadge,
+            input.ItemBadgeDto?.ItemBadge,
+            input.ItemBadgeDto?.ItemBadgeColor,
             input.SetItemDescriptionTitle,
             input.Description,
             input.SetItemMainImageURL,
@@ -91,7 +92,8 @@ public class SetItemAppService : CrudAppService<SetItem, SetItemDto, Guid, Paged
 
         var setItem = await _setItemRepository.GetAsync(id);
         setItem.SetItemName = input.SetItemName;
-        setItem.SetItemBadge = input.SetItemBadge;
+        setItem.SetItemBadge = input.ItemBadgeDto?.ItemBadge;
+        setItem.SetItemBadgeColor = input.ItemBadgeDto?.ItemBadgeColor;
         setItem.SetItemDescriptionTitle = input.SetItemDescriptionTitle;
         setItem.Description = input.Description;
         setItem.SetItemMainImageURL = input.SetItemMainImageURL;
