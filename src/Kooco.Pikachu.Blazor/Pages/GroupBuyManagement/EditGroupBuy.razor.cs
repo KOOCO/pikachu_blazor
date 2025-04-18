@@ -2938,12 +2938,57 @@ public partial class EditGroupBuy
         }
         catch (Exception ex)
         {
-            await Loading.Hide();
+            if (ex.Message.Contains("Cannot issue SAVE TRANSACTION when there is no active transaction"))
+            {
+                await Task.Delay(5000);
+                var groupItem = EditGroupBuyDto.ItemGroups.Where(x => x.GroupBuyModuleType == GroupBuyModuleType.ProductGroupModule).ToList();
+                try
+                {
+                    await HandelPriceUpdateException(groupItem);
+                    await Loading.Hide();
+                    NavigationManager.NavigateTo("GroupBuyManagement/GroupBuyList");
+                    return;
+                }
+                catch (Exception e)
+                {
+                    if (ex.Message.Contains("Cannot issue SAVE TRANSACTION when there is no active transaction"))
+                    {
+                        await Task.Delay(5000);
+
+                        try
+                        {
+                            await HandelPriceUpdateException(groupItem);
+                            await Loading.Hide();
+                            NavigationManager.NavigateTo("GroupBuyManagement/GroupBuyList");
+                            return;
+                        }
+                        catch (Exception exp)
+                        {
+                            await Loading.Hide();
+
+                        }
+
+                    }
+                }
+             
+            }
+                await Loading.Hide();
             
             await HandleErrorAsync(ex);
         }
     }
+     async Task HandelPriceUpdateException(List<GroupBuyItemGroupCreateUpdateDto> groupItem)
+    {
+       
+        foreach (var group in groupItem)
+        {
+            foreach (var item in group.ItemDetails.DistinctBy(x => x.ItemDetailId))
+            {
+                await _groupBuyAppService.UpdateItemProductPrice(Id, item);
+            }
+        }
 
+    }
     public void OnProductTypeChange(ChangeEventArgs e)
     {
         EditGroupBuyDto.ProductType = Enum.TryParse<ProductType>(Convert.ToString(e.Value),
