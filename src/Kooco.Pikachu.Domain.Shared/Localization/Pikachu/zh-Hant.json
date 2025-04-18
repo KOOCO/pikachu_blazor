@@ -294,10 +294,11 @@
     "ItemBadge": "商品標籤",
     "NewItem": "建立新商品",
     "NewSetItem": "新商品組",
-    "NewTag": "新類別",
+    "NewTag": "增加規格",
     "NewTaipeiCity": "新北市",
     "No": "否",
     "Non Taxable": "免稅",
+    "Taxable": "應稅",
     "NonTaxable": "免稅",
     "Normal": "常溫",
     "Notes": "筆記",
@@ -1159,6 +1160,11 @@
     "AddTag": "新增標籤",
     "CurrentBalance": "購物金餘額",
     "TotalEarned": "已獲得購物金",
-    "TotalDeduction": "已扣除購物金"
+    "TotalDeduction": "已扣除購物金",
+    "Search": "搜尋",
+    "Results": "搜尋結果",
+    "Reset": "重設",
+    "PropertyName": "規格名稱"
+
   }
 }

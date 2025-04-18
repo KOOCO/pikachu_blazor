@@ -155,7 +155,7 @@
                         </Addons>
                     </div>
                     <div class="col-12">
-                        <Blazored.TextEditor.BlazoredTextEditor @ref="@QuillHtml">
+                        <Blazored.TextEditor.BlazoredTextEditor @ref="@QuillHtml" Placeholder="@L["Composeanepic"]">
                             <ToolbarContent>
                                 <select class="ql-header">
                                     <option selected=""></option>
@@ -236,7 +236,7 @@
                             }
 
                             <div class="input-container">
-                                <input type="text" class="tag-input" placeholder="New Tag"
+                                <input type="text" class="tag-input" placeholder="@L["NewTag"]"
                                        @bind-value="item.InputTagValue"
                                        @onkeyup="@(async (e) => await HandleAttributeTagInputConfirm(item.Id, item.InputTagValue, e))"
                                        @onblur="@(async () => await HandleAttributeTagInputConfirm(item.Id, item.InputTagValue, null))" />
@@ -472,7 +472,7 @@
                                   TextField="@(( item ) => item.Name)"
                                   ValueField="@(( item ) => item.Id)"
                                   @bind-SelectedText="SelectedAutoCompleteText"
-                                  Placeholder="Search..."
+                                  Placeholder="@L["Search..."]"
                                   Filter="AutocompleteFilter.StartsWith"
                                   CustomFilter="@(( item, searchValue ) => item.Name.IndexOf( searchValue, 0, StringComparison.CurrentCultureIgnoreCase ) >= 0 )"
                                   HighlightSearch
