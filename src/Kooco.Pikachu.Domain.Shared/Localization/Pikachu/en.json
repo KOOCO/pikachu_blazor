@@ -1479,6 +1479,7 @@
     "DiscountType": "Discount Type",
     "DiscountPercentage": "Discount Percentage",
     "ApplyToAllShippingMethods": "Apply To All Shipping Methods",
-    "DeliveryMethods": "Delivery Methods"
+    "DeliveryMethods": "Delivery Methods",
+    "ConfigureShoppingCredit": "Shopping Credit"
   }
 }

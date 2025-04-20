@@ -44,4 +44,6 @@ public class CreateCampaignDto
     public DiscountType? DiscountType { get; set; }
     public int? DiscountAmount { get; set; }
     public int? DiscountPercentage { get; set; }
+
+    public int? Budget { get; set; }
 }

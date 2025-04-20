@@ -15,9 +15,9 @@ public partial class CreateCampaign
 {
     private CreateCampaignDto Entity { get; set; } = new();
     private List<string> TargetAudienceOptions { get; } = CampaignConsts.TargetAudience.Values;
-    private List<DeliveryMethod> DeliveryMethodOptions { get; } = Enum.GetValues<DeliveryMethod>().ToList();
-    private List<KeyValueDto> GroupBuyOptions { get; } = [];
-    private List<KeyValueDto> ProductOptions { get; } = [];
+    private List<DeliveryMethod> DeliveryMethodOptions { get; } = [.. Enum.GetValues<DeliveryMethod>()];
+    private IReadOnlyList<KeyValueDto> GroupBuyOptions { get; set; } = [];
+    private IReadOnlyList<KeyValueDto> ProductOptions { get; set; } = [];
     private bool Loading { get; set; } = false;
 
     private Validations ValidationsRef;
@@ -28,6 +28,22 @@ public partial class CreateCampaign
     {
         _editContext = new(Entity);
         _messageStore = new(_editContext);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try
+            {
+                GroupBuyOptions = await GroupBuyAppService.GetGroupBuyLookupAsync();
+                ProductOptions = await ItemAppService.GetAllItemsLookupAsync();
+            }
+            catch(Exception ex)
+            {
+                await HandleErrorAsync(ex);
+            }
+        }
     }
 
     void Cancel()

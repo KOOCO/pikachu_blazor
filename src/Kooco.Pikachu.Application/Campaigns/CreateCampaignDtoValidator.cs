@@ -91,6 +91,31 @@ public class CreateCampaignDtoValidator : AbstractValidator<CreateCampaignDto>
                     .LessThanOrEqualTo(100);
             });
         });
+
+        When(x => x.PromotionModule == PromotionModule.ShoppingCredit, () =>
+        {
+            AddRequiredRule(x => x.ApplyToAllGroupBuys);
+
+            RuleFor(x => x.GroupBuyIds)
+                .NotEmpty()
+                .When(x => x.ApplyToAllGroupBuys == false)
+                .WithMessage(l["TheFieldIsRequired", l[nameof(CreateCampaignDto.GroupBuyIds)]]);
+
+            AddRequiredRule(x => x.ApplyToAllProducts);
+
+            RuleFor(x => x.ProductIds)
+                .NotEmpty()
+                .When(x => x.ApplyToAllProducts == false)
+                .WithMessage(l["TheFieldIsRequired", l[nameof(CreateCampaignDto.ProductIds)]]);
+
+            AddRequiredRule(x => x.Budget);
+            RuleFor(x => x.Budget).GreaterThanOrEqualTo(0);
+        });
+
+        When(x => x.PromotionModule == PromotionModule.AddonProduct, () =>
+        {
+
+        });
     }
 
     private void AddRequiredRule<T>(
