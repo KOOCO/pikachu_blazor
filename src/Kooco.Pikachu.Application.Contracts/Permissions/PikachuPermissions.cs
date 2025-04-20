@@ -139,6 +139,11 @@ public static class PikachuPermissions
         public const string Default = ".ShoppingCredits";
     }
 
+    public static class Campaigns
+    {
+        public const string Default = ".Campaigns";
+    }
+
     public static class Invoices
     {
         public const string Default = "Pikachu.Invoices";
