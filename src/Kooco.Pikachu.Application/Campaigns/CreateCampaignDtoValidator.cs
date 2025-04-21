@@ -1,8 +1,8 @@
-﻿using FluentValidation;
+﻿using AngleSharp.Dom;
+using FluentValidation;
 using Kooco.Pikachu.Localization;
 using Microsoft.Extensions.Localization;
 using System;
-using System.Linq;
 using System.Linq.Expressions;
 
 namespace Kooco.Pikachu.Campaigns;
@@ -19,6 +19,12 @@ public class CreateCampaignDtoValidator : AbstractValidator<CreateCampaignDto>
         AddRequiredRule(x => x.EndDate);
         AddRequiredRule(x => x.TargetAudience);
         AddRequiredRule(x => x.PromotionModule);
+
+        RuleFor(x => x.Name)
+            .MaximumLength(CampaignConsts.MaxNameLength);
+
+        RuleFor(x => x.Description)
+            .MaximumLength(CampaignConsts.MaxDescriptionLength);
 
         When(x => x.PromotionModule == PromotionModule.Discount, () =>
         {
@@ -151,7 +157,40 @@ public class CreateCampaignDtoValidator : AbstractValidator<CreateCampaignDto>
 
         When(x => x.PromotionModule == PromotionModule.AddOnProduct, () =>
         {
+            AddRequiredRule(x => x.AddOnProductId);
+            AddRequiredRule(x => x.AddOnProductAmount);
+            RuleFor(x => x.AddOnProductAmount)
+                .GreaterThanOrEqualTo(0)
+                .When(x => x.AddOnProductAmount != null);
+            
+            AddRequiredRule(x => x.AddOnLimitPerOrder);
+            RuleFor(x => x.AddOnLimitPerOrder)
+                .GreaterThanOrEqualTo(0)
+                .When(x => x.AddOnLimitPerOrder != null);
 
+            AddRequiredRule(x => x.IsUnlimitedQuantity, nameof(CreateCampaignDto.AvailableQuantity));
+            When(x => x.IsUnlimitedQuantity == false, () =>
+            {
+                RuleFor(x => x.AvailableQuantity)
+                    .GreaterThanOrEqualTo(0)
+                    .WithName(l[nameof(CreateCampaignDto.AvailableQuantity)]);
+            });
+
+            AddRequiredRule(x => x.AddOnDisplayPrice);
+            AddRequiredRule(x => x.AddOnProductCondition);
+            When(x => x.AddOnProductCondition == AddOnProductCondition.MustMeetSpecifiedThreshold, () =>
+            {
+                AddRequiredRule(x => x.Threshold);
+                RuleFor(x => x.Threshold)
+                    .GreaterThanOrEqualTo(0)
+                    .When(x => x.Threshold != null);
+            });
+
+            AddRequiredRule(x => x.ApplyToAllGroupBuys);
+            RuleFor(x => x.GroupBuyIds)
+                .NotEmpty()
+                .When(x => x.ApplyToAllGroupBuys == false)
+                .WithMessage(l["TheFieldIsRequired", l[nameof(CreateCampaignDto.GroupBuyIds)]]);
         });
     }
 

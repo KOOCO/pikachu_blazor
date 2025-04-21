@@ -1491,6 +1491,14 @@
     "ValidForDays": "Valid For Days",
     "CalculationPercentage": "Calculation Percentage",
     "PointsToReceive": "Points To Receive",
-    "ApplicableItem": "Applicable Item"
+    "ApplicableItem": "Applicable Item",
+    "Enum:AddOnDisplayPrice.0": "Do not display original price",
+    "Enum:AddOnDisplayPrice.1": "Display product's original price",
+    "Enum:AddOnDisplayPrice.2": "Display product's group buy price",
+    "Enum:AddOnProductCondition.0": "No minimum spending requirement",
+    "Enum:AddOnProductCondition.1": "Must meet a specified spending threshold",
+    "AddOnProductId": "Add-On Product",
+    "IsUnlimitedQuantity": "Unlimited Quantity",
+    "AddOnDisplayPrice": "Add-On Display Price"
   }
 }

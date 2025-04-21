@@ -56,6 +56,14 @@ public class CreateCampaignDto
     public ApplicableItem? ApplicableItem { get; set; }
     public int? Budget { get; set; }
 
+    public Guid? AddOnProductId { get; set; }
+    public int? AddOnProductAmount { get; set; }
+    public int? AddOnLimitPerOrder { get; set; }
+    public bool? IsUnlimitedQuantity { get; set; }
+    //public int? AvailableQuantity { get; set; }
+    public AddOnDisplayPrice? AddOnDisplayPrice { get; set; }
+    public AddOnProductCondition? AddOnProductCondition { get; set; }
+    public int? Threshold { get; set; }
 
     public void AddStageSetting()
     {
