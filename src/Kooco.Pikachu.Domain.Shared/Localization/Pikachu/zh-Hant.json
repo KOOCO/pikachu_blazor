@@ -1168,7 +1168,10 @@
     "SellableQuantity": "可銷售數量",
     "SetItem": "組合商品",
     "Quantity": "庫存數量",
-    "SetItemPrice": "組合商品價格"
+    "SetItemPrice": "組合商品價格",
+    "InventoryReport": "庫存報表",
+    "PreOrderQuantity": "預售數量",
+    "AvailablePreOrderQuantity": "可預訂數量"
 
   }
 }
