@@ -166,6 +166,9 @@ public partial class CreateGroupBuy
     public GroupBuyOrderInstructionDto GroupOrderInstructionModule = new GroupBuyOrderInstructionDto();
     FilePicker PurchaseOverviewPicker = new FilePicker();
     FilePicker OrderInstructionPicker = new FilePicker();
+    private Cropper PatnerShipCropper; // Reference to the Blazorise Cropper
+    private Modal PatnerShipCropperModal;       // Modal to show cropper
+    public MultiImageModuleItem PatnershipModule = new MultiImageModuleItem();
     #endregion
 
     #region Constructor
@@ -675,6 +678,16 @@ public partial class CreateGroupBuy
         OrderInstructionCropper.Source = "";
         await OrderInstructionCropper.ResetSelection();
         await OrderInstructionPicker.Clear();
+
+    }
+    private async Task ClosePatnershipCropModal()
+    {
+        await PatnerShipCropperModal.Hide();
+        imageToCrop = "";
+        PatnerShipCropper.Source = "";
+        await PatnerShipCropper.ResetSelection();
+        await PatnershipModule.FilePicker.Clear();
+        PatnershipModule = new MultiImageModuleItem();
 
     }
     private string LocalizeFilePicker(string key, object[] args)
@@ -1489,66 +1502,194 @@ public partial class CreateGroupBuy
             await BannerCropperModal.Hide();
         }
     }
+    //async Task OnPartnershipImageUploadAsync(FileChangedEventArgs e, MultiImageModuleItem item)
+    //{
+    //    if (e.Files.Length == 0) return;
+
+    //    try
+    //    {
+    //        if (e.Files.Any(file => !ValidFileExtensions.Contains(Path.GetExtension(file.Name))))
+    //        {
+    //            await _uiMessageService.Error(L["InvalidFileType"]);
+    //            return;
+    //        }
+    //        if (e.Files.Any(file => file.Size > MaxAllowedFileSize))
+    //        {
+    //            await _uiMessageService.Error(L[PikachuDomainErrorCodes.FilesAreGreaterThanMaxAllowedFileSize]);
+    //            return;
+    //        }
+
+    //        foreach (var file in e.Files.Take(5))
+    //        {
+    //            if(item.Images.Count >= 5) return;
+    //            var stream = file.OpenReadStream(long.MaxValue);
+
+    //            try
+    //            {
+    //                string newFileName = Path.ChangeExtension(
+    //                  Guid.NewGuid().ToString().Replace("-", ""),
+    //                  Path.GetExtension(e.Files[0].Name));
+
+    //                var memoryStream = new MemoryStream();
+
+    //                await stream.CopyToAsync(memoryStream);
+    //                memoryStream.Position = 0;
+    //                var url = await _imageContainerManager.SaveAsync(newFileName, memoryStream);
+
+    //                int sortNo = item.Images.OrderByDescending(i => i.SortNo).Select(i => i.SortNo).FirstOrDefault() + 1;
+    //                item.Images.Add(new GroupBuyItemGroupImageDto
+    //                {
+    //                    BlobImageName = newFileName,
+    //                    Url = url,
+    //                    SortNo = sortNo
+    //                });
+
+    //                item.FilePicker?.Clear();
+    //            }
+    //            catch
+    //            {
+    //                throw;
+    //            }
+    //            finally
+    //            {
+    //                stream.Close();
+    //            }
+    //        }
+
+    //    }
+    //    catch (Exception exc)
+    //    {
+    //        await HandleErrorAsync(exc);
+    //    }
+    //}
     async Task OnPartnershipImageUploadAsync(FileChangedEventArgs e, MultiImageModuleItem item)
     {
         if (e.Files.Length == 0) return;
 
         try
         {
+            // Validate file extensions and sizes
             if (e.Files.Any(file => !ValidFileExtensions.Contains(Path.GetExtension(file.Name))))
             {
                 await _uiMessageService.Error(L["InvalidFileType"]);
                 return;
             }
+
             if (e.Files.Any(file => file.Size > MaxAllowedFileSize))
             {
                 await _uiMessageService.Error(L[PikachuDomainErrorCodes.FilesAreGreaterThanMaxAllowedFileSize]);
                 return;
             }
 
+            // Process each file (up to 5 files)
             foreach (var file in e.Files.Take(5))
-            {
-                if(item.Images.Count >= 5) return;
-                var stream = file.OpenReadStream(long.MaxValue);
+{
+    if (item.Images.Count >= 5) return;
 
-                try
-                {
-                    string newFileName = Path.ChangeExtension(
-                      Guid.NewGuid().ToString().Replace("-", ""),
-                      Path.GetExtension(e.Files[0].Name));
+    // Convert file to base64 and show cropper modal
+    selectedFile = file;
+    using var stream = selectedFile.OpenReadStream(long.MaxValue);
+    using var memoryStream = new MemoryStream();
+    await stream.CopyToAsync(memoryStream);
+    var base64 = Convert.ToBase64String(memoryStream.ToArray());
+    var fileExt = Path.GetExtension(selectedFile.Name).ToLowerInvariant().TrimStart('.');
+    imageToCrop = $"data:image/{fileExt};base64,{base64}";
+                PatnershipModule = item;
+    croppedImage = ""; // Reset cropped image
+    cropButtonDisabled = true; // Disable crop button until selection is made
 
-                    var memoryStream = new MemoryStream();
-
-                    await stream.CopyToAsync(memoryStream);
-                    memoryStream.Position = 0;
-                    var url = await _imageContainerManager.SaveAsync(newFileName, memoryStream);
-
-                    int sortNo = item.Images.OrderByDescending(i => i.SortNo).Select(i => i.SortNo).FirstOrDefault() + 1;
-                    item.Images.Add(new GroupBuyItemGroupImageDto
-                    {
-                        BlobImageName = newFileName,
-                        Url = url,
-                        SortNo = sortNo
-                    });
-
-                    item.FilePicker?.Clear();
-                }
-                catch
-                {
-                    throw;
-                }
-                finally
-                {
-                    stream.Close();
-                }
-            }
-
+    // Show the cropper modal
+    await PatnerShipCropperModal.Show();
+}
         }
         catch (Exception exc)
         {
             await HandleErrorAsync(exc);
         }
     }
+
+    // Handle cropping selection change
+    private Task OnPartnershipImageSelectionChanged(CropperSelectionChangedEventArgs eventArgs)
+{
+    if (eventArgs.Width != 0)
+    {
+        cropButtonDisabled = false;
+        return InvokeAsync(StateHasChanged);
+    }
+
+    return Task.CompletedTask;
+}
+
+// Reset the cropper selection
+private async Task ResetPartnershipImageSelection()
+{
+    cropButtonDisabled = true;
+    croppedImage = "";
+    await PatnerShipCropper.ResetSelection();
+}
+
+// Get the cropped image in base64 format
+private async Task GetPartnershipImageCroppedImage()
+{
+    var options = new CropperCropOptions
+    {
+        Width = 300,       // Set desired width of the cropped image
+        Height = 300,      // Set desired height of the cropped image
+        ImageQuality = 0.9, // Set image quality (if using JPEG)
+        ImageType = "image/png" // Specify the image format (use PNG in this case)
+    };
+    var base64Image = await PatnerShipCropper.CropAsBase64ImageAsync(options);
+    croppedImage = base64Image;
+}
+
+// Crops the image and uploads it
+private async Task CropPartnershipImageAsync(MultiImageModuleItem item)
+{
+    try
+    {
+        // Strip the base64 prefix
+        var base64Data = croppedImage.Substring(croppedImage.IndexOf(",") + 1);
+
+        // Convert base64 string to byte array
+        var croppedBytes = Convert.FromBase64String(base64Data);
+
+        // Generate a new unique file name for the cropped image
+        string newFileName = $"{Guid.NewGuid().ToString().Replace("-", "")}.png";
+
+        // Save the cropped image to the server
+        using var croppedStream = new MemoryStream(croppedBytes);
+        var url = await _imageContainerManager.SaveAsync(newFileName, croppedStream);
+
+        // Determine the sort number for the image
+        int sortNo = item.Images.OrderByDescending(i => i.SortNo).Select(i => i.SortNo).FirstOrDefault() + 1;
+
+        // Add the cropped image to the image module's images list
+        item.Images.Add(new GroupBuyItemGroupImageDto
+        {
+            BlobImageName = newFileName,
+            Url = url,
+            SortNo = sortNo
+        });
+
+        // Clear the file picker after uploading the image
+        await item.FilePicker?.Clear();
+
+        // Show success message
+        await _uiMessageService.Success("Image cropped and uploaded successfully!");
+    }
+    catch (Exception ex)
+    {
+        await _uiMessageService.Error("An error occurred during cropping/upload.");
+        Console.WriteLine(ex);
+    }
+    finally
+    {
+        // Reset the selection in the cropper and hide the modal
+        await PatnerShipCropper.ResetSelection();
+        await PatnerShipCropperModal.Hide();
+    }
+}
+
 
     async Task DeletePartnershipImage(MultiImageModuleItem item, GroupBuyItemGroupImageDto image)
     {

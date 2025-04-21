@@ -122,7 +122,7 @@
                     </Addons>
                 </div>
                 <div class="col-12">
-                    <Blazored.TextEditor.BlazoredTextEditor @ref="@QuillHtml">
+                    <Blazored.TextEditor.BlazoredTextEditor @ref="@QuillHtml" Placeholder="@L["Composeanepic"]">
                         <ToolbarContent>
                             <select class="ql-header">
                                 <option selected=""></option>
@@ -190,7 +190,7 @@
                               TextField="@(( item ) => item.Name)"
                               ValueField="@(( item ) => item.Id)"
                               @bind-SelectedText="SelectedAutoCompleteText"
-                              Placeholder="Search..."
+                              Placeholder="@L["Search..."]"
                               Filter="AutocompleteFilter.StartsWith"
                               CustomFilter="@(( item, searchValue ) => item.Name.IndexOf( searchValue, 0, StringComparison.CurrentCultureIgnoreCase ) >= 0 )"
                               HighlightSearch

@@ -2247,6 +2247,39 @@
         </ModalFooter>
     </ModalContent>
 </Modal>
+<Modal @ref="PatnerShipCropperModal">
+    <ModalContent Size="ModalSize.Large">
+        <ModalHeader>
+            <ModalTitle>@L["PatnershipCropper"]</ModalTitle>
+            <CloseButton Clicked="@ClosePatnershipCropModal" />
+        </ModalHeader>
+        <ModalBody>
+            <Row>
+                <Column ColumnSize="ColumnSize.Is6">
+                    <Cropper @ref="PatnerShipCropper"
+                             Source="@imageToCrop"
+                             Style="aspect-ratio: 16 / 9;"
+                             SelectionChanged="@OnPartnershipImageSelectionChanged"
+                             ShowBackground="true" />
+                </Column>
+                <Column ColumnSize="ColumnSize.Is6">
+                    <Div Margin="Margin.Is2.FromBottom">
+                        <Button Color="Color.Primary" Clicked="GetPartnershipImageCroppedImage" Disabled="@cropButtonDisabled">Get Cropped Image</Button>
+                        <Button Color="Color.Secondary" Clicked="@ResetPartnershipImageSelection" Disabled="@cropButtonDisabled">Reset Selection</Button>
+                    </Div>
+                    <Image Source="@croppedImage" Border="Border.Is1" Style="width: 300px; height: 300px;" />
+
+                </Column>
+            </Row>
+
+        </ModalBody>
+        <ModalFooter>
+
+            <Button Color="Color.Secondary" Clicked="@ClosePatnershipCropModal">@L["Cancel"]</Button>
+            <Button Color="Color.Primary" Disabled="@croppedImage.IsNullOrWhiteSpace()" Clicked="()=>CropPartnershipImageAsync(PatnershipModule)">@L["Save"]</Button>
+        </ModalFooter>
+    </ModalContent>
+</Modal>
 @code {
 
 }
