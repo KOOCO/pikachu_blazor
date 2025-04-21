@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 
 namespace Kooco.Pikachu.Campaigns;
 
@@ -45,5 +46,32 @@ public class CreateCampaignDto
     public int? DiscountAmount { get; set; }
     public int? DiscountPercentage { get; set; }
 
+    public bool? CanExpire { get; set; }
+    public int? ValidForDays { get; set; }
+    public CalculationMethod? CalculationMethod { get; set; }
+    public double? CalculationPercentage { get; set; }
+    public List<StageSettingsDto> StageSettings { get; set; } = [new()];
+    public int StageSettingsCount { get { return StageSettings?.Count ?? 0; } }
+    public bool IsAnyStageSettingSelected { get { return StageSettings?.Any(ss => ss.IsSelected) ?? false; } }
+    public ApplicableItem? ApplicableItem { get; set; }
     public int? Budget { get; set; }
+
+
+    public void AddStageSetting()
+    {
+        StageSettings ??= [];
+        StageSettings.Add(new());
+    }
+
+    public void RemoveSelectedStageSettings()
+    {
+        StageSettings.RemoveAll(ss => ss.IsSelected);
+    }
+}
+
+public class StageSettingsDto
+{
+    public bool IsSelected { get; set; }
+    public int? Spend { get; set; }
+    public int? PointsToReceive { get; set; }
 }

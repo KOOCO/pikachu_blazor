@@ -1456,7 +1456,7 @@
     "PromotionModule": "Promotion Module",
     "Enum:PromotionModule.0": "Discount",
     "Enum:PromotionModule.1": "Shopping Credit",
-    "Enum:PromotionModule.2": "Add-on Product",
+    "Enum:PromotionModule.2": "Add-On Product",
     "Enum:PromotionModuleDescription.0": "Percentage or Fixed Amount off",
     "Enum:PromotionModuleDescription.1": "Store credit for purchases",
     "Enum:PromotionModuleDescription.2": "Complimentary items",
@@ -1483,6 +1483,14 @@
     "DeliveryMethods": "Delivery Methods",
     "ConfigureShoppingCredit": "Shopping Credit",
     "InventoryReport": "Inventory Report",
-    "PieceQuantity": "Piece"
+    "PieceQuantity": "Piece",
+    "Enum:CalculationMethod.0": "Unified Calculation",
+    "Enum:CalculationMethod.1": "Staged Calculation",
+    "Enum:ApplicableItem.0": "Add-On Products",
+    "Enum:ApplicableItem.1": "Shipping Fees",
+    "ValidForDays": "Valid For Days",
+    "CalculationPercentage": "Calculation Percentage",
+    "PointsToReceive": "Points To Receive",
+    "ApplicableItem": "Applicable Item"
   }
 }

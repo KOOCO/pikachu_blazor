@@ -38,6 +38,7 @@ public partial class CreateCampaign
             {
                 GroupBuyOptions = await GroupBuyAppService.GetGroupBuyLookupAsync();
                 ProductOptions = await ItemAppService.GetAllItemsLookupAsync();
+                TargetAudienceOptions.AddRange(await MemberTagAppService.GetMemberTagNamesAsync());
             }
             catch(Exception ex)
             {

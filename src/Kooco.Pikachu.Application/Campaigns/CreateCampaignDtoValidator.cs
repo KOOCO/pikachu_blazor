@@ -2,6 +2,7 @@
 using Kooco.Pikachu.Localization;
 using Microsoft.Extensions.Localization;
 using System;
+using System.Linq;
 using System.Linq.Expressions;
 
 namespace Kooco.Pikachu.Campaigns;
@@ -94,6 +95,42 @@ public class CreateCampaignDtoValidator : AbstractValidator<CreateCampaignDto>
 
         When(x => x.PromotionModule == PromotionModule.ShoppingCredit, () =>
         {
+            AddRequiredRule(x => x.CanExpire);
+
+            AddRequiredRule(x => x.ValidForDays);
+            RuleFor(x => x.ValidForDays)
+                .GreaterThanOrEqualTo(0)
+                .When(x => x.CanExpire == true && x.ValidForDays != null);
+
+            AddRequiredRule(x => x.CalculationMethod);
+
+            AddRequiredRule(x => x.CalculationPercentage);
+            RuleFor(x => x.CalculationPercentage)
+                .GreaterThanOrEqualTo(0)
+                .When(x => x.CalculationMethod == CalculationMethod.UnifiedCalculation && x.CalculationPercentage != null);
+
+            When(x => x.CalculationMethod == CalculationMethod.StagedCalculation, () =>
+            {
+                AddRequiredRule(x => x.StageSettings);
+
+                RuleForEach(x => x.StageSettings)
+                    .ChildRules(stage =>
+                    {
+                        stage.RuleFor(s => s.Spend)
+                            .NotEmpty()
+                            .WithMessage(l["TheFieldIsRequired", l[nameof(StageSettingsDto.Spend)]])
+                            .GreaterThanOrEqualTo(0);
+
+                        stage.RuleFor(s => s.PointsToReceive)
+                            .NotEmpty()
+                            .WithMessage(l["TheFieldIsRequired", l[nameof(StageSettingsDto.PointsToReceive)]])
+                            .GreaterThanOrEqualTo(0);
+                    })
+                    .When(x => x.StageSettings != null);
+            });
+
+            AddRequiredRule(x => x.ApplicableItem);
+
             AddRequiredRule(x => x.ApplyToAllGroupBuys);
 
             RuleFor(x => x.GroupBuyIds)
@@ -112,7 +149,7 @@ public class CreateCampaignDtoValidator : AbstractValidator<CreateCampaignDto>
             RuleFor(x => x.Budget).GreaterThanOrEqualTo(0);
         });
 
-        When(x => x.PromotionModule == PromotionModule.AddonProduct, () =>
+        When(x => x.PromotionModule == PromotionModule.AddOnProduct, () =>
         {
 
         });
@@ -143,5 +180,21 @@ public class CreateCampaignDtoValidator : AbstractValidator<CreateCampaignDto>
         if (propertyLambda.Body is not MemberExpression member)
             throw new ArgumentException("Expression must be a member expression");
         return member.Member.Name;
+    }
+}
+
+public class StageSettingsDtoValidator : AbstractValidator<StageSettingsDto>
+{
+    public StageSettingsDtoValidator(IStringLocalizer<PikachuResource> l)
+    {
+        RuleFor(x => x.Spend)
+            .NotEmpty()
+            .WithMessage(l["TheFieldIsRequired", l[nameof(StageSettingsDto.Spend)]])
+            .GreaterThanOrEqualTo(0);
+
+        RuleFor(x => x.PointsToReceive)
+            .NotEmpty()
+            .WithMessage(l["TheFieldIsRequired", l[nameof(StageSettingsDto.PointsToReceive)]])
+            .GreaterThanOrEqualTo(0);
     }
 }
