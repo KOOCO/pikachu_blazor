@@ -230,6 +230,7 @@
     "Pikachu:GroupBuyShortCodeCannotBeNull": "Group Buy Short Code Can not be null",
     "SetItem": "Set Item",
     "AddItem": "Add Item",
+    "AddBadge": "Add Badge",
     "ChooseItem": "Choose Item",
     "ItemList": "Item List",
     "SetItemPrice": "Set Item Price",
