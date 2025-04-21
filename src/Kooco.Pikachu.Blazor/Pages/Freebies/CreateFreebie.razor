@@ -92,7 +92,7 @@
                     </label>
                 </div>
                 <div class="col-10">
-                    <Blazored.TextEditor.BlazoredTextEditor @ref="@ItemDescription">
+                    <Blazored.TextEditor.BlazoredTextEditor @ref="@ItemDescription" Placeholder="@L["Composeanepic"]">
                         <ToolbarContent>
                             <select class="ql-header">
                                 <option selected=""></option>
@@ -234,7 +234,7 @@
                         <div class="col-2">
                             <Label>@L["QuantityReach"]</Label>
                             <div class="input-group">
-                                <Span Class="bg-primary text-light px-2 py-1">@L["Piece"]</Span>
+                                <Span Class="bg-primary text-light px-2 py-1">@L["PieceQuantity"]</Span>
                                 <NumericEdit TValue="int?" @bind-Value="FreebieCreateDto.MinimumPiece" Size="Size.Small" />
                             </div>
                         </div>

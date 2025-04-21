@@ -96,7 +96,7 @@
                     <label>@L["ItemDescription"]<span class="text-danger">*</span></label>
                 </div>
                 <div class="col-10">
-                    <Blazored.TextEditor.BlazoredTextEditor @ref="@ItemDescription">
+                    <Blazored.TextEditor.BlazoredTextEditor @ref="@ItemDescription" Placeholder="@L["Composeanepic"]">
                         <ToolbarContent>
                             <select class="ql-header">
                                 <option selected=""></option>
@@ -237,7 +237,7 @@
                         <div class="col-3">
                             <Label>@L["QuantityReach"]</Label>
                             <div class="input-group">
-                                <Span Class="bg-primary text-light px-2 py-2">@L["Piece"]</Span>
+                                <Span Class="bg-primary text-light px-2 py-2">@L["PieceQuantity"]</Span>
                                 <MudNumericField @bind-Value="UpdateFreebieDto.MinimumPiece" Min="0" />
                             </div>
                         </div>

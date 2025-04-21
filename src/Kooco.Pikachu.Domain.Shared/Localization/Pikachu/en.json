@@ -242,7 +242,7 @@
     "SelectGroupsBuys": "Select Group Buys",
     "SelectGroupBuys": "Select Group Buys",
     "ApplyCondition": "Apply Condition",
-    "Uncondition": "Uncondition",
+    "Uncondition": "Unconditioned",
     "AmountReach": "Amount Reaches",
     "Get": "Get",
     "Piece": "Piece",
@@ -1481,6 +1481,7 @@
     "ApplyToAllShippingMethods": "Apply To All Shipping Methods",
     "DeliveryMethods": "Delivery Methods",
     "ConfigureShoppingCredit": "Shopping Credit",
-    "InventoryReport": "Inventory Report"
+    "InventoryReport": "Inventory Report",
+    "PieceQuantity": "Piece"
   }
 }

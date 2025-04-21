@@ -1171,7 +1171,12 @@
     "SetItemPrice": "組合商品價格",
     "InventoryReport": "庫存報表",
     "PreOrderQuantity": "預售數量",
-    "AvailablePreOrderQuantity": "可預訂數量"
+    "AvailablePreOrderQuantity": "可預訂數量",
+    "SelectGroupsBuys": "選擇特定團購",
+    "Uncondition": "無限制",
+    "WhenOrderReach": "當訂單達到",
+    "PieceQuantity": "商品數量",
+    "Piece": "個"
 
   }
 }
