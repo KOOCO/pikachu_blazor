@@ -17,12 +17,12 @@
 
 <style>
     .form-group[indent] {
-        width: calc(50% - 25px - 1rem);
-        margin-left: 25px;
+    width: calc(50% - 25px - 1rem);
+    margin-left: 25px;
     }
 
     .form-group[mb0] {
-        margin-bottom: 0px;
+    margin-bottom: 0px;
     }
 </style>
 <Div Class="rounded-cards">
@@ -36,13 +36,10 @@
     </Div>
     <Form>
         <Validations @ref="ValidationsRef" Model="@Entity" ValidateOnLoad="false" HandlerType="typeof(FluentValidationHandler)">
-            <Card>
-                <CardBody>
-                    <Row>
-                        <Column ColumnSize="ColumnSize.Is3">
-                            <h4>@L["CampaignDetails"]</h4>
-                        </Column>
-                        <Column ColumnSize="ColumnSize.Is9">
+            <Row>
+                <Column ColumnSize="ColumnSize.Is9">
+                    <Card>
+                        <CardBody>
                             <Validation MessageLocalizer="@LH.Localize">
                                 <Field>
                                     <FieldLabel required>@L["CampaignName"]</FieldLabel>
@@ -93,14 +90,14 @@
                                 <Field>
                                     <FieldLabel required>@L["TargetAudience"]</FieldLabel>
                                     <AntDesign.Select Mode="AntDesign.SelectMode.Multiple"
-                                                      Size="AntDesign.InputSize.Large"
-                                                      TItem="string"
-                                                      TItemValue="string"
-                                                      MaxTagCount="AntDesign.Select.ResponsiveTag.Responsive"
-                                                      EnableSearch
-                                                      AllowClear
-                                                      Class="@ValidationClass(nameof(Entity.TargetAudience))"
-                                                      @bind-Values="Entity.TargetAudience">
+                                    Size="AntDesign.InputSize.Large"
+                                    TItem="string"
+                                    TItemValue="string"
+                                    MaxTagCount="AntDesign.Select.ResponsiveTag.Responsive"
+                                    EnableSearch
+                                    AllowClear
+                                    Class="@ValidationClass(nameof(Entity.TargetAudience))"
+                                    @bind-Values="Entity.TargetAudience">
                                         <SelectOptions>
                                             @foreach (var item in TargetAudienceOptions)
                                             {
@@ -125,23 +122,16 @@
                                     <ValidationMessage For="() => Entity.PromotionModule" />
                                 </Field>
                             </EditForm>
-                        </Column>
-                        @if (Entity.PromotionModule.HasValue)
-                        {
-                            <Column ColumnSize="ColumnSize.Is12">
-                                <Divider></Divider>
-                            </Column>
-                        }
-                    </Row>
-
-                    @if (Entity.PromotionModule == PromotionModule.Discount)
-                    {
-                        <EditForm EditContext="_editContext">
-                            <Row>
-                                <Column ColumnSize="ColumnSize.Is3">
-                                    <h4>@L["ConfigureDiscount"]</h4>
+                            @if (Entity.PromotionModule.HasValue)
+                            {
+                                <Column ColumnSize="ColumnSize.Is12">
+                                    <Divider></Divider>
                                 </Column>
-                                <Column ColumnSize="ColumnSize.Is9">
+                            }
+
+                            @if (Entity.PromotionModule == PromotionModule.Discount)
+                            {
+                                <EditForm EditContext="_editContext">
                                     <Validation MessageLocalizer="@LH.Localize">
                                         <Field>
                                             <FieldLabel required>@L["DiscountCode"]</FieldLabel>
@@ -211,14 +201,14 @@
                                             {
                                                 <Field indent mb0>
                                                     <AntDesign.Select Mode="AntDesign.SelectMode.Multiple"
-                                                                      Size="AntDesign.InputSize.Large"
-                                                                      TItem="Guid"
-                                                                      TItemValue="Guid"
-                                                                      Placeholder="@L["SelectGroupBuys"]"
-                                                                      EnableSearch
-                                                                      MaxTagCount="AntDesign.Select.ResponsiveTag.Responsive"
-                                                                      Class="@ValidationClass(nameof(Entity.GroupBuyIds))"
-                                                                      @bind-Values="Entity.GroupBuyIds">
+                                                    Size="AntDesign.InputSize.Large"
+                                                    TItem="Guid"
+                                                    TItemValue="Guid"
+                                                    Placeholder="@L["SelectGroupBuys"]"
+                                                    EnableSearch
+                                                    MaxTagCount="AntDesign.Select.ResponsiveTag.Responsive"
+                                                    Class="@ValidationClass(nameof(Entity.GroupBuyIds))"
+                                                    @bind-Values="Entity.GroupBuyIds">
                                                         <SelectOptions>
                                                             @foreach (var item in GroupBuyOptions)
                                                             {
@@ -248,15 +238,15 @@
                                             {
                                                 <Field indent mb0>
                                                     <AntDesign.Select Mode="AntDesign.SelectMode.Multiple"
-                                                                      Size="AntDesign.InputSize.Large"
-                                                                      TItem="Guid"
-                                                                      TItemValue="Guid"
-                                                                      Placeholder="@L["SelectProducts"]"
-                                                                      EnableSearch
-                                                                      MaxTagCount="AntDesign.Select.ResponsiveTag.Responsive"
-                                                                      Disabled="@(Entity.ApplyToAllProducts != false)"
-                                                                      Class="@ValidationClass(nameof(Entity.ProductIds))"
-                                                                      @bind-Values="Entity.ProductIds">
+                                                    Size="AntDesign.InputSize.Large"
+                                                    TItem="Guid"
+                                                    TItemValue="Guid"
+                                                    Placeholder="@L["SelectProducts"]"
+                                                    EnableSearch
+                                                    MaxTagCount="AntDesign.Select.ResponsiveTag.Responsive"
+                                                    Disabled="@(Entity.ApplyToAllProducts != false)"
+                                                    Class="@ValidationClass(nameof(Entity.ProductIds))"
+                                                    @bind-Values="Entity.ProductIds">
                                                         <SelectOptions>
                                                             @foreach (var item in ProductOptions)
                                                             {
@@ -317,14 +307,14 @@
                                                     <Validation MessageLocalizer="@LH.Localize">
                                                         <Field indent mb0>
                                                             <AntDesign.Select Mode="AntDesign.SelectMode.Multiple"
-                                                                              Size="AntDesign.InputSize.Large"
-                                                                              TItem="DeliveryMethod"
-                                                                              TItemValue="DeliveryMethod"
-                                                                              Placeholder="@L["SelectShippingMethods"]"
-                                                                              EnableSearch
-                                                                              MaxTagCount="AntDesign.Select.ResponsiveTag.Responsive"
-                                                                              Class="@ValidationClass(nameof(Entity.DeliveryMethods))"
-                                                                              @bind-Values="Entity.DeliveryMethods">
+                                                            Size="AntDesign.InputSize.Large"
+                                                            TItem="DeliveryMethod"
+                                                            TItemValue="DeliveryMethod"
+                                                            Placeholder="@L["SelectShippingMethods"]"
+                                                            EnableSearch
+                                                            MaxTagCount="AntDesign.Select.ResponsiveTag.Responsive"
+                                                            Class="@ValidationClass(nameof(Entity.DeliveryMethods))"
+                                                            @bind-Values="Entity.DeliveryMethods">
                                                                 <SelectOptions>
                                                                     @foreach (var item in DeliveryMethodOptions)
                                                                     {
@@ -378,19 +368,12 @@
                                             </RadioGroup>
                                         </Field>
                                     </Validation>
-                                </Column>
-                            </Row>
-                        </EditForm>
-                    }
+                                </EditForm>
+                            }
 
-                    @if (Entity.PromotionModule == PromotionModule.ShoppingCredit)
-                    {
-                        <EditForm EditContext="_editContext">
-                            <Row>
-                                <Column ColumnSize="ColumnSize.Is3">
-                                    <h4>@L["ConfigureShoppingCredit"]</h4>
-                                </Column>
-                                <Column ColumnSize="ColumnSize.Is9">
+                            @if (Entity.PromotionModule == PromotionModule.ShoppingCredit)
+                            {
+                                <EditForm EditContext="_editContext">
                                     <Validation MessageLocalizer="@LH.Localize">
                                         <Field>
                                             <FieldLabel required>@L["Groupbuys"]</FieldLabel>
@@ -407,14 +390,14 @@
                                             {
                                                 <Field indent mb0>
                                                     <AntDesign.Select Mode="AntDesign.SelectMode.Multiple"
-                                                                      Size="AntDesign.InputSize.Large"
-                                                                      TItem="Guid"
-                                                                      TItemValue="Guid"
-                                                                      Placeholder="@L["SelectGroupBuys"]"
-                                                                      EnableSearch
-                                                                      MaxTagCount="AntDesign.Select.ResponsiveTag.Responsive"
-                                                                      Class="@ValidationClass(nameof(Entity.GroupBuyIds))"
-                                                                      @bind-Values="Entity.GroupBuyIds">
+                                                    Size="AntDesign.InputSize.Large"
+                                                    TItem="Guid"
+                                                    TItemValue="Guid"
+                                                    Placeholder="@L["SelectGroupBuys"]"
+                                                    EnableSearch
+                                                    MaxTagCount="AntDesign.Select.ResponsiveTag.Responsive"
+                                                    Class="@ValidationClass(nameof(Entity.GroupBuyIds))"
+                                                    @bind-Values="Entity.GroupBuyIds">
                                                         <SelectOptions>
                                                             @foreach (var item in GroupBuyOptions)
                                                             {
@@ -444,15 +427,15 @@
                                             {
                                                 <Field indent mb0>
                                                     <AntDesign.Select Mode="AntDesign.SelectMode.Multiple"
-                                                                      Size="AntDesign.InputSize.Large"
-                                                                      TItem="Guid"
-                                                                      TItemValue="Guid"
-                                                                      Placeholder="@L["SelectProducts"]"
-                                                                      EnableSearch
-                                                                      MaxTagCount="AntDesign.Select.ResponsiveTag.Responsive"
-                                                                      Disabled="@(Entity.ApplyToAllProducts != false)"
-                                                                      Class="@ValidationClass(nameof(Entity.ProductIds))"
-                                                                      @bind-Values="Entity.ProductIds">
+                                                    Size="AntDesign.InputSize.Large"
+                                                    TItem="Guid"
+                                                    TItemValue="Guid"
+                                                    Placeholder="@L["SelectProducts"]"
+                                                    EnableSearch
+                                                    MaxTagCount="AntDesign.Select.ResponsiveTag.Responsive"
+                                                    Disabled="@(Entity.ApplyToAllProducts != false)"
+                                                    Class="@ValidationClass(nameof(Entity.ProductIds))"
+                                                    @bind-Values="Entity.ProductIds">
                                                         <SelectOptions>
                                                             @foreach (var item in ProductOptions)
                                                             {
@@ -469,25 +452,30 @@
                                     <Field>
                                         <FieldLabel required>@L["Budget"]</FieldLabel>
                                         <AntDesign.InputNumber Size="AntDesign.InputSize.Large"
-                                                               Class="no-stepper"
-                                                               TValue="int?"
-                                                               Min="0"
-                                                               Formatter="AntHelper.FormatAmount"
-                                                               Parser="AntHelper.ParseAmount"
-                                                               @bind-Value="Entity.Budget">
+                                        Class="no-stepper"
+                                        TValue="int?"
+                                        Min="0"
+                                        Formatter="AntHelper.FormatAmount"
+                                        Parser="AntHelper.ParseAmount"
+                                        @bind-Value="Entity.Budget">
                                         </AntDesign.InputNumber>
                                         <ValidationMessage For="() => Entity.Budget" />
                                     </Field>
-                                </Column>
-                            </Row>
-                        </EditForm>
-                    }
-                </CardBody>
-            </Card>
-            <Div Class="text-end mt-2">
-                <PikachuButton Class="pk-btn-transparent" Disabled="Loading" Clicked="Cancel">@L["Cancel"]</PikachuButton>
-                <PikachuButton Class="pk-btn-primary" Loading="Loading" Clicked="Save">@L["CreateCampaign"]</PikachuButton>
-            </Div>
+                                </EditForm>
+                            }
+
+                            @if(Entity.PromotionModule == PromotionModule.AddonProduct)
+                            {
+                                
+                            }
+                        </CardBody>
+                    </Card>
+                    <Div Class="text-end mt-2">
+                        <PikachuButton Class="pk-btn-transparent" Disabled="Loading" Clicked="Cancel">@L["Cancel"]</PikachuButton>
+                        <PikachuButton Class="pk-btn-primary" Loading="Loading" Clicked="Save">@L["CreateCampaign"]</PikachuButton>
+                    </Div>
+                </Column>
+            </Row>
         </Validations>
     </Form>
 </Div>
