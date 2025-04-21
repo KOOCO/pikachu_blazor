@@ -40,8 +40,9 @@ namespace Kooco.Pikachu.Blazor.Pages.SetItem
         private FilePicker FilePicker { get; set; }
         private CreateUpdateSetItemDto CreateUpdateSetItemDto { get; set; } = new();
         private List<ItemDetailsModel> ItemDetails { get; set; } = new();
-        private List<string> ItemBadgeList { get; set; } = [];
-        private string NewItemBadge { get; set; }
+        private List<ItemBadgeDto> ItemBadgeList { get; set; } = [];
+        private ItemBadgeDto NewItemBadge { get; set; } = new();
+        private bool SelectOpen { get; set; } = false;
 
         private readonly ISetItemAppService _setItemAppService;
         private readonly IUiMessageService _uiMessageService;
@@ -83,6 +84,7 @@ namespace Kooco.Pikachu.Blazor.Pages.SetItem
 
                         // Map ItemDto to UpdateItemDto
                         CreateUpdateSetItemDto = mapper.Map<CreateUpdateSetItemDto>(ExistingItem);
+                        CreateUpdateSetItemDto.ItemBadgeDto = new ItemBadgeDto { ItemBadge = ExistingItem?.SetItemBadge, ItemBadgeColor = ExistingItem?.SetItemBadgeColor };
                         CreateUpdateSetItemDto.Images = CreateUpdateSetItemDto.Images.OrderBy(x => x.SortNo).ToList();
 
                         var itemDetails = ExistingItem.SetItemDetails.ToList();
@@ -106,7 +108,7 @@ namespace Kooco.Pikachu.Blazor.Pages.SetItem
 
                             ItemDetails.Add(itemDetail);
                         });
-                        ItemBadgeList = await _itemAppService.GetItemBadgesAsync();
+                        await GetItemBadgeListAsync();
                         ItemsList = await _itemAppService.GetItemsLookupAsync();
                         await GetAttributesForSelectedItems();
                         await LoadHtmlContent();
@@ -309,7 +311,7 @@ namespace Kooco.Pikachu.Blazor.Pages.SetItem
                             Attribute3Value = item.Attribute3Value
                         });
                 });
-                
+
                 CreateUpdateSetItemDto.Description = await QuillHtml.GetHTML();
 
                 CreateUpdateSetItemDto.SetItemMainImageURL = CreateUpdateSetItemDto.Images.FirstOrDefault()?.ImageUrl;
@@ -370,12 +372,37 @@ namespace Kooco.Pikachu.Blazor.Pages.SetItem
 
         private void AddItem()
         {
-            if (!string.IsNullOrWhiteSpace(NewItemBadge))
+            if (!string.IsNullOrWhiteSpace(NewItemBadge?.ItemBadge))
             {
-                ItemBadgeList.Add(NewItemBadge);
-                CreateUpdateSetItemDto.SetItemBadge = NewItemBadge;
-                NewItemBadge = string.Empty;
+                var newItemBadge = new ItemBadgeDto { ItemBadge = NewItemBadge.ItemBadge, ItemBadgeColor = NewItemBadge.ItemBadgeColor };
+                ItemBadgeList.Add(newItemBadge);
+                CreateUpdateSetItemDto.ItemBadgeDto = newItemBadge;
+                NewItemBadge = new();
             }
+        }
+
+        async Task DeleteItemBadge(ItemBadgeDto itemBadge)
+        {
+            try
+            {
+                var confirmation = await Message.Confirm(L["AreYouSureToDeleteThisBadge"]);
+                if (confirmation)
+                {
+                    await _itemAppService.DeleteItemBadgeAsync(itemBadge);
+                    await GetItemBadgeListAsync();
+                }
+
+                SelectOpen = true;
+            }
+            catch (Exception ex)
+            {
+                await HandleErrorAsync(ex);
+            }
+        }
+
+        async Task GetItemBadgeListAsync()
+        {
+            ItemBadgeList = await _itemAppService.GetItemBadgesAsync();
         }
     }
 }

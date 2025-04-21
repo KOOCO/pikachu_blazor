@@ -40,8 +40,9 @@ namespace Kooco.Pikachu.Blazor.Pages.SetItem
         private readonly IItemAppService _itemAppService;
         private readonly ISetItemAppService _setItemAppService;
 
-        private List<string> ItemBadgeList { get; set; } = [];
-        private string NewItemBadge { get; set; }
+        private List<ItemBadgeDto> ItemBadgeList { get; set; } = [];
+        private ItemBadgeDto NewItemBadge { get; set; } = new();
+        private bool SelectOpen { get; set; } = false;
 
         public CreateSetItem(
             IUiMessageService uiMessageService,
@@ -69,7 +70,7 @@ namespace Kooco.Pikachu.Blazor.Pages.SetItem
             if (firstRender)
             {
                 await JSRuntime.InvokeVoidAsync("updateDropText");
-                ItemBadgeList = await _itemAppService.GetItemBadgesAsync();
+                await GetItemBadgeListAsync();
                 StateHasChanged();
             }
         }
@@ -295,12 +296,37 @@ namespace Kooco.Pikachu.Blazor.Pages.SetItem
 
         private void AddItem()
         {
-            if (!string.IsNullOrWhiteSpace(NewItemBadge))
+            if (!string.IsNullOrWhiteSpace(NewItemBadge?.ItemBadge))
             {
-                ItemBadgeList.Add(NewItemBadge);
-                CreateUpdateSetItemDto.SetItemBadge = NewItemBadge;
-                NewItemBadge = string.Empty;
+                var newItemBadge = new ItemBadgeDto { ItemBadge = NewItemBadge.ItemBadge, ItemBadgeColor = NewItemBadge.ItemBadgeColor };
+                ItemBadgeList.Add(newItemBadge);
+                CreateUpdateSetItemDto.ItemBadgeDto = newItemBadge;
+                NewItemBadge = new();
             }
+        }
+
+        async Task DeleteItemBadge(ItemBadgeDto itemBadge)
+        {
+            try
+            {
+                var confirmation = await Message.Confirm(L["AreYouSureToDeleteThisBadge"]);
+                if (confirmation)
+                {
+                    await _itemAppService.DeleteItemBadgeAsync(itemBadge);
+                    await GetItemBadgeListAsync();
+                }
+
+                SelectOpen = true;
+            }
+            catch (Exception ex)
+            {
+                await HandleErrorAsync(ex);
+            }
+        }
+
+        async Task GetItemBadgeListAsync()
+        {
+            ItemBadgeList = await _itemAppService.GetItemBadgesAsync();
         }
     }
 

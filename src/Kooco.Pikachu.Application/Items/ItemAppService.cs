@@ -61,7 +61,8 @@ public class ItemAppService :
         }
         var item = await _itemManager.CreateAsync(
             input.ItemName,
-            input.ItemBadge,
+            input.ItemBadgeDto?.ItemBadge,
+            input.ItemBadgeDto?.ItemBadgeColor,
             input.ItemDescriptionTitle,
             input.ItemDescription,
             input.ItemTags,
@@ -173,6 +174,7 @@ public class ItemAppService :
             var item = await _itemManager.CreateAsync(
                 orignalItem.ItemName + "Copy",
                 orignalItem.ItemBadge,
+                orignalItem.ItemBadgeColor,
                 orignalItem.ItemDescriptionTitle,
                 orignalItem.ItemDescription,
                 orignalItem.ItemTags,
@@ -281,7 +283,8 @@ public class ItemAppService :
         await _itemRepository.EnsureCollectionLoadedAsync(item, i => i.CategoryProducts);
 
         item.ItemName = input.ItemName;
-        item.ItemBadge = input.ItemBadge;
+        item.ItemBadge = input.ItemBadgeDto?.ItemBadge;
+        item.ItemBadgeColor = input.ItemBadgeDto?.ItemBadgeColor;
         item.ItemDescriptionTitle = input.ItemDescriptionTitle;
         item.ItemDescription = input.ItemDescription;
         item.ItemTags = input.ItemTags;
@@ -513,8 +516,8 @@ public class ItemAppService :
 
     public async Task<List<KeyValueDto>> GetAllItemsLookupAsync()
     {
-        var items = await _itemRepository.GetItemsAllLookupAsync();
-        var list = items.Select(x => new KeyValueDto { Id = x.Id, Name = x.Name }).ToList();
+        var items = await _itemRepository.GetQueryableAsync();
+        var list = items.Select(x => new KeyValueDto { Id = x.Id, Name = x.ItemName }).ToList();
         return list;
     }
 
@@ -561,24 +564,29 @@ public class ItemAppService :
         return _htmlSanitizer.Sanitize(itemDescription);
     }
 
-    public async Task<List<string>> GetItemBadgesAsync()
+    public async Task<List<ItemBadgeDto>> GetItemBadgesAsync()
     {
         var items = await _itemRepository.GetQueryableAsync();
         var setItems = await _setItemRepository.GetQueryableAsync();
         var itemBadges = items
             .Where(x => !string.IsNullOrWhiteSpace(x.ItemBadge))
-            .Select(x => x.ItemBadge!)
+            .Select(x => new ItemBadgeDto { ItemBadge = x.ItemBadge!, ItemBadgeColor = x.ItemBadgeColor })
             .Distinct()
             .ToList();
 
         var setItemBadges = setItems
             .Where(x => !string.IsNullOrWhiteSpace(x.SetItemBadge))
-            .Select(x => x.SetItemBadge!)
+            .Select(x => new ItemBadgeDto { ItemBadge = x.SetItemBadge!, ItemBadgeColor = x.SetItemBadgeColor })
             .Distinct()
             .ToList();
 
-        List<string> badges = [.. itemBadges, .. setItemBadges];
+        List<ItemBadgeDto> badges = [.. itemBadges, .. setItemBadges];
         return [.. badges.Distinct()];
+    }
+
+    public async Task DeleteItemBadgeAsync(ItemBadgeDto input)
+    {
+        await _itemRepository.DeleteItemBadgeAsync(input.ItemBadge, input.ItemBadgeColor); 
     }
     #endregion
 }

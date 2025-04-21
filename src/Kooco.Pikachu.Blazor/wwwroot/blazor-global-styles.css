@@ -730,6 +730,11 @@
     color: crimson;
 }
 
+.form-label[required]::after {
+    content: ' *';
+    color: crimson;
+}
+
 .member-image {
     position: relative;
     width: 40px;
@@ -825,4 +830,87 @@
     justify-content: center;
     width: 100%;
     min-height: 250px;
+}
+
+.dropdown-badge {
+    padding: 3px 15px;
+    border-radius: 4px;
+}
+
+.dropdown-picker {
+    padding: 6px;
+    width: 70px;
+    height: 40px;
+}
+
+.dropdown-btn {
+    background: transparent;
+    border: transparent;
+    color: var(--pk-danger);
+    font-size: 18px;
+    padding: 0;
+}
+
+.promotion-modules {
+    display: flex;
+    width: 100%;
+    gap: 15px;
+    flex-wrap: wrap;
+    align-items: stretch;
+}
+
+.promotion-module {
+    flex: 1 1 calc((100% - 30px) / 3);
+    border: 1px solid lightgrey;
+    border-radius: 10px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    cursor: pointer;
+}
+
+.promotion-module-svg > div {
+    margin-bottom: 20px;
+    padding: 15px;
+    border-radius: 15px;
+    box-sizing: border-box;
+}
+
+.promotion-module h4 {
+    margin: 0;
+    margin-bottom: 5px;
+}
+
+.promotion-module:hover {
+    border-color: var(--pk-primary);
+}
+
+.promotion-module.active {
+    background-color: rgb(238 242 255);
+}
+
+.bg-indigo {
+    background-color: rgb(224 231 255);
+    color: rgb(79 70 229);
+}
+
+.bg-green {
+    background-color: rgb(220 252 231);
+    color: rgb(22 163 74);
+}
+
+.bg-purple {
+    background-color: rgb(243 232 255);
+    color: rgb(147 51 234);
+}
+
+.is-invalid .ant-select-selector {
+    border-color: #dc3545 !important;
+}
+
+.ant-select-focused:not(.ant-select-disabled).ant-select:not(.ant-select-customize-input) .ant-select-selector {
+    box-shadow: none;
 }

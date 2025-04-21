@@ -37,6 +37,7 @@ public partial class CreateItem
     private List<BlazoredTextEditor> ItemDetailsQuillHtml = [];
     private List<CreateItemDetailsDto> ItemDetailsList { get; set; } // List of CreateItemDetail dto to store PriceAndInventory
     private CreateItemDto CreateItemDto = new(); //Item Dto
+
     private List<Attributes> Attributes = [];
     private string TagInputValue { get; set; }
     private Modal GenerateSKUModal { get; set; }
@@ -60,8 +61,9 @@ public partial class CreateItem
 
     private CreateItemDetailsDto draggedItem;
 
-    private List<string> ItemBadgeList { get; set; } = [];
-    private string NewItemBadge { get; set; }
+    private List<ItemBadgeDto> ItemBadgeList { get; set; } = [];
+    private ItemBadgeDto NewItemBadge { get; set; } = new();
+    private bool SelectOpen { get; set; } = false;
     #endregion
 
     #region Constructor
@@ -120,7 +122,7 @@ public partial class CreateItem
             {
                 await JS.InvokeVoidAsync("updateDropText");
                 ProductCategoryLookup = await ProductCategoryAppService.GetProductCategoryLookupAsync();
-                ItemBadgeList = await _itemAppService.GetItemBadgesAsync();
+                await GetItemBadgeListAsync();
                 await InvokeAsync(StateHasChanged);
             }
             catch (Exception ex)
@@ -1066,12 +1068,37 @@ public partial class CreateItem
 
     private void AddItem()
     {
-        if (!string.IsNullOrWhiteSpace(NewItemBadge))
+        if (!string.IsNullOrWhiteSpace(NewItemBadge?.ItemBadge))
         {
-            ItemBadgeList.Add(NewItemBadge);
-            CreateItemDto.ItemBadge = NewItemBadge;
-            NewItemBadge = string.Empty;
+            var newItemBadge = new ItemBadgeDto { ItemBadge = NewItemBadge.ItemBadge, ItemBadgeColor = NewItemBadge.ItemBadgeColor };
+            ItemBadgeList.Add(newItemBadge);
+            CreateItemDto.ItemBadgeDto = newItemBadge;
+            NewItemBadge = new();
         }
+    }
+
+    async Task DeleteItemBadge(ItemBadgeDto itemBadge)
+    {
+        try
+        {
+            var confirmation = await Message.Confirm(L["AreYouSureToDeleteThisBadge"]);
+            if (confirmation)
+            {
+                await _itemAppService.DeleteItemBadgeAsync(itemBadge);
+                await GetItemBadgeListAsync();
+            }
+
+            SelectOpen = true;
+        }
+        catch (Exception ex)
+        {
+            await HandleErrorAsync(ex);
+        }
+    }
+
+    async Task GetItemBadgeListAsync()
+    {
+        ItemBadgeList = await _itemAppService.GetItemBadgesAsync();
     }
     #endregion
 }

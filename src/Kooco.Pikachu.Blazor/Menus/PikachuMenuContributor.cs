@@ -270,6 +270,12 @@ public class PikachuMenuContributor : IMenuContributor
             url: "/shopping-credit",
             requiredPermissionName: PikachuPermissions.ShoppingCredits.Default)
             );
+        promotions.AddItem(new ApplicationMenuItem(
+            name: "Campaigns",
+            displayName: l["Menu:Campaigns"],
+            url: "/Campaigns",
+            requiredPermissionName: PikachuPermissions.Campaigns.Default)
+            );
         context.Menu.AddItem(promotions);
 
         var paymentManagement = new ApplicationMenuItem(

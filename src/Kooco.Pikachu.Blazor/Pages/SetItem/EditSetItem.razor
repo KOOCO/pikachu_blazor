@@ -80,7 +80,7 @@
                 <fieldLabel>@L["ItemBadge"]</fieldLabel>
             </div>
             <div class="col-10">
-                <AntDesign.Select TItem="string"
+                @* <AntDesign.Select TItem="string"
                                   TItemValue="string"
                                   DataSource="@ItemBadgeList"
                                   @bind-Value="@CreateUpdateSetItemDto.SetItemBadge"
@@ -94,6 +94,49 @@
                             <div class="d-flex flex-nowrap py-2 px-1 gap-1">
                                 <AntDesign.Input @bind-Value="@NewItemBadge" Placeholder="@L["EnterANewBadge"]"
                                                  MaxLength="MaxBadgeTextCount" />
+                                <PikachuButton Class="pk-btn-sm pk-btn-primary text-nowrap" Clicked="AddItem">
+                                    <Icon Name="@IconName.Add" />
+                                    @L["AddItem"]
+                                </PikachuButton>
+                            </div>
+                        </div>
+                    </DropdownRender>
+                </AntDesign.Select> *@
+                <AntDesign.Select TItem="ItemBadgeDto"
+                                  TItemValue="ItemBadgeDto"
+                                  ItemLabel="p => p.ItemBadge"
+                                  DataSource="@ItemBadgeList"
+                                  @bind-Value="@CreateUpdateSetItemDto.ItemBadgeDto"
+                                  @bind-Open="SelectOpen"
+                                  Size="AntDesign.InputSize.Large"
+                                  EnableSearch
+                                  AllowClear>
+                    <LabelTemplate>
+                        <AntDesign.Select.LabelTemplateItem Context="item"
+                                                            TItem="ItemBadgeDto"
+                                                            TItemValue="ItemBadgeDto"
+                                                            RemoveIconStyle="margin-top: 1px; display: inline-block;">
+                            <LabelTemplateItemContent>
+                                <span class="dropdown-badge" style="color: @ItemConsts.GetContrastingTextColor(context.ItemBadgeColor); background-color: @context.ItemBadgeColor">@item.ItemBadge</span>
+                            </LabelTemplateItemContent>
+                        </AntDesign.Select.LabelTemplateItem>
+                    </LabelTemplate>
+                    <ItemTemplate>
+                        <div class="d-flex justify-content-between align-items-center px-1">
+                            <span class="dropdown-badge" style="color: @ItemConsts.GetContrastingTextColor(context.ItemBadgeColor); background-color: @context.ItemBadgeColor">@context.ItemBadge</span>
+                            <button class="dropdown-btn" @onclick="() => DeleteItemBadge(context)">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </ItemTemplate>
+                    <DropdownRender Context="originNode">
+                        <div>
+                            @originNode
+                            <Divider Style="margin: 4px 0"></Divider>
+                            <div class="d-flex flex-nowrap py-2 px-1 gap-1">
+                                <AntDesign.Input @bind-Value="@NewItemBadge.ItemBadge" Placeholder="@L["EnterANewBadge"]"
+                                                 MaxLength="MaxBadgeTextCount" />
+                                <ColorEdit @bind-Color="@NewItemBadge.ItemBadgeColor" Class="dropdown-picker" />
                                 <PikachuButton Class="pk-btn-sm pk-btn-primary text-nowrap" Clicked="AddItem">
                                     <Icon Name="@IconName.Add" />
                                     @L["AddItem"]

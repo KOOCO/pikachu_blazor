@@ -88,7 +88,7 @@ public class ItemRepository : EfCoreRepository<PikachuDbContext, Item, Guid>, II
             {
                 Id = item.Id,
                 ItemName = item.ItemName,
-                ItemBadge=item.ItemBadge,
+                ItemBadge = item.ItemBadge,
                 ItemDescriptionTitle = item.ItemDescriptionTitle,
                 LimitAvaliableTimeStart = item.LimitAvaliableTimeStart,
                 LimitAvaliableTimeEnd = item.LimitAvaliableTimeEnd,
@@ -181,5 +181,22 @@ public class ItemRepository : EfCoreRepository<PikachuDbContext, Item, Guid>, II
             .Where(x => ids.Contains(x.Id))
             .Include(x => x.ItemDetails)
             .ToListAsync();
+    }
+
+    public async Task DeleteItemBadgeAsync(string itemBadge, string? itemBadgeColor)
+    {
+        var dbContext = await GetDbContextAsync();
+
+        await dbContext.Items
+            .Where(item => item.ItemBadge == itemBadge && item.ItemBadgeColor == itemBadgeColor)
+            .ExecuteUpdateAsync(setters => setters
+                .SetProperty(p => p.ItemBadge, p => "")
+                .SetProperty(p => p.ItemBadgeColor, p => ""));
+
+        await dbContext.SetItems
+            .Where(item => item.SetItemBadge == itemBadge && item.SetItemBadgeColor == itemBadgeColor)
+            .ExecuteUpdateAsync(setters => setters
+                .SetProperty(p => p.SetItemBadge, p => "")
+                .SetProperty(p => p.SetItemBadgeColor, p => ""));
     }
 }

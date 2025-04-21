@@ -21,6 +21,9 @@ namespace Kooco.Pikachu.Items
         public string? SetItemMainImageURL { get; set; }
         [MaxLength(4)]
         public string? SetItemBadge { get; set; }
+
+        [MaxLength(16)]
+        public string? SetItemBadgeColor { get; set; }
         public string? SetItemStatus { get; set; }
         public int? SetItemSaleableQuantity { get; set; }
 
@@ -111,6 +114,7 @@ namespace Kooco.Pikachu.Items
             Guid? tenantId,
             string setItemName,
             string? setItemBadge,
+            string? setItemBadgeColor,
             string? setItemDescriptionTitle,
             string? description,
             string? setItemMainImageURL,
@@ -127,6 +131,7 @@ namespace Kooco.Pikachu.Items
             TenantId = tenantId;
             SetItemName = setItemName;
             SetItemBadge = setItemBadge;
+            SetItemBadgeColor = setItemBadgeColor;
             SetItemDescriptionTitle = setItemDescriptionTitle;
             Description = description;
             SetItemMainImageURL = setItemMainImageURL;

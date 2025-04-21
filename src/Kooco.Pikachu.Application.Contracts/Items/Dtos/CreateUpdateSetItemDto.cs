@@ -18,7 +18,7 @@ public class CreateUpdateSetItemDto
 
     [MaxLength(4)]
     public string? SetItemBadge { get; set; } = "";
-
+    public ItemBadgeDto ItemBadgeDto { get; set; } = new();
     /// <summary>
     /// 
     /// </summary>

@@ -71,6 +71,7 @@ public class ItemAppServiceTests : PikachuApplicationTestBase
         var result = await _itemManager.CreateAsync(
             input.ItemName,
             input.ItemBadge,
+            input.ItemBadgeDto?.ItemBadgeColor,
             input.ItemDescriptionTitle,
             input.ItemDescription,
             input.ItemTags,

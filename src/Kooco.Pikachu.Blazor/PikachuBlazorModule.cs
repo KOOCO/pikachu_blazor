@@ -65,6 +65,8 @@ using Kooco.Pikachu.PaymentGateways.LinePay;
 using Microsoft.Extensions.Options;
 using Kooco.Pikachu.UserShoppingCredits;
 using Kooco.Pikachu.Orders;
+using Blazorise.FluentValidation;
+using FluentValidation;
 
 namespace Kooco.Pikachu.Blazor;
 
@@ -396,7 +398,10 @@ public class PikachuBlazorModule : AbpModule
         context.Services
             .AddBootstrap5Providers()
             .AddFontAwesomeIcons()
+            .AddBlazoriseFluentValidation()
             .AddMudServices();
+
+        context.Services.AddValidatorsFromAssembly(typeof(PikachuApplicationModule).Assembly);
     }
 
     private void ConfigureMenu(ServiceConfigurationContext context)

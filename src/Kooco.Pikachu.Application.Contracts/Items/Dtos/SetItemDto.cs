@@ -23,6 +23,7 @@ public class SetItemDto : FullAuditedEntityDto<Guid>
     /// </summary>
     public string SetItemName { get; set; }
     public string? SetItemBadge { get; set; }
+    public string? SetItemBadgeColor { get; set; }
     /// <summary>
     /// 
     /// </summary>

@@ -12,6 +12,7 @@ public class UpdateItemDto
     public string ItemName { get; set; } = "";
     [MaxLength(4)]
     public string? ItemBadge { get; set; } = "";
+    public ItemBadgeDto? ItemBadgeDto { get; set; } = new();
     public List<CreateItemDetailsDto> ItemDetails { get; set; }
     public List<CreateImageDto> Images { get; set; }
     public string ItemDescriptionTitle { get; set; } = "";
