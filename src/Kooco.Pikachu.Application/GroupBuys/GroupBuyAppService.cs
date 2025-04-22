@@ -893,94 +893,10 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
 
             foreach (GroupBuyItemGroupModuleDetailsDto module in modules)
             {
-                if (module.GroupBuyModuleType is GroupBuyModuleType.ProductRankingCarouselModule)
-                {
-                    foreach (GroupBuyItemGroupDetailsDto itemDetail in module.ItemGroupDetails)
-                    {
-                        if (itemDetail.ItemType == ItemType.Item)
-                        {
-                            if (!itemDetail.Item.Attribute1Name.IsNullOrEmpty())
-                            {
-                                itemDetail.Item.AttributeNameOptions ??= [];
-
-                                itemDetail.Item.AttributeNameOptions.Add(new()
-                                {
-                                    AttributeName = itemDetail.Item.Attribute1Name,
-                                    AttributeOptions = [.. itemDetail.Item.ItemDetails.DistinctBy(x=>x.Attribute1Value).Where(w => !w.Attribute1Value.IsNullOrEmpty())
-                                                                                  .Select(s => s.Attribute1Value)]
-                                });
-                            }
-
-                            if (!itemDetail.Item.Attribute2Name.IsNullOrEmpty())
-                            {
-                                itemDetail.Item.AttributeNameOptions ??= [];
-
-                                itemDetail.Item.AttributeNameOptions.Add(new()
-                                {
-                                    AttributeName = itemDetail.Item.Attribute2Name,
-                                    AttributeOptions = [.. itemDetail.Item.ItemDetails.DistinctBy(x=>x.Attribute2Value).Where(w => !w.Attribute2Value.IsNullOrEmpty())
-                                                                                  .Select(w => w.Attribute2Value)]
-                                });
-                            }
-
-                            if (!itemDetail.Item.Attribute3Name.IsNullOrEmpty())
-                            {
-                                itemDetail.Item.AttributeNameOptions ??= [];
-
-                                itemDetail.Item.AttributeNameOptions.Add(new()
-                                {
-                                    AttributeName = itemDetail.Item.Attribute3Name,
-                                    AttributeOptions = [.. itemDetail.Item.ItemDetails.Where(w => !w.Attribute3Value.IsNullOrEmpty())
-                                                                                  .Select(w => w.Attribute3Value)]
-                                });
-                            }
-                        }
-                        if (itemDetail.ItemType == ItemType.SetItem)
-                        {
-                            foreach (var setItemDetail in itemDetail.SetItem.SetItemDetails)
-                            {
-                                if (!setItemDetail.Item.Attribute1Name.IsNullOrEmpty())
-                                {
-                                    setItemDetail.Item.AttributeNameOptions ??= [];
-
-                                    setItemDetail.Item.AttributeNameOptions.Add(new()
-                                    {
-                                        AttributeName = setItemDetail.Item.Attribute1Name,
-                                        AttributeOptions = [.. setItemDetail.Item.ItemDetails.Where(w => !w.Attribute1Value.IsNullOrEmpty())
-                                                                                  .Select(s => s.Attribute1Value)]
-                                    });
-                                }
-
-                                if (!setItemDetail.Item.Attribute2Name.IsNullOrEmpty())
-                                {
-                                    setItemDetail.Item.AttributeNameOptions ??= [];
-
-                                    setItemDetail.Item.AttributeNameOptions.Add(new()
-                                    {
-                                        AttributeName = setItemDetail.Item.Attribute2Name,
-                                        AttributeOptions = [.. setItemDetail.Item.ItemDetails.Where(w => !w.Attribute2Value.IsNullOrEmpty())
-                                                                                  .Select(s => s.Attribute2Value)]
-                                    });
-                                }
-
-                                if (!setItemDetail.Item.Attribute3Name.IsNullOrEmpty())
-                                {
-                                    setItemDetail.Item.AttributeNameOptions ??= [];
-
-                                    setItemDetail.Item.AttributeNameOptions.Add(new()
-                                    {
-                                        AttributeName = setItemDetail.Item.Attribute3Name,
-                                        AttributeOptions = [.. setItemDetail.Item.ItemDetails.Where(w => !w.Attribute3Value.IsNullOrEmpty())
-                                                                                  .Select(s => s.Attribute3Value)]
-                                    });
-                                }
-                            }
-                        }
-                    }
-                }
+                
 
 
-                if (module.GroupBuyModuleType is GroupBuyModuleType.ProductGroupModule)
+                if (module.GroupBuyModuleType is GroupBuyModuleType.ProductGroupModule|| module.GroupBuyModuleType is GroupBuyModuleType.ProductRankingCarouselModule)
                 {
                     foreach (GroupBuyItemGroupDetailsDto itemDetail in module.ItemGroupDetails)
                     {
@@ -1035,6 +951,7 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
                 if (module.GroupBuyModuleType is GroupBuyModuleType.ProductRankingCarouselModule)
                 {
                     var productRanking = await _groupBuyProductRankingAppService.GetListByGroupBuyIdAsync(groupBuyId);
+                 
                     module.GroupBuyProductRankingModules = new();
                     module.GroupBuyProductRankingModules = productRanking.Where(x => x.ModuleNumber == module.ModuleNumber).FirstOrDefault();
                     module.GroupBuyProductRankingModules.CarouselImages = (await _ImageAppService.GetGroupBuyImagesAsync(groupBuyId, ImageType.GroupBuyProductRankingCarousel)).Where(x => x.ModuleNumber == module.ModuleNumber).Select(x => x.ImageUrl).ToList();
