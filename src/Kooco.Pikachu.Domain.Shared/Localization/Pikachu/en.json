@@ -505,7 +505,7 @@
     "NonTaxable": "Non Taxable",
     "ZeroTax": "Zero Tax",
     "Threshold": "Threshold",
-    "DeliveryTimePreference": "Delivery Time Preference",
+    "DeliveryTimePreference": "Delivery Time Difference",
     "SelectGroupBuy": "Select Group Buy",
     "Shipped": "Shipped",
     "ManualStatusUpdate": "Manual Status Update",
@@ -1499,6 +1499,8 @@
     "Enum:AddOnProductCondition.1": "Must meet a specified spending threshold",
     "AddOnProductId": "Add-On Product",
     "IsUnlimitedQuantity": "Unlimited Quantity",
-    "AddOnDisplayPrice": "Add-On Display Price"
+    "AddOnDisplayPrice": "Add-On Display Price",
+    "FaceBookPixelID": "FaceBook Pixel ID",
+    "GAID": "GA Tag ID"
   }
 }

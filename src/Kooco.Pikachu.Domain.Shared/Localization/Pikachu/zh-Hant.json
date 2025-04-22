@@ -127,7 +127,7 @@
     "DeliveryTemperature": "溫層",
     "DeliveryTemperatureCost": "溫層運費成本",
     "DeliveryTime": "收貨時間",
-    "DeliveryTimePreference": "收貨時間",
+    "DeliveryTimePreference": "收件時段",
     "Display": "顯示",
     "DownloadExcel": "下載Excel",
     "EcPay": "綠界支付",
@@ -863,7 +863,7 @@
     "Enum:ColorScheme.4": "甜甜奶白",
     "Enum:ColorScheme.5": "甜點日暮",
     "DisplayMethodForProductDetails": "商品內容顯示方式",
-    "ChooseMethod": "商品內容顯示方式 選項有錯字",
+    "ChooseMethod": "商品內容顯示方式",
     "PureImage_LeftRightSlide": "純顯示圖片（左右滑動",
     "PureImage_VerticalSlide": "純顯示圖片（垂直滑動）",
     "SpecificationIntroduction": "特定指示（圖片在左，文字敘述在右）",
@@ -1177,7 +1177,20 @@
     "Uncondition": "無限制",
     "WhenOrderReach": "當訂單達到",
     "PieceQuantity": "商品數量",
-    "Piece": "個"
+    "Piece": "個",
+    "TimePeriod": "團購開放期間",
+    "Copy": "複製",
+    "ShortCode": "團購簡碼",
+    "Threshold": "免運需達到金額",
+    "Weekday9To13": "平日9:00-13:00",
+    "Weekday14To18": "平日14:00-18:00",
+    "Weekend9To13": "週末9:00-13:00",
+    "Weekend14To18": "週末14:00-18:00",
+    "UnableToSpecifyDuringPeakPeriods": "忙碌期無法指定",
+    "PleaseContactUs": "聯繫客服",
+    "FaceBookPixelID": "Facebook 像素 ID",
+    "GAID": "GA追蹤碼ID"
+
 
   }
 }
