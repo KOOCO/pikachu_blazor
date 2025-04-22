@@ -121,6 +121,7 @@ public class PikachuTestDataSeedContributor : IDataSeedContributor, ITransientDe
                 "Set Item",
                 "Set Item",
                 "<h1>Set Item</h1>",
+                "Set Item Description",
                 "https://www.example.com",
                 999,
                 10,

@@ -1,5 +1,4 @@
-﻿using AngleSharp.Dom;
-using FluentValidation;
+﻿using FluentValidation;
 using Kooco.Pikachu.Localization;
 using Microsoft.Extensions.Localization;
 using System;
@@ -26,171 +25,42 @@ public class CreateCampaignDtoValidator : AbstractValidator<CreateCampaignDto>
         RuleFor(x => x.Description)
             .MaximumLength(CampaignConsts.MaxDescriptionLength);
 
-        When(x => x.PromotionModule == PromotionModule.Discount, () =>
+        AddRequiredRule(x => x.ApplyToAllGroupBuys);
+
+        RuleFor(x => x.GroupBuyIds)
+            .NotEmpty()
+            .When(x => x.PromotionModule.HasValue && x.ApplyToAllGroupBuys != null && x.ApplyToAllGroupBuys == false)
+            .WithMessage(l["TheFieldIsRequired", l[nameof(CreateCampaignDto.GroupBuyIds)]]);
+
+        When(x => x.PromotionModule.HasValue && x.PromotionModule != PromotionModule.AddOnProduct, () =>
         {
-            AddRequiredRule(x => x.IsDiscountCodeRequired, nameof(CreateCampaignDto.DiscountCode));
-
-            When(x => x.IsDiscountCodeRequired == true, () =>
-            {
-                RuleFor(x => x.DiscountCode)
-                    .NotEmpty()
-                    .WithMessage(l["TheFieldIsRequired", l[nameof(CreateCampaignDto.DiscountCode)]]);
-            });
-
-            RuleFor(x => x.AvailableQuantity)
-                .GreaterThanOrEqualTo(0)
-                .WithName(l["NoOfIssuedCodes"]);
-
-            RuleFor(x => x.MaximumUsePerPerson)
-                .GreaterThanOrEqualTo(0)
-                .WithName(l["MaximumUsePerPerson"]);
-
-            AddRequiredRule(x => x.ApplyToAllGroupBuys);
-
-            RuleFor(x => x.GroupBuyIds)
-                .NotEmpty()
-                .When(x => x.ApplyToAllGroupBuys == false)
-                .WithMessage(l["TheFieldIsRequired", l[nameof(CreateCampaignDto.GroupBuyIds)]]);
-
             AddRequiredRule(x => x.ApplyToAllProducts);
 
             RuleFor(x => x.ProductIds)
                 .NotEmpty()
-                .When(x => x.ApplyToAllProducts == false)
+                .When(x => x.PromotionModule.HasValue && x.ApplyToAllProducts != null && x.ApplyToAllProducts == false)
                 .WithMessage(l["TheFieldIsRequired", l[nameof(CreateCampaignDto.ProductIds)]]);
+        });
 
-            AddRequiredRule(x => x.DiscountMethod);
-
-            When(x => x.DiscountMethod == DiscountMethod.MinimumSpendAmount, () =>
-            {
-                RuleFor(x => x.MinimumSpendAmount)
-                    .NotEmpty()
-                    .WithMessage(l["TheFieldIsRequired", l[nameof(CreateCampaignDto.MinimumSpendAmount)]])
-                    .GreaterThanOrEqualTo(0);
-            });
-
-            When(x => x.DiscountMethod == DiscountMethod.ShippingDiscount, () =>
-            {
-                AddRequiredRule(x => x.ApplyToAllShippingMethods);
-
-                RuleFor(x => x.DeliveryMethods)
-                    .NotEmpty()
-                    .When(x => x.ApplyToAllShippingMethods == false)
-                    .WithMessage(l["TheFieldIsRequired", l[nameof(CreateCampaignDto.DeliveryMethods)]]);
-            });
-
-            AddRequiredRule(x => x.DiscountType);
-
-            When(x => x.DiscountType == DiscountType.FixedAmount, () =>
-            {
-                RuleFor(x => x.DiscountAmount)
-                    .NotEmpty()
-                    .WithMessage(l["TheFieldIsRequired", l[nameof(CreateCampaignDto.DiscountAmount)]])
-                    .GreaterThanOrEqualTo(0);
-            });
-
-            When(x => x.DiscountType == DiscountType.Percentage, () =>
-            {
-                RuleFor(x => x.DiscountPercentage)
-                    .NotEmpty()
-                    .WithMessage(l["TheFieldIsRequired", l[nameof(CreateCampaignDto.DiscountPercentage)]])
-                    .GreaterThanOrEqualTo(0)
-                    .LessThanOrEqualTo(100);
-            });
+        When(x => x.PromotionModule == PromotionModule.Discount, () =>
+        {
+            RuleFor(x => x.Discount)
+                .NotNull()
+                .SetValidator(new CreateCampaignDiscountDtoValidator(l));
         });
 
         When(x => x.PromotionModule == PromotionModule.ShoppingCredit, () =>
         {
-            AddRequiredRule(x => x.CanExpire);
-
-            AddRequiredRule(x => x.ValidForDays);
-            RuleFor(x => x.ValidForDays)
-                .GreaterThanOrEqualTo(0)
-                .When(x => x.CanExpire == true && x.ValidForDays != null);
-
-            AddRequiredRule(x => x.CalculationMethod);
-
-            AddRequiredRule(x => x.CalculationPercentage);
-            RuleFor(x => x.CalculationPercentage)
-                .GreaterThanOrEqualTo(0)
-                .When(x => x.CalculationMethod == CalculationMethod.UnifiedCalculation && x.CalculationPercentage != null);
-
-            When(x => x.CalculationMethod == CalculationMethod.StagedCalculation, () =>
-            {
-                AddRequiredRule(x => x.StageSettings);
-
-                RuleForEach(x => x.StageSettings)
-                    .ChildRules(stage =>
-                    {
-                        stage.RuleFor(s => s.Spend)
-                            .NotEmpty()
-                            .WithMessage(l["TheFieldIsRequired", l[nameof(StageSettingsDto.Spend)]])
-                            .GreaterThanOrEqualTo(0);
-
-                        stage.RuleFor(s => s.PointsToReceive)
-                            .NotEmpty()
-                            .WithMessage(l["TheFieldIsRequired", l[nameof(StageSettingsDto.PointsToReceive)]])
-                            .GreaterThanOrEqualTo(0);
-                    })
-                    .When(x => x.StageSettings != null);
-            });
-
-            AddRequiredRule(x => x.ApplicableItem);
-
-            AddRequiredRule(x => x.ApplyToAllGroupBuys);
-
-            RuleFor(x => x.GroupBuyIds)
-                .NotEmpty()
-                .When(x => x.ApplyToAllGroupBuys == false)
-                .WithMessage(l["TheFieldIsRequired", l[nameof(CreateCampaignDto.GroupBuyIds)]]);
-
-            AddRequiredRule(x => x.ApplyToAllProducts);
-
-            RuleFor(x => x.ProductIds)
-                .NotEmpty()
-                .When(x => x.ApplyToAllProducts == false)
-                .WithMessage(l["TheFieldIsRequired", l[nameof(CreateCampaignDto.ProductIds)]]);
-
-            AddRequiredRule(x => x.Budget);
-            RuleFor(x => x.Budget).GreaterThanOrEqualTo(0);
+            RuleFor(x => x.ShoppingCredit)
+                .NotNull()
+                .SetValidator(new CreateCampaignShoppingCreditDtoValidator(l));
         });
 
         When(x => x.PromotionModule == PromotionModule.AddOnProduct, () =>
         {
-            AddRequiredRule(x => x.AddOnProductId);
-            AddRequiredRule(x => x.AddOnProductAmount);
-            RuleFor(x => x.AddOnProductAmount)
-                .GreaterThanOrEqualTo(0)
-                .When(x => x.AddOnProductAmount != null);
-            
-            AddRequiredRule(x => x.AddOnLimitPerOrder);
-            RuleFor(x => x.AddOnLimitPerOrder)
-                .GreaterThanOrEqualTo(0)
-                .When(x => x.AddOnLimitPerOrder != null);
-
-            AddRequiredRule(x => x.IsUnlimitedQuantity, nameof(CreateCampaignDto.AvailableQuantity));
-            When(x => x.IsUnlimitedQuantity == false, () =>
-            {
-                RuleFor(x => x.AvailableQuantity)
-                    .GreaterThanOrEqualTo(0)
-                    .WithName(l[nameof(CreateCampaignDto.AvailableQuantity)]);
-            });
-
-            AddRequiredRule(x => x.AddOnDisplayPrice);
-            AddRequiredRule(x => x.AddOnProductCondition);
-            When(x => x.AddOnProductCondition == AddOnProductCondition.MustMeetSpecifiedThreshold, () =>
-            {
-                AddRequiredRule(x => x.Threshold);
-                RuleFor(x => x.Threshold)
-                    .GreaterThanOrEqualTo(0)
-                    .When(x => x.Threshold != null);
-            });
-
-            AddRequiredRule(x => x.ApplyToAllGroupBuys);
-            RuleFor(x => x.GroupBuyIds)
-                .NotEmpty()
-                .When(x => x.ApplyToAllGroupBuys == false)
-                .WithMessage(l["TheFieldIsRequired", l[nameof(CreateCampaignDto.GroupBuyIds)]]);
+            RuleFor(x => x.AddOnProduct)
+                .NotNull()
+                .SetValidator(new CreateCampaignAddOnProductDtoValidator(l));
         });
     }
 
@@ -222,18 +92,199 @@ public class CreateCampaignDtoValidator : AbstractValidator<CreateCampaignDto>
     }
 }
 
-public class StageSettingsDtoValidator : AbstractValidator<StageSettingsDto>
+public class CreateCampaignDiscountDtoValidator : AbstractValidator<CreateCampaignDiscountDto>
+{
+    public CreateCampaignDiscountDtoValidator(IStringLocalizer<PikachuResource> l)
+    {
+        RuleFor(d => d.IsDiscountCodeRequired)
+            .NotNull()
+            .WithMessage(l["TheFieldIsRequired", l[nameof(CreateCampaignDiscountDto.DiscountCode)]]);
+
+        When(d => d.IsDiscountCodeRequired == true, () =>
+        {
+            RuleFor(d => d.DiscountCode)
+                .NotEmpty()
+                .WithMessage(l["TheFieldIsRequired", l[nameof(CreateCampaignDiscountDto.DiscountCode)]]);
+        });
+
+        RuleFor(d => d.AvailableQuantity)
+            .GreaterThanOrEqualTo(0)
+            .WithName(l["NoOfIssuedCodes"]);
+
+        RuleFor(d => d.MaximumUsePerPerson)
+            .GreaterThanOrEqualTo(0)
+            .WithName(l["MaximumUsePerPerson"]);
+
+        RuleFor(d => d.DiscountMethod)
+            .NotNull()
+            .WithMessage(l["TheFieldIsRequired", l[nameof(CreateCampaignDiscountDto.DiscountMethod)]]);
+
+        When(d => d.DiscountMethod == DiscountMethod.MinimumSpendAmount, () =>
+        {
+            RuleFor(d => d.MinimumSpendAmount)
+                .NotNull()
+                .WithMessage(l["TheFieldIsRequired", l[nameof(CreateCampaignDiscountDto.MinimumSpendAmount)]])
+                .GreaterThanOrEqualTo(0);
+        });
+
+        When(d => d.DiscountMethod == DiscountMethod.ShippingDiscount, () =>
+        {
+            RuleFor(d => d.ApplyToAllShippingMethods)
+                .NotNull()
+                .WithMessage(l["TheFieldIsRequired", l[nameof(CreateCampaignDiscountDto.ApplyToAllShippingMethods)]]);
+
+            When(d => d.ApplyToAllShippingMethods == false, () =>
+            {
+                RuleFor(d => d.DeliveryMethods)
+                    .NotEmpty()
+                    .WithMessage(l["TheFieldIsRequired", l[nameof(CreateCampaignDiscountDto.DeliveryMethods)]]);
+            });
+        });
+
+        RuleFor(d => d.DiscountType)
+            .NotNull()
+            .WithMessage(l["TheFieldIsRequired", l[nameof(CreateCampaignDiscountDto.DiscountType)]]);
+
+        When(d => d.DiscountType == DiscountType.FixedAmount, () =>
+        {
+            RuleFor(d => d.DiscountAmount)
+                .NotNull()
+                .WithMessage(l["TheFieldIsRequired", l[nameof(CreateCampaignDiscountDto.DiscountAmount)]])
+                .GreaterThanOrEqualTo(0);
+        });
+
+        When(d => d.DiscountType == DiscountType.Percentage, () =>
+        {
+            RuleFor(d => d.DiscountPercentage)
+                .NotNull()
+                .WithMessage(l["TheFieldIsRequired", l[nameof(CreateCampaignDiscountDto.DiscountPercentage)]])
+                .InclusiveBetween(0, 100);
+        });
+    }
+}
+
+public class CreateCampaignShoppingCreditDtoValidator : AbstractValidator<CreateCampaignShoppingCreditDto>
+{
+    public CreateCampaignShoppingCreditDtoValidator(IStringLocalizer<PikachuResource> l)
+    {
+        RuleFor(x => x.CanExpire)
+            .NotNull()
+            .WithMessage(l["TheFieldIsRequired", l["UsagePeriod"]]);
+
+        RuleFor(x => x.ValidForDays)
+            .NotNull()
+            .WithMessage(l["TheFieldIsRequired", l[nameof(CreateCampaignShoppingCreditDto.ValidForDays)]]);
+
+        RuleFor(x => x.ValidForDays)
+            .GreaterThanOrEqualTo(0)
+            .When(x => x.CanExpire == true && x.ValidForDays != null);
+
+        RuleFor(x => x.CalculationMethod)
+            .NotNull()
+            .WithMessage(l["TheFieldIsRequired", l[nameof(CreateCampaignShoppingCreditDto.CalculationMethod)]]);
+
+        RuleFor(x => x.CalculationPercentage)
+            .NotNull()
+            .WithMessage(l["TheFieldIsRequired", l[nameof(CreateCampaignShoppingCreditDto.CalculationPercentage)]]);
+
+        RuleFor(x => x.CalculationPercentage)
+            .GreaterThanOrEqualTo(0)
+            .When(x => x.CalculationMethod == CalculationMethod.UnifiedCalculation && x.CalculationPercentage != null);
+
+        RuleFor(x => x.ApplicableItem)
+            .NotNull()
+            .WithMessage(l["TheFieldIsRequired", l[nameof(CreateCampaignShoppingCreditDto.ApplicableItem)]]);
+
+        RuleFor(x => x.Budget)
+            .GreaterThanOrEqualTo(0)
+            .When(x => x.Budget != null);
+
+        RuleFor(x => x.Budget)
+            .NotNull()
+            .WithMessage(l["TheFieldIsRequired", l[nameof(CreateCampaignShoppingCreditDto.Budget)]]);
+
+        When(x => x.CalculationMethod == CalculationMethod.StagedCalculation, () =>
+        {
+            RuleFor(x => x.StageSettings)
+                .NotNull()
+                .WithMessage(l["TheFieldIsRequired", l[nameof(CreateCampaignShoppingCreditDto.StageSettings)]]);
+
+            RuleForEach(x => x.StageSettings)
+                .SetValidator(new StageSettingsDtoValidator(l))
+                .When(x => x.StageSettings != null);
+        });
+    }
+}
+
+public class StageSettingsDtoValidator : AbstractValidator<CreateCampaignStageSettingsDto>
 {
     public StageSettingsDtoValidator(IStringLocalizer<PikachuResource> l)
     {
-        RuleFor(x => x.Spend)
+        RuleFor(s => s.Spend)
             .NotEmpty()
-            .WithMessage(l["TheFieldIsRequired", l[nameof(StageSettingsDto.Spend)]])
+            .WithMessage(l["TheFieldIsRequired", l[nameof(CreateCampaignStageSettingsDto.Spend)]])
             .GreaterThanOrEqualTo(0);
 
-        RuleFor(x => x.PointsToReceive)
+        RuleFor(s => s.PointsToReceive)
             .NotEmpty()
-            .WithMessage(l["TheFieldIsRequired", l[nameof(StageSettingsDto.PointsToReceive)]])
+            .WithMessage(l["TheFieldIsRequired", l[nameof(CreateCampaignStageSettingsDto.PointsToReceive)]])
             .GreaterThanOrEqualTo(0);
+    }
+}
+
+public class CreateCampaignAddOnProductDtoValidator : AbstractValidator<CreateCampaignAddOnProductDto>
+{
+    public CreateCampaignAddOnProductDtoValidator(IStringLocalizer<PikachuResource> l)
+    {
+        RuleFor(x => x.AddOnProductId)
+            .NotNull()
+            .WithMessage(l["TheFieldIsRequired", l[nameof(CreateCampaignAddOnProductDto.AddOnProductId)]]);
+
+        RuleFor(x => x.AddOnProductAmount)
+            .NotNull()
+            .WithMessage(l["TheFieldIsRequired", l[nameof(CreateCampaignAddOnProductDto.AddOnProductAmount)]]);
+
+        RuleFor(x => x.AddOnProductAmount)
+            .GreaterThanOrEqualTo(0)
+            .When(x => x.AddOnProductAmount != null)
+            .WithMessage(l["TheFieldIsRequired", l[nameof(CreateCampaignAddOnProductDto.AddOnProductAmount)]]);
+
+        RuleFor(x => x.AddOnLimitPerOrder)
+            .NotNull()
+            .WithMessage(l["TheFieldIsRequired", l[nameof(CreateCampaignAddOnProductDto.AddOnLimitPerOrder)]]);
+
+        RuleFor(x => x.AddOnLimitPerOrder)
+            .GreaterThanOrEqualTo(0)
+            .When(x => x.AddOnLimitPerOrder != null);
+
+        RuleFor(x => x.IsUnlimitedQuantity)
+            .NotNull()
+            .WithMessage(l["TheFieldIsRequired", l[nameof(CreateCampaignAddOnProductDto.IsUnlimitedQuantity)]]);
+
+        When(x => x.IsUnlimitedQuantity == false, () =>
+        {
+            RuleFor(x => x.AvailableQuantity)
+                .NotNull()
+                .WithMessage(l["TheFieldIsRequired", l[nameof(CreateCampaignAddOnProductDto.AvailableQuantity)]])
+                .GreaterThanOrEqualTo(0)
+                .WithName(l[nameof(CreateCampaignAddOnProductDto.AvailableQuantity)]);
+        });
+
+        RuleFor(x => x.AddOnDisplayPrice)
+            .NotNull()
+            .WithMessage(l["TheFieldIsRequired", l[nameof(CreateCampaignAddOnProductDto.AddOnDisplayPrice)]]);
+
+        RuleFor(x => x.AddOnProductCondition)
+            .NotNull()
+            .WithMessage(l["TheFieldIsRequired", l[nameof(CreateCampaignAddOnProductDto.AddOnProductCondition)]]);
+
+        When(x => x.AddOnProductCondition == AddOnProductCondition.MustMeetSpecifiedThreshold, () =>
+        {
+            RuleFor(x => x.Threshold)
+                .NotNull()
+                .WithMessage(l["TheFieldIsRequired", l[nameof(CreateCampaignAddOnProductDto.Threshold)]])
+                .GreaterThanOrEqualTo(0)
+                .When(x => x.Threshold != null);
+        });
     }
 }

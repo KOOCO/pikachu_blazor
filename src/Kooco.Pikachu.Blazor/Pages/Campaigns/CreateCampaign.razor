@@ -38,57 +38,57 @@
     </Div>
     <Form>
         <Validations @ref="ValidationsRef" Model="@Entity" ValidateOnLoad="false" HandlerType="typeof(FluentValidationHandler)">
-            <Row>
-                <Column ColumnSize="ColumnSize.Is9">
-                    <Card>
-                        <CardBody>
-                            <Validation MessageLocalizer="@LH.Localize">
-                                <Field>
-                                    <FieldLabel required>@L["CampaignName"]</FieldLabel>
-                                    <TextEdit @bind-Text="Entity.Name" Placeholder="@L["EnterCampaignName"]">
-                                        <Feedback>
-                                            <ValidationError />
-                                        </Feedback>
-                                    </TextEdit>
-                                </Field>
-                            </Validation>
-                            <Row>
-                                <Column ColumnSize="ColumnSize.Is6">
-                                    <Validation MessageLocalizer="@LH.Localize">
-                                        <Field>
-                                            <FieldLabel required>@L["StartDate"]</FieldLabel>
-                                            <DatePicker TValue="DateTime?" @bind-Date="Entity.StartDate">
-                                                <Feedback>
-                                                    <ValidationError />
-                                                </Feedback>
-                                            </DatePicker>
-                                        </Field>
-                                    </Validation>
-                                </Column>
-                                <Column ColumnSize="ColumnSize.Is6">
-                                    <Validation MessageLocalizer="@LH.Localize">
-                                        <Field>
-                                            <FieldLabel required>@L["EndDate"]</FieldLabel>
-                                            <DatePicker TValue="DateTime?" @bind-Date="Entity.EndDate">
-                                                <Feedback>
-                                                    <ValidationError />
-                                                </Feedback>
-                                            </DatePicker>
-                                        </Field>
-                                    </Validation>
-                                </Column>
-                            </Row>
-                            <Validation MessageLocalizer="@LH.Localize">
-                                <Field>
-                                    <FieldLabel>@L["CampaignDescription"]</FieldLabel>
-                                    <MemoEdit Rows="7" @bind-Text="Entity.Description" Placeholder="@L["EnterCampaignDescription"]">
-                                        <Feedback>
-                                            <ValidationError />
-                                        </Feedback>
-                                    </MemoEdit>
-                                </Field>
-                            </Validation>
-                            <EditForm EditContext="_editContext">
+            <EditForm EditContext="_editContext">
+                <Row>
+                    <Column ColumnSize="ColumnSize.Is9">
+                        <Card>
+                            <CardBody>
+                                <Validation MessageLocalizer="@LH.Localize">
+                                    <Field>
+                                        <FieldLabel required>@L["CampaignName"]</FieldLabel>
+                                        <TextEdit @bind-Text="Entity.Name" Placeholder="@L["EnterCampaignName"]">
+                                            <Feedback>
+                                                <ValidationError />
+                                            </Feedback>
+                                        </TextEdit>
+                                    </Field>
+                                </Validation>
+                                <Row>
+                                    <Column ColumnSize="ColumnSize.Is6">
+                                        <Validation MessageLocalizer="@LH.Localize">
+                                            <Field>
+                                                <FieldLabel required>@L["StartDate"]</FieldLabel>
+                                                <DatePicker TValue="DateTime?" @bind-Date="Entity.StartDate">
+                                                    <Feedback>
+                                                        <ValidationError />
+                                                    </Feedback>
+                                                </DatePicker>
+                                            </Field>
+                                        </Validation>
+                                    </Column>
+                                    <Column ColumnSize="ColumnSize.Is6">
+                                        <Validation MessageLocalizer="@LH.Localize">
+                                            <Field>
+                                                <FieldLabel required>@L["EndDate"]</FieldLabel>
+                                                <DatePicker TValue="DateTime?" @bind-Date="Entity.EndDate">
+                                                    <Feedback>
+                                                        <ValidationError />
+                                                    </Feedback>
+                                                </DatePicker>
+                                            </Field>
+                                        </Validation>
+                                    </Column>
+                                </Row>
+                                <Validation MessageLocalizer="@LH.Localize">
+                                    <Field>
+                                        <FieldLabel>@L["CampaignDescription"]</FieldLabel>
+                                        <MemoEdit Rows="7" @bind-Text="Entity.Description" Placeholder="@L["EnterCampaignDescription"]">
+                                            <Feedback>
+                                                <ValidationError />
+                                            </Feedback>
+                                        </MemoEdit>
+                                    </Field>
+                                </Validation>
                                 <Field>
                                     <FieldLabel required>@L["TargetAudience"]</FieldLabel>
                                     <AntDesign.Select Mode="AntDesign.SelectMode.Multiple"
@@ -123,21 +123,17 @@
                                     </Div>
                                     <ValidationMessage For="() => Entity.PromotionModule" />
                                 </Field>
-                            </EditForm>
-                            @if (Entity.PromotionModule.HasValue)
-                            {
-                                <Column ColumnSize="ColumnSize.Is12">
+                                @if (Entity.PromotionModule.HasValue)
+                                {
                                     <Divider></Divider>
-                                </Column>
-                            }
+                                }
 
-                            @if (Entity.PromotionModule == PromotionModule.Discount)
-                            {
-                                <EditForm EditContext="_editContext">
+                                @if (Entity.PromotionModule == PromotionModule.Discount)
+                                {
                                     <Validation MessageLocalizer="@LH.Localize">
                                         <Field>
                                             <FieldLabel required>@L["DiscountCode"]</FieldLabel>
-                                            <RadioGroup Orientation="Orientation.Vertical" TValue="bool?" Name="DiscountCode" @bind-CheckedValue="@Entity.IsDiscountCodeRequired">
+                                            <RadioGroup Orientation="Orientation.Vertical" TValue="bool?" Name="DiscountCode" @bind-CheckedValue="@Entity.Discount.IsDiscountCodeRequired">
                                                 <ChildContent>
                                                     <Radio TValue="bool?" Value="@false">@L["NoCodeRequiredForDiscount"]</Radio>
                                                     <Radio TValue="bool?" Value="@true">@L["CustomCode"]</Radio>
@@ -146,11 +142,11 @@
                                                     <ValidationError />
                                                 </Feedback>
                                             </RadioGroup>
-                                            @if (Entity.IsDiscountCodeRequired == true)
+                                            @if (Entity.Discount.IsDiscountCodeRequired == true)
                                             {
                                                 <Validation MessageLocalizer="@LH.Localize">
                                                     <Field indent mb0>
-                                                        <TextEdit @bind-Text="Entity.DiscountCode">
+                                                        <TextEdit @bind-Text="Entity.Discount.DiscountCode">
                                                             <Feedback>
                                                                 <ValidationError />
                                                             </Feedback>
@@ -165,7 +161,7 @@
                                             <Validation MessageLocalizer="@LH.Localize">
                                                 <Field>
                                                     <FieldLabel required>@L["NoOfIssuedCodes"]</FieldLabel>
-                                                    <NumericEdit @bind-Value="Entity.AvailableQuantity" TValue="int" Min="0">
+                                                    <NumericEdit @bind-Value="Entity.Discount.AvailableQuantity" TValue="int" Min="0">
                                                         <Feedback>
                                                             <ValidationError />
                                                         </Feedback>
@@ -177,7 +173,7 @@
                                             <Validation MessageLocalizer="@LH.Localize">
                                                 <Field>
                                                     <FieldLabel required>@L["MaximumUsePerPerson"]</FieldLabel>
-                                                    <NumericEdit @bind-Value="Entity.MaximumUsePerPerson" TValue="int" Min="0">
+                                                    <NumericEdit @bind-Value="Entity.Discount.MaximumUsePerPerson" TValue="int" Min="0">
                                                         <Feedback>
                                                             <ValidationError />
                                                         </Feedback>
@@ -189,93 +185,17 @@
                                     <Divider></Divider>
                                     <Validation MessageLocalizer="@LH.Localize">
                                         <Field>
-                                            <FieldLabel required>@L["Groupbuys"]</FieldLabel>
-                                            <RadioGroup Orientation="Orientation.Vertical" TValue="bool?" Name="Groupbuys" @bind-CheckedValue="@Entity.ApplyToAllGroupBuys">
-                                                <ChildContent>
-                                                    <Radio TValue="bool?" Value="@true">@L["AllGroupBuys"]</Radio>
-                                                    <Radio TValue="bool?" Value="@false">@L["SpecificGroupBuys"]</Radio>
-                                                </ChildContent>
-                                                <Feedback>
-                                                    <ValidationError />
-                                                </Feedback>
-                                            </RadioGroup>
-                                            @if (Entity.ApplyToAllGroupBuys == false)
-                                            {
-                                                <Field indent mb0>
-                                                    <AntDesign.Select Mode="AntDesign.SelectMode.Multiple"
-                                                                      Size="AntDesign.InputSize.Large"
-                                                                      TItem="Guid"
-                                                                      TItemValue="Guid"
-                                                                      Placeholder="@L["SelectGroupBuys"]"
-                                                                      EnableSearch
-                                                                      AllowClear
-                                                                      MaxTagCount="AntDesign.Select.ResponsiveTag.Responsive"
-                                                                      Class="@ValidationClass(nameof(Entity.GroupBuyIds))"
-                                                                      @bind-Values="Entity.GroupBuyIds">
-                                                        <SelectOptions>
-                                                            @foreach (var item in GroupBuyOptions)
-                                                            {
-                                                                <AntDesign.SelectOption TItemValue="Guid" TItem="Guid" Value=@item.Id Label=@item.Name />
-                                                            }
-                                                        </SelectOptions>
-                                                    </AntDesign.Select>
-                                                    <ValidationMessage For="() => Entity.GroupBuyIds" />
-                                                </Field>
-                                            }
-                                        </Field>
-                                    </Validation>
-                                    <Divider></Divider>
-                                    <Validation MessageLocalizer="@LH.Localize">
-                                        <Field>
-                                            <FieldLabel required>@L["Products"]</FieldLabel>
-                                            <RadioGroup Orientation="Orientation.Vertical" TValue="bool?" Name="Products" @bind-CheckedValue="@Entity.ApplyToAllProducts">
-                                                <ChildContent>
-                                                    <Radio TValue="bool?" Value="@true">@L["AllProducts"]</Radio>
-                                                    <Radio TValue="bool?" Value="@false">@L["SpecificProducts"]</Radio>
-                                                </ChildContent>
-                                                <Feedback>
-                                                    <ValidationError />
-                                                </Feedback>
-                                            </RadioGroup>
-                                            @if (Entity.ApplyToAllProducts == false)
-                                            {
-                                                <Field indent mb0>
-                                                    <AntDesign.Select Mode="AntDesign.SelectMode.Multiple"
-                                                                      Size="AntDesign.InputSize.Large"
-                                                                      TItem="Guid"
-                                                                      TItemValue="Guid"
-                                                                      Placeholder="@L["SelectProducts"]"
-                                                                      EnableSearch
-                                                                      AllowClear
-                                                                      MaxTagCount="AntDesign.Select.ResponsiveTag.Responsive"
-                                                                      Class="@ValidationClass(nameof(Entity.ProductIds))"
-                                                                      @bind-Values="Entity.ProductIds">
-                                                        <SelectOptions>
-                                                            @foreach (var item in ProductOptions)
-                                                            {
-                                                                <AntDesign.SelectOption TItemValue="Guid" TItem="Guid" Value=@item.Id Label=@item.Name />
-                                                            }
-                                                        </SelectOptions>
-                                                    </AntDesign.Select>
-                                                    <ValidationMessage For="() => Entity.ProductIds" />
-                                                </Field>
-                                            }
-                                        </Field>
-                                    </Validation>
-                                    <Divider></Divider>
-                                    <Validation MessageLocalizer="@LH.Localize">
-                                        <Field>
                                             <FieldLabel required>@L["DiscountMethod"]</FieldLabel>
-                                            <RadioGroup Orientation="Orientation.Vertical" TValue="DiscountMethod?" Name="DiscountMethod" @bind-CheckedValue="@Entity.DiscountMethod">
+                                            <RadioGroup Orientation="Orientation.Vertical" TValue="DiscountMethod?" Name="DiscountMethod" @bind-CheckedValue="@Entity.Discount.DiscountMethod">
                                                 <ChildContent>
                                                     @foreach (DiscountMethod discountMethod in Enum.GetValues<DiscountMethod>())
                                                     {
                                                         <Radio TValue="DiscountMethod?" Value="@discountMethod">@L["Enum:DiscountMethod." + (int)discountMethod]</Radio>
-                                                        @if (discountMethod == DiscountMethod.MinimumSpendAmount && Entity.DiscountMethod == DiscountMethod.MinimumSpendAmount)
+                                                        @if (discountMethod == DiscountMethod.MinimumSpendAmount && Entity.Discount.DiscountMethod == DiscountMethod.MinimumSpendAmount)
                                                         {
                                                             <Validation MessageLocalizer="@LH.Localize">
                                                                 <Field indent mb0>
-                                                                    <NumericEdit @bind-Value="Entity.MinimumSpendAmount" TValue="int" Min="0">
+                                                                    <NumericEdit @bind-Value="Entity.Discount.MinimumSpendAmount" TValue="int" Min="0">
                                                                         <Feedback>
                                                                             <ValidationError />
                                                                         </Feedback>
@@ -291,12 +211,12 @@
                                             </RadioGroup>
                                         </Field>
                                     </Validation>
-                                    @if (Entity.DiscountMethod == DiscountMethod.ShippingDiscount)
+                                    @if (Entity.Discount.DiscountMethod == DiscountMethod.ShippingDiscount)
                                     {
                                         <Validation MessageLocalizer="@LH.Localize">
                                             <Field>
                                                 <FieldLabel required>@L["ShippingDiscountSettings"]</FieldLabel>
-                                                <RadioGroup Orientation="Orientation.Vertical" TValue="bool?" Name="ShippingDiscountSettings" @bind-CheckedValue="@Entity.ApplyToAllShippingMethods">
+                                                <RadioGroup Orientation="Orientation.Vertical" TValue="bool?" Name="ShippingDiscountSettings" @bind-CheckedValue="@Entity.Discount.ApplyToAllShippingMethods">
                                                     <ChildContent>
                                                         <Radio TValue="bool?" Value="@true">@L["AllMethods"]</Radio>
                                                         <Radio TValue="bool?" Value="@false">@L["SpecificMethods"]</Radio>
@@ -305,7 +225,7 @@
                                                         <ValidationError />
                                                     </Feedback>
                                                 </RadioGroup>
-                                                @if (Entity.ApplyToAllShippingMethods == false)
+                                                @if (Entity.Discount.ApplyToAllShippingMethods == false)
                                                 {
                                                     <Validation MessageLocalizer="@LH.Localize">
                                                         <Field indent mb0>
@@ -317,8 +237,8 @@
                                                                               EnableSearch
                                                                               AllowClear
                                                                               MaxTagCount="AntDesign.Select.ResponsiveTag.Responsive"
-                                                                              Class="@ValidationClass(nameof(Entity.DeliveryMethods))"
-                                                                              @bind-Values="Entity.DeliveryMethods">
+                                                                              Class="@ValidationClass(nameof(Entity.Discount.DeliveryMethods))"
+                                                                              @bind-Values="Entity.Discount.DeliveryMethods">
                                                                 <SelectOptions>
                                                                     @foreach (var item in DeliveryMethodOptions)
                                                                     {
@@ -326,7 +246,7 @@
                                                                     }
                                                                 </SelectOptions>
                                                             </AntDesign.Select>
-                                                            <ValidationMessage For="() => Entity.DeliveryMethods" />
+                                                            <ValidationMessage For="() => Entity.Discount.DeliveryMethods" />
                                                         </Field>
                                                     </Validation>
                                                 }
@@ -337,14 +257,14 @@
                                     <Validation MessageLocalizer="@LH.Localize">
                                         <Field>
                                             <FieldLabel required>@L["DiscountAmount"]</FieldLabel>
-                                            <RadioGroup Orientation="Orientation.Vertical" TValue="DiscountType?" @bind-CheckedValue="Entity.DiscountType">
+                                            <RadioGroup Orientation="Orientation.Vertical" TValue="DiscountType?" @bind-CheckedValue="Entity.Discount.DiscountType">
                                                 <ChildContent>
                                                     <Radio TValue="DiscountType?" Value="@DiscountType.FixedAmount">@L["DiscountOf$"]</Radio>
-                                                    @if (Entity.DiscountType == DiscountType.FixedAmount)
+                                                    @if (Entity.Discount.DiscountType == DiscountType.FixedAmount)
                                                     {
                                                         <Validation MessageLocalizer="@LH.Localize">
                                                             <Field indent mb0>
-                                                                <NumericEdit @bind-Value="Entity.DiscountAmount" TValue="int?" Min="0" ReadOnly="Entity.DiscountType != DiscountType.FixedAmount">
+                                                                <NumericEdit @bind-Value="Entity.Discount.DiscountAmount" TValue="int?" Min="0">
                                                                     <Feedback>
                                                                         <ValidationError />
                                                                     </Feedback>
@@ -353,11 +273,11 @@
                                                         </Validation>
                                                     }
                                                     <Radio TValue="DiscountType?" Value="@DiscountType.Percentage">@L["DiscountOf%"]</Radio>
-                                                    @if (Entity.DiscountType == DiscountType.Percentage)
+                                                    @if (Entity.Discount.DiscountType == DiscountType.Percentage)
                                                     {
                                                         <Validation MessageLocalizer="@LH.Localize">
                                                             <Field indent mb0>
-                                                                <NumericEdit @bind-Value="Entity.DiscountPercentage" TValue="int?" Min="0" Max="100" ReadOnly="Entity.DiscountType != DiscountType.Percentage">
+                                                                <NumericEdit @bind-Value="Entity.Discount.DiscountPercentage" TValue="int?" Min="0" Max="100">
                                                                     <Feedback>
                                                                         <ValidationError />
                                                                     </Feedback>
@@ -372,16 +292,14 @@
                                             </RadioGroup>
                                         </Field>
                                     </Validation>
-                                </EditForm>
-                            }
+                                }
 
-                            @if (Entity.PromotionModule == PromotionModule.ShoppingCredit)
-                            {
-                                <EditForm EditContext="_editContext">
+                                @if (Entity.PromotionModule == PromotionModule.ShoppingCredit)
+                                {
                                     <Validation MessageLocalizer="@LH.Localize">
                                         <Field>
                                             <FieldLabel required>@L["UsagePeriod"]</FieldLabel>
-                                            <RadioGroup Orientation="Orientation.Vertical" TValue="bool?" Name="UsagePeriod" @bind-CheckedValue="@Entity.CanExpire">
+                                            <RadioGroup Orientation="Orientation.Vertical" TValue="bool?" Name="UsagePeriod" @bind-CheckedValue="@Entity.ShoppingCredit.CanExpire">
                                                 <ChildContent>
                                                     <Radio TValue="bool?" Value="@false">@L["NoExpiry"]</Radio>
                                                     <Radio TValue="bool?" Value="@true">@L["Limited,validfordays"]</Radio>
@@ -390,11 +308,11 @@
                                                     <ValidationError />
                                                 </Feedback>
                                             </RadioGroup>
-                                            @if (Entity.CanExpire == true)
+                                            @if (Entity.ShoppingCredit.CanExpire == true)
                                             {
                                                 <Validation MessageLocalizer="@LH.Localize">
                                                     <Field indent mb0>
-                                                        <NumericEdit @bind-Value="Entity.ValidForDays">
+                                                        <NumericEdit @bind-Value="Entity.ShoppingCredit.ValidForDays">
                                                             <Feedback>
                                                                 <ValidationError />
                                                             </Feedback>
@@ -408,17 +326,17 @@
                                     <Validation MessageLocalizer="@LH.Localize">
                                         <Field>
                                             <FieldLabel required>@L["CalculationMethod"]</FieldLabel>
-                                            <RadioGroup Orientation="Orientation.Vertical" TValue="CalculationMethod?" Name="CalculationMethod" @bind-CheckedValue="@Entity.CalculationMethod">
+                                            <RadioGroup Orientation="Orientation.Vertical" TValue="CalculationMethod?" Name="CalculationMethod" @bind-CheckedValue="@Entity.ShoppingCredit.CalculationMethod">
                                                 <ChildContent>
                                                     <Radio TValue="CalculationMethod?" Value="@CalculationMethod.UnifiedCalculation">@L["Enum:CalculationMethod." + (int)CalculationMethod.UnifiedCalculation]</Radio>
-                                                    @if (Entity.CalculationMethod == CalculationMethod.UnifiedCalculation)
+                                                    @if (Entity.ShoppingCredit.CalculationMethod == CalculationMethod.UnifiedCalculation)
                                                     {
                                                         <Validation MessageLocalizer="@LH.Localize">
                                                             <Field indent mb0>
                                                                 <Addons>
                                                                     <AddonLabel>%</AddonLabel>
                                                                     <Addon AddonType="AddonType.Body">
-                                                                        <NumericEdit TValue="double?" @bind-Value="Entity.CalculationPercentage">
+                                                                        <NumericEdit TValue="double?" @bind-Value="Entity.ShoppingCredit.CalculationPercentage">
                                                                             <Feedback>
                                                                                 <ValidationError />
                                                                             </Feedback>
@@ -436,30 +354,30 @@
                                             </RadioGroup>
                                         </Field>
                                     </Validation>
-                                    @if (Entity.CalculationMethod == CalculationMethod.StagedCalculation)
+                                    @if (Entity.ShoppingCredit.CalculationMethod == CalculationMethod.StagedCalculation)
                                     {
                                         <Div>
                                             <Div Class="d-flex align-items-center justify-content-between">
                                                 <FieldLabel>@L["StageSettings"]</FieldLabel>
                                                 <Div>
-                                                    @if (Entity.IsAnyStageSettingSelected)
+                                                    @if (Entity.ShoppingCredit.IsAnyStageSettingSelected)
                                                     {
-                                                        <PikachuButton Class="pk-btn-icon danger" IconClass="fas fa-trash" Clicked="Entity.RemoveSelectedStageSettings"></PikachuButton>
+                                                        <PikachuButton Class="pk-btn-icon danger" IconClass="fas fa-trash" Clicked="Entity.ShoppingCredit.RemoveSelectedStageSettings"></PikachuButton>
                                                         <Span Style="margin-right: 5px;"></Span>
                                                     }
-                                                    <PikachuButton Class="pk-btn-icon indigo" IconClass="fas fa-add" Clicked="Entity.AddStageSetting"></PikachuButton>
+                                                    <PikachuButton Class="pk-btn-icon indigo" IconClass="fas fa-add" Clicked="Entity.ShoppingCredit.AddStageSetting"></PikachuButton>
                                                 </Div>
                                             </Div>
-                                            @foreach (var stageSetting in Entity.StageSettings)
+                                            @foreach (var stageSetting in Entity.ShoppingCredit.StageSettings)
                                             {
                                                 <Row>
-                                                    @if (Entity.StageSettingsCount > 1)
+                                                    @if (Entity.ShoppingCredit.StageSettingsCount > 1)
                                                     {
                                                         <Column ColumnSize="ColumnSize.Is1" Class="d-flex align-items-center justify-content-end">
                                                             <InputCheckbox class="form-check-input" @bind-Value="stageSetting.IsSelected" />
                                                         </Column>
                                                     }
-                                                    <Column ColumnSize="Entity.StageSettingsCount > 1 ? ColumnSize.Is5 : ColumnSize.Is6">
+                                                    <Column ColumnSize="Entity.ShoppingCredit.StageSettingsCount > 1 ? ColumnSize.Is5 : ColumnSize.Is6">
                                                         <Validation MessageLocalizer="@LH.Localize">
                                                             <Field>
                                                                 <FieldLabel required>@L["Spend"]</FieldLabel>
@@ -485,14 +403,14 @@
                                                     </Column>
                                                 </Row>
                                             }
-                                            <ValidationMessage For="() => Entity.StageSettings" />
+                                            <ValidationMessage For="() => Entity.ShoppingCredit.StageSettings" />
                                         </Div>
                                     }
                                     <Divider></Divider>
                                     <Validation MessageLocalizer="@LH.Localize">
                                         <Field>
                                             <FieldLabel required>@L["ApplicableItems"]</FieldLabel>
-                                            <RadioGroup Orientation="Orientation.Vertical" TValue="ApplicableItem?" Name="ApplicableItems" @bind-CheckedValue="@Entity.ApplicableItem">
+                                            <RadioGroup Orientation="Orientation.Vertical" TValue="ApplicableItem?" Name="ApplicableItems" @bind-CheckedValue="@Entity.ShoppingCredit.ApplicableItem">
                                                 <ChildContent>
                                                     <Radio TValue="ApplicableItem?" Value="@ApplicableItem.AddOnProducts">@L["Enum:ApplicableItem." + (int)ApplicableItem.AddOnProducts]</Radio>
                                                     <Radio TValue="ApplicableItem?" Value="@ApplicableItem.ShippingFees">@L["Enum:ApplicableItem." + (int)ApplicableItem.ShippingFees]</Radio>
@@ -503,6 +421,148 @@
                                             </RadioGroup>
                                         </Field>
                                     </Validation>
+                                    <Divider></Divider>
+                                    <Field>
+                                        <FieldLabel required>@L["Budget"]</FieldLabel>
+                                        <AntDesign.InputNumber Size="AntDesign.InputSize.Large"
+                                                               Class="@(ValidationClass(nameof(Entity.ShoppingCredit.Budget)) + " no-stepper")"
+                                                               TValue="int?"
+                                                               Min="0"
+                                                               Formatter="AntHelper.FormatAmount"
+                                                               Parser="AntHelper.ParseAmount"
+                                                               OnChange="() => _editContext.NotifyFieldChanged(new FieldIdentifier(Entity.ShoppingCredit, nameof(Entity.ShoppingCredit.Budget)))"
+                                                               @bind-Value="Entity.ShoppingCredit.Budget">
+                                        </AntDesign.InputNumber>
+                                        <ValidationMessage For="() => Entity.ShoppingCredit.Budget" />
+                                    </Field>
+                                }
+
+                                @if (Entity.PromotionModule == PromotionModule.AddOnProduct)
+                                {
+                                    <Field>
+                                        <FieldLabel required>@L["AddOnProduct"]</FieldLabel>
+                                        <AntDesign.Select Size="AntDesign.InputSize.Large"
+                                                          TItem="Guid?"
+                                                          TItemValue="Guid?"
+                                                          Placeholder="@L["SelectaProduct"]"
+                                                          EnableSearch
+                                                          AllowClear
+                                                          Class="@ValidationClass(nameof(Entity.AddOnProduct.AddOnProductId))"
+                                                          @bind-Value="Entity.AddOnProduct.AddOnProductId">
+                                            <SelectOptions>
+                                                @foreach (var item in ProductOptions)
+                                                {
+                                                    <AntDesign.SelectOption TItemValue="Guid?" TItem="Guid?" Value=@item.Id Label=@item.Name />
+                                                }
+                                            </SelectOptions>
+                                        </AntDesign.Select>
+                                        <ValidationMessage For="() => Entity.AddOnProduct.AddOnProductId" />
+                                    </Field>
+                                    <Row>
+                                        <Column ColumnSize="ColumnSize.Is6">
+                                            <Validation MessageLocalizer="@LH.Localize">
+                                                <Field>
+                                                    <FieldLabel required>@L["AddOnProductAmount"]</FieldLabel>
+                                                    <NumericEdit @bind-Value="Entity.AddOnProduct.AddOnProductAmount" TValue="int?" Min="0">
+                                                        <Feedback>
+                                                            <ValidationError />
+                                                        </Feedback>
+                                                    </NumericEdit>
+                                                </Field>
+                                            </Validation>
+                                        </Column>
+                                        <Column ColumnSize="ColumnSize.Is6">
+                                            <Validation MessageLocalizer="@LH.Localize">
+                                                <Field>
+                                                    <FieldLabel required>@L["AddOnLimitPerOrder"]</FieldLabel>
+                                                    <NumericEdit @bind-Value="Entity.AddOnProduct.AddOnLimitPerOrder" TValue="int?" Min="0">
+                                                        <Feedback>
+                                                            <ValidationError />
+                                                        </Feedback>
+                                                    </NumericEdit>
+                                                </Field>
+                                            </Validation>
+                                        </Column>
+                                    </Row>
+                                    <Validation MessageLocalizer="@LH.Localize">
+                                        <Field>
+                                            <FieldLabel required>@L["AvailableQuantity"]</FieldLabel>
+                                            <RadioGroup Orientation="Orientation.Vertical" TValue="bool?" Name="AvailableQuantity" @bind-CheckedValue="@Entity.AddOnProduct.IsUnlimitedQuantity">
+                                                <ChildContent>
+                                                    <Radio TValue="bool?" Value="@true">@L["Unlimited"]</Radio>
+                                                    <Radio TValue="bool?" Value="@false">@L["AvailableQuantity"]</Radio>
+                                                </ChildContent>
+                                                <Feedback>
+                                                    <ValidationError />
+                                                </Feedback>
+                                            </RadioGroup>
+                                            @if (Entity.AddOnProduct.IsUnlimitedQuantity == false)
+                                            {
+                                                <Validation MessageLocalizer="@LH.Localize">
+                                                    <Field indent mb0>
+                                                        <NumericEdit @bind-Value="Entity.AddOnProduct.AvailableQuantity">
+                                                            <Feedback>
+                                                                <ValidationError />
+                                                            </Feedback>
+                                                        </NumericEdit>
+                                                        <FieldHelp>
+                                                            @L["(Can'texceedthecurrentstockoftheoriginalproduct)"]
+                                                        </FieldHelp>
+                                                    </Field>
+                                                </Validation>
+                                            }
+                                        </Field>
+                                    </Validation>
+                                    <Divider></Divider>
+                                    <Validation MessageLocalizer="@LH.Localize">
+                                        <Field>
+                                            <FieldLabel required>@L["DisplayOfOriginalPrice"]</FieldLabel>
+                                            <RadioGroup Orientation="Orientation.Vertical" TValue="AddOnDisplayPrice?" Name="DiscountMethod" @bind-CheckedValue="@Entity.AddOnProduct.AddOnDisplayPrice">
+                                                <ChildContent>
+                                                    @foreach (AddOnDisplayPrice addOnDisplayPrice in Enum.GetValues<AddOnDisplayPrice>())
+                                                    {
+                                                        <Radio TValue="AddOnDisplayPrice?" Value="@addOnDisplayPrice">@L["Enum:AddOnDisplayPrice." + (int)addOnDisplayPrice]</Radio>
+                                                    }
+                                                </ChildContent>
+                                                <Feedback>
+                                                    <ValidationError />
+                                                </Feedback>
+                                            </RadioGroup>
+                                        </Field>
+                                    </Validation>
+                                    <Divider></Divider>
+                                    <Validation MessageLocalizer="@LH.Localize">
+                                        <Field>
+                                            <FieldLabel required>@L["Conditions"]</FieldLabel>
+                                            <RadioGroup Orientation="Orientation.Vertical" TValue="AddOnProductCondition?" Name="ProductCondition" @bind-CheckedValue="@Entity.AddOnProduct.AddOnProductCondition">
+                                                <ChildContent>
+                                                    @foreach (AddOnProductCondition addOnProductCondition in Enum.GetValues<AddOnProductCondition>())
+                                                    {
+                                                        <Radio TValue="AddOnProductCondition?" Value="@addOnProductCondition">@L["Enum:AddOnProductCondition." + (int)addOnProductCondition]</Radio>
+                                                    }
+                                                </ChildContent>
+                                                <Feedback>
+                                                    <ValidationError />
+                                                </Feedback>
+                                            </RadioGroup>
+                                            @if (Entity.AddOnProduct.AddOnProductCondition == AddOnProductCondition.MustMeetSpecifiedThreshold)
+                                            {
+                                                <Validation MessageLocalizer="@LH.Localize">
+                                                    <Field indent mb0>
+                                                        <NumericEdit @bind-Value="Entity.AddOnProduct.Threshold">
+                                                            <Feedback>
+                                                                <ValidationError />
+                                                            </Feedback>
+                                                        </NumericEdit>
+                                                    </Field>
+                                                </Validation>
+                                            }
+                                        </Field>
+                                    </Validation>
+                                }
+
+                                @if (Entity.PromotionModule.HasValue)
+                                {
                                     <Divider></Divider>
                                     <Validation MessageLocalizer="@LH.Localize">
                                         <Field>
@@ -528,6 +588,7 @@
                                                                       AllowClear
                                                                       MaxTagCount="AntDesign.Select.ResponsiveTag.Responsive"
                                                                       Class="@ValidationClass(nameof(Entity.GroupBuyIds))"
+                                                                      OnSelectedItemsChanged="() => _editContext.NotifyFieldChanged(new FieldIdentifier(Entity, nameof(Entity.GroupBuyIds)))"
                                                                       @bind-Values="Entity.GroupBuyIds">
                                                         <SelectOptions>
                                                             @foreach (var item in GroupBuyOptions)
@@ -541,6 +602,10 @@
                                             }
                                         </Field>
                                     </Validation>
+                                }
+
+                                @if (Entity.PromotionModule == PromotionModule.Discount || Entity.PromotionModule == PromotionModule.ShoppingCredit)
+                                {
                                     <Divider></Divider>
                                     <Validation MessageLocalizer="@LH.Localize">
                                         <Field>
@@ -566,6 +631,7 @@
                                                                       AllowClear
                                                                       MaxTagCount="AntDesign.Select.ResponsiveTag.Responsive"
                                                                       Class="@ValidationClass(nameof(Entity.ProductIds))"
+                                                                      OnSelectedItemsChanged="() => _editContext.NotifyFieldChanged(new FieldIdentifier(Entity, nameof(Entity.ProductIds)))"
                                                                       @bind-Values="Entity.ProductIds">
                                                         <SelectOptions>
                                                             @foreach (var item in ProductOptions)
@@ -579,193 +645,16 @@
                                             }
                                         </Field>
                                     </Validation>
-                                    <Divider></Divider>
-                                    <Field>
-                                        <FieldLabel required>@L["Budget"]</FieldLabel>
-                                        <AntDesign.InputNumber Size="AntDesign.InputSize.Large"
-                                                               Class="@(ValidationClass(nameof(Entity.Budget)) + " no-stepper")"
-                                                               TValue="int?"
-                                                               Min="0"
-                                                               Formatter="AntHelper.FormatAmount"
-                                                               Parser="AntHelper.ParseAmount"
-                                                               @bind-Value="Entity.Budget">
-                                        </AntDesign.InputNumber>
-                                        <ValidationMessage For="() => Entity.Budget" />
-                                    </Field>
-                                </EditForm>
-                            }
-
-                            @if (Entity.PromotionModule == PromotionModule.AddOnProduct)
-                            {
-                                <EditForm EditContext="_editContext">
-                                    <Field>
-                                        <FieldLabel required>@L["AddOnProduct"]</FieldLabel>
-                                        <AntDesign.Select Size="AntDesign.InputSize.Large"
-                                                          TItem="Guid?"
-                                                          TItemValue="Guid?"
-                                                          Placeholder="@L["SelectaProduct"]"
-                                                          EnableSearch
-                                                          AllowClear
-                                                          Class="@ValidationClass(nameof(Entity.AddOnProductId))"
-                                                          @bind-Value="Entity.AddOnProductId">
-                                            <SelectOptions>
-                                                @foreach (var item in ProductOptions)
-                                                {
-                                                    <AntDesign.SelectOption TItemValue="Guid?" TItem="Guid?" Value=@item.Id Label=@item.Name />
-                                                }
-                                            </SelectOptions>
-                                        </AntDesign.Select>
-                                        <ValidationMessage For="() => Entity.AddOnProductId" />
-                                    </Field>
-                                    <Row>
-                                        <Column ColumnSize="ColumnSize.Is6">
-                                            <Validation MessageLocalizer="@LH.Localize">
-                                                <Field>
-                                                    <FieldLabel required>@L["AddOnProductAmount"]</FieldLabel>
-                                                    <NumericEdit @bind-Value="Entity.AddOnProductAmount" TValue="int?" Min="0">
-                                                        <Feedback>
-                                                            <ValidationError />
-                                                        </Feedback>
-                                                    </NumericEdit>
-                                                </Field>
-                                            </Validation>
-                                        </Column>
-                                        <Column ColumnSize="ColumnSize.Is6">
-                                            <Validation MessageLocalizer="@LH.Localize">
-                                                <Field>
-                                                    <FieldLabel required>@L["AddOnLimitPerOrder"]</FieldLabel>
-                                                    <NumericEdit @bind-Value="Entity.AddOnLimitPerOrder" TValue="int?" Min="0">
-                                                        <Feedback>
-                                                            <ValidationError />
-                                                        </Feedback>
-                                                    </NumericEdit>
-                                                </Field>
-                                            </Validation>
-                                        </Column>
-                                    </Row>
-                                    <Validation MessageLocalizer="@LH.Localize">
-                                        <Field>
-                                            <FieldLabel required>@L["AvailableQuantity"]</FieldLabel>
-                                            <RadioGroup Orientation="Orientation.Vertical" TValue="bool?" Name="AvailableQuantity" @bind-CheckedValue="@Entity.IsUnlimitedQuantity">
-                                                <ChildContent>
-                                                    <Radio TValue="bool?" Value="@true">@L["Unlimited"]</Radio>
-                                                    <Radio TValue="bool?" Value="@false">@L["AvailableQuantity"]</Radio>
-                                                </ChildContent>
-                                                <Feedback>
-                                                    <ValidationError />
-                                                </Feedback>
-                                            </RadioGroup>
-                                            @if (Entity.IsUnlimitedQuantity == false)
-                                            {
-                                                <Validation MessageLocalizer="@LH.Localize">
-                                                    <Field indent mb0>
-                                                        <NumericEdit @bind-Value="Entity.AvailableQuantity">
-                                                            <Feedback>
-                                                                <ValidationError />
-                                                            </Feedback>
-                                                        </NumericEdit>
-                                                        <FieldHelp>
-                                                            @L["(Can'texceedthecurrentstockoftheoriginalproduct)"]
-                                                        </FieldHelp>
-                                                    </Field>
-                                                </Validation>
-                                            }
-                                        </Field>
-                                    </Validation>
-                                    <Divider></Divider>
-                                    <Validation MessageLocalizer="@LH.Localize">
-                                        <Field>
-                                            <FieldLabel required>@L["DisplayOfOriginalPrice"]</FieldLabel>
-                                            <RadioGroup Orientation="Orientation.Vertical" TValue="AddOnDisplayPrice?" Name="DiscountMethod" @bind-CheckedValue="@Entity.AddOnDisplayPrice">
-                                                <ChildContent>
-                                                    @foreach (AddOnDisplayPrice addOnDisplayPrice in Enum.GetValues<AddOnDisplayPrice>())
-                                                    {
-                                                        <Radio TValue="AddOnDisplayPrice?" Value="@addOnDisplayPrice">@L["Enum:AddOnDisplayPrice." + (int)addOnDisplayPrice]</Radio>
-                                                    }
-                                                </ChildContent>
-                                                <Feedback>
-                                                    <ValidationError />
-                                                </Feedback>
-                                            </RadioGroup>
-                                        </Field>
-                                    </Validation>
-                                    <Divider></Divider>
-                                    <Validation MessageLocalizer="@LH.Localize">
-                                        <Field>
-                                            <FieldLabel required>@L["Conditions"]</FieldLabel>
-                                            <RadioGroup Orientation="Orientation.Vertical" TValue="AddOnProductCondition?" Name="ProductCondition" @bind-CheckedValue="@Entity.AddOnProductCondition">
-                                                <ChildContent>
-                                                    @foreach (AddOnProductCondition addOnProductCondition in Enum.GetValues<AddOnProductCondition>())
-                                                    {
-                                                        <Radio TValue="AddOnProductCondition?" Value="@addOnProductCondition">@L["Enum:AddOnProductCondition." + (int)addOnProductCondition]</Radio>
-                                                    }
-                                                </ChildContent>
-                                                <Feedback>
-                                                    <ValidationError />
-                                                </Feedback>
-                                            </RadioGroup>
-                                            @if (Entity.AddOnProductCondition == AddOnProductCondition.MustMeetSpecifiedThreshold)
-                                            {
-                                                <Validation MessageLocalizer="@LH.Localize">
-                                                    <Field indent mb0>
-                                                        <NumericEdit @bind-Value="Entity.Threshold">
-                                                            <Feedback>
-                                                                <ValidationError />
-                                                            </Feedback>
-                                                        </NumericEdit>
-                                                    </Field>
-                                                </Validation>
-                                            }
-                                        </Field>
-                                    </Validation>
-                                    <Divider></Divider>
-                                    <Validation MessageLocalizer="@LH.Localize">
-                                        <Field>
-                                            <FieldLabel required>@L["Groupbuys"]</FieldLabel>
-                                            <RadioGroup Orientation="Orientation.Vertical" TValue="bool?" Name="Groupbuys" @bind-CheckedValue="@Entity.ApplyToAllGroupBuys">
-                                                <ChildContent>
-                                                    <Radio TValue="bool?" Value="@true">@L["AllGroupBuys"]</Radio>
-                                                    <Radio TValue="bool?" Value="@false">@L["SpecificGroupBuys"]</Radio>
-                                                </ChildContent>
-                                                <Feedback>
-                                                    <ValidationError />
-                                                </Feedback>
-                                            </RadioGroup>
-                                            @if (Entity.ApplyToAllGroupBuys == false)
-                                            {
-                                                <Field indent mb0>
-                                                    <AntDesign.Select Mode="AntDesign.SelectMode.Multiple"
-                                                                      Size="AntDesign.InputSize.Large"
-                                                                      TItem="Guid"
-                                                                      TItemValue="Guid"
-                                                                      Placeholder="@L["SelectGroupBuys"]"
-                                                                      EnableSearch
-                                                                      AllowClear
-                                                                      MaxTagCount="AntDesign.Select.ResponsiveTag.Responsive"
-                                                                      Class="@ValidationClass(nameof(Entity.GroupBuyIds))"
-                                                                      @bind-Values="Entity.GroupBuyIds">
-                                                        <SelectOptions>
-                                                            @foreach (var item in GroupBuyOptions)
-                                                            {
-                                                                <AntDesign.SelectOption TItemValue="Guid" TItem="Guid" Value=@item.Id Label=@item.Name />
-                                                            }
-                                                        </SelectOptions>
-                                                    </AntDesign.Select>
-                                                    <ValidationMessage For="() => Entity.GroupBuyIds" />
-                                                </Field>
-                                            }
-                                        </Field>
-                                    </Validation>
-                                </EditForm>
-                            }
-                        </CardBody>
-                    </Card>
-                    <Div Class="text-end mt-2">
-                        <PikachuButton Class="pk-btn-transparent" Disabled="Loading" Clicked="Cancel">@L["Cancel"]</PikachuButton>
-                        <PikachuButton Class="pk-btn-primary" Loading="Loading" Clicked="Save">@L["CreateCampaign"]</PikachuButton>
-                    </Div>
-                </Column>
-            </Row>
+                                }
+                            </CardBody>
+                        </Card>
+                        <Div Class="text-end mt-2">
+                            <PikachuButton Class="pk-btn-transparent" Disabled="Loading" Clicked="Cancel">@L["Cancel"]</PikachuButton>
+                            <PikachuButton Class="pk-btn-primary" Loading="Loading" Clicked="Save">@L["CreateCampaign"]</PikachuButton>
+                        </Div>
+                    </Column>
+                </Row>
+            </EditForm>
         </Validations>
     </Form>
 </Div>

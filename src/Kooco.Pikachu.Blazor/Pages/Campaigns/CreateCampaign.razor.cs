@@ -28,6 +28,12 @@ public partial class CreateCampaign
     {
         _editContext = new(Entity);
         _messageStore = new(_editContext);
+
+        _editContext.OnFieldChanged += (sender, e) =>
+        {
+            _messageStore.Clear(e.FieldIdentifier);
+            _editContext.NotifyValidationStateChanged();
+        };
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -40,7 +46,7 @@ public partial class CreateCampaign
                 ProductOptions = await ItemAppService.GetAllItemsLookupAsync();
                 TargetAudienceOptions.AddRange(await MemberTagAppService.GetMemberTagNamesAsync());
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 await HandleErrorAsync(ex);
             }
@@ -55,13 +61,9 @@ public partial class CreateCampaign
     async Task Save()
     {
         Loading = true;
-        bool isValid = await ValidationsRef.ValidateAll();
-        await Validate();
 
-        if (!isValid || _editContext.GetValidationMessages().Any())
+        if (!await Validate())
         {
-            await Notify.Error(L["ValidationErrorsDescription"], L["ValidationErrors"]);
-            Loading = false;
             return;
         }
 
@@ -69,18 +71,33 @@ public partial class CreateCampaign
         Loading = false;
     }
 
-    async Task Validate()
+    async Task<bool> Validate()
     {
         _messageStore.Clear();
         var validationResult = await CreateCampaignValidator.ValidateAsync(Entity);
 
         foreach (var error in validationResult.Errors)
         {
-            var fieldIdentifier = new FieldIdentifier(Entity, error.PropertyName);
-            _messageStore.Add(fieldIdentifier, error.ErrorMessage);
+            var field = error.PropertyName switch
+            {
+                "AddOnProduct.AddOnProductId" => new FieldIdentifier(Entity.AddOnProduct, nameof(CreateCampaignAddOnProductDto.AddOnProductId)),
+                "ShoppingCredit.Budget" => new FieldIdentifier(Entity.ShoppingCredit, nameof(CreateCampaignShoppingCreditDto.Budget)),
+                _ => new FieldIdentifier(Entity, error.PropertyName),
+            };
+            _messageStore.Add(field, error.ErrorMessage);
         }
 
         _editContext.NotifyValidationStateChanged();
+        
+        bool isValid = await ValidationsRef.ValidateAll();
+        
+        if (!isValid || _editContext.GetValidationMessages().Any())
+        {
+            await Notify.Error(L["ValidationErrorsDescription"], L["ValidationErrors"]);
+            Loading = false;
+        }
+
+        return Loading;
     }
 
     string ValidationClass(string propertyName)
