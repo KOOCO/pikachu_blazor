@@ -1567,7 +1567,8 @@
                                                 <Label>@L["Text"]</Label>
                                             </Div>
                                             <Div Class="col-12 pb-1">
-                                                <TextEdit @bind-Text="@module.Text" />
+                                                <TinyMCEEditor @bind-Value="@module.Text"
+                                                               Style="min-height: 500px;" />
                                             </Div>
                                         </Div>
                                     }
