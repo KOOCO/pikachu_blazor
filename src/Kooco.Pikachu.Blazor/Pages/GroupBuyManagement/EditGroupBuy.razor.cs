@@ -1650,22 +1650,54 @@ public partial class EditGroupBuy
         try
         {
 
+            if (croppedImage.IsNullOrWhiteSpace())
+            {
+                    if (selectedFile == null)
+                        return;
 
-            // Strip the prefix
-            var base64Data = croppedImage.Substring(croppedImage.IndexOf(",") + 1);
+                    using var stream = selectedFile.OpenReadStream(long.MaxValue);
+                    string newFileName = $"{Guid.NewGuid().ToString().Replace("-", "")}{Path.GetExtension(selectedFile.Name)}";
+                try
+                {
+                    await Loading.Show();
+                    var memoryStream = new MemoryStream();
+  
+                    await stream.CopyToAsync(memoryStream);
+                    memoryStream.Position = 0;
+                    var url = await _imageContainerManager.SaveAsync(newFileName, memoryStream);
+                    logoBlobName = newFileName;
+                    EditGroupBuyDto.LogoURL = url;
+                    await InvokeAsync(StateHasChanged);
+                    await _uiMessageService.Success("Logo uploaded successfully!");
+                }
+                finally
+                {
+                    await Loading.Hide();
+                    stream.Close();
+                }
+            
+       
 
-            // Convert to byte array
-            var croppedBytes = Convert.FromBase64String(base64Data);
+    }
+            else
+            {
+                // Strip the prefix
+                var base64Data = croppedImage.Substring(croppedImage.IndexOf(",") + 1);
 
-            // Save the image to the server
-            string newFileName = $"{Guid.NewGuid().ToString().Replace("-", "")}.png";
-            using var croppedStream = new MemoryStream(croppedBytes);
+                // Convert to byte array
+                var croppedBytes = Convert.FromBase64String(base64Data);
 
-            var url = await _imageContainerManager.SaveAsync(newFileName, croppedStream);
-            logoBlobName = newFileName;
-            EditGroupBuyDto.LogoURL = url;
+                // Save the image to the server
+                string newFileName = $"{Guid.NewGuid().ToString().Replace("-", "")}.png";
+                using var croppedStream = new MemoryStream(croppedBytes);
 
-            await _uiMessageService.Success("Logo uploaded successfully!");
+                var url = await _imageContainerManager.SaveAsync(newFileName, croppedStream);
+                logoBlobName = newFileName;
+                EditGroupBuyDto.LogoURL = url;
+
+
+                await _uiMessageService.Success("Logo uploaded successfully!");
+            }
         }
         catch (Exception ex)
         {
@@ -1688,6 +1720,8 @@ public partial class EditGroupBuy
 
         
     }
+   
+
     #endregion
 
     async Task OnImageModuleUploadAsync(

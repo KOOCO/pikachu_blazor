@@ -231,7 +231,7 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
                 if (sameName) throw new BusinessException(PikachuDomainErrorCodes.GroupBuyWithSameNameAlreadyExists);
 
                 var groupBuy = await _groupBuyRepository.GetAsync(id);
-
+                var oldstamp = groupBuy.ConcurrencyStamp;
                 await _groupBuyRepository.EnsureCollectionLoadedAsync(groupBuy, x => x.ItemGroups);
                 ObjectMapper.Map(input, groupBuy);
                 groupBuy.InstallmentPeriodsJson = JsonSerializer.Serialize(input.InstallmentPeriods);
@@ -239,8 +239,8 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
                 await ProcessItemGroups(groupBuy, input.ItemGroups.ToList());
 
                 groupBuy.ItemGroups.RemoveAll(w => w.Id == Guid.Empty);
-
-                await _groupBuyRepository.UpdateAsync(groupBuy, true);
+                groupBuy.ConcurrencyStamp = oldstamp;
+                await _groupBuyRepository.UpdateAsync(groupBuy, true,default);
 
                 await uow.CompleteAsync(); // Commit unit of work
 
@@ -267,13 +267,13 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
             {
                 var groupBuy = await _groupBuyRepository.GetAsync(id);
                 await _groupBuyRepository.EnsureCollectionLoadedAsync(groupBuy, x => x.ItemGroups);
-
+                var oldConcurrency = groupBuy.ConcurrencyStamp;
                 ObjectMapper.Map(input, groupBuy);
 
                 await ProcessItemGroups(groupBuy, input.ItemGroups.ToList());
 
                 groupBuy.ItemGroups.RemoveAll(w => w.Id == Guid.Empty);
-
+                groupBuy.ConcurrencyStamp = oldConcurrency;
                 await _groupBuyRepository.UpdateAsync(groupBuy);
 
                 await retryUow.CompleteAsync(); // Commit new UOW
