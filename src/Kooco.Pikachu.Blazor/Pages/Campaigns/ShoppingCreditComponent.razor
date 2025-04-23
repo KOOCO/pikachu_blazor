@@ -1,0 +1,157 @@
+﻿@using Kooco.Pikachu.Campaigns
+@using Kooco.Pikachu.Localization
+@using Microsoft.Extensions.Localization
+@using Volo.Abp.AspNetCore.Components.Web
+@inherits PikachuComponentBase
+<Divider></Divider>
+<Validation MessageLocalizer="@LH.Localize">
+    <Field>
+        <FieldLabel required>@L["UsagePeriod"]</FieldLabel>
+        <RadioGroup Orientation="Orientation.Vertical" TValue="bool?" Name="UsagePeriod" @bind-CheckedValue="@Entity.ShoppingCredit.CanExpire">
+            <ChildContent>
+                <Radio TValue="bool?" Value="@false">@L["NoExpiry"]</Radio>
+                <Radio TValue="bool?" Value="@true">@L["Limited,validfordays"]</Radio>
+            </ChildContent>
+            <Feedback>
+                <ValidationError />
+            </Feedback>
+        </RadioGroup>
+        @if (Entity.ShoppingCredit.CanExpire == true)
+        {
+            <Validation MessageLocalizer="@LH.Localize">
+                <Field indent mb0>
+                    <NumericEdit @bind-Value="Entity.ShoppingCredit.ValidForDays">
+                        <Feedback>
+                            <ValidationError />
+                        </Feedback>
+                    </NumericEdit>
+                </Field>
+            </Validation>
+        }
+    </Field>
+</Validation>
+<Divider></Divider>
+<Validation MessageLocalizer="@LH.Localize">
+    <Field>
+        <FieldLabel required>@L["CalculationMethod"]</FieldLabel>
+        <RadioGroup Orientation="Orientation.Vertical" TValue="CalculationMethod?" Name="CalculationMethod" @bind-CheckedValue="@Entity.ShoppingCredit.CalculationMethod">
+            <ChildContent>
+                <Radio TValue="CalculationMethod?" Value="@CalculationMethod.UnifiedCalculation">@L["Enum:CalculationMethod." + (int)CalculationMethod.UnifiedCalculation]</Radio>
+                @if (Entity.ShoppingCredit.CalculationMethod == CalculationMethod.UnifiedCalculation)
+                {
+                    <Validation MessageLocalizer="@LH.Localize">
+                        <Field indent mb0>
+                            <Addons>
+                                <AddonLabel>%</AddonLabel>
+                                <Addon AddonType="AddonType.Body">
+                                    <NumericEdit TValue="double?" @bind-Value="Entity.ShoppingCredit.CalculationPercentage">
+                                        <Feedback>
+                                            <ValidationError />
+                                        </Feedback>
+                                    </NumericEdit>
+                                </Addon>
+                            </Addons>
+                        </Field>
+                    </Validation>
+                }
+                <Radio TValue="CalculationMethod?" Value="@CalculationMethod.StagedCalculation">@L["Enum:CalculationMethod." + (int)CalculationMethod.StagedCalculation]</Radio>
+            </ChildContent>
+            <Feedback>
+                <ValidationError />
+            </Feedback>
+        </RadioGroup>
+    </Field>
+</Validation>
+@if (Entity.ShoppingCredit.CalculationMethod == CalculationMethod.StagedCalculation)
+{
+    <Div>
+        <Div Class="d-flex align-items-center justify-content-between">
+            <FieldLabel>@L["StageSettings"]</FieldLabel>
+            <Div>
+                @if (Entity.ShoppingCredit.IsAnyStageSettingSelected)
+                {
+                    <PikachuButton Class="pk-btn-icon danger" IconClass="fas fa-trash" Clicked="Entity.ShoppingCredit.RemoveSelectedStageSettings"></PikachuButton>
+                    <Span Style="margin-right: 5px;"></Span>
+                }
+                <PikachuButton Class="pk-btn-icon indigo" IconClass="fas fa-add" Clicked="Entity.ShoppingCredit.AddStageSetting"></PikachuButton>
+            </Div>
+        </Div>
+        @foreach (var stageSetting in Entity.ShoppingCredit.StageSettings)
+        {
+            <Row>
+                @if (Entity.ShoppingCredit.StageSettingsCount > 1)
+                {
+                    <Column ColumnSize="ColumnSize.Is1" Class="d-flex align-items-center justify-content-end">
+                        <InputCheckbox class="form-check-input" @bind-Value="stageSetting.IsSelected" />
+                    </Column>
+                }
+                <Column ColumnSize="Entity.ShoppingCredit.StageSettingsCount > 1 ? ColumnSize.Is5 : ColumnSize.Is6">
+                    <Validation MessageLocalizer="@LH.Localize">
+                        <Field>
+                            <FieldLabel required>@L["Spend"]</FieldLabel>
+                            <NumericEdit TValue="int?" @bind-Value="stageSetting.Spend">
+                                <Feedback>
+                                    <ValidationError />
+                                </Feedback>
+                            </NumericEdit>
+                        </Field>
+                    </Validation>
+                </Column>
+                <Column ColumnSize="ColumnSize.Is6">
+                    <Validation MessageLocalizer="@LH.Localize">
+                        <Field>
+                            <FieldLabel required>@L["ToReceivePoints"]</FieldLabel>
+                            <NumericEdit TValue="int?" @bind-Value="stageSetting.PointsToReceive">
+                                <Feedback>
+                                    <ValidationError />
+                                </Feedback>
+                            </NumericEdit>
+                        </Field>
+                    </Validation>
+                </Column>
+            </Row>
+        }
+        <ValidationMessage For="() => Entity.ShoppingCredit.StageSettings" />
+    </Div>
+}
+<Divider></Divider>
+<Validation MessageLocalizer="@LH.Localize">
+    <Field>
+        <FieldLabel required>@L["ApplicableItems"]</FieldLabel>
+        <RadioGroup Orientation="Orientation.Vertical" TValue="ApplicableItem?" Name="ApplicableItems" @bind-CheckedValue="@Entity.ShoppingCredit.ApplicableItem">
+            <ChildContent>
+                <Radio TValue="ApplicableItem?" Value="@ApplicableItem.AddOnProducts">@L["Enum:ApplicableItem." + (int)ApplicableItem.AddOnProducts]</Radio>
+                <Radio TValue="ApplicableItem?" Value="@ApplicableItem.ShippingFees">@L["Enum:ApplicableItem." + (int)ApplicableItem.ShippingFees]</Radio>
+            </ChildContent>
+            <Feedback>
+                <ValidationError />
+            </Feedback>
+        </RadioGroup>
+    </Field>
+</Validation>
+<Divider></Divider>
+<Field>
+    <FieldLabel required>@L["Budget"]</FieldLabel>
+    <AntDesign.InputNumber Size="AntDesign.InputSize.Large"
+                           Class="@(ValidationClass(nameof(Entity.ShoppingCredit.Budget)) + " no-stepper")"
+                           TValue="int?"
+                           Min="0"
+                           Formatter="AntHelper.FormatAmount"
+                           Parser="AntHelper.ParseAmount"
+                           OnChange="() => EditContext.NotifyFieldChanged(new FieldIdentifier(Entity.ShoppingCredit, nameof(Entity.ShoppingCredit.Budget)))"
+                           @bind-Value="Entity.ShoppingCredit.Budget">
+    </AntDesign.InputNumber>
+    <ValidationMessage For="() => Entity.ShoppingCredit.Budget" />
+</Field>
+
+@code {
+    [Parameter] public CreateCampaignDto Entity { get; set; }
+    [Parameter] public EditContext EditContext { get; set; }
+    [Parameter] public AbpBlazorMessageLocalizerHelper<PikachuResource> LH { get; set; }
+    
+    string ValidationClass(string propertyName)
+    {
+        var fieldIdentifier = new FieldIdentifier(Entity.ShoppingCredit, propertyName);
+        return EditContext.GetValidationMessages(fieldIdentifier).Any() ? "is-invalid" : string.Empty;
+    }
+}

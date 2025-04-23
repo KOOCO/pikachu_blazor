@@ -1,0 +1,140 @@
+﻿@using Kooco.Pikachu.Campaigns
+@using Kooco.Pikachu.Items.Dtos
+@using Kooco.Pikachu.Localization
+@using Volo.Abp.AspNetCore.Components.Web
+@inherits PikachuComponentBase
+<Divider></Divider>
+<Field>
+    <FieldLabel required>@L["AddOnProduct"]</FieldLabel>
+    <AntDesign.Select Size="AntDesign.InputSize.Large"
+                      TItem="Guid?"
+                      TItemValue="Guid?"
+                      Placeholder="@L["SelectaProduct"]"
+                      EnableSearch
+                      AllowClear
+                      Class="@ValidationClass(nameof(Entity.AddOnProduct.ProductId))"
+                      OnSelectedItemsChanged="() => EditContext.NotifyFieldChanged(new FieldIdentifier(Entity.AddOnProduct, nameof(Entity.AddOnProduct.ProductId)))"
+                      @bind-Value="Entity.AddOnProduct.ProductId">
+        <SelectOptions>
+            @foreach (var item in ProductOptions)
+            {
+                <AntDesign.SelectOption TItemValue="Guid?" TItem="Guid?" Value=@item.Id Label=@item.Name />
+            }
+        </SelectOptions>
+    </AntDesign.Select>
+    <ValidationMessage For="() => Entity.AddOnProduct.ProductId" />
+</Field>
+<Row>
+    <Column ColumnSize="ColumnSize.Is6">
+        <Validation MessageLocalizer="@LH.Localize">
+            <Field>
+                <FieldLabel required>@L["AddOnProductAmount"]</FieldLabel>
+                <NumericEdit @bind-Value="Entity.AddOnProduct.ProductAmount" TValue="int?" Min="0">
+                    <Feedback>
+                        <ValidationError />
+                    </Feedback>
+                </NumericEdit>
+            </Field>
+        </Validation>
+    </Column>
+    <Column ColumnSize="ColumnSize.Is6">
+        <Validation MessageLocalizer="@LH.Localize">
+            <Field>
+                <FieldLabel required>@L["AddOnLimitPerOrder"]</FieldLabel>
+                <NumericEdit @bind-Value="Entity.AddOnProduct.LimitPerOrder" TValue="int?" Min="0">
+                    <Feedback>
+                        <ValidationError />
+                    </Feedback>
+                </NumericEdit>
+            </Field>
+        </Validation>
+    </Column>
+</Row>
+<Validation MessageLocalizer="@LH.Localize">
+    <Field>
+        <FieldLabel required>@L["AvailableQuantity"]</FieldLabel>
+        <RadioGroup Orientation="Orientation.Vertical" TValue="bool?" Name="AvailableQuantity" @bind-CheckedValue="@Entity.AddOnProduct.IsUnlimitedQuantity">
+            <ChildContent>
+                <Radio TValue="bool?" Value="@true">@L["Unlimited"]</Radio>
+                <Radio TValue="bool?" Value="@false">@L["AvailableQuantity"]</Radio>
+            </ChildContent>
+            <Feedback>
+                <ValidationError />
+            </Feedback>
+        </RadioGroup>
+        @if (Entity.AddOnProduct.IsUnlimitedQuantity == false)
+        {
+            <Validation MessageLocalizer="@LH.Localize">
+                <Field indent mb0>
+                    <NumericEdit @bind-Value="Entity.AddOnProduct.AvailableQuantity">
+                        <Feedback>
+                            <ValidationError />
+                        </Feedback>
+                    </NumericEdit>
+                    <FieldHelp>
+                        @L["(Can'texceedthecurrentstockoftheoriginalproduct)"]
+                    </FieldHelp>
+                </Field>
+            </Validation>
+        }
+    </Field>
+</Validation>
+<Divider></Divider>
+<Validation MessageLocalizer="@LH.Localize">
+    <Field>
+        <FieldLabel required>@L["DisplayOfOriginalPrice"]</FieldLabel>
+        <RadioGroup Orientation="Orientation.Vertical" TValue="AddOnDisplayPrice?" Name="DiscountMethod" @bind-CheckedValue="@Entity.AddOnProduct.DisplayPrice">
+            <ChildContent>
+                @foreach (AddOnDisplayPrice addOnDisplayPrice in Enum.GetValues<AddOnDisplayPrice>())
+                {
+                    <Radio TValue="AddOnDisplayPrice?" Value="@addOnDisplayPrice">@L["Enum:AddOnDisplayPrice." + (int)addOnDisplayPrice]</Radio>
+                }
+            </ChildContent>
+            <Feedback>
+                <ValidationError />
+            </Feedback>
+        </RadioGroup>
+    </Field>
+</Validation>
+<Divider></Divider>
+<Validation MessageLocalizer="@LH.Localize">
+    <Field>
+        <FieldLabel required>@L["Conditions"]</FieldLabel>
+        <RadioGroup Orientation="Orientation.Vertical" TValue="AddOnProductCondition?" Name="ProductCondition" @bind-CheckedValue="@Entity.AddOnProduct.ProductCondition">
+            <ChildContent>
+                @foreach (AddOnProductCondition addOnProductCondition in Enum.GetValues<AddOnProductCondition>())
+                {
+                    <Radio TValue="AddOnProductCondition?" Value="@addOnProductCondition">@L["Enum:AddOnProductCondition." + (int)addOnProductCondition]</Radio>
+                }
+            </ChildContent>
+            <Feedback>
+                <ValidationError />
+            </Feedback>
+        </RadioGroup>
+        @if (Entity.AddOnProduct.ProductCondition == AddOnProductCondition.MustMeetSpecifiedThreshold)
+        {
+            <Validation MessageLocalizer="@LH.Localize">
+                <Field indent mb0>
+                    <NumericEdit @bind-Value="Entity.AddOnProduct.Threshold">
+                        <Feedback>
+                            <ValidationError />
+                        </Feedback>
+                    </NumericEdit>
+                </Field>
+            </Validation>
+        }
+    </Field>
+</Validation>
+
+@code {
+    [Parameter] public CreateCampaignDto Entity { get; set; }
+    [Parameter] public EditContext EditContext { get; set; }
+    [Parameter] public AbpBlazorMessageLocalizerHelper<PikachuResource> LH { get; set; }
+    [Parameter] public IReadOnlyList<KeyValueDto> ProductOptions { get; set; } = [];
+
+    string ValidationClass(string propertyName)
+    {
+        var fieldIdentifier = new FieldIdentifier(Entity.AddOnProduct, propertyName);
+        return EditContext.GetValidationMessages(fieldIdentifier).Any() ? "is-invalid" : string.Empty;
+    }
+}

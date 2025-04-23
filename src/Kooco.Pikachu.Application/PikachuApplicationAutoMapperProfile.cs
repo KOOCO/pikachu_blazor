@@ -1,6 +1,7 @@
 using AutoMapper;
 using Kooco.Pikachu.AddOnProducts;
 using Kooco.Pikachu.AutomaticEmails;
+using Kooco.Pikachu.Campaigns;
 using Kooco.Pikachu.Dashboards;
 using Kooco.Pikachu.DeliveryTemperatureCosts;
 using Kooco.Pikachu.DeliveryTempratureCosts;
@@ -49,6 +50,7 @@ using Kooco.Pikachu.WebsiteManagement.FooterSettings;
 using Kooco.Pikachu.WebsiteManagement.TopbarSettings;
 using Kooco.Pikachu.WebsiteManagement.WebsiteBasicSettings;
 using Kooco.Pikachu.WebsiteManagement.WebsiteSettingsModules;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Volo.Abp.AutoMapper;
@@ -365,5 +367,21 @@ public class PikachuApplicationAutoMapperProfile : Profile
         CreateMap<GroupBuyItemsPrice, GroupBuyItemsPriceDto>();
         CreateMap<GroupBuyItemGroupImageModule, GroupBuyItemGroupImageModuleDto>();
         CreateMap<GroupBuyItemGroupImage, GroupBuyItemGroupImageDto>();
+
+        CreateMap<Campaign, CampaignDto>();
+        CreateMap<CampaignDiscount, CampaignDiscountDto>();
+        CreateMap<CampaignShoppingCredit, CampaignShoppingCreditDto>();
+        CreateMap<CampaignAddOnProduct, CampaignAddOnProductDto>();
+        CreateMap<CampaignGroupBuy, CampaignGroupBuyDto>();
+        CreateMap<CampaignProduct, CampaignProductDto>();
+        CreateMap<CampaignStageSetting, CampaignStageSettingDto>();
+
+        CreateMap<CampaignDto, CreateCampaignDto>()
+            .ForMember(dest => dest.GroupBuyIds, opt => opt.MapFrom(src => src.GroupBuys != null ? src.GroupBuys.Select(gb => gb.GroupBuyId) : new List<Guid>()))
+            .ForMember(dest => dest.ProductIds, opt => opt.MapFrom(src => src.Products != null ? src.Products.Select(gb => gb.ProductId) : new List<Guid>()));
+        CreateMap<CampaignDiscountDto, CreateCampaignDiscountDto>();
+        CreateMap<CampaignShoppingCreditDto, CreateCampaignShoppingCreditDto>();
+        CreateMap<CampaignAddOnProductDto, CreateCampaignAddOnProductDto>();
+        CreateMap<CampaignStageSettingDto, CreateCampaignStageSettingDto>();
     }
 }

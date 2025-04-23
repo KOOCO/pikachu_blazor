@@ -9,7 +9,7 @@ public class CreateCampaignShoppingCreditDto
     public int? ValidForDays { get; set; }
     public CalculationMethod? CalculationMethod { get; set; }
     public double? CalculationPercentage { get; set; }
-    public List<CreateCampaignStageSettingsDto> StageSettings { get; set; } = [new()];
+    public List<CreateCampaignStageSettingDto> StageSettings { get; set; } = [new()];
     public ApplicableItem? ApplicableItem { get; set; }
     public int? Budget { get; set; }
 

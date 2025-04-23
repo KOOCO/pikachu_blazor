@@ -4,12 +4,12 @@ namespace Kooco.Pikachu.Campaigns;
 
 public class CreateCampaignAddOnProductDto
 {
-    public Guid? AddOnProductId { get; set; }
-    public int? AddOnProductAmount { get; set; }
-    public int? AddOnLimitPerOrder { get; set; }
+    public Guid? ProductId { get; set; }
+    public int? ProductAmount { get; set; }
+    public int? LimitPerOrder { get; set; }
     public bool? IsUnlimitedQuantity { get; set; }
     public int? AvailableQuantity { get; set; }
-    public AddOnDisplayPrice? AddOnDisplayPrice { get; set; }
-    public AddOnProductCondition? AddOnProductCondition { get; set; }
+    public AddOnDisplayPrice? DisplayPrice { get; set; }
+    public AddOnProductCondition? ProductCondition { get; set; }
     public int? Threshold { get; set; }
 }

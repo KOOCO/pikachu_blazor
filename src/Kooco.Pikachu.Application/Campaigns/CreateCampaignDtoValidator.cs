@@ -19,6 +19,9 @@ public class CreateCampaignDtoValidator : AbstractValidator<CreateCampaignDto>
         AddRequiredRule(x => x.TargetAudience);
         AddRequiredRule(x => x.PromotionModule);
 
+        RuleFor(x => x.EndDate)
+            .GreaterThan(x => x.StartDate);
+
         RuleFor(x => x.Name)
             .MaximumLength(CampaignConsts.MaxNameLength);
 
@@ -108,12 +111,20 @@ public class CreateCampaignDiscountDtoValidator : AbstractValidator<CreateCampai
         });
 
         RuleFor(d => d.AvailableQuantity)
+            .NotEmpty()
+            .WithMessage(l["TheFieldIsRequired", l["NoOfIssuedCodes"]]);
+
+        RuleFor(d => d.AvailableQuantity)
             .GreaterThanOrEqualTo(0)
             .WithName(l["NoOfIssuedCodes"]);
 
         RuleFor(d => d.MaximumUsePerPerson)
+            .NotEmpty()
+            .WithMessage(l["TheFieldIsRequired", l[nameof(CreateCampaignDiscountDto.MaximumUsePerPerson)]]);
+
+        RuleFor(d => d.MaximumUsePerPerson)
             .GreaterThanOrEqualTo(0)
-            .WithName(l["MaximumUsePerPerson"]);
+            .WithName(l[nameof(CreateCampaignDiscountDto.MaximumUsePerPerson)]);
 
         RuleFor(d => d.DiscountMethod)
             .NotNull()
@@ -216,18 +227,18 @@ public class CreateCampaignShoppingCreditDtoValidator : AbstractValidator<Create
     }
 }
 
-public class StageSettingsDtoValidator : AbstractValidator<CreateCampaignStageSettingsDto>
+public class StageSettingsDtoValidator : AbstractValidator<CreateCampaignStageSettingDto>
 {
     public StageSettingsDtoValidator(IStringLocalizer<PikachuResource> l)
     {
         RuleFor(s => s.Spend)
             .NotEmpty()
-            .WithMessage(l["TheFieldIsRequired", l[nameof(CreateCampaignStageSettingsDto.Spend)]])
+            .WithMessage(l["TheFieldIsRequired", l[nameof(CreateCampaignStageSettingDto.Spend)]])
             .GreaterThanOrEqualTo(0);
 
         RuleFor(s => s.PointsToReceive)
             .NotEmpty()
-            .WithMessage(l["TheFieldIsRequired", l[nameof(CreateCampaignStageSettingsDto.PointsToReceive)]])
+            .WithMessage(l["TheFieldIsRequired", l[nameof(CreateCampaignStageSettingDto.PointsToReceive)]])
             .GreaterThanOrEqualTo(0);
     }
 }
@@ -236,26 +247,26 @@ public class CreateCampaignAddOnProductDtoValidator : AbstractValidator<CreateCa
 {
     public CreateCampaignAddOnProductDtoValidator(IStringLocalizer<PikachuResource> l)
     {
-        RuleFor(x => x.AddOnProductId)
+        RuleFor(x => x.ProductId)
             .NotNull()
-            .WithMessage(l["TheFieldIsRequired", l[nameof(CreateCampaignAddOnProductDto.AddOnProductId)]]);
+            .WithMessage(l["TheFieldIsRequired", l[nameof(CreateCampaignAddOnProductDto.ProductId)]]);
 
-        RuleFor(x => x.AddOnProductAmount)
+        RuleFor(x => x.ProductAmount)
             .NotNull()
-            .WithMessage(l["TheFieldIsRequired", l[nameof(CreateCampaignAddOnProductDto.AddOnProductAmount)]]);
+            .WithMessage(l["TheFieldIsRequired", l[nameof(CreateCampaignAddOnProductDto.ProductAmount)]]);
 
-        RuleFor(x => x.AddOnProductAmount)
+        RuleFor(x => x.ProductAmount)
             .GreaterThanOrEqualTo(0)
-            .When(x => x.AddOnProductAmount != null)
-            .WithMessage(l["TheFieldIsRequired", l[nameof(CreateCampaignAddOnProductDto.AddOnProductAmount)]]);
+            .When(x => x.ProductAmount != null)
+            .WithMessage(l["TheFieldIsRequired", l[nameof(CreateCampaignAddOnProductDto.ProductAmount)]]);
 
-        RuleFor(x => x.AddOnLimitPerOrder)
+        RuleFor(x => x.LimitPerOrder)
             .NotNull()
-            .WithMessage(l["TheFieldIsRequired", l[nameof(CreateCampaignAddOnProductDto.AddOnLimitPerOrder)]]);
+            .WithMessage(l["TheFieldIsRequired", l[nameof(CreateCampaignAddOnProductDto.LimitPerOrder)]]);
 
-        RuleFor(x => x.AddOnLimitPerOrder)
+        RuleFor(x => x.LimitPerOrder)
             .GreaterThanOrEqualTo(0)
-            .When(x => x.AddOnLimitPerOrder != null);
+            .When(x => x.LimitPerOrder != null);
 
         RuleFor(x => x.IsUnlimitedQuantity)
             .NotNull()
@@ -270,15 +281,15 @@ public class CreateCampaignAddOnProductDtoValidator : AbstractValidator<CreateCa
                 .WithName(l[nameof(CreateCampaignAddOnProductDto.AvailableQuantity)]);
         });
 
-        RuleFor(x => x.AddOnDisplayPrice)
+        RuleFor(x => x.DisplayPrice)
             .NotNull()
-            .WithMessage(l["TheFieldIsRequired", l[nameof(CreateCampaignAddOnProductDto.AddOnDisplayPrice)]]);
+            .WithMessage(l["TheFieldIsRequired", l[nameof(CreateCampaignAddOnProductDto.DisplayPrice)]]);
 
-        RuleFor(x => x.AddOnProductCondition)
+        RuleFor(x => x.ProductCondition)
             .NotNull()
-            .WithMessage(l["TheFieldIsRequired", l[nameof(CreateCampaignAddOnProductDto.AddOnProductCondition)]]);
+            .WithMessage(l["TheFieldIsRequired", l[nameof(CreateCampaignAddOnProductDto.ProductCondition)]]);
 
-        When(x => x.AddOnProductCondition == AddOnProductCondition.MustMeetSpecifiedThreshold, () =>
+        When(x => x.ProductCondition == AddOnProductCondition.MustMeetSpecifiedThreshold, () =>
         {
             RuleFor(x => x.Threshold)
                 .NotNull()

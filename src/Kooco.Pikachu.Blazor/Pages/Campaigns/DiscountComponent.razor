@@ -1,0 +1,180 @@
+﻿@using Kooco.Pikachu.Campaigns
+@using Kooco.Pikachu.EnumValues
+@using Kooco.Pikachu.Localization
+@using Volo.Abp.AspNetCore.Components.Web
+@inherits PikachuComponentBase
+<Divider></Divider>
+<Validation MessageLocalizer="@LH.Localize">
+    <Field>
+        <FieldLabel required>@L["DiscountCode"]</FieldLabel>
+        <RadioGroup Orientation="Orientation.Vertical" TValue="bool?" Name="DiscountCode" @bind-CheckedValue="@Entity.Discount.IsDiscountCodeRequired">
+            <ChildContent>
+                <Radio TValue="bool?" Value="@false">@L["NoCodeRequiredForDiscount"]</Radio>
+                <Radio TValue="bool?" Value="@true">@L["CustomCode"]</Radio>
+            </ChildContent>
+            <Feedback>
+                <ValidationError />
+            </Feedback>
+        </RadioGroup>
+        @if (Entity.Discount.IsDiscountCodeRequired == true)
+        {
+            <Validation MessageLocalizer="@LH.Localize">
+                <Field indent mb0>
+                    <TextEdit @bind-Text="Entity.Discount.DiscountCode">
+                        <Feedback>
+                            <ValidationError />
+                        </Feedback>
+                    </TextEdit>
+                </Field>
+            </Validation>
+        }
+    </Field>
+</Validation>
+<Row>
+    <Column ColumnSize="ColumnSize.Is6">
+        <Validation MessageLocalizer="@LH.Localize">
+            <Field>
+                <FieldLabel required>@L["NoOfIssuedCodes"]</FieldLabel>
+                <NumericEdit @bind-Value="Entity.Discount.AvailableQuantity" TValue="int?" Min="0">
+                    <Feedback>
+                        <ValidationError />
+                    </Feedback>
+                </NumericEdit>
+            </Field>
+        </Validation>
+    </Column>
+    <Column ColumnSize="ColumnSize.Is6">
+        <Validation MessageLocalizer="@LH.Localize">
+            <Field>
+                <FieldLabel required>@L["MaximumUsePerPerson"]</FieldLabel>
+                <NumericEdit @bind-Value="Entity.Discount.MaximumUsePerPerson" TValue="int?" Min="0">
+                    <Feedback>
+                        <ValidationError />
+                    </Feedback>
+                </NumericEdit>
+            </Field>
+        </Validation>
+    </Column>
+</Row>
+<Divider></Divider>
+<Validation MessageLocalizer="@LH.Localize">
+    <Field>
+        <FieldLabel required>@L["DiscountMethod"]</FieldLabel>
+        <RadioGroup Orientation="Orientation.Vertical" TValue="DiscountMethod?" Name="DiscountMethod" @bind-CheckedValue="@Entity.Discount.DiscountMethod">
+            <ChildContent>
+                @foreach (DiscountMethod discountMethod in Enum.GetValues<DiscountMethod>())
+                {
+                    <Radio TValue="DiscountMethod?" Value="@discountMethod">@L["Enum:DiscountMethod." + (int)discountMethod]</Radio>
+                    @if (discountMethod == DiscountMethod.MinimumSpendAmount && Entity.Discount.DiscountMethod == DiscountMethod.MinimumSpendAmount)
+                    {
+                        <Validation MessageLocalizer="@LH.Localize">
+                            <Field indent mb0>
+                                <NumericEdit @bind-Value="Entity.Discount.MinimumSpendAmount" TValue="int" Min="0">
+                                    <Feedback>
+                                        <ValidationError />
+                                    </Feedback>
+                                </NumericEdit>
+                            </Field>
+                        </Validation>
+                    }
+                }
+            </ChildContent>
+            <Feedback>
+                <ValidationError />
+            </Feedback>
+        </RadioGroup>
+    </Field>
+</Validation>
+@if (Entity.Discount.DiscountMethod == DiscountMethod.ShippingDiscount)
+{
+    <Validation MessageLocalizer="@LH.Localize">
+        <Field>
+            <FieldLabel required>@L["ShippingDiscountSettings"]</FieldLabel>
+            <RadioGroup Orientation="Orientation.Vertical" TValue="bool?" Name="ShippingDiscountSettings" @bind-CheckedValue="@Entity.Discount.ApplyToAllShippingMethods">
+                <ChildContent>
+                    <Radio TValue="bool?" Value="@true">@L["AllMethods"]</Radio>
+                    <Radio TValue="bool?" Value="@false">@L["SpecificMethods"]</Radio>
+                </ChildContent>
+                <Feedback>
+                    <ValidationError />
+                </Feedback>
+            </RadioGroup>
+            @if (Entity.Discount.ApplyToAllShippingMethods == false)
+            {
+                <Field indent mb0>
+                    <AntDesign.Select Mode="AntDesign.SelectMode.Multiple"
+                                      Size="AntDesign.InputSize.Large"
+                                      TItem="DeliveryMethod"
+                                      TItemValue="DeliveryMethod"
+                                      Placeholder="@L["SelectShippingMethods"]"
+                                      EnableSearch
+                                      AllowClear
+                                      MaxTagCount="AntDesign.Select.ResponsiveTag.Responsive"
+                                      Class="@ValidationClass(nameof(Entity.Discount.DeliveryMethods))"
+                                      OnSelectedItemsChanged="() => EditContext.NotifyFieldChanged(new FieldIdentifier(Entity.AddOnProduct, nameof(Entity.Discount.DeliveryMethods)))"
+                                      @bind-Values="Entity.Discount.DeliveryMethods">
+                        <SelectOptions>
+                            @foreach (var item in DeliveryMethodOptions)
+                            {
+                                <AntDesign.SelectOption TItemValue="DeliveryMethod" TItem="DeliveryMethod" Value="item" Label="@L[item.ToString()]" />
+                            }
+                        </SelectOptions>
+                    </AntDesign.Select>
+                    <ValidationMessage For="() => Entity.Discount.DeliveryMethods" />
+                </Field>
+            }
+        </Field>
+    </Validation>
+}
+<Divider></Divider>
+<Validation MessageLocalizer="@LH.Localize">
+    <Field>
+        <FieldLabel required>@L["DiscountAmount"]</FieldLabel>
+        <RadioGroup Orientation="Orientation.Vertical" TValue="DiscountType?" @bind-CheckedValue="Entity.Discount.DiscountType">
+            <ChildContent>
+                <Radio TValue="DiscountType?" Value="@DiscountType.FixedAmount">@L["DiscountOf$"]</Radio>
+                @if (Entity.Discount.DiscountType == DiscountType.FixedAmount)
+                {
+                    <Validation MessageLocalizer="@LH.Localize">
+                        <Field indent mb0>
+                            <NumericEdit @bind-Value="Entity.Discount.DiscountAmount" TValue="int?" Min="0">
+                                <Feedback>
+                                    <ValidationError />
+                                </Feedback>
+                            </NumericEdit>
+                        </Field>
+                    </Validation>
+                }
+                <Radio TValue="DiscountType?" Value="@DiscountType.Percentage">@L["DiscountOf%"]</Radio>
+                @if (Entity.Discount.DiscountType == DiscountType.Percentage)
+                {
+                    <Validation MessageLocalizer="@LH.Localize">
+                        <Field indent mb0>
+                            <NumericEdit @bind-Value="Entity.Discount.DiscountPercentage" TValue="int?" Min="0" Max="100">
+                                <Feedback>
+                                    <ValidationError />
+                                </Feedback>
+                            </NumericEdit>
+                        </Field>
+                    </Validation>
+                }
+            </ChildContent>
+            <Feedback>
+                <ValidationError />
+            </Feedback>
+        </RadioGroup>
+    </Field>
+</Validation>
+
+@code {
+    [Parameter] public CreateCampaignDto Entity { get; set; }
+    [Parameter] public EditContext EditContext { get; set; }
+    [Parameter] public AbpBlazorMessageLocalizerHelper<PikachuResource> LH { get; set; }
+    private List<DeliveryMethod> DeliveryMethodOptions { get; } = [.. Enum.GetValues<DeliveryMethod>()];
+
+    string ValidationClass(string propertyName)
+    {
+        var fieldIdentifier = new FieldIdentifier(Entity.Discount, propertyName);
+        return EditContext.GetValidationMessages(fieldIdentifier).Any() ? "is-invalid" : string.Empty;
+    }
+}

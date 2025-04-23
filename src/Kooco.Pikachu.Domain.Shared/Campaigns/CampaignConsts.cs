@@ -2,12 +2,13 @@
 
 namespace Kooco.Pikachu.Campaigns;
 
-public class CampaignConsts
+public static class CampaignConsts
 {
     public const int MaxNameLength = 64;
     public const int MaxDescriptionLength = 2000;
+    public const int MaxDiscountCodeLength = 32;
 
-    public class TargetAudience
+    public static class TargetAudience
     {
         public const string All = "All";
         public const string AllMembers = "AllMembers";

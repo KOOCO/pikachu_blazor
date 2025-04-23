@@ -1,8 +1,8 @@
 using Blazorise;
 using DeviceDetectorNET;
 using Kooco.Pikachu.Campaigns;
-using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Items.Dtos;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using System;
 using System.Collections.Generic;
@@ -13,9 +13,9 @@ namespace Kooco.Pikachu.Blazor.Pages.Campaigns;
 
 public partial class CreateCampaign
 {
+    [Parameter] public Guid? Id { get; set; }
     private CreateCampaignDto Entity { get; set; } = new();
-    private List<string> TargetAudienceOptions { get; } = CampaignConsts.TargetAudience.Values;
-    private List<DeliveryMethod> DeliveryMethodOptions { get; } = [.. Enum.GetValues<DeliveryMethod>()];
+    private IReadOnlyList<string> TargetAudienceOptions { get; set; } = [];
     private IReadOnlyList<KeyValueDto> GroupBuyOptions { get; set; } = [];
     private IReadOnlyList<KeyValueDto> ProductOptions { get; set; } = [];
     private bool Loading { get; set; } = false;
@@ -44,7 +44,8 @@ public partial class CreateCampaign
             {
                 GroupBuyOptions = await GroupBuyAppService.GetGroupBuyLookupAsync();
                 ProductOptions = await ItemAppService.GetAllItemsLookupAsync();
-                TargetAudienceOptions.AddRange(await MemberTagAppService.GetMemberTagNamesAsync());
+                var memberTags = await MemberTagAppService.GetMemberTagNamesAsync();
+                TargetAudienceOptions = [.. CampaignConsts.TargetAudience.Values, .. memberTags];
             }
             catch (Exception ex)
             {
@@ -60,15 +61,24 @@ public partial class CreateCampaign
 
     async Task Save()
     {
-        Loading = true;
-
-        if (!await Validate())
+        try
         {
-            return;
-        }
+            Loading = true;
 
-        await Message.Success("Success");
-        Loading = false;
+            if (!await Validate())
+            {
+                return;
+            }
+            await CampaignAppService.CreateAsync(Entity);
+            await Message.Success("Success");
+            Loading = false;
+            Cancel();
+        }
+        catch (Exception ex)
+        {
+            Loading = false;
+            await HandleErrorAsync(ex);
+        }
     }
 
     async Task<bool> Validate()
@@ -78,19 +88,32 @@ public partial class CreateCampaign
 
         foreach (var error in validationResult.Errors)
         {
-            var field = error.PropertyName switch
+            var segments = error.PropertyName.Split('.', 2);
+
+            FieldIdentifier field;
+
+            if (segments.Length == 2)
             {
-                "AddOnProduct.AddOnProductId" => new FieldIdentifier(Entity.AddOnProduct, nameof(CreateCampaignAddOnProductDto.AddOnProductId)),
-                "ShoppingCredit.Budget" => new FieldIdentifier(Entity.ShoppingCredit, nameof(CreateCampaignShoppingCreditDto.Budget)),
-                _ => new FieldIdentifier(Entity, error.PropertyName),
-            };
+                field = segments[0] switch
+                {
+                    "Discount" => new FieldIdentifier(Entity.Discount, segments[1]),
+                    "AddOnProduct" => new FieldIdentifier(Entity.AddOnProduct, segments[1]),
+                    "ShoppingCredit" => new FieldIdentifier(Entity.ShoppingCredit, segments[1]),
+                    _ => new FieldIdentifier(Entity, error.PropertyName)
+                };
+            }
+            else
+            {
+                field = new FieldIdentifier(Entity, error.PropertyName);
+            }
+
             _messageStore.Add(field, error.ErrorMessage);
         }
 
         _editContext.NotifyValidationStateChanged();
-        
+
         bool isValid = await ValidationsRef.ValidateAll();
-        
+
         if (!isValid || _editContext.GetValidationMessages().Any())
         {
             await Notify.Error(L["ValidationErrorsDescription"], L["ValidationErrors"]);

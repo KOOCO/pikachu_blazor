@@ -51,6 +51,7 @@ using Kooco.Pikachu.GroupBuyItemsPriceses;
 using Kooco.Pikachu.LogisticsSettings;
 using Kooco.Pikachu.Tenants.Entities;
 using Kooco.Pikachu.Members.MemberTags;
+using Kooco.Pikachu.Campaigns;
 
 namespace Kooco.Pikachu.EntityFrameworkCore;
 
@@ -169,6 +170,7 @@ public class PikachuDbContext(DbContextOptions<PikachuDbContext> options) :
     public DbSet<TenantWallet> TenantWallets { get; set; }
     public DbSet<TenantWalletTransaction> TenantWalletTransactions { get; set; }
     public DbSet<GroupBuyItemGroupImageModule> GroupBuyItemGroupImageModules { get; set; }
+    public DbSet<Campaign> Campaigns { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -720,9 +722,86 @@ public class PikachuDbContext(DbContextOptions<PikachuDbContext> options) :
         {
             b.ToTable(PikachuConsts.DbTablePrefix + "GroupBuyItemsPriceses", PikachuConsts.DbSchema, table => table.HasComment(""));
             b.ConfigureByConvention();
+        });
 
+        builder.Entity<Campaign>(b =>
+        {
+            b.ToTable(PikachuConsts.DbTablePrefix + "Campaigns", PikachuConsts.DbSchema);
+            b.ConfigureByConvention();
 
+            b.Property(x => x.Name).IsRequired().HasMaxLength(CampaignConsts.MaxNameLength);
+            b.Property(x => x.Description).HasMaxLength(CampaignConsts.MaxDescriptionLength);
 
+            b.HasOne(c => c.Discount)
+            .WithOne(x => x.Campaign)
+            .HasForeignKey<CampaignDiscount>(d => d.CampaignId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+            b.HasOne(c => c.ShoppingCredit)
+                .WithOne(x => x.Campaign)
+                .HasForeignKey<CampaignShoppingCredit>(s => s.CampaignId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            b.HasOne(c => c.AddOnProduct)
+                .WithOne(x => x.Campaign)
+                .HasForeignKey<CampaignAddOnProduct>(a => a.CampaignId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            b.HasMany(x => x.GroupBuys)
+                .WithOne(x => x.Campaign)
+                .HasForeignKey(x => x.CampaignId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            b.HasMany(x => x.Products)
+                .WithOne(x => x.Campaign)
+                .HasForeignKey(x => x.CampaignId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        builder.Entity<CampaignDiscount>(b =>
+        {
+            b.ToTable(PikachuConsts.DbTablePrefix + "CampaignDiscounts", PikachuConsts.DbSchema);
+            b.ConfigureByConvention();
+
+            b.Property(x => x.DiscountCode).HasMaxLength(CampaignConsts.MaxDiscountCodeLength);
+        });
+
+        builder.Entity<CampaignShoppingCredit>(b =>
+        {
+            b.ToTable(PikachuConsts.DbTablePrefix + "CampaignShoppingCredits", PikachuConsts.DbSchema);
+            b.ConfigureByConvention();
+
+            b.HasMany(x => x.StageSettings).WithOne(x => x.ShoppingCredit).HasForeignKey(x => x.ShoppingCreditId);
+        });
+
+        builder.Entity<CampaignAddOnProduct>(b =>
+        {
+            b.ToTable(PikachuConsts.DbTablePrefix + "CampaignAddOnProducts", PikachuConsts.DbSchema);
+            b.ConfigureByConvention();
+
+            b.HasOne(x => x.Product).WithOne().HasForeignKey<CampaignAddOnProduct>(x => x.ProductId);
+        });
+
+        builder.Entity<CampaignStageSetting>(b =>
+        {
+            b.ToTable(PikachuConsts.DbTablePrefix + "CampaignStageSettings", PikachuConsts.DbSchema);
+            b.ConfigureByConvention();
+        });
+
+        builder.Entity<CampaignGroupBuy>(b =>
+        {
+            b.ToTable(PikachuConsts.DbTablePrefix + "CampaignGroupBuys", PikachuConsts.DbSchema);
+            b.ConfigureByConvention();
+
+            b.HasOne(x => x.GroupBuy).WithOne().HasForeignKey<CampaignGroupBuy>(x => x.GroupBuyId);
+        });
+
+        builder.Entity<CampaignProduct>(b =>
+        {
+            b.ToTable(PikachuConsts.DbTablePrefix + "CampaignProducts", PikachuConsts.DbSchema);
+            b.ConfigureByConvention();
+
+            b.HasOne(x => x.Product).WithOne().HasForeignKey<CampaignProduct>(x => x.ProductId);
         });
     }
 }

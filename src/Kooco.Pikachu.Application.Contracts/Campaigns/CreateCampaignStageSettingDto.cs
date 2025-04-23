@@ -1,6 +1,6 @@
 ﻿namespace Kooco.Pikachu.Campaigns;
 
-public class CreateCampaignStageSettingsDto
+public class CreateCampaignStageSettingDto
 {
     public bool IsSelected { get; set; }
     public int? Spend { get; set; }
