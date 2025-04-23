@@ -1867,7 +1867,7 @@ public partial class EditGroupBuy
         if (e.Files.Length > 1)
         {
             await _uiMessageService.Error("Select Only 1 Banner to Upload");
-            await LogoPickerCustom.Clear();
+            await bannerPicker.Clear();
             return;
         }
         if (e.Files.Length == 0)
@@ -1881,12 +1881,12 @@ public partial class EditGroupBuy
             if (!ValidFileExtensions.Contains(Path.GetExtension(e.Files[0].Name)))
             {
                 await _uiMessageService.Error(L["InvalidFileType"]);
-                await LogoPickerCustom.Clear();
+                await bannerPicker.Clear();
                 return;
             }
             if (e.Files[0].Size > MaxAllowedFileSize)
             {
-                await LogoPickerCustom.RemoveFile(e.Files[0]);
+                await bannerPicker.RemoveFile(e.Files[0]);
                 await _uiMessageService.Error(L[PikachuDomainErrorCodes.FilesAreGreaterThanMaxAllowedFileSize]);
                 return;
             }
@@ -2396,7 +2396,7 @@ public partial class EditGroupBuy
 
                     carouselImages = [.. carouselImages.Where(w => w.BlobImageName != blobImageName)];
 
-                    ExistingBannerImages = [.. ExistingBannerImages.Where(w => w.BlobImageName != blobImageName)];
+                  
                 }
 
 
@@ -3361,7 +3361,7 @@ public partial class EditGroupBuy
 
             if (item.GroupBuyModuleType is GroupBuyModuleType.CarouselImages)
             {
-                await _groupBuyAppService.GroupBuyItemModuleNoReindexingAsync(Id, GroupBuyModuleType.CarouselImages);
+                //await _groupBuyAppService.GroupBuyItemModuleNoReindexingAsync(Id, GroupBuyModuleType.CarouselImages);
 
                 CarouselFilePickers = [];
 
@@ -3374,7 +3374,7 @@ public partial class EditGroupBuy
 
             else if (item.GroupBuyModuleType is GroupBuyModuleType.BannerImages)
             {
-                await _groupBuyAppService.GroupBuyItemModuleNoReindexingAsync(Id, GroupBuyModuleType.BannerImages);
+                //await _groupBuyAppService.GroupBuyItemModuleNoReindexingAsync(Id, GroupBuyModuleType.BannerImages);
 
                 BannerFilePickers = [];
 
