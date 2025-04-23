@@ -516,8 +516,8 @@ public class ItemAppService :
 
     public async Task<List<KeyValueDto>> GetAllItemsLookupAsync()
     {
-        var items = await _itemRepository.GetQueryableAsync();
-        var list = items.Select(x => new KeyValueDto { Id = x.Id, Name = x.ItemName }).ToList();
+        var list = (await _itemRepository.GetListAsync()).Select(x => new KeyValueDto { Id = x.Id, Name = x.ItemName }).ToList();
+         
         return list;
     }
 
