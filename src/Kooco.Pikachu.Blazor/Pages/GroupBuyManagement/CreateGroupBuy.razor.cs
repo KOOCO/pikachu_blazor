@@ -25,10 +25,12 @@ using Kooco.Pikachu.Tenants;
 using Kooco.Pikachu.Tenants.Requests;
 using Kooco.Pikachu.Tenants.Responses;
 using Microsoft.AspNetCore.Components;
-
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
 using Newtonsoft.Json;
+using SixLabors.ImageSharp.PixelFormats;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -37,6 +39,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Volo.Abp.AspNetCore.Components.Messages;
 using Modal = Blazorise.Modal;
+using Image = SixLabors.ImageSharp.Image;
 
 
 namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement;
@@ -909,7 +912,7 @@ public partial class CreateGroupBuy
             await _uiMessageService.Error(L[PikachuDomainErrorCodes.FilesAreGreaterThanMaxAllowedFileSize]);
             return;
         }
-
+        
         // Read image to Data URL for cropping preview
         using var stream = selectedFile.OpenReadStream(long.MaxValue);
         using var ms = new MemoryStream();
@@ -941,12 +944,20 @@ public partial class CreateGroupBuy
     }
     private async Task GetCroppedImage()
     {
+        var base64Data = imageToCrop.Substring(imageToCrop.IndexOf(",") + 1);
+        byte[] imageBytes = Convert.FromBase64String(base64Data);
+        var imageWidth = 0;
+        var imageHeight = 0;
+        using (var image = Image.Load<Rgba32>(imageBytes))
+        {
+            imageWidth = image.Width;
+            imageHeight = image.Height;
+        }
         var options = new CropperCropOptions
         {
-            Width = 300,       // Set desired width of the cropped image
-            Height = 300,      // Set desired height of the cropped image
-            ImageQuality = 0.9, // Set image quality (if using JPEG)
-            ImageType = "image/png" // Specify the image format (use PNG in this case)
+          Width=imageWidth,
+          Height = imageHeight,
+          ImageQuality=1,
         };
         var base64Image = await LogoCropper.CropAsBase64ImageAsync(options);
         croppedImage = base64Image;
@@ -1153,8 +1164,7 @@ public partial class CreateGroupBuy
     {
         var options = new CropperCropOptions
         {
-            Width = 300,       // Set desired width of the cropped image
-            Height = 300,      // Set desired height of the cropped image
+            
             ImageQuality = 0.9, // Set image quality (if using JPEG)
             ImageType = "image/png" // Specify the image format (use PNG in this case)
         };
@@ -3425,6 +3435,15 @@ await _uiMessageService.Error(L[PikachuDomainErrorCodes.SomethingWrongWhileFileU
     {
         try
         {
+            // Remove unselected items
+            var removed = selectedItem.ItemDetailsWithPrices.Keys.ToList();
+            foreach (var key in removed)
+            {
+                selectedItem.ItemDetailsWithPrices.Remove(key);
+            }
+
+            selectedItem.SelectedItemDetailIds = [];
+            selectedItem.Item = null;
             var item = ItemsList.FirstOrDefault(x => x.Id == id);
             var index = collapseItem.Selected.IndexOf(selectedItem);
             if (item != null)

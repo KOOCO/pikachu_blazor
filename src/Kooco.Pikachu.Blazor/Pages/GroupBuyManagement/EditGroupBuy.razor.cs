@@ -3168,6 +3168,15 @@ public partial class EditGroupBuy
     {
         try
         {
+            // Remove unselected items
+            var removed = selectedItem.ItemDetailsWithPrices.Keys.ToList();
+            foreach (var key in removed)
+            {
+                selectedItem.ItemDetailsWithPrices.Remove(key);
+            }
+
+            selectedItem.SelectedItemDetailIds = [];
+            selectedItem.Item = null;
             var item = ItemsList.FirstOrDefault(x => x.Id == id);
             var index = collapseItem.Selected.IndexOf(selectedItem);
             if (item != null)
@@ -3215,6 +3224,8 @@ public partial class EditGroupBuy
             .Where(temp => temp != null) // Filter out null temperatures
             .Distinct()
             .Count() > 1;
+            await InvokeAsync(StateHasChanged);
+            
         }
         catch (Exception ex)
         {
@@ -3252,6 +3263,7 @@ public partial class EditGroupBuy
                 }
             }
         }
+
 
         selectedItem.SelectedItemDetailIds = selectedValues.ToList();
         StateHasChanged();
