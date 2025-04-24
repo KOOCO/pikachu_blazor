@@ -91,7 +91,6 @@ public class Campaign : FullAuditedAggregateRoot<Guid>, IMultiTenant
         GroupBuys.Add(groupBuy);
         return groupBuy;
     }
-
     public CampaignProduct AddProduct(Guid id, Guid productId)
     {
         var product = new CampaignProduct(id, Id, productId);

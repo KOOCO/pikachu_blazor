@@ -1,55 +1,50 @@
-using Blazorise.DataGrid;
-using Kooco.Pikachu.Blazor.Helpers;
-using Kooco.Pikachu.Members;
-using Kooco.Pikachu.TierManagement;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using System;
-using Volo.Abp.Application.Dtos;
-using Kooco.Pikachu.Campaigns;
-using System.Linq;
 using Blazorise;
+using Blazorise.DataGrid;
+using Kooco.Pikachu.Campaigns;
+using Kooco.Pikachu.Permissions;
+using Microsoft.AspNetCore.Authorization;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Volo.Abp.Application.Dtos;
 
 namespace Kooco.Pikachu.Blazor.Pages.Campaigns;
 
 public partial class Campaigns
 {
-    private IReadOnlyList<CampaignDto> MembersList { get; set; }
+    private IReadOnlyList<CampaignDto> CampaignsList { get; set; }
     private int PageSize { get; } = LimitedResultRequestDto.DefaultMaxResultCount;
     private int CurrentPage { get; set; } = 1;
     private string CurrentSorting { get; set; }
     private int TotalCount { get; set; }
     private GetCampaignListDto Filters { get; set; }
     private bool FiltersVisible { get; set; } = false;
+    private bool CanCreate { get; set; }
+    private bool CanEdit { get; set; }
+    private bool CanDelete { get; set; }
 
     public Campaigns()
     {
-        MembersList = [];
+        CampaignsList = [];
         Filters = new();
     }
 
     protected override async Task OnInitializedAsync()
     {
-        await GetMembersAsync();
+        await SetAuthorizationAsync();
+        await GetCampaignsAsync();
         await base.OnInitializedAsync();
     }
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    async Task SetAuthorizationAsync()
     {
-        if (firstRender)
-        {
-            try
-            {
-
-            }
-            catch (Exception ex)
-            {
-                await HandleErrorAsync(ex);
-            }
-        }
+        CanCreate = await AuthorizationService.IsGrantedAsync(PikachuPermissions.Campaigns.Create);
+        CanEdit = await AuthorizationService.IsGrantedAsync(PikachuPermissions.Campaigns.Edit);
+        CanDelete = await AuthorizationService.IsGrantedAsync(PikachuPermissions.Campaigns.Delete);
     }
 
-    private async Task GetMembersAsync()
+    private async Task GetCampaignsAsync()
     {
         try
         {
@@ -66,7 +61,7 @@ public partial class Campaigns
                 }
             );
 
-            MembersList = result.Items;
+            CampaignsList = result.Items;
             TotalCount = (int)result.TotalCount;
         }
         catch (Exception ex)
@@ -83,21 +78,55 @@ public partial class Campaigns
             .JoinAsString(",");
         CurrentPage = e.Page;
 
-        await GetMembersAsync();
+        await GetCampaignsAsync();
 
         await InvokeAsync(StateHasChanged);
     }
 
-    private void EditMember(CampaignDto member)
+    private void Edit(CampaignDto member)
     {
         NavigationManager.NavigateTo("/Campaigns/Edit/" + member.Id);
+    }
+
+    async Task DeleteAsync(CampaignDto campaign)
+    {
+        try
+        {
+            var confirm = await Message.Confirm(L["AreYouSureToDeleteCampaign", campaign.Name]);
+            if (confirm)
+            {
+                await CampaignAppService.DeleteAsync(campaign.Id);
+                await GetCampaignsAsync();
+            }
+        }
+        catch (Exception ex)
+        {
+            await HandleErrorAsync(ex);
+        }
+    }
+
+    async Task SetIsEnabled(CampaignDto campaign)
+    {
+        try
+        {
+            var confirm = await Message.Confirm(L["AreYouSureToSetCampaignStatus", campaign.IsEnabled ? L["Inactive"] : L["Active"]]);
+            if (confirm)
+            {
+                await CampaignAppService.SetIsEnabledAsync(campaign.Id, !campaign.IsEnabled);
+                await GetCampaignsAsync();
+            }
+        }
+        catch (Exception ex)
+        {
+            await HandleErrorAsync(ex);
+        }
     }
 
     private async Task ApplyFilters()
     {
         CurrentPage = 1;
 
-        await GetMembersAsync();
+        await GetCampaignsAsync();
 
         await InvokeAsync(StateHasChanged);
     }
@@ -108,7 +137,7 @@ public partial class Campaigns
 
         Filters = new();
 
-        await GetMembersAsync();
+        await GetCampaignsAsync();
 
         await InvokeAsync(StateHasChanged);
     }

@@ -171,6 +171,9 @@ public class PikachuDbContext(DbContextOptions<PikachuDbContext> options) :
     public DbSet<TenantWalletTransaction> TenantWalletTransactions { get; set; }
     public DbSet<GroupBuyItemGroupImageModule> GroupBuyItemGroupImageModules { get; set; }
     public DbSet<Campaign> Campaigns { get; set; }
+    public DbSet<CampaignDiscount> CampaignDiscounts { get; set; }
+    public DbSet<CampaignShoppingCredit> CampaignShoppingCredits { get; set; }
+    public DbSet<CampaignAddOnProduct> CampaignAddOnProducts { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -733,9 +736,9 @@ public class PikachuDbContext(DbContextOptions<PikachuDbContext> options) :
             b.Property(x => x.Description).HasMaxLength(CampaignConsts.MaxDescriptionLength);
 
             b.HasOne(c => c.Discount)
-            .WithOne(x => x.Campaign)
-            .HasForeignKey<CampaignDiscount>(d => d.CampaignId)
-            .OnDelete(DeleteBehavior.Cascade);
+                .WithOne(x => x.Campaign)
+                .HasForeignKey<CampaignDiscount>(d => d.CampaignId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             b.HasOne(c => c.ShoppingCredit)
                 .WithOne(x => x.Campaign)
@@ -779,7 +782,7 @@ public class PikachuDbContext(DbContextOptions<PikachuDbContext> options) :
             b.ToTable(PikachuConsts.DbTablePrefix + "CampaignAddOnProducts", PikachuConsts.DbSchema);
             b.ConfigureByConvention();
 
-            b.HasOne(x => x.Product).WithOne().HasForeignKey<CampaignAddOnProduct>(x => x.ProductId);
+            b.HasOne(x => x.Product).WithMany().HasForeignKey(x => x.ProductId);
         });
 
         builder.Entity<CampaignStageSetting>(b =>
@@ -793,7 +796,7 @@ public class PikachuDbContext(DbContextOptions<PikachuDbContext> options) :
             b.ToTable(PikachuConsts.DbTablePrefix + "CampaignGroupBuys", PikachuConsts.DbSchema);
             b.ConfigureByConvention();
 
-            b.HasOne(x => x.GroupBuy).WithOne().HasForeignKey<CampaignGroupBuy>(x => x.GroupBuyId);
+            b.HasOne(x => x.GroupBuy).WithMany().HasForeignKey(x => x.GroupBuyId);
         });
 
         builder.Entity<CampaignProduct>(b =>
@@ -801,7 +804,7 @@ public class PikachuDbContext(DbContextOptions<PikachuDbContext> options) :
             b.ToTable(PikachuConsts.DbTablePrefix + "CampaignProducts", PikachuConsts.DbSchema);
             b.ConfigureByConvention();
 
-            b.HasOne(x => x.Product).WithOne().HasForeignKey<CampaignProduct>(x => x.ProductId);
+            b.HasOne(x => x.Product).WithMany().HasForeignKey(x => x.ProductId);
         });
     }
 }

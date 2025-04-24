@@ -2,6 +2,8 @@ using Blazorise;
 using DeviceDetectorNET;
 using Kooco.Pikachu.Campaigns;
 using Kooco.Pikachu.Items.Dtos;
+using Kooco.Pikachu.Permissions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using System;
@@ -46,6 +48,20 @@ public partial class CreateCampaign
                 if (Id.HasValue)
                 {
                     IsEditLoading = true;
+                    if (!await AuthorizationService.IsGrantedAsync(PikachuPermissions.Campaigns.Edit))
+                    {
+                        await Message.Error(L["YouAreNotAuthorized"]);
+                        Cancel();
+                    }
+                }
+
+                GroupBuyOptions = await GroupBuyAppService.GetGroupBuyLookupAsync();
+                ProductOptions = await ItemAppService.LookupAsync();
+                var memberTags = await MemberTagAppService.GetMemberTagNamesAsync();
+                TargetAudienceOptions = [.. CampaignConsts.TargetAudience.Values, .. memberTags];
+
+                if (Id.HasValue)
+                {
                     var campaign = await CampaignAppService.GetAsync(Id.Value, true);
                     Entity = ObjectMapper.Map<CampaignDto, CreateCampaignDto>(campaign);
                     Entity.Discount ??= new();
@@ -53,10 +69,7 @@ public partial class CreateCampaign
                     Entity.AddOnProduct ??= new();
                     StateHasChanged();
                 }
-                GroupBuyOptions = await GroupBuyAppService.GetGroupBuyLookupAsync();
-                ProductOptions = await ItemAppService.GetAllItemsLookupAsync();
-                var memberTags = await MemberTagAppService.GetMemberTagNamesAsync();
-                TargetAudienceOptions = [.. CampaignConsts.TargetAudience.Values, .. memberTags];
+
                 ValidationsRef?.ClearAll();
                 IsEditLoading = false;
                 StateHasChanged();
@@ -79,13 +92,25 @@ public partial class CreateCampaign
         {
             Loading = true;
             StateHasChanged();
+
             if (!await Validate())
             {
                 return;
             }
-            await CampaignAppService.CreateAsync(Entity);
+
+            if (Id.HasValue)
+            {
+                await CampaignAppService.UpdateAsync(Id.Value, Entity);
+            }
+            else
+            {
+                await CampaignAppService.CreateAsync(Entity);
+            }
+
             await Notify.Success("Success");
+
             Loading = false;
+
             Cancel();
         }
         catch (Exception ex)

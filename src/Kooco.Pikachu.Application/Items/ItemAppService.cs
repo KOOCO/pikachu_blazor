@@ -514,6 +514,15 @@ public class ItemAppService :
         };
     }
 
+    public async Task<List<KeyValueDto>> LookupAsync()
+    {
+        var list = (await _itemRepository.GetQueryableAsync())
+            .Select(x => new KeyValueDto { Id = x.Id, Name = x.ItemName })
+            .ToList();
+
+        return list;
+    }
+
     public async Task<List<KeyValueDto>> GetAllItemsLookupAsync()
     {
         var list = (await _itemRepository.GetListAsync()).Select(x => new KeyValueDto { Id = x.Id, Name = x.ItemName }).ToList();

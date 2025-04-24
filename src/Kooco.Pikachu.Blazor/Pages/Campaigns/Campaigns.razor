@@ -10,10 +10,13 @@
         <h3 class="text-dark">@L["Campaigns"]</h3>
     </Column>
     <Column ColumnSize="ColumnSize.Is12.Is6.OnTablet" TextAlignment="TextAlignment.End">
-        <PikachuButton Class="pk-btn-sm pk-btn-primary" IconClass="fas fa-add"
-                       Clicked="@(() => NavigationManager.NavigateTo("/Campaigns/Create"))">
-            @L["NewCampaign"]
-        </PikachuButton>
+        @if (CanCreate)
+        {
+            <PikachuButton Class="pk-btn-sm pk-btn-primary" IconClass="fas fa-add"
+                           Clicked="@(() => NavigationManager.NavigateTo("/Campaigns/Create"))">
+                @L["NewCampaign"]
+            </PikachuButton>
+        }
     </Column>
 </Row>
 <Card>
@@ -73,7 +76,7 @@
 <Card>
     <CardBody>
         <DataGrid TItem="CampaignDto"
-                  Data="MembersList"
+                  Data="CampaignsList"
                   ReadData="OnDataGridReadAsync"
                   TotalItems="TotalCount"
                   ShowPager="true"
@@ -98,14 +101,16 @@
                                 Caption="@L["Status"]"
                                 TextAlignment="TextAlignment.Center">
                     <DisplayTemplate>
-                        @if (context.IsEnabled)
-                        {
-                            <PikachuBadge Class="pk-badge-success">@L["Active"]</PikachuBadge>
-                        }
-                        else
-                        {
-                            <PikachuBadge Class="pk-badge-warning">@L["Inactive"]</PikachuBadge>
-                        }
+                        <Span Style="cursor: pointer;" @onclick="@(() => SetIsEnabled(context))">
+                            @if (context.IsEnabled)
+                            {
+                                <PikachuBadge Class="pk-badge-success">@L["Active"]</PikachuBadge>
+                            }
+                            else
+                            {
+                                <PikachuBadge Class="pk-badge-warning">@L["Inactive"]</PikachuBadge>
+                            }
+                        </Span>
                     </DisplayTemplate>
                 </DataGridColumn>
                 <DataGridColumn TItem="CampaignDto"
@@ -148,16 +153,28 @@
                                 Sortable="false"
                                 Caption="@L["Actions"]">
                     <DisplayTemplate>
-                        <Dropdown>
-                            <DropdownToggle Color="Color.Primary">
-                                @L["Actions"]
-                            </DropdownToggle>
-                            <DropdownMenu>
-                                <DropdownItem Clicked="() => EditMember(context)">
-                                    @L["Edit"]
-                                </DropdownItem>
-                            </DropdownMenu>
-                        </Dropdown>
+                        @if (CanEdit || CanDelete)
+                        {
+                            <Dropdown>
+                                <DropdownToggle Color="Color.Primary">
+                                    @L["Actions"]
+                                </DropdownToggle>
+                                <DropdownMenu>
+                                    @if (CanEdit)
+                                    {
+                                        <DropdownItem Clicked="() => Edit(context)">
+                                            @L["Edit"]
+                                        </DropdownItem>
+                                    }
+                                    @if (CanDelete)
+                                    {
+                                        <DropdownItem Clicked="() => DeleteAsync(context)">
+                                            @L["Delete"]
+                                        </DropdownItem>
+                                    }
+                                </DropdownMenu>
+                            </Dropdown>
+                        }
                     </DisplayTemplate>
                 </DataGridColumn>
             </DataGridColumns>

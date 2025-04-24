@@ -14,7 +14,7 @@ public class CampaignBuilder
         _input = input ?? throw new ArgumentNullException(nameof(input));
     }
 
-    public async Task<Campaign> BuildAsync(CampaignManager manager)
+    public async Task<Campaign> CreateAsync(CampaignManager manager)
     {
         var campaign = await manager.CreateAsync(
             _input.Name,
@@ -29,6 +29,34 @@ public class CampaignBuilder
             _input.ProductIds
         );
 
+        HandleModules(campaign, manager);
+
+        return campaign;
+    }
+
+    public async Task<Campaign> UpdateAsync(Campaign campaign, CampaignManager manager)
+    {
+        await manager.UpdateAsync(
+            campaign,
+            _input.Name,
+            Require(_input.StartDate, nameof(_input.StartDate)),
+            Require(_input.EndDate, nameof(_input.EndDate)),
+            _input.Description,
+            _input.TargetAudience,
+            Require(_input.PromotionModule, nameof(_input.PromotionModule)),
+            Require(_input.ApplyToAllGroupBuys, nameof(_input.ApplyToAllGroupBuys)),
+            _input.GroupBuyIds,
+            _input.ApplyToAllProducts,
+            _input.ProductIds
+        );
+
+        HandleModules(campaign, manager);
+
+        return campaign;
+    }
+
+    private void HandleModules(Campaign campaign, CampaignManager manager)
+    {
         switch (_input.PromotionModule)
         {
             case PromotionModule.Discount:
@@ -41,8 +69,6 @@ public class CampaignBuilder
                 AddAddOnProduct(campaign, _input.AddOnProduct, manager);
                 break;
         }
-
-        return campaign;
     }
 
     private void AddDiscount(Campaign campaign, CreateCampaignDiscountDto discount, CampaignManager manager)
@@ -65,9 +91,9 @@ public class CampaignBuilder
 
     private void AddShoppingCredit(Campaign campaign, CreateCampaignShoppingCreditDto credit, CampaignManager manager)
     {
-        var stages = credit.StageSettings.Select(x =>
-            (Require(x.Spend, "Stage Spend"), Require(x.PointsToReceive, "Points"))
-        ).ToList();
+        var stages = credit.CalculationMethod == CalculationMethod.StagedCalculation
+            ? credit.StageSettings.Select(x => (Require(x.Spend, "Stage Spend"), Require(x.PointsToReceive, "Points"))).ToList()
+            : [];
 
         manager.AddShoppingCredit(
             campaign,
@@ -97,6 +123,5 @@ public class CampaignBuilder
     }
 
     private static T Require<T>(T? value, string name) where T : struct =>
-        value ?? throw new BusinessException($"{name} is required");
+        value ?? throw new UserFriendlyException($"{name} is required");
 }
-

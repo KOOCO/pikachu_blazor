@@ -182,25 +182,31 @@ public class CreateCampaignShoppingCreditDtoValidator : AbstractValidator<Create
             .NotNull()
             .WithMessage(l["TheFieldIsRequired", l["UsagePeriod"]]);
 
-        RuleFor(x => x.ValidForDays)
-            .NotNull()
-            .WithMessage(l["TheFieldIsRequired", l[nameof(CreateCampaignShoppingCreditDto.ValidForDays)]]);
+        When(x => x.CanExpire == true, () =>
+        {
+            RuleFor(x => x.ValidForDays)
+                .NotNull()
+                .WithMessage(l["TheFieldIsRequired", l[nameof(CreateCampaignShoppingCreditDto.ValidForDays)]]);
 
-        RuleFor(x => x.ValidForDays)
-            .GreaterThanOrEqualTo(0)
-            .When(x => x.CanExpire == true && x.ValidForDays != null);
+            RuleFor(x => x.ValidForDays)
+                .GreaterThanOrEqualTo(0)
+                .When(x => x.ValidForDays != null);
+        });
 
         RuleFor(x => x.CalculationMethod)
             .NotNull()
             .WithMessage(l["TheFieldIsRequired", l[nameof(CreateCampaignShoppingCreditDto.CalculationMethod)]]);
 
-        RuleFor(x => x.CalculationPercentage)
-            .NotNull()
-            .WithMessage(l["TheFieldIsRequired", l[nameof(CreateCampaignShoppingCreditDto.CalculationPercentage)]]);
+        When(x => x.CalculationMethod == CalculationMethod.UnifiedCalculation, () =>
+        {
+            RuleFor(x => x.CalculationPercentage)
+                .NotNull()
+                .WithMessage(l["TheFieldIsRequired", l[nameof(CreateCampaignShoppingCreditDto.CalculationPercentage)]]);
 
-        RuleFor(x => x.CalculationPercentage)
-            .GreaterThanOrEqualTo(0)
-            .When(x => x.CalculationMethod == CalculationMethod.UnifiedCalculation && x.CalculationPercentage != null);
+            RuleFor(x => x.CalculationPercentage)
+                .GreaterThanOrEqualTo(0)
+                .When(x => x.CalculationPercentage != null);
+        });
 
         RuleFor(x => x.ApplicableItem)
             .NotNull()
@@ -293,7 +299,9 @@ public class CreateCampaignAddOnProductDtoValidator : AbstractValidator<CreateCa
         {
             RuleFor(x => x.Threshold)
                 .NotNull()
-                .WithMessage(l["TheFieldIsRequired", l[nameof(CreateCampaignAddOnProductDto.Threshold)]])
+                .WithMessage(l["TheFieldIsRequired", l[nameof(CreateCampaignAddOnProductDto.Threshold)]]);
+
+            RuleFor(x => x.Threshold)
                 .GreaterThanOrEqualTo(0)
                 .When(x => x.Threshold != null);
         });

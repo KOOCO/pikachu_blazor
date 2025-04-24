@@ -10,6 +10,7 @@
 @using Kooco.Pikachu.Localization
 @using Kooco.Pikachu.Members.MemberTags
 @using Volo.Abp.AspNetCore.Components.Web
+@attribute [Authorize(PikachuPermissions.Campaigns.Create)]
 @inherits PikachuComponentBase
 @inject NavigationManager NavigationManager
 @inject IValidator<CreateCampaignDto> CreateCampaignValidator
@@ -243,7 +244,7 @@
                         </Card>
                         <Div Class="text-end mt-2">
                             <PikachuButton Class="pk-btn-transparent" Disabled="Loading" Clicked="Cancel">@L["Cancel"]</PikachuButton>
-                            <PikachuButton Class="pk-btn-primary" Loading="Loading" Clicked="Save">@L["CreateCampaign"]</PikachuButton>
+                            <PikachuButton Class="pk-btn-primary" Loading="Loading" Clicked="Save">@L[Id.HasValue ? "UpdateCampaign" : "CreateCampaign"]</PikachuButton>
                         </Div>
                     </Column>
                 </Row>

@@ -72,4 +72,5 @@ public static class PikachuDomainErrorCodes
     public const string VipTierConditionChecked = "Pikachu:VipTierConditionChecked";
     public const string VipTierCondition = "Pikachu:VipTierCondition";
     public const string DuplicateTier = "Pikachu:DuplicateTier";
+    public const string CampaignWithSameNameAlreadyExists = "Pikachu:CampaignWithSameNameAlreadyExists";
 }
