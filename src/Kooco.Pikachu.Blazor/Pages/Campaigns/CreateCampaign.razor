@@ -21,12 +21,12 @@
 
 <style>
     .form-group[indent] {
-        width: calc(50% - 25px - 1rem);
-        margin-left: 25px;
+    width: calc(50% - 25px - 1rem);
+    margin-left: 25px;
     }
 
     .form-group[mb0] {
-        margin-bottom: 0px;
+    margin-bottom: 0px;
     }
 </style>
 <Div Class="rounded-cards">
@@ -35,13 +35,25 @@
             <Icon Name="IconName.ArrowLeft" Class="me-1"></Icon>
         </PikachuButton>
         <h4 class="text-dark m-0">
-            @L["CreateNewCampaign"]
+            @(Id.HasValue ? L["EditCampaign"] : L["CreateNewCampaign"])
         </h4>
     </Div>
+    @if (IsEditLoading)
+    {
+        <Row>
+            <Column ColumnSize="ColumnSize.Is9">
+                <Card>
+                    <div class="d-flex align-items-center justify-content-center" style="height: 5rem;">
+                        <div class="spinner-border text-primary" style="height: 3rem; width: 3rem;"></div>
+                    </div>
+                </Card>
+            </Column>
+        </Row>
+    }
     <Form>
         <Validations @ref="ValidationsRef" Model="@Entity" ValidateOnLoad="false" HandlerType="typeof(FluentValidationHandler)">
             <EditForm EditContext="_editContext">
-                <Row>
+                <Row Visibility="IsEditLoading ? Visibility.Invisible : Visibility.Visible">
                     <Column ColumnSize="ColumnSize.Is9">
                         <Card>
                             <CardBody>

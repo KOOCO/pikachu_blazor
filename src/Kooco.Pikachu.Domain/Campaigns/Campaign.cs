@@ -18,6 +18,7 @@ public class Campaign : FullAuditedAggregateRoot<Guid>, IMultiTenant
     public PromotionModule PromotionModule { get; set; }
     public bool ApplyToAllGroupBuys { get; set; }
     public bool? ApplyToAllProducts { get; private set; }
+    public bool IsEnabled { get; set; }
     public Guid? TenantId { get; set; }
     public virtual ICollection<CampaignGroupBuy> GroupBuys { get; set; } = [];
     public virtual ICollection<CampaignProduct> Products { get; set; } = [];
@@ -57,6 +58,7 @@ public class Campaign : FullAuditedAggregateRoot<Guid>, IMultiTenant
         PromotionModule = promotionModule;
         ApplyToAllGroupBuys = applyToAllGroupBuys;
         SetApplyToAllProducts(applyToAllProducts);
+        SetIsEnabled(true);
         GroupBuys = new List<CampaignGroupBuy>();
         Products = new List<CampaignProduct>();
     }
@@ -73,6 +75,7 @@ public class Campaign : FullAuditedAggregateRoot<Guid>, IMultiTenant
         EndDate = Check.NotNull(endDate, nameof(EndDate));
     }
     public void SetTargetAudience(IEnumerable<string> targetAudience) => TargetAudienceJson = JsonSerializer.Serialize(targetAudience);
+    public void SetIsEnabled(bool isEnabled) => IsEnabled = isEnabled;
     public void SetApplyToAllProducts(bool? applyToAllProducts)
     {
         if (PromotionModule != PromotionModule.AddOnProduct && !applyToAllProducts.HasValue)
@@ -82,7 +85,6 @@ public class Campaign : FullAuditedAggregateRoot<Guid>, IMultiTenant
 
         ApplyToAllProducts = applyToAllProducts;
     }
-
     public CampaignGroupBuy AddGroupBuy(Guid id, Guid groupBuyId)
     {
         var groupBuy = new CampaignGroupBuy(id, Id, groupBuyId);

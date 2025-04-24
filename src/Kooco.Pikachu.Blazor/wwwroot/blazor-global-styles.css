@@ -911,6 +911,18 @@
     box-sizing: border-box;
 }
 
+.promotion-module-svg.sm > div {
+    margin-bottom: 0;
+    padding: 8px 12px;
+    border-radius: 9px;
+    box-sizing: border-box;
+}
+
+.promotion-module-svg.sm svg {
+    height: 16px;
+    width: 16px;
+}
+
 .promotion-module h4 {
     margin: 0;
     margin-bottom: 5px;

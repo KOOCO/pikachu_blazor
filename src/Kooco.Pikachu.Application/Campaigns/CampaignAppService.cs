@@ -1,9 +1,11 @@
 ﻿using FluentValidation;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using Volo.Abp;
+using Volo.Abp.Application.Dtos;
 using Volo.Abp.Validation;
 
 namespace Kooco.Pikachu.Campaigns;
@@ -27,19 +29,6 @@ public class CampaignAppService : PikachuAppService, ICampaignAppService
 
     public async Task<CampaignDto> CreateAsync(CreateCampaignDto input)
     {
-        await Validate(input);
-
-        var builder = new CampaignBuilder(input);
-
-        var campaign = await builder.BuildAsync(_campaignManager);
-
-        await _campaignRepository.UpdateAsync(campaign);
-
-        return ObjectMapper.Map<Campaign, CampaignDto>(campaign);
-    }
-
-    private async Task Validate(CreateCampaignDto input)
-    {
         Check.NotNull(input, nameof(input));
 
         var validations = await _createCampaignValidator.ValidateAsync(input);
@@ -50,11 +39,35 @@ public class CampaignAppService : PikachuAppService, ICampaignAppService
                 .ToList();
             throw new AbpValidationException(errors);
         }
+
+        var builder = new CampaignBuilder(input);
+
+        var campaign = await builder.BuildAsync(_campaignManager);
+
+        await _campaignRepository.UpdateAsync(campaign);
+
+        return ObjectMapper.Map<Campaign, CampaignDto>(campaign);
+    }
+    
+    public async Task<CampaignDto> GetAsync(Guid id, bool withDetails = false)
+    {
+        var campaign = withDetails
+            ? await _campaignRepository.GetWithDetailsAsync(id)
+            : await _campaignRepository.GetAsync(id);
+
+        return ObjectMapper.Map<Campaign, CampaignDto>(campaign);
     }
 
-    public async Task<CampaignDto> GetAsync(Guid id)
+    public async Task<PagedResultDto<CampaignDto>> GetListAsync(GetCampaignListDto input)
     {
-        var campaign = await _campaignRepository.GetAsync(id);
-        return ObjectMapper.Map<Campaign, CampaignDto>(campaign);
+        var totalCount = await _campaignRepository.CountAsync(input.Filter, input.IsEnabled, input.StartDate, input.EndDate);
+        var items = await _campaignRepository.GetListAsync(input.SkipCount, input.MaxResultCount, input.Sorting,
+            input.Filter, input.IsEnabled, input.StartDate, input.EndDate);
+
+        return new PagedResultDto<CampaignDto>
+        {
+            TotalCount = totalCount,
+            Items = ObjectMapper.Map<List<Campaign>, List<CampaignDto>>(items)
+        };
     }
 }

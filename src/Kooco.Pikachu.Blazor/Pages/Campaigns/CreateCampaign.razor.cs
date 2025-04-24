@@ -19,6 +19,7 @@ public partial class CreateCampaign
     private IReadOnlyList<KeyValueDto> GroupBuyOptions { get; set; } = [];
     private IReadOnlyList<KeyValueDto> ProductOptions { get; set; } = [];
     private bool Loading { get; set; } = false;
+    private bool IsEditLoading { get; set; } = false;
 
     private Validations ValidationsRef;
     private readonly ValidationMessageStore _messageStore;
@@ -42,10 +43,23 @@ public partial class CreateCampaign
         {
             try
             {
+                if (Id.HasValue)
+                {
+                    IsEditLoading = true;
+                    var campaign = await CampaignAppService.GetAsync(Id.Value, true);
+                    Entity = ObjectMapper.Map<CampaignDto, CreateCampaignDto>(campaign);
+                    Entity.Discount ??= new();
+                    Entity.ShoppingCredit ??= new();
+                    Entity.AddOnProduct ??= new();
+                    StateHasChanged();
+                }
                 GroupBuyOptions = await GroupBuyAppService.GetGroupBuyLookupAsync();
                 ProductOptions = await ItemAppService.GetAllItemsLookupAsync();
                 var memberTags = await MemberTagAppService.GetMemberTagNamesAsync();
                 TargetAudienceOptions = [.. CampaignConsts.TargetAudience.Values, .. memberTags];
+                ValidationsRef?.ClearAll();
+                IsEditLoading = false;
+                StateHasChanged();
             }
             catch (Exception ex)
             {
@@ -64,13 +78,13 @@ public partial class CreateCampaign
         try
         {
             Loading = true;
-
+            StateHasChanged();
             if (!await Validate())
             {
                 return;
             }
             await CampaignAppService.CreateAsync(Entity);
-            await Message.Success("Success");
+            await Notify.Success("Success");
             Loading = false;
             Cancel();
         }

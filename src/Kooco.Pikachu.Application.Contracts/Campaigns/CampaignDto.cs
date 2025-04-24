@@ -13,6 +13,7 @@ public class CampaignDto : FullAuditedEntityDto<Guid>
     public PromotionModule PromotionModule { get; set; }
     public bool ApplyToAllGroupBuys { get; set; }
     public bool? ApplyToAllProducts { get; set; }
+    public bool IsEnabled { get; set; }
     public Guid? TenantId { get; set; }
     public virtual ICollection<CampaignGroupBuyDto> GroupBuys { get; set; } = [];
     public virtual ICollection<CampaignProductDto> Products { get; set; } = [];

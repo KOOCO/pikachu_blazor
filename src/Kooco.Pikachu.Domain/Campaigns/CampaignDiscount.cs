@@ -117,7 +117,7 @@ public class CampaignDiscount : Entity<Guid>
         }
         else
         {
-            DeliveryMethodsJson = JsonSerializer.Serialize(string.Empty);
+            DeliveryMethodsJson = null;
         }
     }
 
