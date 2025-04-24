@@ -1189,7 +1189,8 @@
     "UnableToSpecifyDuringPeakPeriods": "忙碌期無法指定",
     "PleaseContactUs": "聯繫客服",
     "FaceBookPixelID": "Facebook 像素 ID",
-    "GAID": "GA追蹤碼ID"
+    "GAID": "GA追蹤碼ID",
+    "ThisDeleteActionCannotBeReverted": "此操作將無法復原，刪除後將立即儲存。您確定要刪除嗎？"
 
 
   }

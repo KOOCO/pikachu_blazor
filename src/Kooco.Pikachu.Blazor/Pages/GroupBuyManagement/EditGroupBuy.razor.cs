@@ -4,6 +4,7 @@ using Blazorise;
 using Blazorise.Cropper;
 using Blazorise.LoadingIndicator;
 using Kooco.Pikachu.AzureStorage.Image;
+using Kooco.Pikachu.Blazor.Components.Messages;
 using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.GroupBuyItemsPriceses;
 using Kooco.Pikachu.GroupBuyOrderInstructions;
@@ -3319,7 +3320,7 @@ public partial class EditGroupBuy
 
             if (item?.Id is not null)
             {
-                bool confirm = await _uiMessageService.Confirm(L["ThisDeleteActionCannotBeReverted"]);
+                bool confirm = await _myBlazoriseUiMessageService.Confirm(L["ThisDeleteActionCannotBeReverted"]);
 
                 if (!confirm) return;
 
@@ -3381,7 +3382,7 @@ public partial class EditGroupBuy
 
                 //CarouselFilePickers.RemoveAt(moduleNumber - 1);
 
-                //CarouselModules.RemoveAll(r => r.Any(w => w.ModuleNumber == moduleNumber));
+                CarouselModules.RemoveAll(r => r.Any(w => w.ModuleNumber == moduleNumber));
             }
 
             else if (item.GroupBuyModuleType is GroupBuyModuleType.BannerImages)
@@ -3394,7 +3395,7 @@ public partial class EditGroupBuy
 
                 //BannerFilePickers.RemoveAt(moduleNumber - 1);
 
-                //BannerModules.RemoveAll(r => r.Any(w => w.ModuleNumber == moduleNumber));
+                BannerModules.RemoveAll(r => r.Any(w => w.ModuleNumber == moduleNumber));
             }
 
             else if (item.GroupBuyModuleType is GroupBuyModuleType.OrderInstruction)

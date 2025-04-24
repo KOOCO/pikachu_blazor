@@ -3,6 +3,7 @@
 @using Volo.Abp.MultiTenancy
 @inherits PikachuComponentBase
 @inject AuthenticationStateProvider AuthenticationStateProvider
+
 @attribute [Authorize]
 <Div>
     @if (!CurrentUser.IsAuthenticated)
@@ -30,5 +31,6 @@
     {
         <Dashboard></Dashboard>
     }
+
 </Div>
 

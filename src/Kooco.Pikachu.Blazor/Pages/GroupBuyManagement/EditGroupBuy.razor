@@ -21,8 +21,10 @@
 @using Pikachu.Items;
 @using Pikachu.Localization;
 @using Volo.Abp.AspNetCore.Components.Web
+@using Kooco.Pikachu.Blazor.Components.Messages;
 @inherits PikachuComponentBase
 @inject IMyTenantAppService MyTenantAppService
+@inject MyBlazoriseUiMessageService _myBlazoriseUiMessageService;
 @inject IGroupBuyAppService AppService
 @inject NavigationManager NavigationManager
 @inject IStringLocalizer<PikachuResource> L
@@ -2191,6 +2193,7 @@
         </ModalFooter>
     </ModalContent>
 </Modal>
+<ConfirmDialog />
 @code {
 
 }

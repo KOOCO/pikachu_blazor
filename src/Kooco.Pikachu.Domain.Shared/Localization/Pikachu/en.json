@@ -221,7 +221,7 @@
     "Pikachu:CanNotAddMoreThan20Modules": "Can not add more than 20 modules",
     "GroupBuyList": "Group Buy List",
     "uploadUpto5Images": "Upload up to 5 images.",
-    "ThisDeleteActionCannotBeReverted": "This Action Cannot Be Reverted. Are You Sure To Delete It?",
+    "ThisDeleteActionCannotBeReverted": "This Action Cannot Be Reverted And Will Be Saved Immediately.  Are You Sure You Want To Delete It?",
     "EnableDragDrop": "Enable Drag Drop",
     "SaveSortOrder": "Save Sort Order",
     "AreYouSureToUpdateSortOrder": "Are You Sure You Want To Update Sort Order?",
