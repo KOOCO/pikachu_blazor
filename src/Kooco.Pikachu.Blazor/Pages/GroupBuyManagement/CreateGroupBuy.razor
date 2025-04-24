@@ -1278,19 +1278,19 @@
                                                         <Label>@L["Title"] <Span Class="text-danger">*</Span></Label>
                                                     </Div>
                                                     <Div Class="col-12 pb-1">
-                                                        <TextEdit @bind-Text="module.Title" />
+                                                        <TinyMCEEditor Style="min-height: 500px;"@bind-Value="@module.Title" />
                                                     </Div>
                                                     <Div Class="col-2 pb-1">
                                                         <Label>@L["SubTitle"]</Label>
                                                     </Div>
                                                     <Div Class="col-12 pb-1">
-                                                        <TextEdit @bind-Text="@module.SubTitle" />
+                                                        <TinyMCEEditor Style="min-height: 500px;"@bind-Value="@module.SubTitle" />
                                                     </Div>
                                                     <Div Class="col-2 pb-1">
                                                         <Label>@L["BodyText"]</Label>
                                                     </Div>
                                                     <Div Class="col-12 pb-1">
-                                                        <TextEdit @bind-Text="@module.BodyText" />
+                                                        <TinyMCEEditor Style="min-height: 500px;"@bind-Value="@module.BodyText" />
                                                     </Div>
                                                     <Div Class="col-12 pb-1"></Div>
                                                     <Div Class="col-12 pb-1">
