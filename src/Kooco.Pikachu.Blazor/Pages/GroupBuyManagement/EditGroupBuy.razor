@@ -1329,19 +1329,19 @@
                                                         <Label>@L["Title"] <Span Class="text-danger">*</Span></Label>
                                                     </Div>
                                                     <Div Class="col-12 pb-1">
-                                                        <TextEdit @bind-Text="module.Title" />
+                                                        <TinyMCEEditor Style="min-height: 500px;"@bind-Value="@module.Title" />
                                                     </Div>
                                                     <Div Class="col-12 pb-1">
                                                         <Label>@L["SubTitle"]</Label>
                                                     </Div>
                                                     <Div Class="col-12 pb-1">
-                                                        <TextEdit @bind-Text="@module.SubTitle" />
+                                                        <TinyMCEEditor Style="min-height: 500px;" @bind-Value="@module.SubTitle" />
                                                     </Div>
                                                     <Div Class="col-2 pb-1">
                                                         <Label>@L["BodyText"]</Label>
                                                     </Div>
                                                     <Div Class="col-12 pb-1">
-                                                        <TextEdit @bind-Text="@module.BodyText" />
+                                                        <TinyMCEEditor Style="min-height: 500px;" @bind-Value="@module.BodyText" />
                                                     </Div>
                                                     <Div Class="col-12 pb-1"></Div>
                                                     <Div Class="col-12 pb-1">
@@ -1938,7 +1938,7 @@
             </div>
             <div class="col-10">
                 <div class="col-12">
-                    <TextEdit Placeholder="@L["GroupBuyCondition"]" Disabled @bind-Text="EditGroupBuyDto.GroupBuyCondition" MaxLength="60" />
+                    <TextEdit Placeholder="@L["GroupBuyCondition"]" @bind-Text="EditGroupBuyDto.GroupBuyCondition" MaxLength="60" />
                 </div>
                 <div class="col-12">
                     @* <Blazored.TextEditor.BlazoredTextEditor @ref="@GroupBuyHtml">
@@ -2031,7 +2031,7 @@
             </div>
             <div class="col-10">
                 <div class="col-12">
-                    <TextEdit Placeholder="@L["ExchangePolicy"]" Disabled @bind-Text="@EditGroupBuyDto.ExchangePolicy" MaxLength="60" ShowCount />
+                    <TextEdit Placeholder="@L["ExchangePolicy"]" @bind-Text="@EditGroupBuyDto.ExchangePolicy" MaxLength="60" ShowCount />
                 </div>
                 <div class=" col-12">
                     <Blazored.TextEditor.BlazoredTextEditor @ref="@ExchangePolicyHtml" Placeholder="@L["Composeanepic"]">
