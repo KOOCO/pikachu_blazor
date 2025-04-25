@@ -1861,7 +1861,7 @@
                     <TextEdit Placeholder="@L["GroupBuyCondition"]" @bind-Text="CreateGroupBuyDto.GroupBuyCondition" MaxLength="60" />
                 </div>
                 <div class="col-12">
-                    @* <Blazored.TextEditor.BlazoredTextEditor @ref="@GroupBuyHtml">
+                    <Blazored.TextEditor.BlazoredTextEditor @ref="@GroupBuyConditionHtml" Placeholder="@L["Composeanepic"]">
                         <ToolbarContent>
                             <select class="ql-header">
                                 <option selected=""></option>
@@ -1895,8 +1895,7 @@
                                 <button class="ql-video"></button>
                             </span>
                         </ToolbarContent>
-                    </Blazored.TextEditor.BlazoredTextEditor> *@
-                    <textarea rows="7" @bind="@CreateGroupBuyDto.GroupBuyConditionDescription" oninput="enforceCharacterLimit(this, 1000)" class="form-control" />
+                    </Blazored.TextEditor.BlazoredTextEditor>
                 </div>
             </div>
         </div>

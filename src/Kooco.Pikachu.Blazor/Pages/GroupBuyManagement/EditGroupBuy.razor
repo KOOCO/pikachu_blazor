@@ -1941,42 +1941,41 @@
                     <TextEdit Placeholder="@L["GroupBuyCondition"]" @bind-Text="EditGroupBuyDto.GroupBuyCondition" MaxLength="60" />
                 </div>
                 <div class="col-12">
-                    @* <Blazored.TextEditor.BlazoredTextEditor @ref="@GroupBuyHtml">
-                    <ToolbarContent>
-                    <select class="ql-header">
-                    <option selected=""></option>
-                    <option value="1"></option>
-                    <option value="2"></option>
-                    <option value="3"></option>
-                    <option value="4"></option>
-                    <option value="5"></option>
-                    </select>
-                    <span class="ql-formats">
-                    <button class="ql-bold"></button>
-                    <button class="ql-italic"></button>
-                    <button class="ql-underline"></button>
-                    <button class="ql-strike"></button>
-                    </span>
-                    <span class="ql-formats">
-                    <select class="ql-color"></select>
-                    <select class="ql-background"></select>
-                    </span>
-                    <span class="ql-formats">
-                    <button class="ql-list" value="ordered"></button>
-                    <button class="ql-list" value="bullet"></button>
-                    </span>
-                    <span class="ql-formats">
-                    <button class="ql-link"></button>
-                    </span>
-                    <span class="ql-formats">
-                    <button class="ql-image"></button>
-                    </span>
-                    <span class="ql-formats">
-                    <button class="ql-video"></button>
-                    </span>
-                    </ToolbarContent>
-                    </Blazored.TextEditor.BlazoredTextEditor> *@
-                    <textarea rows="7" @bind="@EditGroupBuyDto.GroupBuyConditionDescription" oninput="enforceCharacterLimit(this, 1000)" class="form-control" />
+                    <Blazored.TextEditor.BlazoredTextEditor @ref="@GroupBuyConditionHtml" Placeholder="@L["Composeanepic"]">
+                        <ToolbarContent>
+                            <select class="ql-header">
+                                <option selected=""></option>
+                                <option value="1"></option>
+                                <option value="2"></option>
+                                <option value="3"></option>
+                                <option value="4"></option>
+                                <option value="5"></option>
+                            </select>
+                            <span class="ql-formats">
+                                <button class="ql-bold"></button>
+                                <button class="ql-italic"></button>
+                                <button class="ql-underline"></button>
+                                <button class="ql-strike"></button>
+                            </span>
+                            <span class="ql-formats">
+                                <select class="ql-color"></select>
+                                <select class="ql-background"></select>
+                            </span>
+                            <span class="ql-formats">
+                                <button class="ql-list" value="ordered"></button>
+                                <button class="ql-list" value="bullet"></button>
+                            </span>
+                            <span class="ql-formats">
+                                <button class="ql-link"></button>
+                            </span>
+                            <span class="ql-formats">
+                                <button class="ql-image"></button>
+                            </span>
+                            <span class="ql-formats">
+                                <button class="ql-video"></button>
+                            </span>
+                        </ToolbarContent>
+                    </Blazored.TextEditor.BlazoredTextEditor>
                 </div>
             </div>
         </div>

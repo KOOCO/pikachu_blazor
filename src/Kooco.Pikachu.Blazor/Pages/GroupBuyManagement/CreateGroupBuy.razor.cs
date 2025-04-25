@@ -92,7 +92,7 @@ public partial class CreateGroupBuy
     string bannerBlobName;
     protected Validations EditValidationsRef;
     private BlazoredTextEditor NotifyEmailHtml { get; set; }
-    private BlazoredTextEditor GroupBuyHtml { get; set; }
+    private BlazoredTextEditor GroupBuyConditionHtml { get; set; }
     private BlazoredTextEditor CustomerInformationHtml { get; set; }
     private BlazoredTextEditor ExchangePolicyHtml { get; set; }
     bool CreditCard { get; set; }
@@ -3091,6 +3091,7 @@ await _uiMessageService.Error(L[PikachuDomainErrorCodes.SomethingWrongWhileFileU
                 return;
 
             }
+            CreateGroupBuyDto.GroupBuyConditionDescription = await GroupBuyConditionHtml.GetHTML();
             if (CreateGroupBuyDto.GroupBuyConditionDescription.IsNullOrWhiteSpace())
             {
                 await _uiMessageService.Warn(L[PikachuDomainErrorCodes.GroupBuyConditionRequired]);

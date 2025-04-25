@@ -83,13 +83,13 @@ public partial class EditGroupBuy
     private readonly IObjectMapper _objectMapper;
     private readonly IUiMessageService _uiMessageService;
     private readonly IItemAppService _itemAppService;
-    private BlazoredTextEditor GroupBuyHtml { get; set; }
+    private BlazoredTextEditor GroupBuyConditionHtml { get; set; }
     private readonly ISetItemAppService _setItemAppService;
     private BlazoredTextEditor CustomerInformationHtml { get; set; }
     private BlazoredTextEditor ExchangePolicyHtml { get; set; }
     private BlazoredTextEditor NotifyEmailHtml { get; set; }
     protected Validations EditValidationsRef;
-   
+
     private FilePicker BannerPickerCustom { get; set; }
     private FilePicker CarouselPickerCustom { get; set; }
     private List<FilePicker> CarouselFilePickers = [];
@@ -228,7 +228,7 @@ public partial class EditGroupBuy
             GroupBuy = await _groupBuyAppService.GetWithItemGroupsAsync(Id);
 
             GroupBuy.ItemGroups = await _groupBuyAppService.GetGroupBuyItemGroupsAsync(Id);
-       
+
             EditGroupBuyDto = _objectMapper.Map<GroupBuyDto, GroupBuyUpdateDto>(GroupBuy);
 
             //await LoadHtmlContent();
@@ -789,14 +789,14 @@ public partial class EditGroupBuy
             }
             finally
             {
-               
+
                 LoadingItems = false;
                 var isDisableShipping = CollapseItem.Where(x => x.GroupBuyModuleType == GroupBuyModuleType.ProductGroupModule).ToList();
                 foreach (var item in isDisableShipping)
                 {
-                   
+
                     await OnCollapseVisibleChanged(item, true);
-                  
+
                 }
                 HasDifferentItemTemperatures = isDisableShipping
         .SelectMany(x => x.Selected)
@@ -824,6 +824,7 @@ public partial class EditGroupBuy
         //await GroupBuyHtml.LoadHTMLContent(EditGroupBuyDto.GroupBuyConditionDescription);
         //await CustomerInformationHtml.LoadHTMLContent(EditGroupBuyDto.CustomerInformationDescription);
         await ExchangePolicyHtml.LoadHTMLContent(EditGroupBuyDto.ExchangePolicyDescription);
+        await GroupBuyConditionHtml.LoadHTMLContent(EditGroupBuyDto.GroupBuyConditionDescription);
         await NotifyEmailHtml.LoadHTMLContent(EditGroupBuyDto.NotifyMessage);
     }
 
@@ -1665,16 +1666,16 @@ public partial class EditGroupBuy
 
             if (croppedImage.IsNullOrWhiteSpace())
             {
-                    if (selectedFile == null)
-                        return;
+                if (selectedFile == null)
+                    return;
 
-                    using var stream = selectedFile.OpenReadStream(long.MaxValue);
-                    string newFileName = $"{Guid.NewGuid().ToString().Replace("-", "")}{Path.GetExtension(selectedFile.Name)}";
+                using var stream = selectedFile.OpenReadStream(long.MaxValue);
+                string newFileName = $"{Guid.NewGuid().ToString().Replace("-", "")}{Path.GetExtension(selectedFile.Name)}";
                 try
                 {
                     await Loading.Show();
                     var memoryStream = new MemoryStream();
-  
+
                     await stream.CopyToAsync(memoryStream);
                     memoryStream.Position = 0;
                     var url = await _imageContainerManager.SaveAsync(newFileName, memoryStream);
@@ -1688,10 +1689,10 @@ public partial class EditGroupBuy
                     await Loading.Hide();
                     stream.Close();
                 }
-            
-       
 
-    }
+
+
+            }
             else
             {
                 // Strip the prefix
@@ -1728,12 +1729,12 @@ public partial class EditGroupBuy
     {
         await LogoPickerCustom.Clear();
         await CropperModal.Hide();
-         
+
         croppedImage = "";
 
-        
+
     }
-   
+
 
     #endregion
 
@@ -2409,7 +2410,7 @@ public partial class EditGroupBuy
 
                     carouselImages = [.. carouselImages.Where(w => w.BlobImageName != blobImageName)];
 
-                  
+
                 }
 
 
@@ -2490,7 +2491,7 @@ public partial class EditGroupBuy
     {
         PaymentMethodTags.Remove(item);
     }
- 
+
     protected virtual async Task UpdateEntityAsync()
     {
         try
@@ -2648,6 +2649,7 @@ public partial class EditGroupBuy
                 return;
 
             }
+            EditGroupBuyDto.GroupBuyConditionDescription = await GroupBuyConditionHtml.GetHTML();
             if (EditGroupBuyDto.GroupBuyConditionDescription.IsNullOrWhiteSpace())
             {
                 await _uiMessageService.Warn(L[PikachuDomainErrorCodes.GroupBuyConditionRequired]);
@@ -2969,9 +2971,9 @@ public partial class EditGroupBuy
 
 
                 if (EditGroupBuyDto.IsEnterprise) await _OrderAppService.UpdateOrdersIfIsEnterpricePurchaseAsync(Id);
-                
+
                 var groupItem = EditGroupBuyDto.ItemGroups.Where(x => x.GroupBuyModuleType == GroupBuyModuleType.ProductGroupModule).ToList();
-               
+
                 foreach (List<CreateImageDto> carouselImages in CarouselModules)
                 {
                     foreach (CreateImageDto carouselImage in carouselImages)
@@ -3144,24 +3146,24 @@ public partial class EditGroupBuy
                         {
                             await Loading.Hide();
                             await _uiMessageService.Error("Some thing happend wrong Product module is not Save.Please add Product Price and attribute again and save it.");
-                           
+
                             return;
 
                         }
 
                     }
                 }
-             
+
             }
-                await Loading.Hide();
-            
+            await Loading.Hide();
+
             await HandleErrorAsync(ex);
         }
     }
     [UnitOfWork]
-     async Task HandelPriceUpdateException(List<GroupBuyItemGroupCreateUpdateDto> groupItem)
+    async Task HandelPriceUpdateException(List<GroupBuyItemGroupCreateUpdateDto> groupItem)
     {
-       
+
         foreach (var group in groupItem)
         {
             foreach (var item in group.ItemDetails.DistinctBy(x => x.ItemDetailId))
@@ -3238,7 +3240,7 @@ public partial class EditGroupBuy
             .Distinct()
             .Count() > 1;
             await InvokeAsync(StateHasChanged);
-            
+
         }
         catch (Exception ex)
         {
