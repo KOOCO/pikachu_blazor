@@ -109,7 +109,11 @@ public class PikachuPermissionDefinitionProvider : PermissionDefinitionProvider
         discountCodes.AddChild(PikachuPermissions.DiscountCodes.Edit, L("Permission:Edit"));
         discountCodes.AddChild(PikachuPermissions.DiscountCodes.Delete, L("Permission:Delete"));
         var shoppingCredits = promotion.AddPermission(PikachuPermissions.ShoppingCredits.Default, L("Permission:ShoppingCredits"));
-        promotion.AddPermission(PikachuPermissions.Campaigns.Default, L("Permission:Campaigns"));
+        
+        var campaignPermissions = promotion.AddPermission(PikachuPermissions.Campaigns.Default, L("Permission:Campaigns"));
+        campaignPermissions.AddChild(PikachuPermissions.Campaigns.Create, L("Permission:Create"));
+        campaignPermissions.AddChild(PikachuPermissions.Campaigns.Edit, L("Permission:Edit"));
+        campaignPermissions.AddChild(PikachuPermissions.Campaigns.Delete, L("Permission:Delete"));
 
         _ = memberManagementGroup.AddPermission(PikachuPermissions.ShopCarts.Default, L("Permission:ShopCart"));
 

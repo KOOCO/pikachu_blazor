@@ -142,6 +142,9 @@ public static class PikachuPermissions
     public static class Campaigns
     {
         public const string Default = ".Campaigns";
+        public const string Create = Default + ".Create";
+        public const string Edit = Default + ".Edit";
+        public const string Delete = Default + ".Delete";
     }
 
     public static class Invoices

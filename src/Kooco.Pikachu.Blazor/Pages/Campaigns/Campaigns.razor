@@ -1,5 +1,8 @@
 ﻿@page "/Campaigns"
+@using Kooco.Pikachu.Blazor.Pages.Components.Icons
+@using Kooco.Pikachu.Campaigns
 @inherits PikachuComponentBase
+@inject ICampaignAppService CampaignAppService
 @inject NavigationManager NavigationManager
 
 <Row>
@@ -7,11 +10,174 @@
         <h3 class="text-dark">@L["Campaigns"]</h3>
     </Column>
     <Column ColumnSize="ColumnSize.Is12.Is6.OnTablet" TextAlignment="TextAlignment.End">
-        <PikachuButton Class="pk-btn-sm pk-btn-primary" IconClass="fas fa-add"
-                       Clicked="@(() => NavigationManager.NavigateTo("/Campaigns/Create"))">
-            @L["NewCampaign"]
-        </PikachuButton>
+        @if (CanCreate)
+        {
+            <PikachuButton Class="pk-btn-sm pk-btn-primary" IconClass="fas fa-add"
+                           Clicked="@(() => NavigationManager.NavigateTo("/Campaigns/Create"))">
+                @L["NewCampaign"]
+            </PikachuButton>
+        }
     </Column>
 </Row>
-
-
+<Card>
+    <CardBody>
+        <Row>
+            <Column ColumnSize="ColumnSize.Is10">
+                <Div Class="input-group">
+                    <TextEdit @bind-Text="Filters.Filter" Style="border-radius: 0.5rem 0 0 0.5rem;" />
+                    <Button Color="Color.Primary" Clicked="ApplyFilters"
+                            Style="border-radius: 0 0.5rem 0.5rem 0;">
+                        <Icon Class="fas fa-search"></Icon>
+                    </Button>
+                </Div>
+            </Column>
+            <Column ColumnSize="ColumnSize.Is2">
+                <Button Class="btn-outline-primary w-100" Clicked="(() => FiltersVisible = !FiltersVisible)">
+                    @L["Filters"]
+                    <i class="fas @(FiltersVisible ? "fa-angles-up" : "fa-angles-down") ms-1"></i>
+                </Button>
+            </Column>
+        </Row>
+        @if (FiltersVisible)
+        {
+            <Row Class="mt-2" VerticalGutter="10">
+                <Column ColumnSize="ColumnSize.Is3">
+                    <Label>@L["Status"]</Label>
+                    <Select TValue="bool?" @bind-SelectedValue="Filters.IsEnabled" Size="Size.Small">
+                        <SelectItem Value="(bool?)null"></SelectItem>
+                        <SelectItem Value="@true">@L["Active"]</SelectItem>
+                        <SelectItem Value="@false">@L["Inactive"]</SelectItem>
+                    </Select>
+                </Column>
+                <Column ColumnSize="ColumnSize.Is3">
+                    <Label>@L["StartDate"]</Label>
+                    <AntDesign.DatePicker TValue="DateTime?" Picker="AntDesign.DatePickerType.Date" @bind-Value="Filters.StartDate" />
+                </Column>
+                <Column ColumnSize="ColumnSize.Is3">
+                    <Label>@L["EndDate"]</Label>
+                    <AntDesign.DatePicker TValue="DateTime?" Picker="AntDesign.DatePickerType.Date" @bind-Value="Filters.EndDate" />
+                </Column>
+                <Column ColumnSize="ColumnSize.Is12">
+                    <Div Class="d-flex justify-content-end gap-1 w-100">
+                        <Button Class="btn-sm btn-outline-primary" Clicked="ResetFilters">
+                            <Icon Name="IconName.Undo"></Icon>
+                            @L["Reset"]
+                        </Button>
+                        <Button Class="btn-sm btn-primary" Clicked="ApplyFilters">
+                            <Icon Name="IconName.Filter"></Icon>
+                            @L["Filter"]
+                        </Button>
+                    </Div>
+                </Column>
+            </Row>
+        }
+    </CardBody>
+</Card>
+<Card>
+    <CardBody>
+        <DataGrid TItem="CampaignDto"
+                  Data="CampaignsList"
+                  ReadData="OnDataGridReadAsync"
+                  TotalItems="TotalCount"
+                  ShowPager="true"
+                  PageSize="PageSize"
+                  CurrentPage="CurrentPage"
+                  Hoverable
+                  Narrow
+                  Responsive>
+            <DataGridColumns>
+                <DataGridColumn TItem="CampaignDto"
+                                Field="@nameof(CampaignDto.Name)"
+                                Caption="@L["CampaignName"]">
+                    <DisplayTemplate>
+                        <Div Class="d-flex align-items-center gap-1">
+                            <PromotionModulesSvg Module="@context.PromotionModule" Class="sm" />
+                            <h5 class="m-0">@context.Name</h5>
+                        </Div>
+                    </DisplayTemplate>
+                </DataGridColumn>
+                <DataGridColumn TItem="CampaignDto"
+                                Field="@nameof(CampaignDto.IsEnabled)"
+                                Caption="@L["Status"]"
+                                TextAlignment="TextAlignment.Center">
+                    <DisplayTemplate>
+                        <Span Style="cursor: pointer;" @onclick="@(() => SetIsEnabled(context))">
+                            @if (context.IsEnabled)
+                            {
+                                <PikachuBadge Class="pk-badge-success">@L["Active"]</PikachuBadge>
+                            }
+                            else
+                            {
+                                <PikachuBadge Class="pk-badge-warning">@L["Inactive"]</PikachuBadge>
+                            }
+                        </Span>
+                    </DisplayTemplate>
+                </DataGridColumn>
+                <DataGridColumn TItem="CampaignDto"
+                                Field="@nameof(CampaignDto.StartDate)"
+                                Caption="@L["StartDate"]"
+                                TextAlignment="TextAlignment.Center">
+                    <DisplayTemplate>
+                        @context.StartDate.ToString("MMM d, yyyy")
+                    </DisplayTemplate>
+                </DataGridColumn>
+                <DataGridColumn TItem="CampaignDto"
+                                Field="@nameof(CampaignDto.EndDate)"
+                                Caption="@L["EndDate"]"
+                                TextAlignment="TextAlignment.Center">
+                    <DisplayTemplate>
+                        @context.EndDate.ToString("MMM d, yyyy")
+                    </DisplayTemplate>
+                </DataGridColumn>
+                <DataGridColumn TItem="CampaignDto"
+                                Caption="@L["Quantity"]"
+                                TextAlignment="TextAlignment.Center">
+                    <DisplayTemplate>
+                        @if (context.PromotionModule == PromotionModule.Discount)
+                        {
+                            <Span>@context.Discount?.AvailableQuantity</Span>
+                        }
+                        @if (context.PromotionModule == PromotionModule.ShoppingCredit)
+                        {
+                            <Span>-</Span>
+                        }
+                        @if (context.PromotionModule == PromotionModule.AddOnProduct)
+                        {
+                            <Span>@(context.AddOnProduct?.IsUnlimitedQuantity == true ? "∞" : context.AddOnProduct?.AvailableQuantity)</Span>
+                        }
+                    </DisplayTemplate>
+                </DataGridColumn>
+                <DataGridColumn Width="150px"
+                                TItem="CampaignDto"
+                                Field="@nameof(CampaignDto.Id)"
+                                Sortable="false"
+                                Caption="@L["Actions"]">
+                    <DisplayTemplate>
+                        @if (CanEdit || CanDelete)
+                        {
+                            <Dropdown>
+                                <DropdownToggle Color="Color.Primary">
+                                    @L["Actions"]
+                                </DropdownToggle>
+                                <DropdownMenu>
+                                    @if (CanEdit)
+                                    {
+                                        <DropdownItem Clicked="() => Edit(context)">
+                                            @L["Edit"]
+                                        </DropdownItem>
+                                    }
+                                    @if (CanDelete)
+                                    {
+                                        <DropdownItem Clicked="() => DeleteAsync(context)">
+                                            @L["Delete"]
+                                        </DropdownItem>
+                                    }
+                                </DropdownMenu>
+                            </Dropdown>
+                        }
+                    </DisplayTemplate>
+                </DataGridColumn>
+            </DataGridColumns>
+        </DataGrid>
+    </CardBody>
+</Card>

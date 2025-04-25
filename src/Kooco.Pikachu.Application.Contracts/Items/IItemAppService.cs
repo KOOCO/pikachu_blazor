@@ -23,6 +23,7 @@ public interface IItemAppService :
     Task<string?> GetFirstImageUrlAsync(Guid id);
     Task<List<ItemDto>> GetListForStoreAsync();
     Task<PagedResultDto<ItemListDto>> GetItemsListAsync(GetItemListDto input);
+    Task<List<KeyValueDto>> LookupAsync();
     Task<List<KeyValueDto>> GetAllItemsLookupAsync();
     Task<ItemDto> CopyAysnc(Guid Id);
     Task<ItemDto> GetSKUAndItemAsync(Guid itemId, Guid itemDetailId);

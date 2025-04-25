@@ -4,6 +4,7 @@ using Kooco.Pikachu.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Volo.Abp.EntityFrameworkCore;
 
@@ -12,9 +13,11 @@ using Volo.Abp.EntityFrameworkCore;
 namespace Kooco.Pikachu.Migrations
 {
     [DbContext(typeof(PikachuDbContext))]
-    partial class PikachuDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250424093959_AddedIsEnabledInCampaign")]
+    partial class AddedIsEnabledInCampaign
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -362,7 +365,8 @@ namespace Kooco.Pikachu.Migrations
                     b.HasIndex("CampaignId")
                         .IsUnique();
 
-                    b.HasIndex("ProductId");
+                    b.HasIndex("ProductId")
+                        .IsUnique();
 
                     b.ToTable("AppCampaignAddOnProducts", (string)null);
                 });
@@ -432,7 +436,8 @@ namespace Kooco.Pikachu.Migrations
 
                     b.HasIndex("CampaignId");
 
-                    b.HasIndex("GroupBuyId");
+                    b.HasIndex("GroupBuyId")
+                        .IsUnique();
 
                     b.ToTable("AppCampaignGroupBuys", (string)null);
                 });
@@ -452,7 +457,8 @@ namespace Kooco.Pikachu.Migrations
 
                     b.HasIndex("CampaignId");
 
-                    b.HasIndex("ProductId");
+                    b.HasIndex("ProductId")
+                        .IsUnique();
 
                     b.ToTable("AppCampaignProducts", (string)null);
                 });
@@ -7346,8 +7352,8 @@ namespace Kooco.Pikachu.Migrations
                         .IsRequired();
 
                     b.HasOne("Kooco.Pikachu.Items.Item", "Product")
-                        .WithMany()
-                        .HasForeignKey("ProductId")
+                        .WithOne()
+                        .HasForeignKey("Kooco.Pikachu.Campaigns.CampaignAddOnProduct", "ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -7376,8 +7382,8 @@ namespace Kooco.Pikachu.Migrations
                         .IsRequired();
 
                     b.HasOne("Kooco.Pikachu.GroupBuys.GroupBuy", "GroupBuy")
-                        .WithMany()
-                        .HasForeignKey("GroupBuyId")
+                        .WithOne()
+                        .HasForeignKey("Kooco.Pikachu.Campaigns.CampaignGroupBuy", "GroupBuyId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -7395,8 +7401,8 @@ namespace Kooco.Pikachu.Migrations
                         .IsRequired();
 
                     b.HasOne("Kooco.Pikachu.Items.Item", "Product")
-                        .WithMany()
-                        .HasForeignKey("ProductId")
+                        .WithOne()
+                        .HasForeignKey("Kooco.Pikachu.Campaigns.CampaignProduct", "ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

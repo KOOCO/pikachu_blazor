@@ -150,4 +150,10 @@ public class ItemController(
     {
         return _itemAppService.DeleteItemBadgeAsync(input);
     }
+
+    [HttpGet("lookup")]
+    public Task<List<KeyValueDto>> LookupAsync()
+    {
+        return _itemAppService.LookupAsync();
+    }
 }
