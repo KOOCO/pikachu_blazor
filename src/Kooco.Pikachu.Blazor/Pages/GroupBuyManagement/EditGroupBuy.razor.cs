@@ -25,6 +25,7 @@ using Microsoft.AspNetCore.Components.Web;
 using Microsoft.Extensions.Azure;
 using Microsoft.JSInterop;
 using Newtonsoft.Json;
+using SixLabors.ImageSharp.PixelFormats;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -37,7 +38,10 @@ using Volo.Abp.Data;
 using Volo.Abp.MultiTenancy;
 using Volo.Abp.ObjectMapping;
 using Volo.Abp.Uow;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
 using JsonSerializer = System.Text.Json.JsonSerializer;
+using Image = SixLabors.ImageSharp.Image;
 namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement;
 
 public partial class EditGroupBuy
@@ -1635,12 +1639,20 @@ public partial class EditGroupBuy
     }
     private async Task GetCroppedImage()
     {
+        var base64Data = imageToCrop.Substring(imageToCrop.IndexOf(",") + 1);
+        byte[] imageBytes = Convert.FromBase64String(base64Data);
+        var imageWidth = 0;
+        var imageHeight = 0;
+        using (var image = Image.Load<Rgba32>(imageBytes))
+        {
+            imageWidth = image.Width;
+            imageHeight = image.Height;
+        }
         var options = new CropperCropOptions
         {
-            Width = 300,       // Set desired width of the cropped image
-            Height = 300,      // Set desired height of the cropped image
-            ImageQuality = 0.9, // Set image quality (if using JPEG)
-            ImageType = "image/png" // Specify the image format (use PNG in this case)
+            Width = imageWidth,
+            Height = imageHeight,
+            ImageQuality = 1,
         };
         var base64Image = await LogoCropper.CropAsBase64ImageAsync(options);
         croppedImage = base64Image;

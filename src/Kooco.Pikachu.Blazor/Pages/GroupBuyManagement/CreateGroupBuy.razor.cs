@@ -1455,12 +1455,20 @@ public partial class CreateGroupBuy
     }
     private async Task GetBannerCroppedImage()
     {
+        var base64Data = imageToCrop.Substring(imageToCrop.IndexOf(",") + 1);
+        byte[] imageBytes = Convert.FromBase64String(base64Data);
+        var imageWidth = 0;
+        var imageHeight = 0;
+        using (var image = Image.Load<Rgba32>(imageBytes))
+        {
+            imageWidth = image.Width;
+            imageHeight = image.Height;
+        }
         var options = new CropperCropOptions
         {
-            Width = 300,       // Set desired width of the cropped image
-            Height = 300,      // Set desired height of the cropped image
-            ImageQuality = 0.9, // Set image quality (if using JPEG)
-            ImageType = "image/png" // Specify the image format (use PNG in this case)
+            Width = imageWidth,
+            Height = imageHeight,
+            ImageQuality = 1,
         };
         var base64Image = await BannerCropper.CropAsBase64ImageAsync(options);
         croppedImage = base64Image;
@@ -1641,14 +1649,22 @@ private async Task ResetPartnershipImageSelection()
 // Get the cropped image in base64 format
 private async Task GetPartnershipImageCroppedImage()
 {
-    var options = new CropperCropOptions
-    {
-        Width = 300,       // Set desired width of the cropped image
-        Height = 300,      // Set desired height of the cropped image
-        ImageQuality = 0.9, // Set image quality (if using JPEG)
-        ImageType = "image/png" // Specify the image format (use PNG in this case)
-    };
-    var base64Image = await PatnerShipCropper.CropAsBase64ImageAsync(options);
+        var base64Data = imageToCrop.Substring(imageToCrop.IndexOf(",") + 1);
+        byte[] imageBytes = Convert.FromBase64String(base64Data);
+        var imageWidth = 0;
+        var imageHeight = 0;
+        using (var image = Image.Load<Rgba32>(imageBytes))
+        {
+            imageWidth = image.Width;
+            imageHeight = image.Height;
+        }
+        var options = new CropperCropOptions
+        {
+            Width = imageWidth,
+            Height = imageHeight,
+            ImageQuality = 1,
+        };
+        var base64Image = await PatnerShipCropper.CropAsBase64ImageAsync(options);
     croppedImage = base64Image;
 }
 
@@ -2630,12 +2646,20 @@ private async Task CropPartnershipImageAsync(MultiImageModuleItem item)
     // Get the cropped image in base64 format
     private async Task GetPurchaseOverviewCroppedImage()
     {
+        var base64Data = imageToCrop.Substring(imageToCrop.IndexOf(",") + 1);
+        byte[] imageBytes = Convert.FromBase64String(base64Data);
+        var imageWidth = 0;
+        var imageHeight = 0;
+        using (var image = Image.Load<Rgba32>(imageBytes))
+        {
+            imageWidth = image.Width;
+            imageHeight = image.Height;
+        }
         var options = new CropperCropOptions
         {
-            Width = 300,       // Set desired width of the cropped image
-            Height = 300,      // Set desired height of the cropped image
-            ImageQuality = 0.9, // Set image quality (if using JPEG)
-            ImageType = "image/png" // Specify the image format (use PNG in this case)
+            Width = imageWidth,
+            Height = imageHeight,
+            ImageQuality = 1,
         };
         var base64Image = await PurchaseOverviewCropper.CropAsBase64ImageAsync(options);
         croppedImage = base64Image;
@@ -2824,12 +2848,20 @@ await _uiMessageService.Error(L[PikachuDomainErrorCodes.SomethingWrongWhileFileU
     // Get the cropped image in base64 format
     private async Task GetOrderInstructionCroppedImage()
     {
+        var base64Data = imageToCrop.Substring(imageToCrop.IndexOf(",") + 1);
+        byte[] imageBytes = Convert.FromBase64String(base64Data);
+        var imageWidth = 0;
+        var imageHeight = 0;
+        using (var image = Image.Load<Rgba32>(imageBytes))
+        {
+            imageWidth = image.Width;
+            imageHeight = image.Height;
+        }
         var options = new CropperCropOptions
         {
-            Width = 300,       // Set desired width of the cropped image
-            Height = 300,      // Set desired height of the cropped image
-            ImageQuality = 0.9, // Set image quality (if using JPEG)
-            ImageType = "image/png" // Specify the image format (use PNG in this case)
+            Width = imageWidth,
+            Height = imageHeight,
+            ImageQuality = 1,
         };
         var base64Image = await OrderInstructionCropper.CropAsBase64ImageAsync(options);
         croppedImage = base64Image;
