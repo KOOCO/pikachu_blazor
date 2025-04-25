@@ -58,7 +58,7 @@ namespace Kooco.Pikachu.ShoppingCredits
 
         public void UpdateSpecificGroupbuys(List<Guid> newGroupbuys)
         {
-            SpecificGroupbuys.Clear();
+            SpecificGroupbuys.RemoveAll(SpecificGroupbuys);
             AddSpecificGroupbuys(newGroupbuys);
         }
 
@@ -66,6 +66,8 @@ namespace Kooco.Pikachu.ShoppingCredits
         {
             if (productIds.Count > 0)
             {
+
+               
                 foreach (var id in productIds)
                 {
                     SpecificProducts.Add(new ShoppingCreditUsageSpecificProduct(Guid.NewGuid(), Id, id));
@@ -75,7 +77,7 @@ namespace Kooco.Pikachu.ShoppingCredits
 
         public void UpdateSpecificProducts(List<Guid> newProducts)
         {
-            SpecificProducts.Clear();
+            SpecificProducts.RemoveAll(SpecificProducts);
             AddSpecificProducts(newProducts);
         }
     }

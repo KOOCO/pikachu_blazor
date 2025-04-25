@@ -51,6 +51,7 @@ namespace Kooco.Pikachu.ShoppingCredits
         /// </summary>
         public async Task<ShoppingCreditUsageSettingDto> UpdateAsync(Guid id, CreateUpdateShoppingCreditUsageSettingDto input)
         {
+            
             var shoppingCreditUsageSetting = await shoppingCreditUsageSettingManager.UpdateAsync(id,input.AllowUsage, input.DeductionMethod, input.UnifiedMaxDeductiblePoints, input.StagedSettings, input.ApplicableItems, input.UsableGroupbuysScope, input.UsableProductsScope, input.ProductIds, input.GroupbuyIds);
 
           

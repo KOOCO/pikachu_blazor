@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Volo.Abp.Domain.Entities;
+using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Domain.Services;
 using Volo.Abp.Guids;
 
@@ -65,7 +67,10 @@ namespace Kooco.Pikachu.ShoppingCredits
             List<Guid> specificGroupbuyIds)
         {
             var shoppingCreditUsageSetting = await _shoppingCreditUsageSettingRepository.GetAsync(id);
-
+            await _shoppingCreditUsageSettingRepository.EnsureCollectionLoadedAsync(shoppingCreditUsageSetting, x => x.SpecificGroupbuys);
+            await _shoppingCreditUsageSettingRepository.EnsureCollectionLoadedAsync(shoppingCreditUsageSetting, x => x.SpecificProducts);
+            shoppingCreditUsageSetting.SpecificProducts.Clear();
+            shoppingCreditUsageSetting.SpecificGroupbuys.Clear();
             shoppingCreditUsageSetting.AllowUsage=allowUsage;
             shoppingCreditUsageSetting.DeductionMethod= deductionMethod;
             shoppingCreditUsageSetting.UnifiedMaxDeductiblePoints= unifiedMaxDeductiblePoints;
@@ -76,12 +81,14 @@ namespace Kooco.Pikachu.ShoppingCredits
 
             if (specificProductIds != null)
             {
-                shoppingCreditUsageSetting.AddSpecificProducts(specificProductIds);
+               
+                shoppingCreditUsageSetting.UpdateSpecificProducts(specificProductIds);
             }
 
             if (specificGroupbuyIds != null)
             {
-                shoppingCreditUsageSetting.AddSpecificGroupbuys(specificGroupbuyIds);
+              
+                shoppingCreditUsageSetting.UpdateSpecificGroupbuys(specificGroupbuyIds);
             }
 
             return await _shoppingCreditUsageSettingRepository.UpdateAsync(shoppingCreditUsageSetting);
