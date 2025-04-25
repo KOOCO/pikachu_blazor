@@ -1507,6 +1507,8 @@
     "AreYouSureToDeleteCampaign": "Are you sure you want to delete campaign {0}?",
     "YouAreNotAuthorized": "You are not authorized to perform this action.",
     "UpdateCampaign": "Update Campaign",
+    "TotalCampaigns": "Total Campaigns",
+    "ActiveCampaigns": "Active Campaigns",
     "FaceBookPixelID": "FaceBook Pixel ID",
     "GAID": "GA Tag ID"
   }

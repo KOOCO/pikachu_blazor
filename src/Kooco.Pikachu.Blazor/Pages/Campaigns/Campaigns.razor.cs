@@ -18,6 +18,7 @@ public partial class Campaigns
     private int CurrentPage { get; set; } = 1;
     private string CurrentSorting { get; set; }
     private int TotalCount { get; set; }
+    private long ActiveCount { get; set; }
     private GetCampaignListDto Filters { get; set; }
     private bool FiltersVisible { get; set; } = false;
     private bool CanCreate { get; set; }
@@ -63,6 +64,7 @@ public partial class Campaigns
 
             CampaignsList = result.Items;
             TotalCount = (int)result.TotalCount;
+            ActiveCount = await CampaignAppService.GetActiveCampaignsCountAsync();
         }
         catch (Exception ex)
         {

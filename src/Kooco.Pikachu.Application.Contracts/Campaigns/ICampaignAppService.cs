@@ -13,4 +13,5 @@ public interface ICampaignAppService : IApplicationService
     Task<PagedResultDto<CampaignDto>> GetListAsync(GetCampaignListDto input);
     Task DeleteAsync(Guid id);
     Task SetIsEnabledAsync(Guid id, bool isEnabled);
+    Task<long> GetActiveCampaignsCountAsync();
 }

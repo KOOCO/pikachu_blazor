@@ -68,4 +68,12 @@ public class EfCoreCampaignRepository : EfCoreRepository<PikachuDbContext, Campa
             .WhereIf(startDate.HasValue, x => x.StartDate.Date >= startDate!.Value.Date)
             .WhereIf(endDate.HasValue, x => x.EndDate.Date <= endDate!.Value.Date);
     }
+
+    public async Task<long> GetActiveCampaignsCountAsync()
+    {
+        var dbContext = await GetDbContextAsync();
+        return await dbContext.Campaigns
+            .Where(c => c.IsEnabled)
+            .LongCountAsync();
+    }
 }

@@ -116,4 +116,9 @@ public class CampaignAppService : PikachuAppService, ICampaignAppService
         campaign.SetIsEnabled(isEnabled);
         await _campaignRepository.UpdateAsync(campaign);
     }
+
+    public async Task<long> GetActiveCampaignsCountAsync()
+    {
+        return await _campaignRepository.GetActiveCampaignsCountAsync();
+    }
 }
