@@ -32,6 +32,9 @@ namespace Kooco.Pikachu.Blazor.Pages.ShoppingCredits
         private ValidationMessageStore? messageStore;
         private EditContext? editContext;
         private readonly ItemAppService _itemAppService;
+        private List<string> selectedApplicableItems = new List<string>();
+        private bool IsAddOnProductsSelected { get; set; }
+        private bool IsShippingFeesSelected { get; set; }
         public ShoppingCreditUseSetting(ItemAppService itemAppService)
         {
            
@@ -68,7 +71,12 @@ namespace Kooco.Pikachu.Blazor.Pages.ShoppingCredits
                     await ValidationsRef.ClearAll();
                     await InvokeAsync(StateHasChanged);
                 }
-                
+                if (!string.IsNullOrWhiteSpace(CreateUpdateUsage.ApplicableItems))
+                {
+                    var selected = System.Text.Json.JsonSerializer.Deserialize<List<string>>(CreateUpdateUsage.ApplicableItems) ?? new List<string>();
+                    IsAddOnProductsSelected = selected.Contains("AddOnProducts");
+                    IsShippingFeesSelected = selected.Contains("ShippingFees");
+                }
                 await FetchProducts();
                 await FetchGroupBuys();
                 await InvokeAsync(StateHasChanged);
@@ -136,6 +144,23 @@ namespace Kooco.Pikachu.Blazor.Pages.ShoppingCredits
         }
 
 
+        private void OnCheckChanged(bool value, string itemName)
+        {
+            var selected = new List<string>();
+
+            if (itemName == "AddOnProducts")
+                IsAddOnProductsSelected = value;
+            else if (itemName == "ShippingFees")
+                IsShippingFeesSelected = value;
+
+            if (IsAddOnProductsSelected)
+                selected.Add("AddOnProducts");
+
+            if (IsShippingFeesSelected)
+                selected.Add("ShippingFees");
+
+            CreateUpdateUsage.ApplicableItems = System.Text.Json.JsonSerializer.Serialize(selected);
+        }
         async Task FetchGroupBuys()
         {
             try

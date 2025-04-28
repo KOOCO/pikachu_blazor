@@ -11,7 +11,7 @@ namespace Kooco.Pikachu.ShoppingCredits
         public string DeductionMethod { get; set; }
         public decimal UnifiedMaxDeductiblePoints { get; set; }
         public string StagedSettings { get; set; }
-        public string ApplicableItems { get; set; }
+        public string? ApplicableItems { get; set; }
         public string UsableGroupbuysScope { get; set; }
         public string UsableProductsScope { get; set; }
 

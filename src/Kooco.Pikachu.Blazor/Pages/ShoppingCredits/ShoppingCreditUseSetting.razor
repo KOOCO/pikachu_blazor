@@ -91,20 +91,27 @@
                                 }
                             </Row>
                         </Column>
-                        <Column ColumnSize="ColumnSize.Is12">
-                            <Validation MessageLocalizer="@LH.Localize">
-                                <Label>@L["ApplicableItems"]</Label>
-                                <RadioGroup Orientation="Orientation.Vertical" TValue="string" Name="ApplicableItems" @bind-CheckedValue="CreateUpdateUsage.ApplicableItems">
-                                    <ChildContent>
-                                        <Radio Value="@("AddOnProducts")">@L["Add-OnProducts"]</Radio>
-                                        <Radio Value="@("ShippingFees")">@L["ShippingFees"]</Radio>
-                                    </ChildContent>
-                                    <Feedback>
-                                        <ValidationError />
-                                    </Feedback>
-                                </RadioGroup>
-                            </Validation>
-                        </Column>
+           <Column ColumnSize="ColumnSize.Is12">
+    <Label>@L["ApplicableItems"]</Label>
+
+  
+        <div class="d-flex flex-column">
+     <Check TValue="bool" 
+               Checked="@IsAddOnProductsSelected" 
+               CheckedChanged="@((bool value) => OnCheckChanged(value, "AddOnProducts"))">
+            @L["Add-OnProducts"]
+        </Check>
+
+        <Check TValue="bool" 
+               Checked="@IsShippingFeesSelected" 
+               CheckedChanged="@((bool value) => OnCheckChanged(value, "ShippingFees"))">
+            @L["ShippingFees"]
+        </Check>
+        </div>
+
+      
+</Column>
+
 
                     </Column>
 

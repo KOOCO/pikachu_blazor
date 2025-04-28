@@ -20,7 +20,7 @@ namespace Kooco.Pikachu.ShoppingCredits
         public string StagedSettings { get; set; }
 
         [StringLength(255)]
-        public string ApplicableItems { get; set; }
+        public string? ApplicableItems { get; set; }
 
         [StringLength(50)]
         public string UsableGroupbuysScope { get; set; }
