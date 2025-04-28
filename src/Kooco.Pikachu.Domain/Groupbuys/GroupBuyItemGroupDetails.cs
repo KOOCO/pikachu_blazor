@@ -11,6 +11,7 @@ namespace Kooco.Pikachu.Groupbuys
         public Guid GroupBuyItemGroupId { get; set; }
         public Guid? ItemId { get; set; }
         public Guid? SetItemId { get; set; }
+        public Guid? ItemDetailId { get; set; }
 
         public string? DisplayText { get; set; }
         public int SortOrder { get; set; }
@@ -35,7 +36,8 @@ namespace Kooco.Pikachu.Groupbuys
             Guid? setItemId,
             ItemType itemType,
             string? displayText,
-            int? moduleNumber
+            int? moduleNumber,
+            Guid? itemDetailId
             ) : base(id)
         {
             GroupBuyItemGroupId = groupBuyItemGroupId;
@@ -45,6 +47,7 @@ namespace Kooco.Pikachu.Groupbuys
             ItemType = itemType;
             DisplayText = displayText;
             ModuleNumber = moduleNumber;
+            ItemDetailId = itemDetailId;
         }
     }
 }

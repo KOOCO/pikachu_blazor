@@ -1444,7 +1444,7 @@
                                                                                         @if (itemDetails != null && itemDetails.Where(x => x.Attribute1Value != null).Count() > 0)
                                                                                         {
                                                                                             <div class="mt-2">
-                                                                                                <select class="form-control dropdown" multiple>
+                                                                                                <select class="form-control dropdown" @bind="selectedItem.SelectedItemAttribute">
                                                                                                     @foreach (var item in itemDetails)
                                                                                                     {
                                                                                                         var label = item.Attribute1Value;

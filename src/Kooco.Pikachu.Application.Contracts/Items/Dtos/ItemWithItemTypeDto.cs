@@ -11,6 +11,7 @@ public class ItemWithItemTypeDto
     public ItemType ItemType { get; set; }
     public ItemDto? Item { get; set; }
     public SetItemDto? SetItem { get; set; }
+    public Guid? SelectedItemAttribute { get; set; }
     public bool IsFirstLoad { get; set; }
     public float? Price { get; set; }
     public List<Guid> SelectedItemDetailIds { get; set; } = new();

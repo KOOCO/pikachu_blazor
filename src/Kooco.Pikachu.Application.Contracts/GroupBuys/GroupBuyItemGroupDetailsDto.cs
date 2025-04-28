@@ -16,4 +16,5 @@ public class GroupBuyItemGroupDetailsDto
     public ItemType ItemType { get; set; }
     public string? DisplayText { get; set; }
     public int? ModuleNumber { get; set; }
+    public Guid? ItemDetailId { get; set; }
 }

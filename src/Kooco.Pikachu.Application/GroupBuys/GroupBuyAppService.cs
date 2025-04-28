@@ -166,6 +166,7 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
                 );
 
                 itemGroup.ModuleNumber = group.ModuleNumber;
+                
 
                 await ProcessImageModules(itemGroup, group.ImageModules);
 
@@ -180,7 +181,8 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
                             item.SetItemId,
                             item.ItemType,
                             item.DisplayText,
-                            item.ModuleNumber
+                            item.ModuleNumber,
+                            item.ItemDetailId
                         );
 
                     }
@@ -443,7 +445,8 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
                             item.SetItemId,
                             item.ItemType,
                             item.DisplayText,
-                            item.ModuleNumber
+                            item.ModuleNumber,
+                            item.ItemDetailId
                         );
                     }
                 }
@@ -637,7 +640,7 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
                 item.SetItemId,
                 item.ItemType,
                 item.DisplayText,
-                item.ModuleNumber
+                item.ModuleNumber,item.ItemDetailId
             );
         }
 

@@ -601,7 +601,9 @@ public partial class EditGroupBuy
                         Item = groupBuyItemGroup?.Item,
                         ItemType = groupBuyItemGroup.ItemType,
                         Name = groupBuyItemGroup.Item != null ? groupBuyItemGroup.Item.ItemName : "",
-                        SetItem = groupBuyItemGroup.SetItem
+                        SetItem = groupBuyItemGroup.SetItem,
+                        SelectedItemAttribute=groupBuyItemGroup.ItemDetailId,
+                        
                     });
                 }
 
@@ -2833,7 +2835,8 @@ public partial class EditGroupBuy
                                     SetItemId = itemDetail.ItemType == ItemType.SetItem && itemDetail.Id != Guid.Empty ? itemDetail.Id : null,
                                     ItemType = itemDetail.ItemType,
                                     DisplayText = itemGroup.GroupBuyModuleType == GroupBuyModuleType.IndexAnchor ? itemDetail.Name : null,
-                                    ModuleNumber = ProductRankingCarouselModules.IndexOf(module) + 1
+                                    ModuleNumber = ProductRankingCarouselModules.IndexOf(module) + 1,
+                                    ItemDetailId=itemDetail.SelectedItemAttribute
                                 });
                             }
                         }
@@ -2943,7 +2946,8 @@ public partial class EditGroupBuy
                                     SetItemId = itemDetail.ItemType == ItemType.SetItem && itemDetail.Id != Guid.Empty ? itemDetail.Id : null,
                                     ItemType = itemDetail.ItemType,
                                     DisplayText = itemGroup.GroupBuyModuleType == GroupBuyModuleType.IndexAnchor ? itemDetail.Name : null,
-                                    ModuleNumber = ProductRankingCarouselModules.IndexOf(module) + 1
+                                    ModuleNumber = ProductRankingCarouselModules.IndexOf(module) + 1,
+                                    ItemDetailId=itemDetail.SelectedItemAttribute
                                 });
                             }
                         }

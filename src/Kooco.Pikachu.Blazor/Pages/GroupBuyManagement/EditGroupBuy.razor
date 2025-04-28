@@ -1503,41 +1503,28 @@
                                                                                         @if (itemDetails != null && itemDetails.Where(x => x.Attribute1Value != null).Count() > 0)
                                                                                         {
                                                                                             <div class="mt-2">
-                                                                                                <select class="form-control dropdown">
-                                                                                                    @foreach (var item in itemDetails.DistinctBy(i => i.Attribute1Value))
+                                                                                                <select class="form-control dropdown" @bind="selectedItem.SelectedItemAttribute">
+                                                                                                    @foreach (var item in itemDetails)
                                                                                                     {
-                                                                                                        <option>
-                                                                                                            @item.Attribute1Value
-                                                                                                        </option>
+                                                                                                        var label = item.Attribute1Value;
+
+                                                                                                        if (!string.IsNullOrWhiteSpace(item.Attribute2Value))
+                                                                                                        {
+                                                                                                            label += " / " + item.Attribute2Value;
+                                                                                                        }
+
+                                                                                                        if (!string.IsNullOrWhiteSpace(item.Attribute3Value))
+                                                                                                        {
+                                                                                                            label += " / " + item.Attribute3Value;
+                                                                                                        }
+
+                                                                                                        <option value="@item.Id">@label</option>
                                                                                                     }
                                                                                                 </select>
                                                                                             </div>
-                                                                                        }
-                                                                                        @if (itemDetails != null && itemDetails.Where(x => x.Attribute2Value != null).Count() > 0)
-                                                                                        {
-                                                                                            <div class="mt-2">
-                                                                                                <select class="form-control dropdown">
-                                                                                                    @foreach (var item in itemDetails.DistinctBy(i => i.Attribute2Value))
-                                                                                                    {
-                                                                                                        <option>
-                                                                                                            @item.Attribute2Value
-                                                                                                        </option>
-                                                                                                    }
-                                                                                                </select>
-                                                                                            </div>
-                                                                                        }
-                                                                                        @if (itemDetails != null && itemDetails.Where(x => x.Attribute3Value != null).Count() > 0)
-                                                                                        {
-                                                                                            <div class="mt-2">
-                                                                                                <select class="form-control dropdown">
-                                                                                                    @foreach (var item in itemDetails.DistinctBy(i => i.Attribute3Value))
-                                                                                                    {
-                                                                                                        <option>
-                                                                                                            @item.Attribute3Value
-                                                                                                        </option>
-                                                                                                    }
-                                                                                                </select>
-                                                                                            </div>
+
+
+
                                                                                         }
                                                                                     }
                                                                                 </div>

@@ -129,7 +129,8 @@ public class GroupBuyManager : DomainService
         Guid? setItemId,
         ItemType itemType,
         string displayText,
-        int? moduleNumber
+        int? moduleNumber,
+        Guid? itemDetailId
         ) 
     {
         itemGroup.GroupBuyItemGroupDetails(
@@ -140,7 +141,8 @@ public class GroupBuyManager : DomainService
             setItemId,
             itemType,
             displayText,
-            moduleNumber
+            moduleNumber,
+            itemDetailId
             );
     }
     public GroupBuyItemGroup AddItemGroup(

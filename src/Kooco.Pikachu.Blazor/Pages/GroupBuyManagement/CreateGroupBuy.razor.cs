@@ -3363,6 +3363,7 @@ await _uiMessageService.Error(L[PikachuDomainErrorCodes.SomethingWrongWhileFileU
                                     ItemId = itemDetail.ItemType is ItemType.Item && itemDetail.Id != Guid.Empty ? itemDetail.Id : null,
                                     SetItemId = itemDetail.ItemType == ItemType.SetItem && itemDetail.Id != Guid.Empty ? itemDetail.Id : null,
                                     ItemType = itemDetail.ItemType,
+                                    ItemDetailId=itemDetail.SelectedItemAttribute,
                                     DisplayText = itemGroup.GroupBuyModuleType == GroupBuyModuleType.IndexAnchor ? itemDetail.Name : null,
                                     ModuleNumber = ProductRankingCarouselModules.IndexOf(module) + 1
                                 });
