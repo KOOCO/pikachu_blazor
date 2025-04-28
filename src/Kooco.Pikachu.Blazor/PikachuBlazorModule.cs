@@ -127,7 +127,7 @@ public class PikachuBlazorModule : AbpModule
                 PreConfigure<OpenIddictServerBuilder>(serverBuilder =>
                 {
                     var configuration = context.Services.GetConfiguration();
-                    serverBuilder.AddProductionEncryptionAndSigningCertificate("openiddict.pfx", configuration["MyAppCertificate:X590:Password"]);
+                    serverBuilder.AddProductionEncryptionAndSigningCertificate("openiddict.pfx", configuration["MyAppCertificate:X590:PassWord"]);
                     //serverBuilder.AddEncryptionCertificate(GetEncryptionCertificate(hostingEnvironment, context.Services.GetConfiguration()));
                     //serverBuilder.AddSigningCertificate(GetSigningCertificate(hostingEnvironment, context.Services.GetConfiguration()));
                 });
