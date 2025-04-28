@@ -896,10 +896,29 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
 
             foreach (GroupBuyItemGroupModuleDetailsDto module in modules)
             {
-                
+
+                if (module.GroupBuyModuleType is GroupBuyModuleType.ProductRankingCarouselModule)
+                {
+                    foreach (GroupBuyItemGroupDetailsDto itemDetail in module.ItemGroupDetails)
+                    {
+                        if (itemDetail.ItemType == ItemType.Item)
+                        {
+                            foreach (var detailitem in itemDetail.Item?.ItemDetails)
+                            {
+                              
+                                        itemDetail.Item.ItemDetails.RemoveAll(x=>x.Id!=itemDetail.ItemDetailId);
+                                    
+                                        
+                            }
+
+                            }
+
+                    }
 
 
-                if (module.GroupBuyModuleType is GroupBuyModuleType.ProductGroupModule|| module.GroupBuyModuleType is GroupBuyModuleType.ProductRankingCarouselModule)
+                    }
+
+                if (module.GroupBuyModuleType is GroupBuyModuleType.ProductGroupModule)
                 {
                     foreach (GroupBuyItemGroupDetailsDto itemDetail in module.ItemGroupDetails)
                     {
