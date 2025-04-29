@@ -4,6 +4,10 @@
 @using Volo.Abp.AspNetCore.Components.Messages
 @using Blazorise
 @using Volo.Abp.AspNetCore.Components.Web.Theming.Layout
+@using Volo.Abp.DependencyInjection
+@inherits UiMessageAlert
+@attribute [ExposeServices(typeof(UiMessageAlert))]
+@attribute [Dependency(ReplaceServices = true)]
 <style>
     /* Modal content container */
 .custom-modal-content {
@@ -77,7 +81,7 @@
 }
 
 </style>
-@if(MessageType==UiMessageType.Confirmation)
+@if(IsConfirmation)
 {
     <Modal @ref="@ModalRef" Closing="@OnModalClosing">
     <ModalContent Class="custom-modal-content" Centered="@CenterMessage" Size="ModalSize.Large">
@@ -120,7 +124,7 @@
 </Modal>
 
 }
-@if (MessageType != UiMessageType.Confirmation)
+@if (!IsConfirmation)
 { 
     ﻿<Modal @ref="@ModalRef" Closing="@OnModalClosing">
     <ModalContent Centered="@CenterMessage" >
@@ -181,4 +185,25 @@
         </ModalFooter>
     </ModalContent>
 </Modal>
+}
+
+@code{
+
+private bool _isModalRequested;
+protected override async Task ShowMessageAlert()
+{
+    _isModalRequested = true;
+    await InvokeAsync(StateHasChanged); // Triggers UI update
+}
+protected override async Task OnAfterRenderAsync(bool firstRender)
+{
+    if (_isModalRequested)
+    {
+        _isModalRequested = false; // Reset the flag immediately
+        await ModalRef.Show();      // Now Modal opens after correct rendering
+    }
+
+    await base.OnAfterRenderAsync(firstRender);
+}
+
 }

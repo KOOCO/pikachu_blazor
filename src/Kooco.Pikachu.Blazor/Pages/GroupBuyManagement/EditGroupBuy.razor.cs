@@ -3338,7 +3338,7 @@ public partial class EditGroupBuy
 
             if (item?.Id is not null)
             {
-                bool confirm = await _myBlazoriseUiMessageService.Confirm(L["ThisDeleteActionCannotBeReverted"]);
+                bool confirm = await _uiMessageService.Confirm(L["ThisDeleteActionCannotBeReverted"]);
 
                 if (!confirm) return;
 
