@@ -903,15 +903,11 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
                     {
                         if (itemDetail.ItemType == ItemType.Item)
                         {
-                            foreach (var detailitem in itemDetail.Item?.ItemDetails)
+                            if (itemDetail.Item?.ItemDetails != null)
                             {
-                              
-                                        itemDetail.Item.ItemDetails.RemoveAll(x=>x.Id!=itemDetail.ItemDetailId);
-                                    
-                                        
+                                itemDetail.Item.ItemDetails.RemoveAll(x => x.Id != itemDetail.ItemDetailId);
                             }
-
-                            }
+                        }
 
                     }
 

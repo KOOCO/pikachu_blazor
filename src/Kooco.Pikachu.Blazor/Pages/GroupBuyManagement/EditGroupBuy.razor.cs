@@ -590,7 +590,7 @@ public partial class EditGroupBuy
                 module.Images = [.. createImageDtos.Where(w => w.ModuleNumber == module.ModuleNumber)];
 
                 List<GroupBuyItemGroupDetailsDto> itemDetails = GroupBuy.ItemGroups
-                                                                        .SelectMany(w => w.ItemGroupDetails.Where(d => d.ModuleNumber == module.ModuleNumber))
+                                                                        .SelectMany(w => w.ItemGroupDetails.Where(d => d.ModuleNumber == module.ModuleNumber)).DistinctBy(x=>x.ItemDetailId)
                                                                         .ToList();
 
                 foreach (GroupBuyItemGroupDetailsDto groupBuyItemGroup in itemDetails)
@@ -1255,31 +1255,33 @@ public partial class EditGroupBuy
 
         else if (groupBuyModuleType is GroupBuyModuleType.ProductRankingCarouselModule)
         {
+            var moduleNumber = CollapseItem.Count(c => c.GroupBuyModuleType is GroupBuyModuleType.ProductRankingCarouselModule) + 1;
 
             CollapseItem collapseItem = new()
             {
                 Index = CollapseItem.Count > 0 ? CollapseItem.Count + 1 : 1,
                 SortOrder = CollapseItem.Count > 0 ? CollapseItem.Max(c => c.SortOrder) + 1 : 1,
                 GroupBuyModuleType = groupBuyModuleType,
-                ModuleNumber = CollapseItem.Count(c => c.GroupBuyModuleType is GroupBuyModuleType.ProductRankingCarouselModule) > 0 ?
-                           CollapseItem.Count(c => c.GroupBuyModuleType is GroupBuyModuleType.ProductRankingCarouselModule) + 1 : 1
+                ModuleNumber = moduleNumber
             };
 
             CollapseItem.Add(collapseItem);
 
-
+            // Here, make sure for each CollapseItem you create new picker and module separately
             ProductRankingCarouselPickers.Add(new());
 
             ProductRankingCarouselModules.Add(new()
+         
             {
-                ModuleNumber = collapseItem.ModuleNumber,
+                ModuleNumber = moduleNumber,
                 Selected = [
                     new ItemWithItemTypeDto(),
-                    new ItemWithItemTypeDto(),
-                    new ItemWithItemTypeDto()
+            new ItemWithItemTypeDto(),
+            new ItemWithItemTypeDto()
                 ]
             });
         }
+
 
         else if (groupBuyModuleType == GroupBuyModuleType.CustomTextModule || groupBuyModuleType == GroupBuyModuleType.VideoUpload)
         {
@@ -3426,6 +3428,17 @@ public partial class EditGroupBuy
             {
                 GroupPurchaseOverviewModules = [];
                 GroupPurchaseOverviewFilePickers = [];
+            }
+            else if (item.GroupBuyModuleType is GroupBuyModuleType.ProductRankingCarouselModule)
+            {
+
+              var module=  ProductRankingCarouselModules.Where(x => x.ModuleNumber == moduleNumber).FirstOrDefault();
+                if (module != null)
+                {
+                    await _GroupBuyProductRankingAppService.DeleteAsync(module.Id);
+                    await _imageAppService.DeleteByGroupBuyIdAndImageTypeAsync(Guid.Parse(id), ImageType.GroupBuyProductRankingCarousel, item.ModuleNumber!.Value);
+                    ProductRankingCarouselModules.Remove(module);
+                }
             }
 
             CollapseItem = [];
