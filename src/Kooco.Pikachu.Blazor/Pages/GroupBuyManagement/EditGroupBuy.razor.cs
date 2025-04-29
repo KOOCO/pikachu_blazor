@@ -3384,8 +3384,8 @@ public partial class EditGroupBuy
                 else if (item.GroupBuyModuleType is GroupBuyModuleType.BannerImages)
                     await _imageAppService.DeleteByGroupBuyIdAndImageTypeAsync(GroupBuyId, ImageType.GroupBuyBannerImage, item.ModuleNumber!.Value);
 
-                else if (item.GroupBuyModuleType is GroupBuyModuleType.ProductRankingCarouselModule)
-                    await _GroupBuyProductRankingAppService.DeleteByGroupBuyIdAsync(GroupBuyId);
+                //else if (item.GroupBuyModuleType is GroupBuyModuleType.ProductRankingCarouselModule)
+                //    await _GroupBuyProductRankingAppService.DeleteByGroupBuyIdAsync(GroupBuyId);
 
                 StateHasChanged();
             }
