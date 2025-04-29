@@ -3628,6 +3628,14 @@ await _uiMessageService.Error(L[PikachuDomainErrorCodes.SomethingWrongWhileFileU
             GroupBuyOrderInstructionModules = new List<GroupBuyOrderInstructionDto>();
 
         }
+        if (collapseItem.GroupBuyModuleType is GroupBuyModuleType.ProductRankingCarouselModule)
+        {
+            var module = ProductRankingCarouselModules.Where(x => x.ModuleNumber == collapseItem.ModuleNumber).FirstOrDefault();
+       
+            ProductRankingCarouselModules.Remove(module);
+
+        
+        }
         CollapseItem.Remove(collapseItem);
 
         if (collapseItem.GroupBuyModuleType is GroupBuyModuleType.CarouselImages ||
