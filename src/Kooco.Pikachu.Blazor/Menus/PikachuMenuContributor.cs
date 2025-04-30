@@ -237,6 +237,13 @@ public class PikachuMenuContributor : IMenuContributor
             url: "/Members/Member-Tags",
             requiredPermissionName: PikachuPermissions.Members.Default
             ).RequireAuthenticated());
+        membersMenu.AddItem(new ApplicationMenuItem(
+            name: PikachuMenus.ShopCarts,
+            displayName: l["Menu:ShopCarts"],
+            icon: "fas fa-cart-shopping",
+            url: "/Members/Shop-Carts",
+            requiredPermissionName: PikachuPermissions.ShopCarts.Default
+            ).RequireAuthenticated());
         context.Menu.AddItem(membersMenu);
 
         var promotions =

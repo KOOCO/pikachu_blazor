@@ -1,4 +1,7 @@
-﻿using Kooco.Pikachu.EntityFrameworkCore;
+﻿using Kooco.Pikachu.Common;
+using Kooco.Pikachu.EntityFrameworkCore;
+using Kooco.Pikachu.EnumValues;
+using Kooco.Pikachu.Members;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -73,6 +76,82 @@ public class EfCoreShopCartRepository(IDbContextProvider<PikachuDbContext> dbCon
         return queryable;
     }
 
+    public async Task<PagedResultModel<ShopCartListWithDetailsModel>> GetListWithDetailsAsync(int skipCount, int maxResultCount, string? sorting,
+        string? filter, Guid? userId, Guid? groupBuyId, int? minItems, int? maxItems, int? minAmount, int? maxAmount,
+        string? vipTier, string? memberStatus)
+    {
+        var dbContext = await GetDbContextAsync();
+
+        var query = dbContext.ShopCarts
+            .AsNoTracking()
+            .Include(sc => sc.CartItems)
+            .Include(sc => sc.User)
+            .WhereIf(userId.HasValue, sc => sc.UserId == userId)
+            .WhereIf(groupBuyId.HasValue, sc => sc.GroupBuyId == groupBuyId)
+            .WhereIf(!string.IsNullOrWhiteSpace(filter), sc =>
+                sc.Id.ToString().Contains(filter!) ||
+                sc.UserId.ToString().Contains(filter!) ||
+                (sc.User != null && (sc.User.UserName.Contains(filter!) || sc.User.Email.Contains(filter))));
+
+        var projectedQuery = query.Select(sc => new ShopCartListWithDetailsModel
+        {
+            Id = sc.Id,
+            UserId = sc.UserId,
+            User = sc.User,
+            GroupBuyId = sc.GroupBuyId,
+            TotalItems = sc.CartItems.Sum(ci => ci.Quantity),
+            TotalAmount = sc.CartItems.Sum(ci => (ci.Quantity * ci.UnitPrice))
+        });
+
+        var results = await projectedQuery
+            .WhereIf(minItems.HasValue, sc => sc.TotalItems >= minItems)
+            .WhereIf(maxItems.HasValue, sc => sc.TotalAmount <= maxItems)
+            .WhereIf(minAmount.HasValue, sc => sc.TotalAmount >= minAmount)
+            .WhereIf(maxAmount.HasValue, sc => sc.TotalAmount <= maxAmount)
+            .ToListAsync();
+
+        await EnrichShopCartsWithTagsAndGroupBuyInfoAsync(dbContext, results);
+
+        results = [.. results
+            .WhereIf(!string.IsNullOrWhiteSpace(vipTier), sc => sc.VipTier == vipTier)
+            .WhereIf(!string.IsNullOrWhiteSpace(memberStatus), sc => sc.MemberStatus == memberStatus)];
+
+        results = [.. results
+            .AsQueryable()
+            .OrderBy(string.IsNullOrWhiteSpace(sorting) ? nameof(ShopCartListWithDetailsModel.UserName) : sorting)];
+
+        var totalCount = results.Count;
+
+        return new PagedResultModel<ShopCartListWithDetailsModel>
+        {
+            TotalCount = totalCount,
+            Items = results.Skip(skipCount).Take(maxResultCount).ToList()
+        };
+    }
+
+    private async static Task EnrichShopCartsWithTagsAndGroupBuyInfoAsync(PikachuDbContext dbContext, List<ShopCartListWithDetailsModel> carts)
+    {
+        var userIds = carts.Select(c => c.UserId).Distinct().ToList();
+        var groupBuyIds = carts.Select(c => c.GroupBuyId).Distinct().ToList();
+
+        var tags = await dbContext.MemberTags
+            .Where(mt => userIds.Contains(mt.UserId))
+            .Where(mt => mt.VipTierId.HasValue || mt.IsSystemAssigned)
+            .ToListAsync();
+
+        var groupBuyMap = await dbContext.GroupBuys
+            .Where(gb => groupBuyIds.Contains(gb.Id))
+            .ToDictionaryAsync(gb => gb.Id, gb => gb.GroupBuyName);
+
+        foreach (var cart in carts)
+        {
+            var userTags = tags.Where(t => t.UserId == cart.UserId).ToList();
+            cart.VipTier = userTags.FirstOrDefault(t => t.VipTierId.HasValue)?.Name;
+            cart.MemberStatus = userTags.FirstOrDefault(t => MemberConsts.MemberTags.Names.Contains(t.Name))?.Name;
+            cart.GroupBuyName = groupBuyMap.TryGetValue(cart.GroupBuyId, out var name) ? name : null;
+        }
+    }
+
     public async Task<CartItem> FindCartItemAsync(Guid userId, Guid itemId, bool includeDetails = false)
     {
         var queryable = (await GetQueryableAsync())
@@ -111,5 +190,87 @@ public class EfCoreShopCartRepository(IDbContextProvider<PikachuDbContext> dbCon
         }
 
         return shopCart;
+    }
+
+    public async Task<List<CartItemWithDetailsModel>> GetCartItemsListAsync(Guid shopCartId)
+    {
+        var dbContext = await GetDbContextAsync();
+
+        var cartItems = await dbContext.ShopCarts
+            .Where(sc => sc.Id == shopCartId)
+            .SelectMany(sc => sc.CartItems)
+            .Select(ci => new CartItemWithDetailsModel
+            {
+                Id = ci.Id,
+                ShopCartId = ci.ShopCartId,
+                Quantity = ci.Quantity,
+                UnitPrice = ci.UnitPrice,
+                ItemId = ci.ItemId,
+                SetItemId = ci.SetItemId,
+                ItemType = ci.ItemId.HasValue
+                    ? ItemType.Item
+                    : (ci.SetItemId.HasValue ? ItemType.SetItem : ItemType.Freebie),
+
+            }).ToListAsync();
+
+        var itemIds = cartItems.Where(ci => ci.ItemId.HasValue).Select(ci => ci.ItemId).Distinct().ToList();
+        var setItemIds = cartItems.Where(ci => ci.SetItemId.HasValue).Select(ci => ci.SetItemId).Distinct().ToList();
+
+        var items = await dbContext.Items
+            .Where(i => itemIds.Contains(i.Id))
+            .Include(i => i.Images)
+            .Select(i => new
+            {
+                i.Id,
+                i.ItemName,
+                Image = i.Images
+                .OrderBy(image => image.SortNo)
+                .Where(image => !string.IsNullOrWhiteSpace(image.ImageUrl))
+                .Select(image => image.ImageUrl)
+                .FirstOrDefault()
+            }).ToListAsync();
+
+        var setItems = await dbContext.SetItems
+            .Where(si => setItemIds.Contains(si.Id))
+            .Include(si => si.Images)
+            .Select(si => new
+            {
+                si.Id,
+                si.SetItemName,
+                Image = si.Images
+                .OrderBy(image => image.SortNo)
+                .Where(image => !string.IsNullOrWhiteSpace(image.ImageUrl))
+                .Select(image => image.ImageUrl)
+                .FirstOrDefault()
+            }).ToListAsync();
+
+        cartItems.ForEach(cartItem =>
+        {
+            var item = cartItem.ItemId.HasValue
+                ? items.Where(i => i.Id == cartItem.ItemId)
+                       .Select(i => new { i.ItemName, i.Image })
+                       .FirstOrDefault()
+                : setItems.Where(si => si.Id == cartItem.SetItemId)
+                          .Select(si => new { ItemName = si.SetItemName, si.Image })
+                          .FirstOrDefault();
+
+            if (item != null)
+            {
+                cartItem.ItemName = item.ItemName;
+                cartItem.Image = item.Image;
+            }
+        });
+
+        return cartItems;
+    }
+
+    public async Task<List<ShopCart>> GetListWithCartItemsAsync(List<Guid> ids = null!)
+    {
+        ids ??= [];
+        var queryable = await GetQueryableAsync();
+        return await queryable
+            .WhereIf(ids.Count > 0, q => ids!.Contains(q.Id))
+            .Include(q => q.CartItems)
+            .ToListAsync();
     }
 }

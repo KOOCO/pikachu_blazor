@@ -1,0 +1,203 @@
+﻿@page "/Members/Shop-Carts"
+@using Kooco.Pikachu.Members
+@using Kooco.Pikachu.ShopCarts
+@using Kooco.Pikachu.TierManagement
+@inherits PikachuComponentBase
+@inject NavigationManager NavigationManager
+@inject IVipTierSettingAppService VipTierSettingAppService
+@inject IShopCartAppService ShopCartAppService
+
+<Div>
+    <Row>
+        <Column ColumnSize="ColumnSize.Is6">
+            <h3 class="text-dark">@L["ShoppingCart"]</h3>
+        </Column>
+        <Column ColumnSize="ColumnSize.Is6" TextAlignment="TextAlignment.End">
+            <PikachuButton Class="pk-btn-sm pk-btn-outline-danger"
+                           Clicked="ClearAsync"
+                           Disabled="SelectedShopCarts == null || SelectedShopCarts.Count == 0"
+                           Loading="IsClearing"
+                           IconClass="fas fa-times">
+                @L["Clear"]
+            </PikachuButton>
+        </Column>
+    </Row>
+</Div>
+<Card>
+    <CardBody>
+        <Row>
+            <Column ColumnSize="ColumnSize.Is10">
+                <Div Class="input-group">
+                    <TextEdit @bind-Text="Filters.Filter" Style="border-radius: 0.5rem 0 0 0.5rem;" />
+                    <Button Color="Color.Primary" Clicked="ApplyFilters"
+                            Style="border-radius: 0 0.5rem 0.5rem 0;">
+                        <Icon Class="fas fa-search"></Icon>
+                    </Button>
+                </Div>
+            </Column>
+            <Column ColumnSize="ColumnSize.Is2">
+                <Button Class="btn-outline-primary w-100" Clicked="(() => FiltersVisible = !FiltersVisible)">
+                    @L["Filters"]
+                    <i class="fas @(FiltersVisible ? "fa-angles-up" : "fa-angles-down") ms-1"></i>
+                </Button>
+            </Column>
+        </Row>
+        @if (FiltersVisible)
+        {
+            <Row Class="mt-2" VerticalGutter="10">
+                <Column ColumnSize="ColumnSize.Is3">
+                    <Label>@L["VipTier"]</Label>
+                    <AntDesign.Select @bind-Value="@Filters.VipTier"
+                                      AllowClear
+                                      TItem="string"
+                                      TItemValue="string">
+                        <SelectOptions>
+                            @foreach (var tier in VipTierOptions)
+                            {
+                                <AntDesign.SelectOption TItemValue="string" TItem="string" Value=@tier Label=@L[tier] />
+                            }
+                        </SelectOptions>
+                    </AntDesign.Select>
+                </Column>
+                <Column ColumnSize="ColumnSize.Is3">
+                    <Label>@L["MemberStatus"]</Label>
+                    <AntDesign.Select @bind-Value="@Filters.MemberStatus"
+                                      AllowClear
+                                      TItem="string"
+                                      TItemValue="string">
+                        <SelectOptions>
+                            @foreach (var item in MemberStatusOptions)
+                            {
+                                <AntDesign.SelectOption TItemValue="string" TItem="string" Value=@item Label=@item />
+                            }
+                        </SelectOptions>
+                    </AntDesign.Select>
+                </Column>
+                <Column ColumnSize="ColumnSize.Is3">
+                    <Label>@L["MinNumberOfItems"]</Label>
+                    <AntDesign.InputNumber Class="no-stepper" @bind-Value="Filters.MinItems" Min="0" />
+                </Column>
+                <Column ColumnSize="ColumnSize.Is3">
+                    <Label>@L["MaxNumberOfItems"]</Label>
+                    <AntDesign.InputNumber Class="no-stepper" @bind-Value="Filters.MaxItems" Min="0" />
+                </Column>
+                <Column ColumnSize="ColumnSize.Is3">
+                    <Label>@L["MinAmount"]</Label>
+                    <AntDesign.InputNumber Class="no-stepper"
+                                           @bind-Value="Filters.MinAmount" Min="0"
+                                           Formatter="AntHelper.FormatAmount"
+                                           Parser="AntHelper.ParseAmount">
+                    </AntDesign.InputNumber>
+                </Column>
+                <Column ColumnSize="ColumnSize.Is3">
+                    <Label>@L["MaxAmount"]</Label>
+                    <AntDesign.InputNumber Class="no-stepper"
+                                           @bind-Value="Filters.MaxAmount" Min="0"
+                                           Formatter="AntHelper.FormatAmount"
+                                           Parser="AntHelper.ParseAmount">
+                    </AntDesign.InputNumber>
+                </Column>
+                <Column ColumnSize="ColumnSize.Is12">
+                    <Div Class="d-flex justify-content-end gap-1 w-100">
+                        <Button Class="btn-sm btn-outline-primary" Clicked="ResetFilters">
+                            <Icon Name="IconName.Undo"></Icon>
+                            @L["Reset"]
+                        </Button>
+                        <Button Class="btn-sm btn-primary" Clicked="ApplyFilters">
+                            <Icon Name="IconName.Filter"></Icon>
+                            @L["Filter"]
+                        </Button>
+                    </Div>
+                </Column>
+            </Row>
+        }
+    </CardBody>
+</Card>
+<Card>
+    <CardBody>
+        <DataGrid TItem="ShopCartListWithDetailsDto"
+                  Data="ShopCartsList"
+                  ReadData="OnDataGridReadAsync"
+                  TotalItems="TotalCount"
+                  ShowPager="true"
+                  PageSize="PageSize"
+                  CurrentPage="CurrentPage"
+                  Hoverable
+                  Narrow
+                  Responsive
+                  SelectionMode="DataGridSelectionMode.Multiple"
+                  @bind-SelectedRows="SelectedShopCarts"
+                  RowSelectable="RowSelectableHandler">
+            <DataGridColumns>
+                <DataGridMultiSelectColumn TItem="ShopCartListWithDetailsDto" Width="30px"></DataGridMultiSelectColumn>
+                <DataGridCommandColumn TItem="ShopCartListWithDetailsDto" />
+                <DataGridColumn TItem="ShopCartListWithDetailsDto"
+                                Field="@nameof(ShopCartListWithDetailsDto.UserName)"
+                                Caption="@L["Member"]">
+                    <DisplayTemplate>
+                        <Div Class="d-flex align-items-center gap-1">
+                            <Div Class="member-image">
+                                <img class="img-fluid rounded-circle" src="@MemberConsts.MaleAvatarUrl" alt="Alternate Text" />
+                            </Div>
+                            <Div>
+                                <Div>
+                                    <Button Class="btn-link hyperlink fs-large" Clicked="() => EditMember(context)">@context.UserName</Button>
+                                </Div>
+                                <Span>@context.Email</Span>
+                            </Div>
+                        </Div>
+                    </DisplayTemplate>
+                </DataGridColumn>
+                <DataGridColumn TItem="ShopCartListWithDetailsDto"
+                                Field="@nameof(ShopCartListWithDetailsDto.VipTier)"
+                                Caption="@L["VipTier"]"
+                                TextAlignment="TextAlignment.Center">
+                    <DisplayTemplate>
+                        @if (!string.IsNullOrWhiteSpace(context.VipTier))
+                        {
+                            <PikachuBadge Class="pk-badge-success">@context.VipTier</PikachuBadge>
+                        }
+                    </DisplayTemplate>
+                </DataGridColumn>
+                <DataGridColumn TItem="ShopCartListWithDetailsDto"
+                                Field="@nameof(ShopCartListWithDetailsDto.MemberStatus)"
+                                Caption="@L["MemberStatus"]"
+                                TextAlignment="TextAlignment.Center">
+                    <DisplayTemplate>
+                        <MemberTagComponent Tag="@context.MemberStatus" />
+                    </DisplayTemplate>
+                </DataGridColumn>
+                <DataGridColumn TItem="ShopCartListWithDetailsDto"
+                                Field="@nameof(ShopCartListWithDetailsDto.TotalItems)"
+                                Caption="@L["NumberOfItems"]"
+                                TextAlignment="TextAlignment.Center">
+                    <DisplayTemplate>
+                        @context.TotalItems
+                    </DisplayTemplate>
+                </DataGridColumn>
+                <DataGridColumn TItem="ShopCartListWithDetailsDto"
+                                Field="@nameof(ShopCartListWithDetailsDto.TotalAmount)"
+                                Caption="@L["TotalAmount"]"
+                                TextAlignment="TextAlignment.Center">
+                    <DisplayTemplate>
+                        @context.TotalAmount.ToString("N0")
+                    </DisplayTemplate>
+                </DataGridColumn>
+                <DataGridColumn TItem="ShopCartListWithDetailsDto"
+                                Field="@nameof(ShopCartListWithDetailsDto.GroupBuyName)"
+                                Caption="@L["GroupBuyName"]">
+                </DataGridColumn>
+                <DataGridColumn TItem="ShopCartListWithDetailsDto"
+                                TextAlignment="TextAlignment.Center">
+                    <DisplayTemplate>
+                        <PikachuButton Class="pk-btn-icon indigo"
+                                       IconClass="fas fa-pencil"
+                                       Clicked="@(() => Edit(context))">
+                        </PikachuButton>
+                    </DisplayTemplate>
+                </DataGridColumn>
+            </DataGridColumns>
+        </DataGrid>
+    </CardBody>
+</Card>
+<CartItemsModal @ref="CartItemsModal" AppService="ShopCartAppService" />

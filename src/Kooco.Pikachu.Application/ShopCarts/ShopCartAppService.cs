@@ -1,6 +1,4 @@
-﻿using Kooco.Pikachu.Permissions;
-using Microsoft.AspNetCore.Authorization;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -8,6 +6,7 @@ using Volo.Abp;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
+using Volo.Abp.ObjectMapping;
 
 namespace Kooco.Pikachu.ShopCarts;
 
@@ -179,5 +178,31 @@ public class ShopCartAppService(ShopCartManager shopCartManager, IShopCartReposi
         shopCartManager.RemoveCartItem(shopCart, cartItemId);
         await shopCartRepository.UpdateAsync(shopCart);
         return ObjectMapper.Map<ShopCart, ShopCartDto>(shopCart);
+    }
+
+    public async Task<PagedResultDto<ShopCartListWithDetailsDto>> GetListWithDetailsAsync(GetShopCartListDto input)
+    {
+        var shopCarts = await shopCartRepository.GetListWithDetailsAsync(input.SkipCount, input.MaxResultCount, input.Sorting,
+            input.Filter, input.UserId, input.GroupBuyId, input.MinItems, input.MaxItems, input.MinAmount, input.MaxAmount,
+            input.VipTier, input.MemberStatus);
+
+        return new PagedResultDto<ShopCartListWithDetailsDto>
+        {
+            TotalCount = shopCarts.TotalCount,
+            Items = ObjectMapper.Map<List<ShopCartListWithDetailsModel>, List<ShopCartListWithDetailsDto>>(shopCarts.Items)
+        };
+    }
+
+    public async Task<List<CartItemWithDetailsDto>> GetCartItemsListAsync(Guid shopCartId)
+    {
+        var cartItems = await shopCartRepository.GetCartItemsListAsync(shopCartId);
+        return ObjectMapper.Map<List<CartItemWithDetailsModel>, List<CartItemWithDetailsDto>>(cartItems);
+    }
+
+    public async Task ClearCartItemsAsync(List<Guid> ids)
+    {
+        var shopCarts = await shopCartRepository.GetListWithCartItemsAsync(ids);
+        shopCarts.ForEach(shopCart => shopCart.CartItems.Clear());
+        await shopCartRepository.UpdateManyAsync(shopCarts);
     }
 }
