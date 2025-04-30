@@ -12,7 +12,7 @@ using Volo.Abp.Domain.Repositories;
 namespace Kooco.Pikachu.ShopCarts;
 
 [RemoteService(IsEnabled = false)]
-[Authorize(PikachuPermissions.ShopCarts.Default)]
+//[Authorize]
 public class ShopCartAppService(ShopCartManager shopCartManager, IShopCartRepository shopCartRepository) : ApplicationService, IShopCartAppService
 {
     public async Task<ShopCartDto> CreateAsync(CreateShopCartDto input)
