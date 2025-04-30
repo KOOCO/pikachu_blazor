@@ -1283,7 +1283,8 @@
 
                                     @if (module.GroupBuyModuleType is GroupBuyModuleType.GroupPurchaseOverview)
                                     {
-                                        foreach (GroupPurchaseOverviewDto module in GroupPurchaseOverviewModules)
+                                         List<GroupPurchaseOverviewDto> purchaseOverviewModules = GroupPurchaseOverviewModules.Where(x => x.ModuleNumber == module.ModuleNumber).ToList();
+                                        foreach (GroupPurchaseOverviewDto module in purchaseOverviewModules)
                                         {
                                             <Div Class="row d-flex">
                                                 <Div Class="col-6 pb-1">
@@ -1371,7 +1372,8 @@
 
                                     @if (module.GroupBuyModuleType is GroupBuyModuleType.OrderInstruction)
                                     {
-                                        foreach (GroupBuyOrderInstructionDto module in GroupBuyOrderInstructionModules)
+                                        List<GroupBuyOrderInstructionDto> orderInstructionModules = GroupBuyOrderInstructionModules.Where(x => x.ModuleNumber == module.ModuleNumber).ToList();
+                                        foreach (GroupBuyOrderInstructionDto module in orderInstructionModules)
                                         {
                                             <Div Class="row d-flex">
                                                 <Div Class="col-6 pb-1">

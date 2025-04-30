@@ -17,4 +17,5 @@ public class GroupPurchaseOverviewDto : AuditedEntityDto<Guid>
     public string? ButtonText { get; set; }
     public string? ButtonLink { get; set; }
     public bool IsDeleted { get; set; }
+    public int? ModuleNumber { get; set; }
 }

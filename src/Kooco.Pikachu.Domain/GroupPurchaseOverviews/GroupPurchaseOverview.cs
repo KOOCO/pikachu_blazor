@@ -13,4 +13,5 @@ public class GroupPurchaseOverview : Entity<Guid>
     public bool IsButtonEnable { get; set; }
     public string? ButtonText { get; set; }
     public string? ButtonLink { get; set; }
+    public int? ModuleNumber { get; set; }
 }

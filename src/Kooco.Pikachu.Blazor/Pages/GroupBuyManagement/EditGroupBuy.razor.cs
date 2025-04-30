@@ -1208,39 +1208,45 @@ public partial class EditGroupBuy
 
         else if (groupBuyModuleType is GroupBuyModuleType.GroupPurchaseOverview)
         {
-            if (GroupPurchaseOverviewModules is { Count: 0 })
-            {
-                CollapseItem collapseItem = new()
-                {
-                    Index = CollapseItem.Count > 0 ? CollapseItem.Count + 1 : 1,
-                    SortOrder = CollapseItem.Count > 0 ? CollapseItem.Max(c => c.SortOrder) + 1 : 1,
-                    GroupBuyModuleType = groupBuyModuleType
-                };
 
-                CollapseItem.Add(collapseItem);
-            }
+            CollapseItem collapseItem = new()
+            {
+                Index = CollapseItem.Count > 0 ? CollapseItem.Count + 1 : 1,
+                SortOrder = CollapseItem.Count > 0 ? CollapseItem.Max(c => c.SortOrder) + 1 : 1,
+                GroupBuyModuleType = groupBuyModuleType,
+                ModuleNumber = CollapseItem.Count(c => c.GroupBuyModuleType is GroupBuyModuleType.GroupPurchaseOverview) > 0 ?
+                       CollapseItem.Count(c => c.GroupBuyModuleType is GroupBuyModuleType.GroupPurchaseOverview) + 1 : 1
+            };
+
+            CollapseItem.Add(collapseItem);
+
 
             GroupPurchaseOverviewFilePickers.Add(new());
 
-            GroupPurchaseOverviewModules.Add(new());
+
+            GroupPurchaseOverviewModules.Add(new()
+            {
+                ModuleNumber = collapseItem.ModuleNumber,
+            });
         }
 
         else if (groupBuyModuleType is GroupBuyModuleType.OrderInstruction)
         {
-            if (GroupBuyOrderInstructionModules is { Count: 0 })
-            {
-                CollapseItem collapseItem = new()
-                {
-                    Index = CollapseItem.Count > 0 ? CollapseItem.Count + 1 : 1,
-                    SortOrder = CollapseItem.Count > 0 ? CollapseItem.Max(c => c.SortOrder) + 1 : 1,
-                    GroupBuyModuleType = groupBuyModuleType
-                };
 
-                CollapseItem.Add(collapseItem);
-            }
+
+            CollapseItem collapseItem = new()
+            {
+                Index = CollapseItem.Count > 0 ? CollapseItem.Count + 1 : 1,
+                SortOrder = CollapseItem.Count > 0 ? CollapseItem.Max(c => c.SortOrder) + 1 : 1,
+                GroupBuyModuleType = groupBuyModuleType,
+                ModuleNumber = CollapseItem.Count(c => c.GroupBuyModuleType is GroupBuyModuleType.OrderInstruction) > 0 ?
+                       CollapseItem.Count(c => c.GroupBuyModuleType is GroupBuyModuleType.OrderInstruction) + 1 : 1
+            };
+
+            CollapseItem.Add(collapseItem);
+
 
             GroupBuyOrderInstructionPickers.Add(new());
-
             string? img = null;
             if (EditGroupBuyDto.ColorSchemeType.HasValue)
             {
@@ -1249,7 +1255,8 @@ public partial class EditGroupBuy
             GroupBuyOrderInstructionModules.Add(new GroupBuyOrderInstructionDto
             {
                 Title = L["OrderInstruction"],
-                Image = img
+                Image = img,
+                ModuleNumber = collapseItem.ModuleNumber
             });
         }
 
@@ -3372,13 +3379,12 @@ public partial class EditGroupBuy
 
                 }
 
-                if (item.GroupBuyModuleType is GroupBuyModuleType.GroupPurchaseOverview)
-                    await _GroupPurchaseOverviewAppService.DeleteByGroupIdAsync(GroupBuyId);
+             
+                  
 
-                else if (item.GroupBuyModuleType is GroupBuyModuleType.OrderInstruction)
-                    await _GroupBuyOrderInstructionAppService.DeleteByGroupBuyIdAsync(GroupBuyId);
+                
 
-                else if (item.GroupBuyModuleType is GroupBuyModuleType.CarouselImages)
+                if (item.GroupBuyModuleType is GroupBuyModuleType.CarouselImages)
                     await _imageAppService.DeleteByGroupBuyIdAndImageTypeAsync(GroupBuyId, ImageType.GroupBuyCarouselImage, item.ModuleNumber!.Value);
 
                 else if (item.GroupBuyModuleType is GroupBuyModuleType.BannerImages)
@@ -3391,7 +3397,33 @@ public partial class EditGroupBuy
             }
 
             int moduleNumber = item.ModuleNumber.HasValue ? (int)item.ModuleNumber! : 0;
+            if (item.GroupBuyModuleType is GroupBuyModuleType.GroupPurchaseOverview)
+            {
+                var module = GroupPurchaseOverviewModules.Where(x => x.ModuleNumber == moduleNumber).FirstOrDefault();
+                if (module != null)
+                {
+                    if (module.Id != Guid.Empty)
+                    {
+                        await _GroupPurchaseOverviewAppService.DeleteAsync(module.Id);
+                    }
+                    GroupPurchaseOverviewModules.Remove(module);
+                }
 
+            }
+
+            if (item.GroupBuyModuleType is GroupBuyModuleType.OrderInstruction)
+            {
+                var module = GroupBuyOrderInstructionModules.Where(x => x.ModuleNumber == moduleNumber).FirstOrDefault();
+                if (module != null)
+                {
+                    if (module.Id != Guid.Empty)
+                    {
+                        await _GroupPurchaseOverviewAppService.DeleteAsync(module.Id);
+                    }
+                    GroupBuyOrderInstructionModules.Remove(module);
+                }
+              
+            }
             if (item.GroupBuyModuleType is GroupBuyModuleType.CarouselImages)
             {
                 //await _groupBuyAppService.GroupBuyItemModuleNoReindexingAsync(Id, GroupBuyModuleType.CarouselImages);
@@ -3435,7 +3467,10 @@ public partial class EditGroupBuy
               var module=  ProductRankingCarouselModules.Where(x => x.ModuleNumber == moduleNumber).FirstOrDefault();
                 if (module != null)
                 {
-                    await _GroupBuyProductRankingAppService.DeleteAsync(module.Id);
+                    if (module.Id != Guid.Empty)
+                    {
+                        await _GroupBuyProductRankingAppService.DeleteAsync(module.Id);
+                    }
                     await _imageAppService.DeleteByGroupBuyIdAndImageTypeAsync(Guid.Parse(id), ImageType.GroupBuyProductRankingCarousel, item.ModuleNumber!.Value);
                     ProductRankingCarouselModules.Remove(module);
                 }

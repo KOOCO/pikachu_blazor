@@ -1994,37 +1994,43 @@ private async Task CropPartnershipImageAsync(MultiImageModuleItem item)
 
         else if (groupBuyModuleType is GroupBuyModuleType.GroupPurchaseOverview)
         {
-            if (GroupPurchaseOverviewModules is { Count: 0 })
-            {
+           
                 CollapseItem collapseItem = new()
                 {
                     Index = CollapseItem.Count > 0 ? CollapseItem.Count + 1 : 1,
                     SortOrder = CollapseItem.Count > 0 ? CollapseItem.Max(c => c.SortOrder) + 1 : 1,
-                    GroupBuyModuleType = groupBuyModuleType
+                    GroupBuyModuleType = groupBuyModuleType,
+                    ModuleNumber = CollapseItem.Count(c => c.GroupBuyModuleType is GroupBuyModuleType.GroupPurchaseOverview) > 0 ?
+                           CollapseItem.Count(c => c.GroupBuyModuleType is GroupBuyModuleType.GroupPurchaseOverview) + 1 : 1
                 };
 
                 CollapseItem.Add(collapseItem);
-            }
+            
 
             GroupPurchaseOverviewFilePickers.Add(new());
 
-            GroupPurchaseOverviewModules.Add(new());
+           
+                 GroupPurchaseOverviewModules.Add(new()
+                 {
+                     ModuleNumber = collapseItem.ModuleNumber,
+                 });
         }
 
         else if (groupBuyModuleType is GroupBuyModuleType.OrderInstruction)
         {
 
-            if (GroupBuyOrderInstructionModules is { Count: 0 })
-            {
+           
                 CollapseItem collapseItem = new()
                 {
                     Index = CollapseItem.Count > 0 ? CollapseItem.Count + 1 : 1,
                     SortOrder = CollapseItem.Count > 0 ? CollapseItem.Max(c => c.SortOrder) + 1 : 1,
-                    GroupBuyModuleType = groupBuyModuleType
+                    GroupBuyModuleType = groupBuyModuleType,
+                    ModuleNumber = CollapseItem.Count(c => c.GroupBuyModuleType is GroupBuyModuleType.OrderInstruction) > 0 ?
+                           CollapseItem.Count(c => c.GroupBuyModuleType is GroupBuyModuleType.OrderInstruction) + 1 : 1
                 };
 
                 CollapseItem.Add(collapseItem);
-            }
+            
 
             GroupBuyOrderInstructionPickers.Add(new());
             string? img = null;
@@ -2035,7 +2041,8 @@ private async Task CropPartnershipImageAsync(MultiImageModuleItem item)
             GroupBuyOrderInstructionModules.Add(new GroupBuyOrderInstructionDto
             {
                 Title = L["OrderInstruction"],
-                Image = img
+                Image = img,
+                ModuleNumber=collapseItem.ModuleNumber
             });
         }
 
@@ -3625,7 +3632,18 @@ await _uiMessageService.Error(L[PikachuDomainErrorCodes.SomethingWrongWhileFileU
         }
         if (collapseItem.GroupBuyModuleType is GroupBuyModuleType.OrderInstruction)
         {
-            GroupBuyOrderInstructionModules = new List<GroupBuyOrderInstructionDto>();
+           
+            var module = GroupBuyOrderInstructionModules.Where(x => x.ModuleNumber == collapseItem.ModuleNumber).FirstOrDefault();
+
+            GroupBuyOrderInstructionModules.Remove(module);
+
+        }
+        if (collapseItem.GroupBuyModuleType is GroupBuyModuleType.GroupPurchaseOverview)
+        {
+
+            var module = GroupPurchaseOverviewModules.Where(x => x.ModuleNumber == collapseItem.ModuleNumber).FirstOrDefault();
+
+            GroupPurchaseOverviewModules.Remove(module);
 
         }
         if (collapseItem.GroupBuyModuleType is GroupBuyModuleType.ProductRankingCarouselModule)
