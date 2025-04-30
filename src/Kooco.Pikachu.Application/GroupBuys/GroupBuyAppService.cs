@@ -899,17 +899,52 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
 
                 if (module.GroupBuyModuleType is GroupBuyModuleType.ProductRankingCarouselModule)
                 {
-                    foreach (GroupBuyItemGroupDetailsDto itemDetail in module.ItemGroupDetails)
-                    {
-                        if (itemDetail.ItemType == ItemType.Item)
+                    
+                        foreach (GroupBuyItemGroupDetailsDto itemDetail in module.ItemGroupDetails)
                         {
-                            if (itemDetail.Item?.ItemDetails != null)
+                            if (itemDetail.ItemType == ItemType.Item && itemDetail.ItemId != null)
                             {
-                                itemDetail.Item.ItemDetails.RemoveAll(x => x.Id != itemDetail.ItemDetailId);
+                                List<ItemDetailsDto> removeItems = new List<ItemDetailsDto>();
+                                foreach (var detailitem in itemDetail.Item?.ItemDetails)
+                                {
+                                    var checkPrice = await _groupBuyItemsPriceAppService.GetByItemIdAndGroupBuyIdAsync(detailitem.Id, groupBuyId);
+                                    if (checkPrice is not null)
+                                    {
+                                        detailitem.GroupBuyPrice = checkPrice.GroupBuyPrice;
+
+                                    }
+                 
+
+                                }
+                            if (itemDetail.ItemType == ItemType.Item)
+                            {
+                                if (itemDetail.Item?.ItemDetails != null)
+                                {
+                                    itemDetail.Item.ItemDetails.RemoveAll(x => x.Id != itemDetail.ItemDetailId);
+                                }
                             }
                         }
+                            if (itemDetail.ItemType == ItemType.SetItem && itemDetail.SetItemId != null)
+                            {
 
-                    }
+                                var checkPrice = await _groupBuyItemsPriceAppService.GetBySetItemIdAndGroupBuyIdAsync(itemDetail.SetItemId.Value, groupBuyId);
+                                if (checkPrice is not null)
+                                {
+                                    itemDetail.SetItem.GroupBuyPrice = checkPrice.GroupBuyPrice;
+                                    
+                                }
+                            foreach (var detail in itemDetail.SetItem.SetItemDetails)
+                            {
+                                detail.Item = null;
+                            }
+
+
+                        }
+                        }
+
+                      
+
+                    
 
 
                     }
