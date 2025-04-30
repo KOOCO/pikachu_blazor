@@ -707,7 +707,9 @@ public partial class EditGroupBuy
                         {
                             Index = CollapseItem.Count > 0 ? CollapseItem.Count + 1 : 1,
                             SortOrder = CollapseItem.Count > 0 ? CollapseItem.Max(c => c.SortOrder) + 1 : 1,
-                            GroupBuyModuleType = GroupBuyModuleType.GroupPurchaseOverview
+                            GroupBuyModuleType = GroupBuyModuleType.GroupPurchaseOverview,
+                            ModuleNumber = CollapseItem.Count(c => c.GroupBuyModuleType is GroupBuyModuleType.GroupPurchaseOverview) > 0 ?
+                               CollapseItem.Count(c => c.GroupBuyModuleType is GroupBuyModuleType.GroupPurchaseOverview) + 1 : 1
                         });
 
                     GroupPurchaseOverviewFilePickers.Add(new());
@@ -727,7 +729,9 @@ public partial class EditGroupBuy
                         {
                             Index = CollapseItem.Count > 0 ? CollapseItem.Count + 1 : 1,
                             SortOrder = CollapseItem.Count > 0 ? CollapseItem.Max(c => c.SortOrder) + 1 : 1,
-                            GroupBuyModuleType = GroupBuyModuleType.OrderInstruction
+                            GroupBuyModuleType = GroupBuyModuleType.OrderInstruction,
+                            ModuleNumber = CollapseItem.Count(c => c.GroupBuyModuleType is GroupBuyModuleType.OrderInstruction) > 0 ?
+                               CollapseItem.Count(c => c.GroupBuyModuleType is GroupBuyModuleType.OrderInstruction) + 1 : 1
                         });
 
                     GroupBuyOrderInstructionPickers.Add(new());
@@ -747,7 +751,10 @@ public partial class EditGroupBuy
                         {
                             Index = CollapseItem.Count > 0 ? CollapseItem.Count + 1 : 1,
                             SortOrder = CollapseItem.Count > 0 ? CollapseItem.Max(c => c.SortOrder) + 1 : 1,
-                            GroupBuyModuleType = GroupBuyModuleType.ProductRankingCarouselModule
+                            GroupBuyModuleType = GroupBuyModuleType.ProductRankingCarouselModule,
+                            ModuleNumber = CollapseItem.Count(c => c.GroupBuyModuleType is GroupBuyModuleType.OrderInstruction) > 0 ?
+                               CollapseItem.Count(c => c.GroupBuyModuleType is GroupBuyModuleType.OrderInstruction) + 1 : 1
+
                         });
 
                     ProductRankingCarouselPickers.Add(new());
