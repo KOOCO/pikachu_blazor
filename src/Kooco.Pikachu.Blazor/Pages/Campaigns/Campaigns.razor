@@ -203,6 +203,9 @@
                                     @L["Actions"]
                                 </DropdownToggle>
                                 <DropdownMenu>
+                                    <DropdownItem>
+                                        <Copy Text="@context.Id" DisplayText="@L["CopyId"]" ShouldDisplayIcon="false"></Copy>
+                                    </DropdownItem>
                                     @if (CanEdit)
                                     {
                                         <DropdownItem Clicked="() => Edit(context)">
@@ -224,4 +227,3 @@
         </DataGrid>
     </CardBody>
 </Card>
-<ConfirmDialog />

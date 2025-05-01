@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
@@ -18,4 +19,7 @@ public interface IShopCartAppService : IApplicationService
     Task<ShopCartDto> AddCartItemAsync(Guid userId, Guid groupBuyId, CreateCartItemDto input);
     Task<ShopCartDto> UpdateCartItemAsync(Guid cartItemId, CreateCartItemDto input);
     Task<ShopCartDto> DeleteCartItemAsync(Guid cartItemId);
+    Task<PagedResultDto<ShopCartListWithDetailsDto>> GetListWithDetailsAsync(GetShopCartListDto input);
+    Task ClearCartItemsAsync(List<Guid> ids);
+    Task<List<CartItemWithDetailsDto>> GetCartItemsListAsync(Guid shopCartId);
 }

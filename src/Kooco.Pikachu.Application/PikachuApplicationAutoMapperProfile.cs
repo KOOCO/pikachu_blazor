@@ -2,6 +2,7 @@ using AutoMapper;
 using Kooco.Pikachu.AddOnProducts;
 using Kooco.Pikachu.AutomaticEmails;
 using Kooco.Pikachu.Campaigns;
+using Kooco.Pikachu.Common;
 using Kooco.Pikachu.Dashboards;
 using Kooco.Pikachu.DeliveryTemperatureCosts;
 using Kooco.Pikachu.DeliveryTempratureCosts;
@@ -53,6 +54,7 @@ using Kooco.Pikachu.WebsiteManagement.WebsiteSettingsModules;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Volo.Abp.Application.Dtos;
 using Volo.Abp.AutoMapper;
 using Volo.Abp.Identity;
 
@@ -237,6 +239,8 @@ public class PikachuApplicationAutoMapperProfile : Profile
         CreateMap<ShoppingCreditEarnSpecificProduct, ShoppingCreditEarnSpecificProductDto>();
         CreateMap<ShopCart, ShopCartDto>().ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.User.Name));
         CreateMap<CartItem, CartItemDto>().ForMember(dest => dest.ItemName, opt => opt.MapFrom(src => src.Item.ItemName));
+        CreateMap<ShopCartListWithDetailsModel, ShopCartListWithDetailsDto>();
+        CreateMap<CartItemWithDetailsModel, CartItemWithDetailsDto>();
 
         #region GroupPurchaseOverview Mappings
         CreateMap<GroupPurchaseOverview, GroupPurchaseOverviewDto>().ReverseMap();

@@ -9,6 +9,18 @@ public static class MemberConsts
 
     public const string MembersManagement = "MembersManagement";
 
+    public const string Male = "Male";
+    public const string Female = "Female";
+    public const string MaleAvatarUrl = "images/Male_Avatar.png";
+    public const string FemaleAvatarUrl = "images/Female_Avatar.png";
+
+    public static string GetAvatarUrl(string? gender)
+    {
+        return gender == Female
+            ? FemaleAvatarUrl
+            : MaleAvatarUrl;
+    }
+
     public static class Members
     {
         public const string Default = MembersManagement + ".Members";

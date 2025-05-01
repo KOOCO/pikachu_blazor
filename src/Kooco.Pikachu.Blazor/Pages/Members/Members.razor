@@ -155,7 +155,7 @@
                     <DisplayTemplate>
                         <Div Class="d-flex align-items-center gap-1">
                             <Div Class="member-image">
-                                <img class="img-fluid rounded-circle" src="https://e7.pngegg.com/pngimages/799/987/png-clipart-computer-icons-avatar-icon-design-avatar-heroes-computer-wallpaper-thumbnail.png" alt="Alternate Text" />
+                                <img class="img-fluid rounded-circle" src="@MemberConsts.GetAvatarUrl(context.Gender)" alt="Alternate Text" />
                                 @if (context.IsBlacklisted)
                                 {
                                     <Span Class="blacklisted">

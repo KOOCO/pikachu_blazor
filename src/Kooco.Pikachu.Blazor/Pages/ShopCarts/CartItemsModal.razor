@@ -1,0 +1,204 @@
+﻿@using Kooco.Pikachu.Members
+@inherits PikachuComponentBase
+
+<Modal @ref="ModalRef" Closing="@OnModalClosing">
+    <ModalContent Size="ModalSize.Large" IsCentered="true">
+        <ModalHeader>
+            <Div Class="header-details">
+                <ModalTitle Class="header-title">
+                    <Div Class="d-flex align-items-center gap-1">
+                        <Div Class="member-image">
+                            <img class="img-fluid rounded-circle"
+                                 src="@MemberConsts.MaleAvatarUrl"
+                                 alt="Member Avatar" />
+                        </Div>
+                        <Div>
+                            <h5 class="m-0">@Selected.UserName</h5>
+                            <Span Class="fs-6">@Selected.GroupBuyName</Span>
+                        </Div>
+                    </Div>
+                </ModalTitle>
+                <Div Class="product-input-group">
+                    <Span Class="input-group-icon">
+                        <i class="fas fa-list-check" />
+                    </Span>
+                    <AntDesign.Select AllowClear
+                                      ShowArrowIcon
+                                      TItem="string"
+                                      TItemValue="string"
+                                      Placeholder="@L["AddProduct"]"
+                                      Size="AntDesign.InputSize.Large">
+                        <SelectOptions></SelectOptions>
+                    </AntDesign.Select>
+                </Div>
+            </Div>
+        </ModalHeader>
+        <ModalBody>
+            @if (ItemsLoading)
+            {
+                <Div Class="d-flex align-items-center justify-content-center p-5">
+                    <Div Class="spinner-border"></Div>
+                </Div>
+            }
+            else
+            {
+                foreach (var cartItem in CartItems)
+                {
+                    <div class="row item-row align-items-center py-2 border-bottom">
+                        <div class="col-7 d-flex align-items-center gap-3">
+                            <div>
+                                <img src="@cartItem.Image" style="width: 60px; height: 60px;" />
+                            </div>
+                            <div>
+                                <div class="fw-bold">@cartItem.ItemName</div>
+                                <div class="text-muted small">@cartItem.ItemType.ToString()</div>
+                            </div>
+                        </div>
+
+                        <div class="col-3" style="position: relative;">
+                            <div class="qty-box w-100 d-flex align-items-center justify-content-center">
+                                <button class="minus-button" @onclick="@(() => MinusQuantity(cartItem))">
+                                    <i class="fas fa-minus"></i>
+                                </button>
+                                <span class="px-2 fw-bold flex-grow-1 text-center">@cartItem.Quantity</span>
+                                <button class="add-button" @onclick="@(() => AddQuantity(cartItem))">
+                                    <i class="fas fa-add"></i>
+                                </button>
+                            </div>
+                            <div class="text-muted small stock-div">Stock: @cartItem.Stock</div>
+                        </div>
+
+                        <div class="col-1 text-end fw-bold">
+                            $@cartItem.Amount.ToString("N0")
+                        </div>
+
+                        <div class="col-1 text-end">
+                            <PikachuButton Class="pk-btn-sm pk-btn-icon danger rounded-5"
+                                           IconClass="fas fa-times fa-lg"
+                                           Clicked="() => RemoveItem(cartItem)" />
+                        </div>
+                    </div>
+                }
+                <div class="row item-row align-items-center py-2 text-dark">
+                    <div class="col-7 d-flex align-items-center gap-3">
+                        <div style="width: 60px;"></div>
+                        <div>
+                            <div class="fw-bold text-dark text-uppercase">@L["Total"]</div>
+                        </div>
+                    </div>
+
+                    <div class="col-3 text-center fw-bold">
+                        @CartItems?.Sum(ci => ci.Quantity)
+                    </div>
+
+                    <div class="col-1 text-end fw-bold">
+                        $@CartItems?.Sum(ci => ci.Amount).ToString("N0")
+                    </div>
+
+                    <div class="col-1 text-end">
+                    </div>
+                </div>
+            }
+        </ModalBody>
+        <ModalFooter>
+            <PikachuButton Class="pk-btn-sm pk-btn-danger"
+                           Clicked="Hide"
+                           Disabled="Loading">
+                @L["Cancel"]
+            </PikachuButton>
+            <PikachuButton Class="pk-btn-sm pk-btn-primary"
+                           Clicked="Save"
+                           Loading="Loading"
+                           IconClass="fas fa-check">
+                @L["Save"]
+            </PikachuButton>
+        </ModalFooter>
+    </ModalContent>
+</Modal>
+
+<style>
+    .header-details {
+        display: flex;
+        width: 100%;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .header-title {
+        flex: 1;
+    }
+
+    .product-input-group {
+        position: relative;
+    }
+
+        .product-input-group .input-group-icon {
+            position: absolute;
+            top: 7px;
+            left: 6px;
+            z-index: 9;
+            border-radius: 50%;
+            height: 25px;
+            width: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            background: #2A4469;
+        }
+
+        .product-input-group .ant-select {
+            min-width: 300px;
+        }
+
+            .product-input-group .ant-select .ant-select-selector {
+                padding-left: 38px !important;
+            }
+
+    .qty-box {
+        border: 1px solid lightgrey;
+        padding: 2px;
+        border-radius: 5px;
+    }
+
+        .qty-box button {
+            border: none;
+            border-radius: 5px;
+            padding: 3px 9px;
+        }
+
+    .add-button {
+        background: #ff9f38;
+        color: #fff;
+    }
+
+        .add-button:hover {
+            background: #f69936;
+        }
+
+        .add-button:active {
+            background: #ff9727;
+        }
+
+    .minus-button {
+        background: #fff3e7;
+        color: #ff9f38
+    }
+
+        .minus-button:hover {
+            background: #fff2e4;
+        }
+
+        .minus-button:active {
+            background: #fbe8d3;
+        }
+
+    .stock-div {
+        position: absolute;
+        left: 20px;
+    }
+
+    .ant-select-single.ant-select-lg:not(.ant-select-customize-input) .ant-select-selector {
+        border-radius: 5px;
+    }
+</style>

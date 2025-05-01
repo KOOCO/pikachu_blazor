@@ -1510,6 +1510,14 @@
     "TotalCampaigns": "Total Campaigns",
     "ActiveCampaigns": "Active Campaigns",
     "FaceBookPixelID": "FaceBook Pixel ID",
-    "GAID": "GA Tag ID"
+    "GAID": "GA Tag ID",
+    "Menu:ShopCarts": "Shopping Carts",
+    "ShoppingCart": "Shopping Carts",
+    "NumberOfItems": "Number of Items",
+    "AddProduct": "Add Product",
+    "CopyId": "Copy ID",
+    "MinNumberOfItems": "Min Number of Items",
+    "MaxNumberOfItems": "Max Number of Items",
+    "AreYouSureYouWantToClearTheCarts": "All the items in the selected carts will be removed. This action can not be reverted."
   }
 }
