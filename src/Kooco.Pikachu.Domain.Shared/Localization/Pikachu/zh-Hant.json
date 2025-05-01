@@ -1253,6 +1253,8 @@
     "YouAreNotAuthorized": "您無權執行此操作。",
     "UpdateCampaign": "更新優惠活動",
     "TotalCampaigns": "優惠活動總數",
-    "ActiveCampaigns": "啟用中的優惠活動"
+    "ActiveCampaigns": "啟用中的優惠活動",
+    "ProductGroupModule": "商品模組",
+    "DeliveryTimePreferance": "收件時段"
   }
 }

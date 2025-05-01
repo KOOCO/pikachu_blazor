@@ -91,26 +91,7 @@
                                 }
                             </Row>
                         </Column>
-           <Column ColumnSize="ColumnSize.Is12">
-    <Label>@L["ApplicableItems"]</Label>
-
-  
-        <div class="d-flex flex-column">
-     <Check TValue="bool" 
-               Checked="@IsAddOnProductsSelected" 
-               CheckedChanged="@((bool value) => OnCheckChanged(value, "AddOnProducts"))">
-            @L["Add-OnProducts"]
-        </Check>
-
-        <Check TValue="bool" 
-               Checked="@IsShippingFeesSelected" 
-               CheckedChanged="@((bool value) => OnCheckChanged(value, "ShippingFees"))">
-            @L["ShippingFees"]
-        </Check>
-        </div>
-
-      
-</Column>
+   
 
 
                     </Column>
@@ -194,6 +175,26 @@
                                 </AntDesign.Select>
                                 <ValidationMessage For="() => CreateUpdateUsage!.ProductIds" />
                             </EditForm>
+                        </Column>
+                        <Column ColumnSize="ColumnSize.Is12">
+                            <Label>@L["ApplicableItems"]</Label>
+
+
+                            <div class="d-flex flex-column">
+                                <Check TValue="bool"
+                                       Checked="@IsAddOnProductsSelected"
+                                       CheckedChanged="@((bool value) => OnCheckChanged(value, "AddOnProducts"))">
+                                    @L["Add-OnProducts"]
+                                </Check>
+
+                                <Check TValue="bool"
+                                       Checked="@IsShippingFeesSelected"
+                                       CheckedChanged="@((bool value) => OnCheckChanged(value, "ShippingFees"))">
+                                    @L["ShippingFees"]
+                                </Check>
+                            </div>
+
+
                         </Column>
                     </Column>
 
