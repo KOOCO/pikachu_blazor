@@ -1469,6 +1469,10 @@
 
 
                                                                                         }
+                                                                                      @if(itemDetails!=null && itemDetails.Where(x => x.Attribute1Value == null).Count()==1)
+                                                                                        {
+                                                                                            selectedItem.SelectedItemAttribute = itemDetails.Where(x => x.Attribute1Value == null).Select(x => x.Id).FirstOrDefault();
+                                                                                        }
                                                                                     }
                                                                                 </div>
                                                                             }

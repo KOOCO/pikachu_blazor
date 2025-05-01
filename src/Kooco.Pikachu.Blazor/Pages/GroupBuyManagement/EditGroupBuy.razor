@@ -344,17 +344,17 @@
 
                             <label for="@item" class="form-label me-2">
                                 <input type="checkbox"
-                                       class="form-check-input"
-                                       id="@item"
-                                       disabled="@(EditGroupBuyDto.IsEnterprise||!IsShippingMethodEnabled(item)||HasDifferentItemTemperatures)"
-                                       checked="@((EditGroupBuyDto.ExcludeShippingMethod is not null) &&
+                                class="form-check-input"
+                                id="@item"
+                                disabled="@(EditGroupBuyDto.IsEnterprise||!IsShippingMethodEnabled(item)||HasDifferentItemTemperatures)"
+                                checked="@((EditGroupBuyDto.ExcludeShippingMethod is not null) &&
                                                       (EditGroupBuyDto.ExcludeShippingMethod.Contains(item)))"
-                                       @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
+                                @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
                                 @L[EnumHelper.GetDescription(Enum.Parse<DeliveryMethod>(item))]
                             </label>
 
                             @if (item == Enum.GetName(DeliveryMethod.FamilyMartC2C)
-                           || item == Enum.GetName(DeliveryMethod.BlackCat1))
+                          || item == Enum.GetName(DeliveryMethod.BlackCat1))
                             {
                                 <br />
                                 <Div Class="mt-1"></Div>
@@ -378,19 +378,19 @@
 
                             <label for="@item" class="form-label me-2">
                                 <input type="checkbox"
-                                       class="form-check-input"
-                                       id="@item"
-                                       disabled="@((EditGroupBuyDto.ExcludeShippingMethod is not null) &&
+                                class="form-check-input"
+                                id="@item"
+                                disabled="@((EditGroupBuyDto.ExcludeShippingMethod is not null) &&
                                                    (EditGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore")) &&
                                                    item is not "DeliveredByStore"||EditGroupBuyDto.IsEnterprise||!IsShippingMethodEnabled(item)||HasDifferentItemTemperatures)"
-                                       checked="@((EditGroupBuyDto.ExcludeShippingMethod is not null) &&
+                                checked="@((EditGroupBuyDto.ExcludeShippingMethod is not null) &&
                                                   (EditGroupBuyDto.ExcludeShippingMethod.Contains(item)))"
-                                       @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
+                                @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
                                 @L[EnumHelper.GetDescription(Enum.Parse<DeliveryMethod>(item))]
                             </label>
 
                             @if (item == Enum.GetName(DeliveryMethod.FamilyMartC2C)
-                           || item == Enum.GetName(DeliveryMethod.BlackCat1))
+                          || item == Enum.GetName(DeliveryMethod.BlackCat1))
                             {
                                 <br />
                                 <Div Class="mt-1"></Div>
@@ -411,12 +411,12 @@
 
                             <label for="@item" class="form-label me-2">
                                 <input type="checkbox"
-                                       class="form-check-input"
-                                       id="@item"
-                                       disabled="@(EditGroupBuyDto.IsEnterprise||!IsShippingMethodEnabled(item)||HasDifferentItemTemperatures)"
-                                       checked="@((EditGroupBuyDto.ExcludeShippingMethod is not null) &&
+                                class="form-check-input"
+                                id="@item"
+                                disabled="@(EditGroupBuyDto.IsEnterprise||!IsShippingMethodEnabled(item)||HasDifferentItemTemperatures)"
+                                checked="@((EditGroupBuyDto.ExcludeShippingMethod is not null) &&
                                                   (EditGroupBuyDto.ExcludeShippingMethod.Contains(item)))"
-                                       @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
+                                @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
                                 @L[EnumHelper.GetDescription(Enum.Parse<DeliveryMethod>(item))]
                             </label>
 
@@ -434,14 +434,14 @@
 
                             <label for="@item" class="form-label me-2">
                                 <input type="checkbox"
-                                       class="form-check-input"
-                                       id="@item"
-                                       disabled="@((EditGroupBuyDto.ExcludeShippingMethod is not null) &&
+                                class="form-check-input"
+                                id="@item"
+                                disabled="@((EditGroupBuyDto.ExcludeShippingMethod is not null) &&
                                                        (EditGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore")) &&
                                                        item is not "DeliveredByStore"||EditGroupBuyDto.IsEnterprise||!IsShippingMethodEnabled(item)||HasDifferentItemTemperatures)"
-                                       checked="@((EditGroupBuyDto.ExcludeShippingMethod is not null) &&
+                                checked="@((EditGroupBuyDto.ExcludeShippingMethod is not null) &&
                                                       (EditGroupBuyDto.ExcludeShippingMethod.Contains(item)))"
-                                       @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
+                                @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
                                 @L[EnumHelper.GetDescription(Enum.Parse<DeliveryMethod>(item))]
                             </label>
 
@@ -461,12 +461,12 @@
 
                             <label for="@item" class="form-label me-2">
                                 <input type="checkbox"
-                                       class="form-check-input"
-                                       disabled="@(EditGroupBuyDto.IsEnterprise||!IsShippingMethodEnabled(item)||HasDifferentItemTemperatures)"
-                                       id="@item"
-                                       checked="@((EditGroupBuyDto.ExcludeShippingMethod is not null) &&
+                                class="form-check-input"
+                                disabled="@(EditGroupBuyDto.IsEnterprise||!IsShippingMethodEnabled(item)||HasDifferentItemTemperatures)"
+                                id="@item"
+                                checked="@((EditGroupBuyDto.ExcludeShippingMethod is not null) &&
                                                   (EditGroupBuyDto.ExcludeShippingMethod.Contains(item)))"
-                                       @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
+                                @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
                                 @L[EnumHelper.GetDescription(Enum.Parse<DeliveryMethod>(item))]
                             </label>
 
@@ -485,14 +485,14 @@
 
                             <label for="@item" class="form-label me-2">
                                 <input type="checkbox"
-                                       class="form-check-input"
-                                       id="@item"
-                                       disabled="@((EditGroupBuyDto.ExcludeShippingMethod is not null) &&
+                                class="form-check-input"
+                                id="@item"
+                                disabled="@((EditGroupBuyDto.ExcludeShippingMethod is not null) &&
                                                        (EditGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore")) &&
                                                        item is not "DeliveredByStore"||EditGroupBuyDto.IsEnterprise||!IsShippingMethodEnabled(item)||HasDifferentItemTemperatures)"
-                                       checked="@((EditGroupBuyDto.ExcludeShippingMethod is not null) &&
+                                checked="@((EditGroupBuyDto.ExcludeShippingMethod is not null) &&
                                                       (EditGroupBuyDto.ExcludeShippingMethod.Contains(item)))"
-                                       @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
+                                @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
                                 @L[EnumHelper.GetDescription(Enum.Parse<DeliveryMethod>(item))]
                             </label>
 
@@ -509,12 +509,12 @@
 
                         <label for="@item" class="form-label me-2">
                             <input type="checkbox"
-                                   class="form-check-input"
-                                   id="@item"
-                                   disabled="@(EditGroupBuyDto.IsEnterprise)"
-                                   checked="@((EditGroupBuyDto.ExcludeShippingMethod is not null) &&
+                            class="form-check-input"
+                            id="@item"
+                            disabled="@(EditGroupBuyDto.IsEnterprise)"
+                            checked="@((EditGroupBuyDto.ExcludeShippingMethod is not null) &&
                                                           (EditGroupBuyDto.ExcludeShippingMethod.Contains(item)))"
-                                   @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
+                            @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
                             @L[EnumHelper.GetDescription(Enum.Parse<DeliveryMethod>(item))]
                         </label>
 
@@ -524,14 +524,14 @@
                     {
                         <label for="@item" class="form-label me-2">
                             <input type="checkbox"
-                                   class="form-check-input"
-                                   id="@item"
-                                   disabled="@((EditGroupBuyDto.ExcludeShippingMethod is not null) &&
+                            class="form-check-input"
+                            id="@item"
+                            disabled="@((EditGroupBuyDto.ExcludeShippingMethod is not null) &&
                                                (EditGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore")) &&
                                                item is not "DeliveredByStore"||(EditGroupBuyDto.IsEnterprise && item == Enum.GetName(DeliveryMethod.DeliveredByStore)))"
-                                   checked="@(((EditGroupBuyDto.ExcludeShippingMethod is not null) &&
+                            checked="@(((EditGroupBuyDto.ExcludeShippingMethod is not null) &&
                                               (EditGroupBuyDto.ExcludeShippingMethod.Contains(item)))||( item == Enum.GetName(DeliveryMethod.SelfPickup) && EditGroupBuyDto.IsEnterprise))"
-                                   @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
+                            @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
                             @L[EnumHelper.GetDescription(Enum.Parse<DeliveryMethod>(item))]
                         </label>
                     }
@@ -568,23 +568,23 @@
                     @foreach (string island in DeliveryTimeConts.BlackCat)
                     {
                         @if ((EditGroupBuyDto.ExcludeShippingMethod is not null) &&
-                       ((EditGroupBuyDto.ExcludeShippingMethod.Contains("BlackCat1")) ||
-                       (EditGroupBuyDto.ExcludeShippingMethod.Contains("BlackCatFreeze")) ||
-                       (EditGroupBuyDto.ExcludeShippingMethod.Contains("BlackCatFrozen")) ||
-                       (EditGroupBuyDto.ExcludeShippingMethod.Contains("TCatDeliveryNormal")) ||
-                       (EditGroupBuyDto.ExcludeShippingMethod.Contains("TCatDeliveryFreeze")) ||
-                       (EditGroupBuyDto.ExcludeShippingMethod.Contains("TCatDeliveryFrozen")) ||
-                       (EditGroupBuyDto.ExcludeShippingMethod.Contains("TCatDeliverySevenElevenNormal")) ||
-                       (EditGroupBuyDto.ExcludeShippingMethod.Contains("TCatDeliverySevenElevenFreeze")) ||
-                       (EditGroupBuyDto.ExcludeShippingMethod.Contains("TCatDeliverySevenElevenFrozen"))))
+                      ((EditGroupBuyDto.ExcludeShippingMethod.Contains("BlackCat1")) ||
+                      (EditGroupBuyDto.ExcludeShippingMethod.Contains("BlackCatFreeze")) ||
+                      (EditGroupBuyDto.ExcludeShippingMethod.Contains("BlackCatFrozen")) ||
+                      (EditGroupBuyDto.ExcludeShippingMethod.Contains("TCatDeliveryNormal")) ||
+                      (EditGroupBuyDto.ExcludeShippingMethod.Contains("TCatDeliveryFreeze")) ||
+                      (EditGroupBuyDto.ExcludeShippingMethod.Contains("TCatDeliveryFrozen")) ||
+                      (EditGroupBuyDto.ExcludeShippingMethod.Contains("TCatDeliverySevenElevenNormal")) ||
+                      (EditGroupBuyDto.ExcludeShippingMethod.Contains("TCatDeliverySevenElevenFreeze")) ||
+                      (EditGroupBuyDto.ExcludeShippingMethod.Contains("TCatDeliverySevenElevenFrozen"))))
                         {
                             if (EditGroupBuyDto.BlackCatDeliveryTime.IsNullOrWhiteSpace() || EditGroupBuyDto.BlackCatDeliveryTime == "[]") BlackCatDeliveryTimeCheckedChange("Inapplicable", new ChangeEventArgs { Value = true });
                             <label for="@island" class="form-label me-2">
                                 <input type="checkbox"
-                                       class="form-check-input"
-                                       id="@island"
-                                       checked="@(EditGroupBuyDto.BlackCatDeliveryTime is not null && EditGroupBuyDto.BlackCatDeliveryTime.Contains(island))"
-                                       @onchange="(value) => BlackCatDeliveryTimeCheckedChange(island, value)" />
+                                class="form-check-input"
+                                id="@island"
+                                checked="@(EditGroupBuyDto.BlackCatDeliveryTime is not null && EditGroupBuyDto.BlackCatDeliveryTime.Contains(island))"
+                                @onchange="(value) => BlackCatDeliveryTimeCheckedChange(island, value)" />
                                 @L[island]
                             </label>
                         }
@@ -592,11 +592,11 @@
                         {
                             <label for="@island" class="form-label me-2">
                                 <input disabled
-                                       type="checkbox"
-                                       class="form-check-input"
-                                       id="@island"
-                                       checked="@(EditGroupBuyDto.BlackCatDeliveryTime is not null && EditGroupBuyDto.BlackCatDeliveryTime.Contains(island))"
-                                       @onchange="(value) => BlackCatDeliveryTimeCheckedChange(island, value)" />
+                                type="checkbox"
+                                class="form-check-input"
+                                id="@island"
+                                checked="@(EditGroupBuyDto.BlackCatDeliveryTime is not null && EditGroupBuyDto.BlackCatDeliveryTime.Contains(island))"
+                                @onchange="(value) => BlackCatDeliveryTimeCheckedChange(island, value)" />
                                 @L[island]
                             </label>
 
@@ -618,19 +618,19 @@
                     @foreach (string island in DeliveryTimeConts.HomeDelivery)
                     {
                         @if ((EditGroupBuyDto.ExcludeShippingMethod is not null) &&
-                       (EditGroupBuyDto.ExcludeShippingMethod.Contains("HomeDelivery")))
+                      (EditGroupBuyDto.ExcludeShippingMethod.Contains("HomeDelivery")))
                         {
                             if (EditGroupBuyDto.HomeDeliveryDeliveryTime.IsNullOrWhiteSpace() || EditGroupBuyDto.HomeDeliveryDeliveryTime == "[]") EditGroupBuyDto.HomeDeliveryDeliveryTime = "[\"Inapplicable\"]";
                             <label for="@(island)_HomeDelivery" class="form-label me-2">
                                 <input type="checkbox"
-                                       class="form-check-input"
-                                       id="@island"
-                                       disabled="@(island is not PikachuResource.UnableToSpecifyDuringPeakPeriods ?
+                                class="form-check-input"
+                                id="@island"
+                                disabled="@(island is not PikachuResource.UnableToSpecifyDuringPeakPeriods ?
                                                     IsUnableToSpecifyDuringPeakPeriodsForHomeDelivery :
                                                     false)"
-                                       checked="@(EditGroupBuyDto.HomeDeliveryDeliveryTime is not null &&
+                                checked="@(EditGroupBuyDto.HomeDeliveryDeliveryTime is not null &&
                                                       EditGroupBuyDto.HomeDeliveryDeliveryTime.Contains(island))"
-                                       @onchange="(value) => HomeDeliveryTimeCheckedChange(island, value)" />
+                                @onchange="(value) => HomeDeliveryTimeCheckedChange(island, value)" />
                                 @L[island]
                             </label>
                         }
@@ -639,12 +639,12 @@
                             EditGroupBuyDto.HomeDeliveryDeliveryTime = null;
                             <label for="@(island)_HomeDelivery" class="form-label me-2">
                                 <input disabled
-                                       type="checkbox"
-                                       class="form-check-input"
-                                       id="@island"
-                                       checked="@(EditGroupBuyDto.HomeDeliveryDeliveryTime is not null &&
+                                type="checkbox"
+                                class="form-check-input"
+                                id="@island"
+                                checked="@(EditGroupBuyDto.HomeDeliveryDeliveryTime is not null &&
                                                          EditGroupBuyDto.HomeDeliveryDeliveryTime.Contains(island))"
-                                       @onchange="(value) => HomeDeliveryTimeCheckedChange(island, value)" />
+                                @onchange="(value) => HomeDeliveryTimeCheckedChange(island, value)" />
                                 @L[island]
                             </label>
 
@@ -665,19 +665,19 @@
                     @foreach (string island in DeliveryTimeConts.SelfPickUp)
                     {
                         @if ((EditGroupBuyDto.ExcludeShippingMethod is not null) &&
-                       (EditGroupBuyDto.ExcludeShippingMethod.Contains("SelfPickup")))
+                      (EditGroupBuyDto.ExcludeShippingMethod.Contains("SelfPickup")))
                         {
                             if (EditGroupBuyDto.SelfPickupDeliveryTime.IsNullOrWhiteSpace() || EditGroupBuyDto.SelfPickupDeliveryTime == "[]") EditGroupBuyDto.SelfPickupDeliveryTime = "[\"UnableToSpecifyDuringPeakPeriods\"]";
                             <label for="@(island)_SelfPickUp" class="form-label me-2">
                                 <input type="checkbox"
-                                       class="form-check-input"
-                                       id="@island"
-                                       disabled="@(island is not PikachuResource.UnableToSpecifyDuringPeakPeriods ?
+                                class="form-check-input"
+                                id="@island"
+                                disabled="@(island is not PikachuResource.UnableToSpecifyDuringPeakPeriods ?
                                                         IsUnableToSpecifyDuringPeakPeriodsForSelfPickups :
                                                         false)"
-                                       checked="@(EditGroupBuyDto.SelfPickupDeliveryTime is not null &&
+                                checked="@(EditGroupBuyDto.SelfPickupDeliveryTime is not null &&
                                                       EditGroupBuyDto.SelfPickupDeliveryTime.Contains(island))"
-                                       @onchange="(value) => SelfPickupDeliveryTimeCheckedChange(island, value)" />
+                                @onchange="(value) => SelfPickupDeliveryTimeCheckedChange(island, value)" />
                                 @L[island]
                             </label>
                         }
@@ -686,12 +686,12 @@
                             EditGroupBuyDto.SelfPickupDeliveryTime = null;
                             <label for="@(island)_SelfPickUp" class="form-label me-2">
                                 <input disabled
-                                       type="checkbox"
-                                       class="form-check-input"
-                                       id="@island"
-                                       checked="@(EditGroupBuyDto.SelfPickupDeliveryTime is not null &&
+                                type="checkbox"
+                                class="form-check-input"
+                                id="@island"
+                                checked="@(EditGroupBuyDto.SelfPickupDeliveryTime is not null &&
                                                       EditGroupBuyDto.SelfPickupDeliveryTime.Contains(island))"
-                                       @onchange="(value) => SelfPickupDeliveryTimeCheckedChange(island, value)" />
+                                @onchange="(value) => SelfPickupDeliveryTimeCheckedChange(island, value)" />
                                 @L[island]
                             </label>
                         }
@@ -712,19 +712,19 @@
                     @foreach (string island in DeliveryTimeConts.DeliveredByStore)
                     {
                         @if ((EditGroupBuyDto.ExcludeShippingMethod is not null) &&
-                       (EditGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore")))
+                      (EditGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore")))
                         {
                             if (EditGroupBuyDto.DeliveredByStoreDeliveryTime.IsNullOrWhiteSpace() || EditGroupBuyDto.DeliveredByStoreDeliveryTime == "[]") EditGroupBuyDto.DeliveredByStoreDeliveryTime = "[\"Inapplicable\"]";
                             <label for="@(island)_DeliveredByStore" class="form-label me-2">
                                 <input type="checkbox"
-                                       class="form-check-input"
-                                       id="@island"
-                                       disabled="@(island is not PikachuResource.UnableToSpecifyDuringPeakPeriods ?
+                                class="form-check-input"
+                                id="@island"
+                                disabled="@(island is not PikachuResource.UnableToSpecifyDuringPeakPeriods ?
                                                     IsUnableToSpecifyDuringPeakPeriodsForDeliveredByStore :
                                                     false)"
-                                       checked="@(EditGroupBuyDto.DeliveredByStoreDeliveryTime is not null &&
+                                checked="@(EditGroupBuyDto.DeliveredByStoreDeliveryTime is not null &&
                                                   EditGroupBuyDto.DeliveredByStoreDeliveryTime.Contains(island))"
-                                       @onchange="(value) => DeliveredByStoreTimeCheckedChange(island, value)" />
+                                @onchange="(value) => DeliveredByStoreTimeCheckedChange(island, value)" />
                                 @L[island]
                             </label>
                         }
@@ -732,12 +732,12 @@
                         {
                             <label for="@(island)_DeliveredByStore" class="form-label me-2">
                                 <input disabled
-                                       type="checkbox"
-                                       class="form-check-input"
-                                       id="@island"
-                                       checked="@(EditGroupBuyDto.DeliveredByStoreDeliveryTime is not null &&
+                                type="checkbox"
+                                class="form-check-input"
+                                id="@island"
+                                checked="@(EditGroupBuyDto.DeliveredByStoreDeliveryTime is not null &&
                                                      EditGroupBuyDto.DeliveredByStoreDeliveryTime.Contains(island))"
-                                       @onchange="(value) => DeliveredByStoreTimeCheckedChange(island, value)" />
+                                @onchange="(value) => DeliveredByStoreTimeCheckedChange(island, value)" />
                                 @L[island]
                             </label>
 
@@ -751,7 +751,7 @@
             <Div Class="col-2">@L[PikachuResource.ProductType] <span class="text-danger"> *</span></Div>
             <Div Class="col-8">
                 <select class="form-select"
-                        @onchange=OnProductTypeChange>
+                @onchange=OnProductTypeChange>
                     <option></option>
                     @foreach (ProductType value in Enum.GetValues<ProductType>())
                     {
@@ -775,9 +775,9 @@
             <Div Class="col-8">
                 <Div Class="row">
                     <Check TValue="bool"
-                           Disabled=@EditGroupBuyDto.IsEnterprise
-                           Checked="@CreditCard"
-                           CheckedChanged="OnCreditCardCheckedChange">
+                    Disabled=@EditGroupBuyDto.IsEnterprise
+                    Checked="@CreditCard"
+                    CheckedChanged="OnCreditCardCheckedChange">
                         @L["CreditCard"]
                     </Check>
                     <div class="row justify-content-center mb-2">
@@ -785,25 +785,25 @@
                             @foreach (var period in Constant.InstallmentPeriods)
                             {
                                 <Check Inline TValue="bool" Checked="@EditGroupBuyDto.InstallmentPeriods.Contains(period)"
-                                       CheckedChanged="(e) => OnInstallmentPeriodChange(e, period)"
-                                       Disabled="IsInstallmentPeriodEnabled(period)">
+                                CheckedChanged="(e) => OnInstallmentPeriodChange(e, period)"
+                                Disabled="IsInstallmentPeriodEnabled(period)">
                                     @L["InstallmentPeriods." + period]
                                 </Check>
                             }
                         </div>
                     </div>
                     <Check TValue="bool"
-                           Disabled=@EditGroupBuyDto.IsEnterprise
-                           @bind-Checked="@BankTransfer">
+                    Disabled=@EditGroupBuyDto.IsEnterprise
+                    @bind-Checked="@BankTransfer">
                         @L["BankTransfer"]
                     </Check>
                     <Check TValue="bool"
-                           Disabled=@EditGroupBuyDto.IsEnterprise
-                           @bind-Checked="@IsLinePay">
+                    Disabled=@EditGroupBuyDto.IsEnterprise
+                    @bind-Checked="@IsLinePay">
                         @L["LinePay"]
                     </Check>
                     <Check TValue="bool"
-                           @bind-Checked="@IsCashOnDelivery">
+                    @bind-Checked="@IsCashOnDelivery">
                         @L[PikachuResource.CashOnDelivery]
                     </Check>
                 </Div>
@@ -834,7 +834,7 @@
             </div>
             <div class="col-5">
                 <Select TValue="TaxType" Class="form-select"
-                        @bind-SelectedValue="@EditGroupBuyDto.TaxType">
+                @bind-SelectedValue="@EditGroupBuyDto.TaxType">
                     @foreach (var enumValue in Enum.GetValues(typeof(TaxType)))
                     {
                         <SelectItem Value="@enumValue">@L[enumValue.ToString()]</SelectItem>
@@ -858,9 +858,9 @@
             <div class="col-2 form-label">@L["EnterprisePurchase"]</div>
             <div class="col-4">
                 <Switch TValue="bool"
-                        Checked="@EditGroupBuyDto.IsEnterprise"
-                        CheckedChanged="OnEnterPriseChange"
-                        CheckedExpression="@(() => EditGroupBuyDto.IsEnterprise)" />
+                Checked="@EditGroupBuyDto.IsEnterprise"
+                CheckedChanged="OnEnterPriseChange"
+                CheckedExpression="@(() => EditGroupBuyDto.IsEnterprise)" />
             </div>
         </div>
         <div class="row">
@@ -952,7 +952,7 @@
             <Div Class="col-2">@L["SelectColorTheme"]<span class="text-danger"> *</span></Div>
             <Div Class="col-8">
                 <select class="form-select"
-                        @onchange=OnColorSchemeChange>
+                @onchange=OnColorSchemeChange>
                     <option>@L["ChooseColorTheme"]</option>
                     @foreach (ColorScheme value in Enum.GetValues<ColorScheme>())
                     {
@@ -1017,7 +1017,7 @@
             <Div Class="col-2">@L["DisplayMethodForProductDetails"]<span class="text-danger"> *</span></Div>
             <Div Class="col-8">
                 <select class="form-select"
-                        @onchange=OnProductDetailsDisplayMethodChange>
+                @onchange=OnProductDetailsDisplayMethodChange>
                     <option value="0" selected>@L["ChooseMethod"]</option>
                     @foreach (ProductDetailsDisplayMethod value in Enum.GetValues<ProductDetailsDisplayMethod>())
                     {
@@ -1042,8 +1042,8 @@
                 @if (CollapseItem.Count < 20)
                 {
                     <Select TValue="GroupBuyTemplateType"
-                            @onchange="@((e) => SelectTemplate(e))"
-                            Style="min-width: 300px;">
+                    @onchange="@((e) => SelectTemplate(e))"
+                    Style="min-width: 300px;">
                         <option value="">@L["SelectTemplate"]</option>
                         @foreach (GroupBuyTemplateType type in TemplateTypes.Where(w => w != GroupBuyTemplateType.PikachuOne))
                         {
@@ -1102,9 +1102,9 @@
                                         @if (module.IsWarnedForInCompatible)
                                         {
                                             <Tooltip Text="@($"Incompatible Module for {L[SelectedTemplate.ToString()]}")"
-                                                     TriggerTargetId="tooltip-custom-target"
-                                                     Inline
-                                                     Style="margin-left: 5px;">
+                                            TriggerTargetId="tooltip-custom-target"
+                                            Inline
+                                            Style="margin-left: 5px;">
                                                 <Badge Color="Color.Warning">
                                                     <i class="fas fa-circle-info" />
                                                 </Badge>
@@ -1155,15 +1155,15 @@
                                                     <Div Class="@(((carouselImages.Count > 0 && carouselImages.Any(a => !a.ImageUrl.IsNullOrEmpty())) ? "has-images" : "") + " container-less-filepicker")">
                                                         <Field>
                                                             <FilePicker @ref="CarouselFilePickers[carouselImages.GroupBy(g => g.ModuleNumber).FirstOrDefault().Key!.Value - 1]"
-                                                                        Disabled="carouselImages.Count >= 5"
-                                                                        Multiple
-                                                                        Changed="@(async (e) => await OnImageModuleUploadAsync(e,
+                                                            Disabled="carouselImages.Count >= 5"
+                                                            Multiple
+                                                            Changed="@(async (e) => await OnImageModuleUploadAsync(e,
                                                                                                                            carouselImages,
                                                                                                                            carouselImages.GroupBy(g => g.ModuleNumber).FirstOrDefault().Key!.Value,
                                                                                                                            CarouselFilePickers[carouselImages.GroupBy(g => g.ModuleNumber).FirstOrDefault().Key!.Value - 1],
                                                                                                                            ImageType.GroupBuyCarouselImage))"
-                                                                        ShowMode="FilePickerShowMode.List"
-                                                                        Accept="@(string.Join(", ", Constant.ValidImageExtensions))">
+                                                            ShowMode="FilePickerShowMode.List"
+                                                            Accept="@(string.Join(", ", Constant.ValidImageExtensions))">
                                                             </FilePicker>
                                                         </Field>
                                                     </Div>
@@ -1185,8 +1185,8 @@
                                                                         </button>
                                                                     </Div>
                                                                     <button type="button"
-                                                                            class="btn btn-sm btn-primary mt-1"
-                                                                            @onclick="() => OpenAddLinkModal(image)">
+                                                                    class="btn btn-sm btn-primary mt-1"
+                                                                    @onclick="() => OpenAddLinkModal(image)">
                                                                         @L["AddLink"]
                                                                     </button>
                                                                 </Div>
@@ -1199,7 +1199,7 @@
                                                 </Div>
                                                 <Div class="col-10 pt-2 pb-4">
                                                     <select class="form-select form-select"
-                                                            @onchange=@((e) => OnStyleCarouselChange(e, carouselImages, carouselImages.GroupBy(g => g.ModuleNumber).FirstOrDefault().Key!.Value))>
+                                                    @onchange=@((e) => OnStyleCarouselChange(e, carouselImages, carouselImages.GroupBy(g => g.ModuleNumber).FirstOrDefault().Key!.Value))>
                                                         <option>Select Style</option>
                                                         @foreach (object? enumValue in Enum.GetValues(typeof(StyleForCarouselImages)))
                                                         {
@@ -1240,13 +1240,13 @@
                                                     <Div Class="@(((bannerImages.Count > 0 && bannerImages.Any(a => !a.ImageUrl.IsNullOrEmpty())) ? "has-images" : "") + " container-less-filepicker")">
                                                         <Field>
                                                             <FilePicker @ref="BannerFilePickers[bannerImages.GroupBy(g => g.ModuleNumber).FirstOrDefault().Key!.Value - 1]"
-                                                                        Changed="@(async (e) => await OnBannerImageModuleUploadAsync(e,
+                                                            Changed="@(async (e) => await OnBannerImageModuleUploadAsync(e,
                                                                                                                            bannerImages,
                                                                                                                            bannerImages.GroupBy(g => g.ModuleNumber).FirstOrDefault().Key!.Value,
                                                                                                                            BannerFilePickers[bannerImages.GroupBy(g => g.ModuleNumber).FirstOrDefault().Key!.Value - 1],
                                                                                                                            ImageType.GroupBuyBannerImage))"
-                                                                        ShowMode="FilePickerShowMode.List"
-                                                                        Accept="@(string.Join(", ", Constant.ValidImageExtensions))">
+                                                            ShowMode="FilePickerShowMode.List"
+                                                            Accept="@(string.Join(", ", Constant.ValidImageExtensions))">
                                                             </FilePicker>
                                                         </Field>
                                                     </Div>
@@ -1268,8 +1268,8 @@
                                                                         </button>
                                                                     </Div>
                                                                     <button type="button"
-                                                                            class="btn btn-sm btn-primary mt-1"
-                                                                            @onclick="() => OpenAddLinkModal(image)">
+                                                                    class="btn btn-sm btn-primary mt-1"
+                                                                    @onclick="() => OpenAddLinkModal(image)">
                                                                         @L["AddLink"]
                                                                     </button>
                                                                 </Div>
@@ -1283,7 +1283,7 @@
 
                                     @if (module.GroupBuyModuleType is GroupBuyModuleType.GroupPurchaseOverview)
                                     {
-                                         List<GroupPurchaseOverviewDto> purchaseOverviewModules = GroupPurchaseOverviewModules.Where(x => x.ModuleNumber == module.ModuleNumber).ToList();
+                                        List<GroupPurchaseOverviewDto> purchaseOverviewModules = GroupPurchaseOverviewModules.Where(x => x.ModuleNumber == module.ModuleNumber).ToList();
                                         foreach (GroupPurchaseOverviewDto module in purchaseOverviewModules)
                                         {
                                             <Div Class="row d-flex">
@@ -1301,11 +1301,11 @@
                                                     <Div Class="@((!module.Image.IsNullOrEmpty() ? "has-images" : "") + " container-less-filepicker filepicker-sm")">
                                                         <Field>
                                                             <FilePicker @ref="GroupPurchaseOverviewFilePickers[GroupPurchaseOverviewModules.IndexOf(module)]"
-                                                                        Changed="@(async (e) => await OnImageUploadAsync(e,
+                                                            Changed="@(async (e) => await OnImageUploadAsync(e,
                                                                                                                      module,
                                                                                                                      GroupPurchaseOverviewFilePickers[GroupPurchaseOverviewModules.IndexOf(module)]))"
-                                                                        ShowMode="FilePickerShowMode.List"
-                                                                        Accept="@(string.Join(", ", Constant.ValidImageExtensions))">
+                                                            ShowMode="FilePickerShowMode.List"
+                                                            Accept="@(string.Join(", ", Constant.ValidImageExtensions))">
                                                             </FilePicker>
                                                         </Field>
                                                     </Div>
@@ -1317,7 +1317,7 @@
                                                                 <Div Class="image-container">
                                                                     <Image Class="blur-image" Source="@module.Image" Text="Logo Image" Fluid />
                                                                     <button class="delete-button"
-                                                                            @onclick="@(async (e) => await DeleteImageAsync(e, module))">
+                                                                    @onclick="@(async (e) => await DeleteImageAsync(e, module))">
                                                                         <i class="fa fa-trash" />
                                                                     </button>
                                                                 </Div>
@@ -1347,7 +1347,7 @@
                                                     <Div Class="col-12 pb-1"></Div>
                                                     <Div Class="col-12 pb-1">
                                                         <Switch TValue="bool"
-                                                                @bind-Checked="@module.IsButtonEnable" />
+                                                        @bind-Checked="@module.IsButtonEnable" />
                                                     </Div>
 
                                                     @if (module.IsButtonEnable)
@@ -1390,11 +1390,11 @@
                                                     <Div Class="@((!module.Image.IsNullOrEmpty() ? "has-images" : "") + " container-less-filepicker filepicker-sm")">
                                                         <Field>
                                                             <FilePicker @ref="GroupBuyOrderInstructionPickers[GroupBuyOrderInstructionModules.IndexOf(module)]"
-                                                                        Changed="@(async (e) => await OnImageUploadAsync(e,
+                                                            Changed="@(async (e) => await OnImageUploadAsync(e,
                                                                                                                      module,
                                                                                                                      GroupBuyOrderInstructionPickers[GroupBuyOrderInstructionModules.IndexOf(module)]))"
-                                                                        ShowMode="FilePickerShowMode.List"
-                                                                        Accept="@(string.Join(", ", Constant.ValidImageExtensions))">
+                                                            ShowMode="FilePickerShowMode.List"
+                                                            Accept="@(string.Join(", ", Constant.ValidImageExtensions))">
                                                             </FilePicker>
                                                         </Field>
                                                     </Div>
@@ -1408,7 +1408,7 @@
                                                                         <Div Class="image-container">
                                                                             <Image Class="blur-image" Source="@module.Image" Text="Logo Image" Fluid />
                                                                             <button class="delete-button"
-                                                                                    @onclick="@(async (e) => await DeleteImageAsync(e, module))">
+                                                                            @onclick="@(async (e) => await DeleteImageAsync(e, module))">
                                                                                 <i class="fa fa-trash" />
                                                                             </button>
                                                                         </Div>
@@ -1455,20 +1455,20 @@
                                                         @foreach (ItemWithItemTypeDto selectedItem in productModule.Selected)
                                                         {
                                                             <div class="row-cols-12 mt-@(productModule.Selected.IndexOf(selectedItem) > 0 ? "5" : "2")"
-                                                                 style="@(productModule.Selected.IndexOf(selectedItem) > 0 ? "margin-top: 75px !important" : "")">
+                                                            style="@(productModule.Selected.IndexOf(selectedItem) > 0 ? "margin-top: 75px !important" : "")">
                                                                 <label>@L["Products"]</label>
                                                                 <Autocomplete TItem="ItemWithItemTypeDto"
-                                                                              TValue="Guid?"
-                                                                              Data="@ItemsList"
-                                                                              TextField="@(( item ) => item.Name)"
-                                                                              ValueField="@(( item ) => item.Id)"
-                                                                              Placeholder="@L["Search..."]"
-                                                                              Filter="AutocompleteFilter.StartsWith"
-                                                                              CustomFilter="@(( item, searchValue ) => item.Name.IndexOf( searchValue, 0, StringComparison.CurrentCultureIgnoreCase ) >= 0 )"
-                                                                              HighlightSearch
-                                                                              Immediate="true"
-                                                                              SelectedValue="selectedItem.Id"
-                                                                              SelectedValueChanged="(id) => OnSelectedValueChanged(selectedItem.Item is not null && selectedItem.Item.Id != Guid.Empty ?
+                                                                TValue="Guid?"
+                                                                Data="@ItemsList"
+                                                                TextField="@(( item ) => item.Name)"
+                                                                ValueField="@(( item ) => item.Id)"
+                                                                Placeholder="@L["Search..."]"
+                                                                Filter="AutocompleteFilter.StartsWith"
+                                                                CustomFilter="@(( item, searchValue ) => item.Name.IndexOf( searchValue, 0, StringComparison.CurrentCultureIgnoreCase ) >= 0 )"
+                                                                HighlightSearch
+                                                                Immediate="true"
+                                                                SelectedValue="selectedItem.Id"
+                                                                SelectedValueChanged="(id) => OnSelectedValueChanged(selectedItem.Item is not null && selectedItem.Item.Id != Guid.Empty ?
                                                                                                                                    selectedItem.Item.Id :
                                                                                                                                    id,
                                                                                                                                    productModule,
@@ -1527,6 +1527,10 @@
 
 
 
+                                                                                        }
+                                                                                        @if(itemDetails!=null && itemDetails.Where(x => x.Attribute1Value == null).Count()==1)
+                                                                                        {
+                                                                                            selectedItem.SelectedItemAttribute = itemDetails.Where(x => x.Attribute1Value == null).Select(x => x.Id).FirstOrDefault();
                                                                                         }
                                                                                     }
                                                                                 </div>
