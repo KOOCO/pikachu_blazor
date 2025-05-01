@@ -2980,6 +2980,61 @@ public partial class EditGroupBuy
                         }
                     }
 
+                    if (item.GroupBuyModuleType == GroupBuyModuleType.ProductGroupModule)
+                    {
+                        foreach (ItemWithItemTypeDto itemDetail in item.Selected)
+                        {
+                            if (itemDetail.ItemType == ItemType.Item)
+                            {
+                                if (itemDetail.SelectedItemDetailIds == null || !itemDetail.SelectedItemDetailIds.Any())
+                                {
+                                    await _uiMessageService.Error($"Item '{itemDetail.Name}' must have at least one variant selected.");
+                                    await Loading.Hide();
+                                    return;
+                                }
+
+                                foreach (var detailId in itemDetail.SelectedItemDetailIds)
+                                {
+                                    if (!itemDetail.ItemDetailsWithPrices.TryGetValue(detailId, out var labelAndPrice))
+                                    {
+                                        await _uiMessageService.Error($"Price missing for one or more item variants in '{itemDetail.Name}'.");
+                                        await Loading.Hide();
+                                        return;
+                                    }
+
+                                    itemGroup.ItemDetails.Add(new GroupBuyItemGroupDetailCreateUpdateDto
+                                    {
+                                        SortOrder = j++,
+                                        ItemId = itemDetail.ItemType == ItemType.Item ? itemDetail.Id : null,
+                                        SetItemId = itemDetail.ItemType == ItemType.SetItem ? itemDetail.Id : null,
+                                        ItemType = itemDetail.ItemType,
+                                        ItemDetailId = itemDetail.ItemType == ItemType.Item ? detailId : null, // ✅ only for ItemType.Item
+                                        Price = labelAndPrice.Price
+                                    });
+                                }
+                            }
+                            else
+                            {
+
+                                if (itemDetail.Price is null)
+                                {
+                                    await _uiMessageService.Error($"Price missing for one or more item variants in '{itemDetail.Name}'.");
+                                    await Loading.Hide();
+                                    return;
+                                }
+                                itemGroup.ItemDetails.Add(new GroupBuyItemGroupDetailCreateUpdateDto
+                                {
+                                    SortOrder = j++,
+                                    ItemId = itemDetail.ItemType == ItemType.Item ? itemDetail.Id : null,
+                                    SetItemId = itemDetail.ItemType == ItemType.SetItem ? itemDetail.SetItem.Id : null,
+                                    ItemType = itemDetail.ItemType,
+
+                                    Price = itemDetail.Price.Value
+                                });
+                            }
+                        }
+                    }
+
                     EditGroupBuyDto.ItemGroups.Add(itemGroup);
                 }
             }
@@ -2993,7 +3048,17 @@ public partial class EditGroupBuy
                 if (EditGroupBuyDto.IsEnterprise) await _OrderAppService.UpdateOrdersIfIsEnterpricePurchaseAsync(Id);
 
                 var groupItem = EditGroupBuyDto.ItemGroups.Where(x => x.GroupBuyModuleType == GroupBuyModuleType.ProductGroupModule).ToList();
-
+                if (groupItem.Count>0)
+                {
+                    await _groupBuyItemsPriceAppService.DeleteAllGroupByItemAsync(result.Id);
+                    foreach (var group in groupItem)
+                    {
+                        foreach (var item in group.ItemDetails.DistinctBy(x => x.ItemDetailId))
+                        {
+                            await _groupBuyAppService.UpdateItemProductPrice(result.Id, item);
+                        }
+                    }
+                }
                 foreach (List<CreateImageDto> carouselImages in CarouselModules)
                 {
                     foreach (CreateImageDto carouselImage in carouselImages)
@@ -3116,14 +3181,7 @@ public partial class EditGroupBuy
                         }
                     }
                 }
-                await _groupBuyItemsPriceAppService.DeleteAllGroupByItemAsync(result.Id);
-                foreach (var group in groupItem)
-                {
-                    foreach (var item in group.ItemDetails.DistinctBy(x => x.ItemDetailId))
-                    {
-                        await _groupBuyAppService.UpdateItemProductPrice(result.Id, item);
-                    }
-                }
+              
             }
             catch (AbpDbConcurrencyException e)
             {
