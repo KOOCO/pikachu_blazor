@@ -105,12 +105,17 @@ public class MemberTagAppService : PikachuAppService, IMemberTagAppService
         }
 
         var vipTierNames = vipTiers?.Tiers.Select(t => t.TierName!).ToList();
-
-        return [.. tagNames
+        if (tagNames.Count>0)
+        {
+            return [.. tagNames
             .Concat(vipTierNames)
             .Concat(MemberConsts.MemberTags.Names)
             .Distinct()
             .OrderBy(x => x)];
+        }
+        else {
+            return new List<string>();
+        }
     }
 
     private async Task<IQueryable<MemberModel>> GetForTagsAsync(AddTagForUsersDto input)
