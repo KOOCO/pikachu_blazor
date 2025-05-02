@@ -450,7 +450,10 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
                         );
                     }
                 }
+
             }
+
+          
         }
 
         List<ImageDto> images = await _ImageAppService.GetGroupBuyImagesAsync(input.Id);
@@ -469,7 +472,40 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
         }
 
         await _groupBuyRepository.InsertAsync(result);
+        var groupItem = input.ItemGroups.Where(x => x.GroupBuyModuleType == GroupBuyModuleType.ProductGroupModule).ToList();
+        if (groupItem.Count > 0)
+        {
 
+            foreach (var group in groupItem)
+            {
+
+                foreach (var item in group.ItemGroupDetails)
+                {
+                    if (item.ItemType == ItemType.Item)
+                    {
+                        foreach (var itemDetail in item.Item?.ItemDetails.Distinct())
+                        {
+
+                            var itemPrice = await _groupBuyItemsPriceAppService.GetByItemIdAndGroupBuyIdAsync(itemDetail.Id, Id);
+
+                            if (itemPrice != null)
+                            {
+                                await _groupBuyItemsPriceAppService.CreateAsync(new CreateUpdateGroupBuyItemsPriceDto { ItemDetailId = itemDetail.Id, GroupBuyId = result.Id, GroupBuyPrice = itemPrice.GroupBuyPrice });
+                            }
+
+                        }
+                    }
+                    else
+                    {
+                        var itemPrice = await _groupBuyItemsPriceAppService.GetBySetItemIdAndGroupBuyIdAsync(item.SetItemId.Value, Id);
+                        if(itemPrice !=null)
+                        await _groupBuyItemsPriceAppService.CreateAsync(new CreateUpdateGroupBuyItemsPriceDto { SetItemId = item.SetItemId, GroupBuyId = result.Id, GroupBuyPrice = itemPrice.GroupBuyPrice });
+
+                    }
+                }
+            }
+        }
+        
         var GroupPurchaseOverviewModules = await _GroupPurchaseOverviewAppService.GetListByGroupBuyIdAsync(Id);
         if (GroupPurchaseOverviewModules is { Count: > 0 })
         {
