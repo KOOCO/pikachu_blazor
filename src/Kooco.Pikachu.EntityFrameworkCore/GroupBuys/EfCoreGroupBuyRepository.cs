@@ -94,12 +94,16 @@ public class EfCoreGroupBuyRepository : EfCoreRepository<PikachuDbContext, Group
                 .ThenInclude(ig => ig.ItemGroupDetails.OrderBy(i => i.SortOrder))
                 .ThenInclude(igd => igd.Item)
                 .ThenInclude(i => i.Images)
+                 .Include(x => x.ItemGroups.OrderBy(i => i.SortOrder))
+              .ThenInclude(ig => ig.ImageModules)
+                .ThenInclude(im => im.Images)
             .Include(x => x.ItemGroups)
                 .ThenInclude(ig => ig.ItemGroupDetails.OrderBy(i => i.SortOrder))
                 .ThenInclude(igd => igd.Item)
                 .ThenInclude(i => i.ItemDetails)
             .Include(x => x.ItemGroups.OrderBy(i => i.SortOrder))
                 .ThenInclude(ig => ig.ItemGroupDetails.OrderBy(i => i.SortOrder))
+
             .FirstOrDefaultAsync();
     }
     public async Task<GroupBuy> GetWithItemGroupsAsync(Guid id)

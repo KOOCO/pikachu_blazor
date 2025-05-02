@@ -3478,14 +3478,17 @@ public partial class EditGroupBuy
 
             if (item.GroupBuyModuleType is GroupBuyModuleType.OrderInstruction)
             {
-                var module = GroupBuyOrderInstructionModules.Where(x => x.ModuleNumber == moduleNumber).FirstOrDefault();
-                if (module != null)
+                var module = GroupBuyOrderInstructionModules.Where(x => x.ModuleNumber == moduleNumber).ToList();
+                if (module.Count>0)
                 {
-                    if (module.Id != Guid.Empty)
+                    foreach (var mod in module)
                     {
-                        await _GroupPurchaseOverviewAppService.DeleteAsync(module.Id);
+                        if (mod.Id != Guid.Empty)
+                        {
+                            await _GroupPurchaseOverviewAppService.DeleteAsync(mod.Id);
+                        }
+                        GroupBuyOrderInstructionModules.Remove(mod);
                     }
-                    GroupBuyOrderInstructionModules.Remove(module);
                 }
               
             }
