@@ -1255,7 +1255,8 @@
     "TotalCampaigns": "優惠活動總數",
     "ActiveCampaigns": "啟用中的優惠活動",
     "ProductGroupModule": "商品模組",
-    "DeliveryTimePreferance": "收件時段"
-   
+    "DeliveryTimePreferance": "收件時段",
+    "OnlyAcceptsICO": "只接受 ICO檔案"
+
   }
 }

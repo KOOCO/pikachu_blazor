@@ -94,8 +94,17 @@
                 </Row>
                 <Divider></Divider>
                 <Row>
-                    <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop">
-                        <h4>@L["Favicon"]</h4>
+                    <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop" Style="display: flex;gap:12px;">
+                        <h4>
+                            @L["Favicon"]  
+                        </h4>
+                        <label>
+                            <Span>
+                                <Tooltip Text="@L["OnlyAcceptsICO"]">
+                                    <Icon class="fa-question-circle" />
+                                </Tooltip>
+                            </Span>
+                        </label>
                         @if (Entity.FaviconBase64 != null)
                         {
                             <Div Class="image-thumbnail">
