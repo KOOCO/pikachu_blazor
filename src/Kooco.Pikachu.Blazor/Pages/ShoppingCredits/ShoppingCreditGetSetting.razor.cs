@@ -29,6 +29,9 @@ namespace Kooco.Pikachu.Blazor.Pages.ShoppingCredits
         private ValidationMessageStore? messageStore;
         private EditContext? editContext;
         private readonly ItemAppService _itemAppService;
+        private List<string> selectedApplicableItems = new List<string>();
+        private bool IsAddOnProductsSelected { get; set; }
+        private bool IsShippingFeesSelected { get; set; }
         public ShoppingCreditGetSetting(ItemAppService itemAppService)
         {
 
@@ -61,6 +64,12 @@ namespace Kooco.Pikachu.Blazor.Pages.ShoppingCredits
                     CreateUpdateEarn.SpecificGroupbuyIds = shoppingCreditEarn.SpecificProducts.Select(x => x.ProductId).ToList();
                     SelectedGroupBuy = shoppingCreditEarn.SpecificGroupBuys.Select(x => x.GroupbuyId);
                     SelectedProducts = shoppingCreditEarn.SpecificProducts.Select(x => x.ProductId);
+                    if (!string.IsNullOrWhiteSpace(CreateUpdateEarn.CashbackApplicableItems))
+                    {
+                        var selected = System.Text.Json.JsonSerializer.Deserialize<List<string>>(CreateUpdateEarn.CashbackApplicableItems) ?? new List<string>();
+                        IsAddOnProductsSelected = selected.Contains("AddOnProducts");
+                        IsShippingFeesSelected = selected.Contains("ShippingFees");
+                    }
                     await InvokeAsync(StateHasChanged);
                     await ValidationsRef.ClearAll();
                     await InvokeAsync(StateHasChanged);
@@ -75,6 +84,23 @@ namespace Kooco.Pikachu.Blazor.Pages.ShoppingCredits
                 await HandleErrorAsync(ex);
             }
             await base.OnInitializedAsync();
+        }
+        private void OnCheckChanged(bool value, string itemName)
+        {
+            var selected = new List<string>();
+
+            if (itemName == "AddOnProducts")
+                IsAddOnProductsSelected = value;
+            else if (itemName == "ShippingFees")
+                IsShippingFeesSelected = value;
+
+            if (IsAddOnProductsSelected)
+                selected.Add("AddOnProducts");
+
+            if (IsShippingFeesSelected)
+                selected.Add("ShippingFees");
+
+            CreateUpdateEarn.CashbackApplicableItems = System.Text.Json.JsonSerializer.Serialize(selected);
         }
         async Task FetchGroupBuys()
         {

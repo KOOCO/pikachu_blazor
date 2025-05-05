@@ -26,7 +26,7 @@ namespace Kooco.Pikachu.ShoppingCredits
     public decimal CashbackUnifiedMaxDeductiblePoints { get; set; }
 
     public string CashbackStagedSettings { get; set; }
-    public string CashbackApplicableItems { get; set; }
+    public string? CashbackApplicableItems { get; set; }
     public string CashbackApplicableGroupbuys { get; set; }
     public string CashbackApplicableProducts { get; set; }
 
@@ -52,7 +52,7 @@ namespace Kooco.Pikachu.ShoppingCredits
         string cashbackCalculationMethod,
         decimal cashbackUnifiedMaxDeductiblePoints,
         string cashbackStagedSettings,
-        string cashbackApplicableItems,
+        string? cashbackApplicableItems,
         string cashbackApplicableGroupbuys,
         string cashbackApplicableProducts) : base(id)
     {

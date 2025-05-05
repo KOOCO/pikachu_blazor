@@ -32,8 +32,8 @@ namespace Kooco.Pikachu.ShoppingCredits
         public int CashbackUnifiedMaxDeductiblePoints { get; set; }
 
         public string CashbackStagedSettings { get; set; }
-        [Required]
-        public string CashbackApplicableItems { get; set; }
+       
+        public string? CashbackApplicableItems { get; set; }
         [Required]
         public string CashbackApplicableGroupbuys { get; set; }
         [Required]
