@@ -220,4 +220,29 @@ public class ShopCartAppService(ShopCartManager shopCartManager, IShopCartReposi
         var data = await shopCartRepository.GetItemWithDetailsAsync(groupBuyId, id, itemType);
         return ObjectMapper.Map<ItemWithDetailsModel, ItemWithDetailsDto>(data);
     }
+
+    public async Task UpdateShopCartAsync(Guid id, List<CartItemWithDetailsDto> cartItems)
+    {
+        var shopCart = await shopCartRepository.GetAsync(id);
+        await shopCartRepository.EnsureCollectionLoadedAsync(shopCart, sc => sc.CartItems);
+
+        var existingIds = cartItems.Where(ci => ci.Id.HasValue).Select(ci => ci.Id.Value).ToList();
+        shopCart.CartItems.RemoveAll(ci => !existingIds.Contains(ci.Id));
+
+        foreach (var cartItem in cartItems)
+        {
+            if (cartItem.Id.HasValue)
+            {
+                var existingItem = shopCart.CartItems.First(ci => ci.Id == cartItem.Id);
+                existingItem.SetQuantity(cartItem.Quantity);
+                existingItem.ChangeUnitPrice(cartItem.UnitPrice);
+            }
+            else
+            {
+                await shopCartManager.AddCartItem(shopCart, cartItem.Quantity, cartItem.UnitPrice, cartItem.ItemId, cartItem.ItemDetailId, cartItem.SetItemId);
+            }
+        }
+
+        await shopCartRepository.UpdateAsync(shopCart);
+    }
 }

@@ -13,8 +13,8 @@
                     <Div Class="d-flex align-items-center gap-1">
                         <Div Class="member-image">
                             <img class="img-fluid rounded-circle"
-                            src="@MemberConsts.MaleAvatarUrl"
-                            alt="Member Avatar" />
+                                 src="@MemberConsts.GetAvatarUrl(Selected?.Gender)"
+                                 alt="Member Avatar" />
                         </Div>
                         <Div>
                             <h5 class="m-0">@Selected.UserName</h5>
@@ -27,15 +27,15 @@
                         <i class="fas fa-list-check" />
                     </Span>
                     <AntDesign.Select AllowClear
-                    ShowArrowIcon
-                    EnableSearch
-                    TItem="ItemWithItemTypeDto"
-                    TItemValue="ItemWithItemTypeDto"
-                    Placeholder="@L["AddProduct"]"
-                    Size="AntDesign.InputSize.Large"
-                    IgnoreItemChanges="@false"
-                    @bind-Value="SelectedItem"
-                    OnSelectedItemChanged="OnSelectedItemChanged">
+                                      ShowArrowIcon
+                                      EnableSearch
+                                      TItem="ItemWithItemTypeDto"
+                                      TItemValue="ItemWithItemTypeDto"
+                                      Placeholder="@L["AddProduct"]"
+                                      Size="AntDesign.InputSize.Large"
+                                      IgnoreItemChanges="@false"
+                                      @bind-Value="SelectedItem"
+                                      OnSelectedItemChanged="OnSelectedItemChanged">
                         <SelectOptions>
                             @foreach (var option in ProductOptions)
                             {
@@ -88,7 +88,8 @@
                                                 <SelectOptions>
                                                     @foreach (var option in cartItem.Details)
                                                     {
-                                                        <AntDesign.SelectOption TItem="Guid?" TItemValue="Guid?" Value="@option.Id" Label="@option.Name" />
+                                                        <AntDesign.SelectOption TItem="Guid?" TItemValue="Guid?" Value="@option.Id" Label="@option.Name"
+                                                                                Disabled="@(CartItems.Where(ci => ci != cartItem && ci.ItemId == cartItem.ItemId).Select(ci => ci.ItemDetailId).Contains(option.Id))" />
                                                     }
                                                 </SelectOptions>
                                             </AntDesign.Select>
@@ -108,7 +109,7 @@
                                         <i class="fas fa-add"></i>
                                     </button>
                                 </div>
-                                <div class="text-muted small stock-div">Stock: @cartItem.Stock</div>
+                                <div class="text-muted small stock-div">@L["Stock"]: @cartItem.Stock</div>
                             </div>
 
                             <div class="col-1 text-end fw-bold">
@@ -123,14 +124,14 @@
                         </div>
                     }
                     <div class="row item-row align-items-center py-2 text-dark">
-                        <div class="col-7 d-flex align-items-center gap-3">
+                        <div class="col-8 d-flex align-items-center gap-3">
                             <div style="width: 60px;"></div>
                             <div>
                                 <div class="fw-bold text-dark text-uppercase">@L["Total"]</div>
                             </div>
                         </div>
 
-                        <div class="col-3 text-center fw-bold">
+                        <div class="col-2 text-center fw-bold">
                             @CartItems?.Sum(ci => ci.Quantity)
                         </div>
 
@@ -158,8 +159,7 @@
             </PikachuButton>
             <PikachuButton Class="pk-btn-sm pk-btn-primary"
                            Clicked="Save"
-                           Loading="Loading"
-                           Disabled="!CartItems.Any()">
+                           Loading="Loading">
                 @L["Save"]
             </PikachuButton>
         </ModalFooter>

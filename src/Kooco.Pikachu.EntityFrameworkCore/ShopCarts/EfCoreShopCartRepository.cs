@@ -244,6 +244,7 @@ public class EfCoreShopCartRepository(IDbContextProvider<PikachuDbContext> dbCon
             {
                 si.Id,
                 si.SetItemName,
+                si.SaleableQuantity,
                 Image = si.Images
                 .OrderBy(image => image.SortNo)
                 .Where(image => !string.IsNullOrWhiteSpace(image.ImageUrl))
@@ -267,8 +268,11 @@ public class EfCoreShopCartRepository(IDbContextProvider<PikachuDbContext> dbCon
                 cartItem.Image = item.Image;
             }
 
-            cartItem.ItemDetail = itemDetails.Where(id => id.Id == cartItem.ItemDetailId).Select(id => id.SKU).FirstOrDefault();
-            cartItem.Stock = itemDetails.Where(id => id.Id == cartItem.ItemDetailId).Select(id => id.StockOnHand ?? 0).FirstOrDefault();
+            var itemDetail = itemDetails.Where(id => id.Id == cartItem.ItemDetailId).FirstOrDefault();
+            cartItem.ItemDetail = itemDetail?.SKU;
+            cartItem.Stock = cartItem.ItemId.HasValue
+                ? itemDetail?.StockOnHand ?? 0
+                : setItems.Where(si => si.Id == cartItem.SetItemId).Select(si => si.SaleableQuantity).FirstOrDefault() ?? 0;
         });
 
         return cartItems;
@@ -368,19 +372,17 @@ public class EfCoreShopCartRepository(IDbContextProvider<PikachuDbContext> dbCon
 
             if (item != null)
             {
-                item.Details = item.Details
-                    .Where(detail => itemPrices.Select(ip => ip.ItemDetailId).Contains(detail.Id))
-                    .ToList();
+                item.Details = [.. item.Details.Where(detail => itemPrices.Select(ip => ip.ItemDetailId).Contains(detail.Id))];
 
-                foreach(var detail in item.Details)
+                foreach (var detail in item.Details)
                 {
-                    detail.UnitPrice = itemPrices.Where(ip => ip.ItemDetailId == detail.Id)
+                    detail.UnitPrice = (int)itemPrices.Where(ip => ip.ItemDetailId == detail.Id)
                                 .Select(ip => ip.GroupBuyPrice)
                                 .FirstOrDefault();
                 }
             }
 
-            return item;
+            return item ?? throw new EntityNotFoundException(typeof(Item), id);
         }
 
         else
@@ -390,21 +392,21 @@ public class EfCoreShopCartRepository(IDbContextProvider<PikachuDbContext> dbCon
                 .Select(gbip => new { gbip.SetItemId, gbip.GroupBuyPrice })
                 .FirstOrDefaultAsync();
 
-            var setItem = dbContext.SetItems
+            var setItem = await dbContext.SetItems
                 .Where(si => si.Id == id)
                 .Include(si => si.SetItemDetails)
                 .Include(si => si.Images)
                 .Select(si => new ItemWithDetailsModel
                 {
                     Id = si.Id,
-                    ItemType = ItemType.Item,
+                    ItemType = ItemType.SetItem,
                     Image = si.Images.Where(image => !string.IsNullOrWhiteSpace(image.ImageUrl)).Select(image => image.ImageUrl).FirstOrDefault(),
                     ItemName = si.SetItemName,
                     Stock = si.SaleableQuantity,
-                    UnitPrice = itemPrices != null ? itemPrices.GroupBuyPrice : 0,
-                });
+                    UnitPrice = itemPrices != null ? (int)itemPrices.GroupBuyPrice : 0,
+                }).FirstOrDefaultAsync();
 
-            return await setItem.FirstOrDefaultAsync();
+            return setItem ?? throw new EntityNotFoundException(typeof(SetItem), id);
         }
     }
 }

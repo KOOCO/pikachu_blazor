@@ -46,7 +46,7 @@ public class CartItem : FullAuditedEntity<Guid>, IMultiTenant
         SpecifyItemOrSetItem(itemId, itemDetailId, setItemId);
     }
 
-    internal CartItem SpecifyItemOrSetItem(Guid? itemId, Guid? itemDetailId, Guid? setItemId)
+    public CartItem SpecifyItemOrSetItem(Guid? itemId, Guid? itemDetailId, Guid? setItemId)
     {
         if ((!itemId.HasValue && !setItemId.HasValue) || (itemId.HasValue && setItemId.HasValue))
         {
@@ -65,18 +65,18 @@ public class CartItem : FullAuditedEntity<Guid>, IMultiTenant
         return this;
     }
 
-    internal CartItem ChangeQuantity(int quantity)
+    public CartItem ChangeQuantity(int quantity)
     {
         Quantity += quantity;
         return this;
     }
 
-    private void SetQuantity(int quantity)
+    public void SetQuantity(int quantity)
     {
         Quantity = Check.Range(quantity, nameof(quantity), 0, int.MaxValue);
     }
 
-    internal CartItem ChangeUnitPrice(int unitPrice)
+    public CartItem ChangeUnitPrice(int unitPrice)
     {
         SetUnitPrice(unitPrice);
         return this;

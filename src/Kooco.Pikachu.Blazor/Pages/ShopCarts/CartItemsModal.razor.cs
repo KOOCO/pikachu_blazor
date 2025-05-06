@@ -12,7 +12,7 @@ namespace Kooco.Pikachu.Blazor.Pages.ShopCarts;
 public partial class CartItemsModal
 {
     [Parameter] public IShopCartAppService AppService { get; set; }
-
+    [Parameter] public EventCallback<bool> OnSubmit { get; set; }
     private List<CartItemWithDetailsDto> CartItems { get; set; } = [];
     private ShopCartListWithDetailsDto Selected { get; set; } = new();
     private List<ItemWithItemTypeDto> ProductOptions { get; set; } = [];
@@ -46,25 +46,30 @@ public partial class CartItemsModal
 
     async Task Save()
     {
-        if (CartItems.Count == 0)
+        try
         {
-            return;
-        }
-
-        if (CartItems.Any(ci => !ci.ItemDetailId.HasValue))
-        {
-            foreach (var ci in CartItems.Where(ci => !ci.ItemDetailId.HasValue))
+            if (CartItems.Any(ci => ci.ItemType == ItemType.Item && !ci.ItemDetailId.HasValue))
             {
-                ci.IsInvalid = true;
+                foreach (var ci in CartItems.Where(ci => ci.ItemType == ItemType.Item && !ci.ItemDetailId.HasValue))
+                {
+                    ci.IsInvalid = true;
+                }
+                return;
             }
-            return;
-        }
 
-        Loading = true;
-        StateHasChanged();
-        await Task.Delay(2000);
-        Loading = false;
-        await Hide();
+            Loading = true;
+            StateHasChanged();
+
+            await ShopCartAppService.UpdateShopCartAsync(Selected.Id, CartItems);
+            await OnSubmit.InvokeAsync(true);
+            Loading = false;
+            await Hide();
+        }
+        catch (Exception ex)
+        {
+            Loading = false;
+            await HandleErrorAsync(ex);
+        }
     }
 
     async Task GetItems()
@@ -90,12 +95,14 @@ public partial class CartItemsModal
 
     void AddQuantity(CartItemWithDetailsDto cartItem)
     {
-        cartItem.Quantity++;
+        if (cartItem.Quantity < cartItem.Stock)
+            cartItem.Quantity++;
     }
 
     void MinusQuantity(CartItemWithDetailsDto cartItem)
     {
-        if (cartItem.Quantity > 0) cartItem.Quantity--;
+        if (cartItem.Quantity > 0)
+            cartItem.Quantity--;
     }
 
     void RemoveItem(CartItemWithDetailsDto cartItem)
@@ -131,9 +138,10 @@ public partial class CartItemsModal
                 SetItemId = data.ItemType == ItemType.SetItem ? data.Id : null,
                 ItemName = item.Name,
                 Image = data.Image,
-                Quantity = 1,
+                Stock = data.Stock ?? 0,
+                Quantity = data.Stock > 0 ? 1 : 0,
                 UnitPrice = data.UnitPrice,
-                Details = data.Details
+                Details = data.Details,
             });
 
             SelectedItem = null;
@@ -145,7 +153,8 @@ public partial class CartItemsModal
         if (detailId.HasValue)
         {
             var detail = item.Details.FirstOrDefault(detail => detail.Id == detailId);
-            item.UnitPrice = detail?.UnitPrice ?? 0;
+            item.UnitPrice = (int?)detail?.UnitPrice ?? 0;
+            item.Stock = detail?.Stock ?? 0;
             item.IsInvalid = false;
         }
     }

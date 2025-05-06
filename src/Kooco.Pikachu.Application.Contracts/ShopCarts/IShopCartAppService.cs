@@ -26,4 +26,5 @@ public interface IShopCartAppService : IApplicationService
     Task<List<CartItemWithDetailsDto>> GetCartItemsListAsync(Guid shopCartId);
     Task<List<ItemWithItemTypeDto>> GetGroupBuyProductsLookupAsync(Guid groupBuyId);
     Task<ItemWithDetailsDto> GetItemWithDetailsAsync(Guid groupBuyId, Guid id, ItemType itemType);
+    Task UpdateShopCartAsync(Guid id, List<CartItemWithDetailsDto> cartItems);
 }
