@@ -152,6 +152,15 @@ public partial class EditGroupBuy
     private List<IFileEntry> selectedFiles = new List<IFileEntry>(); // List of selected files
     private IFileEntry selectedFile;
 
+    //Carousel image Uploads
+    private Modal CarouselCropperModal;
+    private Cropper CarouselCropper;
+    private int CurrentFileIndex = 0;
+    private List<CreateImageDto> uploadedCarouselImages = new List<CreateImageDto>(); // List for storing image data
+    FilePicker CarouselPicker = new FilePicker();
+    ImageType ImageType;
+    int CarouselModuleNumber;
+
     #endregion
 
     private List<string> OrderedDeliveryMethods =
@@ -1756,13 +1765,139 @@ public partial class EditGroupBuy
 
     #endregion
 
-    async Task OnImageModuleUploadAsync(
-        FileChangedEventArgs e,
-        List<CreateImageDto> carouselImages,
-        int carouselModuleNumber,
-        FilePicker carouselPicker,
-        ImageType imageType
-    )
+    #region carousel image uploadMethods
+    //    async Task OnImageModuleUploadAsync(
+    //   FileChangedEventArgs e,
+    //   List<CreateImageDto> carouselImages,
+    //   int carouselModuleNumber,
+    //   FilePicker carouselPicker,
+    //   ImageType imageType
+    //)
+    //    {
+    //        if (carouselImages.Count >= 5)
+    //        {
+    //            await carouselPicker.Clear();
+    //            return;
+    //        }
+
+    //        int count = 0;
+    //        try
+    //        {
+    //            foreach (var file in e.Files.Take(5))
+    //            {
+    //                if (!ValidFileExtensions.Contains(Path.GetExtension(file.Name)))
+    //                {
+    //                    await carouselPicker.RemoveFile(file);
+    //                    await _uiMessageService.Error(L["InvalidFileType"]);
+    //                    continue;
+    //                }
+    //                if (file.Size > MaxAllowedFileSize)
+    //                {
+    //                    count++;
+    //                    await carouselPicker.RemoveFile(file);
+    //                    return;
+    //                }
+    //                string newFileName = Path.ChangeExtension(
+    //                      Guid.NewGuid().ToString().Replace("-", ""),
+    //                      Path.GetExtension(file.Name));
+    //                var stream = file.OpenReadStream(long.MaxValue);
+    //                try
+    //                {
+    //                    await Loading.Show();
+    //                    var memoryStream = new MemoryStream();
+
+    //                    await stream.CopyToAsync(memoryStream);
+    //                    memoryStream.Position = 0;
+    //                    var url = await _imageContainerManager.SaveAsync(newFileName, memoryStream);
+
+    //                    int sortNo = carouselImages.LastOrDefault()?.SortNo ?? 0;
+
+    //                    if (sortNo is 0 && carouselImages.Any(a => a.Id != Guid.Empty && a.CarouselStyle != null && a.BlobImageName == string.Empty))
+    //                    {
+    //                        carouselImages[0].Name = file.Name;
+    //                        carouselImages[0].BlobImageName = newFileName;
+    //                        carouselImages[0].ImageUrl = url;
+    //                        carouselImages[0].ImageType = imageType;
+    //                        carouselImages[0].SortNo = sortNo + 1;
+    //                        carouselImages[0].ModuleNumber = carouselModuleNumber;
+    //                    }
+
+    //                    else
+    //                    {
+    //                        //int indexInCarouselModules = CarouselModules.FindIndex(module => module.Any(img => img.ModuleNumber == carouselModuleNumber));
+    //                        int indexInCarouselModules = 0;
+
+    //                        if (imageType is ImageType.GroupBuyCarouselImage)
+    //                            indexInCarouselModules = CarouselModules.FindIndex(module => module.Any(img => img.ModuleNumber == carouselModuleNumber));
+
+    //                        else if (imageType is ImageType.GroupBuyBannerImage)
+    //                            indexInCarouselModules = BannerModules.FindIndex(module => module.Any(img => img.ModuleNumber == carouselModuleNumber));
+    //                        else if (imageType is ImageType.GroupBuyProductRankingCarousel)
+    //                            indexInCarouselModules = ProductRankingCarouselModules.FindIndex(img => img.ModuleNumber == carouselModuleNumber);
+
+    //                        if (indexInCarouselModules >= 0)
+    //                        {
+    //                            //List<CreateImageDto> originalCarouselImages = CarouselModules[indexInCarouselModules];
+
+    //                            List<CreateImageDto> originalCarouselImages = new();
+
+    //                            if (imageType is ImageType.GroupBuyCarouselImage)
+    //                                originalCarouselImages = CarouselModules[indexInCarouselModules];
+
+    //                            else if (imageType is ImageType.GroupBuyBannerImage)
+    //                                originalCarouselImages = BannerModules[indexInCarouselModules];
+    //                            else if (imageType is ImageType.GroupBuyProductRankingCarousel)
+    //                                originalCarouselImages = ProductRankingCarouselModules[indexInCarouselModules].Images;
+    //                            if (originalCarouselImages.Any(a => a.SortNo is 0))
+    //                            {
+    //                                int index = originalCarouselImages.IndexOf(originalCarouselImages.First(f => f.SortNo == 0));
+
+    //                                originalCarouselImages[index].Name = file.Name;
+    //                                originalCarouselImages[index].BlobImageName = newFileName;
+    //                                originalCarouselImages[index].ImageUrl = url;
+    //                                originalCarouselImages[index].ImageType = imageType;
+    //                                originalCarouselImages[index].SortNo = sortNo + 1;
+    //                                originalCarouselImages[index].ModuleNumber = carouselModuleNumber;
+    //                            }
+
+    //                            else
+    //                            {
+    //                                originalCarouselImages.Add(new CreateImageDto
+    //                                {
+    //                                    Name = file.Name,
+    //                                    BlobImageName = newFileName,
+    //                                    ImageUrl = url,
+    //                                    ImageType = imageType,
+    //                                    SortNo = sortNo + 1,
+    //                                    ModuleNumber = carouselModuleNumber,
+    //                                    CarouselStyle = originalCarouselImages.FirstOrDefault(f => f.CarouselStyle != null)?.CarouselStyle
+    //                                });
+    //                            }
+    //                        }
+    //                    }
+
+    //                    await carouselPicker.Clear();
+    //                }
+    //                finally
+    //                {
+    //                    await Loading.Hide();
+    //                    stream.Close();
+    //                }
+    //            }
+    //            if (count > 0)
+    //            {
+    //                await _uiMessageService.Error(count + ' ' + L[PikachuDomainErrorCodes.FilesAreGreaterThanMaxAllowedFileSize]);
+    //            }
+    //        }
+    //        catch (Exception exc)
+    //        {
+    //            await Loading.Hide();
+    //            Console.WriteLine(exc.Message);
+    //            await _uiMessageService.Error(L[PikachuDomainErrorCodes.SomethingWrongWhileFileUpload]);
+    //        }
+    //    } 
+    // Handles file selection from FilePicker for multiple images
+    async Task OnImageModuleUploadAsync(FileChangedEventArgs e, List<CreateImageDto> carouselImages, int carouselModuleNumber, FilePicker carouselPicker, ImageType imageType)
     {
         if (carouselImages.Count >= 5)
         {
@@ -1770,122 +1905,309 @@ public partial class EditGroupBuy
             return;
         }
 
-        int count = 0;
-        try
+        selectedFiles = e.Files.ToList(); // Get the list of selected files
+        CurrentFileIndex = 0;
+
+        // Process each selected file
+        if (selectedFiles.Any())
         {
-            foreach (var file in e.Files.Take(5))
-            {
-                if (!ValidFileExtensions.Contains(Path.GetExtension(file.Name)))
-                {
-                    await carouselPicker.RemoveFile(file);
-                    await _uiMessageService.Error(L["InvalidFileType"]);
-                    continue;
-                }
-                if (file.Size > MaxAllowedFileSize)
-                {
-                    count++;
-                    await carouselPicker.RemoveFile(file);
-                    return;
-                }
-                string newFileName = Path.ChangeExtension(
-                      Guid.NewGuid().ToString().Replace("-", ""),
-                      Path.GetExtension(file.Name));
-                var stream = file.OpenReadStream(long.MaxValue);
-                try
-                {
-                    await Loading.Show();
-                    var memoryStream = new MemoryStream();
-
-                    await stream.CopyToAsync(memoryStream);
-                    memoryStream.Position = 0;
-                    var url = await _imageContainerManager.SaveAsync(newFileName, memoryStream);
-
-                    int sortNo = carouselImages.LastOrDefault()?.SortNo ?? 0;
-
-                    if (sortNo is 0 && carouselImages.Any(a => a.Id != Guid.Empty && a.CarouselStyle != null && a.BlobImageName == string.Empty))
-                    {
-                        carouselImages[0].Name = file.Name;
-                        carouselImages[0].BlobImageName = newFileName;
-                        carouselImages[0].ImageUrl = url;
-                        carouselImages[0].ImageType = imageType;
-                        carouselImages[0].SortNo = sortNo + 1;
-                        carouselImages[0].ModuleNumber = carouselModuleNumber;
-                    }
-
-                    else
-                    {
-                        //int indexInCarouselModules = CarouselModules.FindIndex(module => module.Any(img => img.ModuleNumber == carouselModuleNumber));
-                        int indexInCarouselModules = 0;
-
-                        if (imageType is ImageType.GroupBuyCarouselImage)
-                            indexInCarouselModules = CarouselModules.FindIndex(module => module.Any(img => img.ModuleNumber == carouselModuleNumber));
-
-                        else if (imageType is ImageType.GroupBuyBannerImage)
-                            indexInCarouselModules = BannerModules.FindIndex(module => module.Any(img => img.ModuleNumber == carouselModuleNumber));
-                        else if (imageType is ImageType.GroupBuyProductRankingCarousel)
-                            indexInCarouselModules = ProductRankingCarouselModules.FindIndex(img => img.ModuleNumber == carouselModuleNumber);
-
-                        if (indexInCarouselModules >= 0)
-                        {
-                            //List<CreateImageDto> originalCarouselImages = CarouselModules[indexInCarouselModules];
-
-                            List<CreateImageDto> originalCarouselImages = new();
-
-                            if (imageType is ImageType.GroupBuyCarouselImage)
-                                originalCarouselImages = CarouselModules[indexInCarouselModules];
-
-                            else if (imageType is ImageType.GroupBuyBannerImage)
-                                originalCarouselImages = BannerModules[indexInCarouselModules];
-                            else if (imageType is ImageType.GroupBuyProductRankingCarousel)
-                                originalCarouselImages = ProductRankingCarouselModules[indexInCarouselModules].Images;
-                            if (originalCarouselImages.Any(a => a.SortNo is 0))
-                            {
-                                int index = originalCarouselImages.IndexOf(originalCarouselImages.First(f => f.SortNo == 0));
-
-                                originalCarouselImages[index].Name = file.Name;
-                                originalCarouselImages[index].BlobImageName = newFileName;
-                                originalCarouselImages[index].ImageUrl = url;
-                                originalCarouselImages[index].ImageType = imageType;
-                                originalCarouselImages[index].SortNo = sortNo + 1;
-                                originalCarouselImages[index].ModuleNumber = carouselModuleNumber;
-                            }
-
-                            else
-                            {
-                                originalCarouselImages.Add(new CreateImageDto
-                                {
-                                    Name = file.Name,
-                                    BlobImageName = newFileName,
-                                    ImageUrl = url,
-                                    ImageType = imageType,
-                                    SortNo = sortNo + 1,
-                                    ModuleNumber = carouselModuleNumber,
-                                    CarouselStyle = originalCarouselImages.FirstOrDefault(f => f.CarouselStyle != null)?.CarouselStyle
-                                });
-                            }
-                        }
-                    }
-
-                    await carouselPicker.Clear();
-                }
-                finally
-                {
-                    await Loading.Hide();
-                    stream.Close();
-                }
-            }
-            if (count > 0)
-            {
-                await _uiMessageService.Error(count + ' ' + L[PikachuDomainErrorCodes.FilesAreGreaterThanMaxAllowedFileSize]);
-            }
-        }
-        catch (Exception exc)
-        {
-            await Loading.Hide();
-            Console.WriteLine(exc.Message);
-            await _uiMessageService.Error(L[PikachuDomainErrorCodes.SomethingWrongWhileFileUpload]);
+            // Show cropper for the first file and process one by one
+            await ShowCropperForFileAsync(CurrentFileIndex, carouselImages, carouselModuleNumber, carouselPicker, imageType);
         }
     }
+
+    // Show the cropper for the selected file
+    private async Task ShowCropperForFileAsync(int fileIndex, List<CreateImageDto> carouselImages, int carouselModuleNumber, FilePicker carouselPicker, ImageType imageType)
+    {
+        selectedFile = selectedFiles[fileIndex];
+        uploadedCarouselImages = carouselImages;
+        CarouselPicker = carouselPicker;
+        ImageType = imageType;
+        CarouselModuleNumber = carouselModuleNumber;
+
+        // Convert selected file to base64 for preview in the cropper
+        using var stream = selectedFile.OpenReadStream(long.MaxValue);
+        using var memoryStream = new MemoryStream();
+        await stream.CopyToAsync(memoryStream);
+        var base64 = Convert.ToBase64String(memoryStream.ToArray());
+        var fileExt = Path.GetExtension(selectedFile.Name).ToLowerInvariant().TrimStart('.');
+        imageToCrop = $"data:image/{fileExt};base64,{base64}";
+
+        croppedImage = ""; // Clear previous cropped image
+        cropButtonDisabled = true; // Disable crop button until selection is made
+
+        // Show the cropper modal for cropping
+        await CarouselCropperModal.Show();
+    }
+
+    // Get the cropped image in base64 format
+    private async Task GetCarouselCroppedImage()
+    {
+        var base64Data = imageToCrop.Substring(imageToCrop.IndexOf(",") + 1);
+        byte[] imageBytes = Convert.FromBase64String(base64Data);
+        var imageWidth = 0;
+        var imageHeight = 0;
+        using (var image = Image.Load<Rgba32>(imageBytes))
+        {
+            imageWidth = image.Width;
+            imageHeight = image.Height;
+        }
+        var options = new CropperCropOptions
+        {
+            Width = imageWidth,
+            Height = imageHeight,
+            ImageQuality = 1,
+        };
+        var base64Image = await CarouselCropper.CropAsBase64ImageAsync(options);
+        croppedImage = base64Image;
+    }
+
+    // Crops the image and uploads it, or skips cropping if no cropped image
+    private async Task CropImageAsync(List<CreateImageDto> carouselImages, int carouselModuleNumber, FilePicker carouselPicker, ImageType imageType)
+    {
+        try
+        {
+            // Check if the image was cropped
+            if (croppedImage.IsNullOrWhiteSpace()) // Skip cropping if no crop is done
+            {
+                await SaveOriginalImageAsync(carouselImages, carouselModuleNumber, carouselPicker, imageType);
+                return;
+            }
+
+            // If cropped, save the cropped image
+            var base64Data = croppedImage.Substring(croppedImage.IndexOf(",") + 1);
+            var croppedBytes = Convert.FromBase64String(base64Data);
+
+            string newFileName = $"{Guid.NewGuid().ToString().Replace("-", "")}.png";
+            using var croppedStream = new MemoryStream(croppedBytes);
+            var url = await _imageContainerManager.SaveAsync(newFileName, croppedStream);
+
+            int sortNo = carouselImages.LastOrDefault()?.SortNo ?? 0;
+
+            // Logic to update the carouselImages list
+            if (sortNo == 0 && carouselImages.Any(a => a.Id != Guid.Empty && a.CarouselStyle != null && a.BlobImageName == string.Empty))
+            {
+                carouselImages[0].Name = selectedFile.Name;
+                carouselImages[0].BlobImageName = newFileName;
+                carouselImages[0].ImageUrl = url;
+                carouselImages[0].ImageType = imageType;
+                carouselImages[0].SortNo = sortNo + 1;
+                carouselImages[0].ModuleNumber = carouselModuleNumber;
+            }
+            else
+            {
+                int indexInCarouselModules = 0;
+
+                if (imageType == ImageType.GroupBuyCarouselImage)
+                    indexInCarouselModules = CarouselModules.FindIndex(module => module.Any(img => img.ModuleNumber == carouselModuleNumber));
+                else if (imageType == ImageType.GroupBuyBannerImage)
+                    indexInCarouselModules = BannerModules.FindIndex(module => module.Any(img => img.ModuleNumber == carouselModuleNumber));
+                else if (imageType == ImageType.GroupBuyProductRankingCarousel)
+                    indexInCarouselModules = ProductRankingCarouselModules.FindIndex(img => img.ModuleNumber == carouselModuleNumber);
+
+                if (indexInCarouselModules >= 0)
+                {
+                    List<CreateImageDto> originalCarouselImages = new();
+
+                    if (imageType == ImageType.GroupBuyCarouselImage)
+                        originalCarouselImages = CarouselModules[indexInCarouselModules];
+                    else if (imageType == ImageType.GroupBuyBannerImage)
+                        originalCarouselImages = BannerModules[indexInCarouselModules];
+                    else if (imageType == ImageType.GroupBuyProductRankingCarousel)
+                        originalCarouselImages = ProductRankingCarouselModules[indexInCarouselModules].Images;
+
+                    if (originalCarouselImages.Any(a => a.SortNo == 0))
+                    {
+                        int index = originalCarouselImages.IndexOf(originalCarouselImages.First(f => f.SortNo == 0));
+
+                        originalCarouselImages[index].Name = selectedFile.Name;
+                        originalCarouselImages[index].BlobImageName = newFileName;
+                        originalCarouselImages[index].ImageUrl = url;
+                        originalCarouselImages[index].ImageType = imageType;
+                        originalCarouselImages[index].SortNo = sortNo + 1;
+                        originalCarouselImages[index].ModuleNumber = carouselModuleNumber;
+                    }
+                    else
+                    {
+                        originalCarouselImages.Add(new CreateImageDto
+                        {
+                            Name = selectedFile.Name,
+                            BlobImageName = newFileName,
+                            ImageUrl = url,
+                            ImageType = imageType,
+                            SortNo = sortNo + 1,
+                            ModuleNumber = carouselModuleNumber,
+                            CarouselStyle = originalCarouselImages.FirstOrDefault(f => f.CarouselStyle != null)?.CarouselStyle
+                        });
+                    }
+                }
+            }
+
+           // await carouselPicker.Clear();
+
+            // Move to the next image in the list if there are more images to process
+            if (CurrentFileIndex < selectedFiles.Count - 1)
+            {
+                CurrentFileIndex++;
+                await ShowCropperForFileAsync(CurrentFileIndex, carouselImages, carouselModuleNumber, carouselPicker, imageType); // Show cropper for the next image
+            }
+            else
+            {
+                // All images are processed, hide the modal and show success message
+                await _uiMessageService.Success("All images cropped and uploaded successfully!");
+                await CarouselCropperModal.Hide();
+                await carouselPicker.Clear();
+                await InvokeAsync(StateHasChanged); // Refresh UI
+            }
+        }
+        catch (Exception ex)
+        {
+            await _uiMessageService.Error("An error occurred during cropping/upload.");
+            Console.WriteLine(ex);
+        }
+        finally
+        {
+            // Reset cropper and picker
+            await CarouselCropper.ResetSelection();
+            await carouselPicker.Clear();
+        }
+    }
+
+
+    // Save the original image without cropping
+    private async Task SaveOriginalImageAsync(List<CreateImageDto> carouselImages, int carouselModuleNumber, FilePicker carouselPicker, ImageType imageType)
+    {
+        try
+        {
+            string newFileName = Path.ChangeExtension(Guid.NewGuid().ToString().Replace("-", ""), Path.GetExtension(selectedFile.Name));
+            var stream = selectedFile.OpenReadStream(long.MaxValue);
+
+            // Proceed with saving the original image
+            try
+            {
+                var memoryStream = new MemoryStream();
+                await stream.CopyToAsync(memoryStream);
+                memoryStream.Position = 0;
+                var url = await _imageContainerManager.SaveAsync(newFileName, memoryStream);
+
+                int sortNo = carouselImages.LastOrDefault()?.SortNo ?? 0;
+
+                // Logic to update the carouselImages list for the original image
+                if (sortNo == 0 && carouselImages.Any(a => a.Id != Guid.Empty && a.CarouselStyle != null && a.BlobImageName == string.Empty))
+                {
+                    carouselImages[0].Name = selectedFile.Name;
+                    carouselImages[0].BlobImageName = newFileName;
+                    carouselImages[0].ImageUrl = url;
+                    carouselImages[0].ImageType = imageType;
+                    carouselImages[0].SortNo = sortNo + 1;
+                    carouselImages[0].ModuleNumber = carouselModuleNumber;
+                }
+                else
+                {
+                    int indexInCarouselModules = 0;
+
+                    if (imageType == ImageType.GroupBuyCarouselImage)
+                        indexInCarouselModules = CarouselModules.FindIndex(module => module.Any(img => img.ModuleNumber == carouselModuleNumber));
+                    else if (imageType == ImageType.GroupBuyBannerImage)
+                        indexInCarouselModules = BannerModules.FindIndex(module => module.Any(img => img.ModuleNumber == carouselModuleNumber));
+                    else if (imageType == ImageType.GroupBuyProductRankingCarousel)
+                        indexInCarouselModules = ProductRankingCarouselModules.FindIndex(img => img.ModuleNumber == carouselModuleNumber);
+
+                    if (indexInCarouselModules >= 0)
+                    {
+                        List<CreateImageDto> originalCarouselImages = new();
+
+                        if (imageType == ImageType.GroupBuyCarouselImage)
+                            originalCarouselImages = CarouselModules[indexInCarouselModules];
+                        else if (imageType == ImageType.GroupBuyBannerImage)
+                            originalCarouselImages = BannerModules[indexInCarouselModules];
+                        else if (imageType == ImageType.GroupBuyProductRankingCarousel)
+                            originalCarouselImages = ProductRankingCarouselModules[indexInCarouselModules].Images;
+
+                        if (originalCarouselImages.Any(a => a.SortNo == 0))
+                        {
+                            int index = originalCarouselImages.IndexOf(originalCarouselImages.First(f => f.SortNo == 0));
+
+                            originalCarouselImages[index].Name = selectedFile.Name;
+                            originalCarouselImages[index].BlobImageName = newFileName;
+                            originalCarouselImages[index].ImageUrl = url;
+                            originalCarouselImages[index].ImageType = imageType;
+                            originalCarouselImages[index].SortNo = sortNo + 1;
+                            originalCarouselImages[index].ModuleNumber = carouselModuleNumber;
+                        }
+                        else
+                        {
+                            originalCarouselImages.Add(new CreateImageDto
+                            {
+                                Name = selectedFile.Name,
+                                BlobImageName = newFileName,
+                                ImageUrl = url,
+                                ImageType = imageType,
+                                SortNo = sortNo + 1,
+                                ModuleNumber = carouselModuleNumber,
+                                CarouselStyle = originalCarouselImages.FirstOrDefault(f => f.CarouselStyle != null)?.CarouselStyle
+                            });
+                        }
+                    }
+                }
+
+                // Clear the picker once image is saved
+                //await carouselPicker.Clear();
+
+                // Move to the next image in the list if there are more to process
+                if (CurrentFileIndex < selectedFiles.Count - 1)
+                {
+                    CurrentFileIndex++;
+                    await ShowCropperForFileAsync(CurrentFileIndex, carouselImages, carouselModuleNumber, carouselPicker, imageType); // Show cropper for next image
+                }
+                else
+                {
+                    // All images are processed, hide the modal and show success message
+                    await _uiMessageService.Success("All images uploaded successfully!");
+                    await CarouselCropperModal.Hide();
+                    await carouselPicker.Clear();
+                    await InvokeAsync(StateHasChanged); // Refresh UI
+                }
+            }
+            catch (Exception ex)
+            {
+                await _uiMessageService.Error("An error occurred during image upload.");
+                Console.WriteLine(ex);
+            }
+            finally
+            {
+                // Ensure we close the stream and reset picker
+                stream.Close();
+                await carouselPicker.Clear();
+            }
+        }
+        catch (Exception ex)
+        {
+            await _uiMessageService.Error("An error occurred while processing the image.");
+            Console.WriteLine(ex);
+        }
+    }
+
+
+    // Reset the cropper selection
+    private async Task ResetCarouselSelection()
+    {
+        cropButtonDisabled = true;
+        croppedImage = "";
+        await CarouselCropper.ResetSelection();
+    }
+
+    // When user finishes uploading all images
+    private async Task FinalizeUploads()
+    {
+        // Process any final logic, like hiding the modal or showing success message.
+        await _uiMessageService.Success("All images processed successfully.");
+        await CarouselCropperModal.Hide();
+        await InvokeAsync(StateHasChanged);
+    }
+
+
+    #endregion
 
     async Task OnBannerImageModuleUploadAsync(
         FileChangedEventArgs e,
