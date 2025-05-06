@@ -3365,10 +3365,26 @@ public partial class EditGroupBuy
     {
         try
         {
+            var check = false;
+            if (id == null)
+            {
+                check =true;
+                if (selectedItem.ItemType == ItemType.Item)
+                {
+                    id = selectedItem.Item.Id;
+                }
+                else {
+                    id = selectedItem.SetItem.Id;
+                
+                }
+            }
             var index = module.Selected.IndexOf(selectedItem);
 
             var item = ItemsList.FirstOrDefault(x => x.Id == id);
-            selectedItem = new ItemWithItemTypeDto();
+            if (!check)
+            {
+                selectedItem = new ItemWithItemTypeDto();
+            }
             if (item != null)
             {
                 if (item.ItemType == ItemType.Item)
