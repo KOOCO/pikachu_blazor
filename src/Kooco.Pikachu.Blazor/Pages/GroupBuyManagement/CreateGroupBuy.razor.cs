@@ -3579,6 +3579,7 @@ await _uiMessageService.Error(L[PikachuDomainErrorCodes.SomethingWrongWhileFileU
         {
             var item = ItemsList.FirstOrDefault(x => x.Id == id);
             var index = module.Selected.IndexOf(selectedItem);
+            selectedItem = new ItemWithItemTypeDto();
             if (item != null)
             {
                 if (item.ItemType == ItemType.Item)

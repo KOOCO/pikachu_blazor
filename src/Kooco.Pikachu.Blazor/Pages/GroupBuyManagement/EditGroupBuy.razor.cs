@@ -3365,8 +3365,10 @@ public partial class EditGroupBuy
     {
         try
         {
-            var item = ItemsList.FirstOrDefault(x => x.Id == id);
             var index = module.Selected.IndexOf(selectedItem);
+
+            var item = ItemsList.FirstOrDefault(x => x.Id == id);
+            selectedItem = new ItemWithItemTypeDto();
             if (item != null)
             {
                 if (item.ItemType == ItemType.Item)
@@ -3392,6 +3394,7 @@ public partial class EditGroupBuy
                     module.Selected[index] = new();
                 }
             }
+            await InvokeAsync(StateHasChanged);
         }
         catch (Exception ex)
         {
