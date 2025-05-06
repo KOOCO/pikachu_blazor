@@ -1,4 +1,7 @@
-﻿using System;
+﻿using Kooco.Pikachu.EnumValues;
+using Kooco.Pikachu.Items;
+using Kooco.Pikachu.Items.Dtos;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -204,5 +207,17 @@ public class ShopCartAppService(ShopCartManager shopCartManager, IShopCartReposi
         var shopCarts = await shopCartRepository.GetListWithCartItemsAsync(ids);
         shopCarts.ForEach(shopCart => shopCart.CartItems.Clear());
         await shopCartRepository.UpdateManyAsync(shopCarts);
+    }
+
+    public async Task<List<ItemWithItemTypeDto>> GetGroupBuyProductsLookupAsync(Guid groupBuyId)
+    {
+        var data = await shopCartRepository.GetGroupBuyProductsLookupAsync(groupBuyId);
+        return ObjectMapper.Map<List<ItemWithItemType>, List<ItemWithItemTypeDto>>(data);
+    }
+
+    public async Task<ItemWithDetailsDto> GetItemWithDetailsAsync(Guid groupBuyId, Guid id, ItemType itemType)
+    {
+        var data = await shopCartRepository.GetItemWithDetailsAsync(groupBuyId, id, itemType);
+        return ObjectMapper.Map<ItemWithDetailsModel, ItemWithDetailsDto>(data);
     }
 }

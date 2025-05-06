@@ -1,6 +1,7 @@
 ﻿using Kooco.Pikachu.Common;
 using Kooco.Pikachu.EntityFrameworkCore;
 using Kooco.Pikachu.EnumValues;
+using Kooco.Pikachu.Items;
 using Kooco.Pikachu.Members;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -206,6 +207,7 @@ public class EfCoreShopCartRepository(IDbContextProvider<PikachuDbContext> dbCon
                 Quantity = ci.Quantity,
                 UnitPrice = ci.UnitPrice,
                 ItemId = ci.ItemId,
+                ItemDetailId = ci.ItemDetailId,
                 SetItemId = ci.SetItemId,
                 ItemType = ci.ItemId.HasValue
                     ? ItemType.Item
@@ -215,6 +217,11 @@ public class EfCoreShopCartRepository(IDbContextProvider<PikachuDbContext> dbCon
 
         var itemIds = cartItems.Where(ci => ci.ItemId.HasValue).Select(ci => ci.ItemId).Distinct().ToList();
         var setItemIds = cartItems.Where(ci => ci.SetItemId.HasValue).Select(ci => ci.SetItemId).Distinct().ToList();
+        var itemDetailIds = cartItems.Where(ci => ci.ItemDetailId.HasValue).Select(ci => ci.ItemDetailId).Distinct().ToList();
+
+        var itemDetails = await dbContext.ItemDetails.Where(id => itemDetailIds.Contains(id.Id))
+            .Select(id => new { id.Id, id.StockOnHand, id.SKU })
+            .ToListAsync();
 
         var items = await dbContext.Items
             .Where(i => itemIds.Contains(i.Id))
@@ -259,6 +266,9 @@ public class EfCoreShopCartRepository(IDbContextProvider<PikachuDbContext> dbCon
                 cartItem.ItemName = item.ItemName;
                 cartItem.Image = item.Image;
             }
+
+            cartItem.ItemDetail = itemDetails.Where(id => id.Id == cartItem.ItemDetailId).Select(id => id.SKU).FirstOrDefault();
+            cartItem.Stock = itemDetails.Where(id => id.Id == cartItem.ItemDetailId).Select(id => id.StockOnHand ?? 0).FirstOrDefault();
         });
 
         return cartItems;
@@ -272,5 +282,129 @@ public class EfCoreShopCartRepository(IDbContextProvider<PikachuDbContext> dbCon
             .WhereIf(ids.Count > 0, q => ids!.Contains(q.Id))
             .Include(q => q.CartItems)
             .ToListAsync();
+    }
+
+    public async Task<List<ItemWithItemType>> GetGroupBuyProductsLookupAsync(Guid groupBuyId)
+    {
+        var dbContext = await GetDbContextAsync();
+
+        var itemReferences = await dbContext.GroupBuys
+            .Where(gb => gb.Id == groupBuyId)
+            .SelectMany(gb => gb.ItemGroups)
+            .SelectMany(ig => ig.ItemGroupDetails)
+            .Select(igd => new { igd.ItemId, igd.SetItemId })
+            .ToListAsync();
+
+        var itemIds = itemReferences
+            .Where(x => x.ItemId.HasValue)
+            .Select(x => x.ItemId!.Value)
+            .Distinct()
+            .ToList();
+
+        var setItemIds = itemReferences
+            .Where(x => x.SetItemId.HasValue)
+            .Select(x => x.SetItemId!.Value)
+            .Distinct()
+            .ToList();
+
+        var itemTask = await dbContext.Items
+            .Where(i => itemIds.Contains(i.Id))
+            .Select(i => new ItemWithItemType
+            {
+                Id = i.Id,
+                Name = i.ItemName,
+                ItemType = ItemType.Item
+            })
+            .ToListAsync();
+
+        var setItemTask = await dbContext.SetItems
+            .Where(i => setItemIds.Contains(i.Id))
+            .Select(i => new ItemWithItemType
+            {
+                Id = i.Id,
+                Name = i.SetItemName,
+                ItemType = ItemType.SetItem
+            })
+            .ToListAsync();
+
+        return [.. itemTask, .. setItemTask];
+    }
+
+    public async Task<ItemWithDetailsModel> GetItemWithDetailsAsync(Guid groupBuyId, Guid id, ItemType itemType)
+    {
+        var dbContext = await GetDbContextAsync();
+
+        if (itemType == ItemType.Item)
+        {
+            var itemDetailIds = await dbContext.Items
+                .Where(item => item.Id == id)
+                .Include(item => item.ItemDetails)
+                .SelectMany(item => item.ItemDetails)
+                .Select(id => id.Id)
+                .ToListAsync();
+
+            var itemPrices = dbContext.GroupBuyItemsPriceses
+                .Where(gbip => gbip.GroupBuyId == groupBuyId && gbip.ItemDetailId.HasValue && itemDetailIds.Contains(gbip.ItemDetailId.Value))
+                .Select(gbip => new { gbip.ItemDetailId, gbip.GroupBuyPrice })
+                .ToList();
+
+            var item = await dbContext.Items
+                .Where(item => item.Id == id)
+                .Include(item => item.ItemDetails)
+                .Select(item => new ItemWithDetailsModel
+                {
+                    Id = item.Id,
+                    ItemType = ItemType.Item,
+                    Image = item.Images.Where(image => !string.IsNullOrWhiteSpace(image.ImageUrl)).Select(image => image.ImageUrl).FirstOrDefault(),
+                    ItemName = item.ItemName,
+                    Details = item.ItemDetails
+                        .Select(detail => new CartItemDetailsModel
+                        {
+                            Id = detail.Id,
+                            Name = detail.SKU,
+                            Stock = detail.StockOnHand
+                        })
+                }).FirstOrDefaultAsync();
+
+            if (item != null)
+            {
+                item.Details = item.Details
+                    .Where(detail => itemPrices.Select(ip => ip.ItemDetailId).Contains(detail.Id))
+                    .ToList();
+
+                foreach(var detail in item.Details)
+                {
+                    detail.UnitPrice = itemPrices.Where(ip => ip.ItemDetailId == detail.Id)
+                                .Select(ip => ip.GroupBuyPrice)
+                                .FirstOrDefault();
+                }
+            }
+
+            return item;
+        }
+
+        else
+        {
+            var itemPrices = await dbContext.GroupBuyItemsPriceses
+                .Where(gbip => gbip.GroupBuyId == groupBuyId && gbip.SetItemId == id)
+                .Select(gbip => new { gbip.SetItemId, gbip.GroupBuyPrice })
+                .FirstOrDefaultAsync();
+
+            var setItem = dbContext.SetItems
+                .Where(si => si.Id == id)
+                .Include(si => si.SetItemDetails)
+                .Include(si => si.Images)
+                .Select(si => new ItemWithDetailsModel
+                {
+                    Id = si.Id,
+                    ItemType = ItemType.Item,
+                    Image = si.Images.Where(image => !string.IsNullOrWhiteSpace(image.ImageUrl)).Select(image => image.ImageUrl).FirstOrDefault(),
+                    ItemName = si.SetItemName,
+                    Stock = si.SaleableQuantity,
+                    UnitPrice = itemPrices != null ? itemPrices.GroupBuyPrice : 0,
+                });
+
+            return await setItem.FirstOrDefaultAsync();
+        }
     }
 }

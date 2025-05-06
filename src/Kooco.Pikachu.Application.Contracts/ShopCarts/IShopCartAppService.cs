@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Kooco.Pikachu.EnumValues;
+using Kooco.Pikachu.Items.Dtos;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
@@ -22,4 +24,6 @@ public interface IShopCartAppService : IApplicationService
     Task<PagedResultDto<ShopCartListWithDetailsDto>> GetListWithDetailsAsync(GetShopCartListDto input);
     Task ClearCartItemsAsync(List<Guid> ids);
     Task<List<CartItemWithDetailsDto>> GetCartItemsListAsync(Guid shopCartId);
+    Task<List<ItemWithItemTypeDto>> GetGroupBuyProductsLookupAsync(Guid groupBuyId);
+    Task<ItemWithDetailsDto> GetItemWithDetailsAsync(Guid groupBuyId, Guid id, ItemType itemType);
 }

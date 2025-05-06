@@ -1,16 +1,20 @@
-﻿@using Kooco.Pikachu.Members
+﻿@using Kooco.Pikachu.EnumValues
+@using Kooco.Pikachu.Members
+@using Kooco.Pikachu.ShopCarts
+@using Kooco.Pikachu.Items.Dtos
 @inherits PikachuComponentBase
+@inject IShopCartAppService ShopCartAppService
 
 <Modal @ref="ModalRef" Closing="@OnModalClosing">
-    <ModalContent Size="ModalSize.Large" IsCentered="true">
+    <ModalContent Size="ModalSize.ExtraLarge" IsCentered="true">
         <ModalHeader>
             <Div Class="header-details">
                 <ModalTitle Class="header-title">
                     <Div Class="d-flex align-items-center gap-1">
                         <Div Class="member-image">
                             <img class="img-fluid rounded-circle"
-                                 src="@MemberConsts.MaleAvatarUrl"
-                                 alt="Member Avatar" />
+                            src="@MemberConsts.MaleAvatarUrl"
+                            alt="Member Avatar" />
                         </Div>
                         <Div>
                             <h5 class="m-0">@Selected.UserName</h5>
@@ -23,12 +27,21 @@
                         <i class="fas fa-list-check" />
                     </Span>
                     <AntDesign.Select AllowClear
-                                      ShowArrowIcon
-                                      TItem="string"
-                                      TItemValue="string"
-                                      Placeholder="@L["AddProduct"]"
-                                      Size="AntDesign.InputSize.Large">
-                        <SelectOptions></SelectOptions>
+                    ShowArrowIcon
+                    EnableSearch
+                    TItem="ItemWithItemTypeDto"
+                    TItemValue="ItemWithItemTypeDto"
+                    Placeholder="@L["AddProduct"]"
+                    Size="AntDesign.InputSize.Large"
+                    IgnoreItemChanges="@false"
+                    @bind-Value="SelectedItem"
+                    OnSelectedItemChanged="OnSelectedItemChanged">
+                        <SelectOptions>
+                            @foreach (var option in ProductOptions)
+                            {
+                                <AntDesign.SelectOption TItem="ItemWithItemTypeDto" TItemValue="ItemWithItemTypeDto" Value="@option" Label="@option.Name" />
+                            }
+                        </SelectOptions>
                     </AntDesign.Select>
                 </Div>
             </Div>
@@ -42,62 +55,99 @@
             }
             else
             {
-                foreach (var cartItem in CartItems)
+                @if (CartItems.Any())
                 {
-                    <div class="row item-row align-items-center py-2 border-bottom">
-                        <div class="col-7 d-flex align-items-center gap-3">
-                            <div>
-                                <img src="@cartItem.Image" style="width: 60px; height: 60px;" />
+                    foreach (var cartItem in CartItems)
+                    {
+                        <div class="row item-row align-items-center py-2 border-bottom">
+                            <div class="col-8 d-flex align-items-center gap-3">
+                                <div>
+                                    <img src="@cartItem.Image" style="width: 60px; height: 60px;" />
+                                </div>
+                                <div>
+                                    <div class="fw-bold">@cartItem.ItemName</div>
+                                    @if (cartItem.ItemType == ItemType.Item)
+                                    {
+                                        @if (cartItem.Id.HasValue)
+                                        {
+                                            <div class="text-muted small">@cartItem.ItemDetail</div>
+                                        }
+                                        else
+                                        {
+                                            <AntDesign.Select AllowClear
+                                                              ShowArrowIcon
+                                                              EnableSearch
+                                                              TItem="Guid?"
+                                                              TItemValue="Guid?"
+                                                              Placeholder="@L["SelectItem"]"
+                                                              IgnoreItemChanges="@false"
+                                                              @bind-Value="cartItem.ItemDetailId"
+                                                              Class="@(cartItem.IsInvalid ? "is-invalid" : "")"
+                                                              OnSelectedItemChanged="@((e) => OnSelectedDetailChanged(cartItem, e))"
+                                                              Style="width: 250px">
+                                                <SelectOptions>
+                                                    @foreach (var option in cartItem.Details)
+                                                    {
+                                                        <AntDesign.SelectOption TItem="Guid?" TItemValue="Guid?" Value="@option.Id" Label="@option.Name" />
+                                                    }
+                                                </SelectOptions>
+                                            </AntDesign.Select>
+                                            <Div Class="invalid-feedback">@L["ThisFieldIsRequired"]</Div>
+                                        }
+                                    }
+                                </div>
                             </div>
+
+                            <div class="col-2" style="position: relative;">
+                                <div class="qty-box w-100 d-flex align-items-center justify-content-center">
+                                    <button class="minus-button" @onclick="@(() => MinusQuantity(cartItem))">
+                                        <i class="fas fa-minus"></i>
+                                    </button>
+                                    <span class="px-2 fw-bold flex-grow-1 text-center">@cartItem.Quantity</span>
+                                    <button class="add-button" @onclick="@(() => AddQuantity(cartItem))">
+                                        <i class="fas fa-add"></i>
+                                    </button>
+                                </div>
+                                <div class="text-muted small stock-div">Stock: @cartItem.Stock</div>
+                            </div>
+
+                            <div class="col-1 text-end fw-bold">
+                                $@cartItem.Amount.ToString("N0")
+                            </div>
+
+                            <div class="col-1 text-end">
+                                <PikachuButton Class="pk-btn-sm pk-btn-icon danger rounded-5"
+                                               IconClass="fas fa-times fa-lg"
+                                               Clicked="() => RemoveItem(cartItem)" />
+                            </div>
+                        </div>
+                    }
+                    <div class="row item-row align-items-center py-2 text-dark">
+                        <div class="col-7 d-flex align-items-center gap-3">
+                            <div style="width: 60px;"></div>
                             <div>
-                                <div class="fw-bold">@cartItem.ItemName</div>
-                                <div class="text-muted small">@cartItem.ItemType.ToString()</div>
+                                <div class="fw-bold text-dark text-uppercase">@L["Total"]</div>
                             </div>
                         </div>
 
-                        <div class="col-3" style="position: relative;">
-                            <div class="qty-box w-100 d-flex align-items-center justify-content-center">
-                                <button class="minus-button" @onclick="@(() => MinusQuantity(cartItem))">
-                                    <i class="fas fa-minus"></i>
-                                </button>
-                                <span class="px-2 fw-bold flex-grow-1 text-center">@cartItem.Quantity</span>
-                                <button class="add-button" @onclick="@(() => AddQuantity(cartItem))">
-                                    <i class="fas fa-add"></i>
-                                </button>
-                            </div>
-                            <div class="text-muted small stock-div">Stock: @cartItem.Stock</div>
+                        <div class="col-3 text-center fw-bold">
+                            @CartItems?.Sum(ci => ci.Quantity)
                         </div>
 
                         <div class="col-1 text-end fw-bold">
-                            $@cartItem.Amount.ToString("N0")
+                            $@CartItems?.Sum(ci => ci.Amount).ToString("N0")
                         </div>
 
                         <div class="col-1 text-end">
-                            <PikachuButton Class="pk-btn-sm pk-btn-icon danger rounded-5"
-                                           IconClass="fas fa-times fa-lg"
-                                           Clicked="() => RemoveItem(cartItem)" />
                         </div>
                     </div>
                 }
-                <div class="row item-row align-items-center py-2 text-dark">
-                    <div class="col-7 d-flex align-items-center gap-3">
-                        <div style="width: 60px;"></div>
-                        <div>
-                            <div class="fw-bold text-dark text-uppercase">@L["Total"]</div>
-                        </div>
+                else
+                {
+                    <div class="text-center">
+                        <img class="img-fluid" src="/images/icons/empty-cart.png" style="height: 150px;" alt="@L["EmptyCart"]" />
                     </div>
-
-                    <div class="col-3 text-center fw-bold">
-                        @CartItems?.Sum(ci => ci.Quantity)
-                    </div>
-
-                    <div class="col-1 text-end fw-bold">
-                        $@CartItems?.Sum(ci => ci.Amount).ToString("N0")
-                    </div>
-
-                    <div class="col-1 text-end">
-                    </div>
-                </div>
+                }
             }
         </ModalBody>
         <ModalFooter>
@@ -109,7 +159,7 @@
             <PikachuButton Class="pk-btn-sm pk-btn-primary"
                            Clicked="Save"
                            Loading="Loading"
-                           IconClass="fas fa-check">
+                           Disabled="!CartItems.Any()">
                 @L["Save"]
             </PikachuButton>
         </ModalFooter>
@@ -148,11 +198,15 @@
         }
 
         .product-input-group .ant-select {
-            min-width: 300px;
+            min-width: 450px;
         }
 
             .product-input-group .ant-select .ant-select-selector {
                 padding-left: 38px !important;
+            }
+
+            .product-input-group .ant-select .ant-select-selection-search-input {
+                padding-left: 28px !important;
             }
 
     .qty-box {

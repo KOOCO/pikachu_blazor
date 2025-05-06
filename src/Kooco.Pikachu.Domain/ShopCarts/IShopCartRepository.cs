@@ -1,4 +1,6 @@
 ﻿using Kooco.Pikachu.Common;
+using Kooco.Pikachu.EnumValues;
+using Kooco.Pikachu.Items;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,4 +23,6 @@ public interface IShopCartRepository : IRepository<ShopCart, Guid>
         string? vipTier, string? memberStatus);
     Task<List<ShopCart>> GetListWithCartItemsAsync(List<Guid> ids = null!);
     Task<List<CartItemWithDetailsModel>> GetCartItemsListAsync(Guid shopCartId);
+    Task<List<ItemWithItemType>> GetGroupBuyProductsLookupAsync(Guid groupBuyId);
+    Task<ItemWithDetailsModel> GetItemWithDetailsAsync(Guid groupBuyId, Guid id, ItemType itemType);
 }

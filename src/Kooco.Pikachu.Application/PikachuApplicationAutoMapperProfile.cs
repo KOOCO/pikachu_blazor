@@ -241,6 +241,8 @@ public class PikachuApplicationAutoMapperProfile : Profile
         CreateMap<CartItem, CartItemDto>().ForMember(dest => dest.ItemName, opt => opt.MapFrom(src => src.Item.ItemName));
         CreateMap<ShopCartListWithDetailsModel, ShopCartListWithDetailsDto>();
         CreateMap<CartItemWithDetailsModel, CartItemWithDetailsDto>();
+        CreateMap<ItemWithDetailsModel, ItemWithDetailsDto>();
+        CreateMap<CartItemDetailsModel, CartItemDetailsDto>();
 
         #region GroupPurchaseOverview Mappings
         CreateMap<GroupPurchaseOverview, GroupPurchaseOverviewDto>().ReverseMap();
