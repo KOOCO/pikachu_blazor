@@ -967,10 +967,12 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
                                 if (checkPrice is not null)
                                 {
                                     itemDetail.SetItem.GroupBuyPrice = checkPrice.GroupBuyPrice;
+                                
                                     
                                 }
                             foreach (var detail in itemDetail.SetItem.SetItemDetails)
                             {
+                                detail.ItemName = detail.Item?.ItemName;
                                 detail.Item = null;
                             }
 
@@ -1021,6 +1023,7 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
                                 itemDetail.SetItem.GroupBuyPrice = checkPrice.GroupBuyPrice;
                                 foreach (var detail in itemDetail.SetItem.SetItemDetails)
                                 {
+                                    detail.ItemName = detail.Item?.ItemName;
                                     detail.Item = null;
                                 }
                             }
