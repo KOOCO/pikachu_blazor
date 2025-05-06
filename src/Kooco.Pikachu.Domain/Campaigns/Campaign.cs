@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
 using System.Text.Json;
 using Volo.Abp;
 using Volo.Abp.Domain.Entities.Auditing;
@@ -74,7 +75,7 @@ public class Campaign : FullAuditedAggregateRoot<Guid>, IMultiTenant
         StartDate = Check.NotNull(startDate, nameof(StartDate));
         EndDate = Check.NotNull(endDate, nameof(EndDate));
     }
-    public void SetTargetAudience(IEnumerable<string> targetAudience) => TargetAudienceJson = JsonSerializer.Serialize(targetAudience);
+    public void SetTargetAudience(IEnumerable<string> targetAudience) => TargetAudienceJson = JsonSerializer.Serialize(targetAudience.Distinct());
     public void SetIsEnabled(bool isEnabled) => IsEnabled = isEnabled;
     public void SetApplyToAllProducts(bool? applyToAllProducts)
     {

@@ -1,5 +1,4 @@
 using Blazorise;
-using DeviceDetectorNET;
 using Kooco.Pikachu.Campaigns;
 using Kooco.Pikachu.Items.Dtos;
 using Kooco.Pikachu.Permissions;
@@ -59,11 +58,13 @@ public partial class CreateCampaign
                 ProductOptions = await ItemAppService.LookupAsync();
                 var memberTags = await MemberTagAppService.GetMemberTagNamesAsync();
                 TargetAudienceOptions = [.. CampaignConsts.TargetAudience.Values, .. memberTags];
+                IEnumerable<string> targetAudience = [];
 
                 if (Id.HasValue)
                 {
                     var campaign = await CampaignAppService.GetAsync(Id.Value, true);
                     Entity = ObjectMapper.Map<CampaignDto, CreateCampaignDto>(campaign);
+                    targetAudience = Entity.TargetAudience;
                     Entity.Discount ??= new();
                     Entity.ShoppingCredit ??= new();
                     Entity.AddOnProduct ??= new();
@@ -73,6 +74,7 @@ public partial class CreateCampaign
                 ValidationsRef?.ClearAll();
                 IsEditLoading = false;
                 StateHasChanged();
+                Entity.TargetAudience = targetAudience;
             }
             catch (Exception ex)
             {
