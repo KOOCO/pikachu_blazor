@@ -451,6 +451,27 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
                     }
                 }
 
+                if (group.ImageModules != null && group.ImageModules.Any())
+                {
+                    foreach (var module in group.ImageModules)
+                    {
+                        var newImageModule = new GroupBuyItemGroupImageModule(GuidGenerator.Create())
+                        {
+                            GroupBuyItemGroupId = itemGroup.Id
+                        };
+
+                        newImageModule.Images = [.. module.Images
+                                .Select(image => new GroupBuyItemGroupImage(GuidGenerator.Create())
+                                {
+                                    GroupBuyItemGroupImageModuleId = newImageModule.Id,
+                                    Url = image.Url,
+                                    SortNo = image.SortNo,
+                                    BlobImageName = image.BlobImageName
+                                })];
+
+                        itemGroup.ImageModules.Add(newImageModule);
+                    }
+                }
             }
 
           
