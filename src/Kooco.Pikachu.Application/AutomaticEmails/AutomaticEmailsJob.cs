@@ -57,12 +57,10 @@ namespace Kooco.Pikachu.AutomaticEmails
                         memoryStream.Seek(0, SeekOrigin.Begin);
 
                         var excelData = MiniExcel.Query(memoryStream, true);
-                        if (excelData.Any())
-                        {
-                            memoryStream.Seek(0, SeekOrigin.Begin);
-                            var attachment = new Attachment(memoryStream, data.FileName, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-                            attachments.Add(attachment);
-                        }
+
+                        memoryStream.Seek(0, SeekOrigin.Begin);
+                        var attachment = new Attachment(memoryStream, data.FileName, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+                        attachments.Add(attachment);
                     }
 
                     TimeZoneInfo tz = TimeZoneInfo.FindSystemTimeZoneById("China Standard Time"); // UTC+8
