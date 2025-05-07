@@ -1,13 +1,13 @@
 using Blazorise;
-using Kooco.Pikachu.TenantManagement;
+using Kooco.Pikachu.Extensions;
+using Kooco.Pikachu.Tenants;
 using Microsoft.AspNetCore.Components;
-using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using Microsoft.JSInterop;
 using System;
 using System.IO;
 using System.Linq;
-using Kooco.Pikachu.Extensions;
-using Microsoft.Extensions.Logging;
-using Kooco.Pikachu.Tenants;
+using System.Threading.Tasks;
 
 namespace Kooco.Pikachu.Blazor.Pages.TenantManagement.TenantSettings;
 
@@ -33,6 +33,7 @@ public partial class TenantFrontendInformation
         if (firstRender)
         {
             await ResetAsync();
+            await JSRuntime.InvokeVoidAsync("updateDropText");
         }
     }
 

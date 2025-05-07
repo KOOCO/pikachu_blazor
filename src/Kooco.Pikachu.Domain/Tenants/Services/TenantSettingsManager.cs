@@ -132,16 +132,17 @@ public class TenantSettingsManager(IRepository<TenantSettings, Guid> tenantSetti
         tenantSettings.SetFaviconUrl(faviconUrl);
         tenantSettings.SetDescription(description);
 
-        var tenant = await tenantRepository.FirstOrDefaultAsync(x => CurrentTenant != null && x.Id == CurrentTenant.Id)
-            ?? throw new EntityNotFoundException(typeof(Tenant));
+        if (tenantSettings.Tenant == null)
+        {
+            throw new EntityNotFoundException(typeof(Tenant));
+        }
 
-        tenant.RemoveProperty(Constant.Logo);
-        tenant.SetProperty(Constant.Logo, logoUrl);
+        tenantSettings.Tenant.RemoveProperty(Constant.Logo);
+        tenantSettings.Tenant.SetProperty(Constant.Logo, logoUrl);
 
-        tenant.RemoveProperty(Constant.BannerUrl);
-        tenant.SetProperty(Constant.BannerUrl, bannerUrl);
+        tenantSettings.Tenant.RemoveProperty(Constant.BannerUrl);
+        tenantSettings.Tenant.SetProperty(Constant.BannerUrl, bannerUrl);
 
-        await tenantRepository.UpdateAsync(tenant);
         await tenantSettingsRepository.UpdateAsync(tenantSettings);
         return tenantSettings;
     }

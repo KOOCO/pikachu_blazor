@@ -272,10 +272,15 @@ function updateFilePickerText() {
     let maxFileSize = window.localization?.maxFileSize || "Max File Size";
 
     dropTextElements.forEach(dropText => {
+
+        let pickerContainer = dropText.closest(".b-file-picker");
+        let input = pickerContainer?.querySelector('input[type="file"]');
+        let acceptedExt = input?.getAttribute("drop-text") || "JPG, JPEG, PNG, WEBP, SVG";
+
         dropText.innerHTML = "";
 
         let line1 = document.createElement("span");
-        line1.innerHTML = `${onlyAccepts} <br />[JPG, JPEG, PNG, WEBP, SVG]`;
+        line1.innerHTML = `${onlyAccepts} <br />[${acceptedExt}]`;
 
         let line2 = document.createElement("span");
         line2.textContent = `${maxFileSize}: 10MB`;

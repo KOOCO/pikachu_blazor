@@ -4,6 +4,7 @@
 @inherits PikachuComponentBase
 @inject AbpBlazorMessageLocalizerHelper<PikachuResource> LH
 @inject IUiNotificationService UiNotificationService
+@inject IJSRuntime JSRuntime
 
 <Form>
     <Validations @ref="@ValidationsRef" Model="@Entity" ValidateOnLoad="false">
@@ -94,17 +95,17 @@
                 </Row>
                 <Divider></Divider>
                 <Row>
-                    <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop" Style="display: flex;gap:12px;">
-                        <h4>
-                            @L["Favicon"]  
-                        </h4>
-                        <label>
+                    <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop">
+                        <Div Class="d-flex gap-1">
+                            <h4>
+                                @L["Favicon"]
+                            </h4>
                             <Span>
-                                <Tooltip Text="@L["OnlyAcceptsICO"]">
+                                <Tooltip Display="Display.InlineBlock" Text="@L["OnlyAcceptsICO"]">
                                     <Icon class="fa-question-circle" />
                                 </Tooltip>
                             </Span>
-                        </label>
+                        </Div>
                         @if (Entity.FaviconBase64 != null)
                         {
                             <Div Class="image-thumbnail">
@@ -122,7 +123,8 @@
                         <Field Class="container-less-filepicker">
                             <FilePicker Changed="@((e) => OnFileUploadAsync(e, "favicon"))"
                                         ShowMode="FilePickerShowMode.List"
-                                        Accept="@(string.Join(", ", Constant.ValidFaviconExtensions))">
+                                        Accept="@(string.Join(", ", Constant.ValidFaviconExtensions))"
+                                        drop-text="ICO">
                                 <FileTemplate></FileTemplate>
                                 <ButtonsTemplate></ButtonsTemplate>
                             </FilePicker>
