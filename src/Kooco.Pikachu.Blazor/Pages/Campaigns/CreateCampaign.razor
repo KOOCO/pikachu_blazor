@@ -39,22 +39,10 @@
             @(Id.HasValue ? L["EditCampaign"] : L["CreateNewCampaign"])
         </h4>
     </Div>
-    @if (IsEditLoading)
-    {
-        <Row>
-            <Column ColumnSize="ColumnSize.Is9">
-                <Card>
-                    <div class="d-flex align-items-center justify-content-center" style="height: 5rem;">
-                        <div class="spinner-border text-primary" style="height: 3rem; width: 3rem;"></div>
-                    </div>
-                </Card>
-            </Column>
-        </Row>
-    }
     <Form>
         <Validations @ref="ValidationsRef" Model="@Entity" ValidateOnLoad="false" HandlerType="typeof(FluentValidationHandler)">
             <EditForm EditContext="_editContext">
-                <Row Visibility="IsEditLoading ? Visibility.Invisible : Visibility.Visible">
+                <Row>
                     <Column ColumnSize="ColumnSize.Is9">
                         <Card>
                             <CardBody>

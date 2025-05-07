@@ -20,7 +20,6 @@ public partial class CreateCampaign
     private IReadOnlyList<KeyValueDto> GroupBuyOptions { get; set; } = [];
     private IReadOnlyList<KeyValueDto> ProductOptions { get; set; } = [];
     private bool Loading { get; set; } = false;
-    private bool IsEditLoading { get; set; } = false;
 
     private Validations ValidationsRef;
     private readonly ValidationMessageStore _messageStore;
@@ -38,43 +37,36 @@ public partial class CreateCampaign
         };
     }
 
+    protected override async Task OnInitializedAsync()
+    {
+        if (Id.HasValue)
+        {
+            if (!await AuthorizationService.IsGrantedAsync(PikachuPermissions.Campaigns.Edit))
+            {
+                await Message.Error(L["YouAreNotAuthorized"]);
+                Cancel();
+            }
+            var campaign = await CampaignAppService.GetAsync(Id.Value, true);
+            Entity = ObjectMapper.Map<CampaignDto, CreateCampaignDto>(campaign);
+            Entity.Discount ??= new();
+            Entity.ShoppingCredit ??= new();
+            Entity.AddOnProduct ??= new();
+            ValidationsRef?.ClearAll();
+            StateHasChanged();
+        }
+    }
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
             try
             {
-                if (Id.HasValue)
-                {
-                    IsEditLoading = true;
-                    if (!await AuthorizationService.IsGrantedAsync(PikachuPermissions.Campaigns.Edit))
-                    {
-                        await Message.Error(L["YouAreNotAuthorized"]);
-                        Cancel();
-                    }
-                }
-
                 GroupBuyOptions = await GroupBuyAppService.GetGroupBuyLookupAsync();
                 ProductOptions = await ItemAppService.LookupAsync();
                 var memberTags = await MemberTagAppService.GetMemberTagNamesAsync();
                 TargetAudienceOptions = [.. CampaignConsts.TargetAudience.Values, .. memberTags];
-                IEnumerable<string> targetAudience = [];
-
-                if (Id.HasValue)
-                {
-                    var campaign = await CampaignAppService.GetAsync(Id.Value, true);
-                    Entity = ObjectMapper.Map<CampaignDto, CreateCampaignDto>(campaign);
-                    targetAudience = Entity.TargetAudience;
-                    Entity.Discount ??= new();
-                    Entity.ShoppingCredit ??= new();
-                    Entity.AddOnProduct ??= new();
-                    StateHasChanged();
-                }
-
-                ValidationsRef?.ClearAll();
-                IsEditLoading = false;
                 StateHasChanged();
-                Entity.TargetAudience = targetAudience;
             }
             catch (Exception ex)
             {
