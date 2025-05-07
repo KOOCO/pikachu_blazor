@@ -2117,11 +2117,11 @@
         <ModalFooter>
 
             <Button Color="Color.Secondary" Clicked="@CloseCropModal">@L["Cancel"]</Button>
-            <Button Color="Color.Primary" Disabled="@croppedImage.IsNullOrWhiteSpace()" Clicked="@CropImageAsync">@L["Save"]</Button>
+            <Button Color="Color.Primary"  Clicked="@CropImageAsync">@L["Save"]</Button>
         </ModalFooter>
     </ModalContent>
 </Modal>
-<Modal @ref="CarouselCropperModal">
+@* <Modal @ref="CarouselCropperModal">
     <ModalContent Size="ModalSize.Large">
         <ModalHeader>
             <ModalTitle>@L["CarouselCropper"]</ModalTitle>
@@ -2285,7 +2285,7 @@
             <Button Color="Color.Primary" Disabled="@croppedImage.IsNullOrWhiteSpace()" Clicked="()=>CropPartnershipImageAsync(PatnershipModule)">@L["Save"]</Button>
         </ModalFooter>
     </ModalContent>
-</Modal>
+</Modal> *@
 @code {
 
 }
