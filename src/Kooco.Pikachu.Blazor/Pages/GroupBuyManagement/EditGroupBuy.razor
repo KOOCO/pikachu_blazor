@@ -1643,7 +1643,7 @@
                                                 <Label>@L["Title"]</Label>
                                             </Div>
                                             <Div Class="col-12">
-                                                <TinyMCEEditor @bind-Value="@module.Title" Style="min-height: 500px;" />
+                                                <TinyMCEEditor @key="module.Id" @bind-Value="@module.Title" Style="min-height: 500px;" />
                                             </Div>
                                         </Div>
                                         <Div Class="row mb-2">
@@ -1651,7 +1651,7 @@
                                                 <Label>@L["Description"]</Label>
                                             </Div>
                                             <Div Class="col-12">
-                                                <TinyMCEEditor @bind-Value="@module.Text" Style="min-height: 500px;" />
+                                                <TinyMCEEditor @key="module.Id" @bind-Value="@module.Text" Style="min-height: 500px;" />
                                             </Div>
                                         </Div>
                                         <Div Class="row mb-2">
