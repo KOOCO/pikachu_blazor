@@ -896,21 +896,34 @@ public partial class EditGroupBuy
 
                         if (itemGroup.GroupBuyModuleType is GroupBuyModuleType.CarouselImages)
                         {
-                            List<CreateImageDto> imageList = await _imageAppService.GetImageListByModuleNumberAsync(Id, ImageType.GroupBuyCarouselImage, collapseItem.ModuleNumber!.Value);
+                            var moduleNumber = collapseItem.ModuleNumber!.Value;
 
-                            CarouselFilePickers.Add(new());
+                            // Check if module already exists in CarouselModules
+                            if (!CarouselModules.Any(m => m.Any(i => i.ModuleNumber == moduleNumber)))
+                            {
+                                List<CreateImageDto> imageList = await _imageAppService.GetImageListByModuleNumberAsync(Id, ImageType.GroupBuyCarouselImage, moduleNumber);
 
-                            CarouselModules.Add(imageList is { Count: > 0 } ? imageList : [new() { ModuleNumber = collapseItem.ModuleNumber }]);
+                                CarouselFilePickers.Add(new());
+
+                                CarouselModules.Add(imageList is { Count: > 0 } ? imageList : [new() { ModuleNumber = moduleNumber }]);
+                            }
                         }
 
                         else if (itemGroup.GroupBuyModuleType is GroupBuyModuleType.BannerImages)
                         {
-                            List<CreateImageDto> imageList = await _imageAppService.GetImageListByModuleNumberAsync(Id, ImageType.GroupBuyBannerImage, collapseItem.ModuleNumber!.Value);
+                            var moduleNumber = collapseItem.ModuleNumber!.Value;
 
-                            BannerFilePickers.Add(new());
+                            // Check if module already exists in BannerModules
+                            if (!BannerModules.Any(m => m.Any(i => i.ModuleNumber == moduleNumber)))
+                            {
+                                List<CreateImageDto> imageList = await _imageAppService.GetImageListByModuleNumberAsync(Id, ImageType.GroupBuyBannerImage, moduleNumber);
 
-                            BannerModules.Add(imageList is { Count: > 0 } ? imageList : [new() { ModuleNumber = collapseItem.ModuleNumber }]);
+                                BannerFilePickers.Add(new());
+
+                                BannerModules.Add(imageList is { Count: > 0 } ? imageList : [new() { ModuleNumber = moduleNumber }]);
+                            }
                         }
+
                     }
 
                     else
@@ -1904,7 +1917,10 @@ public partial class EditGroupBuy
             await carouselPicker.Clear();
             return;
         }
-
+        if (e.Files.Length == 0)
+        {
+            return;
+        }
         selectedFiles = e.Files.ToList(); // Get the list of selected files
         CurrentFileIndex = 0;
 
@@ -3885,7 +3901,7 @@ public partial class EditGroupBuy
                 }
             }
 
-            CollapseItem = [];
+            CollapseItem.Remove(item);
 
             await LoadItemGroups(true);
 
