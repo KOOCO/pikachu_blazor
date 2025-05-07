@@ -39,39 +39,33 @@ public partial class CreateCampaign
 
     protected override async Task OnInitializedAsync()
     {
-        if (Id.HasValue)
+        try
         {
-            if (!await AuthorizationService.IsGrantedAsync(PikachuPermissions.Campaigns.Edit))
+            if (Id.HasValue)
             {
-                await Message.Error(L["YouAreNotAuthorized"]);
-                Cancel();
+                if (!await AuthorizationService.IsGrantedAsync(PikachuPermissions.Campaigns.Edit))
+                {
+                    await Message.Error(L["YouAreNotAuthorized"]);
+                    Cancel();
+                }
+                var campaign = await CampaignAppService.GetAsync(Id.Value, true);
+                Entity = ObjectMapper.Map<CampaignDto, CreateCampaignDto>(campaign);
+                Entity.Discount ??= new();
+                Entity.ShoppingCredit ??= new();
+                Entity.AddOnProduct ??= new();
+                StateHasChanged();
+                ValidationsRef?.ClearAll();
             }
-            var campaign = await CampaignAppService.GetAsync(Id.Value, true);
-            Entity = ObjectMapper.Map<CampaignDto, CreateCampaignDto>(campaign);
-            Entity.Discount ??= new();
-            Entity.ShoppingCredit ??= new();
-            Entity.AddOnProduct ??= new();
-            ValidationsRef?.ClearAll();
+
+            GroupBuyOptions = await GroupBuyAppService.GetGroupBuyLookupAsync();
+            ProductOptions = await ItemAppService.LookupAsync();
+            var memberTags = await MemberTagAppService.GetMemberTagNamesAsync();
+            TargetAudienceOptions = [.. CampaignConsts.TargetAudience.Values, .. memberTags];
             StateHasChanged();
         }
-    }
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
+        catch (Exception ex)
         {
-            try
-            {
-                GroupBuyOptions = await GroupBuyAppService.GetGroupBuyLookupAsync();
-                ProductOptions = await ItemAppService.LookupAsync();
-                var memberTags = await MemberTagAppService.GetMemberTagNamesAsync();
-                TargetAudienceOptions = [.. CampaignConsts.TargetAudience.Values, .. memberTags];
-                StateHasChanged();
-            }
-            catch (Exception ex)
-            {
-                await HandleErrorAsync(ex);
-            }
+            await HandleErrorAsync(ex);
         }
     }
 
