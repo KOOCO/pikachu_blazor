@@ -386,8 +386,15 @@ public partial class EditGroupBuy
             {
                 if (fileNames.Any(fileName => item.Image.Contains(fileName)))
                 {
-                    item.Image = "https://pikachublobs.blob.core.windows.net/images/" + L["Enum:ColorSchemeFile." + (int)EditGroupBuyDto.ColorSchemeType.Value] + ".png";
-                }
+                    if (EditGroupBuyDto.ColorSchemeType == null)
+                    {
+                        item.Image = "";
+                    }
+                    else
+                    {
+                        item.Image = "https://pikachublobs.blob.core.windows.net/images/" + L["Enum:ColorSchemeFile." + (int)EditGroupBuyDto.ColorSchemeType.Value] + ".png";
+                    }
+                    }
 
             }
 

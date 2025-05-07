@@ -750,7 +750,14 @@ public partial class CreateGroupBuy
             {
                 if (fileNames.Any(fileName => item.Image.Contains(fileName)))
                 {
-                    item.Image = "https://pikachublobs.blob.core.windows.net/images/" + L["Enum:ColorSchemeFile." + (int)CreateGroupBuyDto.ColorSchemeType.Value] + ".png";
+                    if (CreateGroupBuyDto.ColorSchemeType == null)
+                    {
+                        item.Image = "";
+                    }
+                    else
+                    {
+                        item.Image = "https://pikachublobs.blob.core.windows.net/images/" + L["Enum:ColorSchemeFile." + (int)CreateGroupBuyDto.ColorSchemeType.Value] + ".png";
+                    }
                 }
 
             }
