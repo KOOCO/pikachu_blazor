@@ -1,5 +1,6 @@
 using Blazorise;
 using Blazorise.DataGrid;
+using Kooco.Pikachu.Items.Dtos;
 using Kooco.Pikachu.Members;
 using Kooco.Pikachu.ShopCarts;
 using System;
@@ -15,6 +16,7 @@ public partial class ShopCarts
     private IReadOnlyList<ShopCartListWithDetailsDto> ShopCartsList { get; set; }
     private IReadOnlyList<string> MemberStatusOptions { get; set; }
     private IReadOnlyList<string> VipTierOptions { get; set; }
+    private IReadOnlyList<KeyValueDto> GroupBuyOptions { get; set; } = [];
     private int PageSize { get; } = LimitedResultRequestDto.DefaultMaxResultCount;
     private int CurrentPage { get; set; } = 1;
     private string CurrentSorting { get; set; }
@@ -22,7 +24,6 @@ public partial class ShopCarts
 
     private GetShopCartListDto Filters { get; set; }
 
-    private ShopCartListWithDetailsDto SelectedShopCart { get; set; }
     private List<ShopCartListWithDetailsDto> SelectedShopCarts { get; set; }
     private bool FiltersVisible { get; set; } = false;
     private bool IsClearing { get; set; }
@@ -32,9 +33,10 @@ public partial class ShopCarts
     public ShopCarts()
     {
         ShopCartsList = [];
+        VipTierOptions = [];
         MemberStatusOptions = [];
-        Filters = new();
         SelectedShopCarts = [];
+        Filters = new();
     }
 
     protected override async Task OnInitializedAsync()
@@ -51,6 +53,7 @@ public partial class ShopCarts
             {
                 MemberStatusOptions = [.. MemberConsts.MemberTags.Names];
                 VipTierOptions = await VipTierSettingAppService.GetVipTierNamesAsync();
+                GroupBuyOptions = await GroupBuyAppService.GetAllGroupBuyLookupAsync();
             }
             catch (Exception ex)
             {
@@ -152,7 +155,6 @@ public partial class ShopCarts
 
     async Task Edit(ShopCartListWithDetailsDto shopCart)
     {
-        SelectedShopCart = shopCart;
         await CartItemsModal.Show(shopCart);
     }
 
