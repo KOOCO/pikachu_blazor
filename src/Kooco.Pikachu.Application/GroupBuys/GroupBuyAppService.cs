@@ -1357,6 +1357,14 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
             { headers["CheckoutAmount"], "$ " + x.TotalAmount.ToString("N2") }
         });
 
+        if (!excelData.Any())
+        {
+            excelData =
+            [
+                headers.ToDictionary(k => k.Value, k => (object)string.Empty)
+            ];
+        }
+
         var memoryStream = new MemoryStream();
         await memoryStream.SaveAsAsync(excelData);
         memoryStream.Seek(0, SeekOrigin.Begin);
