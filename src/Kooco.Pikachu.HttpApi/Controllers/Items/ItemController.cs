@@ -10,6 +10,7 @@ using Volo.Abp;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 using Volo.Abp.AspNetCore.Mvc;
+using Volo.Abp.Content;
 
 namespace Kooco.Pikachu.Controllers.Items;
 
@@ -155,5 +156,10 @@ public class ItemController(
     public Task<List<KeyValueDto>> LookupAsync()
     {
         return _itemAppService.LookupAsync();
+    }
+    [HttpGet("export-excel")]
+    public Task<IRemoteStreamContent> ExportItemListToExcelAsync(List<Guid> itemIds)
+    {
+        return _itemAppService.ExportItemListToExcelAsync(itemIds);
     }
 }

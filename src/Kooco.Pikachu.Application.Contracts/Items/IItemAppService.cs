@@ -5,6 +5,7 @@ using Kooco.Pikachu.Items.Dtos;
 using Kooco.Pikachu.ProductCategories;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
+using Volo.Abp.Content;
 
 namespace Kooco.Pikachu.Items;
 
@@ -32,4 +33,5 @@ public interface IItemAppService :
     Task<List<ItemDto>> GetItemsWithAttributesAsync(List<Guid> ids);
     Task<List<ItemBadgeDto>> GetItemBadgesAsync();
     Task DeleteItemBadgeAsync(ItemBadgeDto input);
+    Task<IRemoteStreamContent> ExportItemListToExcelAsync(List<Guid> itemIds);
 }

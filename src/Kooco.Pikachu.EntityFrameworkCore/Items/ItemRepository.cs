@@ -199,4 +199,17 @@ public class ItemRepository : EfCoreRepository<PikachuDbContext, Item, Guid>, II
                 .SetProperty(p => p.SetItemBadge, p => "")
                 .SetProperty(p => p.SetItemBadgeColor, p => ""));
     }
+
+    public async Task<List<Item>> GetItemsWithDetailsByIdsAsync(List<Guid> itemIds)
+    {
+        var queryable = await GetQueryableAsync();
+
+        return await queryable
+            .Where(item => itemIds.Contains(item.Id))
+            .Include(item => item.ItemDetails)
+            .Include(Item=>Item.CategoryProducts)
+            .ThenInclude(x=>x.ProductCategory)
+            .Include(Item=>Item.TaxType)
+            .ToListAsync();
+    }
 }

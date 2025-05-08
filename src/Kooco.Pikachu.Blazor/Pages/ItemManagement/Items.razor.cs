@@ -2,12 +2,14 @@
 using Blazorise.Components;
 using Blazorise.DataGrid;
 using Blazorise.LoadingIndicator;
+using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Items;
 using Kooco.Pikachu.Items.Dtos;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Volo.Abp;
@@ -201,7 +203,35 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
 
             StateHasChanged();
         }
+        async Task DownloadExcel()
+        {
+            try
+            {
+              
+                var remoteStreamContent = await _itemAppService.ExportItemListToExcelAsync(ItemList.Where(x=>x.IsSelected).Select(x=>x.Id).ToList());
+                using var responseStream = remoteStreamContent.GetStream();
+                // Create Excel file from the stream
+                using var memoryStream = new MemoryStream();
+                await responseStream.CopyToAsync(memoryStream);
+                memoryStream.Seek(0, SeekOrigin.Begin);
 
+                // Convert MemoryStream to byte array
+                var excelData = memoryStream.ToArray();
+
+                // Trigger the download using JavaScript interop
+                await JSRuntime.InvokeVoidAsync("downloadFile", new
+                {
+                    ByteArray = excelData,
+                    remoteStreamContent.FileName,
+                    ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                });
+            }
+            catch (Exception ex)
+            {
+                await _uiMessageService.Error(ex.GetType().ToString());
+            }
+            
+        }
         private async Task LoadItemImagesAsync()
         {
             foreach (var item in ItemList)

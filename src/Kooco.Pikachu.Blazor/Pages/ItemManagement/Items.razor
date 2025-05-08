@@ -212,6 +212,9 @@
         <Button Color="Color.Secondary" Size="Size.Small" Clicked="CopyAsync" Disabled="@(ItemList.Count(x => x.IsSelected) != 1)">
             @L["CopyItem"]
         </Button>
+         <Button Color="Color.Secondary" Size="Size.Small" Clicked="DownloadExcel" Disabled="@(ItemList.Count(x => x.IsSelected)<1)">
+            @L["DownloadExcel"]
+        </Button>
         <Button Type="@ButtonType.Button" Class="btn btn-sm btn-danger" Clicked="DeleteSelectedAsync">
             @L["DeleteSelected"]
         </Button>

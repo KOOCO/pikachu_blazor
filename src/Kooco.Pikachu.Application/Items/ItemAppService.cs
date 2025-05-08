@@ -9,6 +9,9 @@ using Volo.Abp.Domain.Repositories;
 using Volo.Abp;
 using Kooco.Pikachu.ProductCategories;
 using Ganss.Xss;
+using System.IO;
+using Volo.Abp.Content;
+using MiniExcelLibs;
 
 namespace Kooco.Pikachu.Items;
 
@@ -467,6 +470,59 @@ public class ItemAppService :
     {
         var items = await _itemRepository.GetItemsLookupAsync();
         return ObjectMapper.Map<List<ItemWithItemType>, List<ItemWithItemTypeDto>>(items);
+    }
+    public async Task<IRemoteStreamContent> ExportItemListToExcelAsync(List<Guid>itemIds)
+    {
+        var items = await _itemRepository.GetItemsWithDetailsByIdsAsync(itemIds);
+
+        int itemIndex = 1;
+        var headers = new Dictionary<string, string>
+{
+    { "ItemNo", L["ItemNo"] },
+    { "ItemName", L["ItemName"] },
+    { "ItemAttributes", L["ItemAttributes"] },
+    { "SKU", L["SKU"] },
+    { "InventoryName", L["InventoryName"] },
+    { "SellingPrice", L["SellingPrice"] },
+    { "CostPrice", L["CostPrice"] },
+    { "CurrentStock", L["CurrentStock"] },
+    { "Temperature", L["Temperature"] },
+    { "TaxType", L["TaxType"] },
+    { "Category", L["Category"] },
+    { "Availability", L["Availability"] }
+};
+        var excelData = items
+          .SelectMany(item =>
+          {
+              var rows = item.ItemDetails.Select(detail => new Dictionary<string, object>
+              {
+            { headers["ItemNo"], itemIndex },
+            { headers["ItemName"], item.ItemName },
+            { headers["ItemAttributes"], detail.ItemName },
+            { headers["SKU"], detail.SKU },
+            { headers["InventoryName"], detail.InventoryAccount },
+            { headers["SellingPrice"], $"${detail.SellingPrice:F2}" },
+            { headers["CostPrice"], $"${detail.Cost:F2}" },
+            { headers["CurrentStock"], detail.StockOnHand ?? 0 },
+            { headers["Temperature"], item.ItemStorageTemperature?.ToString() },
+            { headers["TaxType"], item.TaxType?.Text},
+            { headers["Category"],  string.Join(", ", item.CategoryProducts.Select(x => x.ProductCategory?.Name).Where(name => !string.IsNullOrWhiteSpace(name))) },
+            { headers["Availability"], item.IsItemAvaliable ? L["Active"] : L["Disabled"] }
+              }).ToList();
+
+              itemIndex++;
+              return rows;
+          });
+
+        var stream = new MemoryStream();
+        await stream.SaveAsAsync(excelData);
+        stream.Seek(0, SeekOrigin.Begin);
+
+        return new RemoteStreamContent(
+            stream,
+            "ItemsList.xlsx",
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        );
     }
 
 

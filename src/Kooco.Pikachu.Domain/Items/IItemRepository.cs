@@ -43,4 +43,5 @@ public interface IItemRepository : IRepository<Item, Guid>
     Task<List<CategoryProduct>> GetItemCategoriesAsync(Guid id);
     Task<List<Item>> GetItemsWithAttributesAsync(List<Guid> ids);
     Task DeleteItemBadgeAsync(string itemBadge, string? itemBadgeColor);
+    Task<List<Item>> GetItemsWithDetailsByIdsAsync(List<Guid> itemIds);
 }
