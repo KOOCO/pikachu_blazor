@@ -3709,6 +3709,10 @@ public partial class EditGroupBuy
                 check =true;
                 if (selectedItem.ItemType == ItemType.Item)
                 {
+                    if (selectedItem.Item == null)
+                    {
+                        return;
+                    }
                     id = selectedItem.Item.Id;
                 }
                 else {
