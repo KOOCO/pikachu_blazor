@@ -9,6 +9,8 @@ using Kooco.Pikachu.Orders.Services;
 using Kooco.Pikachu.OrderTransactions;
 using Kooco.Pikachu.PaymentGateways;
 using Kooco.Pikachu.Permissions;
+using Kooco.Pikachu.UserCumulativeCredits;
+using Kooco.Pikachu.UserShoppingCredits;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
@@ -31,6 +33,7 @@ using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Emailing;
 using Volo.Abp.Users;
+using static Kooco.Pikachu.Permissions.PikachuPermissions;
 
 namespace Kooco.Pikachu.Refunds;
 
@@ -51,7 +54,10 @@ public class RefundAppService : ApplicationService, IRefundAppService
     private readonly OrderHistoryManager _orderHistoryManager;
     private readonly IStringLocalizer<PikachuResource> _l;
     private readonly OrderTransactionManager _orderTransactionManager;
-
+    private readonly IUserShoppingCreditRepository _userShoppingCreditRepository;
+    private readonly UserShoppingCreditManager _userShoppingCreditManager;
+    private readonly IUserCumulativeCreditRepository _userCumulativeCreditRepository;
+    private readonly IUserCumulativeCreditAppService _userCumulativeCreditAppService;
     #endregion
 
     #region Constructor
@@ -64,7 +70,11 @@ public class RefundAppService : ApplicationService, IRefundAppService
         IConfiguration Configuration,
         IEmailAppService emailAppService,
         OrderHistoryManager orderHistoryManager, IStringLocalizer<PikachuResource> l,
-        OrderTransactionManager orderTransactionManager
+        OrderTransactionManager orderTransactionManager,
+        IUserShoppingCreditRepository userShoppingCreditRepository,
+        UserShoppingCreditManager userShoppingCreditManager,
+        IUserCumulativeCreditRepository userCumulativeCreditRepository,
+        IUserCumulativeCreditAppService userCumulativeCreditAppService
     )
     {
         _refundRepository = refundRepository;
@@ -79,6 +89,10 @@ public class RefundAppService : ApplicationService, IRefundAppService
         _l = l;
         _orderHistoryManager = orderHistoryManager;
         _orderTransactionManager = orderTransactionManager;
+        _userShoppingCreditRepository = userShoppingCreditRepository;
+        _userShoppingCreditManager = userShoppingCreditManager;
+        _userCumulativeCreditRepository = userCumulativeCreditRepository;
+        _userCumulativeCreditAppService = userCumulativeCreditAppService;
     }
     #endregion
 
@@ -127,7 +141,7 @@ public class RefundAppService : ApplicationService, IRefundAppService
     }
     public async Task<long> GetRefundPendingCount()
     {
-      return  await _refundRepository.GetRundPendingCountAsync();
+        return await _refundRepository.GetRundPendingCountAsync();
 
     }
     public async Task<RefundDto> UpdateRefundReviewAsync(Guid id, RefundReviewStatus input, string? rejectReason = null)
@@ -150,6 +164,31 @@ public class RefundAppService : ApplicationService, IRefundAppService
         }
         if (input is RefundReviewStatus.Fail || input is RefundReviewStatus.Success)
             refund.Refunder = CurrentUser.Name;
+
+        if (input == RefundReviewStatus.Success)
+        {
+            var order = await _orderRepository.GetAsync(refund.OrderId);
+            if (order.OrderRefundType == OrderRefundType.FullRefund && order.CreditDeductionRecordId.HasValue)
+            {
+                var userShoppingCredit = await _userShoppingCreditRepository.FirstOrDefaultAsync(x => x.Id == order.CreditDeductionRecordId);
+                if (userShoppingCredit != null && order.UserId != null && (!userShoppingCredit.ExpirationDate.HasValue || userShoppingCredit.ExpirationDate > DateTime.Now))
+                {
+                    await _userShoppingCreditManager.CreateAsync(order.UserId.Value, order.CreditDeductionAmount, order.CreditDeductionAmount,
+                        $"訂單取消 #{order.OrderNo}.", userShoppingCredit.ExpirationDate, userShoppingCredit.IsActive, UserShoppingCreditType.Grant);
+
+                    var userCumulativeCredit = await _userCumulativeCreditRepository.FirstOrDefaultAsync(x => x.UserId == order.UserId);
+                    if (userCumulativeCredit is null)
+                    {
+                        await _userCumulativeCreditAppService.CreateAsync(new CreateUserCumulativeCreditDto { TotalAmount = order.CreditDeductionAmount, TotalDeductions = 0, TotalRefunds = 0, UserId = order.UserId.Value });
+                    }
+                    else
+                    {
+                        userCumulativeCredit.ChangeTotalAmount((int)(userCumulativeCredit.TotalAmount + order.CreditDeductionAmount));
+                        await _userCumulativeCreditRepository.UpdateAsync(userCumulativeCredit);
+                    }
+                }
+            }
+        }
 
         await _refundRepository.UpdateAsync(refund);
 
