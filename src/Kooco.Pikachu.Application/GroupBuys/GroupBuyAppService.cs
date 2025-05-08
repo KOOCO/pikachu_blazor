@@ -414,7 +414,7 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
                                                     input.CustomerInformationDescription, input.GroupBuyConditionDescription, input.ExchangePolicyDescription, ShortCode, input.IsEnterprise, input.FreeShippingThreshold,
                                                     input.SelfPickupDeliveryTime, input.BlackCatDeliveryTime, input.HomeDeliveryDeliveryTime, input.DeliveredByStoreDeliveryTime, input.TaxType, input.ProductType,
                                                     input.ColorSchemeType, input.PrimaryColor, input.SecondaryColor, input.BackgroundColor, input.SecondaryBackgroundColor, input.AlertColor, input.BlockColor, input.ProductDetailsDisplayMethod, input.NotificationBar);
-
+        result.TemplateType = input.TemplateType;
         if (input.ItemGroups != null && input.ItemGroups.Any())
         {
             foreach (var group in input.ItemGroups)
