@@ -1086,10 +1086,11 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
                     module.BannerModulesImages = await GetBannerImagesModuleWiseAsync(groupBuyId, module.ModuleNumber!.Value);
 
                 if (module.GroupBuyModuleType is GroupBuyModuleType.GroupPurchaseOverview)
-                    module.GroupPurchaseOverviewModules = await GetGroupPurchaseOverviewsAsync(groupBuyId);
+                    module.GroupPurchaseOverviewModules = (await GetGroupPurchaseOverviewsAsync(groupBuyId)).Where(x=>x.ModuleNumber==module.ModuleNumber).ToList();
+                
 
                 if (module.GroupBuyModuleType is GroupBuyModuleType.OrderInstruction)
-                    module.GetGroupBuyOrderInstructionModules = await GetGroupBuyOrderInstructionsAsync(groupBuyId);
+                    module.GetGroupBuyOrderInstructionModules = (await GetGroupBuyOrderInstructionsAsync(groupBuyId)).Where(x => x.ModuleNumber == module.ModuleNumber).ToList();
             }
 
             return modules;
