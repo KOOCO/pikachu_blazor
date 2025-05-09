@@ -1168,7 +1168,7 @@
     "PropertyName": "規格名稱",
     "SellableQuantity": "可銷售數量",
     "SetItem": "組合商品",
-    "Quantity": "庫存數量",
+    "Quantity": "數量",
     "SetItemPrice": "組合商品價格",
     "InventoryReport": "庫存報表",
     "PreOrderQuantity": "預售數量",
@@ -1310,6 +1310,8 @@
     "Stock": "庫存",
     "SelectItem": "選取項目",
     "SelectCustomText": "自訂名稱",
-    
+    "RecipientCity": "收件人城市",
+    "RecipientAddress": "收件人地址"
+
   }
 }
