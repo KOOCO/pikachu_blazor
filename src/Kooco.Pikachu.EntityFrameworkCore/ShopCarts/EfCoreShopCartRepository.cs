@@ -220,7 +220,7 @@ public class EfCoreShopCartRepository(IDbContextProvider<PikachuDbContext> dbCon
         var itemDetailIds = cartItems.Where(ci => ci.ItemDetailId.HasValue).Select(ci => ci.ItemDetailId).Distinct().ToList();
 
         var itemDetails = await dbContext.ItemDetails.Where(id => itemDetailIds.Contains(id.Id))
-            .Select(id => new { id.Id, id.StockOnHand, id.SKU })
+            .Select(id => new { id.Id, id.StockOnHand, id.Attribute1Value, id.Attribute2Value, id.Attribute3Value })
             .ToListAsync();
 
         var items = await dbContext.Items
@@ -269,7 +269,10 @@ public class EfCoreShopCartRepository(IDbContextProvider<PikachuDbContext> dbCon
             }
 
             var itemDetail = itemDetails.Where(id => id.Id == cartItem.ItemDetailId).FirstOrDefault();
-            cartItem.ItemDetail = itemDetail?.SKU;
+            cartItem.ItemDetail = itemDetail == null
+                ? string.Empty
+                : string.Join("/", new[] { itemDetail.Attribute1Value, itemDetail.Attribute2Value, itemDetail.Attribute3Value }
+                    .Where(v => !string.IsNullOrWhiteSpace(v)));
             cartItem.Stock = cartItem.ItemId.HasValue
                 ? itemDetail?.StockOnHand ?? 0
                 : setItems.Where(si => si.Id == cartItem.SetItemId).Select(si => si.SaleableQuantity).FirstOrDefault() ?? 0;
@@ -365,7 +368,9 @@ public class EfCoreShopCartRepository(IDbContextProvider<PikachuDbContext> dbCon
                         .Select(detail => new CartItemDetailsModel
                         {
                             Id = detail.Id,
-                            Name = detail.SKU,
+                            Attribute1Value = detail.Attribute1Value,
+                            Attribute2Value = detail.Attribute2Value,
+                            Attribute3Value = detail.Attribute3Value,
                             Stock = detail.StockOnHand
                         })
                 }).FirstOrDefaultAsync();
