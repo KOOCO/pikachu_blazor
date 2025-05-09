@@ -1308,6 +1308,8 @@
     "Member": "會員",
     "TotalAmount": "商品總額",
     "Stock": "庫存",
-    "SelectItem": "選取項目"
+    "SelectItem": "選取項目",
+    "SelectCustomText": "自訂名稱",
+    
   }
 }

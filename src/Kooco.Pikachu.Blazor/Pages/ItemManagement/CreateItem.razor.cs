@@ -749,8 +749,8 @@ public partial class CreateItem
                 options.Add(item.Name);
             }
         });
-        options.Add(new string("ItemName"));
-        options.Add(new string("SelectCustomText"));
+        options.Add(L["ItemName"]);
+        options.Add(L["SelectCustomText"]);
         return options;
     }
 
@@ -777,7 +777,7 @@ public partial class CreateItem
         }
         else
         {
-            if (value == "ItemName")
+            if (value == L["ItemName"])
             {
                 item.CustomValueEnabled = false;
                 item.SelectedSampleValue = value;
@@ -845,7 +845,7 @@ public partial class CreateItem
             else if (!string.IsNullOrWhiteSpace(item.SelectedSampleValue))
             {
                 var temp = "";
-                if (item.SelectedSampleValue == "ItemName")
+                if (item.SelectedSampleValue == L["ItemName"])
                 {
                     temp = CreateItemDto.ItemName;
                 }

@@ -1519,6 +1519,7 @@
     "MinNumberOfItems": "Min Number of Items",
     "MaxNumberOfItems": "Max Number of Items",
     "AreYouSureYouWantToClearTheCarts": "All the items in the selected carts will be removed. This action can not be reverted.",
-    "OnlyAcceptsICO": "Only Accepts ICO"
+    "OnlyAcceptsICO": "Only Accepts ICO",
+    
   }
 }
