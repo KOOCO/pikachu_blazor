@@ -15,6 +15,8 @@ using MiniExcelLibs;
 using OfficeOpenXml;
 using Microsoft.AspNetCore.Http;
 using Kooco.Pikachu.EnumValues;
+using Kooco.Pikachu.Localization;
+using Microsoft.Extensions.Localization;
 
 namespace Kooco.Pikachu.Items;
 
@@ -35,6 +37,7 @@ public class ItemAppService :
     private readonly ItemManager _itemManager;
     private readonly HtmlSanitizer _htmlSanitizer;
     private readonly IEnumValueAppService _enumValueService;
+    private readonly IStringLocalizer<PikachuResource> _l;
     #endregion
 
     #region Constructor
@@ -42,7 +45,8 @@ public class ItemAppService :
         IItemRepository repository,
         ISetItemRepository setItemRepository,
         ItemManager itemManager,
-        IEnumValueAppService enumValueService
+        IEnumValueAppService enumValueService,
+        IStringLocalizer<PikachuResource> l
     )
         : base(repository)
     {
@@ -51,6 +55,7 @@ public class ItemAppService :
         _itemManager = itemManager;
         _htmlSanitizer = new HtmlSanitizer();
         _enumValueService = enumValueService;
+        _l = l;
     }
     #endregion
 
@@ -484,18 +489,18 @@ public class ItemAppService :
         int itemIndex = 1;
         var headers = new Dictionary<string, string>
 {
-    { "ItemNo", L["ItemNo"] },
-    { "ItemName", L["ItemName"] },
-    { "ItemAttributes", L["ItemAttributes"] },
-    { "SKU", L["SKU"] },
-    { "InventoryName", L["InventoryName"] },
-    { "SellingPrice", L["SellingPrice"] },
-    { "CostPrice", L["CostPrice"] },
-    { "CurrentStock", L["CurrentStock"] },
-    { "Temperature", L["Temperature"] },
-    { "TaxType", L["TaxType"] },
-    { "Category", L["Category"] },
-    { "Availability", L["Availability"] }
+    { "ItemNo", _l["ItemNo"] },
+    { "ItemName", _l["ItemName"] },
+    { "ItemAttributes", _l["ItemAttributes"] },
+    { "SKU", _l["SKU"] },
+    { "InventoryName", _l["InventoryName"] },
+    { "SellingPrice", _l["SellingPrice"] },
+    { "CostPrice", _l["CostPrice"] },
+    { "CurrentStock", _l["CurrentStock"] },
+    { "Temperature", _l["Temperature"] },
+    { "TaxType", _l["TaxType"] },
+    { "Category", _l["Category"] },
+    { "Availability", _l["Availability"] }
 };
         var excelData = items
           .SelectMany(item =>
@@ -736,7 +741,14 @@ public class ItemAppService :
                     Attribute1Value = worksheet.Cells[row, 22].Text,
                     Attribute2Value = worksheet.Cells[row, 23].Text,
                     Attribute3Value = worksheet.Cells[row, 24].Text,
-                    ItemName = worksheet.Cells[row, 22].Text + "/" + worksheet.Cells[row, 23].Text + "/" + worksheet.Cells[row, 24].Text,
+                    ItemName = string.Join("/",
+    new[]
+    {
+        worksheet.Cells[row, 22].Text,
+        worksheet.Cells[row, 23].Text,
+        worksheet.Cells[row, 24].Text
+    }.Where(v => !string.IsNullOrWhiteSpace(v))
+),
                     Image = null,
                     ItemDescription = worksheet.Cells[row, 25].Text,
                     SortNo = int.TryParse(worksheet.Cells[row, 26].Text, out var sortNo) ? sortNo : 0,

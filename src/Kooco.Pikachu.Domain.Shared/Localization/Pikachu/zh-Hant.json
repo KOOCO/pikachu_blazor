@@ -1311,7 +1311,13 @@
     "SelectItem": "選取項目",
     "SelectCustomText": "自訂名稱",
     "RecipientCity": "收件人城市",
-    "RecipientAddress": "收件人地址"
+    "RecipientAddress": "收件人地址",
+    "ItemNo": "商品群組編號",
+    "ItemAttributes": "商品規格",
+    "InventoryName": "倉庫名稱",
+    "CostPrice": "成本價格",
+    "Temperature": "溫層",
+    "Category": "類別"
 
   }
 }
