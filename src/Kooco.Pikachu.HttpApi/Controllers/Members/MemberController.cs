@@ -185,4 +185,10 @@ public class MemberController(IMemberAppService memberAppService, IPikachuAccoun
     {
         return memberAppService.SetBlacklistedAsync(memberId, blacklisted);
     }
+
+    [HttpGet("current-user-id")]
+    public Task<Guid?> GetCurrentUserIdAsync()
+    {
+        return memberAppService.GetCurrentUserIdAsync();
+    }
 }

@@ -273,6 +273,12 @@ public class MemberAppService(IObjectMapper objectMapper, IMemberRepository memb
     }
 
     [AllowAnonymous]
+    public Task<Guid?> GetCurrentUserIdAsync()
+    {
+        return Task.FromResult(CurrentUser?.Id);
+    }
+
+    [AllowAnonymous]
     public async Task<MemberLoginResponseDto> LoginAsync(MemberLoginInputDto input)
     {
         Check.NotNull(input, nameof(input));
