@@ -108,6 +108,7 @@ public class RefundAppService : ApplicationService, IRefundAppService
         await _refundRepository.InsertAsync(refund);
         var order = await _orderRepository.GetAsync(orderId);
         order.IsRefunded = true;
+        order.OrderRefundType = OrderRefundType.FullRefund;
         // **Get Current User (Editor)**
         var currentUserId = CurrentUser.Id ?? Guid.Empty;
         var currentUserName = CurrentUser.UserName ?? "System";
