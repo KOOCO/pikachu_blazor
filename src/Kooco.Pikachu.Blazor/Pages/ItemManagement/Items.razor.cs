@@ -6,6 +6,7 @@ using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Items;
 using Kooco.Pikachu.Items.Dtos;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.JSInterop;
 using System;
 using System.Collections.Generic;
@@ -14,6 +15,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.AspNetCore.Components.Messages;
+using Volo.Abp.Content;
 
 namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
 {
@@ -41,7 +43,8 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
 
         // Image fit style - true for cover, false for contain
         public bool UseImageCover { get; } = true;
-
+        private bool ShowImportModal = false;
+        private bool UploadInProgress = false;
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
             if (firstRender)
@@ -246,5 +249,44 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
                 }
             }
         }
+        private async Task OnFileSelected(InputFileChangeEventArgs e)
+        {
+            try
+            {
+                UploadInProgress = true;
+
+                var file = e.File;
+                if (file == null)
+                {
+                    await _uiMessageService.Error("Please select a file.");
+                    return;
+                }
+
+                var stream = file.OpenReadStream(long.MaxValue);
+                var remoteFile = new RemoteStreamContent(stream, file.Name, file.ContentType);
+
+                await _itemAppService.ImportItemsFromExcelAsync(remoteFile);
+
+                await _uiMessageService.Success("Items imported successfully.");
+                ShowImportModal = false;
+            }
+            catch (Exception ex)
+            {
+                await _uiMessageService.Error($"Error: {ex.Message}");
+            }
+            finally
+            {
+                UploadInProgress = false;
+                await UpdateItemList();
+
+            }
+        }
+
+        private async Task DownloadTemplate()
+        {
+            await JSRuntime.InvokeVoidAsync("open", "Templates/ItemTemplate.xlsx", "_blank");
+
+        }
     }
 }
+

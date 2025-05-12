@@ -1520,6 +1520,13 @@
     "MaxNumberOfItems": "Max Number of Items",
     "AreYouSureYouWantToClearTheCarts": "All the items in the selected carts will be removed. This action can not be reverted.",
     "OnlyAcceptsICO": "Only Accepts ICO",
-    
+    "ImportItems": "Import Items",
+    "Instructions": "Instructions",
+    "DownloadTemplateInstruction": "Download the Excel template file.",
+    "FillTemplateInstruction": "Fill required fields like ItemName, SKU, Styles, etc.",
+    "UploadTemplateInstruction": "Upload the filled file below.",
+    "DownloadTemplate": "Download Template",
+    "Close": "Close"
+
   }
 }

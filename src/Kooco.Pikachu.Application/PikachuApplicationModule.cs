@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using OfficeOpenXml;
 using Volo.Abp.Account;
 using Volo.Abp.AutoMapper;
 using Volo.Abp.BackgroundJobs;
@@ -38,7 +39,9 @@ public class PikachuApplicationModule : AbpModule
         {
             options.AddMaps<PikachuApplicationModule>();
         });
-
+       
         context.Services.AddAllHostedServices();
+
+      
     }
 }

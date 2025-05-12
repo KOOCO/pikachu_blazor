@@ -12,6 +12,9 @@ using Ganss.Xss;
 using System.IO;
 using Volo.Abp.Content;
 using MiniExcelLibs;
+using OfficeOpenXml;
+using Microsoft.AspNetCore.Http;
+using Kooco.Pikachu.EnumValues;
 
 namespace Kooco.Pikachu.Items;
 
@@ -31,13 +34,15 @@ public class ItemAppService :
     private readonly ISetItemRepository _setItemRepository;
     private readonly ItemManager _itemManager;
     private readonly HtmlSanitizer _htmlSanitizer;
+    private readonly IEnumValueAppService _enumValueService;
     #endregion
 
     #region Constructor
     public ItemAppService(
         IItemRepository repository,
         ISetItemRepository setItemRepository,
-        ItemManager itemManager
+        ItemManager itemManager,
+        IEnumValueAppService enumValueService
     )
         : base(repository)
     {
@@ -45,6 +50,7 @@ public class ItemAppService :
         _setItemRepository = setItemRepository;
         _itemManager = itemManager;
         _htmlSanitizer = new HtmlSanitizer();
+        _enumValueService = enumValueService;
     }
     #endregion
 
@@ -653,5 +659,177 @@ public class ItemAppService :
     {
         await _itemRepository.DeleteItemBadgeAsync(input.ItemBadge, input.ItemBadgeColor); 
     }
+    public async Task ImportItemsFromExcelAsync(IRemoteStreamContent file)
+    {
+        using var stream = new MemoryStream();
+        await file.GetStream().CopyToAsync(stream);
+
+        ExcelPackage.License.SetNonCommercialPersonal("Pikachu");
+        using var package = new ExcelPackage(stream);
+
+        var worksheet = package.Workbook.Worksheets[0];
+        var rowCount = worksheet.Dimension?.Rows ?? 0;
+
+        if (rowCount <= 1)
+            throw new UserFriendlyException("Excel file is empty or invalid");
+
+        var enumValues = (await _enumValueService.GetEnums(new List<EnumType>
+    {
+        EnumType.ShippingMethod,
+        EnumType.TaxType
+    })).ToList();
+
+        var ShippingMethods = enumValues
+            .Where(x => x.EnumType == EnumType.ShippingMethod)
+            .ToList();
+        var taxs = enumValues
+            .Where(x => x.EnumType == EnumType.TaxType)
+            .ToList();
+
+        var itemsDict = new Dictionary<long, CreateItemDto>();
+
+        for (int row = 2; row <= rowCount; row++)
+        {
+            try
+            {
+                var itemNo = long.Parse(worksheet.Cells[row, 1].Text);
+                var taxTypeText = worksheet.Cells[row, 12].Text?.Trim();
+                var taxType = taxs.FirstOrDefault(x =>
+                    string.Equals(x.Text, taxTypeText, StringComparison.OrdinalIgnoreCase));
+
+               
+                if (!itemsDict.ContainsKey(itemNo))
+                {
+                    itemsDict[itemNo] = new CreateItemDto
+                    {
+                        ItemName = worksheet.Cells[row, 2].Text,
+                        ItemDescription = worksheet.Cells[row, 3].Text,
+                        ItemBadgeDto = new ItemBadgeDto
+                        {
+                            ItemBadge = worksheet.Cells[row, 4].Text,
+                            ItemBadgeColor = worksheet.Cells[row, 5].Text
+                        },
+                        ItemDescriptionTitle = worksheet.Cells[row, 6].Text,
+                        Attribute1Name = worksheet.Cells[row, 7].Text,
+                        Attribute2Name = worksheet.Cells[row, 8].Text,
+                        Attribute3Name = worksheet.Cells[row, 9].Text,
+                        ItemTags = null,
+                        IsFreeShipping = worksheet.Cells[row, 10].Text.Equals("Yes", StringComparison.OrdinalIgnoreCase),
+                        IsReturnable = worksheet.Cells[row, 11].Text.Equals("Yes", StringComparison.OrdinalIgnoreCase),
+                        TaxTypeId = taxType?.Id ?? 0,
+                        ShareProfit = float.TryParse(worksheet.Cells[row, 27].Text, out var profit) ? profit : 0,
+                        ItemDetails = new List<CreateItemDetailsDto>()
+                    };
+                }
+
+                itemsDict[itemNo].ItemDetails.Add(new CreateItemDetailsDto
+                {
+                    Sku = worksheet.Cells[row, 13].Text,
+                    SellingPrice = float.TryParse(worksheet.Cells[row, 14].Text, out var sellingPrice) ? sellingPrice : 0,
+                    Cost = float.TryParse(worksheet.Cells[row, 15].Text, out var cost) ? cost : 0,
+                    LimitQuantity = int.TryParse(worksheet.Cells[row, 16].Text, out var limitQty) ? limitQty : null,
+                    SaleableQuantity = float.TryParse(worksheet.Cells[row, 17].Text, out var saleableQty) ? saleableQty : 0,
+                    StockOnHand = int.TryParse(worksheet.Cells[row, 18].Text, out var stock) ? stock : null,
+                    PreOrderableQuantity = float.TryParse(worksheet.Cells[row, 19].Text, out var preOrderQty) ? preOrderQty : null,
+                    SaleablePreOrderQuantity = float.TryParse(worksheet.Cells[row, 20].Text, out var saleablePreOrder) ? saleablePreOrder : null,
+                    InventoryAccount = worksheet.Cells[row, 21].Text,
+                    Attribute1Value = worksheet.Cells[row, 22].Text,
+                    Attribute2Value = worksheet.Cells[row, 23].Text,
+                    Attribute3Value = worksheet.Cells[row, 24].Text,
+                    ItemName = worksheet.Cells[row, 22].Text + "/" + worksheet.Cells[row, 23].Text + "/" + worksheet.Cells[row, 24].Text,
+                    Image = null,
+                    ItemDescription = worksheet.Cells[row, 25].Text,
+                    SortNo = int.TryParse(worksheet.Cells[row, 26].Text, out var sortNo) ? sortNo : 0,
+                    Status = worksheet.Cells[row, 27].Text.Equals("Active", StringComparison.OrdinalIgnoreCase)
+                });
+            }
+            catch (Exception ex)
+            {
+                throw new UserFriendlyException($"Error processing row {row}: {ex.Message}");
+            }
+        }
+
+        foreach (var itemDto in itemsDict.Values)
+        {
+            try
+            {
+                var item = await _itemManager.CreateAsync(
+                    itemDto.ItemName,
+                    itemDto.ItemBadgeDto?.ItemBadge,
+                    itemDto.ItemBadgeDto?.ItemBadgeColor,
+                    itemDto.ItemDescriptionTitle,
+                    itemDto.ItemDescription,
+                    itemDto.ItemTags,
+                    itemDto.LimitAvaliableTimeStart,
+                    itemDto.LimitAvaliableTimeEnd,
+                    itemDto.ShareProfit,
+                    itemDto.IsFreeShipping,
+                    itemDto.IsReturnable,
+                    itemDto.ShippingMethodId,
+                    itemDto.TaxTypeId,
+                    itemDto.CustomField1Value,
+                    itemDto.CustomField1Name,
+                    itemDto.CustomField2Value,
+                    itemDto.CustomField2Name,
+                    itemDto.CustomField3Value,
+                    itemDto.CustomField3Name,
+                    itemDto.CustomField4Value,
+                    itemDto.CustomField4Name,
+                    itemDto.CustomField5Value,
+                    itemDto.CustomField5Name,
+                    itemDto.CustomField6Value,
+                    itemDto.CustomField6Name,
+                    itemDto.CustomField7Value,
+                    itemDto.CustomField7Name,
+                    itemDto.CustomField8Value,
+                    itemDto.CustomField8Name,
+                    itemDto.CustomField9Value,
+                    itemDto.CustomField9Name,
+                    itemDto.CustomField10Value,
+                    itemDto.CustomField10Name,
+                    itemDto.Attribute1Name,
+                    itemDto.Attribute2Name,
+                    itemDto.Attribute3Name,
+                    itemDto.ItemStorageTemperature
+                );
+
+                item.ShippingMethodId = ShippingMethods.First().Id;
+
+                foreach (var detailDto in itemDto.ItemDetails)
+                {
+                    await _itemManager.AddItemDetailAsync(
+                        item,
+                        detailDto.ItemName,
+                        detailDto.Sku,
+                        detailDto.LimitQuantity,
+                        detailDto.SellingPrice,
+                        detailDto.Cost,
+                        detailDto.SaleableQuantity,
+                        detailDto.StockOnHand,
+                        detailDto.PreOrderableQuantity,
+                        detailDto.SaleablePreOrderQuantity,
+                        detailDto.InventoryAccount,
+                        detailDto.Attribute1Value,
+                        detailDto.Attribute2Value,
+                        detailDto.Attribute3Value,
+                        detailDto.Image,
+                        detailDto.ItemDescription,
+                        detailDto.SortNo,
+                        detailDto.Status
+                    );
+                }
+
+                await _itemRepository.InsertAsync(item);
+            }
+            catch (Exception ex)
+            {
+                throw new UserFriendlyException($"Error importing item {itemDto.ItemName}: {ex.Message}");
+            }
+        }
+    }
+
+
+
+
     #endregion
 }

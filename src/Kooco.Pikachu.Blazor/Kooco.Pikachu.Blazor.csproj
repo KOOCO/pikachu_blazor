@@ -137,6 +137,9 @@
     <Content Update="wwwroot\order.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Update="wwwroot\Templates\ItemTemplate.xlsx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>
@@ -146,5 +149,5 @@
   <ItemGroup>
     <Using Include="Kooco.Pikachu.Blazor" />
   </ItemGroup>
-  
+	
 </Project>

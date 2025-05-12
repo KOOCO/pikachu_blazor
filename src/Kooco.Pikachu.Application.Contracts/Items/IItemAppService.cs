@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Kooco.Pikachu.Items.Dtos;
 using Kooco.Pikachu.ProductCategories;
+using Microsoft.AspNetCore.Http;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Content;
@@ -34,4 +35,5 @@ public interface IItemAppService :
     Task<List<ItemBadgeDto>> GetItemBadgesAsync();
     Task DeleteItemBadgeAsync(ItemBadgeDto input);
     Task<IRemoteStreamContent> ExportItemListToExcelAsync(List<Guid> itemIds);
+    Task ImportItemsFromExcelAsync(IRemoteStreamContent file);
 }

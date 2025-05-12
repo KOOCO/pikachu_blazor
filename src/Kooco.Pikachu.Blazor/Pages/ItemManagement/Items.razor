@@ -215,6 +215,10 @@
          <Button Color="Color.Secondary" Size="Size.Small" Clicked="DownloadExcel" Disabled="@(ItemList.Count(x => x.IsSelected)<1)">
             @L["DownloadExcel"]
         </Button>
+       <Button Color="Color.Info" Size="Size.Small" Clicked="() => ShowImportModal = true">
+    <Icon Name="IconName.File" />
+    @L["ImportItems"]
+</Button>
         <Button Type="@ButtonType.Button" Class="btn btn-sm btn-danger" Clicked="DeleteSelectedAsync">
             @L["DeleteSelected"]
         </Button>
@@ -420,6 +424,55 @@
         }
     </CardBody>
 </Card>
+<Modal @bind-Visible="ShowImportModal" Size="ModalSize.Large">
+     <ModalContent IsCentered="true">
+    <ModalHeader>
+        <strong>@L["ImportItems"]</strong>
+    </ModalHeader>
+
+    <ModalBody>
+        <Alert  Color="Color.Info" Visible>
+            <AlertMessage>
+            <p><strong>@L["Instructions"]:</strong></p>
+            </AlertMessage>
+            <AlertDescription>           <ul class="mb-0">
+                <li>@L["DownloadTemplateInstruction"]</li>
+                <li>@L["FillTemplateInstruction"]</li>
+                <li>If one item have multipal item details add item that times with same item no.</li>
+                <li>TaxTypes: Taxable and Non Taxable</li>
+                <li>@L["UploadTemplateInstruction"]</li>
+            </ul>
+            </AlertDescription>
+ 
+        </Alert>
+
+        <div class="my-3">
+            <Button Color="Color.Secondary" Clicked="DownloadTemplate">
+                <Icon Name="IconName.FileDownload" />
+                @L["DownloadTemplate"]
+            </Button>
+        </div>
+
+        <InputFile OnChange="OnFileSelected" />
+
+        @if (UploadInProgress)
+        {
+            <div class="mt-3">
+                <LoadingIndicator Visible="true" />
+            </div>
+        }
+    </ModalBody>
+
+    <ModalFooter>
+        <Button Color="Color.Secondary" Clicked="() => ShowImportModal = false">
+            <Icon Name="IconName.Times" />
+            @L["Close"]
+        </Button>
+    </ModalFooter>
+    </ModalContent>
+</Modal>
+
+
 </div>
 @code {
 
