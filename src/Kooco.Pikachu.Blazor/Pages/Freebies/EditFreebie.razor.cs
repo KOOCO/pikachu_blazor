@@ -1,24 +1,25 @@
-﻿using Blazorise;
+﻿using AutoMapper;
+using Blazored.TextEditor;
+using Blazorise;
 using Kooco.Pikachu.AzureStorage.Image;
-using Kooco.Pikachu.Freebies.Dtos;
+using Kooco.Pikachu.Blazor.Helpers;
+using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Freebies;
+using Kooco.Pikachu.Freebies.Dtos;
+using Kooco.Pikachu.FreeBies.Dtos;
+using Kooco.Pikachu.GroupBuys;
 using Kooco.Pikachu.Images;
 using Kooco.Pikachu.Items.Dtos;
+using Kooco.Pikachu.Localization;
+using Microsoft.AspNetCore.Components;
+using Microsoft.JSInterop;
+using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Threading.Tasks;
-using System;
-using Volo.Abp.AspNetCore.Components.Messages;
-using Volo.Abp;
 using System.Linq;
-using Microsoft.AspNetCore.Components;
-using AutoMapper;
-using Kooco.Pikachu.FreeBies.Dtos;
-using Blazored.TextEditor;
-using Kooco.Pikachu.GroupBuys;
-using Kooco.Pikachu.Localization;
-using Kooco.Pikachu.EnumValues;
-using Microsoft.JSInterop;
+using System.Threading.Tasks;
+using Volo.Abp;
+using Volo.Abp.AspNetCore.Components.Messages;
 
 namespace Kooco.Pikachu.Blazor.Pages.Freebies;
 
@@ -96,7 +97,7 @@ public partial class EditFreebie
             {
                 Console.WriteLine(ex.ToString());
                 await _uiMessageService.Error(ex.GetType().ToString());
-            } 
+            }
         }
     }
 
@@ -151,41 +152,35 @@ public partial class EditFreebie
         {
             foreach (var file in e.Files)
             {
-                if (file.Size > MaxAllowedFileSize)
+                string newFileName = Path.ChangeExtension(
+                      Path.GetRandomFileName(),
+                      Path.GetExtension(file.Name));
+
+                var bytes = await file.GetBytes();
+
+                var compressed = await ImageCompressorService.CompressAsync(bytes);
+
+                if (compressed.CompressedSize > MaxAllowedFileSize)
                 {
                     count++;
                     await FilePicker.RemoveFile(file);
                     return;
                 }
-                string newFileName = Path.ChangeExtension(
-                      Path.GetRandomFileName(),
-                      Path.GetExtension(file.Name));
-                var stream = file.OpenReadStream();
-                try
+
+                var url = await _imageContainerManager.SaveAsync(newFileName, compressed.CompressedBytes);
+
+                int sortNo = UpdateFreebieDto.Images.LastOrDefault()?.SortNo ?? 0;
+
+                UpdateFreebieDto.Images.Add(new CreateImageDto
                 {
-                    var memoryStream = new MemoryStream();
+                    Name = file.Name,
+                    BlobImageName = newFileName,
+                    ImageUrl = url,
+                    ImageType = ImageType.Item,
+                    SortNo = sortNo + 1
+                });
 
-                    await stream.CopyToAsync(memoryStream);
-                    memoryStream.Position = 0;
-                    var url = await _imageContainerManager.SaveAsync(newFileName, memoryStream);
-
-                    int sortNo = UpdateFreebieDto.Images.LastOrDefault()?.SortNo ?? 0;
-
-                    UpdateFreebieDto.Images.Add(new CreateImageDto
-                    {
-                        Name = file.Name,
-                        BlobImageName = newFileName,
-                        ImageUrl = url,
-                        ImageType = ImageType.Item,
-                        SortNo = sortNo + 1
-                    });
-
-                    await FilePicker.Clear();
-                }
-                finally
-                {
-                    stream.Close();
-                }
+                await FilePicker.Clear();
             }
             if (count > 0)
             {
@@ -194,8 +189,7 @@ public partial class EditFreebie
         }
         catch (Exception exc)
         {
-            Console.WriteLine(exc.Message);
-            await _uiMessageService.Error(L[PikachuDomainErrorCodes.SomethingWrongWhileFileUpload]);
+            await HandleErrorAsync(exc);
         }
     }
 

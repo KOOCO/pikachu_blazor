@@ -3,6 +3,7 @@
 @using Blazorise.Components
 @using Kooco.Pikachu.AzureStorage.Image
 @using Kooco.Pikachu.Blazor.Pages.Components.Icons
+@using Kooco.Pikachu.ImageCompressors
 @using Kooco.Pikachu.Items
 @using Kooco.Pikachu.Items.Dtos
 @using Kooco.Pikachu.Permissions
@@ -20,6 +21,7 @@
 @inject ImageContainerManager ImageContainerManager
 @inject IItemAppService ItemAppService
 @inject IJSRuntime JSRuntime
+@inject IImageCompressorService ImageCompressorService
 
 <Div Class="rounded-cards">
     <PikachuButton Clicked="NavigateToProductCategory">

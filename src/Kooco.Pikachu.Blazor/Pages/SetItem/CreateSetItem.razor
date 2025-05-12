@@ -1,6 +1,7 @@
 ﻿@page "/SetItem/Create"
 
 @using Kooco.Pikachu.EnumValues
+@using Kooco.Pikachu.ImageCompressors
 @using Kooco.Pikachu.Items
 @using Kooco.Pikachu.Items.Dtos;
 @using Kooco.Pikachu.Localization;
@@ -11,6 +12,8 @@
 @inherits PikachuComponentBase
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JSRuntime
+@inject IImageCompressorService ImageCompressorService
+
 @attribute [Authorize]
  <Heading Size="HeadingSize.Is3" @onclick="NavigateToItemList" style="cursor: pointer;">@L["SetItem"]</Heading>
 

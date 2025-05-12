@@ -3,6 +3,7 @@ using Blazored.TextEditor;
 using Blazorise;
 using Blazorise.Components;
 using Kooco.Pikachu.AzureStorage.Image;
+using Kooco.Pikachu.Blazor.Helpers;
 using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Images;
 using Kooco.Pikachu.Items;
@@ -173,45 +174,40 @@ namespace Kooco.Pikachu.Blazor.Pages.SetItem
                         await FilePicker.RemoveFile(file);
                         return;
                     }
-                    if (file.Size > MaxAllowedFileSize)
+
+                    string newFileName = Path.ChangeExtension(
+                          Guid.NewGuid().ToString().Replace("-", ""),
+                          Path.GetExtension(file.Name));
+
+                    var bytes = await file.GetBytes();
+
+                    var compressed = await ImageCompressorService.CompressAsync(bytes);
+
+                    if (compressed.CompressedSize > MaxAllowedFileSize)
                     {
                         count++;
                         await FilePicker.RemoveFile(file);
                         return;
                     }
-                    string newFileName = Path.ChangeExtension(
-                          Guid.NewGuid().ToString().Replace("-", ""),
-                          Path.GetExtension(file.Name));
-                    var stream = file.OpenReadStream(long.MaxValue);
-                    try
+
+                    var url = await _imageContainerManager.SaveAsync(newFileName, compressed.CompressedBytes);
+
+                    int sortNo = 0;
+                    if (CreateUpdateSetItemDto.Images.Any())
                     {
-                        var memoryStream = new MemoryStream();
-
-                        await stream.CopyToAsync(memoryStream);
-                        memoryStream.Position = 0;
-                        var url = await _imageContainerManager.SaveAsync(newFileName, memoryStream);
-
-                        int sortNo = 0;
-                        if (CreateUpdateSetItemDto.Images.Any())
-                        {
-                            sortNo = CreateUpdateSetItemDto.Images.Max(x => x.SortNo);
-                        }
-
-                        CreateUpdateSetItemDto.Images.Add(new CreateImageDto
-                        {
-                            Name = file.Name,
-                            BlobImageName = newFileName,
-                            ImageUrl = url,
-                            ImageType = ImageType.Item,
-                            SortNo = sortNo + 1
-                        });
-
-                        await FilePicker.Clear();
+                        sortNo = CreateUpdateSetItemDto.Images.Max(x => x.SortNo);
                     }
-                    finally
+
+                    CreateUpdateSetItemDto.Images.Add(new CreateImageDto
                     {
-                        stream.Close();
-                    }
+                        Name = file.Name,
+                        BlobImageName = newFileName,
+                        ImageUrl = url,
+                        ImageType = ImageType.Item,
+                        SortNo = sortNo + 1
+                    });
+
+                    await FilePicker.Clear();
                 }
                 if (count > 0)
                 {
@@ -220,8 +216,7 @@ namespace Kooco.Pikachu.Blazor.Pages.SetItem
             }
             catch (Exception exc)
             {
-                Console.WriteLine(exc.Message);
-                await _uiMessageService.Error(L[PikachuDomainErrorCodes.SomethingWrongWhileFileUpload]);
+                await HandleErrorAsync(exc);
             }
         }
         private string LocalizeFilePicker(string key, object[] args)

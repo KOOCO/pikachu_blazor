@@ -3,6 +3,7 @@ using Blazorise;
 using Blazorise.Components;
 using Blazorise.LoadingIndicator;
 using Kooco.Pikachu.AzureStorage.Image;
+using Kooco.Pikachu.Blazor.Helpers;
 using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Images;
 using Kooco.Pikachu.Items;
@@ -159,43 +160,38 @@ public partial class CreateItem
                     await FilePickerCustom.RemoveFile(file);
                     return;
                 }
-                if (file.Size > MaxAllowedFileSize)
+
+                string newFileName = Path.ChangeExtension(
+                      Guid.NewGuid().ToString().Replace("-", ""),
+                      Path.GetExtension(file.Name));
+
+                var bytes = await file.GetBytes();
+
+                var compressed = await ImageCompressorService.CompressAsync(bytes);
+
+                if (compressed.CompressedSize > MaxAllowedFileSize)
                 {
                     count++;
                     await FilePickerCustom.RemoveFile(file);
                     return;
                 }
-                string newFileName = Path.ChangeExtension(
-                      Guid.NewGuid().ToString().Replace("-", ""),
-                      Path.GetExtension(file.Name));
-                var stream = file.OpenReadStream(long.MaxValue);
-                try
+
+                var url = await _imageContainerManager.SaveAsync(newFileName, compressed.CompressedBytes);
+
+                int sortNo = 0;
+                if (CreateItemDto.ItemImages.Any())
                 {
-                    var memoryStream = new MemoryStream();
-
-                    await stream.CopyToAsync(memoryStream);
-                    memoryStream.Position = 0;
-                    var url = await _imageContainerManager.SaveAsync(newFileName, memoryStream);
-
-                    int sortNo = 0;
-                    if (CreateItemDto.ItemImages.Any())
-                    {
-                        sortNo = CreateItemDto.ItemImages.Max(x => x.SortNo);
-                    }
-
-                    CreateItemDto.ItemImages.Add(new CreateImageDto
-                    {
-                        Name = file.Name,
-                        BlobImageName = newFileName,
-                        ImageUrl = url,
-                        ImageType = ImageType.Item,
-                        SortNo = sortNo + 1
-                    });
+                    sortNo = CreateItemDto.ItemImages.Max(x => x.SortNo);
                 }
-                finally
+
+                CreateItemDto.ItemImages.Add(new CreateImageDto
                 {
-                    stream.Close();
-                }
+                    Name = file.Name,
+                    BlobImageName = newFileName,
+                    ImageUrl = url,
+                    ImageType = ImageType.Item,
+                    SortNo = sortNo + 1
+                });
             }
             if (count > 0)
             {
@@ -432,26 +428,15 @@ public partial class CreateItem
                 Path.GetExtension(e.Files[0].Name)
             );
 
-            Stream stream = e.Files[0].OpenReadStream(long.MaxValue);
+            var bytes = await e.Files[0].GetBytes();
 
-            try
-            {
-                MemoryStream memoryStream = new();
+            var compressed = await ImageCompressorService.CompressAsync(bytes);
 
-                await stream.CopyToAsync(memoryStream);
+            string url = await _imageContainerManager.SaveAsync(newFileName, compressed.CompressedBytes);
 
-                memoryStream.Position = 0;
+            item.Image = url;
 
-                string url = await _imageContainerManager.SaveAsync(newFileName, memoryStream);
-
-                item.Image = url;
-
-                await filePicker.Clear();
-            }
-            finally
-            {
-                stream.Close();
-            }
+            await filePicker.Clear();
         }
         catch (Exception ex)
         {

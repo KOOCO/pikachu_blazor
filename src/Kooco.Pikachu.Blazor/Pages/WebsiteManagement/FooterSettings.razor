@@ -1,6 +1,7 @@
 ﻿@page "/Footer-Settings"
 @using Kooco.Pikachu.Blazor.Pages.Components.Icons
 @using Kooco.Pikachu.Blazor.Pages.TenantManagement.TenantSettings
+@using Kooco.Pikachu.ImageCompressors
 @using Kooco.Pikachu.Images
 @using Kooco.Pikachu.Localization
 @using Kooco.Pikachu.Permissions
@@ -15,9 +16,10 @@
 @inject IFooterSettingAppService FooterSettingAppService
 @inject IImageAppService ImageAppService
 @inject IJSRuntime JSRuntime
+@inject IImageCompressorService ImageCompressorService
 
 <style>
-    .filepicker-sm .b-text-drop {
+    .has-images.filepicker-sm .b-text-drop {
         width: 216px;
     }
 </style>
@@ -161,13 +163,16 @@
                                         </Validation>
                                     </Field>
                                 </Div>
-                                <div class="image-list-container" style="margin-right: 218px;">
-                                    <div>
-                                        <div class="image-container">
-                                            <Image class="blur-image" Source="@(section.ImageBase64 != null ? "data:image/png;base64," + section.ImageBase64 : section.ImageUrl)" Text="Logo Image" Fluid />
+                                @if (!string.IsNullOrEmpty(section.ImageBase64) || !string.IsNullOrEmpty(section.ImageUrl))
+                                {
+                                    <div class="image-list-container" style="margin-right: 218px;">
+                                        <div>
+                                            <div class="image-container">
+                                                <Image class="blur-image" Source="@(section.ImageBase64 != null ? "data:image/png;base64," + section.ImageBase64 : section.ImageUrl)" Text="Logo Image" Fluid />
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
+                                }
                             }
                             @if (section.FooterSettingsType == FooterSettingsType.CompanyAndCustomerServiceInformation)
                             {

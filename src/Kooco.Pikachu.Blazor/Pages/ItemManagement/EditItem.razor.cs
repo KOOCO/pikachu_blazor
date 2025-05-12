@@ -4,6 +4,7 @@ using Blazorise;
 using Blazorise.Components;
 using Blazorise.LoadingIndicator;
 using Kooco.Pikachu.AzureStorage.Image;
+using Kooco.Pikachu.Blazor.Helpers;
 using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Images;
 using Kooco.Pikachu.Items;
@@ -276,45 +277,40 @@ public partial class EditItem
                     await FilePickerCustom.RemoveFile(file);
                     return;
                 }
-                if (file.Size > MaxAllowedFileSize)
+
+                string newFileName = Path.ChangeExtension(
+                      Guid.NewGuid().ToString().Replace("-", ""),
+                      Path.GetExtension(file.Name));
+
+                var bytes = await file.GetBytes();
+
+                var compressed = await ImageCompressorService.CompressAsync(bytes);
+
+                if (compressed.CompressedSize > MaxAllowedFileSize)
                 {
                     count++;
                     await FilePickerCustom.RemoveFile(file);
                     return;
                 }
-                string newFileName = Path.ChangeExtension(
-                      Guid.NewGuid().ToString().Replace("-", ""),
-                      Path.GetExtension(file.Name));
-                var stream = file.OpenReadStream(long.MaxValue);
-                try
+
+                var url = await _imageContainerManager.SaveAsync(newFileName, compressed.CompressedBytes);
+
+                int sortNo = 0;
+                if (UpdateItemDto.Images.Any())
                 {
-                    var memoryStream = new MemoryStream();
-
-                    await stream.CopyToAsync(memoryStream);
-                    memoryStream.Position = 0;
-                    var url = await _imageContainerManager.SaveAsync(newFileName, memoryStream);
-
-                    int sortNo = 0;
-                    if (UpdateItemDto.Images.Any())
-                    {
-                        sortNo = UpdateItemDto.Images.Max(x => x.SortNo);
-                    }
-
-                    UpdateItemDto.Images.Add(new CreateImageDto
-                    {
-                        Name = file.Name,
-                        BlobImageName = newFileName,
-                        ImageUrl = url,
-                        ImageType = ImageType.Item,
-                        SortNo = sortNo + 1
-                    });
-
-                    await FilePickerCustom.Clear();
+                    sortNo = UpdateItemDto.Images.Max(x => x.SortNo);
                 }
-                finally
+
+                UpdateItemDto.Images.Add(new CreateImageDto
                 {
-                    stream.Close();
-                }
+                    Name = file.Name,
+                    BlobImageName = newFileName,
+                    ImageUrl = url,
+                    ImageType = ImageType.Item,
+                    SortNo = sortNo + 1
+                });
+
+                await FilePickerCustom.Clear();
             }
             if (count > 0)
             {
@@ -323,8 +319,7 @@ public partial class EditItem
         }
         catch (Exception ex)
         {
-            await _uiMessageService.Error(L[PikachuDomainErrorCodes.SomethingWrongWhileFileUpload]);
-            await JSRuntime.InvokeVoidAsync("console.error", ex.ToString());
+            await HandleErrorAsync(ex);
         }
         finally
         {
@@ -983,32 +978,19 @@ public partial class EditItem
                 Path.GetExtension(e.Files[0].Name)
             );
 
-            Stream stream = e.Files[0].OpenReadStream(long.MaxValue);
+            var bytes = await e.Files[0].GetBytes();
 
-            try
-            {
-                MemoryStream memoryStream = new();
+            var compressed = await ImageCompressorService.CompressAsync(bytes);
 
-                await stream.CopyToAsync(memoryStream);
+            string url = await _imageContainerManager.SaveAsync(newFileName, compressed.CompressedBytes);
 
-                memoryStream.Position = 0;
+            item.Image = url;
 
-                string url = await _imageContainerManager.SaveAsync(newFileName, memoryStream);
-
-                item.Image = url;
-
-                await filePicker.Clear();
-            }
-            finally
-            {
-                stream.Close();
-            }
+            await filePicker.Clear();
         }
         catch (Exception ex)
         {
-            Console.WriteLine(ex.Message);
-
-            await _uiMessageService.Error(L[PikachuDomainErrorCodes.SomethingWrongWhileFileUpload]);
+            await HandleErrorAsync(ex);
         }
     }
 

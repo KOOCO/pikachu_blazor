@@ -1,4 +1,5 @@
 using Blazorise;
+using Kooco.Pikachu.Blazor.Helpers;
 using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Extensions;
 using Kooco.Pikachu.WebsiteManagement.WebsiteBasicSettings;
@@ -95,32 +96,39 @@ public partial class WebsiteBasicSettings
 
     async Task OnFileUploadAsync(FileChangedEventArgs e)
     {
-        var file = e.Files.FirstOrDefault();
-
-        if (file != null)
+        try
         {
-            string extension = Path.GetExtension(file.Name);
+            var file = e.Files.FirstOrDefault();
 
-            if (file.Size > Constant.MaxImageSizeInBytes)
+            if (file != null)
             {
-                await Message.Error(L["Pikachu:ImageSizeExceeds", Constant.MaxImageSizeInBytes.FromBytesToMB()]);
-                return;
+                string extension = Path.GetExtension(file.Name);
+
+                if (!Constant.ValidImageExtensions.Contains(extension))
+                {
+                    await Message.Error(L["Pikachu:InvalidImageExtension", string.Join(", ", Constant.ValidImageExtensions)]);
+                    return;
+                }
+
+                var bytes = await file.GetBytes();
+
+                var compressed = await ImageCompressorService.CompressAsync(bytes);
+
+                if (compressed.CompressedSize > Constant.MaxImageSizeInBytes)
+                {
+                    await Message.Error(L["Pikachu:ImageSizeExceeds", Constant.MaxImageSizeInBytes.FromBytesToMB()]);
+                    return;
+                }
+
+                LogoBase64 = compressed.CompressedImage;
+                Entity.LogoName = file.Name;
+
+                await InvokeAsync(StateHasChanged);
             }
-
-            if (!Constant.ValidImageExtensions.Contains(extension))
-            {
-                await Message.Error(L["Pikachu:InvalidImageExtension", string.Join(", ", Constant.ValidImageExtensions)]);
-                return;
-            }
-
-            using var memoryStream = new MemoryStream();
-            await file.OpenReadStream().CopyToAsync(memoryStream);
-            var fileBytes = memoryStream.ToArray();
-
-            LogoBase64 = Convert.ToBase64String(fileBytes);
-            Entity.LogoName = file.Name;
-
-            await InvokeAsync(StateHasChanged);
+        }
+        catch (Exception ex)
+        {
+            await HandleErrorAsync(ex);
         }
     }
 

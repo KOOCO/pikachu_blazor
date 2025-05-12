@@ -67,6 +67,7 @@ using Kooco.Pikachu.UserShoppingCredits;
 using Kooco.Pikachu.Orders;
 using Blazorise.FluentValidation;
 using FluentValidation;
+using Kooco.Pikachu.ImageCompressors;
 
 namespace Kooco.Pikachu.Blazor;
 
@@ -227,6 +228,7 @@ public class PikachuBlazorModule : AbpModule
         ConfigureSignalRHubOptions();
         ConfigureHangfire(context, configuration);
         ConfigureLoggerService(context, configuration);
+        ConfigureOptions(context);
         if (!hostingEnvironment.IsDevelopment())
         {
             Configure<AbpTenantResolveOptions>(options =>
@@ -268,6 +270,11 @@ public class PikachuBlazorModule : AbpModule
     private void ConfigurePaymentGateways(ServiceConfigurationContext context)
     {
         context.Services.AddTransient<IConfigureOptions<LinePayConfiguration>, ConfigureLinePayOptions>();
+    }
+
+    private void ConfigureOptions(ServiceConfigurationContext context)
+    {
+        context.Services.AddTransient<IConfigureOptions<ImageCompressorConfiguration>, ConfigureImageCompressorOptions>();
     }
 
     private void ConfigureHangfire(ServiceConfigurationContext context, IConfiguration configuration)

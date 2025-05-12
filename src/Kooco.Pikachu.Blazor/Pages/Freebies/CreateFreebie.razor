@@ -2,6 +2,7 @@
 
 @using Kooco.Pikachu.EnumValues;
 @using Kooco.Pikachu.GroupBuys;
+@using Kooco.Pikachu.ImageCompressors
 @using Kooco.Pikachu.Items.Dtos;
 @using Pikachu.Items;
 @using Pikachu.Localization;
@@ -12,6 +13,7 @@
 @inherits PikachuComponentBase
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JSRuntime
+@inject IImageCompressorService ImageCompressorService
 @attribute [Authorize]
 <Heading Size="HeadingSize.Is3" @onclick="NavigateToList" style="cursor: pointer;">@L["NewFreebie"]</Heading>
 <Card>

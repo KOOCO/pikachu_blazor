@@ -1,4 +1,5 @@
 using Blazorise;
+using Kooco.Pikachu.Blazor.Helpers;
 using Kooco.Pikachu.Extensions;
 using Kooco.Pikachu.WebsiteManagement.FooterSettings;
 using Microsoft.JSInterop;
@@ -44,15 +45,18 @@ public partial class FooterSettings
                 {
                     throw new InvalidNumberOfLinksException(FooterSettingsConsts.MaxAllowedLinks);
                 }
+
                 IsLoading = true;
-                Entity.Sections.ForEach(async section =>
+
+                foreach (var section in Entity.Sections)
                 {
                     if (section.FooterSettingsType == FooterSettingsType.Image && section.ImageBase64 != null)
                     {
                         var bytes = Convert.FromBase64String(section.ImageBase64);
                         section.ImageUrl = await ImageAppService.UploadImageAsync(section.ImageName, bytes);
                     }
-                });
+                }
+
                 await FooterSettingAppService.UpdateAsync(Entity);
                 await Message.Success(L["FooterSettingsUpdated"]);
             }
@@ -93,32 +97,39 @@ public partial class FooterSettings
 
     async Task OnFileUploadAsync(FileChangedEventArgs e, UpdateFooterSettingSectionDto section)
     {
-        var file = e.Files.FirstOrDefault();
-
-        if (file != null)
+        try
         {
-            string extension = Path.GetExtension(file.Name);
+            var file = e.Files.FirstOrDefault();
 
-            if (file.Size > Constant.MaxImageSizeInBytes)
+            if (file != null)
             {
-                await Message.Error(L["Pikachu:ImageSizeExceeds", Constant.MaxImageSizeInBytes.FromBytesToMB()]);
-                return;
+                string extension = Path.GetExtension(file.Name);
+
+                if (!Constant.ValidImageExtensions.Contains(extension))
+                {
+                    await Message.Error(L["Pikachu:InvalidImageExtension", string.Join(", ", Constant.ValidImageExtensions)]);
+                    return;
+                }
+
+                var bytes = await file.GetBytes();
+
+                var compressed = await ImageCompressorService.CompressAsync(bytes);
+
+                if (compressed.CompressedSize > Constant.MaxImageSizeInBytes)
+                {
+                    await Message.Error(L["Pikachu:ImageSizeExceeds", Constant.MaxImageSizeInBytes.FromBytesToMB()]);
+                    return;
+                }
+
+                section.ImageBase64 = compressed.CompressedImage;
+                section.ImageName = file.Name;
+
+                await InvokeAsync(StateHasChanged);
             }
-
-            if (!Constant.ValidImageExtensions.Contains(extension))
-            {
-                await Message.Error(L["Pikachu:InvalidImageExtension", string.Join(", ", Constant.ValidImageExtensions)]);
-                return;
-            }
-
-            using var memoryStream = new MemoryStream();
-            await file.OpenReadStream().CopyToAsync(memoryStream);
-            var fileBytes = memoryStream.ToArray();
-
-            section.ImageBase64 = Convert.ToBase64String(fileBytes);
-            section.ImageName = file.Name;
-
-            await InvokeAsync(StateHasChanged);
+        }
+        catch (Exception ex)
+        {
+            await HandleErrorAsync(ex);
         }
     }
 

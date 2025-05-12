@@ -1,6 +1,7 @@
 ﻿@page "/SetItem/Edit/{id}"
 
 @using Kooco.Pikachu.EnumValues
+@using Kooco.Pikachu.ImageCompressors
 @using Kooco.Pikachu.Items
 @using Kooco.Pikachu.Items.Dtos;
 @using Kooco.Pikachu.Localization;
@@ -11,6 +12,7 @@
 @inject NavigationManager NavigationManager
 @inject IItemAppService ItemAppService
 @inject IJSRuntime JSRuntime
+@inject IImageCompressorService ImageCompressorService
 @attribute [Authorize]
  <Heading Size="HeadingSize.Is3" @onclick="NavigateToItemList" style="cursor: pointer;">@L["EditSetItem"]</Heading>
 
@@ -80,28 +82,6 @@
                 <fieldLabel>@L["ItemBadge"]</fieldLabel>
             </div>
             <div class="col-10">
-                @* <AntDesign.Select TItem="string"
-                                  TItemValue="string"
-                                  DataSource="@ItemBadgeList"
-                                  @bind-Value="@CreateUpdateSetItemDto.SetItemBadge"
-                                  Size="AntDesign.InputSize.Large"
-                                  EnableSearch
-                                  AllowClear>
-                    <DropdownRender Context="originNode">
-                        <div>
-                            @originNode
-                            <Divider Style="margin: 4px 0"></Divider>
-                            <div class="d-flex flex-nowrap py-2 px-1 gap-1">
-                                <AntDesign.Input @bind-Value="@NewItemBadge" Placeholder="@L["EnterANewBadge"]"
-                                                 MaxLength="MaxBadgeTextCount" />
-                                <PikachuButton Class="pk-btn-sm pk-btn-primary text-nowrap" Clicked="AddItem">
-                                    <Icon Name="@IconName.Add" />
-                                    @L["AddItem"]
-                                </PikachuButton>
-                            </div>
-                        </div>
-                    </DropdownRender>
-                </AntDesign.Select> *@
                 <AntDesign.Select TItem="ItemBadgeDto"
                                   TItemValue="ItemBadgeDto"
                                   ItemLabel="p => p.ItemBadge"

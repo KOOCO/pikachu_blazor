@@ -1,6 +1,7 @@
 using Blazored.TextEditor;
 using Blazorise;
 using Blazorise.Components;
+using Kooco.Pikachu.Blazor.Helpers;
 using Kooco.Pikachu.Blazor.Pages.GroupBuyManagement;
 using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Extensions;
@@ -957,93 +958,88 @@ public partial class EditWebsiteSettings
                     await UiNotificationService.Error(L["InvalidFileType"]);
                     continue;
                 }
-                if (file.Size > MaxAllowedFileSize)
+
+                string newFileName = Path.ChangeExtension(
+                      Guid.NewGuid().ToString().Replace("-", ""),
+                      Path.GetExtension(file.Name));
+
+                var bytes = await file.GetBytes();
+
+                var compressed = await ImageCompressorService.CompressAsync(bytes);
+
+                if (compressed.CompressedSize > MaxAllowedFileSize)
                 {
                     count++;
                     await carouselPicker.RemoveFile(file);
                     continue;
                 }
-                string newFileName = Path.ChangeExtension(
-                      Guid.NewGuid().ToString().Replace("-", ""),
-                      Path.GetExtension(file.Name));
-                var stream = file.OpenReadStream(long.MaxValue);
-                try
+
+                var url = await ImageContainerManager.SaveAsync(newFileName, compressed.CompressedBytes);
+
+                int sortNo = carouselImages.LastOrDefault()?.SortNo ?? 0;
+
+                if (sortNo is 0 && carouselImages.Any(a => a.Id != Guid.Empty && a.CarouselStyle != null && a.BlobImageName == string.Empty))
                 {
-                    var memoryStream = new MemoryStream();
+                    carouselImages[0].Name = file.Name;
+                    carouselImages[0].BlobImageName = newFileName;
+                    carouselImages[0].ImageUrl = url;
+                    carouselImages[0].ImageType = imageType;
+                    carouselImages[0].SortNo = sortNo + 1;
+                    carouselImages[0].ModuleNumber = carouselModuleNumber;
+                }
 
-                    await stream.CopyToAsync(memoryStream);
-                    memoryStream.Position = 0;
-                    var url = await ImageContainerManager.SaveAsync(newFileName, memoryStream);
+                else
+                {
+                    //int indexInCarouselModules = CarouselModules.FindIndex(module => module.Any(img => img.ModuleNumber == carouselModuleNumber));
+                    int indexInCarouselModules = 0;
 
-                    int sortNo = carouselImages.LastOrDefault()?.SortNo ?? 0;
+                    if (imageType is ImageType.GroupBuyCarouselImage)
+                        indexInCarouselModules = CarouselModules.FindIndex(module => module.Any(img => img.ModuleNumber == carouselModuleNumber));
 
-                    if (sortNo is 0 && carouselImages.Any(a => a.Id != Guid.Empty && a.CarouselStyle != null && a.BlobImageName == string.Empty))
+                    else if (imageType is ImageType.GroupBuyBannerImage)
+                        indexInCarouselModules = BannerModules.FindIndex(module => module.Any(img => img.ModuleNumber == carouselModuleNumber));
+
+                    if (indexInCarouselModules >= 0)
                     {
-                        carouselImages[0].Name = file.Name;
-                        carouselImages[0].BlobImageName = newFileName;
-                        carouselImages[0].ImageUrl = url;
-                        carouselImages[0].ImageType = imageType;
-                        carouselImages[0].SortNo = sortNo + 1;
-                        carouselImages[0].ModuleNumber = carouselModuleNumber;
-                    }
+                        // List<CreateImageDto> originalCarouselImages = CarouselModules[indexInCarouselModules];
 
-                    else
-                    {
-                        //int indexInCarouselModules = CarouselModules.FindIndex(module => module.Any(img => img.ModuleNumber == carouselModuleNumber));
-                        int indexInCarouselModules = 0;
+                        List<CreateImageDto> originalCarouselImages = new();
 
                         if (imageType is ImageType.GroupBuyCarouselImage)
-                            indexInCarouselModules = CarouselModules.FindIndex(module => module.Any(img => img.ModuleNumber == carouselModuleNumber));
+                            originalCarouselImages = CarouselModules[indexInCarouselModules];
 
                         else if (imageType is ImageType.GroupBuyBannerImage)
-                            indexInCarouselModules = BannerModules.FindIndex(module => module.Any(img => img.ModuleNumber == carouselModuleNumber));
+                            originalCarouselImages = BannerModules[indexInCarouselModules];
 
-                        if (indexInCarouselModules >= 0)
+                        if (originalCarouselImages.Any(a => a.SortNo is 0))
                         {
-                            // List<CreateImageDto> originalCarouselImages = CarouselModules[indexInCarouselModules];
+                            int index = originalCarouselImages.IndexOf(originalCarouselImages.First(f => f.SortNo == 0));
 
-                            List<CreateImageDto> originalCarouselImages = new();
+                            originalCarouselImages[index].Name = file.Name;
+                            originalCarouselImages[index].BlobImageName = newFileName;
+                            originalCarouselImages[index].ImageUrl = url;
+                            originalCarouselImages[index].ImageType = imageType;
+                            originalCarouselImages[index].SortNo = sortNo + 1;
+                            originalCarouselImages[index].ModuleNumber = carouselModuleNumber;
+                        }
 
-                            if (imageType is ImageType.GroupBuyCarouselImage)
-                                originalCarouselImages = CarouselModules[indexInCarouselModules];
-
-                            else if (imageType is ImageType.GroupBuyBannerImage)
-                                originalCarouselImages = BannerModules[indexInCarouselModules];
-
-                            if (originalCarouselImages.Any(a => a.SortNo is 0))
+                        else
+                        {
+                            originalCarouselImages.Add(new CreateImageDto
                             {
-                                int index = originalCarouselImages.IndexOf(originalCarouselImages.First(f => f.SortNo == 0));
-
-                                originalCarouselImages[index].Name = file.Name;
-                                originalCarouselImages[index].BlobImageName = newFileName;
-                                originalCarouselImages[index].ImageUrl = url;
-                                originalCarouselImages[index].ImageType = imageType;
-                                originalCarouselImages[index].SortNo = sortNo + 1;
-                                originalCarouselImages[index].ModuleNumber = carouselModuleNumber;
-                            }
-
-                            else
-                            {
-                                originalCarouselImages.Add(new CreateImageDto
-                                {
-                                    Name = file.Name,
-                                    BlobImageName = newFileName,
-                                    ImageUrl = url,
-                                    ImageType = imageType,
-                                    SortNo = sortNo + 1,
-                                    ModuleNumber = carouselModuleNumber,
-                                    CarouselStyle = originalCarouselImages.FirstOrDefault(f => f.CarouselStyle != null)?.CarouselStyle ?? null
-                                });
-                            }
+                                Name = file.Name,
+                                BlobImageName = newFileName,
+                                ImageUrl = url,
+                                ImageType = imageType,
+                                SortNo = sortNo + 1,
+                                ModuleNumber = carouselModuleNumber,
+                                CarouselStyle = originalCarouselImages.FirstOrDefault(f => f.CarouselStyle != null)?.CarouselStyle ?? null
+                            });
                         }
                     }
+                }
 
-                    await carouselPicker.Clear();
-                }
-                finally
-                {
-                    stream.Close();
-                }
+                await carouselPicker.Clear();
             }
             if (count > 0)
             {
@@ -1052,8 +1048,7 @@ public partial class EditWebsiteSettings
         }
         catch (Exception exc)
         {
-            Console.WriteLine(exc.Message);
-            await UiNotificationService.Error(L[PikachuDomainErrorCodes.SomethingWrongWhileFileUpload]);
+            await HandleErrorAsync(exc);
         }
     }
 
@@ -1086,41 +1081,38 @@ public partial class EditWebsiteSettings
                 await LogoPickerCustom.Clear();
                 return;
             }
-            if (e.Files[0].Size > MaxAllowedFileSize)
+
+            var file = e.Files.First();
+
+            string newFileName = Path.ChangeExtension(
+                      Guid.NewGuid().ToString().Replace("-", ""),
+                      Path.GetExtension(file.Name));
+
+            var bytes = await file.GetBytes();
+
+            var compressed = await ImageCompressorService.CompressAsync(bytes);
+
+            if (compressed.CompressedSize > MaxAllowedFileSize)
             {
                 await LogoPickerCustom.RemoveFile(e.Files[0]);
                 await UiNotificationService.Error(L[PikachuDomainErrorCodes.FilesAreGreaterThanMaxAllowedFileSize]);
                 return;
             }
-            string newFileName = Path.ChangeExtension(
-                      Guid.NewGuid().ToString().Replace("-", ""),
-                      Path.GetExtension(e.Files[0].Name));
-            var stream = e.Files[0].OpenReadStream(long.MaxValue);
-            try
-            {
-                var memoryStream = new MemoryStream();
 
-                await stream.CopyToAsync(memoryStream);
-                memoryStream.Position = 0;
-                var url = await ImageContainerManager.SaveAsync(newFileName, memoryStream);
+            var url = await ImageContainerManager.SaveAsync(newFileName, compressed.CompressedBytes);
 
-                int sortNo = bannerImages[0].SortNo is 0 ? bannerImages[0].SortNo + 1 : 1;
+            int sortNo = bannerImages[0].SortNo is 0 ? bannerImages[0].SortNo + 1 : 1;
 
-                bannerImages[0].Name = e.Files[0].Name;
-                bannerImages[0].BlobImageName = newFileName;
-                bannerImages[0].ImageUrl = url;
-                bannerImages[0].ImageType = imageType;
-                bannerImages[0].SortNo = sortNo;
-                bannerImages[0].ModuleNumber = carouselModuleNumber;
+            bannerImages[0].Name = e.Files[0].Name;
+            bannerImages[0].BlobImageName = newFileName;
+            bannerImages[0].ImageUrl = url;
+            bannerImages[0].ImageType = imageType;
+            bannerImages[0].SortNo = sortNo;
+            bannerImages[0].ModuleNumber = carouselModuleNumber;
 
-                SelectedImageDto.Link = string.Empty;
+            SelectedImageDto.Link = string.Empty;
 
-                await bannerPicker.Clear();
-            }
-            finally
-            {
-                stream.Close();
-            }
+            await bannerPicker.Clear();
 
             if (count > 0)
             {
@@ -1129,8 +1121,7 @@ public partial class EditWebsiteSettings
         }
         catch (Exception exc)
         {
-            Console.WriteLine(exc.Message);
-            await UiNotificationService.Error(L[PikachuDomainErrorCodes.SomethingWrongWhileFileUpload]);
+            await HandleErrorAsync(exc);
         }
     }
 
@@ -1291,38 +1282,33 @@ public partial class EditWebsiteSettings
 
                 return;
             }
+            
+            var file = e.Files.First();
 
             string newFileName = Path.ChangeExtension(
                 Guid.NewGuid().ToString().Replace("-", ""),
-                Path.GetExtension(e.Files[0].Name)
+                Path.GetExtension(file.Name)
             );
 
-            Stream stream = e.Files[0].OpenReadStream(long.MaxValue);
+            var bytes = await file.GetBytes();
 
-            try
+            var compressed = await ImageCompressorService.CompressAsync(bytes);
+
+            if (compressed.CompressedSize > Constant.MaxImageSizeInBytes)
             {
-                MemoryStream memoryStream = new();
-
-                await stream.CopyToAsync(memoryStream);
-
-                memoryStream.Position = 0;
-
-                string url = await ImageContainerManager.SaveAsync(newFileName, memoryStream);
-
-                module.Image = url;
-
-                await filePicker.Clear();
+                await Message.Error(L["Pikachu:ImageSizeExceeds", Constant.MaxImageSizeInBytes.FromBytesToMB()]);
+                return;
             }
-            finally
-            {
-                stream.Close();
-            }
+
+            string url = await ImageContainerManager.SaveAsync(newFileName, compressed.CompressedBytes);
+
+            module.Image = url;
+
+            await filePicker.Clear();
         }
         catch (Exception ex)
         {
-            Console.WriteLine(ex.Message);
-
-            await Message.Error(L[PikachuDomainErrorCodes.SomethingWrongWhileFileUpload]);
+            await HandleErrorAsync(ex);
         }
     }
 
@@ -1435,32 +1421,25 @@ public partial class EditWebsiteSettings
                 Path.GetExtension(e.Files[0].Name)
             );
 
-            Stream stream = e.Files[0].OpenReadStream(long.MaxValue);
+            var bytes = await e.Files.First().GetBytes();
 
-            try
+            var compressed = await ImageCompressorService.CompressAsync(bytes);
+
+            if (compressed.CompressedSize > Constant.MaxImageSizeInBytes)
             {
-                MemoryStream memoryStream = new();
-
-                await stream.CopyToAsync(memoryStream);
-
-                memoryStream.Position = 0;
-
-                string url = await ImageContainerManager.SaveAsync(newFileName, memoryStream);
-
-                module.Image = url;
-
-                await filePicker.Clear();
+                await Message.Error(L["Pikachu:ImageSizeExceeds", Constant.MaxImageSizeInBytes.FromBytesToMB()]);
+                return;
             }
-            finally
-            {
-                stream.Close();
-            }
+
+            string url = await ImageContainerManager.SaveAsync(newFileName, compressed.CompressedBytes);
+
+            module.Image = url;
+
+            await filePicker.Clear();
         }
         catch (Exception ex)
         {
-            Console.WriteLine(ex.Message);
-
-            await UiNotificationService.Error(L[PikachuDomainErrorCodes.SomethingWrongWhileFileUpload]);
+            await HandleErrorAsync(ex);
         }
     }
 

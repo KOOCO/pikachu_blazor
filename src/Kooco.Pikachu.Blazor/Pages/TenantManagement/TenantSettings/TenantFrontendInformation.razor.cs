@@ -1,4 +1,5 @@
 using Blazorise;
+using Kooco.Pikachu.Blazor.Helpers;
 using Kooco.Pikachu.Extensions;
 using Kooco.Pikachu.Tenants;
 using Microsoft.AspNetCore.Components;
@@ -39,49 +40,59 @@ public partial class TenantFrontendInformation
 
     async Task OnFileUploadAsync(FileChangedEventArgs e, string type)
     {
-        var file = e.Files.FirstOrDefault();
-
-        if (file != null)
+        try
         {
-            string extension = Path.GetExtension(file.Name);
+            var file = e.Files.FirstOrDefault();
 
-            if (file.Size > Constant.MaxImageSizeInBytes)
+            if (file != null)
             {
-                await UiNotificationService.Error(L["Pikachu:ImageSizeExceeds", Constant.MaxImageSizeInBytes.FromBytesToMB()]);
-                return;
+                string extension = Path.GetExtension(file.Name);
+
+                var validExtensions = type == "favicon" ? Constant.ValidFaviconExtensions : Constant.ValidImageExtensions;
+
+                if (!validExtensions.Contains(extension))
+                {
+                    await UiNotificationService.Error(L["Pikachu:InvalidImageExtension", string.Join(", ", validExtensions)]);
+                    return;
+                }
+
+                var bytes = await file.GetBytes();
+
+                var response = type != "favicon" 
+                    ? await ImageCompressorService.CompressAsync(bytes)
+                    : null;
+
+                if ((response != null && response.CompressedSize > Constant.MaxImageSizeInBytes) 
+                    || (response == null && file.Size > Constant.MaxImageSizeInBytes))
+                {
+                    await UiNotificationService.Error(L["Pikachu:ImageSizeExceeds", Constant.MaxImageSizeInBytes.FromBytesToMB()]);
+                    return;
+                }
+
+                if (type == "logo")
+                {
+                    Entity.LogoBase64 = response.CompressedImage;
+                    Entity.LogoName = file.Name;
+                }
+
+                if (type == "banner")
+                {
+                    Entity.BannerBase64 = response.CompressedImage;
+                    Entity.BannerName = file.Name;
+                }
+
+                if (type == "favicon")
+                {
+                    Entity.FaviconBase64 = Convert.ToBase64String(bytes);
+                    Entity.FaviconName = file.Name;
+                }
+
+                await InvokeAsync(StateHasChanged);
             }
-
-            var validExtensions = type == "favicon" ? Constant.ValidFaviconExtensions : Constant.ValidImageExtensions;
-
-            if (!validExtensions.Contains(extension))
-            {
-                await UiNotificationService.Error(L["Pikachu:InvalidImageExtension", string.Join(", ", validExtensions)]);
-                return;
-            }
-
-            using var memoryStream = new MemoryStream();
-            await file.OpenReadStream().CopyToAsync(memoryStream);
-            var fileBytes = memoryStream.ToArray();
-
-            if (type == "logo")
-            {
-                Entity.LogoBase64 = Convert.ToBase64String(fileBytes);
-                Entity.LogoName = file.Name;
-            }
-
-            if (type == "banner")
-            {
-                Entity.BannerBase64 = Convert.ToBase64String(fileBytes);
-                Entity.BannerName = file.Name;
-            }
-
-            if (type == "favicon")
-            {
-                Entity.FaviconBase64 = Convert.ToBase64String(fileBytes);
-                Entity.FaviconName = file.Name;
-            }
-
-            await InvokeAsync(StateHasChanged);
+        }
+        catch (Exception ex)
+        {
+            await HandleErrorAsync(ex);
         }
     }
 

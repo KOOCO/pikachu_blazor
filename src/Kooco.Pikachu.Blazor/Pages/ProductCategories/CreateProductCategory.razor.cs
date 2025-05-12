@@ -2,6 +2,7 @@ using Blazored.TextEditor;
 using Blazorise;
 using Blazorise.Components;
 using Kooco.Pikachu.AzureStorage.Image;
+using Kooco.Pikachu.Blazor.Helpers;
 using Kooco.Pikachu.Extensions;
 using Kooco.Pikachu.Items.Dtos;
 using Kooco.Pikachu.ProductCategories;
@@ -59,51 +60,57 @@ public partial class CreateProductCategory
 
     async Task OnFileUploadAsync(FileChangedEventArgs e)
     {
-        if (e?.Files == null)
+        try
         {
-            await FilePicker.Clear();
-            return;
-        }
-
-        if ((NewEntity.ProductCategoryImages.Count + e.Files.Length) > ProductCategoryConsts.MaxImageLimit)
-        {
-            await Message.Error(L[PikachuDomainErrorCodes.ProductCategoryImageMaxLimit]);
-            return;
-        }
-
-        if (e.Files.Any(file => file.Size > Constant.MaxImageSizeInBytes))
-        {
-            await Message.Error(L["Pikachu:ImageSizeExceeds", Constant.MaxImageSizeInBytes.FromBytesToMB()]);
-            return;
-        }
-
-        if (e.Files.Any(file => !Constant.ValidImageExtensions.Contains(Path.GetExtension(file.Name))))
-        {
-            await Message.Error(L["Pikachu:InvalidImageExtension", string.Join(", ", Constant.ValidImageExtensions)]);
-            return;
-        }
-
-        foreach (var file in e.Files)
-        {
-            if (file != null)
+            if (e?.Files == null)
             {
-                using var memoryStream = new MemoryStream();
-                await file.OpenReadStream().CopyToAsync(memoryStream);
-                var fileBytes = memoryStream.ToArray();
-
-                var sortNo = NewEntity.ProductCategoryImages.Count > 0 ? NewEntity.ProductCategoryImages.Max(i => i.SortNo) : 1;
-
-                var base64 = Convert.ToBase64String(fileBytes);
-                NewEntity.ProductCategoryImages.Add(new CreateUpdateProductCategoryImageDto
-                {
-                    Base64 = base64,
-                    Name = file.Name,
-                    SortNo = sortNo
-                });
+                await FilePicker.Clear();
+                return;
             }
-        }
 
-        await InvokeAsync(StateHasChanged);
+            if ((NewEntity.ProductCategoryImages.Count + e.Files.Length) > ProductCategoryConsts.MaxImageLimit)
+            {
+                await Message.Error(L[PikachuDomainErrorCodes.ProductCategoryImageMaxLimit]);
+                return;
+            }
+
+            if (e.Files.Any(file => !Constant.ValidImageExtensions.Contains(Path.GetExtension(file.Name))))
+            {
+                await Message.Error(L["Pikachu:InvalidImageExtension", string.Join(", ", Constant.ValidImageExtensions)]);
+                return;
+            }
+
+            foreach (var file in e.Files)
+            {
+                if (file != null)
+                {
+                    var bytes = await file.GetBytes();
+
+                    var compressed = await ImageCompressorService.CompressAsync(bytes);
+
+                    if (compressed.CompressedSize > Constant.MaxImageSizeInBytes)
+                    {
+                        await Message.Error(L["Pikachu:ImageSizeExceeds", Constant.MaxImageSizeInBytes.FromBytesToMB()]);
+                        return;
+                    }
+
+                    var sortNo = NewEntity.ProductCategoryImages.Count > 0 ? NewEntity.ProductCategoryImages.Max(i => i.SortNo) : 1;
+
+                    NewEntity.ProductCategoryImages.Add(new CreateUpdateProductCategoryImageDto
+                    {
+                        Base64 = compressed.CompressedImage,
+                        Name = file.Name,
+                        SortNo = sortNo
+                    });
+                }
+            }
+
+            await InvokeAsync(StateHasChanged);
+        }
+        catch (Exception ex)
+        {
+            await HandleErrorAsync(ex);
+        }
     }
 
     async Task CreateAsync()

@@ -1,5 +1,6 @@
 ﻿@page "/Website-Basic-Settings"
 @using Kooco.Pikachu.EnumValues
+@using Kooco.Pikachu.ImageCompressors
 @using Kooco.Pikachu.Images
 @using Kooco.Pikachu.Localization
 @using Kooco.Pikachu.Permissions
@@ -13,6 +14,7 @@
 @inject IImageAppService ImageAppService
 @inject AbpBlazorMessageLocalizerHelper<PikachuResource> LH
 @inject IJSRuntime JSRuntime
+@inject IImageCompressorService ImageCompressorService
 
 <h3 class="text-dark text-center">@L["WebsiteBasicSettings"]</h3>
 

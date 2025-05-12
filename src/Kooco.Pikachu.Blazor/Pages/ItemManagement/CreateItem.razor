@@ -2,6 +2,7 @@
 
 @using Kooco.Pikachu.Blazor.Pages.Components.Icons
 @using Kooco.Pikachu.EnumValues;
+@using Kooco.Pikachu.ImageCompressors
 @using Kooco.Pikachu.Items.Dtos;
 @using Kooco.Pikachu.ProductCategories
 @using Pikachu.Items;
@@ -19,6 +20,7 @@
 @inject IProductCategoryAppService ProductCategoryAppService
 @using Microsoft.JSInterop;
 @inject IJSRuntime JS;
+@inject IImageCompressorService ImageCompressorService
 @attribute [Authorize]
 
 <style>

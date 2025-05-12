@@ -1,5 +1,6 @@
 ﻿using Blazorise;
 using Kooco.Pikachu.AzureStorage.Image;
+using Kooco.Pikachu.Blazor.Helpers;
 using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Freebies;
 using Kooco.Pikachu.Freebies.Dtos;
@@ -97,41 +98,35 @@ namespace Kooco.Pikachu.Blazor.Pages.Freebies
             {
                 foreach (var file in e.Files)
                 {
-                    if (file.Size > MaxAllowedFileSize)
+                    string newFileName = Path.ChangeExtension(
+                          Path.GetRandomFileName(),
+                          Path.GetExtension(file.Name));
+
+                    var bytes = await file.GetBytes();
+
+                    var compressed = await ImageCompressorService.CompressAsync(bytes);
+
+                    if (compressed.CompressedSize > MaxAllowedFileSize)
                     {
                         count++;
                         await FilePicker.RemoveFile(file);
                         return;
                     }
-                    string newFileName = Path.ChangeExtension(
-                          Path.GetRandomFileName(),
-                          Path.GetExtension(file.Name));
-                    var stream = file.OpenReadStream(long.MaxValue);
-                    try
+
+                    var url = await _imageContainerManager.SaveAsync(newFileName, compressed.CompressedBytes);
+
+                    int sortNo = ImageList.LastOrDefault()?.SortNo ?? 0;
+
+                    ImageList.Add(new CreateImageDto
                     {
-                        var memoryStream = new MemoryStream();
+                        Name = file.Name,
+                        BlobImageName = newFileName,
+                        ImageUrl = url,
+                        ImageType = ImageType.Item,
+                        SortNo = sortNo + 1
+                    });
 
-                        await stream.CopyToAsync(memoryStream);
-                        memoryStream.Position = 0;
-                        var url = await _imageContainerManager.SaveAsync(newFileName, memoryStream);
-
-                        int sortNo = ImageList.LastOrDefault()?.SortNo ?? 0;
-
-                        ImageList.Add(new CreateImageDto
-                        {
-                            Name = file.Name,
-                            BlobImageName = newFileName,
-                            ImageUrl = url,
-                            ImageType = ImageType.Item,
-                            SortNo = sortNo + 1
-                        });
-
-                        await FilePicker.Clear();
-                    }
-                    finally
-                    {
-                        stream.Close();
-                    }
+                    await FilePicker.Clear();
                 }
                 if (count > 0)
                 {
@@ -140,8 +135,7 @@ namespace Kooco.Pikachu.Blazor.Pages.Freebies
             }
             catch (Exception exc)
             {
-                Console.WriteLine(exc.Message);
-                await _uiMessageService.Error(L[PikachuDomainErrorCodes.SomethingWrongWhileFileUpload]);
+                await HandleErrorAsync(exc);
             }
         }
 
@@ -173,7 +167,7 @@ namespace Kooco.Pikachu.Blazor.Pages.Freebies
                 {
                     await _uiMessageService.Error(L[PikachuDomainErrorCodes.ItemDescriptionIsRequired]);
                     return;
-                }    
+                }
                 ValidateForm();
 
                 FreebieCreateDto.Images = ImageList;

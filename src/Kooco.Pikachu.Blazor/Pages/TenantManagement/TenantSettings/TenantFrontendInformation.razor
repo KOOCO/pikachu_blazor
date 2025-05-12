@@ -1,10 +1,12 @@
-﻿@using Kooco.Pikachu.Localization
+﻿@using Kooco.Pikachu.ImageCompressors
+@using Kooco.Pikachu.Localization
 @using Volo.Abp.AspNetCore.Components.Notifications
 @using Volo.Abp.AspNetCore.Components.Web
 @inherits PikachuComponentBase
 @inject AbpBlazorMessageLocalizerHelper<PikachuResource> LH
 @inject IUiNotificationService UiNotificationService
 @inject IJSRuntime JSRuntime
+@inject IImageCompressorService ImageCompressorService
 
 <Form>
     <Validations @ref="@ValidationsRef" Model="@Entity" ValidateOnLoad="false">
@@ -41,56 +43,50 @@
                 <Row>
                     <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop">
                         <h4>@L["Logo"]</h4>
-                        @if (Entity.LogoBase64 != null)
-                        {
-                            <Div Class="image-thumbnail">
-                                <img src="@("data:image/png;base64," + Entity.LogoBase64)" class="img-fluid" />
-                            </Div>
-                        }
-                        else if (Entity.LogoUrl != null)
-                        {
-                            <Div Class="image-thumbnail">
-                                <img src="@Entity.LogoUrl" class="img-fluid" />
-                            </Div>
-                        }
                     </Column>
                     <Column ColumnSize="ColumnSize.Is12.Is9.OnDesktop">
-                        <Field Class="container-less-filepicker">
-                            <FilePicker Changed="@((e) => OnFileUploadAsync(e, "logo"))"
-                                        ShowMode="FilePickerShowMode.List"
-                                        Accept="@(string.Join(", ", Constant.ValidImageExtensions))">
-                                <FileTemplate></FileTemplate>
-                                <ButtonsTemplate></ButtonsTemplate>
-                            </FilePicker>
-                        </Field>
+                        <Div Class="@((!string.IsNullOrWhiteSpace(Entity.LogoBase64) || !string.IsNullOrWhiteSpace(Entity.LogoUrl) ? "has-images" : "") + " container-less-filepicker filepicker-sm")">
+                            <Field>
+                                <FilePicker Changed="@((e) => OnFileUploadAsync(e, "logo"))"
+                                            ShowMode="FilePickerShowMode.List"
+                                            Accept="@(string.Join(", ", Constant.ValidImageExtensions))">
+                                    <FileTemplate></FileTemplate>
+                                    <ButtonsTemplate></ButtonsTemplate>
+                                </FilePicker>
+                            </Field>
+                        </Div>
+                        <div class="image-list-container">
+                            <div>
+                                <div class="image-container">
+                                    <Image class="blur-image" Source="@(Entity.LogoBase64 != null ? "data:image/png;base64," + Entity.LogoBase64 : Entity.LogoUrl)" Text="Logo Image" Fluid />
+                                </div>
+                            </div>
+                        </div>
                     </Column>
                 </Row>
                 <Divider></Divider>
                 <Row>
                     <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop">
                         <h4>@L["Banner"]</h4>
-                        @if (Entity.BannerBase64 != null)
-                        {
-                            <Div Class="image-thumbnail">
-                                <img src="@("data:image/png;base64," + Entity.BannerBase64)" class="img-fluid" />
-                            </Div>
-                        }
-                        else if (Entity.BannerUrl != null)
-                        {
-                            <Div Class="image-thumbnail">
-                                <img src="@Entity.BannerUrl" class="img-fluid" />
-                            </Div>
-                        }
                     </Column>
                     <Column ColumnSize="ColumnSize.Is12.Is9.OnDesktop">
-                        <Field Class="container-less-filepicker">
-                            <FilePicker Changed="@((e) => OnFileUploadAsync(e, "banner"))"
-                                        ShowMode="FilePickerShowMode.List"
-                                        Accept="@(string.Join(", ", Constant.ValidImageExtensions))">
-                                <FileTemplate></FileTemplate>
-                                <ButtonsTemplate></ButtonsTemplate>
-                            </FilePicker>
-                        </Field>
+                        <Div Class="@((!string.IsNullOrWhiteSpace(Entity.BannerBase64) || !string.IsNullOrWhiteSpace(Entity.BannerUrl) ? "has-images" : "") + " container-less-filepicker filepicker-sm")">
+                            <Field>
+                                <FilePicker Changed="@((e) => OnFileUploadAsync(e, "banner"))"
+                                            ShowMode="FilePickerShowMode.List"
+                                            Accept="@(string.Join(", ", Constant.ValidImageExtensions))">
+                                    <FileTemplate></FileTemplate>
+                                    <ButtonsTemplate></ButtonsTemplate>
+                                </FilePicker>
+                            </Field>
+                        </Div>
+                        <div class="image-list-container">
+                            <div>
+                                <div class="image-container">
+                                    <Image class="blur-image" Source="@(Entity.BannerBase64 != null ? "data:image/png;base64," + Entity.BannerBase64 : Entity.BannerUrl)" Text="Banner Image" Fluid />
+                                </div>
+                            </div>
+                        </div>
                     </Column>
                 </Row>
                 <Divider></Divider>
@@ -106,29 +102,26 @@
                                 </Tooltip>
                             </Span>
                         </Div>
-                        @if (Entity.FaviconBase64 != null)
-                        {
-                            <Div Class="image-thumbnail">
-                                <img src="@("data:image/png;base64," + Entity.FaviconBase64)" class="img-fluid" />
-                            </Div>
-                        }
-                        else if (Entity.FaviconUrl != null)
-                        {
-                            <Div Class="image-thumbnail">
-                                <img src="@Entity.FaviconUrl" class="img-fluid" />
-                            </Div>
-                        }
                     </Column>
                     <Column ColumnSize="ColumnSize.Is12.Is9.OnDesktop">
-                        <Field Class="container-less-filepicker">
-                            <FilePicker Changed="@((e) => OnFileUploadAsync(e, "favicon"))"
-                                        ShowMode="FilePickerShowMode.List"
-                                        Accept="@(string.Join(", ", Constant.ValidFaviconExtensions))"
-                                        drop-text="ICO">
-                                <FileTemplate></FileTemplate>
-                                <ButtonsTemplate></ButtonsTemplate>
-                            </FilePicker>
-                        </Field>
+                        <Div Class="@((!string.IsNullOrWhiteSpace(Entity.FaviconBase64) || !string.IsNullOrWhiteSpace(Entity.FaviconUrl) ? "has-images" : "") + " container-less-filepicker filepicker-sm")">
+                            <Field>
+                                <FilePicker Changed="@((e) => OnFileUploadAsync(e, "favicon"))"
+                                            ShowMode="FilePickerShowMode.List"
+                                            Accept="@(string.Join(", ", Constant.ValidFaviconExtensions))"
+                                            drop-text="ICO">
+                                    <FileTemplate></FileTemplate>
+                                    <ButtonsTemplate></ButtonsTemplate>
+                                </FilePicker>
+                            </Field>
+                        </Div>
+                        <div class="image-list-container">
+                            <div>
+                                <div class="image-container">
+                                    <Image class="blur-image" Source="@(Entity.FaviconBase64 != null ? "data:image/png;base64," + Entity.FaviconBase64 : Entity.FaviconUrl)" Text="Favicon Image" Fluid />
+                                </div>
+                            </div>
+                        </div>
                     </Column>
                 </Row>
             </CardBody>

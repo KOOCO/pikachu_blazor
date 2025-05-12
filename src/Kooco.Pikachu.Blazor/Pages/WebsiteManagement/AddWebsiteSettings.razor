@@ -8,6 +8,7 @@
 @using Kooco.Pikachu.GroupBuyOrderInstructions
 @using Kooco.Pikachu.GroupBuys
 @using Kooco.Pikachu.GroupPurchaseOverviews
+@using Kooco.Pikachu.ImageCompressors
 @using Kooco.Pikachu.Images
 @using Kooco.Pikachu.Items
 @using Kooco.Pikachu.Items.Dtos
@@ -31,6 +32,7 @@
 @inject IProductCategoryAppService ProductCategoryAppService
 @inject IWebsiteBasicSettingAppService WebsiteBasicSettingAppService
 @inject IJSRuntime JSRuntime
+@inject IImageCompressorService ImageCompressorService
 
 <PikachuButton Clicked="NavigateToWebsiteSettings">
     <Icon Name="IconName.ArrowLeft" Class="me-1"></Icon>
