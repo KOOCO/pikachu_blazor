@@ -1318,7 +1318,15 @@
     "CostPrice": "成本價格",
     "Temperature": "溫層",
     "Category": "類別",
-    "Upto5ImagesAllowed": "最多上傳5張圖片"
+    "Upto5ImagesAllowed": "最多上傳5張圖片",
+    "ReturnStatus": "退換貨狀態",
+    "Succeeded in return": "已完成",
+    "Approve": "確認",
+    "Reject": "取消",
+    "Returned": "退貨中",
+    "Succeeded": "已完成"
+
+
 
   }
 }
