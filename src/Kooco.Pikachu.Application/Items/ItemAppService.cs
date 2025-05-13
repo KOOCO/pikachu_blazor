@@ -702,7 +702,6 @@ public class ItemAppService :
                 var taxType = taxs.FirstOrDefault(x =>
                     string.Equals(x.Text, taxTypeText, StringComparison.OrdinalIgnoreCase));
 
-               
                 if (!itemsDict.ContainsKey(itemNo))
                 {
                     itemsDict[itemNo] = new CreateItemDto
@@ -715,9 +714,9 @@ public class ItemAppService :
                             ItemBadgeColor = worksheet.Cells[row, 5].Text
                         },
                         ItemDescriptionTitle = worksheet.Cells[row, 6].Text,
-                        Attribute1Name = worksheet.Cells[row, 7].Text,
-                        Attribute2Name = worksheet.Cells[row, 8].Text,
-                        Attribute3Name = worksheet.Cells[row, 9].Text,
+                        Attribute1Name = worksheet.Cells[row, 7].Text, // ItemStyle1
+                        Attribute2Name = worksheet.Cells[row, 8].Text, // ItemStyle2
+                        Attribute3Name = worksheet.Cells[row, 9].Text, // ItemStyle3
                         ItemTags = null,
                         IsFreeShipping = worksheet.Cells[row, 10].Text.Equals("Yes", StringComparison.OrdinalIgnoreCase),
                         IsReturnable = worksheet.Cells[row, 11].Text.Equals("Yes", StringComparison.OrdinalIgnoreCase),
@@ -738,17 +737,17 @@ public class ItemAppService :
                     PreOrderableQuantity = float.TryParse(worksheet.Cells[row, 19].Text, out var preOrderQty) ? preOrderQty : null,
                     SaleablePreOrderQuantity = float.TryParse(worksheet.Cells[row, 20].Text, out var saleablePreOrder) ? saleablePreOrder : null,
                     InventoryAccount = worksheet.Cells[row, 21].Text,
-                    Attribute1Value = worksheet.Cells[row, 22].Text,
-                    Attribute2Value = worksheet.Cells[row, 23].Text,
-                    Attribute3Value = worksheet.Cells[row, 24].Text,
+                    Attribute1Value = worksheet.Cells[row, 22].Text, // Attribute1Value
+                    Attribute2Value = worksheet.Cells[row, 23].Text, // Attribute2Value
+                    Attribute3Value = worksheet.Cells[row, 24].Text, // Attribute3Value
                     ItemName = string.Join("/",
-    new[]
-    {
-        worksheet.Cells[row, 22].Text,
-        worksheet.Cells[row, 23].Text,
-        worksheet.Cells[row, 24].Text
-    }.Where(v => !string.IsNullOrWhiteSpace(v))
-),
+                        new[]
+                        {
+            worksheet.Cells[row, 22].Text,
+            worksheet.Cells[row, 23].Text,
+            worksheet.Cells[row, 24].Text
+                        }.Where(v => !string.IsNullOrWhiteSpace(v))
+                    ),
                     Image = null,
                     ItemDescription = worksheet.Cells[row, 25].Text,
                     SortNo = int.TryParse(worksheet.Cells[row, 26].Text, out var sortNo) ? sortNo : 0,
