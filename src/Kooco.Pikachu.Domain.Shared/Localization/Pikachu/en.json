@@ -1526,7 +1526,8 @@
     "FillTemplateInstruction": "Fill required fields like ItemName, SKU, Styles, etc.",
     "UploadTemplateInstruction": "Upload the filled file below.",
     "DownloadTemplate": "Download Template",
-    "Close": "Close"
+    "Close": "Close",
+    "Upto5ImagesAllowed": "Upto 5 Images Allowed."
 
   }
 }

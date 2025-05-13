@@ -1317,7 +1317,8 @@
     "InventoryName": "倉庫名稱",
     "CostPrice": "成本價格",
     "Temperature": "溫層",
-    "Category": "類別"
+    "Category": "類別",
+    "Upto5ImagesAllowed": "最多上傳5張圖片"
 
   }
 }
