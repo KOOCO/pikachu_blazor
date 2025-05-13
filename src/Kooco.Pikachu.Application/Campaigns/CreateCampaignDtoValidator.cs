@@ -206,11 +206,15 @@ public class CreateCampaignShoppingCreditDtoValidator : AbstractValidator<Create
             RuleFor(x => x.CalculationPercentage)
                 .GreaterThanOrEqualTo(0)
                 .When(x => x.CalculationPercentage != null);
-        });
 
-        RuleFor(x => x.ApplicableItem)
-            .NotNull()
-            .WithMessage(l["TheFieldIsRequired", l[nameof(CreateCampaignShoppingCreditDto.ApplicableItem)]]);
+            RuleFor(x => x.CapAmount)
+                .NotNull()
+                .WithMessage(l["TheFieldIsRequired", l[nameof(CreateCampaignShoppingCreditDto.CapAmount)]]);
+
+            RuleFor(x => x.CapAmount)
+                .GreaterThanOrEqualTo(0)
+                .When(x => x.CapAmount != null);
+        });
 
         RuleFor(x => x.Budget)
             .GreaterThanOrEqualTo(0)

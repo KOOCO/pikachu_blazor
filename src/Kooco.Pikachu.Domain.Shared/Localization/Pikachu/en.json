@@ -815,7 +815,7 @@
     "UnifiedCalculation:": "Unified Calculation",
     "StagedCalculation": "Staged Calculation",
     "Spend": "Spend",
-    "ToReceivePoints": "To Use Points",
+    "ToReceivePoints": "To Receive Points",
     "ApplicableItems": "Applicable Items",
 
     "ShippingFees": "Shipping Fees",
@@ -1486,8 +1486,7 @@
     "PieceQuantity": "Piece",
     "Enum:CalculationMethod.0": "Unified Calculation",
     "Enum:CalculationMethod.1": "Staged Calculation",
-    "Enum:ApplicableItem.0": "Add-On Products",
-    "Enum:ApplicableItem.1": "Shipping Fees",
+    "CapAmount": "Cap Amount",
     "ValidForDays": "Valid For Days",
     "CalculationPercentage": "Calculation Percentage",
     "PointsToReceive": "Points To Receive",
@@ -1528,6 +1527,5 @@
     "DownloadTemplate": "Download Template",
     "Close": "Close",
     "Upto5ImagesAllowed": "Upto 5 Images Allowed."
-
   }
 }

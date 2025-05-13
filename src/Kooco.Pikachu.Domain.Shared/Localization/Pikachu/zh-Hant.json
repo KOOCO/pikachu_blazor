@@ -738,7 +738,7 @@
     "UnifiedCalculation:": "統一計算:",
     "StagedCalculation": "階段計算",
     "Spend": "花費",
-    "ToReceivePoints": "可使用點數",
+    "ToReceivePoints": "可獲得點數",
     "ApplicableItems": "適用項目",
 
     "ShippingFees": "運費",
@@ -1231,6 +1231,7 @@
     "ConfigureShoppingCredit": "購物金設定",
     "Enum:CalculationMethod.0": "統一計算",
     "Enum:CalculationMethod.1": "階段計算",
+    "CapAmount": "上限金額",
     "Enum:ApplicableItem.0": "加購商品",
     "Enum:ApplicableItem.1": "運費",
     "ValidForDays": "有效天數",

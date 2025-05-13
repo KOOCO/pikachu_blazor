@@ -13,7 +13,9 @@ public class CampaignShoppingCredit : Entity<Guid>
     public int? ValidForDays { get; private set; }
     public CalculationMethod CalculationMethod { get; private set; }
     public double? CalculationPercentage { get; private set; }
-    public ApplicableItem ApplicableItem { get; set; }
+    public double? CapAmount { get; private set; }
+    public bool ApplicableToAddOnProducts { get; set; }
+    public bool ApplicableToShippingFees { get; set; }
     public int Budget { get; private set; }
     public ICollection<CampaignStageSetting> StageSettings { get; set; }
 
@@ -29,14 +31,18 @@ public class CampaignShoppingCredit : Entity<Guid>
         int? validForDays,
         CalculationMethod calculationMethod,
         double? calculationPercentage,
-        ApplicableItem applicableItem,
-        int budget
+        double? capAmount,
+        bool applicableToAddOnProducts,
+        bool applicableToShippingFees,
+        int budget,
+        int maxPointsToReceive
         ) : base(id)
     {
         CampaignId = campaignId;
         SetExpiration(canExpire, validForDays);
-        SetCalculationMethod(calculationMethod, calculationPercentage);
-        ApplicableItem = applicableItem;
+        SetCalculationMethod(calculationMethod, calculationPercentage, capAmount, maxPointsToReceive);
+        ApplicableToAddOnProducts = applicableToAddOnProducts;
+        ApplicableToShippingFees = applicableToShippingFees;
         SetBudget(budget);
         StageSettings = new List<CampaignStageSetting>();
     }
@@ -55,17 +61,20 @@ public class CampaignShoppingCredit : Entity<Guid>
         }
     }
 
-    public void SetCalculationMethod(CalculationMethod method, double? percentage)
+    public void SetCalculationMethod(CalculationMethod method, double? percentage, double? capAmount, int maxPointsToReceive)
     {
         CalculationMethod = method;
         if (CalculationMethod == CalculationMethod.UnifiedCalculation)
         {
             Check.NotNull(percentage, nameof(CalculationPercentage));
+            Check.NotNull(capAmount, nameof(CapAmount));
             CalculationPercentage = Check.Range(percentage.Value, nameof(CalculationPercentage), 0);
+            CapAmount = Check.Range(capAmount.Value, nameof(CapAmount), 0);
         }
         else
         {
             CalculationPercentage = null;
+            CapAmount = maxPointsToReceive;
         }
     }
 

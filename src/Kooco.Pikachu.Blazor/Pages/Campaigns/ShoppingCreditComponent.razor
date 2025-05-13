@@ -53,6 +53,16 @@
                             </Addons>
                         </Field>
                     </Validation>
+                    <Validation MessageLocalizer="@LH.Localize">
+                        <Field indent mb0 Class="mt-1">
+                            <FieldLabel required>@L["CapAmount"]</FieldLabel>
+                            <NumericEdit TValue="double?" @bind-Value="Entity.ShoppingCredit.CapAmount">
+                                <Feedback>
+                                    <ValidationError />
+                                </Feedback>
+                            </NumericEdit>
+                        </Field>
+                    </Validation>
                 }
                 <Radio TValue="CalculationMethod?" Value="@CalculationMethod.StagedCalculation">@L["Enum:CalculationMethod." + (int)CalculationMethod.StagedCalculation]</Radio>
             </ChildContent>
@@ -114,21 +124,6 @@
         <ValidationMessage For="() => Entity.ShoppingCredit.StageSettings" />
     </Div>
 }
-<Divider></Divider>
-<Validation MessageLocalizer="@LH.Localize">
-    <Field>
-        <FieldLabel required>@L["ApplicableItems"]</FieldLabel>
-        <RadioGroup Orientation="Orientation.Vertical" TValue="ApplicableItem?" Name="ApplicableItems" @bind-CheckedValue="@Entity.ShoppingCredit.ApplicableItem">
-            <ChildContent>
-                <Radio TValue="ApplicableItem?" Value="@ApplicableItem.AddOnProducts">@L["Enum:ApplicableItem." + (int)ApplicableItem.AddOnProducts]</Radio>
-                <Radio TValue="ApplicableItem?" Value="@ApplicableItem.ShippingFees">@L["Enum:ApplicableItem." + (int)ApplicableItem.ShippingFees]</Radio>
-            </ChildContent>
-            <Feedback>
-                <ValidationError />
-            </Feedback>
-        </RadioGroup>
-    </Field>
-</Validation>
 <Divider></Divider>
 <Field>
     <FieldLabel required>@L["Budget"]</FieldLabel>

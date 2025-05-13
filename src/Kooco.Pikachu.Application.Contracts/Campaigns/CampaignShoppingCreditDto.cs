@@ -11,7 +11,9 @@ public class CampaignShoppingCreditDto : EntityDto<Guid>
     public int? ValidForDays { get; set; }
     public CalculationMethod CalculationMethod { get; set; }
     public double? CalculationPercentage { get; set; }
-    public ApplicableItem ApplicableItem { get; set; }
+    public double? CapAmount { get; private set; }
+    public bool ApplicableToAddOnProducts { get; set; }
+    public bool ApplicableToShippingFees { get; set; }
     public int Budget { get; set; }
     public ICollection<CampaignStageSettingDto> StageSettings { get; set; }
 }

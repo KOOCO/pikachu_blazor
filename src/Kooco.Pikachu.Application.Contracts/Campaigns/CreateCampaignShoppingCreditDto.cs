@@ -9,8 +9,10 @@ public class CreateCampaignShoppingCreditDto
     public int? ValidForDays { get; set; }
     public CalculationMethod? CalculationMethod { get; set; }
     public double? CalculationPercentage { get; set; }
+    public double? CapAmount { get; set; }
     public List<CreateCampaignStageSettingDto> StageSettings { get; set; } = [new()];
-    public ApplicableItem? ApplicableItem { get; set; }
+    public bool ApplicableToAddOnProducts { get; set; }
+    public bool ApplicableToShippingFees { get; set; }
     public int? Budget { get; set; }
 
     public int StageSettingsCount { get { return StageSettings?.Count ?? 0; } }

@@ -201,14 +201,17 @@ public class CampaignManager : DomainService
     }
 
     public CampaignShoppingCredit AddShoppingCredit(Campaign campaign, bool canExpire, int? validForDays,
-        CalculationMethod calculationMethod, double? calculationPercentage, ApplicableItem applicableItem, int budget,
-        List<(int spend, int pointsToReceive)> stageSettings)
+        CalculationMethod calculationMethod, double? calculationPercentage, double? capAmount, bool applicableToAddOnProducts,
+        bool applicableToShippingFees, int budget, List<(int spend, int pointsToReceive)> stageSettings)
     {
         Check.NotNull(campaign, nameof(Campaign));
         EnsurePromotionModule(campaign, PromotionModule.ShoppingCredit);
 
+        int maxPointsToReceive = stageSettings.OrderByDescending(ss => ss.pointsToReceive).Select(ss => ss.pointsToReceive).FirstOrDefault();
+
         var shoppingCredit = new CampaignShoppingCredit(GuidGenerator.Create(), campaign.Id, canExpire,
-            validForDays, calculationMethod, calculationPercentage, applicableItem, budget);
+            validForDays, calculationMethod, calculationPercentage, capAmount, applicableToAddOnProducts, 
+            applicableToShippingFees, budget, maxPointsToReceive);
 
         if (calculationMethod == CalculationMethod.StagedCalculation)
         {
@@ -236,7 +239,7 @@ public class CampaignManager : DomainService
         return campaign.AddOnProduct;
     }
 
-    private void EnsurePromotionModule(Campaign campaign, PromotionModule expected)
+    private static void EnsurePromotionModule(Campaign campaign, PromotionModule expected)
     {
         if (campaign.PromotionModule != expected)
             throw new BusinessException($"Campaign module must be {expected}");

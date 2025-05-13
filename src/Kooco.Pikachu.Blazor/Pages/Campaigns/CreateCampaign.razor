@@ -22,12 +22,12 @@
 
 <style>
     .form-group[indent] {
-    width: calc(50% - 25px - 1rem);
-    margin-left: 25px;
+        width: calc(50% - 25px - 1rem);
+        margin-left: 25px;
     }
 
     .form-group[mb0] {
-    margin-bottom: 0px;
+        margin-bottom: 0px;
     }
 </style>
 <Div Class="rounded-cards">
@@ -227,6 +227,16 @@
                                             }
                                         </Field>
                                     </Validation>
+                                }
+
+                                @if (Entity.PromotionModule == PromotionModule.ShoppingCredit)
+                                {
+                                    <Divider></Divider>
+                                    <Field>
+                                        <FieldLabel>@L["ApplicableItems"]</FieldLabel>
+                                        <Check TValue="bool" @bind-Checked="Entity.ShoppingCredit.ApplicableToAddOnProducts">@L["AddOnProducts"]</Check>
+                                        <Check TValue="bool" @bind-Checked="Entity.ShoppingCredit.ApplicableToShippingFees">@L["ShippingFees"]</Check>
+                                    </Field>
                                 }
                             </CardBody>
                         </Card>

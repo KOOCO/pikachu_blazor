@@ -71,7 +71,7 @@ public class CampaignBuilder
         }
     }
 
-    private void AddDiscount(Campaign campaign, CreateCampaignDiscountDto discount, CampaignManager manager)
+    private static void AddDiscount(Campaign campaign, CreateCampaignDiscountDto discount, CampaignManager manager)
     {
         manager.AddCampaignDiscount(
             campaign,
@@ -89,7 +89,7 @@ public class CampaignBuilder
         );
     }
 
-    private void AddShoppingCredit(Campaign campaign, CreateCampaignShoppingCreditDto credit, CampaignManager manager)
+    private static void AddShoppingCredit(Campaign campaign, CreateCampaignShoppingCreditDto credit, CampaignManager manager)
     {
         var stages = credit.CalculationMethod == CalculationMethod.StagedCalculation
             ? credit.StageSettings.Select(x => (Require(x.Spend, "Stage Spend"), Require(x.PointsToReceive, "Points"))).ToList()
@@ -101,13 +101,15 @@ public class CampaignBuilder
             credit.ValidForDays,
             Require(credit.CalculationMethod, nameof(credit.CalculationMethod)),
             credit.CalculationPercentage,
-            Require(credit.ApplicableItem, nameof(credit.ApplicableItem)),
+            credit.CapAmount,
+            credit.ApplicableToAddOnProducts,
+            credit.ApplicableToShippingFees,
             Require(credit.Budget, nameof(credit.Budget)),
             stages
         );
     }
 
-    private void AddAddOnProduct(Campaign campaign, CreateCampaignAddOnProductDto dto, CampaignManager manager)
+    private static void AddAddOnProduct(Campaign campaign, CreateCampaignAddOnProductDto dto, CampaignManager manager)
     {
         manager.AddAddOnProduct(
             campaign,
