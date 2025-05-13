@@ -1526,6 +1526,10 @@
     "UploadTemplateInstruction": "Upload the filled file below.",
     "DownloadTemplate": "Download Template",
     "Close": "Close",
-    "Upto5ImagesAllowed": "Upto 5 Images Allowed."
+    "Upto5ImagesAllowed": "Upto 5 Images Allowed.",
+    "Menu:EmailManagement": "Email Management",
+    "Menu:EmailSettings": "Settings",
+    "Menu:CreateEmail": "Create Email",
+    "CreateEmail": "Create Email"
   }
 }

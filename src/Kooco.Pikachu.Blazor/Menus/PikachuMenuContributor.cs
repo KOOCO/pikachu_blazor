@@ -404,41 +404,31 @@ public class PikachuMenuContributor : IMenuContributor
 
         context.Menu.AddItem(websiteManagement);
 
+        var emailManagement = new ApplicationMenuItem(
+            PikachuMenus.EmailManagement,
+            displayName: l["Menu:EmailManagement"],
+            icon: "fas fa-envelopes-bulk",
+            order: 7,
+            requiredPermissionName: PikachuPermissions.EmailSettings
+            );
 
-        //context.Menu.Items.Insert(
-        //    6,
-        //    new ApplicationMenuItem(
-        //        PikachuMenus.TenantManagement,
-        //        "多商戶管理",
-        //        url: "/LogisticsManagement",
-        //        icon: "fas fa-users-cog",
-        //        order: 6
-        //    )
-        //.AddItem(new ApplicationMenuItem(
-        //name: "TenantManagement",
-        //displayName: "商戶列表",
-        //icon: "fas fa-list",
-        //url: "/TenantManagement/Tenants")
-        //).AddItem(new ApplicationMenuItem(
-        //name: "TenantManagementBillList",
-        //displayName: "商戶帳單列表",
-        //icon: "fas fa-file-invoice",
-        //url: "/TenantManagement/TenantBillList")
-        //)
-        //);
+        emailManagement.AddItem(new ApplicationMenuItem(
+            name: PikachuMenus.EmailSettings,
+            displayName: l["Menu:EmailSettings"],
+            url: "/EmailSettings",
+            icon: "fas fa-gears",
+            requiredPermissionName: PikachuPermissions.EmailSettings
+            ));
 
-        //var systemManagment =
-        //    new ApplicationMenuItem(
-        //        PikachuMenus.SystemManagement,
-        //        displayName: l["Menu:SystemManagement"],
-        //        //"系統管理",
-        //        icon: "fas fa-user",
-        //        order: 7
-        //    );
-        //context.Menu.AddItem(systemManagment);
+        emailManagement.AddItem(new ApplicationMenuItem(
+            name: PikachuMenus.EmailSettings,
+            displayName: l["Menu:CreateEmail"],
+            url: "/CreateEmail",
+            icon: "fas fa-envelope",
+            requiredPermissionName: PikachuPermissions.EmailSettings
+            ));
 
-        //systemManagment
-
+        context.Menu.AddItem(emailManagement);
 
         if (MultiTenancyConsts.IsEnabled)
         {
@@ -484,13 +474,7 @@ public class PikachuMenuContributor : IMenuContributor
 
         administration.SetSubItemOrder(IdentityMenuNames.GroupName, 2);
         administration.SetSubItemOrder(SettingManagementMenus.GroupName, 3);
-        administration.AddItem(new ApplicationMenuItem(
-        name: "EmailSettings",
-        icon: "fas fa-mail-bulk",
-        displayName: l["EmailSettings"],
-        url: "/EmailSettings",
-        requiredPermissionName: PikachuPermissions.EmailSettings)
-        );
+        
         //remove administration item from menu
         //context.Menu.Items.Remove( administration );
 

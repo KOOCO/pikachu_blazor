@@ -1,0 +1,93 @@
+﻿@page "/CreateEmail"
+@using Kooco.Pikachu.Localization
+@using Volo.Abp.AspNetCore.Components.Web
+@inherits PikachuComponentBase
+@inject AbpBlazorMessageLocalizerHelper<PikachuResource> LH
+
+<Div Class="rounded-cards">
+    <Div Class="d-flex align-items-center">
+        <PikachuButton>
+            @* <Icon Name="IconName.ArrowLeft" Class="me-1"></Icon> *@
+        </PikachuButton>
+        <h4 class="text-dark m-0">
+            @* @(Id.HasValue ? L["EditCampaign"] : L["CreateNewCampaign"]) *@
+            @L["CreateEmail"]
+        </h4>
+    </Div>
+    <Row>
+        <Column ColumnSize="ColumnSize.Is12.Is9.OnDesktop">
+            <Card>
+                <CardBody>
+                    <Tabs SelectedTab="@SelectedTab" SelectedTabChanged="@OnTabChanged">
+                        <Items>
+                            @foreach (var templateType in TemplateTypes)
+                            {
+                                <Tab Name="@templateType">@templateType</Tab>
+                            }
+                        </Items>
+                    </Tabs>
+
+                    <Div Class="p-3">
+                        <Field>
+                            <FieldLabel required>@L["MemberTags"]</FieldLabel>
+                            <AntDesign.Select Mode="AntDesign.SelectMode.Multiple"
+                                              Size="AntDesign.InputSize.Large"
+                                              TItem="string"
+                                              TItemValue="string"
+                                              MaxTagCount="AntDesign.Select.ResponsiveTag.Responsive"
+                                              EnableSearch
+                                              AllowClear
+                                              HideSelected>
+                                <SelectOptions>
+                                    @foreach (var item in TargetAudienceOptions)
+                                    {
+                                        <AntDesign.SelectOption TItemValue="string" TItem="string" Value=@item Label=@L[item] />
+                                    }
+                                </SelectOptions>
+                            </AntDesign.Select>
+                            @* <ValidationMessage For="() => Entity.TargetAudience" /> *@
+                        </Field>
+                        @* <Row>
+                            <Column ColumnSize="ColumnSize.Is6">
+                                <Validation MessageLocalizer="@LH.Localize">
+                                    <Field>
+                                        <FieldLabel required>@L["StartDate"]</FieldLabel>
+                                        <DatePicker TValue="DateTime?">
+                                            <Feedback>
+                                                <ValidationError />
+                                            </Feedback>
+                                        </DatePicker>
+                                    </Field>
+                                </Validation>
+                            </Column>
+                            <Column ColumnSize="ColumnSize.Is6">
+                                <Validation MessageLocalizer="@LH.Localize">
+                                    <Field>
+                                        <FieldLabel required>@L["EndDate"]</FieldLabel>
+                                        <DatePicker TValue="DateTime?">
+                                            <Feedback>
+                                                <ValidationError />
+                                            </Feedback>
+                                        </DatePicker>
+                                    </Field>
+                                </Validation>
+                            </Column>
+                        </Row> *@
+                    </Div>
+                </CardBody>
+            </Card>
+        </Column>
+    </Row>
+</Div>
+
+@code {
+    List<string> TemplateTypes = ["Customize", "Campaign", "Shopping Cart"];
+    private string SelectedTab { get; set; } = "Customize";
+
+    private IReadOnlyList<string> TargetAudienceOptions { get; set; } = [];
+
+    void OnTabChanged(string tab)
+    {
+        SelectedTab = tab;
+    }
+}

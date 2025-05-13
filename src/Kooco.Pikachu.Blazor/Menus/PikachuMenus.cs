@@ -35,5 +35,9 @@ public class PikachuMenus
     public const string FooterSettings = WebsiteManagement + ".FooterSettings";
     public const string WebsiteBasicSettings = WebsiteManagement + ".WebsiteBasicSettings";
 
+    public const string EmailManagement = Prefix + ".EmailManagement";
+    public const string EmailSettings = Prefix + ".EmailSettings";
+    public const string CreateEmail = Prefix + ".CreateEmail";
+
     public const string Campaigns = Prefix + ".Campaigns";
 }
