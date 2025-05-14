@@ -1528,13 +1528,22 @@
     "DownloadTemplate": "Download Template",
     "Close": "Close",
     "Upto5ImagesAllowed": "Upto 5 Images Allowed.",
-    "Menu:EmailManagement": "Email Management",
-    "Menu:EmailSettings": "Settings",
-    "Menu:CreateEmail": "Create Email",
-    "CreateEmail": "Create Email",
     "Doyouapprovetherefund": "Do you approve the refund?",
     "Blacklisted": "Blacklisted",
     "Existing": "Existing",
-    "Gender": "Gender"
+    "Gender": "Gender",
+    "Menu:EmailManagement": "Email Management",
+    "Menu:EmailSettings": "Settings",
+    "Menu:CreateEdm": "Create EDM",
+    "CreateEdm": "Create EDM",
+    "SendDate": "Send Date",
+    "Enum:EdmTemplateType.0": "Customize",
+    "Enum:EdmTemplateType.1": "Campaign",
+    "Enum:EdmTemplateType.2": "Shopping Cart",
+    "SelectCampaign": "Select Campaign",
+    "SelectSendFrequency": "Select Send Frequency",
+    "Enum:SendFrequency.0": "Day",
+    "Enum:SendFrequency.1": "Week",
+    "Enum:SendFrequency.2": "Month"
   }
 }

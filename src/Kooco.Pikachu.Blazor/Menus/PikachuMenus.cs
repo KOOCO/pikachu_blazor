@@ -37,7 +37,7 @@ public class PikachuMenus
 
     public const string EmailManagement = Prefix + ".EmailManagement";
     public const string EmailSettings = Prefix + ".EmailSettings";
-    public const string CreateEmail = Prefix + ".CreateEmail";
+    public const string CreateEdm = Prefix + ".CreateEdm";
 
     public const string Campaigns = Prefix + ".Campaigns";
 }
