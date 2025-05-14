@@ -130,14 +130,15 @@ namespace Kooco.Pikachu.ShoppingCredits
 
             // Fetch settings
             var earnSetting = await _shoppingCreditEarnSettingRepository.FirstOrDefaultAsync();
-            await _shoppingCreditEarnSettingRepository.EnsureCollectionLoadedAsync(earnSetting, x => x.SpecificGroupbuys);
+          
 
             var usageSetting = await _shoppingCreditUsageSettingRepository.FirstOrDefaultAsync();
-            await _shoppingCreditUsageSettingRepository.EnsureCollectionLoadedAsync(usageSetting, x => x.SpecificGroupbuys);
+
 
             // Populate Cashback section
             if (earnSetting != null)
             {
+                await _shoppingCreditEarnSettingRepository.EnsureCollectionLoadedAsync(earnSetting, x => x.SpecificGroupbuys);
                 if (!earnSetting.CashbackEnabled)
                 {
                     response["Cashback"] = new { Error = "Shopping credit earn setting is disabled." };
@@ -167,6 +168,7 @@ namespace Kooco.Pikachu.ShoppingCredits
             // Populate Use section
             if (usageSetting != null)
             {
+                await _shoppingCreditUsageSettingRepository.EnsureCollectionLoadedAsync(usageSetting, x => x.SpecificGroupbuys);
                 if (!usageSetting.AllowUsage)
                 {
                     response["Cashback"] = new { Error = "Shopping credit usage setting is disabled." };
