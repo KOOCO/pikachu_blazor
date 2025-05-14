@@ -1532,6 +1532,9 @@
     "Menu:EmailSettings": "Settings",
     "Menu:CreateEmail": "Create Email",
     "CreateEmail": "Create Email",
-    "Doyouapprovetherefund": "Do you approve the refund?"
+    "Doyouapprovetherefund": "Do you approve the refund?",
+    "Blacklisted": "Blacklisted",
+    "Existing": "Existing",
+    "Gender": "Gender"
   }
 }
