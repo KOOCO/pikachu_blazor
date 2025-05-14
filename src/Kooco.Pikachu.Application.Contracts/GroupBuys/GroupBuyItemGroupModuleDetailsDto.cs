@@ -19,7 +19,7 @@ public class GroupBuyItemGroupModuleDetailsDto
     public string GroupBuyModuleTypeName { get; set; }
     public string? AdditionalInfo { get; set; }
     public string? ProductGroupModuleTitle { get; set; }
-    public string? ProductGroupModuleImageSize { get; set; }
+    //public string? ProductGroupModuleImageSize { get; set; }
     public int? ModuleNumber { get; set; }
     public string? Title { get; set; }
     public string? Text { get; set; }

@@ -1669,16 +1669,17 @@
                                     <div class="row mt-2">
                                         @if (module.GroupBuyModuleType is GroupBuyModuleType.ProductGroupModule)
                                         {
-                                            <Div Class="col-md-6 text-left mb-3">
-                                                <InputText class="form-control" @bind-Value="module.ProductGroupModuleTitle" />
+                                            <Div Class="col-md-12 text-left mb-3">
+                                                 <TinyMCEEditor @bind-Value="@module.ProductGroupModuleTitle" Style="min-height: 500px;" />
+                                              @*   <InputText class="form-control" @bind-Value="module.ProductGroupModuleTitle" /> *@
                                             </Div>
-                                            <Div Class="col-md-6 text-right mb-3">
+                                          @*   <Div Class="col-md-6 text-right mb-3">
                                                 <Select TValue="string" @onchange=@((e) => module.ProductGroupModuleImageSize = e.Value.ToString())>
                                                     <option value="">@L["SelectStyle"] </option>
                                                     <option value="SmallImage">@L["SmallImage"]</option>
                                                     <option value="LargeImage">@L["LargeImage"]</option>
                                                 </Select>
-                                            </Div>
+                                            </Div> *@
                                         }
                                         @foreach (var selectedItem in module.Selected)
                                         {
