@@ -1530,6 +1530,7 @@
     "Menu:EmailManagement": "Email Management",
     "Menu:EmailSettings": "Settings",
     "Menu:CreateEmail": "Create Email",
-    "CreateEmail": "Create Email"
+    "CreateEmail": "Create Email",
+    "Doyouapprovetherefund": "Do you approve the refund?"
   }
 }

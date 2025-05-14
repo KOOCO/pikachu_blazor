@@ -1325,7 +1325,17 @@
     "Approve": "確認",
     "Reject": "取消",
     "Returned": "退貨中",
-    "Succeeded": "已完成"
+    "Succeeded": "已完成",
+    "SubmissionTime": "提交申請時間",
+    "ReviewCompletionTime": "審核完成時間",
+    "RefundReview": "退款確認",
+    "Refunder": "審核人員",
+    "Success": "退款成功",
+    "ViewReason": "查看原因",
+    "Doyouapprovetherefund": "您確定要執行退款嗎?",
+    "RejectReason": "拒絕原因",
+    "PleaseSpecifyTheReasonForRejection": "請說明拒絕的原因",
+    "ThisFieldIsRequired": "此欄位為必填"
 
 
 
