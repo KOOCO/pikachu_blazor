@@ -599,7 +599,7 @@
     <div id="detailPanel" class="detail-panel @(isDetailOpen ? "open" : "closed")">
         <Card>
         <CardHeader  style="display: flex;justify-content: space-between;">
-            <h5>Order Details - @SelectedOrder?.OrderNo</h5>
+            <h5>@L["OrderDetails"] - @SelectedOrder?.OrderNo</h5>
              <CloseButton  Clicked="ClosePanel"/>
         </CardHeader>
 

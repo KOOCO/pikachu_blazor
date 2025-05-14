@@ -1335,7 +1335,15 @@
     "Doyouapprovetherefund": "您確定要執行退款嗎?",
     "RejectReason": "拒絕原因",
     "PleaseSpecifyTheReasonForRejection": "請說明拒絕的原因",
-    "ThisFieldIsRequired": "此欄位為必填"
+    "ThisFieldIsRequired": "此欄位為必填",
+    "Refund": "退款",
+    "RefundWholeOrder": "全額退款",
+    "SelectItemForRefund": "選擇個別品項退款",
+    "RefundAmount": "輸入退款金額",
+    "RefundAmount1": "退款金額",
+    "Areyousureyouwanttoreturnthisorder": "您確認要執行退貨嗎？",
+    "RecipientInformation": "收件人資訊",
+    "Remarks": "收件人備註"
 
 
 
