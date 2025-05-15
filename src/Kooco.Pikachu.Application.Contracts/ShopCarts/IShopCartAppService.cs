@@ -23,6 +23,7 @@ public interface IShopCartAppService : IApplicationService
     Task<ShopCartDto> DeleteCartItemAsync(Guid cartItemId);
     Task<PagedResultDto<ShopCartListWithDetailsDto>> GetListWithDetailsAsync(GetShopCartListDto input);
     Task ClearCartItemsAsync(List<Guid> ids);
+    Task ClearCartItemsAsync(Guid userId, Guid groupBuyId);
     Task<List<CartItemWithDetailsDto>> GetCartItemsListAsync(Guid shopCartId);
     Task<List<ItemWithItemTypeDto>> GetGroupBuyProductsLookupAsync(Guid groupBuyId);
     Task<ItemWithDetailsDto> GetItemWithDetailsAsync(Guid groupBuyId, Guid id, ItemType itemType);

@@ -67,4 +67,10 @@ public class ShopCartController(IShopCartAppService shopCartAppService) : Pikach
     {
         return shopCartAppService.DeleteCartItemAsync(cartItemId);
     }
+
+    [HttpDelete("clear-cart-items/{userId}/{groupBuyId}")]
+    public Task ClearCartItemsAsync(Guid userId, Guid groupBuyId)
+    {
+        return shopCartAppService.ClearCartItemsAsync(userId, groupBuyId);
+    }
 }

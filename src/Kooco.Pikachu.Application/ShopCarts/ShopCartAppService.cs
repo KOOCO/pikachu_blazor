@@ -8,8 +8,8 @@ using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
+using Volo.Abp.Domain.Entities;
 using Volo.Abp.Domain.Repositories;
-using Volo.Abp.ObjectMapping;
 
 namespace Kooco.Pikachu.ShopCarts;
 
@@ -207,6 +207,16 @@ public class ShopCartAppService(ShopCartManager shopCartManager, IShopCartReposi
         var shopCarts = await shopCartRepository.GetListWithCartItemsAsync(ids);
         shopCarts.ForEach(shopCart => shopCart.CartItems.Clear());
         await shopCartRepository.UpdateManyAsync(shopCarts);
+    }
+
+    public async Task ClearCartItemsAsync(Guid userId, Guid groupBuyId)
+    {
+        var shopCart = await shopCartRepository.FindByUserIdAndGroupBuyIdAsync(userId, groupBuyId)
+            ?? throw new EntityNotFoundException(typeof(ShopCart));
+
+        await shopCartRepository.EnsureCollectionLoadedAsync(shopCart, s => s.CartItems);
+        shopCart.CartItems.Clear();
+        await shopCartRepository.UpdateAsync(shopCart);
     }
 
     public async Task<List<ItemWithItemTypeDto>> GetGroupBuyProductsLookupAsync(Guid groupBuyId)
