@@ -32,7 +32,6 @@ using Kooco.Pikachu.Assembly;
 using DinkToPdf;
 using HtmlAgilityPack;
 using Kooco.Pikachu.Orders.Interfaces;
-using System.Threading;
 
 namespace Kooco.Pikachu.Blazor.Pages.Orders;
 
@@ -2242,7 +2241,7 @@ public partial class OrderDetails
             });
         }
 
-        Directory.Delete(Path.Combine(Path.GetTempPath(), "MergeTemp"), true);
+        await SafeDeleteDirectoryAsync(Path.Combine(Path.GetTempPath(), "MergeTemp"));
 
         loading = false;
     }
@@ -2397,28 +2396,56 @@ public partial class OrderDetails
             });
         }
 
-        Directory.Delete(Path.Combine(Path.GetTempPath(), "MergeTemp"), true);
+        await SafeDeleteDirectoryAsync(Path.Combine(Path.GetTempPath(), "MergeTemp"));
 
         loading = false;
     }
+    private async Task SafeDeleteDirectoryAsync(string dirPath, int maxRetries = 5, int delayMs = 500)
+    {
+        for (int i = 0; i < maxRetries; i++)
+        {
+            try
+            {
+                if (Directory.Exists(dirPath))
+                    Directory.Delete(dirPath, true);
+
+                return;
+            }
+            catch (IOException)
+            {
+                await Task.Delay(delayMs);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                await Task.Delay(delayMs);
+            }
+        }
+
+        Console.WriteLine($"[WARN] Could not delete directory: {dirPath}");
+    }
+
     public List<string> GeneratePdf(List<string> htmls)
     {
         List<string> pdfFilePaths = [];
 
         CustomAssemblyContext customAssembly = new();
-        customAssembly.LoadDinkToPdfDll();
 
-        string tempPath = Path.Combine(Path.GetTempPath(), "MergeTemp");
-        Directory.CreateDirectory(tempPath);
+        customAssembly.LoadDinkToPdfDll();
 
         for (int i = 0; i < htmls.Count; i++)
         {
             try
             {
+                string tempPath = Path.Combine(Path.GetTempPath(), "MergeTemp");
+
                 string htmlFilePath = Path.Combine(tempPath, $"outputHTML{i}.html");
+
                 string pdfFilePath = Path.Combine(tempPath, $"output{i}.pdf");
 
+                pdfFilePaths.Add(pdfFilePath);
+
                 File.WriteAllText(htmlFilePath, htmls[i]);
+
                 if (File.Exists(pdfFilePath)) File.Delete(pdfFilePath);
 
                 var doc = new HtmlToPdfDocument
@@ -2428,30 +2455,27 @@ public partial class OrderDetails
                         ColorMode = ColorMode.Color,
                         Orientation = DinkToPdf.Orientation.Portrait,
                         PaperSize = PaperKind.A4,
-                        Out = pdfFilePath
+                        Out = pdfFilePath,
+
                     },
                     Objects =
-                {
-                    new ObjectSettings
                     {
-                        Page = htmlFilePath,
-                        LoadSettings = new LoadSettings { JSDelay = 5000 },
-                        WebSettings = new WebSettings
+                        new ObjectSettings
                         {
-                            EnableJavascript = true,
-                            DefaultEncoding = "UTF-8",
-                            LoadImages = true
+                            Page = htmlFilePath,
+                            LoadSettings = new LoadSettings { JSDelay = 5000 },
+                            WebSettings = new WebSettings
+                            {
+                                EnableJavascript = true,
+                                DefaultEncoding = "UTF-8",
+                                LoadImages = true,
+
+                            }
                         }
                     }
-                }
                 };
 
                 Converter.Convert(doc);
-                pdfFilePaths.Add(pdfFilePath);
-
-                // Try deleting the HTML file after conversion (with retries)
-                DeleteWithRetry(htmlFilePath);
-
                 Console.WriteLine($"PDF generated successfully: {pdfFilePath}");
             }
             catch (Exception ex)
@@ -2462,30 +2486,6 @@ public partial class OrderDetails
 
         return pdfFilePaths;
     }
-
-    private void DeleteWithRetry(string filePath, int maxRetries = 5, int delayMs = 300)
-    {
-        for (int attempt = 0; attempt < maxRetries; attempt++)
-        {
-            try
-            {
-                if (File.Exists(filePath))
-                {
-                    File.Delete(filePath);
-                }
-                break;
-            }
-            catch (IOException)
-            {
-                Thread.Sleep(delayMs); // Wait and retry
-            }
-            catch (UnauthorizedAccessException)
-            {
-                Thread.Sleep(delayMs);
-            }
-        }
-    }
-
     public List<string> GenerateA6Pdf(List<string> htmls)
     {
         List<string> pdfFilePaths = new(); // List to store generated PDF file paths
@@ -2580,7 +2580,6 @@ public partial class OrderDetails
                                 // Convert the HTML to PDF and add the PDF path to the list
                                 Converter.Convert(doc);
                                 pdfFilePaths.Add(pdfFilePath);
-                                DeleteWithRetry(htmlFilePath);
                                 Console.WriteLine($"PDF generated successfully for PrintBlock image: {pdfFilePath}");
                             }
                             continue; // Skip to the next HTML input after processing images
@@ -2655,7 +2654,6 @@ public partial class OrderDetails
                                 // Convert the HTML to PDF and add the PDF path to the list
                                 Converter.Convert(doc);
                                 pdfFilePaths.Add(pdfFilePath);
-                                DeleteWithRetry(htmlFilePath);
                                 Console.WriteLine($"PDF generated successfully for ForwardOrderTCat image: {pdfFilePath}");
                             }
 
@@ -2705,7 +2703,6 @@ public partial class OrderDetails
 
                             // Convert the HTML to PDF
                             Converter.Convert(doc);
-                            DeleteWithRetry(htmlFilePath);
                             Console.WriteLine($"PDF generated successfully: {pdfFilePath}");
                         }
                     }
@@ -2789,7 +2786,6 @@ public partial class OrderDetails
                                 // Convert the HTML to PDF and add the PDF path to the list
                                 Converter.Convert(doc);
                                 pdfFilePaths.Add(pdfFilePath);
-                                DeleteWithRetry(htmlFilePath);
                                 Console.WriteLine($"PDF generated successfully for PrintContent: {pdfFilePath}");
                             }
                         }
@@ -2836,7 +2832,6 @@ public partial class OrderDetails
 
                             // Convert the HTML to PDF
                             Converter.Convert(doc);
-                            DeleteWithRetry(htmlFilePath);
                             Console.WriteLine($"PDF generated successfully: {pdfFilePath}");
                         }
                     }
@@ -2903,7 +2898,6 @@ public partial class OrderDetails
                             };
 
                             Converter.Convert(doc);
-                            DeleteWithRetry(htmlFilePath);
                             Console.WriteLine($"PDF generated successfully for div_frame: {pdfFilePath}");
                         }
 
