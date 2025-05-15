@@ -1,25 +1,27 @@
 using Blazored.TextEditor;
 using Blazorise;
+using Kooco.Pikachu.EdmManagement;
 using Kooco.Pikachu.Items.Dtos;
-using Kooco.Pikachu.TenantEmailing;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
 
-namespace Kooco.Pikachu.Blazor.Pages.TenantEmailing;
+namespace Kooco.Pikachu.Blazor.Pages.EdmManagement;
 
 public partial class CreateEdm
 {
+    [Parameter] public Guid? Id { get; set; }
     private CreateEdmDto Entity { get; set; } = new();
     private IReadOnlyList<KeyValueDto> CampaignOptions { get; set; } = [];
     private IReadOnlyList<KeyValueDto> GroupBuyOptions { get; set; } = [];
     private IReadOnlyList<string> MemberTagOptions { get; set; } = [];
     private IReadOnlyList<EdmTemplateType> TemplateTypeOptions { get; set; } = [.. Enum.GetValues<EdmTemplateType>()];
     private IReadOnlyList<EdmSendFrequency> SendFrequencyOptions { get; set; } = [.. Enum.GetValues<EdmSendFrequency>()];
-    private string SelectedTab { get; set; } = EdmTemplateType.Customize.ToString();
+    private IReadOnlyList<EdmMemberType> MemberTypeOptions { get; set; } = [.. Enum.GetValues<EdmMemberType>()];
+    private string SelectedTab { get; set; }
     private bool Loading { get; set; }
 
     private Validations ValidationsRef;
@@ -37,6 +39,8 @@ public partial class CreateEdm
             _messageStore.Clear(e.FieldIdentifier);
             _editContext.NotifyValidationStateChanged();
         };
+
+        OnTabChanged(EdmTemplateType.Customize.ToString());
     }
 
     protected override async Task OnInitializedAsync()
@@ -44,6 +48,8 @@ public partial class CreateEdm
         try
         {
             GroupBuyOptions = await GroupBuyAppService.GetAllGroupBuyLookupAsync();
+            CampaignOptions = await CampaignAppService.GetLookupAsync();
+            MemberTagOptions = await MemberTagAppService.GetMemberTagNamesAsync();
         }
         catch (Exception ex)
         {
@@ -54,13 +60,34 @@ public partial class CreateEdm
     void OnTabChanged(string tab)
     {
         SelectedTab = tab;
-        Entity.TemplateType = Enum.Parse<EdmTemplateType>(tab);
+        var templateType = Enum.Parse<EdmTemplateType>(tab);
+
+        if (templateType != Entity.TemplateType)
+        {
+            Entity.TemplateType = templateType;
+            if (Entity.TemplateType == EdmTemplateType.ShoppingCart)
+            {
+                Entity.Subject = L["EdmTemplateTypeShoppingCartSubject"];
+            }
+            else
+            {
+                Entity.Subject = string.Empty;
+            }
+        }
     }
 
-    string ValidationClass(string propertyName)
+    void OnCampaignChanged(Guid? campaignId)
     {
-        var fieldIdentifier = new FieldIdentifier(Entity, propertyName);
-        return _editContext.GetValidationMessages(fieldIdentifier).Any() ? "is-invalid" : string.Empty;
+        _editContext.NotifyFieldChanged(new FieldIdentifier(Entity, nameof(Entity.CampaignId)));
+
+        if (campaignId.HasValue)
+        {
+            var campaign = CampaignOptions.FirstOrDefault(c => c.Id == campaignId);
+            if (campaign != null)
+            {
+                Entity.Subject = campaign.Name;
+            }
+        }
     }
 
     async Task Save()
@@ -76,6 +103,8 @@ public partial class CreateEdm
             {
                 return;
             }
+
+            Loading = false;
         }
         catch (Exception ex)
         {
@@ -105,5 +134,16 @@ public partial class CreateEdm
         }
 
         return Loading;
+    }
+
+    string ValidationClass(string propertyName)
+    {
+        var fieldIdentifier = new FieldIdentifier(Entity, propertyName);
+        return _editContext.GetValidationMessages(fieldIdentifier).Any() ? "is-invalid" : string.Empty;
+    }
+
+    void Cancel()
+    {
+        NavigationManager.NavigateTo("/Edm");
     }
 }

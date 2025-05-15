@@ -1534,7 +1534,8 @@
     "Gender": "Gender",
     "Menu:EmailManagement": "Email Management",
     "Menu:EmailSettings": "Settings",
-    "Menu:CreateEdm": "Create EDM",
+    "Menu:EdmList": "EDM",
+    "EdmList": "Electronic Direct Mail",
     "CreateEdm": "Create EDM",
     "SendDate": "Send Date",
     "Enum:EdmTemplateType.0": "Customize",
@@ -1542,8 +1543,14 @@
     "Enum:EdmTemplateType.2": "Shopping Cart",
     "SelectCampaign": "Select Campaign",
     "SelectSendFrequency": "Select Send Frequency",
-    "Enum:SendFrequency.0": "Day",
-    "Enum:SendFrequency.1": "Week",
-    "Enum:SendFrequency.2": "Month"
+    "Enum:EdmSendFrequency.0": "Day",
+    "Enum:EdmSendFrequency.1": "Week",
+    "Enum:EdmSendFrequency.2": "Month",
+    "Enum:EdmMemberType.0": "All Members",
+    "Enum:EdmMemberType.1": "Every Member Tag",
+    "Enum:EdmMemberType.2": "Specific Member Tags",
+    "SelectMemberTags": "Select Member Tags",
+    "TheFieldMustBeGreaterOrEqualTo": "{0} must be greater than or equal to {1}.",
+    "EdmTemplateTypeShoppingCartSubject": "You still have items left in your shopping cart!"
   }
 }

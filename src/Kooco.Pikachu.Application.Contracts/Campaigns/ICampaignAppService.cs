@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Kooco.Pikachu.Items.Dtos;
+using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
@@ -14,4 +16,5 @@ public interface ICampaignAppService : IApplicationService
     Task DeleteAsync(Guid id);
     Task SetIsEnabledAsync(Guid id, bool isEnabled);
     Task<long> GetActiveCampaignsCountAsync();
+    Task<List<KeyValueDto>> GetLookupAsync();
 }

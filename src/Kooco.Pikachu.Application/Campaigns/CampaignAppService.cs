@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using Kooco.Pikachu.Items.Dtos;
 using Kooco.Pikachu.Permissions;
 using Microsoft.AspNetCore.Authorization;
 using System;
@@ -120,5 +121,15 @@ public class CampaignAppService : PikachuAppService, ICampaignAppService
     public async Task<long> GetActiveCampaignsCountAsync()
     {
         return await _campaignRepository.GetActiveCampaignsCountAsync();
+    }
+
+    public async Task<List<KeyValueDto>> GetLookupAsync()
+    {
+        return [.. (await _campaignRepository.GetQueryableAsync())
+            .Select(q => new KeyValueDto
+            {
+                Id = q.Id,
+                Name = q.Name
+            })];
     }
 }

@@ -105,7 +105,7 @@ public class MemberTagAppService : PikachuAppService, IMemberTagAppService
         }
 
         var vipTierNames = vipTiers?.Tiers.Select(t => t.TierName!).ToList();
-        if (tagNames.Count>0)
+        if (tagNames.Count > 0)
         {
             return [.. tagNames
             .Concat(vipTierNames)
@@ -113,8 +113,9 @@ public class MemberTagAppService : PikachuAppService, IMemberTagAppService
             .Distinct()
             .OrderBy(x => x)];
         }
-        else {
-            return new List<string>();
+        else
+        {
+            return [];
         }
     }
 

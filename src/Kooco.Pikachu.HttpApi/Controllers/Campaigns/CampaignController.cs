@@ -1,7 +1,9 @@
 ﻿using Asp.Versioning;
 using Kooco.Pikachu.Campaigns;
+using Kooco.Pikachu.Items.Dtos;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Application.Dtos;
@@ -42,6 +44,12 @@ public class CampaignController(ICampaignAppService campaignAppService) : Pikach
     public Task<PagedResultDto<CampaignDto>> GetListAsync(GetCampaignListDto input)
     {
         return campaignAppService.GetListAsync(input);
+    }
+
+    [HttpGet("lookup")]
+    public Task<List<KeyValueDto>> GetLookupAsync()
+    {
+        return campaignAppService.GetLookupAsync();
     }
 
     [HttpPost("enabled/{id}/{isEnabled}")]

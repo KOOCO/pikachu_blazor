@@ -1,0 +1,26 @@
+﻿@page "/Edm"
+@inherits PikachuComponentBase
+@inject NavigationManager NavigationManager
+
+<Div Class="d-flex justify-content-between align-items-center">
+    <h3 class="mb-0 text-dark">@L["EdmList"]</h3>
+    <PikachuButton Class="pk-btn-sm pk-btn-primary"
+                   IconClass="fas fa-add"
+                   Clicked="() => Navigate()">
+        @L["AddNew"]
+    </PikachuButton>
+</Div>
+
+@code {
+    void Navigate(Guid? id = null)
+    {
+        if (id.HasValue)
+        {
+            NavigationManager.NavigateTo("Edm/Edit/" + id);
+        }
+        else
+        {
+            NavigationManager.NavigateTo("Edm/Create");
+        }
+    }
+}

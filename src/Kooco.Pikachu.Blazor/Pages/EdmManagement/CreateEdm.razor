@@ -1,0 +1,280 @@
+﻿@page "/Edm/Create"
+@page "/Edm/Edit/{Id:guid}"
+@using Blazored.TextEditor
+@using Blazorise.FluentValidation
+@using FluentValidation
+@using Kooco.Pikachu.Campaigns
+@using Kooco.Pikachu.EdmManagement
+@using Kooco.Pikachu.EnumValues;
+@using Kooco.Pikachu.GroupBuys
+@using Kooco.Pikachu.Localization
+@using Kooco.Pikachu.Members.MemberTags
+@using Volo.Abp.AspNetCore.Components.Web
+@inherits PikachuComponentBase
+@inject AbpBlazorMessageLocalizerHelper<PikachuResource> LH
+@inject IValidator<CreateEdmDto> CreateEdmValidator
+@inject IGroupBuyAppService GroupBuyAppService
+@inject ICampaignAppService CampaignAppService
+@inject IMemberTagAppService MemberTagAppService
+@inject NavigationManager NavigationManager
+
+<style>
+    .form-group[indent] {
+        margin-left: 25px;
+    }
+
+    .main-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+    }
+
+        .main-container .card,
+        .main-container .container-header {
+            width: 75%;
+            max-width: 1080px;
+        }
+
+    @@media (max-width: 999px) {
+        .main-container .card,
+        .main-container .container-header {
+            width: 100%;
+            max-width: 100%;
+        }
+    }
+
+    .container-header {
+        display: flex;
+        align-items: center;
+    }
+
+    .container-footer .pk-btn {
+        min-width: 100px;
+        margin: 0;
+        margin-left: 7px;
+    }
+</style>
+
+<Div Class="rounded-cards">
+    <Div Class="main-container">
+        <Div Class="container-header">
+            <PikachuButton Clicked="@Cancel">
+                <Icon Name="IconName.ArrowLeft" Class="me-1"></Icon>
+            </PikachuButton>
+            <h4 class="text-dark m-0">
+                @L["CreateEdm"]
+            </h4>
+        </Div>
+        <Card>
+            <CardBody>
+                <Tabs SelectedTab="@SelectedTab" SelectedTabChanged="@OnTabChanged">
+                    <Items>
+                        @foreach (var templateType in TemplateTypeOptions)
+                        {
+                            <Tab Name="@templateType.ToString()">@L["Enum:EdmTemplateType." + (int)templateType]</Tab>
+                        }
+                    </Items>
+                </Tabs>
+
+                <Div Class="p-3">
+                    <Validations @ref="ValidationsRef" Model="@Entity" ValidateOnLoad="false" HandlerType="typeof(FluentValidationHandler)">
+                        <EditForm EditContext="_editContext">
+                            @if (Entity.TemplateType == EdmTemplateType.Campaign)
+                            {
+                                <Field>
+                                    <FieldLabel required>@L["Campaign"]</FieldLabel>
+                                    <AntDesign.Select Size="AntDesign.InputSize.Large"
+                                                      TItem="Guid?"
+                                                      TItemValue="Guid?"
+                                                      Placeholder="@L["SelectCampaign"]"
+                                                      EnableSearch
+                                                      AllowClear
+                                                      Class="@ValidationClass(nameof(Entity.CampaignId))"
+                                                      OnSelectedItemChanged="OnCampaignChanged"
+                                                      @bind-Value="Entity.CampaignId">
+                                        <SelectOptions>
+                                            @foreach (var item in CampaignOptions)
+                                            {
+                                                <AntDesign.SelectOption TItemValue="Guid?" TItem="Guid?" Value=@item.Id Label=@item.Name />
+                                            }
+                                        </SelectOptions>
+                                    </AntDesign.Select>
+                                    <ValidationMessage For="() => Entity.CampaignId" />
+                                </Field>
+                            }
+                            <Validation MessageLocalizer="@LH.Localize">
+                                <Field>
+                                    <FieldLabel required>@L["MemberTags"]</FieldLabel>
+                                    <RadioGroup Orientation="Orientation.Vertical" TValue="EdmMemberType?" Name="MemberTypes" @bind-CheckedValue="@Entity.MemberType">
+                                        <ChildContent>
+                                            @foreach (var memberType in MemberTypeOptions)
+                                            {
+                                                <Radio TValue="EdmMemberType?" Value="@memberType">@L["Enum:EdmMemberType." + (int)memberType]</Radio>
+                                            }
+                                        </ChildContent>
+                                        <Feedback>
+                                            <ValidationError />
+                                        </Feedback>
+                                    </RadioGroup>
+                                    @if (Entity.MemberType == EdmMemberType.SpecificMemberTags)
+                                    {
+                                        <Field indent>
+                                            <AntDesign.Select Mode="AntDesign.SelectMode.Multiple"
+                                                              Size="AntDesign.InputSize.Large"
+                                                              TItem="string"
+                                                              TItemValue="string"
+                                                              Placeholder="@L["SelectMemberTags"]"
+                                                              MaxTagCount="AntDesign.Select.ResponsiveTag.Responsive"
+                                                              EnableSearch
+                                                              AllowClear
+                                                              HideSelected
+                                                              Class="@ValidationClass(nameof(Entity.MemberTags))"
+                                                              @bind-Values="Entity.MemberTags">
+                                                <SelectOptions>
+                                                    @foreach (var item in MemberTagOptions)
+                                                    {
+                                                        <AntDesign.SelectOption TItemValue="string" TItem="string" Value=@item Label=@L[item] />
+                                                    }
+                                                </SelectOptions>
+                                            </AntDesign.Select>
+                                            <ValidationMessage For="() => Entity.MemberTags" />
+                                        </Field>
+                                    }
+                                </Field>
+                            </Validation>
+                            <Validation MessageLocalizer="@LH.Localize">
+                                <Field>
+                                    <FieldLabel required>@L["GroupBuy"]</FieldLabel>
+                                    <RadioGroup Orientation="Orientation.Vertical" TValue="bool?" Name="Groupbuys" @bind-CheckedValue="@Entity.ApplyToAllGroupBuys">
+                                        <ChildContent>
+                                            <Radio TValue="bool?" Value="@true">@L["AllGroupBuys"]</Radio>
+                                            <Radio TValue="bool?" Value="@false">@L["SpecificGroupBuys"]</Radio>
+                                        </ChildContent>
+                                        <Feedback>
+                                            <ValidationError />
+                                        </Feedback>
+                                    </RadioGroup>
+                                    @if (Entity.ApplyToAllGroupBuys == false)
+                                    {
+                                        <Field indent>
+                                            <AntDesign.Select Size="AntDesign.InputSize.Large"
+                                                              TItem="Guid?"
+                                                              TItemValue="Guid?"
+                                                              Placeholder="@L["SelectGroupBuy"]"
+                                                              EnableSearch
+                                                              AllowClear
+                                                              Class="@ValidationClass(nameof(Entity.GroupBuyId))"
+                                                              OnSelectedItemChanged="() => _editContext.NotifyFieldChanged(new FieldIdentifier(Entity, nameof(Entity.GroupBuyId)))"
+                                                              @bind-Value="Entity.GroupBuyId">
+                                                <SelectOptions>
+                                                    @foreach (var item in GroupBuyOptions)
+                                                    {
+                                                        <AntDesign.SelectOption TItemValue="Guid?" TItem="Guid?" Value=@item.Id Label=@item.Name />
+                                                    }
+                                                </SelectOptions>
+                                            </AntDesign.Select>
+                                            <ValidationMessage For="() => Entity.GroupBuyId" />
+                                        </Field>
+                                    }
+                                </Field>
+                            </Validation>
+                            <Row>
+                                <Column ColumnSize="ColumnSize.Is6">
+                                    <Validation MessageLocalizer="@LH.Localize">
+                                        <Field>
+                                            <FieldLabel required>
+                                                @L[Entity.TemplateType == EdmTemplateType.ShoppingCart ? "SendDateRange" : "SendDate"]
+                                            </FieldLabel>
+                                            <DatePicker TValue="DateTime?" @bind-Date="Entity.StartDate">
+                                                <Feedback>
+                                                    <ValidationError />
+                                                </Feedback>
+                                            </DatePicker>
+                                        </Field>
+                                    </Validation>
+                                </Column>
+                                @if (Entity.TemplateType == EdmTemplateType.ShoppingCart)
+                                {
+                                    <Column ColumnSize="ColumnSize.Is6">
+                                        <Validation MessageLocalizer="@LH.Localize">
+                                            <Field>
+                                                <FieldLabel Visibility="Visibility.Invisible">@L["SendDate"]</FieldLabel>
+                                                <DatePicker TValue="DateTime?" @bind-Date="Entity.EndDate">
+                                                    <Feedback>
+                                                        <ValidationError />
+                                                    </Feedback>
+                                                </DatePicker>
+                                            </Field>
+                                        </Validation>
+                                    </Column>
+                                }
+                            </Row>
+                            <Row>
+                                <Column ColumnSize="ColumnSize.Is6">
+                                    <Validation MessageLocalizer="@LH.Localize">
+                                        <Field>
+                                            <FieldLabel required>@L["SendTime"]</FieldLabel>
+                                            <TimeEdit TValue="DateTime?" @bind-Time="Entity.SendTime">
+                                                <Feedback>
+                                                    <ValidationError />
+                                                </Feedback>
+                                            </TimeEdit>
+                                        </Field>
+                                    </Validation>
+                                </Column>
+                            </Row>
+                            @if (Entity.TemplateType == EdmTemplateType.ShoppingCart)
+                            {
+                                <Field>
+                                    <FieldLabel required>@L["SendFrequency"]</FieldLabel>
+                                    <AntDesign.Select Size="AntDesign.InputSize.Large"
+                                                      TItem="EdmSendFrequency?"
+                                                      TItemValue="EdmSendFrequency?"
+                                                      Placeholder="@L["SelectSendFrequency"]"
+                                                      AllowClear
+                                                      Class="@ValidationClass(nameof(Entity.SendFrequency))"
+                                                      OnSelectedItemChanged="() => _editContext.NotifyFieldChanged(new FieldIdentifier(Entity, nameof(Entity.SendFrequency)))"
+                                                      @bind-Value="Entity.SendFrequency">
+                                        <SelectOptions>
+                                            @foreach (var item in SendFrequencyOptions)
+                                            {
+                                                <AntDesign.SelectOption TItemValue="EdmSendFrequency?" TItem="EdmSendFrequency?" Value=@item Label=@L["Enum:EdmSendFrequency." + (int)item] />
+                                            }
+                                        </SelectOptions>
+                                    </AntDesign.Select>
+                                    <ValidationMessage For="() => Entity.SendFrequency" />
+                                </Field>
+                            }
+                            <Validation MessageLocalizer="@LH.Localize">
+                                <Field>
+                                    <FieldLabel required>@L["Subject"]</FieldLabel>
+                                    <TextEdit @bind-Text="Entity.Subject">
+                                        <Feedback>
+                                            <ValidationError />
+                                        </Feedback>
+                                    </TextEdit>
+                                </Field>
+                            </Validation>
+                            <Field>
+                                <FieldLabel required>@L["Message"]</FieldLabel>
+                                <Div Class="@(ValidationClass(nameof(Entity.Message)) + " quill-editor")">
+                                    <BlazoredTextEditor @ref="@MessageHtml" Placeholder="@L["Composeanepic"]">
+                                        <ToolbarContent>
+                                            <BlazoredTextEditorToolbar />
+                                        </ToolbarContent>
+                                    </BlazoredTextEditor>
+                                </Div>
+                                <ValidationMessage For="() => Entity.Message" />
+                            </Field>
+                        </EditForm>
+                    </Validations>
+                    <Div Class="text-end mt-3 container-footer">
+                        <PikachuButton Class="pk-btn-danger" Disabled="Loading" Clicked="Cancel">@L["Cancel"]</PikachuButton>
+                        <PikachuButton Class="pk-btn-primary" Loading="Loading" Clicked="Save">@L["Save"]</PikachuButton>
+                    </Div>
+                </Div>
+            </CardBody>
+        </Card>
+    </Div>
+</Div>
