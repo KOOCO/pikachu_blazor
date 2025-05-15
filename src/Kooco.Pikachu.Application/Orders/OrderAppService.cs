@@ -152,6 +152,7 @@ public class OrderAppService : PikachuAppService, IOrderAppService
             order.DeliveryCostForFrozen = input.DeliveryCostForFrozen;
             order.DeliveryCost = input.DeliveryCost;
             order.DiscountAmount = input.DiscountCodeAmount;
+            order.CampaignId = input.CampaignId;
 
             if (input.IsTest)
             {

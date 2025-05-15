@@ -1,4 +1,5 @@
-﻿using Kooco.Pikachu.DiscountCodes;
+﻿using Kooco.Pikachu.Campaigns;
+using Kooco.Pikachu.DiscountCodes;
 using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.GroupBuys;
 using Kooco.Pikachu.StoreComments;
@@ -604,6 +605,11 @@ public class Order : FullAuditedAggregateRoot<Guid>, IMultiTenant
     /// 訂單交易列表
     /// </summary>
     public ICollection<OrderTransaction> OrderTransactions { get; set; } = new List<OrderTransaction>();
+    
+    public Guid? CampaignId { get; set; }
+
+    [ForeignKey(nameof(CampaignId))]
+    public virtual Campaign Campaign { get; set; }
 
     public Order() { }
 
