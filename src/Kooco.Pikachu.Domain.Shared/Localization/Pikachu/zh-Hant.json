@@ -1357,6 +1357,9 @@
     "ReturnedApplication": "退款已取消"
 
 
-
+    "Menu:EmailManagement": "Email 管理",
+    "Menu:EmailSettings": "設定",
+    "Menu:CreateEdm": "建立EDM",
+    "CreateEdm": "建立EDM"
   }
 }

@@ -955,6 +955,14 @@
     border-color: #dc3545 !important;
 }
 
+.is-invalid.quill-editor .ql-container {
+    border: 1px solid #dc3545 !important;
+}
+
+.quill-editor .ql-editor {
+    min-height: 200px;
+}
+
 .ant-select-focused:not(.ant-select-disabled).ant-select:not(.ant-select-customize-input) .ant-select-selector {
     box-shadow: none;
 }

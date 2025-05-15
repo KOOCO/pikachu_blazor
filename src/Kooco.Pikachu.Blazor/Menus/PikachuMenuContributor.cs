@@ -421,9 +421,9 @@ public class PikachuMenuContributor : IMenuContributor
             ));
 
         emailManagement.AddItem(new ApplicationMenuItem(
-            name: PikachuMenus.EmailSettings,
-            displayName: l["Menu:CreateEmail"],
-            url: "/CreateEmail",
+            name: PikachuMenus.CreateEdm,
+            displayName: l["Menu:CreateEdm"],
+            url: "/CreateEdm",
             icon: "fas fa-envelope",
             requiredPermissionName: PikachuPermissions.EmailSettings
             ));
