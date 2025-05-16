@@ -1386,7 +1386,11 @@
     "Monthly": "每月",
     "NewAddOn": "新增加購商品",
     "AddNewDiscountCode": "新增折扣優惠",
-    "SaveChanges": "儲存"
+    "SaveChanges": "儲存",
+    "SaveSettings": "儲存",
+    "Size": "商品尺寸",
+    "Yes": "是",
+    "PostOffice": "郵局"
 
   }
 }
