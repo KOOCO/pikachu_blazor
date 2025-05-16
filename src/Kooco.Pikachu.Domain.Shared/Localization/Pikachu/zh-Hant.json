@@ -1381,6 +1381,8 @@
     "SendDateRange": "發送日期區間",
     "SendFrequency": "發送頻率",
     "TheFieldMustBeGreaterOrEqualTo": "{0} 必須大於或等於 {1}。",
-    "Enabled": "啟用狀態"
+    "Enabled": "啟用狀態",
+    "Weekly": "每週",
+    "Monthly":"每月"
   }
 }

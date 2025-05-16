@@ -28,8 +28,9 @@ public class EfCoreSalesReportRepository(IDbContextProvider<PikachuDbContext> db
             .Where(x => x.CreationTime.Date >= startDate.Date)
             .Where(x => x.CreationTime.Date <= endDate.Date)
             .WhereIf(groupBuyId.HasValue, x => x.GroupBuyId == groupBuyId)
+             .OrderByDescending(x => x.CreationTime)
             .Include(o => o.OrderItems)
-            .OrderByDescending(x => x.CreationTime)
+           
             .GroupBy(x => x.CreationTime)
             .ToListAsync();
 
@@ -158,7 +159,7 @@ public class EfCoreSalesReportRepository(IDbContextProvider<PikachuDbContext> db
             }
         }
 
-        return results;
+        return results.OrderByDescending(x=>x.Date).ToList();
     }
 
     private static SalesReportModel CreateSalesReport(
