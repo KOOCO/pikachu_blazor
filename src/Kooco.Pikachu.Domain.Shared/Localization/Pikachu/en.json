@@ -1551,6 +1551,8 @@
     "Enum:EdmMemberType.2": "Specific Member Tags",
     "SelectMemberTags": "Select Member Tags",
     "TheFieldMustBeGreaterOrEqualTo": "{0} must be greater than or equal to {1}.",
-    "EdmTemplateTypeShoppingCartSubject": "You still have items left in your shopping cart!"
+    "EdmTemplateTypeShoppingCartSubject": "You still have items left in your shopping cart!",
+    "NewAddOn": "New",
+    "AddNewDiscountCode": "New"
   }
 }

@@ -89,7 +89,7 @@
     "Cm0002": "0002: 90cm",
     "Cm0003": "0003: 120cm",
     "Cm0004": "0004: 150cm",
-    "Code": "Code",
+    "Code": "折扣代碼",
     "CodeValue": "Code Value",
     "Combined": "併單",
     "CombineOrders": "合併訂單",
@@ -1383,6 +1383,9 @@
     "TheFieldMustBeGreaterOrEqualTo": "{0} 必須大於或等於 {1}。",
     "Enabled": "啟用狀態",
     "Weekly": "每週",
-    "Monthly":"每月"
+    "Monthly": "每月",
+    "NewAddOn": "新增加購商品",
+    "AddNewDiscountCode": "新增折扣優惠"
+
   }
 }
