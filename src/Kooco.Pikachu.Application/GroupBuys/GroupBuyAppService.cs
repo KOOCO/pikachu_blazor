@@ -859,29 +859,19 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
                             {
                                 foreach (var deliveryCost in deliveryTemperatureCosts)
                                 {
-                                    var key = deliveryCost.Temperature.ToString();
-                                    response.DeliveredByStoreType.TryAdd(key, new());
-
-                                    response.DeliveredByStoreType[key].DeliveryMethod = deliveryCost.DeliveryMethod?.ToString();
-
-                                    if (deliveryCost.DeliveryMethod is DeliveryMethod.BlackCat1 or DeliveryMethod.BlackCatFreeze or DeliveryMethod.BlackCatFrozen or
-                                        DeliveryMethod.TCatDeliveryNormal or DeliveryMethod.TCatDeliveryFreeze or DeliveryMethod.TCatDeliveryFrozen)
+                                    response.DeliveredByStoreType.Add(new DeliveredByStoreTypeResponse
                                     {
-                                        var matchingTimes = convenienceStoreTimes.Where(t => !string.IsNullOrEmpty(t)).ToList();
-                                        response.DeliveredByStoreType[key].DeliveryTime = matchingTimes.Count > 0 ? matchingTimes : ["No time preference"];
-                                        response.DeliveredByStoreType[key].DeliveryType = 0;
-                                    }
-                                    else if (deliveryCost.DeliveryMethod is DeliveryMethod.HomeDelivery or DeliveryMethod.PostOffice)
-                                    {
-                                        response.DeliveredByStoreType[key].DeliveryType = 0;
-                                    }
-                                    else if (deliveryCost.DeliveryMethod is DeliveryMethod.SevenToEleven1 or DeliveryMethod.SevenToElevenC2C or
-                                             DeliveryMethod.FamilyMart1 or DeliveryMethod.FamilyMartC2C or
-                                             DeliveryMethod.TCatDeliverySevenElevenNormal or DeliveryMethod.TCatDeliverySevenElevenFreeze or
-                                             DeliveryMethod.TCatDeliverySevenElevenFrozen or DeliveryMethod.SevenToElevenFrozen)
-                                    {
-                                        response.DeliveredByStoreType[key].DeliveryType = 1;
-                                    }
+                                        Type = deliveryCost.Temperature.ToString(),
+                                        DeliveryMethod = deliveryCost.DeliveryMethod?.ToString(),
+                                        DeliveryTime = (deliveryCost.DeliveryMethod is DeliveryMethod.BlackCat1 or DeliveryMethod.BlackCatFreeze or DeliveryMethod.BlackCatFrozen or
+                                                        DeliveryMethod.TCatDeliveryNormal or DeliveryMethod.TCatDeliveryFreeze or DeliveryMethod.TCatDeliveryFrozen)
+                                                        ? (convenienceStoreTimes.Where(t => !string.IsNullOrEmpty(t)).ToList() ?? new List<string> { "No time preference" })
+                                                        : new List<string> { "Inapplicable" },
+                                        DeliveryType = (deliveryCost.DeliveryMethod is DeliveryMethod.SevenToEleven1 or DeliveryMethod.SevenToElevenC2C or
+                                                        DeliveryMethod.FamilyMart1 or DeliveryMethod.FamilyMartC2C or
+                                                        DeliveryMethod.TCatDeliverySevenElevenNormal or DeliveryMethod.TCatDeliverySevenElevenFreeze or
+                                                        DeliveryMethod.TCatDeliverySevenElevenFrozen or DeliveryMethod.SevenToElevenFrozen) ? 1 : 0
+                                    });
                                 }
                             }
                         }
