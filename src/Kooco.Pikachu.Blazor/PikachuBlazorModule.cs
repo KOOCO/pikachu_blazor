@@ -106,18 +106,7 @@ public class PikachuBlazorModule : AbpModule
         context.Services.AddBlazoriseRichTextEdit();
         context.Services.AddAntDesign();
         context.Services.AddTransient<OrderDeliveryBackgroundJob>();
-        context.Services.AddServerSideBlazor()
-    .AddHubOptions(options =>
-    {
-        // Default is 30 seconds
-        options.ClientTimeoutInterval = TimeSpan.FromMinutes(3);
-
-        // Default is 15 seconds
-        options.KeepAliveInterval = TimeSpan.FromSeconds(30);
-
-        // Increase the max time the server will wait for the client
-        options.HandshakeTimeout = TimeSpan.FromSeconds(30);
-    });
+    
         PreConfigure<OpenIddictBuilder>(builder =>
         {
             builder.AddValidation(options =>

@@ -10,7 +10,7 @@
 <Modal @ref="TagModal" Closing="@OnModalClosing">
     <ModalContent Size="ModalSize.Large" IsCentered="true">
         <ModalHeader>
-            <ModalTitle>@(Input.EditingId.HasValue ? L["Edit"] : L["New"])</ModalTitle>
+            <ModalTitle>@(Input.EditingId.HasValue ? L["Edit"] : L["NewTag1"])</ModalTitle>
             <CloseButton Clicked="CloseTagModal" />
         </ModalHeader>
         <ModalBody>
@@ -91,7 +91,8 @@
                         <AntDesign.RangePicker TValue="DateTime?[]"
                                                Value="Input.RegistrationDateRange"
                                                Format="@AntLocaleHelper.GetFormat()"
-                                               Locale="AntLocaleHelper.GetLocale()"
+                                               Locale="AntLocaleHelper.GetLocale()",
+                                               Placeholder="@(new[] { L["StartDate"].Value, L["EndDate"].Value })"
                                                CultureInfo="@CultureInfo.CurrentCulture"
                                                OnChange="OnRangeChange" />
                     </Field>

@@ -937,6 +937,7 @@
     "FullWidthWithLargeImage": "全寬大圖",
     "available": "可用",
     "New": "新會員",
+    "NewTag1": "新增標籤",
     "TenantInformationUpdated": "租戶資訊已更新!",
     "CustomerServiceUpdated": "客服資訊已更新!",
     "PrivacyPolicyUpdated": "隱私政策已更新!",
@@ -1098,8 +1099,8 @@
     "Pikachu:VipTierConditionChecked": "至少需要選擇一個條件。",
     "Pikachu:VipTierCondition": "VIP 等級條件欄位為必填。",
     "Pikachu:DuplicateTier": "無效輸入 - 存在重複的等級。",
-    "BasedOnAmount": "基於金額",
-    "BasedOnCount": "基於次數",
+    "BasedOnAmount": "基於消費總金額",
+    "BasedOnCount": "基於完成訂單總數量",
     "MemberTags": "會員標籤",
     "MemberStatus": "會員狀態",
     "VipTier": "VIP 等級",
@@ -1379,6 +1380,7 @@
     "GroupBuy": "團購",
     "SendDateRange": "發送日期區間",
     "SendFrequency": "發送頻率",
-    "TheFieldMustBeGreaterOrEqualTo": "{0} 必須大於或等於 {1}。"
+    "TheFieldMustBeGreaterOrEqualTo": "{0} 必須大於或等於 {1}。",
+    "Enabled": "啟用狀態"
   }
 }

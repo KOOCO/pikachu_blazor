@@ -23,7 +23,11 @@ public class AntLocaleHelper
                     QuarterSelect = "选择季度",
                     Today = "今天",
                     ShortWeekDays = ["日", "一", "二", "三", "四", "五", "六"],
-                }
+                    RangePlaceholder = ["開始日期", "結束日期"]
+                    
+                },
+               
+                
             },
             _ => new DatePickerLocale()
         };
