@@ -29,7 +29,7 @@
     }
     @if (ShouldDisplayText && IconAlignment == Alignment.Start)
     {
-        <Span>
+        <Span @onclick="CopyToClipboard">
             @_displayText
         </Span>
     }

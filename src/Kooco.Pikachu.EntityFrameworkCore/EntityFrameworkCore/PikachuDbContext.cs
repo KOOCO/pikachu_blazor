@@ -52,6 +52,7 @@ using Kooco.Pikachu.LogisticsSettings;
 using Kooco.Pikachu.Tenants.Entities;
 using Kooco.Pikachu.Members.MemberTags;
 using Kooco.Pikachu.Campaigns;
+using Kooco.Pikachu.EdmManagement;
 
 namespace Kooco.Pikachu.EntityFrameworkCore;
 
@@ -174,6 +175,9 @@ public class PikachuDbContext(DbContextOptions<PikachuDbContext> options) :
     public DbSet<CampaignDiscount> CampaignDiscounts { get; set; }
     public DbSet<CampaignShoppingCredit> CampaignShoppingCredits { get; set; }
     public DbSet<CampaignAddOnProduct> CampaignAddOnProducts { get; set; }
+
+    public DbSet<Edm> Edms { get; set; }
+    public DbSet<EdmGroupBuy> EdmGroupBuys { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -805,6 +809,24 @@ public class PikachuDbContext(DbContextOptions<PikachuDbContext> options) :
             b.ConfigureByConvention();
 
             b.HasOne(x => x.Product).WithMany().HasForeignKey(x => x.ProductId);
+        });
+
+        builder.Entity<Edm>(b =>
+        {
+            b.ToTable(PikachuConsts.DbTablePrefix + "Edms", PikachuConsts.DbSchema);
+            b.ConfigureByConvention();
+
+            b.HasMany(x => x.GroupBuys).WithOne(x => x.Edm).HasForeignKey(x => x.EdmId);
+            b.HasOne(x => x.Campaign).WithMany().HasForeignKey(x => x.CampaignId);
+        });
+
+        builder.Entity<EdmGroupBuy>(b =>
+        {
+            b.ToTable(PikachuConsts.DbTablePrefix + "EdmGroupBuys", PikachuConsts.DbSchema);
+            b.ConfigureByConvention();
+
+            b.HasOne(x => x.Edm).WithMany(x => x.GroupBuys).HasForeignKey(x => x.EdmId);
+            b.HasOne(x => x.GroupBuy).WithMany().HasForeignKey(x => x.GroupBuyId);
         });
     }
 }

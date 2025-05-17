@@ -2,6 +2,8 @@ using Blazored.TextEditor;
 using Blazorise;
 using Kooco.Pikachu.EdmManagement;
 using Kooco.Pikachu.Items.Dtos;
+using Kooco.Pikachu.Permissions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using System;
@@ -28,6 +30,8 @@ public partial class CreateEdm
     private readonly ValidationMessageStore _messageStore;
     private readonly EditContext _editContext;
     private BlazoredTextEditor MessageHtml;
+    private bool _htmlLoaded = false;
+    private bool _htmlNeedsLoading = false;
 
     public CreateEdm()
     {
@@ -47,13 +51,54 @@ public partial class CreateEdm
     {
         try
         {
+            await CheckPolicyAsync();
+
             GroupBuyOptions = await GroupBuyAppService.GetAllGroupBuyLookupAsync();
             CampaignOptions = await CampaignAppService.GetLookupAsync();
             MemberTagOptions = await MemberTagAppService.GetMemberTagNamesAsync();
+
+            if (Id.HasValue)
+            {
+                var edm = await EdmAppService.GetAsync(Id.Value);
+                Entity = ObjectMapper.Map<EdmDto, CreateEdmDto>(edm);
+                OnTabChanged(Entity.TemplateType.ToString());
+                StateHasChanged();
+                await ValidationsRef.ClearAll();
+
+                _htmlNeedsLoading = true;
+            }
         }
         catch (Exception ex)
         {
             await HandleErrorAsync(ex);
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if ((_htmlNeedsLoading || firstRender) && !_htmlLoaded)
+        {
+            if (Id.HasValue && !string.IsNullOrWhiteSpace(Entity?.Message))
+            {
+                await Task.Delay(5);
+                await MessageHtml.LoadHTMLContent(Entity.Message);
+                _htmlLoaded = true;
+                _htmlNeedsLoading = false;
+                StateHasChanged();
+            }
+        }
+    }
+
+    async Task CheckPolicyAsync()
+    {
+        bool isGranted = Id.HasValue
+                ? await AuthorizationService.IsGrantedAsync(PikachuPermissions.EdmManagement.Edit)
+                : await AuthorizationService.IsGrantedAsync(PikachuPermissions.EdmManagement.Create);
+
+        if (!isGranted)
+        {
+            await Message.Error(L["YouAreNotAuthorized"]);
+            Cancel();
         }
     }
 
@@ -104,10 +149,21 @@ public partial class CreateEdm
                 return;
             }
 
+            if (Id.HasValue)
+            {
+                await EdmAppService.UpdateAsync(Id.Value, Entity);
+            }
+            else
+            {
+                await EdmAppService.CreateAsync(Entity);
+            }
+
             Loading = false;
+            Cancel();
         }
         catch (Exception ex)
         {
+            Loading = false;
             await HandleErrorAsync(ex);
         }
     }

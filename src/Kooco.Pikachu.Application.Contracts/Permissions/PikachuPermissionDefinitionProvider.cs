@@ -141,6 +141,12 @@ public class PikachuPermissionDefinitionProvider : PermissionDefinitionProvider
         invoiceGroup.AddPermission(PikachuPermissions.Invoices.Update, L("Permission:Invoices.Update"));
         invoiceGroup.AddPermission(PikachuPermissions.Invoices.Delete, L("Permission:Invoices.Delete"));
         invoiceGroup.AddPermission(PikachuPermissions.Invoices.Void, L("Permission:Invoices.Void"));
+
+        var edmManagementGroup = context.AddGroup(PikachuPermissions.EdmManagementGroup, L("Permission:EdmManagementGroup"));
+        var edmPermissions = edmManagementGroup.AddPermission(PikachuPermissions.EdmManagement.Default, L("Permission:EdmManagementGroup"));
+        edmPermissions.AddChild(PikachuPermissions.EdmManagement.Create, L("Permission:Create"));
+        edmPermissions.AddChild(PikachuPermissions.EdmManagement.Edit, L("Permission:Edit"));
+        edmPermissions.AddChild(PikachuPermissions.EdmManagement.Delete, L("Permission:Delete"));
     }
 
     private static LocalizableString L(string name)

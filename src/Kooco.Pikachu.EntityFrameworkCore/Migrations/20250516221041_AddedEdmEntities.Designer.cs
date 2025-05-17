@@ -4,6 +4,7 @@ using Kooco.Pikachu.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Volo.Abp.EntityFrameworkCore;
 
@@ -12,9 +13,11 @@ using Volo.Abp.EntityFrameworkCore;
 namespace Kooco.Pikachu.Migrations
 {
     [DbContext(typeof(PikachuDbContext))]
-    partial class PikachuDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250516221041_AddedEdmEntities")]
+    partial class AddedEdmEntities
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -881,8 +884,6 @@ namespace Kooco.Pikachu.Migrations
                         .HasColumnName("TenantId");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("CampaignId");
 
                     b.ToTable("AppEdms", (string)null);
                 });
@@ -7606,15 +7607,6 @@ namespace Kooco.Pikachu.Migrations
                     b.Navigation("DiscountCode");
 
                     b.Navigation("Product");
-                });
-
-            modelBuilder.Entity("Kooco.Pikachu.EdmManagement.Edm", b =>
-                {
-                    b.HasOne("Kooco.Pikachu.Campaigns.Campaign", "Campaign")
-                        .WithMany()
-                        .HasForeignKey("CampaignId");
-
-                    b.Navigation("Campaign");
                 });
 
             modelBuilder.Entity("Kooco.Pikachu.EdmManagement.EdmGroupBuy", b =>

@@ -7,6 +7,7 @@ using Kooco.Pikachu.Dashboards;
 using Kooco.Pikachu.DeliveryTemperatureCosts;
 using Kooco.Pikachu.DeliveryTempratureCosts;
 using Kooco.Pikachu.DiscountCodes;
+using Kooco.Pikachu.EdmManagement;
 using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Freebies;
 using Kooco.Pikachu.Freebies.Dtos;
@@ -389,5 +390,11 @@ public class PikachuApplicationAutoMapperProfile : Profile
         CreateMap<CampaignShoppingCreditDto, CreateCampaignShoppingCreditDto>();
         CreateMap<CampaignAddOnProductDto, CreateCampaignAddOnProductDto>();
         CreateMap<CampaignStageSettingDto, CreateCampaignStageSettingDto>();
+
+        CreateMap<Edm, EdmDto>()
+            .ForMember(dest => dest.CampaignName, opt => opt.MapFrom(src => src.Campaign != null ? src.Campaign.Name : null));
+        CreateMap<EdmGroupBuy, EdmGroupBuyDto>();
+        CreateMap<EdmDto, CreateEdmDto>()
+            .ForMember(dest => dest.GroupBuyIds, opt => opt.MapFrom(src => src.GroupBuys != null ? src.GroupBuys.Select(gb => gb.GroupBuyId) : new List<Guid>()));
     }
 }

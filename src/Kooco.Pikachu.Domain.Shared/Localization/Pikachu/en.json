@@ -1537,6 +1537,7 @@
     "Menu:EdmList": "EDM",
     "EdmList": "Electronic Direct Mail",
     "CreateEdm": "Create EDM",
+    "EditEdm": "Edit EDM",
     "SendDate": "Send Date",
     "Enum:EdmTemplateType.0": "Customize",
     "Enum:EdmTemplateType.1": "Campaign",
@@ -1552,6 +1553,12 @@
     "SelectMemberTags": "Select Member Tags",
     "TheFieldMustBeGreaterOrEqualTo": "{0} must be greater than or equal to {1}.",
     "EdmTemplateTypeShoppingCartSubject": "You still have items left in your shopping cart!",
+    "Permission:EdmManagementGroup": "EDM Management",
+    "GroupBuys": "Group Buys",
+    "GroupBuyType": "Group Buy Type",
+    "MinSendTime": "Min Send Time",
+    "MaxSendTime": "Max Send Time",
+    "AreYouSureToDeleteEdm": "Are you sure to delete this EDM?",
     "NewAddOn": "New",
     "AddNewDiscountCode": "New"
   }

@@ -1,26 +1,389 @@
 ﻿@page "/Edm"
+@using Kooco.Pikachu.Campaigns
+@using Kooco.Pikachu.EdmManagement
+@using Kooco.Pikachu.GroupBuys
+@using Kooco.Pikachu.Members.MemberTags
+@using System.Globalization
+@attribute [Authorize(PikachuPermissions.EdmManagement.Default)]
 @inherits PikachuComponentBase
+@inject IEdmAppService EdmAppService
 @inject NavigationManager NavigationManager
+@inject CopyService CopyService
+@inject IGroupBuyAppService GroupBuyAppService
+@inject ICampaignAppService CampaignAppService
+@inject IMemberTagAppService MemberTagAppService
 
-<Div Class="d-flex justify-content-between align-items-center">
+<Div Class="d-flex justify-content-between align-items-center mb-2">
     <h3 class="mb-0 text-dark">@L["EdmList"]</h3>
-    <PikachuButton Class="pk-btn-sm pk-btn-primary"
-                   IconClass="fas fa-add"
-                   Clicked="() => Navigate()">
-        @L["AddNew"]
-    </PikachuButton>
-</Div>
-
-@code {
-    void Navigate(Guid? id = null)
+    @if (CanCreateEdm)
     {
-        if (id.HasValue)
-        {
-            NavigationManager.NavigateTo("Edm/Edit/" + id);
-        }
-        else
-        {
-            NavigationManager.NavigateTo("Edm/Create");
-        }
+        <PikachuButton Class="pk-btn-sm pk-btn-primary"
+                       IconClass="fas fa-add"
+                       Clicked="() => Navigate()">
+            @L["AddNew"]
+        </PikachuButton>
     }
-}
+</Div>
+<Card>
+    <CardBody>
+        <Row>
+            <Column ColumnSize="ColumnSize.Is10">
+                <Div Class="input-group">
+                    <TextEdit @bind-Text="Filters.Filter" Style="border-radius: 0.5rem 0 0 0.5rem;" />
+                    <Button Color="Color.Primary" Clicked="ApplyFilters"
+                            Style="border-radius: 0 0.5rem 0.5rem 0;">
+                        <Icon Class="fas fa-search"></Icon>
+                    </Button>
+                </Div>
+            </Column>
+            <Column ColumnSize="ColumnSize.Is2">
+                <Button Class="btn-outline-primary w-100" Clicked="(() => FiltersVisible = !FiltersVisible)">
+                    @L["Filters"]
+                    <i class="fas @(FiltersVisible ? "fa-angles-up" : "fa-angles-down") ms-1"></i>
+                </Button>
+            </Column>
+        </Row>
+        @if (FiltersVisible)
+        {
+            <Row Class="mt-2" VerticalGutter="10">
+                <Column ColumnSize="ColumnSize.Is2">
+                    <Label>@L["TemplateType"]</Label>
+                    <AntDesign.Select TItem="EdmTemplateType?"
+                                      TItemValue="EdmTemplateType?"
+                                      AllowClear
+                                      HideSelected
+                                      @bind-Value="Filters.TemplateType">
+                        <SelectOptions>
+                            @foreach (var option in TemplateTypeOptions)
+                            {
+                                <AntDesign.SelectOption TItemValue="EdmTemplateType?" TItem="EdmTemplateType?" Value=@option Label=@L["Enum:EdmTemplateType." + (int)option] />
+                            }
+                        </SelectOptions>
+                    </AntDesign.Select>
+                </Column>
+                <Column ColumnSize="ColumnSize.Is2">
+                    <Label>@L["MemberType"]</Label>
+                    <AntDesign.Select TItem="EdmMemberType?"
+                                      TItemValue="EdmMemberType?"
+                                      AllowClear
+                                      HideSelected
+                                      DropdownMatchSelectWidth="false"
+                                      @bind-Value="Filters.MemberType">
+                        <SelectOptions>
+                            @foreach (var option in MemberTypeOptions)
+                            {
+                                <AntDesign.SelectOption TItemValue="EdmMemberType?" TItem="EdmMemberType?" Value=@option Label=@L["Enum:EdmMemberType." + (int)option] />
+                            }
+                        </SelectOptions>
+                    </AntDesign.Select>
+                </Column>
+                <Column ColumnSize="ColumnSize.Is2">
+                    <Label>@L["MemberTags"]</Label>
+                    <AntDesign.Select Mode="AntDesign.SelectMode.Multiple"
+                                      MaxTagCount="AntDesign.Select.ResponsiveTag.Responsive"
+                                      TItem="string"
+                                      TItemValue="string"
+                                      AllowClear
+                                      HideSelected
+                                      EnableSearch
+                                      ShowArrowIcon
+                                      DropdownMatchSelectWidth="false"
+                                      @bind-Values="Filters.MemberTags">
+                        <SelectOptions>
+                            @foreach (var option in MemberTagOptions)
+                            {
+                                <AntDesign.SelectOption TItemValue="string" TItem="string" Value=@option Label=@option />
+                            }
+                        </SelectOptions>
+                    </AntDesign.Select>
+                </Column>
+                <Column ColumnSize="ColumnSize.Is2">
+                    <Label>@L["GroupBuyType"]</Label>
+                    <AntDesign.Select TItem="bool?"
+                                      TItemValue="bool?"
+                                      AllowClear
+                                      HideSelected
+                                      @bind-Value="Filters.ApplyToAllGroupBuys">
+                        <SelectOptions>
+                            <AntDesign.SelectOption TItemValue="bool?" TItem="bool?" Value=@true Label=@L["AllGroupBuys"] />
+                            <AntDesign.SelectOption TItemValue="bool?" TItem="bool?" Value=@false Label=@L["SpecificGroupBuys"] />
+                        </SelectOptions>
+                    </AntDesign.Select>
+                </Column>
+                <Column ColumnSize="ColumnSize.Is2">
+                    <Label>@L["GroupBuys"]</Label>
+                    <AntDesign.Select Mode="AntDesign.SelectMode.Multiple"
+                                      MaxTagCount="AntDesign.Select.ResponsiveTag.Responsive"
+                                      TItem="Guid"
+                                      TItemValue="Guid"
+                                      AllowClear
+                                      HideSelected
+                                      EnableSearch
+                                      ShowArrowIcon
+                                      DropdownMatchSelectWidth="false"
+                                      @bind-Values="Filters.GroupBuyIds">
+                        <SelectOptions>
+                            @foreach (var option in GroupBuyOptions)
+                            {
+                                <AntDesign.SelectOption TItemValue="Guid" TItem="Guid" Value=@option.Id Label=@option.Name />
+                            }
+                        </SelectOptions>
+                    </AntDesign.Select>
+                </Column>
+                <Column ColumnSize="ColumnSize.Is2">
+                    <Label>@L["Campaign"]</Label>
+                    <AntDesign.Select TItem="Guid?"
+                                      TItemValue="Guid?"
+                                      AllowClear
+                                      HideSelected
+                                      EnableSearch
+                                      DropdownMatchSelectWidth="false"
+                                      @bind-Value="Filters.CampaignId">
+                        <SelectOptions>
+                            @foreach (var option in CampaignOptions)
+                            {
+                                <AntDesign.SelectOption TItemValue="Guid?" TItem="Guid?" Value=@option.Id Label=@option.Name />
+                            }
+                        </SelectOptions>
+                    </AntDesign.Select>
+                </Column>
+                <Column ColumnSize="ColumnSize.Is2">
+                    <Label>@L["SendFrequency"]</Label>
+                    <AntDesign.Select TItem="EdmSendFrequency?"
+                                      TItemValue="EdmSendFrequency?"
+                                      AllowClear
+                                      HideSelected
+                                      @bind-Value="Filters.SendFrequency">
+                        <SelectOptions>
+                            @foreach (var option in SendFrequencyOptions)
+                            {
+                                <AntDesign.SelectOption TItemValue="EdmSendFrequency?" TItem="EdmSendFrequency?" Value=@option Label=@L["Enum:EdmSendFrequency." + (int)option] />
+                            }
+                        </SelectOptions>
+                    </AntDesign.Select>
+                </Column>
+                <Column ColumnSize="ColumnSize.Is2">
+                    <Label>@L["StartDate"]</Label>
+                    <AntDesign.DatePicker TValue="DateTime?"
+                                          Picker="AntDesign.DatePickerType.Date"
+                                          Format="@AntLocaleHelper.GetFormat()"
+                                          Locale="AntLocaleHelper.GetLocale()"
+                                          CultureInfo="@CultureInfo.CurrentCulture"
+                                          @bind-Value="Filters.StartDate" />
+                </Column>
+                <Column ColumnSize="ColumnSize.Is2">
+                    <Label>@L["EndDate"]</Label>
+                    <AntDesign.DatePicker TValue="DateTime?"
+                                          Picker="AntDesign.DatePickerType.Date"
+                                          Format="@AntLocaleHelper.GetFormat()"
+                                          Locale="AntLocaleHelper.GetLocale()"
+                                          CultureInfo="@CultureInfo.CurrentCulture"
+                                          @bind-Value="Filters.EndDate" />
+                </Column>
+                <Column ColumnSize="ColumnSize.Is2">
+                    <Label>@L["MinSendTime"]</Label>
+                    <TimeEdit TValue="DateTime?" @bind-Time="Filters.MinSendTime" Size="Size.Small"></TimeEdit>
+                </Column>
+                <Column ColumnSize="ColumnSize.Is2">
+                    <Label>@L["MaxSendTime"]</Label>
+                    <TimeEdit TValue="DateTime?" @bind-Time="Filters.MaxSendTime" Size="Size.Small"></TimeEdit>
+                </Column>
+                <Column ColumnSize="ColumnSize.Is2">
+                    <Div Class="d-flex h-100 gap-1 w-100 align-items-end">
+                        <Button Class="btn-sm btn-outline-primary" Clicked="ResetFilters">
+                            <Icon Name="IconName.Undo"></Icon>
+                            @L["Reset"]
+                        </Button>
+                        <Button Class="btn-sm btn-primary" Clicked="ApplyFilters">
+                            <Icon Name="IconName.Filter"></Icon>
+                            @L["Filter"]
+                        </Button>
+                    </Div>
+                </Column>
+            </Row>
+        }
+    </CardBody>
+</Card>
+<Card>
+    <CardBody>
+        <DataGrid TItem="EdmDto"
+                  Data="EdmsList"
+                  ReadData="OnDataGridReadAsync"
+                  TotalItems="TotalCount"
+                  ShowPager="true"
+                  PageSize="PageSize"
+                  CurrentPage="CurrentPage"
+                  Hoverable
+                  Narrow
+                  Responsive>
+            <DataGridColumns>
+                <DataGridColumn TItem="EdmDto"
+                                Field="@nameof(EdmDto.TemplateType)"
+                                Caption="@L["TemplateType"]">
+                    <DisplayTemplate>
+                        <Span Class="text-nowrap">@L["Enum:EdmTemplateType." + (int)context.TemplateType]</Span>
+                    </DisplayTemplate>
+                </DataGridColumn>
+                <DataGridColumn TItem="EdmDto"
+                                Field="@nameof(EdmDto.MemberType)"
+                                Caption="@L["MemberType"]">
+                    <DisplayTemplate>
+                        <Span Class="text-nowrap">
+                            @if (context.MemberType == EdmMemberType.SpecificMemberTags)
+                            {
+                                <Span @onclick="() => ShowMemberTagsModal(context)" Style="cursor: pointer; text-decoration: underline;">
+                                    @L["Enum:EdmMemberType." + (int)context.MemberType]
+                                </Span>
+                            }
+                            else
+                            {
+                                <Span>@L["Enum:EdmMemberType." + (int)context.MemberType]</Span>
+                            }
+                        </Span>
+                    </DisplayTemplate>
+                </DataGridColumn>
+                <DataGridColumn TItem="EdmDto"
+                                Field="@nameof(EdmDto.ApplyToAllGroupBuys)"
+                                Caption="@L["GroupBuys"]">
+                    <DisplayTemplate>
+                        <Span Class="text-nowrap">
+                            @if (context.ApplyToAllGroupBuys)
+                            {
+                                <Span>@L["AllGroupBuys"]</Span>
+                            }
+                            else
+                            {
+                                <Span @onclick="() => ShowGroupBuysModal(context)" Style="cursor: pointer; text-decoration: underline;">
+                                    @L["SpecificGroupBuys"]
+                                </Span>
+                            }
+                        </Span>
+                    </DisplayTemplate>
+                </DataGridColumn>
+                <DataGridColumn TItem="EdmDto"
+                                Field="@nameof(EdmDto.StartDate)"
+                                Caption="@L["SendDateRange"]"
+                                TextAlignment="TextAlignment.Center">
+                    <DisplayTemplate>
+                        <Span>@context.StartDate.ToShortDateString()</Span>
+                        @if (context.EndDate.HasValue)
+                        {
+                            <Span>&nbsp;~&nbsp;@context.EndDate.Value.ToShortDateString()</Span>
+                        }
+                    </DisplayTemplate>
+                </DataGridColumn>
+                <DataGridColumn TItem="EdmDto"
+                                Field="@nameof(EdmDto.SendTime)"
+                                Caption="@L["SendTime"]"
+                                TextAlignment="TextAlignment.Center">
+                    <DisplayTemplate>
+                        <Span Class="text-nowrap">@context.SendTime.ToShortTimeString()</Span>
+                    </DisplayTemplate>
+                </DataGridColumn>
+                <DataGridColumn TItem="EdmDto"
+                                Field="@nameof(EdmDto.Subject)"
+                                Caption="@L["Subject"]">
+                    <DisplayTemplate>
+                        <Div Style="min-width: 250px;">@context.Subject</Div>
+                    </DisplayTemplate>
+                </DataGridColumn>
+                <DataGridColumn TItem="EdmDto"
+                                Field="@nameof(EdmDto.CampaignName)"
+                                Sortable="false"
+                                Caption="@L["Campaign"]">
+                    <DisplayTemplate>
+                        <Div Style="min-width: 150px;">
+                            <Copy DisplayText="@context.CampaignName" Text="@context.CampaignId" IconAlignment="Alignment.Start"></Copy>
+                        </Div>
+                    </DisplayTemplate>
+                </DataGridColumn>
+                <DataGridColumn Width="100px"
+                                TItem="EdmDto"
+                                Field="@nameof(EdmDto.SendFrequency)"
+                                Sortable="false"
+                                Caption="@L["SendFrequency"]">
+                    <DisplayTemplate>
+                        @if (context.SendFrequency.HasValue)
+                        {
+                            @L["Enum:EdmSendFrequency." + (int)context.SendFrequency]
+                        }
+                    </DisplayTemplate>
+                </DataGridColumn>
+                <DataGridColumn Width="150px"
+                                TItem="EdmDto"
+                                Field="@nameof(EdmDto.Id)"
+                                Sortable="false"
+                                Caption="@L["Actions"]">
+                    <DisplayTemplate>
+                        <Dropdown>
+                            <DropdownToggle Color="Color.Primary">
+                                @L["Actions"]
+                            </DropdownToggle>
+                            <DropdownMenu>
+                                <DropdownItem Clicked="() => Copy(context.Id)">
+                                    @L["CopyId"]
+                                </DropdownItem>
+                                @if (CanEditEdm)
+                                {
+                                    <DropdownItem Clicked="() => Navigate(context.Id)">
+                                        @L["Edit"]
+                                    </DropdownItem>
+                                }
+                                @if (CanDeleteEdm)
+                                {
+                                    <DropdownItem Clicked="() => DeleteAsync(context)">
+                                        @L["Delete"]
+                                    </DropdownItem>
+                                }
+                            </DropdownMenu>
+                        </Dropdown>
+                    </DisplayTemplate>
+                </DataGridColumn>
+            </DataGridColumns>
+        </DataGrid>
+    </CardBody>
+</Card>
+<Modal @ref="MemberTagsModal">
+    <ModalContent Centered>
+        <ModalHeader>
+            <ModalTitle>@L["MemberTags"]</ModalTitle>
+            <CloseButton />
+        </ModalHeader>
+        <ModalBody>
+            @if (Selected.MemberTags != null)
+            {
+                @foreach (var memberTag in Selected.MemberTags)
+                {
+                    <Div Class="mb-1">
+                        <Copy Text="@memberTag" IconAlignment="Alignment.Start"></Copy>
+                    </Div>
+                }
+            }
+        </ModalBody>
+        <ModalFooter>
+            <Button Color="Color.Secondary" Clicked="@HideMemberTagsModal">@L["Close"]</Button>
+        </ModalFooter>
+    </ModalContent>
+</Modal>
+<Modal @ref="GroupBuysModal">
+    <ModalContent Centered>
+        <ModalHeader>
+            <ModalTitle>@L["GroupBuys"]</ModalTitle>
+            <CloseButton />
+        </ModalHeader>
+        <ModalBody>
+            @if (Selected.GroupBuys != null)
+            {
+                @foreach (var groupBuy in Selected.GroupBuys)
+                {
+                    <Div Class="mb-1">
+                        <Copy DisplayText="@groupBuy.GroupBuyName" Text="@groupBuy.GroupBuyId" IconAlignment="Alignment.Start"></Copy>
+                    </Div>
+                }
+            }
+        </ModalBody>
+        <ModalFooter>
+            <Button Color="Color.Secondary" Clicked="@HideGroupBuysModal">@L["Close"]</Button>
+        </ModalFooter>
+    </ModalContent>
+</Modal>

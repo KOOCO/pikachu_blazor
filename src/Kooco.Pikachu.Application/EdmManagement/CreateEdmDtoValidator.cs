@@ -31,22 +31,22 @@ public class CreateEdmDtoValidator : AbstractValidator<CreateEdmDto>
             .NotNull()
             .WithMessage(Required(nameof(CreateEdmDto.ApplyToAllGroupBuys)));
 
-        RuleFor(x => x.GroupBuyId)
-            .NotNull()
+        RuleFor(x => x.GroupBuyIds)
+            .NotEmpty()
             .When(x => x.ApplyToAllGroupBuys == false)
-            .WithMessage(Required("GroupBuy"));
+            .WithMessage(Required("GroupBuys"));
+
+        RuleFor(x => x.StartDate)
+                .NotNull()
+                .WithMessage(x => Required(x.TemplateType == EdmTemplateType.ShoppingCart ? "SendDateRange" : "SendDate"));
+
+        RuleFor(x => x.StartDate)
+            .GreaterThanOrEqualTo(DateTime.Today)
+            .WithName(l["SendDateRange"])
+            .WithMessage(x => GreaterOrEqualTo(x.TemplateType == EdmTemplateType.ShoppingCart ? "SendDateRange" : "SendDate", DateFormat(DateTime.Today)));
 
         When(x => x.TemplateType == EdmTemplateType.ShoppingCart, () =>
         {
-            RuleFor(x => x.StartDate)
-                .NotNull()
-                .WithMessage(Required("SendDateRange"));
-
-            RuleFor(x => x.StartDate)
-                .GreaterThanOrEqualTo(DateTime.Today)
-                .WithName(l["SendDateRange"])
-                .WithMessage(GreaterOrEqualTo("SendDateRange", DateFormat(DateTime.Today)));
-
             RuleFor(x => x.EndDate)
                 .NotNull()
                 .WithMessage(Required("SendDateRange"));
@@ -55,16 +55,6 @@ public class CreateEdmDtoValidator : AbstractValidator<CreateEdmDto>
                 .GreaterThanOrEqualTo(x => x.StartDate)
                 .When(x => x.StartDate.HasValue)
                 .WithMessage(x => GreaterOrEqualTo("SendDateRange", DateFormat(x.StartDate)));
-        }).Otherwise(() =>
-        {
-            RuleFor(x => x.StartDate)
-                .NotNull()
-                .WithMessage(Required("SendDate"));
-
-            RuleFor(x => x.StartDate.Value.Date)
-                .GreaterThanOrEqualTo(DateTime.Today)
-                .When(x => x.StartDate.HasValue)
-                .WithMessage(GreaterOrEqualTo("SendDate", DateFormat(DateTime.Today)));
         });
 
         RuleFor(x => x.SendTime)

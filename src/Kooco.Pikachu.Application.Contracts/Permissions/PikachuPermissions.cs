@@ -43,6 +43,7 @@ public static class PikachuPermissions
     public const string Promotions = "Promotions";
 
     public const string WebsiteManagementGroup = "WebsiteManagement";
+    public const string EdmManagementGroup = "EdmMangement";
     /// <summary>
     /// 
     /// </summary>
@@ -195,5 +196,13 @@ public static class PikachuPermissions
     public static class VipTierSettings
     {
         public const string Default = MembersManagement + ".VipTierSettings";
+    }
+
+    public static class EdmManagement
+    {
+        public const string Default = EdmManagementGroup + ".Edm";
+        public const string Create = Default + ".Create";
+        public const string Edit = Default + ".Edit";
+        public const string Delete = Default + ".Delete";
     }
 }
