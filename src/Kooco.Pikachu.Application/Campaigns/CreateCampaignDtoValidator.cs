@@ -170,6 +170,11 @@ public class CreateCampaignDiscountDtoValidator : AbstractValidator<CreateCampai
                 .NotNull()
                 .WithMessage(l["TheFieldIsRequired", l[nameof(CreateCampaignDiscountDto.DiscountPercentage)]])
                 .InclusiveBetween(0, 100);
+
+            RuleFor(d => d.CapAmount)
+                .NotNull()
+                .WithMessage(l["TheFieldIsRequired", l[nameof(CreateCampaignDiscountDto.CapAmount)]])
+                .GreaterThanOrEqualTo(0);
         });
     }
 }

@@ -6,6 +6,8 @@
 @inject ICampaignAppService CampaignAppService
 @inject NavigationManager NavigationManager
 @inject IUiMessageService UiMessageService
+@inject CopyService CopyService
+
 <style>
     svg.icon {
         font-size: 12px;
@@ -203,8 +205,8 @@
                                     @L["Actions"]
                                 </DropdownToggle>
                                 <DropdownMenu>
-                                    <DropdownItem>
-                                        <Copy Text="@context.Id" DisplayText="@L["CopyId"]" ShouldDisplayIcon="false"></Copy>
+                                    <DropdownItem Clicked="() => Copy(context.Id)">
+                                        @L["CopyId"]
                                     </DropdownItem>
                                     @if (CanEdit)
                                     {

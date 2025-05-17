@@ -157,6 +157,16 @@
                             </NumericEdit>
                         </Field>
                     </Validation>
+                    <Validation MessageLocalizer="@LH.Localize">
+                        <Field indent mb0>
+                            <FieldLabel required>@L["CapAmount"]</FieldLabel>
+                            <NumericEdit TValue="double?" @bind-Value="Entity.Discount.CapAmount">
+                                <Feedback>
+                                    <ValidationError />
+                                </Feedback>
+                            </NumericEdit>
+                        </Field>
+                    </Validation>
                 }
             </ChildContent>
             <Feedback>

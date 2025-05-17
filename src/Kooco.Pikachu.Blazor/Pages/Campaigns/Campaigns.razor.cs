@@ -143,4 +143,9 @@ public partial class Campaigns
 
         await InvokeAsync(StateHasChanged);
     }
+
+    async Task Copy(object text)
+    {
+        await CopyService.Copy(text);
+    }
 }

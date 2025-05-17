@@ -23,6 +23,7 @@ public class CampaignDiscount : Entity<Guid>
     public DiscountType? DiscountType { get; private set; }
     public int? DiscountAmount { get; private set; }
     public int? DiscountPercentage { get; private set; }
+    public double? CapAmount { get; private set; }
 
     [ForeignKey(nameof(CampaignId))]
     public virtual Campaign Campaign { get; set; }
@@ -53,7 +54,8 @@ public class CampaignDiscount : Entity<Guid>
         IEnumerable<DeliveryMethod> deliveryMethods,
         DiscountType? discountType,
         int? discountAmount,
-        int? discountPercentage
+        int? discountPercentage,
+        double? capAmount
         ) : base(id)
     {
         CampaignId = campaignId;
@@ -62,7 +64,7 @@ public class CampaignDiscount : Entity<Guid>
         SetMaximumUsePerPerson(maximumUsePerPerson);
         SetDiscountMethod(discountMethod, minimumSpendAmount);
         SetShippingOptions(applyToAllShippingMethods, deliveryMethods);
-        SetDiscount(discountType, discountAmount, discountPercentage);
+        SetDiscount(discountType, discountAmount, discountPercentage, capAmount);
     }
 
     public void SetAvailableQuantity(int quantity) => AvailableQuantity = Check.Range(quantity, nameof(AvailableQuantity), 0);
@@ -121,7 +123,7 @@ public class CampaignDiscount : Entity<Guid>
         }
     }
 
-    public void SetDiscount(DiscountType? type, int? amount = null, int? percentage = null)
+    public void SetDiscount(DiscountType? type, int? amount = null, int? percentage = null, double? capAmount = null)
     {
         DiscountType = type;
 
@@ -129,12 +131,18 @@ public class CampaignDiscount : Entity<Guid>
         {
             Check.NotNull(amount, nameof(DiscountAmount));
             DiscountAmount = Check.Range(amount.Value, nameof(DiscountAmount), 0);
+            CapAmount = DiscountAmount;
+
             DiscountPercentage = null;
         }
         else if (type == Campaigns.DiscountType.Percentage)
         {
             Check.NotNull(percentage, nameof(DiscountPercentage));
+            Check.NotNull(capAmount, nameof(CapAmount));
+
             DiscountPercentage = Check.Range(percentage.Value, nameof(DiscountPercentage), 0);
+            CapAmount = Check.Range(capAmount.Value, nameof(CapAmount), 0);
+
             DiscountAmount = null;
         }
     }

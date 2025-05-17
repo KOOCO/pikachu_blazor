@@ -188,14 +188,14 @@ public class CampaignManager : DomainService
 
     public CampaignDiscount AddCampaignDiscount(Campaign campaign, bool isDiscountCodeRequired, string? discountCode, int availableQuantity,
         int maximumUsePerPerson, DiscountMethod discountMethod, int? minimumSpendAmount, bool? applyToAllShippingMethods,
-        IEnumerable<DeliveryMethod> deliveryMethods, DiscountType discountType, int? discountAmount, int? discountPercentage)
+        IEnumerable<DeliveryMethod> deliveryMethods, DiscountType discountType, int? discountAmount, int? discountPercentage, double? capAmount)
     {
         Check.NotNull(campaign, nameof(Campaign));
         EnsurePromotionModule(campaign, PromotionModule.Discount);
 
         campaign.Discount = new CampaignDiscount(GuidGenerator.Create(), campaign.Id, isDiscountCodeRequired, discountCode,
             availableQuantity, maximumUsePerPerson, discountMethod, minimumSpendAmount, applyToAllShippingMethods,
-            deliveryMethods, discountType, discountAmount, discountPercentage);
+            deliveryMethods, discountType, discountAmount, discountPercentage, capAmount);
 
         return campaign.Discount;
     }

@@ -16,4 +16,5 @@ public class CreateCampaignDiscountDto
     public DiscountType? DiscountType { get; set; }
     public int? DiscountAmount { get; set; }
     public int? DiscountPercentage { get; set; }
+    public double? CapAmount { get; set; }
 }

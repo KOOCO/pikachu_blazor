@@ -18,5 +18,6 @@ public class CampaignDiscountDto : EntityDto<Guid>
     public DiscountType? DiscountType { get; set; }
     public int? DiscountAmount { get; set; }
     public int? DiscountPercentage { get; set; }
+    public double? CapAmount { get; set; }
     public IEnumerable<DeliveryMethod> DeliveryMethods { get; set; }
 }

@@ -85,7 +85,8 @@ public class CampaignBuilder
             discount.DeliveryMethods,
             Require(discount.DiscountType, nameof(discount.DiscountType)),
             discount.DiscountAmount,
-            discount.DiscountPercentage
+            discount.DiscountPercentage,
+            discount.CapAmount
         );
     }
 
