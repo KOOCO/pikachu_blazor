@@ -83,6 +83,11 @@ public class CampaignShoppingCredit : Entity<Guid>
         Budget = Check.Range(budget, nameof(Budget), 0);
     }
 
+    public void DeductBudget(int deduction)
+    {
+        Budget -= deduction;
+    }
+
     public CampaignStageSetting AddStageSetting(Guid id, int spend, int pointsToReceive)
     {
         var stageSetting = new CampaignStageSetting(id, Id, spend, pointsToReceive);

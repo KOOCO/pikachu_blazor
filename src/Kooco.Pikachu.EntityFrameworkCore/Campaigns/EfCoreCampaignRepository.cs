@@ -62,8 +62,8 @@ public class EfCoreCampaignRepository : EfCoreRepository<PikachuDbContext, Campa
 
         var queryable = await GetQueryableAsync();
         return queryable
-            .WhereIf(!filter.IsNullOrWhiteSpace(), x => x.Name.Contains(filter) || x.TargetAudience.Contains(filter)
-            || x.Id.ToString() == filter)
+            .WhereIf(!filter.IsNullOrWhiteSpace(), x => x.Name.Contains(filter) || x.Id.ToString() == filter
+             || (x.TargetAudienceJson != null && x.TargetAudienceJson.Contains(filter)))
             .WhereIf(isEnabled.HasValue, x => x.IsEnabled == isEnabled)
             .WhereIf(startDate.HasValue, x => x.StartDate.Date >= startDate!.Value.Date)
             .WhereIf(endDate.HasValue, x => x.EndDate.Date <= endDate!.Value.Date);

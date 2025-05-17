@@ -1,4 +1,5 @@
-﻿using Kooco.Pikachu.DiscountCodes;
+﻿using Kooco.Pikachu.Campaigns;
+using Kooco.Pikachu.DiscountCodes;
 using Kooco.Pikachu.Emails;
 using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Freebies;
@@ -307,6 +308,15 @@ public class OrderAppService : PikachuAppService, IOrderAppService
             {
                 if (order.cashback_amount > 0)
                 {
+                    if (order.CampaignId.HasValue)
+                    {
+                        var campaign = await CampaignRepository.FirstOrDefaultAsync(c => c.Id == order.CampaignId);
+                        if (campaign != null && campaign.PromotionModule == PromotionModule.ShoppingCredit)
+                        {
+                            await CampaignRepository.EnsurePropertyLoadedAsync(campaign, c => c.ShoppingCredit);
+                            campaign.ShoppingCredit?.DeductBudget((int)order.cashback_amount);
+                        }
+                    }
 
                     var newcashback = await UserShoppingCreditAppService.RecordShoppingCreditAsync(new RecordUserShoppingCreditDto
                     {
@@ -2377,7 +2387,7 @@ public class OrderAppService : PikachuAppService, IOrderAppService
                 await OrderTransactionManager.CreateAsync(orderTransaction);
 
                 await CreateOrderDeliveriesAsync(order);
-                
+
                 await OrderRepository.UpdateAsync(order);
                 await SendEmailAsync(order.Id);
                 await UnitOfWorkManager.Current.SaveChangesAsync();
@@ -2769,4 +2779,5 @@ public class OrderAppService : PikachuAppService, IOrderAppService
     public required IOrderHistoryRepository OrderHistoryRepository { get; init; }
     public required IMemberRepository MemberRepository { get; init; }
     public required ITenantTripartiteRepository TenantTripartiteRepository { get; init; }
+    public required ICampaignRepository CampaignRepository { get; init; }
 }
