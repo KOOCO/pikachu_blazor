@@ -2921,14 +2921,13 @@ public partial class OrderDetails
     {
         var memoryStream = new MemoryStream();
 
-        string tempPath = Path.Combine(Path.GetTempPath(), "MergeTemp");
-
-        string outputPdfPath = Path.Combine(tempPath, "combinedPdf.pdf");
-
         using (var outputDocument = new PdfDocument())
         {
             foreach (var path in inputPdfPaths)
             {
+                if (!File.Exists(path))
+                    throw new FileNotFoundException("PDF not found", path);
+
                 var inputDocument = PdfReader.Open(path, PdfDocumentOpenMode.Import);
                 foreach (var page in inputDocument.Pages)
                 {
@@ -2937,12 +2936,10 @@ public partial class OrderDetails
             }
 
             outputDocument.Save(memoryStream);
-
-            Console.WriteLine($"Combined PDF created successfully at: {outputPdfPath}");
         }
 
+        memoryStream.Flush(); // Ensure all data is written
         memoryStream.Position = 0;
-
         return memoryStream;
     }
     private void OpenRefundModal()
