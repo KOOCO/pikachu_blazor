@@ -333,10 +333,10 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
      currentUserName
  );
 
-                        //order.ShippingStatus = ShippingStatus.ToBeShipped;
-                        //order = await _orderRepository.GetAsync(orderId);
+                        order.ShippingStatus = ShippingStatus.ToBeShipped;
+                        order = await _orderRepository.GetAsync(orderId);
 
-                        //await _orderRepository.UpdateAsync(order);
+                        await _orderRepository.UpdateAsync(order);
 
                     }
 
@@ -367,10 +367,10 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
 
 
                         await uow.SaveChangesAsync();
-                        //order.ShippingStatus = ShippingStatus.ToBeShipped;
+                        order.ShippingStatus = ShippingStatus.ToBeShipped;
                         //order = await _orderRepository.GetAsync(orderId);
 
-                        //await _orderRepository.UpdateAsync(order);
+                        await _orderRepository.UpdateAsync(order);
 
                     }
 
@@ -994,9 +994,9 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
 
 
 
-                //order.ShippingStatus = ShippingStatus.ToBeShipped;
+                order.ShippingStatus = ShippingStatus.ToBeShipped;
                 await uow.SaveChangesAsync();
-                //await _orderRepository.UpdateAsync(order);
+                await _orderRepository.UpdateAsync(order);
                 // **Get Current User (Editor)**
                 var currentUserId = CurrentUser.Id ?? Guid.Empty;
                 var currentUserName = CurrentUser.UserName ?? "System";
@@ -1174,9 +1174,9 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
 
 
 
-                //order.ShippingStatus = ShippingStatus.ToBeShipped;
+                order.ShippingStatus = ShippingStatus.ToBeShipped;
                 await uow.SaveChangesAsync();
-                //await _orderRepository.UpdateAsync(order);
+                await _orderRepository.UpdateAsync(order);
                 // **Get Current User (Editor)**
                 var currentUserId = CurrentUser.Id ?? Guid.Empty;
                 var currentUserName = CurrentUser.UserName ?? "System";
@@ -1218,9 +1218,9 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
 
 
 
-                //order.ShippingStatus = ShippingStatus.ToBeShipped;
+                order.ShippingStatus = ShippingStatus.ToBeShipped;
                 await uow.SaveChangesAsync();
-                //await _orderRepository.UpdateAsync(order);
+                await _orderRepository.UpdateAsync(order);
                 // **Get Current User (Editor)**
                 var currentUserId = CurrentUser.Id ?? Guid.Empty;
                 var currentUserName = CurrentUser.UserName ?? "System";
@@ -1273,7 +1273,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
 
         if (orderDeliveries.All(a => a.DeliveryStatus == DeliveryStatus.ToBeShipped))
         {
-            //order.ShippingStatus = ShippingStatus.ToBeShipped;
+            order.ShippingStatus = ShippingStatus.ToBeShipped;
 
             await _orderRepository.UpdateAsync(order);
         }
@@ -1566,9 +1566,9 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
 
 
 
-                    //order.ShippingStatus = ShippingStatus.ToBeShipped;
+                    order.ShippingStatus = ShippingStatus.ToBeShipped;
                     await uow.SaveChangesAsync();
-                    // await _orderRepository.UpdateAsync(order);
+                     await _orderRepository.UpdateAsync(order);
                     // **Get Current User (Editor)**
                     var currentUserId = CurrentUser.Id ?? Guid.Empty;
                     var currentUserName = CurrentUser.UserName ?? "System";
