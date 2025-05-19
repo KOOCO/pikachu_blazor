@@ -1,5 +1,6 @@
 ﻿using Kooco.Pikachu.EntityFrameworkCore;
 using Kooco.Pikachu.EnumValues;
+using Kooco.Pikachu.Orders;
 using Kooco.Pikachu.Reports;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -30,7 +31,7 @@ public class EfCoreDashboardRepository(IDbContextProvider<PikachuDbContext> dbCo
         var dbContext = await GetDbContextAsync();
 
         var query = await dbContext.Orders
-            .Where(o => o.ShippingStatus == ShippingStatus.Completed)
+            .Where(o => OrderConsts.CompletedShippingStatus.Contains(o.ShippingStatus))
             .Where(o => o.CompletionTime >= previousDate && o.CompletionTime <= endDate)
             .WhereIf(selectedGroupBuyIds.Any(), o => selectedGroupBuyIds.Contains(o.GroupBuyId))
             .Select(o => new
@@ -80,7 +81,7 @@ public class EfCoreDashboardRepository(IDbContextProvider<PikachuDbContext> dbCo
         var dbContext = await GetDbContextAsync();
 
         var orders = await dbContext.Orders
-            .Where(o => o.ShippingStatus == ShippingStatus.Completed)
+            .Where(o => OrderConsts.CompletedShippingStatus.Contains(o.ShippingStatus))
             .Where(o => o.CompletionTime >= startDate && o.CompletionTime <= endDate)
             .WhereIf(selectedGroupBuyIds.Any(), o => selectedGroupBuyIds.Contains(o.GroupBuyId))
             .Select(o => new
@@ -230,7 +231,7 @@ public class EfCoreDashboardRepository(IDbContextProvider<PikachuDbContext> dbCo
         var dbContext = await GetDbContextAsync();
 
         var orderItems = await dbContext.Orders
-            .Where(o => o.ShippingStatus == ShippingStatus.Completed)
+            .Where(o => OrderConsts.CompletedShippingStatus.Contains(o.ShippingStatus))
             .WhereIf(selectedGroupBuyIds.Any(), o => selectedGroupBuyIds.Contains(o.GroupBuyId))
             .Include(o => o.OrderItems)
             .SelectMany(o => o.OrderItems)
