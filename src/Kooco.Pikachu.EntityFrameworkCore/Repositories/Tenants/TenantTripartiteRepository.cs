@@ -13,7 +13,7 @@ namespace Kooco.Pikachu.Repositories.Tenants;
 public class TenantTripartiteRepository(IDbContextProvider<PikachuDbContext> dbContextProvider) :
     EfCoreRepository<PikachuDbContext, TenantTripartite, Guid>(dbContextProvider), ITenantTripartiteRepository
 {
-    public async Task<TenantTripartite?> FindByTenantAsync(Guid tenantId, CancellationToken ct = default)
+    public async Task<TenantTripartite?> FindByTenantAsync(Guid? tenantId, CancellationToken ct = default)
     {
         return await (await GetQueryableAsync())
             .Where(od => od.TenantId == tenantId)

@@ -132,7 +132,7 @@ public class OrderDeliveryAppService : PikachuAppService, IOrderDeliveryAppServi
         {
             order.ShippingStatus = ShippingStatus.Delivered;
             await OrderRepository.UpdateAsync(order);
-            var invoiceSetting = await TenantTripartiteRepository.FindByTenantAsync(CurrentUser.Id.Value);
+            var invoiceSetting = await TenantTripartiteRepository.FindByTenantAsync(CurrentTenant.Id);
             if (invoiceSetting.StatusOnInvoiceIssue == DeliveryStatus.Completed)
             {
                 if (order.GroupBuy.IssueInvoice)
@@ -188,7 +188,7 @@ public class OrderDeliveryAppService : PikachuAppService, IOrderDeliveryAppServi
             order.ShippingStatus = ShippingStatus.Completed;
 
             await OrderRepository.UpdateAsync(order);
-            var invoiceSetting = await TenantTripartiteRepository.FindByTenantAsync(CurrentUser.Id.Value);
+            var invoiceSetting = await TenantTripartiteRepository.FindByTenantAsync(CurrentTenant.Id);
             if (invoiceSetting.StatusOnInvoiceIssue == DeliveryStatus.Completed)
             {
                 if (order.GroupBuy.IssueInvoice)
@@ -245,7 +245,7 @@ public class OrderDeliveryAppService : PikachuAppService, IOrderDeliveryAppServi
             await OrderRepository.UpdateAsync(order);
             await EmailAppService.SendLogisticsEmailAsync(delivery.OrderId, delivery.DeliveryNo, delivery.DeliveryMethod);
             await UnitOfWorkManager.Current.SaveChangesAsync();
-            var invoiceSetting = await TenantTripartiteRepository.FindByTenantAsync(CurrentUser.Id.Value);
+            var invoiceSetting = await TenantTripartiteRepository.FindByTenantAsync(CurrentTenant.Id);
             if (invoiceSetting.StatusOnInvoiceIssue == DeliveryStatus.Shipped)
             {
                 if (order.GroupBuy.IssueInvoice)

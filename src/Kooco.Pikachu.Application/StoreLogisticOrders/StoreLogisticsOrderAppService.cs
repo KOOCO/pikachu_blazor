@@ -153,7 +153,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
       currentUserName
   );
 
-            var invoiceSetting = await _electronicInvoiceSettingRepository.FindByTenantAsync(CurrentUser.Id.Value);
+            var invoiceSetting = await _electronicInvoiceSettingRepository.FindByTenantAsync(CurrentTenant.Id);
             if (invoiceSetting.StatusOnInvoiceIssue == DeliveryStatus.ToBeShipped)
             {
 

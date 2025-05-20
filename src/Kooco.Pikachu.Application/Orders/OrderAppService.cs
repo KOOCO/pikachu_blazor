@@ -1941,7 +1941,7 @@ public class OrderAppService : PikachuAppService, IOrderAppService
         var returnOrder = ObjectMapper.Map<Order, OrderDto>(order);
         if (order.InvoiceNumber.IsNullOrEmpty())
         {
-            var invoiceSetting = await TenantTripartiteRepository.FindByTenantAsync(CurrentUser.Id.Value);
+            var invoiceSetting = await TenantTripartiteRepository.FindByTenantAsync(CurrentTenant.Id.Value);
             if (invoiceSetting.StatusOnInvoiceIssue == DeliveryStatus.Shipped)
             {
                 if (order.GroupBuy.IssueInvoice)

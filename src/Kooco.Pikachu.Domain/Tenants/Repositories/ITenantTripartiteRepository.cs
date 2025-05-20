@@ -10,7 +10,7 @@ public interface ITenantTripartiteRepository : IRepository<TenantTripartite, Gui
     /// <summary>
     /// 依租戶ID查找租戶三方資料
     /// </summary>
-    Task<TenantTripartite?> FindByTenantAsync(Guid tenantId, CancellationToken ct = default);
+    Task<TenantTripartite?> FindByTenantAsync(Guid? tenantId, CancellationToken ct = default);
 
     /// <summary>
     /// 新增或更新租戶三方資料
