@@ -84,14 +84,14 @@ public class CreateEdmDtoValidator : AbstractValidator<CreateEdmDto>
             .WithMessage(Required(nameof(CreateEdmDto.SendFrequency)));
 
         RuleFor(x => x.Subject)
-            .NotNull()
+            .NotEmpty()
             .WithMessage(Required(nameof(CreateEdmDto.Subject)));
 
         RuleFor(x => x.Subject)
             .MaximumLength(EdmConsts.MaxSubjectLength);
 
         RuleFor(x => x.Message)
-            .NotNull()
+            .NotEmpty()
             .WithMessage(Required(nameof(CreateEdmDto.Message)))
             .NotEqual("<p><br></p>")
             .WithMessage(Required(nameof(CreateEdmDto.Message)));

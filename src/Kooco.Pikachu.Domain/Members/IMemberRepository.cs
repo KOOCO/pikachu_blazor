@@ -1,4 +1,5 @@
-﻿using Kooco.Pikachu.TierManagement;
+﻿using Kooco.Pikachu.EdmManagement;
+using Kooco.Pikachu.TierManagement;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -40,4 +41,6 @@ public interface IMemberRepository : IIdentityUserRepository, IRepository<Identi
         DateTime? usageTimeFrom, DateTime? usageTimeTo, DateTime? expirationTimeFrom, DateTime? expirationTimeTo,
         int? minRemainingCredits, int? maxRemainingCredits, int? minAmount, int? maxAmount, Guid? userId);
     Task<List<IdentityUser>> GetBirthdayMember();
+
+    Task<List<string>> GetEdmMemberEmailsAsync(EdmMemberType memberType, IEnumerable<string> memberTags);
 }
