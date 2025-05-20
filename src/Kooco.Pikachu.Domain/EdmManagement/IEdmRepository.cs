@@ -25,4 +25,6 @@ public interface IEdmRepository : IRepository<Edm, Guid>
         Guid? campaignId = null, EdmMemberType? memberType = null, IEnumerable<string>? memberTags = null, bool? applyToAllGroupBuys = null,
         IEnumerable<Guid>? groupBuyIds = null, DateTime? startDate = null, DateTime? endDate = null,
         DateTime? minSendTime = null, DateTime? maxSendTime = null, EdmSendFrequency? sendFrequency = null);
+
+    Task<List<string>> GetGroupBuyNamesAsync(List<Guid> groupBuyIds);
 }

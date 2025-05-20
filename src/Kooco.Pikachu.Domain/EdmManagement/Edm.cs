@@ -21,13 +21,14 @@ public class Edm : FullAuditedAggregateRoot<Guid>, IMultiTenant
     public DateTime StartDate { get; private set; }
     public DateTime? EndDate { get; private set; }
     public DateTime SendTime { get; private set; }
+    public DateTime SendTimeUtc { get; set; }
     public EdmSendFrequency? SendFrequency { get; private set; }
 
     [MaxLength(EdmConsts.MaxSubjectLength)]
     public string Subject { get; private set; }
     public string Message { get; private set; }
     public Guid? TenantId { get; private set; }
-
+    public string? JobId { get; set; }
     public virtual ICollection<EdmGroupBuy> GroupBuys { get; private set; } = [];
 
     [ForeignKey(nameof(CampaignId))]
@@ -149,6 +150,7 @@ public class Edm : FullAuditedAggregateRoot<Guid>, IMultiTenant
         }
 
         SendTime = Check.NotNull(sendTime, nameof(sendTime));
+        SendTimeUtc = SendTime.ToUniversalTime();
     }
 
     public void SetSubject(string subject)
@@ -159,5 +161,10 @@ public class Edm : FullAuditedAggregateRoot<Guid>, IMultiTenant
     public void SetMessage(string message)
     {
         Message = Check.NotNullOrWhiteSpace(message, nameof(Message));
+    }
+
+    public void SetJobId(string? jobId)
+    {
+        JobId = jobId;
     }
 }

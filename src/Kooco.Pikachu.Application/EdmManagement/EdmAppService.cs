@@ -16,16 +16,19 @@ public class EdmAppService : PikachuAppService, IEdmAppService
     private readonly IEdmRepository _edmRepository;
     private readonly EdmManager _edmManager;
     private readonly IValidator<CreateEdmDto> _validator;
+    private readonly EdmEmailService _edmEmailService;
 
     public EdmAppService(
         IEdmRepository edmRepository,
         EdmManager edmManager,
-        IValidator<CreateEdmDto> validator
+        IValidator<CreateEdmDto> validator,
+        EdmEmailService edmEmailService
         )
     {
         _edmRepository = edmRepository;
         _edmManager = edmManager;
         _validator = validator;
+        _edmEmailService = edmEmailService;
     }
 
     [Authorize(PikachuPermissions.EdmManagement.Create)]
@@ -37,6 +40,8 @@ public class EdmAppService : PikachuAppService, IEdmAppService
             input.MemberType.Value, input.MemberTags, input.ApplyToAllGroupBuys.Value, input.GroupBuyIds,
             input.StartDate.Value, input.EndDate, input.SendTime.Value, input.SendFrequency,
             input.Subject, input.Message);
+
+        await _edmEmailService.EnqueueJob(edm);
 
         return ObjectMapper.Map<Edm, EdmDto>(edm);
     }
@@ -52,6 +57,8 @@ public class EdmAppService : PikachuAppService, IEdmAppService
             input.MemberType.Value, input.MemberTags, input.ApplyToAllGroupBuys.Value, input.GroupBuyIds,
             input.StartDate.Value, input.EndDate, input.SendTime.Value, input.SendFrequency,
             input.Subject, input.Message);
+
+        await _edmEmailService.EnqueueJob(edm);
 
         return ObjectMapper.Map<Edm, EdmDto>(edm);
     }

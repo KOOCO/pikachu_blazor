@@ -1,4 +1,5 @@
-﻿using Kooco.Pikachu.EntityFrameworkCore;
+﻿using Kooco.Pikachu.EdmManagement;
+using Kooco.Pikachu.EntityFrameworkCore;
 using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Members.MemberTags;
 using Kooco.Pikachu.Orders;
@@ -303,5 +304,28 @@ public class EfCoreMemberRepository(IDbContextProvider<PikachuDbContext> pikachu
             .ToList();
 
         return filteredUsers;
+    }
+
+    public async Task<List<string>> GetEdmMemberEmailsAsync(EdmMemberType memberType, IEnumerable<string> memberTags)
+    {
+        var dbContext = await GetPikachuDbContextAsync();
+
+        var memberRole = await dbContext.Roles.FirstOrDefaultAsync(role => role.Name == MemberConsts.Role);
+        if (memberRole == null)
+        {
+            return [];
+        }
+
+        return await dbContext.Users
+            .Include(user => user.Roles)
+            .Where(user => user.Roles.Any(role => role.RoleId == memberRole.Id))
+            .GroupJoin(dbContext.MemberTags,
+            user => user.Id,
+            memberTags => memberTags.UserId,
+            (user, memberTags) => new { User = user, MemberTags = memberTags })
+            .WhereIf(memberType == EdmMemberType.EveryMemberTag, user => user.MemberTags.Any())
+            .WhereIf(memberType == EdmMemberType.SpecificMemberTags, user => user.MemberTags.Any(tag => memberTags.Contains(tag.Name)))
+            .Select(user => user.User.NormalizedEmail)
+            .ToListAsync();
     }
 }
