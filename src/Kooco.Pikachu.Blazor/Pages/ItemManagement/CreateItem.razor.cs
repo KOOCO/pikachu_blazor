@@ -65,6 +65,7 @@ public partial class CreateItem
     private List<ItemBadgeDto> ItemBadgeList { get; set; } = [];
     private ItemBadgeDto NewItemBadge { get; set; } = new();
     private bool SelectOpen { get; set; } = false;
+    private object TooltipVisibleItem;
     #endregion
 
     #region Constructor
@@ -1084,6 +1085,23 @@ public partial class CreateItem
     async Task GetItemBadgeListAsync()
     {
         ItemBadgeList = await _itemAppService.GetItemBadgesAsync();
+    }
+
+    private void ShowTooltipFor(object item)
+    {
+        TooltipVisibleItem = item;
+    }
+
+    private void HideTooltip()
+    {
+        TooltipVisibleItem = null;
+    }
+
+    private string GetInputClass(CreateItemDetailsDto item)
+    {
+        return ValidationErrors.ContainsKey(item)
+            ? "form-control form-control-sm border-danger"
+            : "form-control form-control-sm";
     }
     #endregion
 }

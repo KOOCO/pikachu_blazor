@@ -35,6 +35,22 @@
         .draggable-row:active {
             cursor: grabbing;
         }
+        .custom-tooltip {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background: #fff;
+    color: #dc3545;
+    border: 1px solid #dc3545;
+    padding: 4px 10px;
+    font-size: 0.75rem;
+    border-radius: 4px;
+    white-space: nowrap;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    margin-top: 4px;
+    z-index: 1000;
+}
+
 </style>
 
 <LoadingIndicator @ref="Loading" FullScreen></LoadingIndicator>
@@ -402,14 +418,19 @@
                                                          Style="min-width: 100px;" />
                                         </TableRowCell>
                                         <TableRowCell>
-                                            <NumericEdit Class="form-control form-control-sm"
-                                                         @bind-Value="@item.SaleableQuantity"
-                                                         @onchange="(e) => OnSaleableQuantityChanged(e, item)"
-                                                         Style="min-width: 100px;" />
-                                            @if (ValidationErrors.ContainsKey(item))
-                                            {
-                                                <div class="text-danger">@ValidationErrors[item]</div>
-                                            }
+                                            <div class="position-relative" @onmouseenter="() => ShowTooltipFor(item)" @onmouseleave="HideTooltip">
+                                                <NumericEdit class="@GetInputClass(item)"
+                                                             @bind-Value="@item.SaleableQuantity"
+                                                             @onchange="(e) => OnSaleableQuantityChanged(e, item)"
+                                                             style="min-width: 100px;" />
+
+                                                @if (ValidationErrors.ContainsKey(item) && TooltipVisibleItem == item)
+                                                {
+                                                    <div class="custom-tooltip">
+                                                        @ValidationErrors[item]
+                                                    </div>
+                                                }
+                                            </div>
                                         </TableRowCell>
 
                                         <TableRowCell>
