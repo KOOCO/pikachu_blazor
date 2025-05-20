@@ -15,7 +15,7 @@ public class Edm : FullAuditedAggregateRoot<Guid>, IMultiTenant
 {
     public EdmTemplateType TemplateType { get; private set; }
     public Guid? CampaignId { get; private set; }
-    public EdmMemberType MemberType { get; private set; }
+    public bool ApplyToAllMembers { get; private set; }
     public string? MemberTagsJson { get; private set; }
     public bool ApplyToAllGroupBuys { get; private set; }
     public DateTime StartDate { get; private set; }
@@ -50,7 +50,7 @@ public class Edm : FullAuditedAggregateRoot<Guid>, IMultiTenant
         Guid id,
         EdmTemplateType templateType,
         Guid? campaignId,
-        EdmMemberType memberType,
+        bool applyToAllMembers,
         IEnumerable<string> memberTags,
         bool applyToAllGroupBuys,
         IEnumerable<Guid> groupBuyIds,
@@ -63,7 +63,7 @@ public class Edm : FullAuditedAggregateRoot<Guid>, IMultiTenant
         ) : base(id)
     {
         SetTemplateType(templateType, campaignId, sendFrequency);
-        SetMemberType(memberType, memberTags);
+        SetApplyToAllMembers(applyToAllMembers, memberTags);
         SetApplyToAllGroupBuys(applyToAllGroupBuys, groupBuyIds);
         SetDateRange(templateType, startDate, endDate, sendTime);
         SetSubject(subject);
@@ -83,11 +83,11 @@ public class Edm : FullAuditedAggregateRoot<Guid>, IMultiTenant
             : null;
     }
 
-    public void SetMemberType(EdmMemberType memberType, IEnumerable<string> memberTags)
+    public void SetApplyToAllMembers(bool applyToAllMembers, IEnumerable<string> memberTags)
     {
-        MemberType = memberType;
+        ApplyToAllMembers = applyToAllMembers;
 
-        if (MemberType == EdmMemberType.SpecificMemberTags)
+        if (!ApplyToAllMembers)
         {
             Check.NotNull(memberTags, nameof(MemberTags));
             MemberTagsJson = JsonSerializer.Serialize(memberTags);
@@ -102,7 +102,7 @@ public class Edm : FullAuditedAggregateRoot<Guid>, IMultiTenant
     {
         ApplyToAllGroupBuys = applyToAllGroupBuys;
 
-        if (!applyToAllGroupBuys)
+        if (!ApplyToAllGroupBuys)
         {
             if (!groupBuyIds?.Any() ?? true)
                 throw new UserFriendlyException("The field Group Buys is required.");

@@ -63,17 +63,15 @@
                 </Column>
                 <Column ColumnSize="ColumnSize.Is2">
                     <Label>@L["MemberType"]</Label>
-                    <AntDesign.Select TItem="EdmMemberType?"
-                                      TItemValue="EdmMemberType?"
+                    <AntDesign.Select TItem="bool?"
+                                      TItemValue="bool?"
                                       AllowClear
                                       HideSelected
                                       DropdownMatchSelectWidth="false"
-                                      @bind-Value="Filters.MemberType">
+                                      @bind-Value="Filters.ApplyToAllMembers">
                         <SelectOptions>
-                            @foreach (var option in MemberTypeOptions)
-                            {
-                                <AntDesign.SelectOption TItemValue="EdmMemberType?" TItem="EdmMemberType?" Value=@option Label=@L["Enum:EdmMemberType." + (int)option] />
-                            }
+                            <AntDesign.SelectOption TItemValue="bool?" TItem="bool?" Value=@true Label=@L["AllMembers"] />
+                            <AntDesign.SelectOption TItemValue="bool?" TItem="bool?" Value=@false Label=@L["SpecificMemberTags "] />
                         </SelectOptions>
                     </AntDesign.Select>
                 </Column>
@@ -225,19 +223,19 @@
                     </DisplayTemplate>
                 </DataGridColumn>
                 <DataGridColumn TItem="EdmDto"
-                                Field="@nameof(EdmDto.MemberType)"
+                                Field="@nameof(EdmDto.ApplyToAllMembers)"
                                 Caption="@L["MemberType"]">
                     <DisplayTemplate>
                         <Span Class="text-nowrap">
-                            @if (context.MemberType == EdmMemberType.SpecificMemberTags)
+                            @if (context.ApplyToAllMembers)
                             {
-                                <Span @onclick="() => ShowMemberTagsModal(context)" Style="cursor: pointer; text-decoration: underline;">
-                                    @L["Enum:EdmMemberType." + (int)context.MemberType]
-                                </Span>
+                                <Span>@L["AllMembers"]</Span>
                             }
                             else
                             {
-                                <Span>@L["Enum:EdmMemberType." + (int)context.MemberType]</Span>
+                                <Span @onclick="() => ShowMemberTagsModal(context)" Style="cursor: pointer; text-decoration: underline;">
+                                    @L["SpecificMemberTags"]
+                                </Span>
                             }
                         </Span>
                     </DisplayTemplate>

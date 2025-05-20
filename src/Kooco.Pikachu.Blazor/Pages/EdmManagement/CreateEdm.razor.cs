@@ -22,7 +22,6 @@ public partial class CreateEdm
     private IReadOnlyList<string> MemberTagOptions { get; set; } = [];
     private IReadOnlyList<EdmTemplateType> TemplateTypeOptions { get; set; } = [.. Enum.GetValues<EdmTemplateType>()];
     private IReadOnlyList<EdmSendFrequency> SendFrequencyOptions { get; set; } = [.. Enum.GetValues<EdmSendFrequency>()];
-    private IReadOnlyList<EdmMemberType> MemberTypeOptions { get; set; } = [.. Enum.GetValues<EdmMemberType>()];
     private string SelectedTab { get; set; }
     private bool Loading { get; set; }
 

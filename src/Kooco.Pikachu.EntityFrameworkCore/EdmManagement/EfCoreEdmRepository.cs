@@ -27,22 +27,22 @@ public class EfCoreEdmRepository : EfCoreRepository<PikachuDbContext, Edm, Guid>
     }
 
     public async Task<long> CountAsync(string? filter = null, EdmTemplateType? templateType = null, Guid? campaignId = null,
-        EdmMemberType? memberType = null, IEnumerable<string>? memberTags = null, bool? applyToAllGroupBuys = null, IEnumerable<Guid>? groupBuyIds = null,
+        bool? applyToAllMembers = null, IEnumerable<string>? memberTags = null, bool? applyToAllGroupBuys = null, IEnumerable<Guid>? groupBuyIds = null,
         DateTime? startDate = null, DateTime? endDate = null, DateTime? minSendTime = null, DateTime? maxSendTime = null,
         EdmSendFrequency? sendFrequency = null)
     {
-        var queryable = await GetFilteredQueryableAsync(filter, templateType, campaignId, memberType, memberTags,
+        var queryable = await GetFilteredQueryableAsync(filter, templateType, campaignId, applyToAllMembers, memberTags,
             applyToAllGroupBuys, groupBuyIds, startDate, endDate, minSendTime, maxSendTime, sendFrequency);
         return await queryable.LongCountAsync();
     }
 
     public async Task<List<Edm>> GetListAsync(int skipCount = 0, int maxResultCount = 10, string? sorting = null,
         string? filter = null, EdmTemplateType? templateType = null, Guid? campaignId = null,
-        EdmMemberType? memberType = null, IEnumerable<string>? memberTags = null, bool? applyToAllGroupBuys = null, IEnumerable<Guid>? groupBuyIds = null,
+        bool? applyToAllMembers = null, IEnumerable<string>? memberTags = null, bool? applyToAllGroupBuys = null, IEnumerable<Guid>? groupBuyIds = null,
         DateTime? startDate = null, DateTime? endDate = null, DateTime? minSendTime = null, DateTime? maxSendTime = null,
         EdmSendFrequency? sendFrequency = null, bool includeGroupBuyName = false)
     {
-        var queryable = await GetFilteredQueryableAsync(filter, templateType, campaignId, memberType, memberTags,
+        var queryable = await GetFilteredQueryableAsync(filter, templateType, campaignId, applyToAllMembers, memberTags,
             applyToAllGroupBuys, groupBuyIds, startDate, endDate, minSendTime, maxSendTime, sendFrequency);
 
         var edms = await queryable
@@ -70,7 +70,7 @@ public class EfCoreEdmRepository : EfCoreRepository<PikachuDbContext, Edm, Guid>
     }
 
     public async Task<IQueryable<Edm>> GetFilteredQueryableAsync(string? filter = null, EdmTemplateType? templateType = null,
-        Guid? campaignId = null, EdmMemberType? memberType = null, IEnumerable<string>? memberTags = null, bool? applyToAllGroupBuys = null,
+        Guid? campaignId = null, bool? applyToAllMembers = null, IEnumerable<string>? memberTags = null, bool? applyToAllGroupBuys = null,
         IEnumerable<Guid>? groupBuyIds = null, DateTime? startDate = null, DateTime? endDate = null,
         DateTime? minSendTime = null, DateTime? maxSendTime = null, EdmSendFrequency? sendFrequency = null)
     {
@@ -81,7 +81,7 @@ public class EfCoreEdmRepository : EfCoreRepository<PikachuDbContext, Edm, Guid>
         return queryable
             .WhereIf(templateType.HasValue, x => x.TemplateType == templateType)
             .WhereIf(campaignId.HasValue, x => x.CampaignId == campaignId)
-            .WhereIf(memberType.HasValue, x => x.MemberType == memberType)
+            .WhereIf(applyToAllMembers.HasValue, x => x.ApplyToAllMembers == applyToAllMembers)
             .WhereIf(memberTags != null && memberTags.Any(), x => x.MemberTagsJson != null && memberTags.Any(mt => x.MemberTagsJson.Contains(mt)))
             .WhereIf(applyToAllGroupBuys.HasValue, x => x.ApplyToAllGroupBuys == applyToAllGroupBuys)
             .WhereIf(groupBuyIds != null && groupBuyIds.Any(), x => x.GroupBuys.Any(gb => groupBuyIds.Contains(gb.GroupBuyId)))

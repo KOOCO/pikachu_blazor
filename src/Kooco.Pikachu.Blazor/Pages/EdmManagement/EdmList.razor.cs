@@ -28,7 +28,6 @@ public partial class EdmList
     private bool CanEditEdm { get; set; }
     private bool CanDeleteEdm { get; set; }
     private IReadOnlyList<EdmTemplateType> TemplateTypeOptions { get; set; } = Enum.GetValues<EdmTemplateType>();
-    private IReadOnlyList<EdmMemberType> MemberTypeOptions { get; set; } = Enum.GetValues<EdmMemberType>();
     private IReadOnlyList<EdmSendFrequency> SendFrequencyOptions { get; set; } = Enum.GetValues<EdmSendFrequency>();
     private IReadOnlyList<KeyValueDto> CampaignOptions { get; set; } = [];
     private IReadOnlyList<KeyValueDto> GroupBuyOptions { get; set; } = [];
@@ -73,7 +72,7 @@ public partial class EdmList
                     Filter = Filters.Filter,
                     TemplateType = Filters.TemplateType,
                     CampaignId = Filters.CampaignId,
-                    MemberType = Filters.MemberType,
+                    ApplyToAllMembers = Filters.ApplyToAllMembers,
                     MemberTags = Filters.MemberTags,
                     ApplyToAllGroupBuys = Filters.ApplyToAllGroupBuys,
                     GroupBuyIds = Filters.GroupBuyIds,

@@ -18,13 +18,13 @@ public class CreateEdmDtoValidator : AbstractValidator<CreateEdmDto>
             .When(x => x.TemplateType == EdmTemplateType.Campaign)
             .WithMessage(Required(nameof(Campaign)));
 
-        RuleFor(x => x.MemberType)
+        RuleFor(x => x.ApplyToAllMembers)
             .NotNull()
             .WithMessage(Required(nameof(CreateEdmDto.MemberTags)));
 
         RuleFor(x => x.MemberTags)
             .NotEmpty()
-            .When(x => x.MemberType == EdmMemberType.SpecificMemberTags)
+            .When(x => x.ApplyToAllMembers == false)
             .WithMessage(Required(nameof(CreateEdmDto.MemberTags)));
 
         RuleFor(x => x.ApplyToAllGroupBuys)

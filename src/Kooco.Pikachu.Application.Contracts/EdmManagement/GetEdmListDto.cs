@@ -9,7 +9,7 @@ public class GetEdmListDto : PagedAndSortedResultRequestDto
     public string? Filter { get; set; }
     public EdmTemplateType? TemplateType { get; set; }
     public Guid? CampaignId { get; set; }
-    public EdmMemberType? MemberType { get; set; }
+    public bool? ApplyToAllMembers { get; set; }
     public IEnumerable<string> MemberTags { get; set; } = [];
     public bool? ApplyToAllGroupBuys { get; set; }
     public IEnumerable<Guid> GroupBuyIds { get; set; } = [];

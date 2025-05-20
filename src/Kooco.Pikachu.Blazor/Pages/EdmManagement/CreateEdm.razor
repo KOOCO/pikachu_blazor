@@ -108,18 +108,16 @@
                             <Validation MessageLocalizer="@LH.Localize">
                                 <Field>
                                     <FieldLabel required>@L["MemberTags"]</FieldLabel>
-                                    <RadioGroup Orientation="Orientation.Vertical" TValue="EdmMemberType?" Name="MemberTypes" @bind-CheckedValue="@Entity.MemberType">
+                                    <RadioGroup Orientation="Orientation.Vertical" TValue="bool?" Name="MemberTypes" @bind-CheckedValue="@Entity.ApplyToAllMembers">
                                         <ChildContent>
-                                            @foreach (var memberType in MemberTypeOptions)
-                                            {
-                                                <Radio TValue="EdmMemberType?" Value="@memberType">@L["Enum:EdmMemberType." + (int)memberType]</Radio>
-                                            }
+                                            <Radio TValue="bool?" Value="@true">@L["AllMembers"]</Radio>
+                                            <Radio TValue="bool?" Value="@false">@L["SpecificMemberTags"]</Radio>
                                         </ChildContent>
                                         <Feedback>
                                             <ValidationError />
                                         </Feedback>
                                     </RadioGroup>
-                                    @if (Entity.MemberType == EdmMemberType.SpecificMemberTags)
+                                    @if (Entity.ApplyToAllMembers == false)
                                     {
                                         <Field indent>
                                             <AntDesign.Select Mode="AntDesign.SelectMode.Multiple"

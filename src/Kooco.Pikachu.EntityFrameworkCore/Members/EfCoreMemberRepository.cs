@@ -306,7 +306,7 @@ public class EfCoreMemberRepository(IDbContextProvider<PikachuDbContext> pikachu
         return filteredUsers;
     }
 
-    public async Task<List<string>> GetEdmMemberEmailsAsync(EdmMemberType memberType, IEnumerable<string> memberTags)
+    public async Task<List<string>> GetEdmMemberEmailsAsync(bool applyToAllMembers, IEnumerable<string> memberTags)
     {
         var dbContext = await GetPikachuDbContextAsync();
 
@@ -323,8 +323,7 @@ public class EfCoreMemberRepository(IDbContextProvider<PikachuDbContext> pikachu
             user => user.Id,
             memberTags => memberTags.UserId,
             (user, memberTags) => new { User = user, MemberTags = memberTags })
-            .WhereIf(memberType == EdmMemberType.EveryMemberTag, user => user.MemberTags.Any())
-            .WhereIf(memberType == EdmMemberType.SpecificMemberTags, user => user.MemberTags.Any(tag => memberTags.Contains(tag.Name)))
+            .WhereIf(!applyToAllMembers, user => user.MemberTags.Any(tag => memberTags.Contains(tag.Name)))
             .Select(user => user.User.NormalizedEmail)
             .ToListAsync();
     }

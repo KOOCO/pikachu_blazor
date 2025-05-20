@@ -10,7 +10,7 @@ public class EdmDto : FullAuditedEntityDto<Guid>, IMultiTenant
     public EdmTemplateType TemplateType { get; set; }
     public Guid? CampaignId { get; set; }
     public string? CampaignName { get; set; }
-    public EdmMemberType MemberType { get; set; }
+    public bool ApplyToAllMembers { get; set; }
     public bool ApplyToAllGroupBuys { get; set; }
     public DateTime StartDate { get; set; }
     public DateTime? EndDate { get; set; }

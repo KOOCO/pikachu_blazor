@@ -37,7 +37,7 @@ public class EdmAppService : PikachuAppService, IEdmAppService
         await _validator.ValidateAndThrowAsync(input);
 
         var edm = await _edmManager.CreateAsync(input.TemplateType.Value, input.CampaignId,
-            input.MemberType.Value, input.MemberTags, input.ApplyToAllGroupBuys.Value, input.GroupBuyIds,
+            input.ApplyToAllMembers.Value, input.MemberTags, input.ApplyToAllGroupBuys.Value, input.GroupBuyIds,
             input.StartDate.Value, input.EndDate, input.SendTime.Value, input.SendFrequency,
             input.Subject, input.Message);
 
@@ -54,7 +54,7 @@ public class EdmAppService : PikachuAppService, IEdmAppService
         var edm = await _edmRepository.GetAsync(id);
 
         await _edmManager.UpdateAsync(edm, input.TemplateType.Value, input.CampaignId,
-            input.MemberType.Value, input.MemberTags, input.ApplyToAllGroupBuys.Value, input.GroupBuyIds,
+            input.ApplyToAllMembers.Value, input.MemberTags, input.ApplyToAllGroupBuys.Value, input.GroupBuyIds,
             input.StartDate.Value, input.EndDate, input.SendTime.Value, input.SendFrequency,
             input.Subject, input.Message);
 
@@ -72,11 +72,11 @@ public class EdmAppService : PikachuAppService, IEdmAppService
     public async Task<PagedResultDto<EdmDto>> GetListAsync(GetEdmListDto input)
     {
         var totalCount = await _edmRepository.CountAsync(input.Filter, input.TemplateType, input.CampaignId,
-            input.MemberType, input.MemberTags, input.ApplyToAllGroupBuys, input.GroupBuyIds, input.StartDate, input.EndDate,
+            input.ApplyToAllMembers, input.MemberTags, input.ApplyToAllGroupBuys, input.GroupBuyIds, input.StartDate, input.EndDate,
             input.MinSendTime, input.MaxSendTime, input.SendFrequency);
 
         var items = await _edmRepository.GetListAsync(input.SkipCount, input.MaxResultCount, input.Sorting,
-            input.Filter, input.TemplateType, input.CampaignId, input.MemberType, input.MemberTags, input.ApplyToAllGroupBuys,
+            input.Filter, input.TemplateType, input.CampaignId, input.ApplyToAllMembers, input.MemberTags, input.ApplyToAllGroupBuys,
             input.GroupBuyIds, input.StartDate, input.EndDate, input.MinSendTime, input.MaxSendTime, input.SendFrequency, includeGroupBuyName: true);
 
         return new PagedResultDto<EdmDto>

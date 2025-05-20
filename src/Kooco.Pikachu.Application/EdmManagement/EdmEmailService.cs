@@ -1,9 +1,9 @@
 ﻿using Hangfire;
 using Kooco.Pikachu.Members;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Volo.Abp.Data;
 using Volo.Abp.DependencyInjection;
 using Volo.Abp.Emailing;
 using Volo.Abp.MultiTenancy;
@@ -16,21 +16,21 @@ public class EdmEmailService : ITransientDependency
     private readonly IEmailSender _emailSender;
     private readonly IMemberRepository _memberRepository;
     private readonly ICurrentTenant _currentTenant;
-    private readonly IDataFilter<IMultiTenant> _multiTenantFilter;
+    private readonly ILogger<EdmEmailService> _logger;
 
     public EdmEmailService(
         IEdmRepository edmRepository,
         IEmailSender emailSender,
         IMemberRepository memberRepository,
         ICurrentTenant currentTenant,
-        IDataFilter<IMultiTenant> multiTenantFilter
+        ILogger<EdmEmailService> logger
         )
     {
         _edmRepository = edmRepository;
         _emailSender = emailSender;
         _memberRepository = memberRepository;
         _currentTenant = currentTenant;
-        _multiTenantFilter = multiTenantFilter;
+        _logger = logger;
     }
 
     public Task EnqueueJob(Edm edm)
@@ -52,6 +52,11 @@ public class EdmEmailService : ITransientDependency
 
             jobId = edm.Id.ToString();
 
+            if (!string.IsNullOrWhiteSpace(edm.JobId))
+            {
+                RecurringJob.RemoveIfExists(edm.JobId);
+            }
+
             RecurringJob.AddOrUpdate<EdmEmailingJob>(
                 jobId,
                 job => job.ExecuteAsync(edm.Id),
@@ -66,6 +71,11 @@ public class EdmEmailService : ITransientDependency
                 DateTimeKind.Utc
             );
 
+            if (!string.IsNullOrWhiteSpace(edm.JobId))
+            {
+                BackgroundJob.Delete(edm.JobId);
+            }
+
             jobId = BackgroundJob.Schedule<EdmEmailingJob>(
                 sender => sender.ExecuteAsync(edm.Id),
                 scheduledUtc
@@ -78,26 +88,28 @@ public class EdmEmailService : ITransientDependency
 
     public async Task SendEmailAsync(Edm edm)
     {
-        using (_currentTenant.Change(edm.TenantId))
+        try
         {
-            var members = await _memberRepository.GetEdmMemberEmailsAsync(edm.MemberType, edm.MemberTags);
-
-            if (members.Count == 0)
+            using (_currentTenant.Change(edm.TenantId))
             {
-                return;
-            }
+                var members = await _memberRepository.GetEdmMemberEmailsAsync(edm.ApplyToAllMembers, edm.MemberTags);
 
-            var groupBuyNames = await _edmRepository.GetGroupBuyNamesAsync([.. edm.GroupBuys.Select(gb => gb.GroupBuyId)]);
+                if (members.Count == 0)
+                {
+                    return;
+                }
 
-            var emailTitle = edm.TemplateType switch
-            {
-                EdmTemplateType.Customize => "This is CUSTOMIZE email template!",
-                EdmTemplateType.Campaign => "This is CAMPAIGN email template!",
-                EdmTemplateType.ShoppingCart => "This is SHOPPING CART email template!",
-                _ => ""
-            };
+                var groupBuyNames = await _edmRepository.GetGroupBuyNamesAsync([.. edm.GroupBuys.Select(gb => gb.GroupBuyId)]);
 
-            var template = @$"
+                var emailTitle = edm.TemplateType switch
+                {
+                    EdmTemplateType.Customize => "This is CUSTOMIZE email template!",
+                    EdmTemplateType.Campaign => "This is CAMPAIGN email template!",
+                    EdmTemplateType.ShoppingCart => "This is SHOPPING CART email template!",
+                    _ => ""
+                };
+
+                var template = @$"
                 <table>
                     <tr>
                       <td>
@@ -111,21 +123,27 @@ public class EdmEmailService : ITransientDependency
                 </table>
             ";
 
-            string groupBuyTemplate = "<h5>Group Buy Names:</h5>";
-            foreach (var groupBuyName in groupBuyNames)
-            {
-                groupBuyTemplate += $"<div>{groupBuyName}</div>";
-            }
+                string groupBuyTemplate = "<h5>Group Buy Names:</h5>";
+                foreach (var groupBuyName in groupBuyNames)
+                {
+                    groupBuyTemplate += $"<div>{groupBuyName}</div>";
+                }
 
-            template = template.Replace("{groupbuys}", groupBuyTemplate);
-            foreach (var member in members)
-            {
-                await _emailSender.SendAsync(
-                    member,
-                    edm.Subject,
-                    template
-                );
+                template = template.Replace("{groupbuys}", groupBuyTemplate);
+                foreach (var member in members)
+                {
+                    await _emailSender.SendAsync(
+                        member,
+                        edm.Subject,
+                        template
+                    );
+                }
             }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogException(ex);
+            throw;
         }
     }
 }
