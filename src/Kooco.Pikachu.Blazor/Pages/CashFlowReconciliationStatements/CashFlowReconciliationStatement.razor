@@ -25,7 +25,7 @@
         <h3>@L["CashFlowReconciliation"]</h3>
     </div>
     <div class="col-6 text-lg-end">
-        @if (OrderTransactions.Where(x => x.IsSelected).Count() != 1 || OrderTransactions.Any(x => x.IsSelected && x.Order != null && x.Order.IsVoidInvoice && x.Order.CreditNoteReason != null))
+        @if (OrderTransactions.Where(x => x.IsSelected).Count() != 1 || OrderTransactions.Any(x => x.IsSelected && x.Order != null && x.Order.IsVoidInvoice && x.Order.CreditNoteReason != null||x.Order.InvoiceDate==null))
         {
             <Button Type="@ButtonType.Button" disabled Class="ms-1 btn btn-sm btn-primary">
                 <i class="fa fa-print"></i>
@@ -40,7 +40,7 @@
             </Button>
         }
 
-        @if (OrderTransactions.Where(x => x.IsSelected).Count() != 1 || OrderTransactions.Any(x => x.IsSelected && x.Order != null && x.Order.IsVoidInvoice))
+        @if (OrderTransactions.Where(x => x.IsSelected).Count() != 1 || OrderTransactions.Any(x => x.IsSelected && x.Order != null && x.Order.IsVoidInvoice || x.Order.InvoiceDate==null))
         {
             <Button Type="@ButtonType.Button" disabled Class="ms-1 btn btn-sm btn-primary">
                 <i class="fa fa-print"></i>

@@ -1558,6 +1558,7 @@
     "MaxSendTime": "Max Send Time",
     "AreYouSureToDeleteEdm": "Are you sure to delete this EDM?",
     "NewAddOn": "New",
-    "AddNewDiscountCode": "New"
+    "AddNewDiscountCode": "New",
+    "Invoicehasvoided": "Invoice has successfully voided"
   }
 }

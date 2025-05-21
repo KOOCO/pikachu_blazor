@@ -1395,7 +1395,8 @@
     "SaveSettings": "儲存",
     "Size": "商品尺寸",
     "Yes": "是",
-    "PostOffice": "郵局"
+    "PostOffice": "郵局",
+    "Invoicehasvoided": "發票已成功做廢"
 
   }
 }

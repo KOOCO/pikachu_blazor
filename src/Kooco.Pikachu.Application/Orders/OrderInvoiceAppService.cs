@@ -29,17 +29,17 @@ public class OrderInvoiceAppService : PikachuAppService, IOrderInvoiceAppService
         {
             throw new InvalidOperationException("訂單已有未作廢發票，不能重複建立");
         }
-
-        if (CurrentTenant?.Id == null) return "";
-
-        var setting = await TenantTripartiteRepository.FindByTenantAsync(CurrentTenant.Id.Value);
-
         var order = (await OrderRepository.GetQueryableAsync())
             .Include(x => x.OrderItems)
             .ThenInclude(x => x.Item)
             .Include(x => x.OrderItems)
             .ThenInclude(x => x.Freebie)
             .First(x => x.Id == orderId);
+        
+
+        var setting = await TenantTripartiteRepository.FindByTenantAsync(CurrentTenant.Id??order.TenantId);
+
+        
 
 
         //foreach (var orderItem in order.OrderItems)
@@ -320,6 +320,7 @@ public class OrderInvoiceAppService : PikachuAppService, IOrderInvoiceAppService
             order.IsVoidInvoice = true;
 
             order.InvoiceStatus = InvoiceStatus.InvoiceVoided;
+            order.IssueStatus = IssueInvoiceStatus.Voided;
 
             await OrderRepository.UpdateAsync(order);
         }

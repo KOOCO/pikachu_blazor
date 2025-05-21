@@ -182,6 +182,11 @@ public partial class CashFlowReconciliationStatement
     {
         var selectedOrder = OrderTransactions.SingleOrDefault(x => x.IsSelected);
         await _orderAppService.VoidInvoice(selectedOrder.OrderId, VoidReason.Reason);
+        var order=await _orderAppService.GetAsync(selectedOrder.OrderId);
+        if (order.InvoiceStatus == EnumValues.InvoiceStatus.InvoiceVoided)
+        {
+            await _uiMessageService.Success(L["Invoicehasvoided"]);
+        }
         await CreateVoidReasonModal.Hide();
         await UpdateItemList();
         await InvokeAsync(StateHasChanged);

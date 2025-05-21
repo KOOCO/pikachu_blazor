@@ -3,5 +3,6 @@ public enum IssueInvoiceStatus
 {
     SentToBackStage,
     Succeeded,
-    Failed
+    Failed,
+    Voided
 }
