@@ -1396,7 +1396,8 @@
     "Size": "商品尺寸",
     "Yes": "是",
     "PostOffice": "郵局",
-    "Invoicehasvoided": "發票已成功做廢"
+    "Invoicehasvoided": "發票已成功做廢",
+    "ToUsePoints": "可使用點數"
 
   }
 }
