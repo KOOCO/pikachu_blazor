@@ -1914,9 +1914,10 @@ public partial class OrderDetails
 
             UpdateOrder.DeliveryMethod = shipments.ShippingMethod;
 
-            await _orderDeliveryAppService.UpdateShippingDetails(OrderDeliveryId, UpdateOrder);
+            var deliveryOrder= await _orderDeliveryAppService.UpdateShippingDetails(OrderDeliveryId, UpdateOrder);
 
             await CreateShipmentModal.Hide();
+             CreateOrderLogistics(deliveryOrder);
 
             await GetOrderDetailsAsync();
 
