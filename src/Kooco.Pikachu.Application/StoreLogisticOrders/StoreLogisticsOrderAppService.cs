@@ -68,15 +68,10 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
     private readonly ITenantTripartiteRepository _electronicInvoiceSettingRepository;
     private readonly IBackgroundJobManager _backgroundJobManager;
     private IStringLocalizer<PikachuResource> _L;
-
     private readonly IConfiguration _configuration;
-
     private readonly IGroupBuyAppService _GroupBuyAppService;
-
     private readonly IGroupBuyRepository _GroupBuyRepository;
-
     private readonly ITenantSettingsAppService _tenantSettingsAppService;
-
     private readonly IEmailSender _emailSender;
     private readonly IEmailAppService _emailAppService;
     private readonly OrderHistoryManager _orderHistoryManager;
@@ -814,123 +809,119 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
 
     public async Task<PrintObtResponse?> GenerateDeliveryNumberForTCatDeliveryAsync(Guid orderId, Guid orderDeliveryId, DeliveryMethod? deliveryMethod = null)
     {
-       
-            var order = await _orderRepository.GetAsync(orderId);
+        var order = await _orderRepository.GetAsync(orderId);
+        List<OrderDelivery> orderDeliveries = await _deliveryRepository.GetWithDetailsAsync(orderId);
+        OrderDelivery orderDelivery = orderDeliveries.First(f => f.Id == orderDeliveryId);
+        var groupBuy = await _GroupBuyAppService.GetAsync(order.GroupBuyId);
+        List<LogisticsProviderSettingsDto> providers = await _logisticsProvidersAppService.GetAllAsync();
+        LogisticsProviderSettingsDto? tCat = providers.FirstOrDefault(f => f.LogisticProvider is LogisticProviders.TCat);
+        if (tCat is not null) 
+        { 
+            TCatLogistics = ObjectMapper.Map<LogisticsProviderSettingsDto, TCatLogisticsCreateUpdateDto>(tCat); 
+        }
+        
+        LogisticsProviderSettingsDto? tCatNormal = providers.FirstOrDefault(f => f.LogisticProvider is LogisticProviders.TCatNormal);
+        if (tCatNormal is not null)
+        { 
+            TCatNormal = ObjectMapper.Map<LogisticsProviderSettingsDto, TCatNormalCreateUpdateDto>(tCatNormal); 
+        }
+        
+        LogisticsProviderSettingsDto? tCatFreeze = providers.FirstOrDefault(f => f.LogisticProvider is LogisticProviders.TCatFreeze);
+        if (tCatFreeze is not null)
+        { 
+            TCatFreeze = ObjectMapper.Map<LogisticsProviderSettingsDto, TCatFreezeCreateUpdateDto>(tCatFreeze); 
+        }
+        
+        LogisticsProviderSettingsDto? tCatFrozen = providers.FirstOrDefault(f => f.LogisticProvider is LogisticProviders.TCatFrozen);
+        if (tCatFrozen is not null)
+        { 
+            TCatFrozen = ObjectMapper.Map<LogisticsProviderSettingsDto, TCatFrozenCreateUpdateDto>(tCatFrozen); 
+        }
+        
+        string thermosphere = string.Empty; 
+        string spec = string.Empty; 
+        string isSwipe = string.Empty;
+        string isCollection = string.Empty; 
+        int collectionAmount = 0; 
+        string deliveryTime = string.Empty;
+        var itemStorageTemp = orderDelivery.Items.First().DeliveryTemperature;
 
-            List<OrderDelivery> orderDeliveries = await _deliveryRepository.GetWithDetailsAsync(orderId);
-
-            OrderDelivery orderDelivery = orderDeliveries.First(f => f.Id == orderDeliveryId);
-
-            var groupBuy = await _GroupBuyAppService.GetAsync(order.GroupBuyId);
-
-            List<LogisticsProviderSettingsDto> providers = await _logisticsProvidersAppService.GetAllAsync();
-
-            LogisticsProviderSettingsDto? tCat = providers.FirstOrDefault(f => f.LogisticProvider is LogisticProviders.TCat);
-
-            if (tCat is not null) TCatLogistics = ObjectMapper.Map<LogisticsProviderSettingsDto, TCatLogisticsCreateUpdateDto>(tCat);
-
-            LogisticsProviderSettingsDto? tCatNormal = providers.FirstOrDefault(f => f.LogisticProvider is LogisticProviders.TCatNormal);
-
-            if (tCatNormal is not null) TCatNormal = ObjectMapper.Map<LogisticsProviderSettingsDto, TCatNormalCreateUpdateDto>(tCatNormal);
-
-            LogisticsProviderSettingsDto? tCatFreeze = providers.FirstOrDefault(f => f.LogisticProvider is LogisticProviders.TCatFreeze);
-
-            if (tCatFreeze is not null) TCatFreeze = ObjectMapper.Map<LogisticsProviderSettingsDto, TCatFreezeCreateUpdateDto>(tCatFreeze);
-
-            LogisticsProviderSettingsDto? tCatFrozen = providers.FirstOrDefault(f => f.LogisticProvider is LogisticProviders.TCatFrozen);
-
-            if (tCatFrozen is not null) TCatFrozen = ObjectMapper.Map<LogisticsProviderSettingsDto, TCatFrozenCreateUpdateDto>(tCatFrozen);
-
-            string thermosphere = string.Empty; string spec = string.Empty; string isSwipe = string.Empty;
-
-            string isCollection = string.Empty; int collectionAmount = 0; string deliveryTime = string.Empty;
-
-            if (orderDelivery.Items is { Count: > 0 } &&
-                orderDelivery.Items.First().DeliveryTemperature is ItemStorageTemperature.Normal)
+        void SetThermalValues(
+            string thermosphereCode,
+            dynamic tCat,
+            Func<string> getSize,
+            ReceivingTime? receivingTime)
+        {
+            thermosphere = thermosphereCode;
+            spec = getSize();
+            isCollection = tCat.Payment &&
+                           order.PaymentMethod is PaymentMethods.CashOnDelivery &&
+                           order.ShippingStatus >= ShippingStatus.PrepareShipment
+                ? "Y" : "N";
+            collectionAmount = tCat.Payment &&
+                               order.PaymentMethod is PaymentMethods.CashOnDelivery &&
+                               order.ShippingStatus >= ShippingStatus.PrepareShipment
+                ? GetCollectionAmountWithDeduction(
+                    orderDelivery.Items.Sum(s => s.TotalAmount),
+                    order.DeliveryCost,
+                    order.CreditDeductionAmount + order.DiscountAmount)
+                : 0;
+            isSwipe = tCat.Payment && 
+                      tCat.TCatPaymentMethod is TCatPaymentMethod.CardAndMobilePaymentsAccepted
+                ? "Y" : "N";
+            deliveryTime = receivingTime switch
             {
-                thermosphere = "0001";
+                ReceivingTime.Before13PM => "01",
+                ReceivingTime.Between14To18PM => "02",
+                _ => "04"
+            };
+        }
 
-                spec = GetSpec(TCatNormal.Size);
-
-                isCollection = TCatNormal.Payment && order.PaymentMethod is PaymentMethods.CashOnDelivery && order.ShippingStatus is ShippingStatus.PrepareShipment ? "Y" : "N";
-
-                collectionAmount = TCatNormal.Payment && order.PaymentMethod is PaymentMethods.CashOnDelivery && order.ShippingStatus is ShippingStatus.PrepareShipment ?
-                                    GetCollectionAmount(orderDelivery.Items.Sum(s => s.TotalAmount), order.DeliveryCost) :
-                                    0;
-
-                isSwipe = TCatNormal.Payment && TCatNormal.TCatPaymentMethod is TCatPaymentMethod.CardAndMobilePaymentsAccepted ? "Y" : "N";
-
-                deliveryTime = order.ReceivingTimeNormal switch
-                {
-                    ReceivingTime.Before13PM => "01",
-                    ReceivingTime.Between14To18PM => "02",
-                    _ => "04"
-                };
-            }
-
-            else if (orderDelivery.Items is { Count: > 0 } &&
-                     orderDelivery.Items.First().DeliveryTemperature is ItemStorageTemperature.Freeze)
+        if (orderDelivery.Items is { Count: > 0 })
+        {
+            switch (itemStorageTemp)
             {
-                thermosphere = "0002";
-
-                spec = GetSpec(TCatFreeze.Size);
-
-                isCollection = TCatFreeze.Payment && order.PaymentMethod is PaymentMethods.CashOnDelivery && order.ShippingStatus is ShippingStatus.PrepareShipment ? "Y" : "N";
-
-                collectionAmount = TCatFreeze.Payment && order.PaymentMethod is PaymentMethods.CashOnDelivery && order.ShippingStatus is ShippingStatus.PrepareShipment ?
-                                    GetCollectionAmount(orderDelivery.Items.Sum(s => s.TotalAmount), order.DeliveryCost) :
-                                    0;
-
-                isSwipe = TCatFreeze.Payment && TCatFreeze.TCatPaymentMethod is TCatPaymentMethod.CardAndMobilePaymentsAccepted ? "Y" : "N";
-
-                deliveryTime = order.ReceivingTimeFreeze switch
-                {
-                    ReceivingTime.Before13PM => "01",
-                    ReceivingTime.Between14To18PM => "02",
-                    _ => "04"
-                };
+                case ItemStorageTemperature.Normal:
+                    SetThermalValues(
+                        thermosphereCode: "0001",
+                        tCat: TCatNormal,
+                        getSize: () => GetSpec(TCatNormal.Size),
+                        receivingTime: order.ReceivingTimeNormal);
+                    break;
+                case ItemStorageTemperature.Freeze:
+                    SetThermalValues(
+                        thermosphereCode: "0002",
+                        tCat: TCatFreeze,
+                        getSize: () => GetSpec(TCatFreeze.Size),
+                        receivingTime: order.ReceivingTimeFreeze);
+                    break;
+                case ItemStorageTemperature.Frozen:
+                    SetThermalValues(
+                        thermosphereCode: "0003",
+                        tCat: TCatFrozen,
+                        getSize: () => GetSpec(TCatFrozen.Size),
+                        receivingTime: order.ReceivingTimeFrozen);
+                    break;
             }
+        }
 
-            else if (orderDelivery.Items is { Count: > 0 } &&
-                     orderDelivery.Items.First().DeliveryTemperature is ItemStorageTemperature.Frozen)
-            {
-                thermosphere = "0003";
+        string isDeclare = TCatLogistics.DeclaredValue &&
+                           IsOrderAmountValid(
+                               orderDelivery.Items.Sum(s => s.TotalAmount), 
+                               order.DeliveryCost) 
+                           ? "Y" : "N";
 
-                spec = GetSpec(TCatFrozen.Size);
-
-                isCollection = TCatFrozen.Payment && order.PaymentMethod is PaymentMethods.CashOnDelivery && order.ShippingStatus is ShippingStatus.PrepareShipment ? "Y" : "N";
-
-                collectionAmount = TCatFrozen.Payment && order.PaymentMethod is PaymentMethods.CashOnDelivery && order.ShippingStatus is ShippingStatus.PrepareShipment ?
-                                    GetCollectionAmount(orderDelivery.Items.Sum(s => s.TotalAmount), order.DeliveryCost) :
-                                    0;
-
-                isSwipe = TCatFrozen.Payment && TCatFrozen.TCatPaymentMethod is TCatPaymentMethod.CardAndMobilePaymentsAccepted ? "Y" : "N";
-
-                deliveryTime = order.ReceivingTimeFrozen switch
-                {
-                    ReceivingTime.Before13PM => "01",
-                    ReceivingTime.Between14To18PM => "02",
-                    _ => "04"
-                };
-            }
-
-            //if (order.PaymentMethod is PaymentMethods.CashOnDelivery && order.ShippingStatus is ShippingStatus.PrepareShipment)
-            //    isCollection = "Y";
-
-            string isDeclare = TCatLogistics.DeclaredValue &&
-                               IsOrderAmountValid(orderDelivery.Items.Sum(s => s.TotalAmount), order.DeliveryCost) ? "Y" : "N";
-
-            DayOfWeek TodaysDay = DateTime.Today.DayOfWeek;
+        DayOfWeek TodaysDay = DateTime.Today.DayOfWeek;
         var newOrderNo = AddNumericSuffix(order.OrderNo);
         PrintOBTRequest request = new()
-            {
-                CustomerId = TCatLogistics.CustomerId,
-                CustomerToken = TCatLogistics.CustomerToken,
-                PrintType = "01",
-                PrintOBTType = $"0{(int)TCatLogistics.TCatShippingLabelForm}",
-                Orders =
-                [
-                    new OrderOBT
+        {
+            CustomerId = TCatLogistics.CustomerId,
+            CustomerToken = TCatLogistics.CustomerToken,
+            PrintType = "01",
+            PrintOBTType = $"0{(int)TCatLogistics.TCatShippingLabelForm}",
+            Orders =
+            [
+                new OrderOBT
                 {
                     OBTNumber = string.Empty,
                     OrderId = newOrderNo,
@@ -961,28 +952,25 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
                     ProductName = GetProductName(groupBuy.GroupBuyName),
                     Memo = string.Empty
                 }
-                ]
-            };
+            ]
+        };
 
-            string jsonContent = JsonConvert.SerializeObject(request);
+        string jsonContent = JsonConvert.SerializeObject(request);
+        StringContent content = new(jsonContent, Encoding.UTF8, "application/json");
 
-            StringContent content = new(jsonContent, Encoding.UTF8, "application/json");
+        using HttpClient httpClient = new();
+        HttpResponseMessage response = await httpClient.PostAsync(_configuration["T-Cat:PrintOBT"], content);
+        string responseContent = await response.Content.ReadAsStringAsync();
 
-            using HttpClient httpClient = new();
+        PrintObtResponse? printObtResponse = JsonConvert.DeserializeObject<PrintObtResponse>(responseContent);
+        if (printObtResponse is null || printObtResponse.Data is null)
+        { 
+            return printObtResponse; 
+        }
 
-            HttpResponseMessage response = await httpClient.PostAsync(_configuration["T-Cat:PrintOBT"], content);
-
-            string responseContent = await response.Content.ReadAsStringAsync();
-
-            PrintObtResponse? printObtResponse = JsonConvert.DeserializeObject<PrintObtResponse>(responseContent);
-
-            if (printObtResponse is null || printObtResponse.Data is null) return printObtResponse;
-
-            try
-            {
-            using (var uow = UnitOfWorkManager.Begin(
-               requiresNew: true, isTransactional: false
-           ))
+        try
+        {
+            using (var uow = UnitOfWorkManager.Begin(requiresNew: true, isTransactional: false))
             {
                 var newOrderDelivery = await _deliveryRepository.GetAsync(orderDeliveryId);
                 newOrderDelivery.SrvTranId = printObtResponse.SrvTranId;
@@ -1010,23 +998,21 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
 
                 // **Log Order History for Delivery Update**
                 await _orderHistoryManager.AddOrderHistoryAsync(
-      newOrderDelivery.OrderId,
-      "GenerateDeliveryNumberLog", // Localization key
-      new object[] { newOrderDelivery.DeliveryNo }, // Dynamic placeholder for delivery number
-      currentUserId,
-      currentUserName
-  );
+                    newOrderDelivery.OrderId,
+                    "GenerateDeliveryNumberLog", // Localization key
+                    new object[] { newOrderDelivery.DeliveryNo }, // Dynamic placeholder for delivery number
+                    currentUserId,
+                    currentUserName
+                );
 
             }
-                await SendEmailAsync(orderId, ShippingStatus.ToBeShipped);
-            }
+            await SendEmailAsync(orderId, ShippingStatus.ToBeShipped);
+        }
         catch (AbpDbConcurrencyException e)
         {
             Logger.LogError(e.Message);
             Logger.LogWarning("Issue on Delivery Number For TCat");
-            using (var uow = UnitOfWorkManager.Begin(
-             requiresNew: true, isTransactional: false
-         ))
+            using (var uow = UnitOfWorkManager.Begin(requiresNew: true, isTransactional: false))
             {
                 var newOrderDelivery = await _deliveryRepository.GetAsync(orderDeliveryId);
                 newOrderDelivery.SrvTranId = printObtResponse.SrvTranId;
@@ -1043,8 +1029,6 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
                         deliveryMethod is not null)
                     newOrderDelivery.ActualDeliveryMethod = deliveryMethod;
 
-
-
                 //order.ShippingStatus = ShippingStatus.ToBeShipped;
                 await uow.SaveChangesAsync();
                 //await _orderRepository.UpdateAsync(order);
@@ -1054,20 +1038,19 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
 
                 // **Log Order History for Delivery Update**
                 await _orderHistoryManager.AddOrderHistoryAsync(
-     newOrderDelivery.OrderId,
-     "GenerateDeliveryNumberLog", // Localization key
-     new object[] { newOrderDelivery.DeliveryNo }, // Dynamic placeholder for delivery number
-     currentUserId,
-     currentUserName
- );
+                    newOrderDelivery.OrderId,
+                    "GenerateDeliveryNumberLog", // Localization key
+                    new object[] { newOrderDelivery.DeliveryNo }, // Dynamic placeholder for delivery number
+                    currentUserId,
+                    currentUserName
+                );
             }
             await SendEmailAsync(orderId, ShippingStatus.ToBeShipped);
+            
             return printObtResponse;
-
         }
 
         return printObtResponse;
-        
     }
 
     public async Task<PrintOBTB2SResponse?> GenerateDeliveryNumberForTCat711DeliveryAsync(Guid orderId, Guid orderDeliveryId, DeliveryMethod? deliveryMethod = null)
@@ -1308,6 +1291,21 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
         decimal totalValue = totalAmountValue + deliveryCostValue;
 
         totalValue = totalValue.IsBetween(20000, 100001) ? totalValue : 0;
+
+        return (int)totalValue;
+    }
+
+    private static int GetCollectionAmountWithDeduction(
+        decimal? totalAmount, 
+        decimal? deliveryCost, 
+        decimal? totalDeduction, 
+        bool isFor711 = false)
+    {
+        decimal totalAmountValue = totalAmount is not null ? totalAmount.Value : 0.00m;
+        decimal deliveryCostValue = deliveryCost is not null ? deliveryCost.Value : 0.00m;
+        decimal totalDeductionValue = totalDeduction is not null ? totalDeduction.Value : 0.00m;
+        decimal totalValue = totalAmountValue + deliveryCostValue - totalDeductionValue;
+        totalValue = totalValue.IsBetween(0, isFor711 ? 20000 : 100001) ? totalValue : 0;
 
         return (int)totalValue;
     }
