@@ -233,7 +233,6 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
                 SevenToElevenFrozen = ObjectMapper.Map<LogisticsProviderSettingsDto, SevenToElevenCreateUpdateDto>(sevenToElevenFrozen);
             }
 
-            string temperature = "0001";
             var bNormal = providers.Where(p => p.LogisticProvider is LogisticProviders.BNormal).FirstOrDefault();
             if (bNormal != null)
             {
@@ -243,13 +242,11 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
             if (bFreeze != null)
             {
                 BFreeze = ObjectMapper.Map<LogisticsProviderSettingsDto, BNormalCreateUpdateDto>(bFreeze);
-                temperature = "0002";
             }
             var bFrozen = providers.Where(p => p.LogisticProvider is LogisticProviders.BFrozen).FirstOrDefault();
             if (bFrozen != null)
             {
                 BFrozen = ObjectMapper.Map<LogisticsProviderSettingsDto, BNormalCreateUpdateDto>(bFrozen);
-                temperature = "0003";
             }
             var options = new RestClientOptions
             {
@@ -267,7 +264,15 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
             HttpRequest? domainRequest = _httpContextAccessor?.HttpContext?.Request;
 
             string? domainName = $"{domainRequest?.Scheme}://{domainRequest?.Host.Value}";
-
+            string temperature = "0001";
+            if (deliveryMethod is DeliveryMethod.BlackCatFreeze)
+            {
+                temperature = "0002";
+            }
+            else if (deliveryMethod is DeliveryMethod.BlackCatFrozen)
+            {
+                temperature = "0003";
+            }
             if (orderDelivery.DeliveryMethod is DeliveryMethod.PostOffice || deliveryMethod is DeliveryMethod.PostOffice)
             {
                 temperature = "0001";

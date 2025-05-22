@@ -1441,20 +1441,38 @@ public partial class OrderDetails
                 }
             }
 
+            else if (deliveryOrder.DeliveryMethod is DeliveryMethod.BlackCat1 ||
+                     deliveryOrder.DeliveryMethod is DeliveryMethod.BlackCatFreeze ||
+                     deliveryOrder.DeliveryMethod is DeliveryMethod.BlackCatFrozen)
+            {
+                ResponseResultDto result = await _storeLogisticsOrderAppService.CreateHomeDeliveryShipmentOrderAsync(
+                    Order.Id, 
+                    OrderDeliveryId, 
+                    deliveryOrder.DeliveryMethod);
+                if (result.ResponseCode is not "1")
+                {
+                    await _uiMessageService.Error(result.ResponseMessage);
+                    loading = false;
+                }
+                else if (result.ResponseCode is "1")
+                {
+                    await _storeLogisticsOrderAppService.IssueInvoiceAync(Order.Id);
+                }
+            }
+
             else if (deliveryOrder.DeliveryMethod is DeliveryMethod.DeliveredByStore)
             {
-                LogisticProviders? logisticProvider = null; DeliveryMethod? deliveryMethod = null; ItemStorageTemperature? temperature = null;
+                LogisticProviders? logisticProvider = null;
+                DeliveryMethod? deliveryMethod = null;
+                ItemStorageTemperature? temperature = null;
 
                 List<DeliveryTemperatureCostDto> deliveryTemperatureCosts = await _DeliveryTemperatureCostAppService.GetListAsync();
-
                 foreach (DeliveryTemperatureCostDto entity in deliveryTemperatureCosts)
                 {
                     if (deliveryOrder.Items.Any(a => a.DeliveryTemperature == entity.Temperature))
                     {
                         logisticProvider = entity.LogisticProvider;
-
                         deliveryMethod = entity.DeliveryMethod;
-
                         temperature = entity.Temperature;
                     }
                 }
@@ -1477,12 +1495,10 @@ public partial class OrderDetails
                             await _storeLogisticsOrderAppService.IssueInvoiceAync(Order.Id);
                         }
                     }
-
                     else if (logisticProvider is LogisticProviders.GreenWorldLogistics && deliveryMethod is DeliveryMethod.PostOffice ||
                              logisticProvider is LogisticProviders.GreenWorldLogistics && deliveryMethod is DeliveryMethod.BlackCat1)
                     {
                         ResponseResultDto result = await _storeLogisticsOrderAppService.CreateHomeDeliveryShipmentOrderAsync(Order.Id, OrderDeliveryId, deliveryMethod);
-
                         if (result.ResponseCode is not "1")
                         {
                             await _uiMessageService.Error(result.ResponseMessage);
@@ -1493,7 +1509,6 @@ public partial class OrderDetails
                             await _storeLogisticsOrderAppService.IssueInvoiceAync(Order.Id);
                         }
                     }
-
                     else if (logisticProvider is LogisticProviders.TCat && deliveryMethod is DeliveryMethod.TCatDeliveryNormal)
                     {
                         PrintObtResponse? response = await _storeLogisticsOrderAppService.GenerateDeliveryNumberForTCatDeliveryAsync(Order.Id, deliveryOrder.Id, deliveryMethod);
@@ -1507,7 +1522,6 @@ public partial class OrderDetails
                             await _storeLogisticsOrderAppService.IssueInvoiceAync(Order.Id);
                         }
                     }
-
                     else if (logisticProvider is LogisticProviders.TCat && deliveryMethod is DeliveryMethod.TCatDeliverySevenElevenNormal)
                     {
                         PrintOBTB2SResponse? response = await _storeLogisticsOrderAppService.GenerateDeliveryNumberForTCat711DeliveryAsync(Order.Id, deliveryOrder.Id, deliveryMethod);
