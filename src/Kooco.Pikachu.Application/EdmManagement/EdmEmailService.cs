@@ -1,10 +1,14 @@
 ﻿using Hangfire;
+using Kooco.Pikachu.Campaigns;
 using Kooco.Pikachu.Members;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Volo.Abp.DependencyInjection;
+using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Emailing;
 using Volo.Abp.MultiTenancy;
 
@@ -16,6 +20,7 @@ public class EdmEmailService : ITransientDependency
     private readonly IEmailSender _emailSender;
     private readonly IMemberRepository _memberRepository;
     private readonly ICurrentTenant _currentTenant;
+    private readonly ICampaignRepository _campaignRepository;
     private readonly ILogger<EdmEmailService> _logger;
 
     public EdmEmailService(
@@ -23,6 +28,7 @@ public class EdmEmailService : ITransientDependency
         IEmailSender emailSender,
         IMemberRepository memberRepository,
         ICurrentTenant currentTenant,
+        ICampaignRepository campaignRepository,
         ILogger<EdmEmailService> logger
         )
     {
@@ -30,6 +36,7 @@ public class EdmEmailService : ITransientDependency
         _emailSender = emailSender;
         _memberRepository = memberRepository;
         _currentTenant = currentTenant;
+        _campaignRepository = campaignRepository;
         _logger = logger;
     }
 
@@ -66,8 +73,10 @@ public class EdmEmailService : ITransientDependency
         }
         else
         {
+            var utcStartDate = edm.StartDate.ToUniversalTime();
+
             var scheduledUtc = DateTime.SpecifyKind(
-                edm.StartDate.Date.Add(edm.SendTimeUtc.TimeOfDay),
+                utcStartDate.Date.Add(edm.SendTimeUtc.TimeOfDay),
                 DateTimeKind.Utc
             );
 
@@ -92,48 +101,23 @@ public class EdmEmailService : ITransientDependency
         {
             using (_currentTenant.Change(edm.TenantId))
             {
-                var members = await _memberRepository.GetEdmMemberEmailsAsync(edm.ApplyToAllMembers, edm.MemberTags);
+                var members = await _memberRepository.GetEdmMemberNameAndEmailAsync(edm.ApplyToAllMembers, edm.MemberTags);
 
                 if (members.Count == 0)
                 {
                     return;
                 }
 
-                var groupBuyNames = new List<string>();// await _edmRepository.GetGroupBuyNamesAsync([.. edm.GroupBuys.Select(gb => gb.GroupBuyId)]);
+                var subject = edm.Subject;
 
-                var emailTitle = edm.TemplateType switch
+                var template = await GetTemplate(edm);
+
+                foreach (var (name, email) in members)
                 {
-                    EdmTemplateType.Customize => "This is CUSTOMIZE email template!",
-                    EdmTemplateType.Campaign => "This is CAMPAIGN email template!",
-                    EdmTemplateType.ShoppingCart => "This is SHOPPING CART email template!",
-                    _ => ""
-                };
+                    template = template.Replace("{{memberName}}", name);
 
-                var template = @$"
-                <table>
-                    <tr>
-                      <td>
-                        <h3>{emailTitle}</h3>
-                        <div>
-                          {edm.Message}
-                        </div>
-                        {{groupbuys}}
-                      </td>
-                    </tr>
-                </table>
-            ";
-
-                string groupBuyTemplate = "<h5>Group Buy Names:</h5>";
-                foreach (var groupBuyName in groupBuyNames)
-                {
-                    groupBuyTemplate += $"<div>{groupBuyName}</div>";
-                }
-
-                template = template.Replace("{groupbuys}", groupBuyTemplate);
-                foreach (var member in members)
-                {
                     await _emailSender.SendAsync(
-                        member,
+                        email,
                         edm.Subject,
                         template
                     );
@@ -146,4 +130,95 @@ public class EdmEmailService : ITransientDependency
             throw;
         }
     }
+
+    private async Task<string> GetTemplate(Edm edm)
+    {
+        await _edmRepository.EnsurePropertyLoadedAsync(edm, e => e.GroupBuy);
+
+        var templateName = edm.TemplateType switch
+        {
+            EdmTemplateType.Customize => "edm_campaign_main",
+            EdmTemplateType.Campaign => "edm_campaign_main",
+            EdmTemplateType.ShoppingCart => "edm_campaign_main",
+            _ => string.Empty
+        };
+
+        if (string.IsNullOrEmpty(templateName))
+            return string.Empty;
+
+        var templatePath = Path.Combine("wwwroot", "EmailTemplates", "Edms", $"{templateName}.html");
+        var template = File.ReadAllText(templatePath)
+            .Replace("{{groupBuyName}}", edm.GroupBuy?.GroupBuyName ?? "N/A")
+            .Replace("{{message}}", edm.Message);
+
+        if (edm.TemplateType == EdmTemplateType.Campaign && edm.CampaignId.HasValue)
+        {
+            var campaign = await _campaignRepository.GetWithDetailsAsync(edm.CampaignId.Value);
+
+            template = template
+                .Replace("{{campaignName}}", campaign.Name)
+                .Replace("{{campaignPeriod}}", $"{campaign.StartDate:dd/MM/yyyy} to {campaign.EndDate:dd/MM/yyyy}");
+
+            template = InjectCampaignProperties(campaign, template);
+        }
+
+        return template;
+    }
+
+    private string InjectCampaignProperties(Campaign campaign, string template)
+    {
+        var propTemplatePath = Path.Combine("wwwroot", "EmailTemplates", "Edms", "edm_campaign_property_cell.html");
+        var propTemplate = File.ReadAllText(propTemplatePath);
+
+        var properties = campaign.PromotionModule switch
+        {
+            PromotionModule.Discount when campaign.Discount != null => GetDiscountProperties(campaign.Discount),
+            PromotionModule.ShoppingCredit when campaign.ShoppingCredit != null => GetShoppingCreditProperties(campaign.ShoppingCredit),
+            PromotionModule.AddOnProduct when campaign.AddOnProduct != null => GetAddOnProductProperties(campaign.AddOnProduct),
+            _ => Enumerable.Empty<CampaignProperty>()
+        };
+
+        var propsHtml = string.Join("", properties.Select(p =>
+            propTemplate.Replace("{{PropIcon}}", p.Icon)
+                        .Replace("{{PropName}}", p.Name)
+                        .Replace("{{PropValue}}", p.Value)));
+
+        return template.Replace("{{edm_campaign_properties}}", propsHtml);
+    }
+
+    private List<CampaignProperty> GetDiscountProperties(CampaignDiscount discount)
+    {
+        return
+        [
+            new("💸", "Discount", discount.DiscountCode ?? "N/A"),
+            new("🏷", "YourCode", discount.DiscountType == DiscountType.FixedAmount
+                ? $"${discount.DiscountAmount}"
+                : $"{discount.DiscountPercentage}%"),
+            new("💵", "MinimumSpend", discount.MinimumSpendAmount?.ToString() ?? "N/A"),
+            new("👤", "MaxUsePerPerson", discount.MaximumUsePerPerson.ToString())
+        ];
+    }
+
+    private List<CampaignProperty> GetShoppingCreditProperties(CampaignShoppingCredit credit)
+    {
+        return
+        [
+            new("🏷", "Discount", credit.CalculationMethod == CalculationMethod.UnifiedCalculation
+                ? $"{credit.CalculationPercentage}%"
+                : $"${credit.GetMaxPointsToReceive()}"),
+            new("💵", "UsagePeriod", credit.ValidForDays?.ToString() ?? "N/A")
+        ];
+    }
+
+    private List<CampaignProperty> GetAddOnProductProperties(CampaignAddOnProduct addOn)
+    {
+        return
+        [
+            new("🏷", "Discount", addOn.ProductAmount.ToString()),
+            new("💵", "MinimumSpend", addOn.Threshold?.ToString() ?? "N/A"),
+            new("💵", "LimitPerOrder", addOn.LimitPerOrder.ToString())
+        ];
+    }
+
+    private record CampaignProperty(string Icon, string Name, string Value);
 }
