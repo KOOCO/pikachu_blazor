@@ -11,7 +11,8 @@ public class EdmDto : FullAuditedEntityDto<Guid>, IMultiTenant
     public Guid? CampaignId { get; set; }
     public string? CampaignName { get; set; }
     public bool ApplyToAllMembers { get; set; }
-    public bool ApplyToAllGroupBuys { get; set; }
+    public Guid GroupBuyId { get; set; }
+    public string? GroupBuyName { get; set; }
     public DateTime StartDate { get; set; }
     public DateTime? EndDate { get; set; }
     public DateTime SendTime { get; set; }
@@ -19,6 +20,5 @@ public class EdmDto : FullAuditedEntityDto<Guid>, IMultiTenant
     public string Subject { get; set; }
     public string Message { get; set; }
     public Guid? TenantId { get; set; }
-    public ICollection<EdmGroupBuyDto> GroupBuys { get; set; }
     public IEnumerable<string> MemberTags { get; set; }
 }

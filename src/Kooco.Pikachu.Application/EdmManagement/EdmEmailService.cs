@@ -2,7 +2,7 @@
 using Kooco.Pikachu.Members;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Linq;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Volo.Abp.DependencyInjection;
 using Volo.Abp.Emailing;
@@ -99,7 +99,7 @@ public class EdmEmailService : ITransientDependency
                     return;
                 }
 
-                var groupBuyNames = await _edmRepository.GetGroupBuyNamesAsync([.. edm.GroupBuys.Select(gb => gb.GroupBuyId)]);
+                var groupBuyNames = new List<string>();// await _edmRepository.GetGroupBuyNamesAsync([.. edm.GroupBuys.Select(gb => gb.GroupBuyId)]);
 
                 var emailTitle = edm.TemplateType switch
                 {

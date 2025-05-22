@@ -1,9 +1,9 @@
 ﻿using Kooco.Pikachu.Campaigns;
+using Kooco.Pikachu.GroupBuys;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
 using System.Text.Json;
 using Volo.Abp;
 using Volo.Abp.Domain.Entities.Auditing;
@@ -17,7 +17,7 @@ public class Edm : FullAuditedAggregateRoot<Guid>, IMultiTenant
     public Guid? CampaignId { get; private set; }
     public bool ApplyToAllMembers { get; private set; }
     public string? MemberTagsJson { get; private set; }
-    public bool ApplyToAllGroupBuys { get; private set; }
+    public Guid GroupBuyId { get; private set; }
     public DateTime StartDate { get; private set; }
     public DateTime? EndDate { get; private set; }
     public DateTime SendTime { get; private set; }
@@ -29,7 +29,9 @@ public class Edm : FullAuditedAggregateRoot<Guid>, IMultiTenant
     public string Message { get; private set; }
     public Guid? TenantId { get; private set; }
     public string? JobId { get; set; }
-    public virtual ICollection<EdmGroupBuy> GroupBuys { get; private set; } = [];
+
+    [ForeignKey(nameof(GroupBuyId))]
+    public virtual GroupBuy GroupBuy { get; set; }
 
     [ForeignKey(nameof(CampaignId))]
     public virtual Campaign Campaign { get; set; }
@@ -52,8 +54,7 @@ public class Edm : FullAuditedAggregateRoot<Guid>, IMultiTenant
         Guid? campaignId,
         bool applyToAllMembers,
         IEnumerable<string> memberTags,
-        bool applyToAllGroupBuys,
-        IEnumerable<Guid> groupBuyIds,
+        Guid groupBuyId,
         DateTime startDate,
         DateTime? endDate,
         DateTime sendTime,
@@ -64,7 +65,7 @@ public class Edm : FullAuditedAggregateRoot<Guid>, IMultiTenant
     {
         SetTemplateType(templateType, campaignId, sendFrequency);
         SetApplyToAllMembers(applyToAllMembers, memberTags);
-        SetApplyToAllGroupBuys(applyToAllGroupBuys, groupBuyIds);
+        SetGroupBuy(groupBuyId);
         SetDateRange(templateType, startDate, endDate, sendTime);
         SetSubject(subject);
         SetMessage(message);
@@ -98,21 +99,9 @@ public class Edm : FullAuditedAggregateRoot<Guid>, IMultiTenant
         }
     }
 
-    public void SetApplyToAllGroupBuys(bool applyToAllGroupBuys, IEnumerable<Guid> groupBuyIds)
+    public void SetGroupBuy(Guid groupBuyId)
     {
-        ApplyToAllGroupBuys = applyToAllGroupBuys;
-
-        if (!ApplyToAllGroupBuys)
-        {
-            if (!groupBuyIds?.Any() ?? true)
-                throw new UserFriendlyException("The field Group Buys is required.");
-
-            GroupBuys = [.. groupBuyIds!.Distinct().Select(id => new EdmGroupBuy(Guid.NewGuid(), Id, id))];
-        }
-        else
-        {
-            GroupBuys.Clear();
-        }
+        GroupBuyId = Check.NotDefaultOrNull<Guid>(groupBuyId, nameof(GroupBuyId));
     }
 
     public void SetDateRange(EdmTemplateType templateType, DateTime startDate, DateTime? endDate, DateTime sendTime)
