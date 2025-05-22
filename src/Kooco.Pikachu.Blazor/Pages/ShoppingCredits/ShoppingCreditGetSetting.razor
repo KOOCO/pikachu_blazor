@@ -65,7 +65,11 @@
                                 <RadioGroup Orientation="Orientation.Vertical" TValue="string" @bind-CheckedValue="CreateUpdateEarn.RegistrationUsagePeriodType" Name="RegistrationUsagePeriod">
                                     <ChildContent>
                                         <Radio Value="@("NoExpiry")">@L["NoExpiry"]</Radio>
-                                        <Radio Value="@("Limited")">@L["Limited,validfordays"]</Radio><NumericEdit @bind-Value="CreateUpdateEarn.RegistrationValidDays" TValue="int" />
+                                        <Radio Value="@("Limited")">@L["Limited,validfordays"]</Radio>
+                                        @if (CreateUpdateEarn.RegistrationUsagePeriodType == "Limited")
+                                        {
+                                            <NumericEdit @bind-Value="CreateUpdateEarn.RegistrationValidDays" TValue="int" />
+                                        }
                                     </ChildContent>
                                     <Feedback>
                                         <ValidationError />
@@ -112,7 +116,11 @@
                                 <RadioGroup Orientation="Orientation.Vertical" TValue="string" @bind-CheckedValue="CreateUpdateEarn.BirthdayUsagePeriodType" Name="BirthdayUsagePeriod">
                                     <ChildContent>
                                         <Radio Value="@("NoExpiry")">@L["NoExpiry"]</Radio>
-                                        <Radio Value="@("Limited")">@L["Limited,validfordays"]</Radio><NumericEdit @bind-Value="CreateUpdateEarn.BirthdayValidDays" TValue="int" />
+                                        <Radio Value="@("Limited")">@L["Limited,validfordays"]</Radio>
+                                        @if (CreateUpdateEarn.BirthdayUsagePeriodType == "Limited")
+                                        {
+                                            <NumericEdit @bind-Value="CreateUpdateEarn.BirthdayValidDays" TValue="int" />
+                                        }
                                     </ChildContent>
                                     <Feedback>
                                         <ValidationError />
@@ -150,7 +158,12 @@
                                     <RadioGroup Orientation="Orientation.Vertical" TValue="string" @bind-CheckedValue="CreateUpdateEarn.CashbackUsagePeriodType" Name="CashBackUsagePeriod">
                                         <ChildContent>
                                             <Radio Value="@("NoExpiry")">@L["NoExpiry"]</Radio>
-                                            <Radio Value="@("Limited")">@L["Limited,validfordays"]</Radio><NumericEdit @bind-Value="CreateUpdateEarn.CashbackValidDays" TValue="int" />
+                                            <Radio Value="@("Limited")">@L["Limited,validfordays"]</Radio>
+
+                                            @if (CreateUpdateEarn.CashbackUsagePeriodType == "Limited")
+                                            {
+                                                <NumericEdit @bind-Value="CreateUpdateEarn.CashbackValidDays" TValue="int" />
+                                            }
                                         </ChildContent>
                                         <Feedback>
                                             <ValidationError />
@@ -162,7 +175,13 @@
                                 <Label>@L["CalculationMethod"]</Label>
                                 <RadioGroup Orientation="Orientation.Vertical" TValue="string" @bind-CheckedValue="CreateUpdateEarn.CashbackCalculationMethod" Name="DeductionMethod">
                                     <ChildContent>
-                                        <Radio Value="@("UnifiedCalculation")">@L["UnifiedCalculation:"]<NumericEdit @bind-Value="CreateUpdateEarn.CashbackUnifiedMaxDeductiblePoints" Max="100" TValue="int" />%</Radio>
+                                        <Radio Value="@("UnifiedCalculation")">@L["UnifiedCalculation:"]
+                                            @if (CreateUpdateEarn.CashbackCalculationMethod == "UnifiedCalculation")
+                                            {
+                                                <NumericEdit @bind-Value="CreateUpdateEarn.CashbackUnifiedMaxDeductiblePoints" Max="100" TValue="int" /><label>%</label>
+                                                  }
+
+                                        </Radio>
                                         <Radio Value="@("StagedCalculation")">@L["StagedCalculation"]</Radio>
                                     </ChildContent>
                                     <Feedback>
