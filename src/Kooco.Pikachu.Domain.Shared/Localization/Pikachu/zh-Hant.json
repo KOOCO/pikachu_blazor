@@ -1398,7 +1398,8 @@
     "PostOffice": "郵局",
     "Invoicehasvoided": "發票已成功做廢",
     "ToUsePoints": "可使用點數",
-    "Weight": "商品重量"
+    "Weight": "商品重量",
+    "SaleableQuantitycannotbegreaterthanCurrentStock": "可銷售數量不能大於庫存數量."
 
   }
 }

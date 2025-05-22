@@ -1560,6 +1560,7 @@
     "NewAddOn": "New",
     "AddNewDiscountCode": "New",
     "Invoicehasvoided": "Invoice has successfully voided",
-    "ToUsePoints": "To Use Points"
+    "ToUsePoints": "To Use Points",
+    "SaleableQuantitycannotbegreaterthanCurrentStock": "Saleable Quantity cannot be greater than Current Stock."
   }
 }
