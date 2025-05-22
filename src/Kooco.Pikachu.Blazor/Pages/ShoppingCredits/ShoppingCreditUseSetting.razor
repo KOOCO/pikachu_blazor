@@ -71,7 +71,7 @@
                                             {
                                                 <NumericEdit @bind-Value="CreateUpdateUsage.UnifiedMaxDeductiblePoints" Max="100" TValue="int" /><label>%</label>
                                             }
-                                            </Radio>
+                                        </Radio>
                                         <Radio Value="@("StagedCalculation")">@L["StagedCalculation"]</Radio>
                                     </ChildContent>
                                     <Feedback>
@@ -80,28 +80,30 @@
                                 </RadioGroup>
                             </Validation>
                         </Column>
-                        <Column ColumnSize="ColumnSize.Is12">
-                            <Row>
-                                <Column ColumnSize="ColumnSize.Is6">
-                                    <Label>@L["StagedSettings"]</Label>
-                                </Column>
-                                <Column Class="text-end" ColumnSize="ColumnSize.Is6">
-                                    <Button Clicked="AddNewRow"><Icon Name="IconName.Add"></Icon></Button>
-                                </Column>
-                                @foreach (var setting in stagedSettings)
-                                {
+                        @if (CreateUpdateUsage.DeductionMethod == "StagedCalculation")
+                        {
+                            <Column ColumnSize="ColumnSize.Is12">
+                                <Row>
                                     <Column ColumnSize="ColumnSize.Is6">
-                                        <Label>@L["Spend"]</Label>
-                                        <NumericEdit @bind-Value="setting.Spend" TValue="int" />
+                                        <Label>@L["StagedSettings"]</Label>
                                     </Column>
-                                    <Column ColumnSize="ColumnSize.Is6">
-                                        <Label>@L["ToUsePoints"]</Label>
-                                        <NumericEdit @bind-Value="setting.Points" TValue="int" />
+                                    <Column Class="text-end" ColumnSize="ColumnSize.Is6">
+                                        <Button Clicked="AddNewRow"><Icon Name="IconName.Add"></Icon></Button>
                                     </Column>
-                                }
-                            </Row>
-                        </Column>
-   
+                                    @foreach (var setting in stagedSettings)
+                                    {
+                                        <Column ColumnSize="ColumnSize.Is6">
+                                            <Label>@L["Spend"]</Label>
+                                            <NumericEdit @bind-Value="setting.Spend" TValue="int" />
+                                        </Column>
+                                        <Column ColumnSize="ColumnSize.Is6">
+                                            <Label>@L["ToUsePoints"]</Label>
+                                            <NumericEdit @bind-Value="setting.Points" TValue="int" />
+                                        </Column>
+                                    }
+                                </Row>
+                            </Column>
+                        }
 
 
                     </Column>
@@ -131,27 +133,29 @@
                                 </RadioGroup>
                             </Validation>
                         </Column>
-                        <Column ColumnSize="ColumnSize.Is12">
-                            <EditForm EditContext="editContext">
-                                <AntDesign.Select Mode="AntDesign.SelectMode.Multiple"
-                                                  TItem="Guid"
-                                                  TItemValue="Guid"
-                                                  @bind-Values="@SelectedGroupBuy"
-                                                  Placeholder="@L["SelectaGroupBuys"]"
-                                                 
-                                                  EnableSearch>
-                                    <SelectOptions>
-                                        @foreach (var item in Groupbuys)
-                                        {
-                                            <AntDesign.SelectOption TItemValue="Guid" TItem="Guid" Value=@item.Id Label=@item.GroupBuyName />
-                                        }
-                                    </SelectOptions>
-                                </AntDesign.Select>
-                                <ValidationMessage For="() => CreateUpdateUsage!.ProductIds" />
-                            </EditForm>
+                        @if (CreateUpdateUsage.UsableGroupbuysScope == "SpecificGroupbuys")
+                        {
+                            <Column ColumnSize="ColumnSize.Is12">
+                                <EditForm EditContext="editContext">
+                                    <AntDesign.Select Mode="AntDesign.SelectMode.Multiple"
+                                    TItem="Guid"
+                                    TItemValue="Guid"
+                                    @bind-Values="@SelectedGroupBuy"
+                                    Placeholder="@L["SelectaGroupBuys"]"
 
-                        </Column>
+                                    EnableSearch>
+                                        <SelectOptions>
+                                            @foreach (var item in Groupbuys)
+                                            {
+                                                <AntDesign.SelectOption TItemValue="Guid" TItem="Guid" Value=@item.Id Label=@item.GroupBuyName />
+                                            }
+                                        </SelectOptions>
+                                    </AntDesign.Select>
+                                    <ValidationMessage For="() => CreateUpdateUsage!.ProductIds" />
+                                </EditForm>
 
+                            </Column>
+                        }
                         <Divider></Divider>
 
                         <Column ColumnSize="ColumnSize.Is12">
@@ -168,24 +172,27 @@
                                 </RadioGroup>
                             </Validation>
                         </Column>
-                        <Column ColumnSize="ColumnSize.Is12">
-                            <EditForm EditContext="editContext">
-                                <AntDesign.Select Mode="AntDesign.SelectMode.Multiple"
-                                                  TItem="Guid"
-                                                  TItemValue="Guid"
-                                                  @bind-Values="@SelectedProducts"
-                                                  Placeholder="@L["SelectaProducts"]"
-                                                  EnableSearch>
-                                    <SelectOptions>
-                                        @foreach (var item in Products)
-                                        {
-                                            <AntDesign.SelectOption TItemValue="Guid" TItem="Guid" Value=@item.Id Label=@item.Name />
-                                        }
-                                    </SelectOptions>
+                        @if (CreateUpdateUsage.UsableProductsScope == "SpecificProducts")
+                        {
+                            <Column ColumnSize="ColumnSize.Is12">
+                                <EditForm EditContext="editContext">
+                                    <AntDesign.Select Mode="AntDesign.SelectMode.Multiple"
+                                    TItem="Guid"
+                                    TItemValue="Guid"
+                                    @bind-Values="@SelectedProducts"
+                                    Placeholder="@L["SelectaProducts"]"
+                                    EnableSearch>
+                                        <SelectOptions>
+                                            @foreach (var item in Products)
+                                            {
+                                                <AntDesign.SelectOption TItemValue="Guid" TItem="Guid" Value=@item.Id Label=@item.Name />
+                                            }
+                                        </SelectOptions>
                                 </AntDesign.Select>
                                 <ValidationMessage For="() => CreateUpdateUsage!.ProductIds" />
                             </EditForm>
                         </Column>
+                        }
                         <Column ColumnSize="ColumnSize.Is12">
                             <Label>@L["ApplicableItems"]</Label>
 

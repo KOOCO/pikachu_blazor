@@ -179,7 +179,7 @@
                                             @if (CreateUpdateEarn.CashbackCalculationMethod == "UnifiedCalculation")
                                             {
                                                 <NumericEdit @bind-Value="CreateUpdateEarn.CashbackUnifiedMaxDeductiblePoints" Max="100" TValue="int" /><label>%</label>
-                                                  }
+                                            }
 
                                         </Radio>
                                         <Radio Value="@("StagedCalculation")">@L["StagedCalculation"]</Radio>
@@ -190,41 +190,44 @@
                                 </RadioGroup>
                             </Validation>
                         </Column>
+                        @if (CreateUpdateEarn.CashbackCalculationMethod == "StagedCalculation")
+                        {
+                            <Column ColumnSize="ColumnSize.Is12">
+                                <Row>
+                                    <Column ColumnSize="ColumnSize.Is6">
+                                        <Label>@L["StageSettings"]</Label>
+                                    </Column>
+                                    <Column Class="text-end" ColumnSize="ColumnSize.Is6">
+                                        <Button Clicked="AddNewRow"><Icon Name="IconName.Add"></Icon></Button>
+                                    </Column>
+                                    @foreach (var setting in stagedSettings)
+                                    {
+                                        <Column ColumnSize="ColumnSize.Is6">
+                                            <Label>@L["Spend"]</Label>
+                                            <NumericEdit @bind-Value="setting.Spend" TValue="int" />
+                                        </Column>
+                                        <Column ColumnSize="ColumnSize.Is6">
+                                            <Label>@L["ToReceivePoints"]</Label>
+                                            <NumericEdit @bind-Value="setting.Points" TValue="int" />
+                                        </Column>
+                                    }
+                                </Row>
+                            </Column>
+                        }
                         <Column ColumnSize="ColumnSize.Is12">
-                            <Row>
-                                <Column ColumnSize="ColumnSize.Is6">
-                                    <Label>@L["StageSettings"]</Label>
-                                </Column>
-                                <Column Class="text-end" ColumnSize="ColumnSize.Is6">
-                                    <Button Clicked="AddNewRow"><Icon Name="IconName.Add"></Icon></Button>
-                                </Column>
-                                @foreach (var setting in stagedSettings)
-                                {
-                                    <Column ColumnSize="ColumnSize.Is6">
-                                        <Label>@L["Spend"]</Label>
-                                        <NumericEdit @bind-Value="setting.Spend" TValue="int" />
-                                    </Column>
-                                    <Column ColumnSize="ColumnSize.Is6">
-                                        <Label>@L["ToReceivePoints"]</Label>
-                                        <NumericEdit @bind-Value="setting.Points" TValue="int" />
-                                    </Column>
-                                }
-                            </Row>
-                        </Column>
-                     <Column ColumnSize="ColumnSize.Is12">
                             <Label>@L["ApplicableItems"]</Label>
 
 
                             <div class="d-flex flex-column">
                                 <Check TValue="bool"
-                                       Checked="@IsAddOnProductsSelected"
-                                       CheckedChanged="@((bool value) => OnCheckChanged(value, "AddOnProducts"))">
+                                Checked="@IsAddOnProductsSelected"
+                                CheckedChanged="@((bool value) => OnCheckChanged(value, "AddOnProducts"))">
                                     @L["Add-OnProducts"]
                                 </Check>
 
                                 <Check TValue="bool"
-                                       Checked="@IsShippingFeesSelected"
-                                       CheckedChanged="@((bool value) => OnCheckChanged(value, "ShippingFees"))">
+                                Checked="@IsShippingFeesSelected"
+                                CheckedChanged="@((bool value) => OnCheckChanged(value, "ShippingFees"))">
                                     @L["ShippingFees"]
                                 </Check>
                             </div>
@@ -245,26 +248,28 @@
                                 </RadioGroup>
                             </Validation>
                         </Column>
-                        <Column ColumnSize="ColumnSize.Is12">
-                            <EditForm EditContext="editContext">
-                                <AntDesign.Select Mode="AntDesign.SelectMode.Multiple"
-                                                  TItem="Guid"
-                                                  TItemValue="Guid"
-                                                  @bind-Values="@SelectedGroupBuy"
-                                                  Placeholder="@L["SelectaGroupBuys"]"
-                                                  EnableSearch>
-                                    <SelectOptions>
-                                        @foreach (var item in Groupbuys)
-                                        {
-                                            <AntDesign.SelectOption TItemValue="Guid" TItem="Guid" Value=@item.Id Label=@item.GroupBuyName />
-                                        }
-                                    </SelectOptions>
-                                </AntDesign.Select>
-                                <ValidationMessage For="() => CreateUpdateEarn!.SpecificGroupbuyIds" />
-                            </EditForm>
+                        @if (CreateUpdateEarn.CashbackApplicableGroupbuys == "SpecificGroupbuys")
+                        {
+                            <Column ColumnSize="ColumnSize.Is12">
+                                <EditForm EditContext="editContext">
+                                    <AntDesign.Select Mode="AntDesign.SelectMode.Multiple"
+                                    TItem="Guid"
+                                    TItemValue="Guid"
+                                    @bind-Values="@SelectedGroupBuy"
+                                    Placeholder="@L["SelectaGroupBuys"]"
+                                    EnableSearch>
+                                        <SelectOptions>
+                                            @foreach (var item in Groupbuys)
+                                            {
+                                                <AntDesign.SelectOption TItemValue="Guid" TItem="Guid" Value=@item.Id Label=@item.GroupBuyName />
+                                            }
+                                        </SelectOptions>
+                                    </AntDesign.Select>
+                                    <ValidationMessage For="() => CreateUpdateEarn!.SpecificGroupbuyIds" />
+                                </EditForm>
 
-                        </Column>
-
+                            </Column>
+                        }
                         <Divider></Divider>
 
                         <Column ColumnSize="ColumnSize.Is12">
@@ -281,25 +286,27 @@
                                 </RadioGroup>
                             </Validation>
                         </Column>
-                        <Column ColumnSize="ColumnSize.Is12">
-                            <EditForm EditContext="editContext">
-                                <AntDesign.Select Mode="AntDesign.SelectMode.Multiple"
-                                                  TItem="Guid"
-                                                  TItemValue="Guid"
-                                                  @bind-Values="@SelectedProducts"
-                                                  Placeholder="@L["SelectaProducts"]"
-                                                  EnableSearch>
-                                    <SelectOptions>
-                                        @foreach (var item in Products)
-                                        {
-                                            <AntDesign.SelectOption TItemValue="Guid" TItem="Guid" Value=@item.Id Label=@item.Name />
-                                        }
-                                    </SelectOptions>
+                        @if (CreateUpdateEarn.CashbackApplicableProducts == "SpecificProducts")
+                        {
+                            <Column ColumnSize="ColumnSize.Is12">
+                                <EditForm EditContext="editContext">
+                                    <AntDesign.Select Mode="AntDesign.SelectMode.Multiple"
+                                    TItem="Guid"
+                                    TItemValue="Guid"
+                                    @bind-Values="@SelectedProducts"
+                                    Placeholder="@L["SelectaProducts"]"
+                                    EnableSearch>
+                                        <SelectOptions>
+                                            @foreach (var item in Products)
+                                            {
+                                                <AntDesign.SelectOption TItemValue="Guid" TItem="Guid" Value=@item.Id Label=@item.Name />
+                                            }
+                                        </SelectOptions>
                                 </AntDesign.Select>
                                 <ValidationMessage For="() => CreateUpdateEarn!.SpecificProductIds" />
                             </EditForm>
                         </Column>
-
+                        }
                     </Column>
 
                 </Row>

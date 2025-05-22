@@ -984,7 +984,7 @@ public partial class CreateItem
     {
         if (item.SaleableQuantity > item.StockOnHand)
         {
-            ValidationErrors[item] = "Saleable Quantity cannot be greater than Current Stock.";
+            ValidationErrors[item] = L["SaleableQuantitycannotbegreaterthanCurrentStock"];
         }
         else
         {
