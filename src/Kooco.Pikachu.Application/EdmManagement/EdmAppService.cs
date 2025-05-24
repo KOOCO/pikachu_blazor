@@ -92,4 +92,10 @@ public class EdmAppService : PikachuAppService, IEdmAppService
         var edm = await _edmRepository.GetAsync(id);
         await _edmRepository.DeleteAsync(edm);
     }
+
+    public async Task SendEmailAsync(Guid id)
+    {
+        var edm = await _edmRepository.GetAsync(id);
+        await _edmEmailService.SendEmailAsync(edm);
+    }
 }

@@ -78,7 +78,7 @@ public class TenantSettings : FullAuditedEntity<Guid>, IMultiTenant
         SetCustomerServiceEmail(customerServiceEmail);
         SetCustomerServiceContactPhone(customerServiceContactPhone);
         SetServiceHours(serviceHoursFrom, serviceHoursTo);
-        SetSocials(facebookTitle, facebookLink, instagramTitle,instagramLink, lineTitle,lineLink);
+        SetSocials(facebookTitle, facebookLink, instagramTitle, instagramLink, lineTitle, lineLink);
         SetGtm(gtmEnabled, gtmContainerId);
         SetDescription(description);
     }
@@ -155,7 +155,7 @@ public class TenantSettings : FullAuditedEntity<Guid>, IMultiTenant
         return this;
     }
 
-    public TenantSettings SetSocials(string? facebookTitle,string? facebookUrl, string? instagramTitle, string? instagramUrl,string? lineTitle,string? lineUrl)
+    public TenantSettings SetSocials(string? facebookTitle, string? facebookUrl, string? instagramTitle, string? instagramUrl, string? lineTitle, string? lineUrl)
     {
         FacebookLink = facebookUrl.IsEmptyOrValidUrl() ? facebookUrl : throw new InvalidUrlException(nameof(facebookUrl));
         InstagramLink = instagramUrl.IsEmptyOrValidUrl() ? instagramUrl : throw new InvalidUrlException(nameof(instagramUrl));

@@ -345,9 +345,9 @@ public class PikachuAccountAppService(IConfiguration configuration, IdentityUser
         {
             body = body
                 .Replace("{{logo_url}}", tenantSettings.LogoUrl)
-                .Replace("{{facebook_url}}", tenantSettings.Facebook)
-                .Replace("{{instagram_url}}", tenantSettings.Instagram)
-                .Replace("{{line_url}}", tenantSettings.Line)
+                .Replace("{{facebook_url}}", tenantSettings.FacebookLink)
+                .Replace("{{instagram_url}}", tenantSettings.InstagramLink)
+                .Replace("{{line_url}}", tenantSettings.LineLink)
                 .Replace("{{code}}", code)
                 .Replace("{{title}}", "感謝您的註冊");
         }
@@ -416,9 +416,9 @@ public class PikachuAccountAppService(IConfiguration configuration, IdentityUser
         {
             body = body
                 .Replace("{{logo_url}}", tenantSettings.LogoUrl)
-                .Replace("{{facebook_url}}", tenantSettings.Facebook)
-                .Replace("{{instagram_url}}", tenantSettings.Instagram)
-                .Replace("{{line_url}}", tenantSettings.Line)
+                .Replace("{{facebook_url}}", tenantSettings.FacebookLink)
+                .Replace("{{instagram_url}}", tenantSettings.InstagramLink)
+                .Replace("{{line_url}}", tenantSettings.LineLink)
                 .Replace("{{code}}", code)
                 .Replace("{{title}}", "重設密碼");
         }
