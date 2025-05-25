@@ -25,4 +25,5 @@ public interface IShopCartRepository : IRepository<ShopCart, Guid>
     Task<List<CartItemWithDetailsModel>> GetCartItemsListAsync(Guid shopCartId);
     Task<List<ItemWithItemType>> GetGroupBuyProductsLookupAsync(Guid groupBuyId);
     Task<ItemWithDetailsModel> GetItemWithDetailsAsync(Guid groupBuyId, Guid id, ItemType itemType);
+    Task<List<ShopCart>> GetEdmShopCartsAsync(List<Guid> userIds, Guid groupBuyId);
 }

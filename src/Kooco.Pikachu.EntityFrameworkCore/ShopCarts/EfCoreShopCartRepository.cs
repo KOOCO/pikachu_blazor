@@ -414,4 +414,18 @@ public class EfCoreShopCartRepository(IDbContextProvider<PikachuDbContext> dbCon
             return setItem ?? throw new EntityNotFoundException(typeof(SetItem), id);
         }
     }
+
+    public async Task<List<ShopCart>> GetEdmShopCartsAsync(List<Guid> userIds, Guid groupBuyId)
+    {
+        var queryable = await GetQueryableAsync();
+
+        return await queryable
+            .Where(q => q.GroupBuyId == groupBuyId)
+            .Where(q => userIds.Contains(q.UserId))
+            .Include(q => q.CartItems)
+                .ThenInclude(ci => ci.Item)
+            .Include(q => q.CartItems)
+                .ThenInclude(ci => ci.SetItem)
+            .ToListAsync();
+    }
 }

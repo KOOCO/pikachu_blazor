@@ -1,9 +1,13 @@
 ﻿using Hangfire;
 using Kooco.Pikachu.Campaigns;
 using Kooco.Pikachu.Members;
+using Kooco.Pikachu.ShopCarts;
 using Kooco.Pikachu.Tenants;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Volo.Abp.DependencyInjection;
 using Volo.Abp.Domain.Repositories;
@@ -21,6 +25,8 @@ public class EdmEmailService : ITransientDependency
     private readonly ICampaignRepository _campaignRepository;
     private readonly ILogger<EdmEmailService> _logger;
     private readonly ITenantSettingsAppService _tenantSettingsAppService;
+    private readonly IShopCartRepository _shopCartRepository;
+
     public EdmEmailService(
         IEdmRepository edmRepository,
         IEmailSender emailSender,
@@ -28,7 +34,8 @@ public class EdmEmailService : ITransientDependency
         ICurrentTenant currentTenant,
         ICampaignRepository campaignRepository,
         ILogger<EdmEmailService> logger,
-        ITenantSettingsAppService tenantSettingsAppService
+        ITenantSettingsAppService tenantSettingsAppService,
+        IShopCartRepository shopCartRepository
         )
     {
         _edmRepository = edmRepository;
@@ -38,6 +45,7 @@ public class EdmEmailService : ITransientDependency
         _campaignRepository = campaignRepository;
         _logger = logger;
         _tenantSettingsAppService = tenantSettingsAppService;
+        _shopCartRepository = shopCartRepository;
     }
 
     public Task EnqueueJob(Edm edm)
@@ -108,6 +116,12 @@ public class EdmEmailService : ITransientDependency
                     return;
                 }
 
+                List<ShopCart> shopCarts = [];
+                if (edm.TemplateType == EdmTemplateType.ShoppingCart)
+                {
+                    shopCarts = await _shopCartRepository.GetEdmShopCartsAsync([.. members.Select(m => m.id)], edm.GroupBuyId);
+                }
+
                 await _edmRepository.EnsurePropertyLoadedAsync(edm, edm => edm.GroupBuy);
 
                 var subject = edm.Subject;
@@ -116,9 +130,26 @@ public class EdmEmailService : ITransientDependency
 
                 var template = await EdmTemplateBuilder.Build(edm, tenantSettings, _campaignRepository);
 
-                foreach (var (name, email) in members)
+                foreach (var (id, name, email) in members)
                 {
                     var memberTemplate = template.Replace("{{MemberName}}", name);
+                    if (edm.TemplateType == EdmTemplateType.ShoppingCart)
+                    {
+                        var memberCartItems = shopCarts.SelectMany(sc => sc.CartItems);
+                        if (!memberCartItems.Any()) continue;
+
+                        var shopCartItemsTemplatePath = Path.Combine("wwwroot", "EmailTemplates", "Edms", "edm_shopping_cart_items.html");
+                        var shopCartItemsTemplate = File.ReadAllText(shopCartItemsTemplatePath);
+                        var memberItemsTemplate = string.Join("", memberCartItems.Select(ci =>
+                            shopCartItemsTemplate
+                                .Replace("{{ItemName}}", ci.Item?.ItemName ?? ci.SetItem?.SetItemName)
+                                .Replace("{{ItemDetails}}", "")
+                                .Replace("{{UnitPrice}}", ci.UnitPrice.ToString("N2"))
+                                .Replace("{{ItemQuantity}}", ci.Quantity.ToString("N0"))
+                                .Replace("{{ItemTotal}}", (ci.UnitPrice * ci.Quantity).ToString("N2"))));
+
+                        memberTemplate = memberTemplate.Replace("{{edm_shopping_cart_items}}", memberItemsTemplate);
+                    }
 
                     await _emailSender.SendAsync(
                         email,

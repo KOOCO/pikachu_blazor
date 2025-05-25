@@ -13,36 +13,51 @@ public class EdmTemplateBuilder
 {
     public static async Task<string> Build(Edm edm, TenantSettingsDto tenantSettings, ICampaignRepository campaignRepository)
     {
-        return await GetCampaignTemplate(edm, tenantSettings, campaignRepository);
-    }
-
-    #region Campaign Template
-    private static async Task<string> GetCampaignTemplate(Edm edm, TenantSettingsDto tenantSettings, ICampaignRepository campaignRepository)
-    {
         string groupBuyUrl = tenantSettings?.Tenant.GetProperty<string>(Constant.TenantUrl)?.EnsureEndsWith('/') + $"groupBuy/{edm.GroupBuyId}";
 
-        var templatePath = Path.Combine("wwwroot", "EmailTemplates", "Edms", $"edm_campaign_main.html");
+        var templateName = edm.TemplateType switch
+        {
+            EdmTemplateType.Customize => "edm_customize",
+            EdmTemplateType.Campaign => "edm_campaign_main",
+            EdmTemplateType.ShoppingCart => "edm_shopping_cart_main",
+            _ => string.Empty
+        };
+
+        if (string.IsNullOrEmpty(templateName))
+            return string.Empty;
+
+        var templatePath = Path.Combine("wwwroot", "EmailTemplates", "Edms", $"{templateName}.html");
+
         var template = File.ReadAllText(templatePath)
             .Replace("{{LogoUrl}}", tenantSettings?.LogoUrl)
-            .Replace("{{GroupBuyName}}", edm.GroupBuy?.GroupBuyName ?? "N/A")
             .Replace("{{Message}}", edm.Message)
+            .Replace("{{GroupBuyName}}", edm.GroupBuy?.GroupBuyName ?? "N/A")
             .Replace("{{FacebookUrl}}", tenantSettings?.FacebookLink)
             .Replace("{{InstagramUrl}}", tenantSettings?.InstagramLink)
             .Replace("{{LineUrl}}", tenantSettings?.LineLink)
             .Replace("{{CurrentYear}}", DateTime.Today.Year.ToString())
-            .Replace("{{CompanyName}}", tenantSettings?.CompanyName);
+            .Replace("{{CompanyName}}", tenantSettings?.CompanyName)
+            .Replace("{{ButtonLink}}", groupBuyUrl);
 
-        if (edm.TemplateType == EdmTemplateType.Campaign && edm.CampaignId.HasValue)
+        var templateTask = edm.TemplateType switch
         {
-            var campaign = await campaignRepository.GetWithDetailsAsync(edm.CampaignId.Value);
+            EdmTemplateType.Campaign => GetCampaignTemplate(template, edm.CampaignId, campaignRepository),
+            _ => Task.FromResult(template)
+        };
 
-            template = template
-                .Replace("{{CampaignName}}", campaign.Name)
-                .Replace("{{CampaignPeriod}}", $"{campaign.StartDate:dd/MM/yyyy} to {campaign.EndDate:dd/MM/yyyy}")
-                .Replace("{{ButtonLink}}", groupBuyUrl);
+        return await templateTask;
+    }
 
-            template = InjectCampaignProperties(campaign, template);
-        }
+    #region Campaign Template
+    private static async Task<string> GetCampaignTemplate(string template, Guid? campaignId, ICampaignRepository campaignRepository)
+    {
+        var campaign = await campaignRepository.GetWithDetailsAsync(campaignId.Value);
+
+        template = template
+            .Replace("{{CampaignName}}", campaign.Name)
+            .Replace("{{CampaignPeriod}}", $"{campaign.StartDate:dd/MM/yyyy} to {campaign.EndDate:dd/MM/yyyy}");
+
+        template = InjectCampaignProperties(campaign, template);
 
         return template;
     }

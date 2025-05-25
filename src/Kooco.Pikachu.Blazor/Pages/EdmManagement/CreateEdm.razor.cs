@@ -148,6 +148,13 @@ public partial class CreateEdm
                 return;
             }
 
+            if (Entity.TemplateType == EdmTemplateType.Customize && !Entity.Message.Contains("{{GroupBuyName}}"))
+            {
+                Loading = false;
+                await Message.Error(L["PleaseInsertGroupBuyName"]);
+                return;
+            }
+
             if (Id.HasValue)
             {
                 await EdmAppService.UpdateAsync(Id.Value, Entity);
@@ -200,5 +207,15 @@ public partial class CreateEdm
     void Cancel()
     {
         NavigationManager.NavigateTo("/Edm");
+    }
+
+    async Task InsertGroupBuy()
+    {
+        if (Entity.TemplateType == EdmTemplateType.Customize && MessageHtml != null)
+        {
+            var messageHtml = await MessageHtml.GetHTML();
+            await MessageHtml.LoadHTMLContent(messageHtml + "{{GroupBuyName}}");
+            StateHasChanged();
+        }
     }
 }

@@ -1557,6 +1557,8 @@
     "MinSendTime": "Min Send Time",
     "MaxSendTime": "Max Send Time",
     "AreYouSureToDeleteEdm": "Are you sure to delete this EDM?",
+    "InsertGroupBuy": "Insert Group Buy",
+    "PleaseInsertGroupBuyName": "Please insert Group Buy Name in message template.",
     "NewAddOn": "New",
     "AddNewDiscountCode": "New",
     "Invoicehasvoided": "Invoice has successfully voided",
