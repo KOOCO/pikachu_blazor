@@ -276,7 +276,7 @@ public class OrderAppService : PikachuAppService, IOrderAppService
 
             await UnitOfWorkManager.Current.SaveChangesAsync();
 
-            if (order.PaymentMethod is PaymentMethods.CashOnDelivery && order.ShippingStatus is ShippingStatus.PrepareShipment)
+            if (order.PaymentMethod is PaymentMethods.CashOnDelivery && order.ShippingStatus is ShippingStatus.PrepareShipment || order.TotalAmount==0)
             {
                 Order newOrder = await OrderRepository.GetWithDetailsAsync(order.Id);
                 await CreateOrderDeliveriesAsync(newOrder);
