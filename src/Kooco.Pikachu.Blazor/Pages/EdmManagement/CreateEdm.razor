@@ -11,6 +11,7 @@
 @using Kooco.Pikachu.Localization
 @using Kooco.Pikachu.Members.MemberTags
 @using Volo.Abp.AspNetCore.Components.Web
+@using static Kooco.Pikachu.EdmManagement.EdmTemplateConsts
 @inherits PikachuComponentBase
 @inject AbpBlazorMessageLocalizerHelper<PikachuResource> LH
 @inject IEdmAppService EdmAppService
@@ -246,13 +247,25 @@
                             <Field>
                                 <Div Class="d-flex justify-content-between align-items-end mb-1">
                                     <FieldLabel required>@L["Message"]</FieldLabel>
-                                    @if (Entity.TemplateType == EdmTemplateType.Customize)
-                                    {
-                                        <PikachuButton Class="pk-btn-sm pk-btn-outline-primary"
-                                                       Clicked="@InsertGroupBuy">
-                                            @L["InsertGroupBuy"]
-                                        </PikachuButton>
-                                    }
+                                    <Div Class="d-flex gap-1 text-nowrap">
+                                        <Dropdown>
+                                            <DropdownToggle Color="Color.Primary" Size="Size.Small">
+                                                @L["InsertPlaceholder"]
+                                            </DropdownToggle>
+                                            <DropdownMenu>
+                                                @foreach (var placeholder in EdmTemplatePlaceholders.GetAllInsertable())
+                                                {
+                                                    <DropdownItem Clicked="() => InsertPlaceholder(placeholder)">
+                                                        @placeholder
+                                                    </DropdownItem>
+                                                }
+                                            </DropdownMenu>
+                                        </Dropdown>
+                                        <Button Color="Color.Secondary" Size="Size.Small" Clicked="LoadDefaultTemplate"
+                                                Disabled="@(Entity.TemplateType == EdmTemplateType.Campaign && !Entity.CampaignId.HasValue)">
+                                            @L["DefaultTemplate"]
+                                        </Button>
+                                    </Div>
                                 </Div>
                                 <Div Class="@(ValidationClass(nameof(Entity.Message)) + " quill-editor")">
                                     <BlazoredTextEditor @ref="@MessageHtml" Placeholder="@L["Composeanepic"]">

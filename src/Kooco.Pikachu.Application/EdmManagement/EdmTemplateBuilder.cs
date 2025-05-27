@@ -1,122 +1,75 @@
 ﻿using Kooco.Pikachu.Campaigns;
+using Kooco.Pikachu.ShopCarts;
 using Kooco.Pikachu.Tenants;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using Volo.Abp.Data;
+using static Kooco.Pikachu.EdmManagement.EdmTemplateConsts;
 
 namespace Kooco.Pikachu.EdmManagement;
 
 public class EdmTemplateBuilder
 {
-    public static async Task<string> Build(Edm edm, TenantSettingsDto tenantSettings, ICampaignRepository campaignRepository)
+    public static string Build(Edm edm, TenantSettingsDto tenantSettings, Campaign? campaign)
     {
         string groupBuyUrl = tenantSettings?.Tenant.GetProperty<string>(Constant.TenantUrl)?.EnsureEndsWith('/') + $"groupBuy/{edm.GroupBuyId}";
 
-        var templateName = edm.TemplateType switch
-        {
-            EdmTemplateType.Customize => "edm_customize",
-            EdmTemplateType.Campaign => "edm_campaign_main",
-            EdmTemplateType.ShoppingCart => "edm_shopping_cart_main",
-            _ => string.Empty
-        };
+        var mainTemplate = GetTemplate(Main);
 
-        if (string.IsNullOrEmpty(templateName))
-            return string.Empty;
-
-        var templatePath = Path.Combine("wwwroot", "EmailTemplates", "Edms", $"{templateName}.html");
-
-        var template = File.ReadAllText(templatePath)
+        var template = mainTemplate
             .Replace("{{LogoUrl}}", tenantSettings?.LogoUrl)
-            .Replace("{{Message}}", edm.Message)
             .Replace("{{GroupBuyName}}", edm.GroupBuy?.GroupBuyName ?? "N/A")
             .Replace("{{FacebookUrl}}", tenantSettings?.FacebookLink)
             .Replace("{{InstagramUrl}}", tenantSettings?.InstagramLink)
             .Replace("{{LineUrl}}", tenantSettings?.LineLink)
             .Replace("{{CurrentYear}}", DateTime.Today.Year.ToString())
             .Replace("{{CompanyName}}", tenantSettings?.CompanyName)
-            .Replace("{{ButtonLink}}", groupBuyUrl);
+            .Replace("{{ButtonLink}}", groupBuyUrl)
+            .Replace(EdmTemplatePlaceholders.TemplateTypeMain, edm.Message)
+            .Replace(EdmTemplatePlaceholders.CampaignName, campaign?.Name)
+            .Replace(EdmTemplatePlaceholders.CampaignPeriod, $"{campaign?.StartDate:dd/MM/yyyy} to {campaign?.EndDate:dd/MM/yyyy}")
+            .Replace(EdmTemplatePlaceholders.DiscountCode, campaign?.Discount?.DiscountCode)
+            .Replace(EdmTemplatePlaceholders.MinimumSpendAmount, campaign?.Discount?.MinimumSpendAmount?.ToString() ?? "N/A")
+            .Replace(EdmTemplatePlaceholders.MaximumUsePerPerson, campaign?.Discount?.MaximumUsePerPerson.ToString() ?? "N/A")
+            .Replace(EdmTemplatePlaceholders.ValidForDays, campaign?.ShoppingCredit?.ValidForDays?.ToString() ?? "N/A")
+            .Replace(EdmTemplatePlaceholders.Threshold, campaign?.AddOnProduct?.Threshold?.ToString() ?? "N/A")
+            .Replace(EdmTemplatePlaceholders.LimitPerOrder, campaign?.AddOnProduct?.LimitPerOrder.ToString() ?? "N/A");
 
-        var templateTask = edm.TemplateType switch
-        {
-            EdmTemplateType.Campaign => GetCampaignTemplate(template, edm.CampaignId, campaignRepository),
-            _ => Task.FromResult(template)
-        };
-
-        return await templateTask;
-    }
-
-    #region Campaign Template
-    private static async Task<string> GetCampaignTemplate(string template, Guid? campaignId, ICampaignRepository campaignRepository)
-    {
-        var campaign = await campaignRepository.GetWithDetailsAsync(campaignId.Value);
-
-        template = template
-            .Replace("{{CampaignName}}", campaign.Name)
-            .Replace("{{CampaignPeriod}}", $"{campaign.StartDate:dd/MM/yyyy} to {campaign.EndDate:dd/MM/yyyy}");
-
-        template = InjectCampaignProperties(campaign, template);
+        template = template.Replace(EdmTemplatePlaceholders.Discount,
+            campaign?.PromotionModule switch
+            {
+                PromotionModule.Discount => campaign?.Discount?.DiscountType == DiscountType.FixedAmount ? $"${campaign?.Discount?.DiscountAmount}" : $"{campaign?.Discount?.DiscountPercentage}%" ?? "N/A",
+                PromotionModule.ShoppingCredit => campaign?.ShoppingCredit?.CalculationMethod == CalculationMethod.UnifiedCalculation ? $"{campaign?.ShoppingCredit?.CalculationPercentage}%" : $"${campaign?.ShoppingCredit?.GetMaxPointsToReceive()}" ?? "N/A",
+                PromotionModule.AddOnProduct => campaign?.AddOnProduct?.ProductAmount != null ? "$" + campaign?.AddOnProduct?.ProductAmount.ToString() : "N/A",
+                _ => "N/A"
+            });
 
         return template;
     }
 
-    private static string InjectCampaignProperties(Campaign campaign, string template)
+    public static string BuildForMember(string template, Guid id, string name, List<ShopCart> shopCarts)
     {
-        var propTemplatePath = Path.Combine("wwwroot", "EmailTemplates", "Edms", "edm_campaign_property_cell.html");
-        var propTemplate = File.ReadAllText(propTemplatePath);
+        var memberTemplate = template.Replace(EdmTemplatePlaceholders.MemberName, name);
 
-        var properties = campaign.PromotionModule switch
+        var memberCartItems = shopCarts.Where(sc => sc.UserId == id).SelectMany(sc => sc.CartItems);
+
+        if (memberCartItems.Any())
         {
-            PromotionModule.Discount when campaign.Discount != null => GetDiscountProperties(campaign.Discount),
-            PromotionModule.ShoppingCredit when campaign.ShoppingCredit != null => GetShoppingCreditProperties(campaign.ShoppingCredit),
-            PromotionModule.AddOnProduct when campaign.AddOnProduct != null => GetAddOnProductProperties(campaign.AddOnProduct),
-            _ => Enumerable.Empty<CampaignProperty>()
-        };
+            var shopCartItemsTemplate = GetTemplate(ShopCartItemsName);
 
-        var propsHtml = string.Join("", properties.Select(p =>
-            propTemplate.Replace("{{PropIcon}}", p.Icon)
-                        .Replace("{{PropName}}", p.Name)
-                        .Replace("{{PropValue}}", p.Value)));
+            var memberItemsTemplate = string.Join("", memberCartItems.Select(ci =>
+                shopCartItemsTemplate
+                    .Replace("{{ItemName}}", ci.Item?.ItemName ?? ci.SetItem?.SetItemName)
+                    .Replace("{{ItemDetails}}", "")
+                    .Replace("{{UnitPrice}}", ci.UnitPrice.ToString("N2"))
+                    .Replace("{{ItemQuantity}}", ci.Quantity.ToString("N0"))
+                    .Replace("{{ItemTotal}}", (ci.UnitPrice * ci.Quantity).ToString("N2"))));
 
-        return template.Replace("{{edm_campaign_properties}}", propsHtml);
+            memberTemplate = memberTemplate.Replace(EdmTemplatePlaceholders.ShopCartItems, memberItemsTemplate);
+        }
+
+        return memberTemplate;
     }
-
-    private static List<CampaignProperty> GetDiscountProperties(CampaignDiscount discount)
-    {
-        return
-        [
-            new("💸", "折扣", discount.DiscountType == DiscountType.FixedAmount
-                ? $"${discount.DiscountAmount}"
-                : $"{discount.DiscountPercentage}%"),
-            new("🏷", "您的代碼", discount.DiscountCode ?? "N/A"),
-            new("💵", "最低消費金額", "$" + discount.MinimumSpendAmount?.ToString() ?? "N/A"),
-            new("👤", "每人最高使用次數", discount.MaximumUsePerPerson.ToString())
-        ];
-    }
-
-    private static List<CampaignProperty> GetShoppingCreditProperties(CampaignShoppingCredit credit)
-    {
-        return
-        [
-            new("💸", "折扣", credit.CalculationMethod == CalculationMethod.UnifiedCalculation
-                ? $"{credit.CalculationPercentage}%"
-                : $"${credit.GetMaxPointsToReceive()}"),
-            new("🕒", "使用期限", credit.ValidForDays?.ToString() ?? "N/A")
-        ];
-    }
-
-    private static List<CampaignProperty> GetAddOnProductProperties(CampaignAddOnProduct addOn)
-    {
-        return
-        [
-            new("💸", "折扣", addOn.ProductAmount.ToString()),
-            new("💵", "最低消費金額", "$" + addOn.Threshold?.ToString() ?? "N/A"),
-            new("📦", "每筆訂單限用次數", addOn.LimitPerOrder.ToString())
-        ];
-    }
-
-    private record CampaignProperty(string Icon, string Name, string Value);
-    #endregion
 }

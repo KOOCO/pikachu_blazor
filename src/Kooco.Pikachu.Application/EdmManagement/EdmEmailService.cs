@@ -3,10 +3,11 @@ using Kooco.Pikachu.Campaigns;
 using Kooco.Pikachu.Members;
 using Kooco.Pikachu.ShopCarts;
 using Kooco.Pikachu.Tenants;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using RestSharp;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Volo.Abp.DependencyInjection;
@@ -26,6 +27,7 @@ public class EdmEmailService : ITransientDependency
     private readonly ILogger<EdmEmailService> _logger;
     private readonly ITenantSettingsAppService _tenantSettingsAppService;
     private readonly IShopCartRepository _shopCartRepository;
+    private readonly IConfiguration _configuration;
 
     public EdmEmailService(
         IEdmRepository edmRepository,
@@ -35,7 +37,8 @@ public class EdmEmailService : ITransientDependency
         ICampaignRepository campaignRepository,
         ILogger<EdmEmailService> logger,
         ITenantSettingsAppService tenantSettingsAppService,
-        IShopCartRepository shopCartRepository
+        IShopCartRepository shopCartRepository,
+        IConfiguration configuration
         )
     {
         _edmRepository = edmRepository;
@@ -46,6 +49,7 @@ public class EdmEmailService : ITransientDependency
         _logger = logger;
         _tenantSettingsAppService = tenantSettingsAppService;
         _shopCartRepository = shopCartRepository;
+        _configuration = configuration;
     }
 
     public Task EnqueueJob(Edm edm)
@@ -128,28 +132,15 @@ public class EdmEmailService : ITransientDependency
 
                 var tenantSettings = await _tenantSettingsAppService.FirstOrDefaultAsync();
 
-                var template = await EdmTemplateBuilder.Build(edm, tenantSettings, _campaignRepository);
+                var campaign = edm.CampaignId.HasValue
+                    ? await _campaignRepository.GetWithDetailsAsync(edm.CampaignId.Value)
+                    : null;
+
+                var template = EdmTemplateBuilder.Build(edm, tenantSettings, campaign);
 
                 foreach (var (id, name, email) in members)
                 {
-                    var memberTemplate = template.Replace("{{MemberName}}", name);
-                    if (edm.TemplateType == EdmTemplateType.ShoppingCart)
-                    {
-                        var memberCartItems = shopCarts.SelectMany(sc => sc.CartItems);
-                        if (!memberCartItems.Any()) continue;
-
-                        var shopCartItemsTemplatePath = Path.Combine("wwwroot", "EmailTemplates", "Edms", "edm_shopping_cart_items.html");
-                        var shopCartItemsTemplate = File.ReadAllText(shopCartItemsTemplatePath);
-                        var memberItemsTemplate = string.Join("", memberCartItems.Select(ci =>
-                            shopCartItemsTemplate
-                                .Replace("{{ItemName}}", ci.Item?.ItemName ?? ci.SetItem?.SetItemName)
-                                .Replace("{{ItemDetails}}", "")
-                                .Replace("{{UnitPrice}}", ci.UnitPrice.ToString("N2"))
-                                .Replace("{{ItemQuantity}}", ci.Quantity.ToString("N0"))
-                                .Replace("{{ItemTotal}}", (ci.UnitPrice * ci.Quantity).ToString("N2"))));
-
-                        memberTemplate = memberTemplate.Replace("{{edm_shopping_cart_items}}", memberItemsTemplate);
-                    }
+                    var memberTemplate = EdmTemplateBuilder.BuildForMember(template, id, name, shopCarts);
 
                     await _emailSender.SendAsync(
                         email,
@@ -161,6 +152,13 @@ public class EdmEmailService : ITransientDependency
         }
         catch (Exception ex)
         {
+            if (ex.Message.Contains("This mail account has sent too many messages"))
+            {
+                var restClient = new RestClient(_configuration["App:EmailQuotaExceededNotifyUrl"]);
+                var restRequest = new RestRequest("", Method.Get);
+                await restClient.ExecuteAsync(restRequest);
+            }
+
             _logger.LogException(ex);
             throw;
         }
