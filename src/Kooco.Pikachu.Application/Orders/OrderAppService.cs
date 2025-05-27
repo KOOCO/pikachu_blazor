@@ -929,10 +929,12 @@ public class OrderAppService : PikachuAppService, IOrderAppService
             }
 
             //order1.OrderStatus = OrderStatus.Returned;
+            List<OrderItem> deletedItem = new List<OrderItem>();
             foreach (var item in ord.OrderItems)
             {
                 if (OrderItemIds.Any(x => x == item.Id))
                 {
+                    deletedItem.Add(item);
                     returnedOrderItemIds = returnedOrderItemIds.IsNullOrEmpty() ?
                                             item.Id.ToString() :
                                             string.Join(',', returnedOrderItemIds, item.Id.ToString());
@@ -951,6 +953,7 @@ public class OrderAppService : PikachuAppService, IOrderAppService
 
                     //ord.TotalAmount = ord.TotalAmount - item.TotalAmount;
                     ord.TotalQuantity = ord.TotalQuantity - item.Quantity;
+                    ord.TotalAmount = ord.TotalAmount - item.TotalAmount;
                     //await OrderItemRepository.DeleteAsync(item.Id);
 
                     OrderManager.AddOrderItem(
@@ -976,6 +979,7 @@ public class OrderAppService : PikachuAppService, IOrderAppService
 
             await OrderRepository.InsertAsync(order1);
             await OrderRepository.UpdateAsync(ord);
+            
             await UnitOfWorkManager.Current.SaveChangesAsync();
             newOrder = order1;
 
@@ -996,7 +1000,7 @@ public class OrderAppService : PikachuAppService, IOrderAppService
             ord.ReturnedOrderItemIds = returnedOrderItemIds;
 
             await OrderRepository.UpdateAsync(ord);
-
+            ord.OrderItems.RemoveAll(deletedItem);
             await UnitOfWorkManager.Current.SaveChangesAsync();
 
             await RefundAppService.CreateAsync(newOrder.Id);
