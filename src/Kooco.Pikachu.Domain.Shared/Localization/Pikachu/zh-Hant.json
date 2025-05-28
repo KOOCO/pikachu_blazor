@@ -1259,7 +1259,7 @@
     "ProductGroupModule": "商品模組",
     "DeliveryTimePreferance": "收件時段",
     "OnlyAcceptsICO": "只接受 ICO檔案",
-    
+
     "Print": "列印理貨單",
     "SelectGroupBuy": "選擇團購",
     "WaitingForPayment": "待付款",
@@ -1286,9 +1286,9 @@
     "ActionDetails": "操作內容",
     "OrderCreatedLog": "訂單已成立",
     "PaymentProcessedTitle": "付款完成",
-    
+
     "OrderToBeShippedTitle": "訂單狀態變更為 '待出貨'",
-    
+
     "InvoiceIssuedTitle": "發票已開立",
     "OrderCreated": "訂單 {0} 已成立",
     "OrderShipped": "訂單狀態變更為 '運送中'. 原訂單狀態： {0}, 當前訂單狀態： {1}.",
@@ -1353,7 +1353,7 @@
     "MaxSpent": "最高消費金額",
     "Blacklisted": "黑名單",
     "Existing": "現有會員",
-    
+
     "Gender": "性別",
     "ReturnedApplication": "退款已取消",
     "Menu:EmailManagement": "Email 管理",
@@ -1471,11 +1471,11 @@
     "ShippingDetailsUpdatedTitle": "運送詳細資訊已更新",
     "ShippingDetailsUpdated": "運送詳細資訊已更新。先前配送方式：{0}，新配送方式：{1}。先前追蹤編號：{2}，新追蹤編號：{3}。先前運送狀態：{4}，新狀態：{5}。",
     "OrderShippedTitle": "訂單已出貨",
-   
+
     "OrderClosedTitle": "訂單已關閉",
     "OrderClosed": "訂單已關閉。先前運送狀態：{0}，新狀態：{1}。",
-   
-    
+
+
     "PaymentProcessed": "已收到付款。先前運送狀態：{0}，新狀態：{1}。",
     "OrderCompletedTitle": "訂單已完成",
     "OrderCompleted": "訂單已標記為已完成。先前運送狀態：{0}，新狀態：{1}。",
@@ -1486,7 +1486,7 @@
     "OrderExpired": "訂單因未付款已過期。先前訂單狀態：{0}，新狀態：{1}。先前運送狀態：{2}，新運送狀態：{3}。{4} 件商品庫存已還原。",
     "InvoiceIssueFailedTitle": "發票開立失敗",
     "InvoiceIssueFailed": "發票開立失敗。原因：{0}。",
-   
+
     "InvoiceIssued": "發票已成功開立。發票號碼：{0}。",
     "OrderShippingUpdatedTitle": "訂單運送資訊已更新",
     "DeliveryMethodChanged": "配送方式已從 {0} 變更為 {1}",
@@ -1512,14 +1512,23 @@
     "OrderApplyForRefundTitle": "已申請退款",
     "StandardPrinting": "標準列印 (A4)",
     "ThermalPrinting": "熱感應列印 (A6)",
-   
+
     "EmailSubject": "電子郵件主旨",
- 
+
     "Youcannotsplittheorder": "您無法拆分此訂單，因為商品項目與數量與原始訂單相同。",
     "Pikachu:ItemDescriptionIsRequired": "Pikachu：必須填寫商品描述",
     "CloseOrderJob": "關閉訂單作業",
     "OrderClosedDueToInActivityTitle": "訂單因閒置已關閉",
-    "OrderClosedDueToInActivity": "訂單因閒置已關閉：{0} 狀態已從 '{1}' 變更為 '{2}'"
+    "OrderClosedDueToInActivity": "訂單因閒置已關閉：{0} 狀態已從 '{1}' 變更為 '{2}'",
+    "ImportItems": "匯入商品",
+    "Instructions": "操作說明",
+    "DownloadTemplateInstruction": "下載 Excel 範本檔案。",
+    "FillTemplateInstruction": "填寫必要欄位，例如：商品名稱、SKU貨商品規格等。",
+    "ItemDetailsInstructions": "若同一商品有多個商品規格，請使用相同的商品編號，重複新增該商品多次。",
+    "TaxTypesInstructions": "TaxTypes(稅別) 可填：Taxable (應稅) 或 Non Taxable (免稅)。(需填寫英文)",
+    "UploadTemplateInstruction": "將填寫完成的檔案上傳至下方。",
+    "DownloadTemplate": "下載範本",
+    "Close": "關閉"
 
 
 
