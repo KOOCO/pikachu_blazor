@@ -1408,7 +1408,6 @@ public partial class OrderDetails
                 //    //NavigationManager.NavigateTo($"map-response/{htmlForm}");
                 #endregion
             }
-
             else if (deliveryOrder.DeliveryMethod is DeliveryMethod.TCatDeliveryNormal ||
                      deliveryOrder.DeliveryMethod is DeliveryMethod.TCatDeliveryFreeze ||
                      deliveryOrder.DeliveryMethod is DeliveryMethod.TCatDeliveryFrozen)
@@ -1424,7 +1423,6 @@ public partial class OrderDetails
                     await _storeLogisticsOrderAppService.IssueInvoiceAync(Order.Id);
                 }
             }
-
             else if (deliveryOrder.DeliveryMethod is DeliveryMethod.TCatDeliverySevenElevenNormal ||
                      deliveryOrder.DeliveryMethod is DeliveryMethod.TCatDeliverySevenElevenFreeze ||
                      deliveryOrder.DeliveryMethod is DeliveryMethod.TCatDeliverySevenElevenFrozen)
@@ -1440,7 +1438,6 @@ public partial class OrderDetails
                     await _storeLogisticsOrderAppService.IssueInvoiceAync(Order.Id);
                 }
             }
-
             else if (deliveryOrder.DeliveryMethod is DeliveryMethod.BlackCat1 ||
                      deliveryOrder.DeliveryMethod is DeliveryMethod.BlackCatFreeze ||
                      deliveryOrder.DeliveryMethod is DeliveryMethod.BlackCatFrozen)
@@ -1459,7 +1456,6 @@ public partial class OrderDetails
                     await _storeLogisticsOrderAppService.IssueInvoiceAync(Order.Id);
                 }
             }
-
             else if (deliveryOrder.DeliveryMethod is DeliveryMethod.DeliveredByStore)
             {
                 LogisticProviders? logisticProvider = null;
@@ -1642,14 +1638,12 @@ public partial class OrderDetails
                     }
                 }
             }
-
-            else if (deliveryOrder.DeliveryMethod is EnumValues.DeliveryMethod.SelfPickup ||
-                           deliveryOrder.DeliveryMethod is EnumValues.DeliveryMethod.HomeDelivery)
+            else if (deliveryOrder.DeliveryMethod is DeliveryMethod.SelfPickup ||
+                     deliveryOrder.DeliveryMethod is DeliveryMethod.HomeDelivery)
             {
                 await _storeLogisticsOrderAppService.GenerateDeliveryNumberForSelfPickupAndHomeDeliveryAsync(Order.Id, deliveryOrder.Id);
                 await _storeLogisticsOrderAppService.IssueInvoiceAync(Order.Id);
             }
-
             else
             {
                 ResponseResultDto result = await _storeLogisticsOrderAppService.CreateHomeDeliveryShipmentOrderAsync(Order.Id, OrderDeliveryId);

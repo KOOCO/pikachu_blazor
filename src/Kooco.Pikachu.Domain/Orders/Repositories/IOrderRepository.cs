@@ -64,6 +64,8 @@ public interface IOrderRepository : IRepository<Order, Guid>
     Task<(int normalCount, int freezeCount, int frozenCount)> GetTotalDeliveryTemperatureCountsAsync();
 
     Task<Order> GetOrderByMerchantTradeNoAsync(string merchantTradeNo);
+
+    Task<Order?> MatchOrderExtraPropertiesByMerchantTradeNoAsync(string merchantTradeNo);
     Task<string> GetOrderNoByOrderId(Guid OrderId);
     Task<List<Order>> GetOrdersToCloseAsync();
     Task<long> ReturnOrderNotificationCountAsync();

@@ -2181,7 +2181,12 @@ public class OrderAppService : PikachuAppService, IOrderAppService
 
     public async Task UpdateLogisticStatusAsync(string merchantTradeNo, string rtnMsg, int rtnCode = 0)
     {
-        Order order = await OrderRepository.GetOrderByMerchantTradeNoAsync(merchantTradeNo);
+        var order = await OrderRepository.MatchOrderExtraPropertiesByMerchantTradeNoAsync(merchantTradeNo);
+        if (order is null)
+        {
+            return;
+        }
+
         // Capture old logistics status and shipping status before updating
         var oldLogisticsStatus = order.EcpayLogisticsStatus;
         var oldShippingStatus = order.ShippingStatus;

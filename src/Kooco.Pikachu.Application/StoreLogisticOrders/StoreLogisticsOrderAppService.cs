@@ -309,38 +309,41 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
                 if (result.ResponseCode is "1")
                 {
                     using (var uow = UnitOfWorkManager.Begin(requiresNew: true, isTransactional: false))
-                        {
-                            var newOrderDelivery = await _deliveryRepository.GetAsync(orderDeliveryId);
-                            // Capture old delivery details before updating
-                           
-                            var oldDeliveryStatus = newOrderDelivery.DeliveryStatus;
-                            newOrderDelivery.DeliveryNo = result.ShippingInfo.BookingNote;
-                            newOrderDelivery.AllPayLogisticsID = result.ShippingInfo.AllPayLogisticsID;
-                            newOrderDelivery.DeliveryStatus = DeliveryStatus.ToBeShipped;
+                    {
+                        var newOrderDelivery = await _deliveryRepository.GetAsync(orderDeliveryId);
+                        // Capture old delivery details before updating
+                       
+                        var oldDeliveryStatus = newOrderDelivery.DeliveryStatus;
+                        newOrderDelivery.DeliveryNo = result.ShippingInfo.BookingNote;
+                        newOrderDelivery.AllPayLogisticsID = result.ShippingInfo.AllPayLogisticsID;
+                        newOrderDelivery.DeliveryStatus = DeliveryStatus.ToBeShipped;
 
-                            if (orderDelivery.DeliveryMethod is DeliveryMethod.DeliveredByStore &&
-                                deliveryMethod is not null)
-                                newOrderDelivery.ActualDeliveryMethod = deliveryMethod;
+                        if (orderDelivery.DeliveryMethod is DeliveryMethod.DeliveredByStore &&
+                            deliveryMethod is not null)
+                            newOrderDelivery.ActualDeliveryMethod = deliveryMethod;
 
-                            await uow.SaveChangesAsync();
-                            // **Get Current User (Editor)**
-                            var currentUserId = CurrentUser.Id ?? Guid.Empty;
-                            var currentUserName = CurrentUser.UserName ?? "System";
+                        await uow.SaveChangesAsync();
+                        // **Get Current User (Editor)**
+                        var currentUserId = CurrentUser.Id ?? Guid.Empty;
+                        var currentUserName = CurrentUser.UserName ?? "System";
 
-                            // **Log Order History for Delivery Update**
-                            await _orderHistoryManager.AddOrderHistoryAsync(
-                                newOrderDelivery.OrderId,
-                                "GenerateDeliveryNumberLog", // Localization key
-                                new object[] { newOrderDelivery.DeliveryNo }, // Dynamic placeholder for delivery number
-                                currentUserId,
-                                currentUserName
-                            );
+                        // **Log Order History for Delivery Update**
+                        await _orderHistoryManager.AddOrderHistoryAsync(
+                            newOrderDelivery.OrderId,
+                            "GenerateDeliveryNumberLog", // Localization key
+                            new object[] { newOrderDelivery.DeliveryNo }, // Dynamic placeholder for delivery number
+                            currentUserId,
+                            currentUserName
+                        );
 
-                            order.ShippingStatus = ShippingStatus.ToBeShipped;
-                            order = await _orderRepository.GetAsync(orderId);
-
-                            await _orderRepository.UpdateAsync(order);
-                        }
+                        order.ShippingStatus = ShippingStatus.ToBeShipped;
+                        order = await _orderRepository.GetAsync(orderId);
+                        GenerateAndStoreMerchantTradeNoAsync(
+                            order, 
+                            merchantTrdaeNo, 
+                            newOrderDelivery.AllPayLogisticsID);
+                        await _orderRepository.UpdateAsync(order);
+                    }
 
                     await SendEmailAsync(orderId, ShippingStatus.ToBeShipped);
                 }
@@ -1371,8 +1374,8 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
             ResponseResultDto result = new();
 
             var order = await _orderRepository.GetAsync(orderId);
-        var groupbuy = await _GroupBuyAppService.GetAsync(order.GroupBuyId);
-        List<OrderDelivery> orderDeliverys = await _deliveryRepository.GetWithDetailsAsync(orderId);
+            var groupbuy = await _GroupBuyAppService.GetAsync(order.GroupBuyId);
+            List<OrderDelivery> orderDeliverys = await _deliveryRepository.GetWithDetailsAsync(orderId);
 
             OrderDelivery? orderDelivery = orderDeliverys.Where(x => x.Id == orderDeliveryId).FirstOrDefault();
 
@@ -1446,7 +1449,8 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
             string goodsName = groupbuy.GroupBuyName;
 
             goodsName = Regex.Replace(goodsName, validatePattern, "");
-        var merchantTrdaeNo = AddNumericSuffix(order.OrderNo);
+
+            var merchantTrdaeNo = AddNumericSuffix(order.OrderNo);
             HttpRequest? domainRequest = _httpContextAccessor?.HttpContext?.Request;
 
             string? domainName = $"{domainRequest?.Scheme}://{domainRequest?.Host.Value}";
@@ -1532,9 +1536,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
             {
                 if (result.ResponseCode is "1")
                 {
-                using (var uow = UnitOfWorkManager.Begin(
-              requiresNew: true, isTransactional: false
-          ))
+                using (var uow = UnitOfWorkManager.Begin(requiresNew: true, isTransactional: false))
                 {
                     var newOrderDelivery = await _deliveryRepository.GetAsync(orderDeliveryId);
                     newOrderDelivery.DeliveryNo = result.ShippingInfo.BookingNote??"";
@@ -1554,8 +1556,10 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
                     }
 
                     if (order.DeliveryMethod is DeliveryMethod.FamilyMartC2C ||
-                        deliveryMethod is DeliveryMethod.FamilyMartC2C)
-                        newOrderDelivery.DeliveryNo = result.ShippingInfo.CVSPaymentNo;
+                        deliveryMethod is DeliveryMethod.FamilyMartC2C)  
+                    { 
+                        newOrderDelivery.DeliveryNo = result.ShippingInfo.CVSPaymentNo; 
+                    }
 
                     if (order.DeliveryMethod is DeliveryMethod.SevenToElevenC2C ||
                         deliveryMethod is DeliveryMethod.SevenToElevenC2C)
@@ -1573,7 +1577,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
 
                     order.ShippingStatus = ShippingStatus.ToBeShipped;
                     await uow.SaveChangesAsync();
-                     await _orderRepository.UpdateAsync(order);
+                    await _orderRepository.UpdateAsync(order);
                     // **Get Current User (Editor)**
                     var currentUserId = CurrentUser.Id ?? Guid.Empty;
                     var currentUserName = CurrentUser.UserName ?? "System";
@@ -1666,6 +1670,14 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
 
         return result;
         
+    }
+
+    private static void GenerateAndStoreMerchantTradeNoAsync(Order order, string merchantTradeNo, string allPayLogisticId)
+    {
+        Dictionary<string, string> dictionary = [];
+
+        dictionary.Add(allPayLogisticId, merchantTradeNo);
+        order.SetProperty("Logistics_MerchantTradeNos", dictionary);
     }
 
     public async Task<string> FindStatusAsync()

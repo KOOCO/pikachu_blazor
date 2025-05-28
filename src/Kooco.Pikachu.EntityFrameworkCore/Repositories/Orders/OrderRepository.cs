@@ -7,11 +7,13 @@ using Kooco.Pikachu.Orders;
 using Kooco.Pikachu.Orders.Entities;
 using Kooco.Pikachu.Orders.Repositories;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
+using Volo.Abp.Data;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Domain.Repositories.EntityFrameworkCore;
 using Volo.Abp.EntityFrameworkCore;
@@ -417,6 +419,40 @@ public class OrderRepository(IDbContextProvider<PikachuDbContext> dbContextProvi
         return await (await GetQueryableAsync())
                         .FirstOrDefaultAsync(w => w.OrderNo == merchantTradeNo ||
                                                   w.MerchantTradeNo == merchantTradeNo);
+    }
+
+    public async Task<Order?> MatchOrderExtraPropertiesByMerchantTradeNoAsync(string merchantTradeNo)
+    {
+        var query = await GetQueryableAsync();
+        var orders = await query
+            .OrderByDescending(o => o.CreationTime)
+            .ToListAsync();
+
+        foreach (var order in orders)
+        {
+            var json = order.GetProperty("Logistics_MerchantTradeNos")?.ToString();
+            if (string.IsNullOrWhiteSpace(json))
+            {
+                continue; 
+            }
+
+            Dictionary<string, string>? dictionary = null;
+            try
+            {
+                dictionary = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
+            }
+            catch
+            {
+                continue;
+            }
+
+            if (dictionary is not null && dictionary.ContainsValue(merchantTradeNo))
+            {
+                return order;
+            }
+        }
+
+        return null;
     }
 
     public async Task<Order> GetMemberOrderAsync(Guid orderId, Guid memberId)
