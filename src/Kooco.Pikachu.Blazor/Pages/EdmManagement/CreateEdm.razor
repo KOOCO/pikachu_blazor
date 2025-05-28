@@ -253,7 +253,7 @@
                                                 @L["InsertPlaceholder"]
                                             </DropdownToggle>
                                             <DropdownMenu>
-                                                @foreach (var placeholder in EdmTemplatePlaceholders.GetAllInsertable())
+                                                @foreach (var placeholder in EdmTemplatePlaceholders.GetTemplateTypeConstants(Entity.TemplateType))
                                                 {
                                                     <DropdownItem Clicked="() => InsertPlaceholder(placeholder)">
                                                         @placeholder
@@ -261,10 +261,13 @@
                                                 }
                                             </DropdownMenu>
                                         </Dropdown>
-                                        <Button Color="Color.Secondary" Size="Size.Small" Clicked="LoadDefaultTemplate"
-                                                Disabled="@(Entity.TemplateType == EdmTemplateType.Campaign && !Entity.CampaignId.HasValue)">
-                                            @L["DefaultTemplate"]
-                                        </Button>
+                                        @if (Entity.TemplateType != EdmTemplateType.Customize)
+                                        {
+                                            <Button Color="Color.Secondary" Size="Size.Small" Clicked="LoadDefaultTemplate"
+                                                    Disabled="@(Entity.TemplateType == EdmTemplateType.Campaign && !Entity.CampaignId.HasValue)">
+                                                @L["DefaultTemplate"]
+                                            </Button>
+                                        }
                                     </Div>
                                 </Div>
                                 <Div Class="@(ValidationClass(nameof(Entity.Message)) + " quill-editor")">

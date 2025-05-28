@@ -24,5 +24,5 @@ public interface IEdmRepository : IRepository<Edm, Guid>
         DateTime? startDate = null, DateTime? endDate = null, DateTime? minSendTime = null, DateTime? maxSendTime = null, 
         EdmSendFrequency? sendFrequency = null);
 
-    Task<List<string>> GetGroupBuyNamesAsync(List<Guid> groupBuyIds);
+    Task<string> GetGroupBuyNameAsync(Guid groupBuyId);
 }

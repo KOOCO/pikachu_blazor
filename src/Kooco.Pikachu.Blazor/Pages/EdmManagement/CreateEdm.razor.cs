@@ -118,6 +118,8 @@ public partial class CreateEdm
             {
                 Entity.Subject = string.Empty;
             }
+
+            MessageHtml?.LoadHTMLContent(string.Empty);
         }
     }
 
@@ -170,13 +172,6 @@ public partial class CreateEdm
 
             if (!await Validate())
             {
-                return;
-            }
-
-            if (Entity.TemplateType == EdmTemplateType.Customize && !Entity.Message.Contains("{{GroupBuyName}}"))
-            {
-                Loading = false;
-                await Message.Error(L["PleaseInsertGroupBuyName"]);
                 return;
             }
 

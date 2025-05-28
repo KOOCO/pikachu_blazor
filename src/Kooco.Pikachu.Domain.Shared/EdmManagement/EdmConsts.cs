@@ -1,4 +1,5 @@
 ﻿using Kooco.Pikachu.Campaigns;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Volo.Abp.Reflection;
@@ -25,8 +26,8 @@ public class EdmTemplateConsts
     public const string CampaignDiscountName = "edm_campaign_discount";
     public const string CampaignShoppingCreditName = "edm_campaign_shopping_credit";
     public const string CampaignAddOnProductName = "edm_campaign_addon_product";
-    public const string ShopCartName = "edm_shop_cart_main";
-    public const string ShopCartItemsName = "edm_shop_cart_items";
+    public const string ShopCartName = "edm_shopping_cart_main";
+    public const string ShopCartItemsName = "edm_shopping_cart_items";
 
     public static string GetTemplateName(EdmTemplateType edmTemplateType)
     {
@@ -92,7 +93,19 @@ public class EdmTemplatePlaceholders
     public const string TemplateTypeMain = "{{edm_template_type_main}}";
     public const string CampaignProperties = "{{edm_campaign_properties}}";
     public const string PromotionModule = "{{edm_promotion_module_template}}";
-    public const string ShopCartItems = "{{edm_shop_cart_items}}";
+    public const string ShopCartItems = "{{edm_shopping_cart_items}}";
+
+    public static string[] GetTemplateTypeConstants(EdmTemplateType? edmTemplateType)
+    {
+        var constants = GetAllInsertable();
+
+        return [.. GetAllInsertable()
+            .Where(x => edmTemplateType != null)
+            .AsQueryable()
+            .WhereIf(edmTemplateType == EdmTemplateType.Customize || edmTemplateType == EdmTemplateType.ShoppingCart,
+                x => new[] { MemberName, GroupBuyName }.Contains(x))
+            ];
+    }
 
     public static string[] GetAllInsertable()
     {

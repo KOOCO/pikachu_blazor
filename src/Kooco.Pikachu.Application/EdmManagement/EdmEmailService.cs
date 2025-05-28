@@ -11,7 +11,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Volo.Abp.DependencyInjection;
-using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Emailing;
 using Volo.Abp.MultiTenancy;
 
@@ -71,10 +70,7 @@ public class EdmEmailService : ITransientDependency
 
             jobId = edm.Id.ToString();
 
-            if (!string.IsNullOrWhiteSpace(edm.JobId))
-            {
-                RecurringJob.RemoveIfExists(edm.JobId);
-            }
+            CancelJob(edm);
 
             RecurringJob.AddOrUpdate<EdmEmailingJob>(
                 jobId,
@@ -92,10 +88,7 @@ public class EdmEmailService : ITransientDependency
                 DateTimeKind.Utc
             );
 
-            if (!string.IsNullOrWhiteSpace(edm.JobId))
-            {
-                BackgroundJob.Delete(edm.JobId);
-            }
+            CancelJob(edm);
 
             jobId = BackgroundJob.Schedule<EdmEmailingJob>(
                 sender => sender.ExecuteAsync(edm.Id),
@@ -105,6 +98,22 @@ public class EdmEmailService : ITransientDependency
 
         edm.SetJobId(jobId);
         return Task.CompletedTask;
+    }
+
+    public void CancelJob(Edm edm)
+    {
+        if (!string.IsNullOrWhiteSpace(edm.JobId))
+        {
+            if (edm.TemplateType == EdmTemplateType.ShoppingCart)
+            {
+                RecurringJob.RemoveIfExists(edm.JobId);
+            }
+            else
+            {
+                BackgroundJob.Delete(edm.JobId);
+            }
+            edm.SetJobId(null);
+        }
     }
 
     public async Task SendEmailAsync(Edm edm)
@@ -126,9 +135,9 @@ public class EdmEmailService : ITransientDependency
                     shopCarts = await _shopCartRepository.GetEdmShopCartsAsync([.. members.Select(m => m.id)], edm.GroupBuyId);
                 }
 
-                await _edmRepository.EnsurePropertyLoadedAsync(edm, edm => edm.GroupBuy);
-
                 var subject = edm.Subject;
+
+                var groupBuyName = await _edmRepository.GetGroupBuyNameAsync(edm.GroupBuyId);
 
                 var tenantSettings = await _tenantSettingsAppService.FirstOrDefaultAsync();
 
@@ -136,7 +145,7 @@ public class EdmEmailService : ITransientDependency
                     ? await _campaignRepository.GetWithDetailsAsync(edm.CampaignId.Value)
                     : null;
 
-                var template = EdmTemplateBuilder.Build(edm, tenantSettings, campaign);
+                var template = EdmTemplateBuilder.Build(edm, tenantSettings, campaign, groupBuyName);
 
                 foreach (var (id, name, email) in members)
                 {

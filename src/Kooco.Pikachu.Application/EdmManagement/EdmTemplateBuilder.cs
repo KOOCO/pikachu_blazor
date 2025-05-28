@@ -3,7 +3,6 @@ using Kooco.Pikachu.ShopCarts;
 using Kooco.Pikachu.Tenants;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using Volo.Abp.Data;
 using static Kooco.Pikachu.EdmManagement.EdmTemplateConsts;
@@ -12,7 +11,7 @@ namespace Kooco.Pikachu.EdmManagement;
 
 public class EdmTemplateBuilder
 {
-    public static string Build(Edm edm, TenantSettingsDto tenantSettings, Campaign? campaign)
+    public static string Build(Edm edm, TenantSettingsDto tenantSettings, Campaign? campaign, string? groupBuyName)
     {
         string groupBuyUrl = tenantSettings?.Tenant.GetProperty<string>(Constant.TenantUrl)?.EnsureEndsWith('/') + $"groupBuy/{edm.GroupBuyId}";
 
@@ -20,7 +19,6 @@ public class EdmTemplateBuilder
 
         var template = mainTemplate
             .Replace("{{LogoUrl}}", tenantSettings?.LogoUrl)
-            .Replace("{{GroupBuyName}}", edm.GroupBuy?.GroupBuyName ?? "N/A")
             .Replace("{{FacebookUrl}}", tenantSettings?.FacebookLink)
             .Replace("{{InstagramUrl}}", tenantSettings?.InstagramLink)
             .Replace("{{LineUrl}}", tenantSettings?.LineLink)
@@ -28,6 +26,7 @@ public class EdmTemplateBuilder
             .Replace("{{CompanyName}}", tenantSettings?.CompanyName)
             .Replace("{{ButtonLink}}", groupBuyUrl)
             .Replace(EdmTemplatePlaceholders.TemplateTypeMain, edm.Message)
+            .Replace(EdmTemplatePlaceholders.GroupBuyName, groupBuyName ?? "N/A")
             .Replace(EdmTemplatePlaceholders.CampaignName, campaign?.Name)
             .Replace(EdmTemplatePlaceholders.CampaignPeriod, $"{campaign?.StartDate:dd/MM/yyyy} to {campaign?.EndDate:dd/MM/yyyy}")
             .Replace(EdmTemplatePlaceholders.DiscountCode, campaign?.Discount?.DiscountCode)

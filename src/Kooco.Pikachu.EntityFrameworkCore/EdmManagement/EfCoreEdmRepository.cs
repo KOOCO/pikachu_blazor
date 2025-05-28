@@ -69,13 +69,13 @@ public class EfCoreEdmRepository : EfCoreRepository<PikachuDbContext, Edm, Guid>
             || x.GroupBuyId.ToString() == filter || (x.GroupBuy != null && x.GroupBuy.GroupBuyName.Contains(filter)));
     }
 
-    public async Task<List<string>> GetGroupBuyNamesAsync(List<Guid> groupBuyIds)
+    public async Task<string> GetGroupBuyNameAsync(Guid groupBuyId)
     {
         var dbContext = await GetDbContextAsync();
 
         return await dbContext.GroupBuys
-            .Where(gb => groupBuyIds.Contains(gb.Id))
+            .Where(gb => gb.Id == groupBuyId)
             .Select(gb => gb.GroupBuyName)
-            .ToListAsync();
+            .FirstOrDefaultAsync();
     }
 }

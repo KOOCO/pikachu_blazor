@@ -52,6 +52,8 @@ public class EdmAppService : PikachuAppService, IEdmAppService
         await _validator.ValidateAndThrowAsync(input);
 
         var edm = await _edmRepository.GetAsync(id);
+        
+        _edmEmailService.CancelJob(edm);
 
         await _edmManager.UpdateAsync(edm, input.TemplateType.Value, input.CampaignId,
             input.ApplyToAllMembers.Value, input.MemberTags, input.GroupBuyId,
@@ -90,6 +92,7 @@ public class EdmAppService : PikachuAppService, IEdmAppService
     public async Task DeleteAsync(Guid id)
     {
         var edm = await _edmRepository.GetAsync(id);
+        _edmEmailService.CancelJob(edm);
         await _edmRepository.DeleteAsync(edm);
     }
 

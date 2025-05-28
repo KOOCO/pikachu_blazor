@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using Kooco.Pikachu.Campaigns;
+using Kooco.Pikachu.Extensions;
 using Kooco.Pikachu.Localization;
 using Microsoft.Extensions.Localization;
 using System;
@@ -88,7 +89,7 @@ public class CreateEdmDtoValidator : AbstractValidator<CreateEdmDto>
         RuleFor(x => x.Message)
             .NotEmpty()
             .WithMessage(Required(nameof(CreateEdmDto.Message)))
-            .NotEqual("<p><br></p>")
+            .NotEqual(StringExtensions.DefaultQuillHtml)
             .WithMessage(Required(nameof(CreateEdmDto.Message)));
 
         string Required(string propName)
