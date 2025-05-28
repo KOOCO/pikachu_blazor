@@ -53,6 +53,7 @@ using Kooco.Pikachu.Tenants.Entities;
 using Kooco.Pikachu.Members.MemberTags;
 using Kooco.Pikachu.Campaigns;
 using Kooco.Pikachu.EdmManagement;
+using Kooco.Pikachu.Domain.LogisticStatusRecords;
 
 namespace Kooco.Pikachu.EntityFrameworkCore;
 
@@ -141,6 +142,8 @@ public class PikachuDbContext(DbContextOptions<PikachuDbContext> options) :
     // Order
     public DbSet<OrderMessage> OrderMessages { get; set; }
     public DbSet<OrderInvoice> OrderInvoices { get; set; }
+
+    public DbSet<LogisticStatusRecord> LogisticStatusRecords { get; set; }
 
     public DbSet<WebsiteBasicSetting> WebsiteBasicSettings { get; set; }
     public DbSet<WebsiteSettings> WebsiteSettings { get; set; }
@@ -389,6 +392,21 @@ public class PikachuDbContext(DbContextOptions<PikachuDbContext> options) :
             // b.Ignore(x => x.LogisticsSubTypesList);
             b.Ignore(x => x.MainIslandsList);
             b.Ignore(x => x.OuterIslandsList);
+        });
+
+        builder.Entity<LogisticStatusRecord>(b =>
+        {
+            b.ToTable(PikachuConsts.DbTablePrefix + "LogisticStatusRecords", PikachuConsts.DbSchema);
+            b.Property(x => x.OrderId).IsRequired().HasMaxLength(32);
+            b.Property(x => x.Reference).HasMaxLength(64);
+            b.Property(x => x.Location).HasMaxLength(128);
+            b.Property(x => x.Datetime).HasMaxLength(32); // 原始字串型別的日期時間
+            b.Property(x => x.DatetimeParsed).HasColumnType("datetime2"); // 新增的 DateTime 型別欄位
+            b.Property(x => x.Code).HasMaxLength(32);
+            b.Property(x => x.StatusCode).HasMaxLength(16);
+            b.Property(x => x.StatusMessage).HasMaxLength(128);
+            b.Property(x => x.RawLine).HasMaxLength(512);
+            b.Property(x => x.CreateTime).IsRequired();
         });
 
         builder.Entity<UserAddress>(b =>

@@ -7,6 +7,8 @@ using Kooco.Pikachu.Dashboards;
 using Kooco.Pikachu.DeliveryTemperatureCosts;
 using Kooco.Pikachu.DeliveryTempratureCosts;
 using Kooco.Pikachu.DiscountCodes;
+using Kooco.Pikachu.Domain.LogisticStatusRecords;
+using Kooco.Pikachu.LogisticStatusRecords;
 using Kooco.Pikachu.EdmManagement;
 using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Freebies;
@@ -68,6 +70,10 @@ public class PikachuApplicationAutoMapperProfile : Profile
         /* You can configure your AutoMapper mapping configuration here.
          * Alternatively, you can split your mapping configurations
          * into multiple profile classes for a better organization. */
+        
+        // 物流狀態記錄映射
+        CreateMap<LogisticStatusRecord, LogisticStatusRecordDto>();
+         
 
         //Item Dto EntityMapping
         CreateMap<Item, ItemDto>();
