@@ -392,9 +392,8 @@ public class PikachuApplicationAutoMapperProfile : Profile
         CreateMap<CampaignStageSettingDto, CreateCampaignStageSettingDto>();
 
         CreateMap<Edm, EdmDto>()
-            .ForMember(dest => dest.CampaignName, opt => opt.MapFrom(src => src.Campaign != null ? src.Campaign.Name : null));
-        CreateMap<EdmGroupBuy, EdmGroupBuyDto>();
-        CreateMap<EdmDto, CreateEdmDto>()
-            .ForMember(dest => dest.GroupBuyIds, opt => opt.MapFrom(src => src.GroupBuys != null ? src.GroupBuys.Select(gb => gb.GroupBuyId) : new List<Guid>()));
+            .ForMember(dest => dest.CampaignName, opt => opt.MapFrom(src => src.Campaign != null ? src.Campaign.Name : null))
+            .ForMember(dest => dest.GroupBuyName, opt => opt.MapFrom(src => src.GroupBuy != null ? src.GroupBuy.GroupBuyName : null));
+        CreateMap<EdmDto, CreateEdmDto>();
     }
 }

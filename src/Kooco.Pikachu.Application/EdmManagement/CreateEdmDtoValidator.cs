@@ -27,14 +27,9 @@ public class CreateEdmDtoValidator : AbstractValidator<CreateEdmDto>
             .When(x => x.ApplyToAllMembers == false)
             .WithMessage(Required(nameof(CreateEdmDto.MemberTags)));
 
-        RuleFor(x => x.ApplyToAllGroupBuys)
-            .NotNull()
-            .WithMessage(Required(nameof(CreateEdmDto.ApplyToAllGroupBuys)));
-
-        RuleFor(x => x.GroupBuyIds)
+        RuleFor(x => x.GroupBuyId)
             .NotEmpty()
-            .When(x => x.ApplyToAllGroupBuys == false)
-            .WithMessage(Required("GroupBuys"));
+            .WithMessage(Required("GroupBuy"));
 
         RuleFor(x => x.StartDate)
                 .NotNull()

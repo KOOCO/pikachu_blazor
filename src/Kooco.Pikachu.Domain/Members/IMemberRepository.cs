@@ -42,5 +42,5 @@ public interface IMemberRepository : IIdentityUserRepository, IRepository<Identi
         int? minRemainingCredits, int? maxRemainingCredits, int? minAmount, int? maxAmount, Guid? userId);
     Task<List<IdentityUser>> GetBirthdayMember();
 
-    Task<List<string>> GetEdmMemberEmailsAsync(bool applyToAllMembers, IEnumerable<string> memberTags);
+    Task<List<(Guid id, string name, string email)>> GetEdmMemberNameAndEmailAsync(bool applyToAllMembers, IEnumerable<string> memberTags);
 }

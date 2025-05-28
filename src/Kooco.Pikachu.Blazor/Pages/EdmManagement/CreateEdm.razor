@@ -11,6 +11,7 @@
 @using Kooco.Pikachu.Localization
 @using Kooco.Pikachu.Members.MemberTags
 @using Volo.Abp.AspNetCore.Components.Web
+@using static Kooco.Pikachu.EdmManagement.EdmTemplateConsts
 @inherits PikachuComponentBase
 @inject AbpBlazorMessageLocalizerHelper<PikachuResource> LH
 @inject IEdmAppService EdmAppService
@@ -143,45 +144,29 @@
                                     }
                                 </Field>
                             </Validation>
-                            <Validation MessageLocalizer="@LH.Localize">
+                            <Field>
+                                <FieldLabel required>@L["GroupBuy"]</FieldLabel>
                                 <Field>
-                                    <FieldLabel required>@L["GroupBuys"]</FieldLabel>
-                                    <RadioGroup Orientation="Orientation.Vertical" TValue="bool?" Name="Groupbuys" @bind-CheckedValue="@Entity.ApplyToAllGroupBuys">
-                                        <ChildContent>
-                                            <Radio TValue="bool?" Value="@true">@L["AllGroupBuys"]</Radio>
-                                            <Radio TValue="bool?" Value="@false">@L["SpecificGroupBuys"]</Radio>
-                                        </ChildContent>
-                                        <Feedback>
-                                            <ValidationError />
-                                        </Feedback>
-                                    </RadioGroup>
-                                    @if (Entity.ApplyToAllGroupBuys == false)
-                                    {
-                                        <Field indent>
-                                            <AntDesign.Select Mode="AntDesign.SelectMode.Multiple"
-                                                              Size="AntDesign.InputSize.Large"
-                                                              TItem="Guid"
-                                                              TItemValue="Guid"
-                                                              Placeholder="@L["SelectGroupBuys"]"
-                                                              MaxTagCount="AntDesign.Select.ResponsiveTag.Responsive"
-                                                              EnableSearch
-                                                              AllowClear
-                                                              HideSelected
-                                                              Class="@ValidationClass(nameof(Entity.GroupBuyIds))"
-                                                              OnSelectedItemsChanged="() => _editContext.NotifyFieldChanged(new FieldIdentifier(Entity, nameof(Entity.GroupBuyIds)))"
-                                                              @bind-Values="Entity.GroupBuyIds">
-                                                <SelectOptions>
-                                                    @foreach (var item in GroupBuyOptions)
-                                                    {
-                                                        <AntDesign.SelectOption TItemValue="Guid" TItem="Guid" Value=@item.Id Label=@item.Name />
-                                                    }
-                                                </SelectOptions>
-                                            </AntDesign.Select>
-                                            <ValidationMessage For="() => Entity.GroupBuyIds" />
-                                        </Field>
-                                    }
+                                    <AntDesign.Select Size="AntDesign.InputSize.Large"
+                                                      TItem="Guid"
+                                                      TItemValue="Guid"
+                                                      Placeholder="@L["SelectGroupBuy"]"
+                                                      EnableSearch
+                                                      AllowClear
+                                                      HideSelected
+                                                      Class="@ValidationClass(nameof(Entity.GroupBuyId))"
+                                                      OnSelectedItemChanged="() => _editContext.NotifyFieldChanged(new FieldIdentifier(Entity, nameof(Entity.GroupBuyId)))"
+                                                      @bind-Value="Entity.GroupBuyId">
+                                        <SelectOptions>
+                                            @foreach (var item in GroupBuyOptions)
+                                            {
+                                                <AntDesign.SelectOption TItemValue="Guid" TItem="Guid" Value=@item.Id Label=@item.Name />
+                                            }
+                                        </SelectOptions>
+                                    </AntDesign.Select>
+                                    <ValidationMessage For="() => Entity.GroupBuyId" />
                                 </Field>
-                            </Validation>
+                            </Field>
                             <Row>
                                 <Column ColumnSize="ColumnSize.Is6">
                                     <Validation MessageLocalizer="@LH.Localize">
@@ -260,7 +245,28 @@
                                 </Field>
                             </Validation>
                             <Field>
-                                <FieldLabel required>@L["Message"]</FieldLabel>
+                                <Div Class="d-flex justify-content-between align-items-end mb-1">
+                                    <FieldLabel required>@L["Message"]</FieldLabel>
+                                    <Div Class="d-flex gap-1 text-nowrap">
+                                        <Dropdown>
+                                            <DropdownToggle Color="Color.Primary" Size="Size.Small">
+                                                @L["InsertPlaceholder"]
+                                            </DropdownToggle>
+                                            <DropdownMenu>
+                                                @foreach (var placeholder in EdmTemplatePlaceholders.GetAllInsertable())
+                                                {
+                                                    <DropdownItem Clicked="() => InsertPlaceholder(placeholder)">
+                                                        @placeholder
+                                                    </DropdownItem>
+                                                }
+                                            </DropdownMenu>
+                                        </Dropdown>
+                                        <Button Color="Color.Secondary" Size="Size.Small" Clicked="LoadDefaultTemplate"
+                                                Disabled="@(Entity.TemplateType == EdmTemplateType.Campaign && !Entity.CampaignId.HasValue)">
+                                            @L["DefaultTemplate"]
+                                        </Button>
+                                    </Div>
+                                </Div>
                                 <Div Class="@(ValidationClass(nameof(Entity.Message)) + " quill-editor")">
                                     <BlazoredTextEditor @ref="@MessageHtml" Placeholder="@L["Composeanepic"]">
                                         <ToolbarContent>

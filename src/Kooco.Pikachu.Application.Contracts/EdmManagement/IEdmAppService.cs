@@ -12,4 +12,5 @@ public interface IEdmAppService : IApplicationService
     Task<EdmDto> UpdateAsync(Guid id, CreateEdmDto input);
     Task<PagedResultDto<EdmDto>> GetListAsync(GetEdmListDto input);
     Task DeleteAsync(Guid id);
+    Task SendEmailAsync(Guid id);
 }

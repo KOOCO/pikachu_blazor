@@ -1350,7 +1350,9 @@ public partial class OrderDetails
             if (deliveryOrder.DeliveryMethod is DeliveryMethod.SevenToEleven1 ||
                 deliveryOrder.DeliveryMethod is DeliveryMethod.FamilyMart1 ||
                 deliveryOrder.DeliveryMethod is DeliveryMethod.SevenToElevenC2C ||
-                deliveryOrder.DeliveryMethod is DeliveryMethod.FamilyMartC2C)
+                deliveryOrder.DeliveryMethod is DeliveryMethod.FamilyMartC2C
+                ||deliveryOrder.DeliveryMethod is DeliveryMethod.SevenToElevenFrozen)
+
             {
                 ResponseResultDto result = await _storeLogisticsOrderAppService.CreateStoreLogisticsOrderAsync(Order.Id, deliveryOrder.Id);
 

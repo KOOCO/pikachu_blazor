@@ -1557,10 +1557,14 @@
     "MinSendTime": "Min Send Time",
     "MaxSendTime": "Max Send Time",
     "AreYouSureToDeleteEdm": "Are you sure to delete this EDM?",
+    "InsertPlaceholder": "Insert Placeholder",
+    "DefaultTemplate": "Default Template",
     "NewAddOn": "New",
     "AddNewDiscountCode": "New",
     "Invoicehasvoided": "Invoice has successfully voided",
     "ToUsePoints": "To Use Points",
-    "SaleableQuantitycannotbegreaterthanCurrentStock": "Saleable Quantity cannot be greater than Current Stock."
+    "SaleableQuantitycannotbegreaterthanCurrentStock": "Saleable Quantity cannot be greater than Current Stock.",
+    "ItemDetailsInstructions": "If one item have multiple item details add item that times with same item no.",
+    "TaxTypesInstructions": "TaxTypes: Taxable and Non Taxable"
   }
 }

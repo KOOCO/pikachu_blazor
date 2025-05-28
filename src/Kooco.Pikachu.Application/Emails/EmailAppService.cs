@@ -80,9 +80,9 @@ public class EmailAppService(IOrderRepository orderRepository, IGroupBuyReposito
             body = body.Replace("{{OrderUrl}}", orderUrl);
 
             body = body.Replace("{{LogoUrl}}", tenantSettings?.LogoUrl);
-            body = body.Replace("{{FacebookUrl}}", tenantSettings?.Facebook);
-            body = body.Replace("{{InstagramUrl}}", tenantSettings?.Instagram);
-            body = body.Replace("{{LineUrl}}", tenantSettings?.Line);
+            body = body.Replace("{{FacebookUrl}}", tenantSettings?.FacebookLink);
+            body = body.Replace("{{InstagramUrl}}", tenantSettings?.InstagramLink);
+            body = body.Replace("{{LineUrl}}", tenantSettings?.LineLink);
 
             body = body.Replace("{{CurrentYear}}", DateTime.Today.ToString("yyyy"));
             body = body.Replace("{{CompanyName}}", tenantSettings?.CompanyName);
@@ -188,9 +188,9 @@ public class EmailAppService(IOrderRepository orderRepository, IGroupBuyReposito
             body = body.Replace("{{OrderUrl}}", orderUrl);
 
             body = body.Replace("{{LogoUrl}}", tenantSettings?.LogoUrl);
-            body = body.Replace("{{FacebookUrl}}", tenantSettings?.Facebook);
-            body = body.Replace("{{InstagramUrl}}", tenantSettings?.Instagram);
-            body = body.Replace("{{LineUrl}}", tenantSettings?.Line);
+            body = body.Replace("{{FacebookUrl}}", tenantSettings?.FacebookLink);
+            body = body.Replace("{{InstagramUrl}}", tenantSettings?.InstagramLink);
+            body = body.Replace("{{LineUrl}}", tenantSettings?.LineLink);
 
             body = body.Replace("{{CurrentYear}}", DateTime.Today.ToString("yyyy"));
             body = body.Replace("{{CompanyName}}", tenantSettings?.CompanyName);
@@ -278,9 +278,9 @@ public class EmailAppService(IOrderRepository orderRepository, IGroupBuyReposito
             body = body.Replace("{{OrderUrl}}", orderUrl);
 
             body = body.Replace("{{LogoUrl}}", tenantSettings?.LogoUrl);
-            body = body.Replace("{{FacebookUrl}}", tenantSettings?.Facebook);
-            body = body.Replace("{{InstagramUrl}}", tenantSettings?.Instagram);
-            body = body.Replace("{{LineUrl}}", tenantSettings?.Line);
+            body = body.Replace("{{FacebookUrl}}", tenantSettings?.FacebookLink);
+            body = body.Replace("{{InstagramUrl}}", tenantSettings?.InstagramLink);
+            body = body.Replace("{{LineUrl}}", tenantSettings?.LineLink);
 
             body = body.Replace("{{CurrentYear}}", DateTime.Today.ToString("yyyy"));
             body = body.Replace("{{CompanyName}}", tenantSettings?.CompanyName);
@@ -315,9 +315,9 @@ public class EmailAppService(IOrderRepository orderRepository, IGroupBuyReposito
             body = body.Replace("{{OrderUrl}}", orderUrl);
 
             body = body.Replace("{{LogoUrl}}", tenantSettings?.LogoUrl);
-            body = body.Replace("{{FacebookUrl}}", tenantSettings?.Facebook);
-            body = body.Replace("{{InstagramUrl}}", tenantSettings?.Instagram);
-            body = body.Replace("{{LineUrl}}", tenantSettings?.Line);
+            body = body.Replace("{{FacebookUrl}}", tenantSettings?.FacebookLink);
+            body = body.Replace("{{InstagramUrl}}", tenantSettings?.InstagramLink);
+            body = body.Replace("{{LineUrl}}", tenantSettings?.LineLink);
 
             body = body.Replace("{{CurrentYear}}", DateTime.Today.ToString("yyyy"));
             body = body.Replace("{{CompanyName}}", tenantSettings?.CompanyName);
@@ -370,9 +370,9 @@ public class EmailAppService(IOrderRepository orderRepository, IGroupBuyReposito
             body = body.Replace("{{OrderToMerge2Url}}", $"{groupBuyUrl}/result/{orderNumbers.LastOrDefault()}/{order.CustomerEmail}");
 
             body = body.Replace("{{LogoUrl}}", tenantSettings?.LogoUrl);
-            body = body.Replace("{{FacebookUrl}}", tenantSettings?.Facebook);
-            body = body.Replace("{{InstagramUrl}}", tenantSettings?.Instagram);
-            body = body.Replace("{{LineUrl}}", tenantSettings?.Line);
+            body = body.Replace("{{FacebookUrl}}", tenantSettings?.FacebookLink);
+            body = body.Replace("{{InstagramUrl}}", tenantSettings?.InstagramLink);
+            body = body.Replace("{{LineUrl}}", tenantSettings?.LineLink);
 
             body = body.Replace("{{CurrentYear}}", DateTime.Today.ToString("yyyy"));
             body = body.Replace("{{CompanyName}}", tenantSettings?.CompanyName);
@@ -421,9 +421,9 @@ public class EmailAppService(IOrderRepository orderRepository, IGroupBuyReposito
             body = body.Replace("{{SplitOrder2Url}}", $"{groupBuyUrl}/result/{splitOrder?.OrderNo}/{order.CustomerEmail}");
 
             body = body.Replace("{{LogoUrl}}", tenantSettings?.LogoUrl);
-            body = body.Replace("{{FacebookUrl}}", tenantSettings?.Facebook);
-            body = body.Replace("{{InstagramUrl}}", tenantSettings?.Instagram);
-            body = body.Replace("{{LineUrl}}", tenantSettings?.Line);
+            body = body.Replace("{{FacebookUrl}}", tenantSettings?.FacebookLink);
+            body = body.Replace("{{InstagramUrl}}", tenantSettings?.InstagramLink);
+            body = body.Replace("{{LineUrl}}", tenantSettings?.LineLink);
 
             body = body.Replace("{{CurrentYear}}", DateTime.Today.ToString("yyyy"));
             body = body.Replace("{{CompanyName}}", tenantSettings?.CompanyName);
@@ -450,9 +450,9 @@ public class EmailAppService(IOrderRepository orderRepository, IGroupBuyReposito
             string? tenantUrl = tenantSettings?.Tenant.GetProperty<string?>(Constant.TenantUrl);
 
             body = body.Replace("{{LogoUrl}}", tenantSettings?.LogoUrl);
-            body = body.Replace("{{FacebookUrl}}", tenantSettings?.Facebook);
-            body = body.Replace("{{InstagramUrl}}", tenantSettings?.Instagram);
-            body = body.Replace("{{LineUrl}}", tenantSettings?.Line);
+            body = body.Replace("{{FacebookUrl}}", tenantSettings?.FacebookLink);
+            body = body.Replace("{{InstagramUrl}}", tenantSettings?.InstagramLink);
+            body = body.Replace("{{LineUrl}}", tenantSettings?.LineLink);
 
             body = body.Replace("{{CurrentYear}}", DateTime.Today.ToString("yyyy"));
             body = body.Replace("{{CompanyName}}", tenantSettings?.CompanyName);

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
 using Volo.Abp;
 using Volo.Abp.Domain.Entities;
 
@@ -93,5 +94,13 @@ public class CampaignShoppingCredit : Entity<Guid>
         var stageSetting = new CampaignStageSetting(id, Id, spend, pointsToReceive);
         StageSettings.Add(stageSetting);
         return stageSetting;
+    }
+
+    public int GetMaxPointsToReceive()
+    {
+        return StageSettings?
+            .Select(ss => ss.PointsToReceive)
+            .OrderByDescending(ss => ss)
+            .FirstOrDefault() ?? 0;
     }
 }

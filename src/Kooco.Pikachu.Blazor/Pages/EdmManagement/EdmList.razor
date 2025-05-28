@@ -96,34 +96,19 @@
                     </AntDesign.Select>
                 </Column>
                 <Column ColumnSize="ColumnSize.Is2">
-                    <Label>@L["GroupBuyType"]</Label>
-                    <AntDesign.Select TItem="bool?"
-                                      TItemValue="bool?"
-                                      AllowClear
-                                      HideSelected
-                                      @bind-Value="Filters.ApplyToAllGroupBuys">
-                        <SelectOptions>
-                            <AntDesign.SelectOption TItemValue="bool?" TItem="bool?" Value=@true Label=@L["AllGroupBuys"] />
-                            <AntDesign.SelectOption TItemValue="bool?" TItem="bool?" Value=@false Label=@L["SpecificGroupBuys"] />
-                        </SelectOptions>
-                    </AntDesign.Select>
-                </Column>
-                <Column ColumnSize="ColumnSize.Is2">
-                    <Label>@L["GroupBuys"]</Label>
-                    <AntDesign.Select Mode="AntDesign.SelectMode.Multiple"
-                                      MaxTagCount="AntDesign.Select.ResponsiveTag.Responsive"
-                                      TItem="Guid"
-                                      TItemValue="Guid"
+                    <Label>@L["GroupBuy"]</Label>
+                    <AntDesign.Select TItem="Guid?"
+                                      TItemValue="Guid?"
                                       AllowClear
                                       HideSelected
                                       EnableSearch
                                       ShowArrowIcon
                                       DropdownMatchSelectWidth="false"
-                                      @bind-Values="Filters.GroupBuyIds">
+                                      @bind-Value="Filters.GroupBuyId">
                         <SelectOptions>
                             @foreach (var option in GroupBuyOptions)
                             {
-                                <AntDesign.SelectOption TItemValue="Guid" TItem="Guid" Value=@option.Id Label=@option.Name />
+                                <AntDesign.SelectOption TItemValue="Guid?" TItem="Guid?" Value=@option.Id Label=@option.Name />
                             }
                         </SelectOptions>
                     </AntDesign.Select>
@@ -135,6 +120,7 @@
                                       AllowClear
                                       HideSelected
                                       EnableSearch
+                                      ShowArrowIcon
                                       DropdownMatchSelectWidth="false"
                                       @bind-Value="Filters.CampaignId">
                         <SelectOptions>
@@ -241,21 +227,14 @@
                     </DisplayTemplate>
                 </DataGridColumn>
                 <DataGridColumn TItem="EdmDto"
-                                Field="@nameof(EdmDto.ApplyToAllGroupBuys)"
-                                Caption="@L["GroupBuys"]">
+                                Field="@nameof(EdmDto.GroupBuyId)"
+                                Sortable="false"
+                                Caption="@L["GroupBuy"]">
                     <DisplayTemplate>
-                        <Span Class="text-nowrap">
-                            @if (context.ApplyToAllGroupBuys)
-                            {
-                                <Span>@L["AllGroupBuys"]</Span>
-                            }
-                            else
-                            {
-                                <Span @onclick="() => ShowGroupBuysModal(context)" Style="cursor: pointer; text-decoration: underline;">
-                                    @L["SpecificGroupBuys"]
-                                </Span>
-                            }
-                        </Span>
+                        @if (!string.IsNullOrWhiteSpace(context.GroupBuyName))
+                        {
+                            <Copy DisplayText="@context.GroupBuyName" Text="@context.GroupBuyId" IconAlignment="Alignment.Start"></Copy>
+                        }
                     </DisplayTemplate>
                 </DataGridColumn>
                 <DataGridColumn TItem="EdmDto"
@@ -360,28 +339,6 @@
         </ModalBody>
         <ModalFooter>
             <Button Color="Color.Secondary" Clicked="@HideMemberTagsModal">@L["Close"]</Button>
-        </ModalFooter>
-    </ModalContent>
-</Modal>
-<Modal @ref="GroupBuysModal">
-    <ModalContent Centered>
-        <ModalHeader>
-            <ModalTitle>@L["GroupBuys"]</ModalTitle>
-            <CloseButton />
-        </ModalHeader>
-        <ModalBody>
-            @if (Selected.GroupBuys != null)
-            {
-                @foreach (var groupBuy in Selected.GroupBuys)
-                {
-                    <Div Class="mb-1">
-                        <Copy DisplayText="@groupBuy.GroupBuyName" Text="@groupBuy.GroupBuyId" IconAlignment="Alignment.Start"></Copy>
-                    </Div>
-                }
-            }
-        </ModalBody>
-        <ModalFooter>
-            <Button Color="Color.Secondary" Clicked="@HideGroupBuysModal">@L["Close"]</Button>
         </ModalFooter>
     </ModalContent>
 </Modal>

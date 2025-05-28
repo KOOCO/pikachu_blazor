@@ -1,7 +1,7 @@
 ﻿@using Kooco.Pikachu.Members
 @inherits PikachuComponentBase
 
-<PikachuBadge Class="@_badgeColor" Style="@(_margin)">@L[Tag]</PikachuBadge>
+<PikachuBadge Class="@_badgeColor" Style="@(_margin)">@L[_tag]</PikachuBadge>
 
 @code {
     [Parameter]
@@ -12,6 +12,8 @@
 
     [Parameter]
     public bool IsSystemAssigned { get; set; } = true;
+
+    private string _tag => Tag ?? "";
 
     private string _badgeColor
     {

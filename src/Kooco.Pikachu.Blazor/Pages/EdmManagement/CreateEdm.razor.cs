@@ -104,6 +104,7 @@ public partial class CreateEdm
     void OnTabChanged(string tab)
     {
         SelectedTab = tab;
+
         var templateType = Enum.Parse<EdmTemplateType>(tab);
 
         if (templateType != Entity.TemplateType)
@@ -118,6 +119,30 @@ public partial class CreateEdm
                 Entity.Subject = string.Empty;
             }
         }
+    }
+
+    async Task LoadDefaultTemplate()
+    {
+        if (!Entity.TemplateType.HasValue) return;
+
+        var templateType = Entity.TemplateType!.Value;
+
+        var template = EdmTemplateConsts.GetTemplate(templateType).Replace("\n", "");
+
+        if (templateType == EdmTemplateType.Campaign)
+        {
+            if (!Entity.CampaignId.HasValue) return;
+
+            var campaign = await CampaignAppService.GetAsync(Entity.CampaignId.Value);
+
+            template = template
+                .Replace(EdmTemplatePlaceholders.PromotionModule, EdmTemplateConsts.GetTemplate(campaign.PromotionModule))
+                .Replace("\n", "");
+        }
+
+        await MessageHtml.LoadHTMLContent(template);
+
+        StateHasChanged();
     }
 
     void OnCampaignChanged(Guid? campaignId)
@@ -145,6 +170,13 @@ public partial class CreateEdm
 
             if (!await Validate())
             {
+                return;
+            }
+
+            if (Entity.TemplateType == EdmTemplateType.Customize && !Entity.Message.Contains("{{GroupBuyName}}"))
+            {
+                Loading = false;
+                await Message.Error(L["PleaseInsertGroupBuyName"]);
                 return;
             }
 
@@ -200,5 +232,14 @@ public partial class CreateEdm
     void Cancel()
     {
         NavigationManager.NavigateTo("/Edm");
+    }
+
+    async Task InsertPlaceholder(string placeholder)
+    {
+        if (MessageHtml != null)
+        {
+            await MessageHtml.InsertText(placeholder);
+            StateHasChanged();
+        }
     }
 }

@@ -34,7 +34,6 @@ public partial class EdmList
     private IReadOnlyList<string> MemberTagOptions { get; set; } = [];
 
     private Modal MemberTagsModal;
-    private Modal GroupBuysModal;
 
     protected override async Task OnInitializedAsync()
     {
@@ -74,8 +73,7 @@ public partial class EdmList
                     CampaignId = Filters.CampaignId,
                     ApplyToAllMembers = Filters.ApplyToAllMembers,
                     MemberTags = Filters.MemberTags,
-                    ApplyToAllGroupBuys = Filters.ApplyToAllGroupBuys,
-                    GroupBuyIds = Filters.GroupBuyIds,
+                    GroupBuyId = Filters.GroupBuyId,
                     StartDate = Filters.StartDate,
                     EndDate = Filters.EndDate,
                     MinSendTime = Filters.MinSendTime,
@@ -163,17 +161,5 @@ public partial class EdmList
     {
         Selected = new();
         return MemberTagsModal.Hide();
-    }
-
-    Task ShowGroupBuysModal(EdmDto edm)
-    {
-        Selected = edm;
-        return GroupBuysModal.Show();
-    }
-
-    Task HideGroupBuysModal()
-    {
-        Selected = new();
-        return GroupBuysModal.Hide();
     }
 }
