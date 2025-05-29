@@ -117,9 +117,9 @@
                                         SelectedValue="@context.ReturnStatus"
                                         SelectedValueChanged="@(e => ReturnStatusChanged(e, context))">
 
-                                    @foreach (var enumValue in Enum.GetValues(typeof(OrderReturnStatus)))
+                                    @foreach (OrderReturnStatus enumValue in Enum.GetValues(typeof(OrderReturnStatus)))
                                     {
-                                        @if (enumValue.ToString() == "Processing" || enumValue.ToString() == "Succeeded")
+                                        @if (enumValue.ToString() == "Processing" || enumValue.ToString() == "Succeeded" || enumValue == OrderReturnStatus.Cancelled)
                                         {
                                             @if (enumValue.ToString() == "Succeeded")
                                             {

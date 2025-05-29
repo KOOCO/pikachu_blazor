@@ -1577,6 +1577,10 @@ public class OrderAppService : PikachuAppService, IOrderAppService
         // Capture old status before updating
         var oldReturnStatus = order.ReturnStatus;
         order.ReturnStatus = orderReturnStatus;
+
+        var oldShippingStatus = order.ShippingStatus;
+        var oldOrderStatus = order.OrderStatus;
+
         if (orderReturnStatus == OrderReturnStatus.Reject)
         {
             order.OrderStatus = OrderStatus.Open;
@@ -1589,26 +1593,40 @@ public class OrderAppService : PikachuAppService, IOrderAppService
 
             order.ReturnStatus = OrderReturnStatus.Processing;
         }
-        if (orderReturnStatus == OrderReturnStatus.Succeeded && order.OrderStatus == OrderStatus.Returned && isRefund)
+        if (orderReturnStatus == OrderReturnStatus.Succeeded && order.OrderStatus == OrderStatus.Returned)
         {
-            await RefundAppService.CreateAsync(id);
-            var refund = (await RefundRepository.GetQueryableAsync()).Where(x => x.OrderId == order.Id).FirstOrDefault();
-            await RefundAppService.UpdateRefundReviewAsync(refund.Id, RefundReviewStatus.Proccessing);
-            await RefundAppService.SendRefundRequestAsync(refund.Id);
+            order.ShippingStatus = ShippingStatus.Closed;
+            order.OrderStatus = OrderStatus.Closed;
 
-            var orderTransaction = new OrderTransaction(GuidGenerator.Create(), order.Id, order.OrderNo,
-                order.TotalAmount, TransactionType.Returned, TransactionStatus.Successful, order.PaymentMethod?.GetPaymentChannel());
-            await OrderTransactionManager.CreateAsync(orderTransaction);
+            if (isRefund)
+            {
+                await RefundAppService.CreateAsync(id);
+                var refund = (await RefundRepository.GetQueryableAsync()).Where(x => x.OrderId == order.Id).FirstOrDefault();
+                await RefundAppService.UpdateRefundReviewAsync(refund.Id, RefundReviewStatus.Proccessing);
+                await RefundAppService.SendRefundRequestAsync(refund.Id);
+
+                var orderTransaction = new OrderTransaction(GuidGenerator.Create(), order.Id, order.OrderNo,
+                    order.TotalAmount, TransactionType.Returned, TransactionStatus.Successful, order.PaymentMethod?.GetPaymentChannel());
+                await OrderTransactionManager.CreateAsync(orderTransaction);
+            }
         }
         if (orderReturnStatus == OrderReturnStatus.Succeeded && order.OrderStatus == OrderStatus.Exchange)
         {
+            order.ShippingStatus = ShippingStatus.Completed;
+            order.OrderStatus = OrderStatus.Closed;
+
             order.ExchangeBy = CurrentUser.UserName;
             order.ExchangeTime = DateTime.Now;
-            order.ShippingStatus = ShippingStatus.Exchange;
+            //order.ShippingStatus = ShippingStatus.Exchange;
 
             var orderTransaction = new OrderTransaction(GuidGenerator.Create(), order.Id, order.OrderNo,
                 order.TotalAmount, TransactionType.Exchange, TransactionStatus.Successful, order.PaymentMethod?.GetPaymentChannel());
             await OrderTransactionManager.CreateAsync(orderTransaction);
+        }
+        if (orderReturnStatus == OrderReturnStatus.Cancelled)
+        {
+            order.OrderStatus = OrderStatus.Open;
+            order.ReturnStatus = OrderReturnStatus.Cancelled;
         }
         await OrderRepository.UpdateAsync(order);
         // **Get Current User (Editor)**
@@ -1617,13 +1635,34 @@ public class OrderAppService : PikachuAppService, IOrderAppService
 
         // **Log Order History for Return Status Change**
         await OrderHistoryManager.AddOrderHistoryAsync(
-     order.Id,
-     "ReturnStatusChanged", // Localization key
-     new object[] { L[oldReturnStatus.ToString()]?.Value, L[orderReturnStatus.ToString()]?.Value }, // Dynamic placeholders
-     currentUserId,
-     currentUserName
- );
+             order.Id,
+             "ReturnStatusChanged", // Localization key
+             new object[] { L[oldReturnStatus.ToString()]?.Value, L[orderReturnStatus.ToString()]?.Value }, // Dynamic placeholders
+             currentUserId,
+             currentUserName
+         );
 
+        if (oldShippingStatus != order.ShippingStatus)
+        {
+            await OrderHistoryManager.AddOrderHistoryAsync(
+                 order.Id,
+                 "ShippingStatusChanged", // Localization key
+                 new object[] { L[oldShippingStatus.ToString()].Value, L[order.ShippingStatus.ToString()].Value }, // Dynamic placeholders
+                 currentUserId,
+                 currentUserName
+             );
+        }
+
+        if (oldOrderStatus != order.OrderStatus)
+        {
+            await OrderHistoryManager.AddOrderHistoryAsync(
+                 order.Id,
+                 "OrderStatusChanged", // Localization key
+                 new object[] { L[oldOrderStatus.ToString()].Value, L[order.OrderStatus.ToString()].Value }, // Dynamic placeholders
+                 currentUserId,
+                 currentUserName
+             );
+        }
 
         // **Log Additional Details for Refund or Exchange**
         if (orderReturnStatus == OrderReturnStatus.Approve && order.OrderStatus == OrderStatus.Returned)
