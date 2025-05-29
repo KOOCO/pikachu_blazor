@@ -314,8 +314,8 @@ public class OrderRepository(IDbContextProvider<PikachuDbContext> dbContextProvi
             .WhereIf(startDate.HasValue, x => x.CreationTime.Date >= startDate.Value.Date)
             .WhereIf(endDate.HasValue, x => x.CreationTime.Date <= endDate.Value.Date)
             .WhereIf(orderStatus.HasValue, x => x.OrderStatus == orderStatus)
-            .WhereIf(shippingStatus.HasValue, w => w.ShippingStatus == shippingStatus)
-            .Where(x => x.IsRefunded == false);
+            .WhereIf(shippingStatus.HasValue, w => w.ShippingStatus == shippingStatus);
+            //.Where(x => x.IsRefunded == false);
         //.Where(x => x.OrderType != OrderType.MargeToNew);
 
         return queryable;
@@ -575,7 +575,7 @@ public class OrderRepository(IDbContextProvider<PikachuDbContext> dbContextProvi
         var dbContext = await GetDbContextAsync();
 
         var ordersToClose = await dbContext.Orders
-            .Where(o => o.CreationTime < DateTime.Today.AddDays(-7) && (o.ShippingStatus == ShippingStatus.Completed || o.ShippingStatus == ShippingStatus.Return))
+            .Where(o => o.CreationTime < DateTime.Today.AddDays(-7) && (o.ShippingStatus == ShippingStatus.PickedUp || o.ShippingStatus == ShippingStatus.Delivered))
             .GroupJoin(
                 dbContext.OrderHistories,
                 order => order.Id,

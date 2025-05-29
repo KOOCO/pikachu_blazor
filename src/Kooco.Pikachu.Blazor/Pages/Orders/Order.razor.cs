@@ -88,6 +88,17 @@ public partial class Order
         parentRowExpand = false;
 
     }
+    List<string> GetTabsList()
+    {
+        var shippingStatus = Enum.GetValues<ShippingStatus>().Where(x => x <= ShippingStatus.PickedUp).ToList();
+        var otherStatus = new List<ShippingStatus> { ShippingStatus.Return, ShippingStatus.Exchange, ShippingStatus.Completed, ShippingStatus.EnterpricePurchase, ShippingStatus.Closed };
+
+        return shippingStatus
+            .Concat(otherStatus)
+            .Select(x => x.ToString())
+            .ToList();
+    }
+
     public void SelectedTabChanged(string e)
     {
         SelectedOrder = null;

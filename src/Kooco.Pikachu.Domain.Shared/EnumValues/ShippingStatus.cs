@@ -11,9 +11,10 @@ public enum ShippingStatus
     ToBeShipped,
     Shipped,
     Delivered,
-    Completed,
+    PickedUp,
     EnterpricePurchase,
     Return,
     Closed,
-    Exchange
+    Exchange,
+    Completed
 }

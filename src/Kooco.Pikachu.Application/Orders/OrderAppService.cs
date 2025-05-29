@@ -280,7 +280,7 @@ public class OrderAppService : PikachuAppService, IOrderAppService
 
             await UnitOfWorkManager.Current.SaveChangesAsync();
 
-            if (order.PaymentMethod is PaymentMethods.CashOnDelivery && order.ShippingStatus is ShippingStatus.PrepareShipment || order.TotalAmount==0)
+            if (order.PaymentMethod is PaymentMethods.CashOnDelivery && order.ShippingStatus is ShippingStatus.PrepareShipment || order.TotalAmount == 0)
             {
                 Order newOrder = await OrderRepository.GetWithDetailsAsync(order.Id);
                 await CreateOrderDeliveriesAsync(newOrder);
@@ -983,7 +983,7 @@ public class OrderAppService : PikachuAppService, IOrderAppService
 
             await OrderRepository.InsertAsync(order1);
             await OrderRepository.UpdateAsync(ord);
-            
+
             await UnitOfWorkManager.Current.SaveChangesAsync();
             newOrder = order1;
 
@@ -1040,7 +1040,15 @@ public class OrderAppService : PikachuAppService, IOrderAppService
         var oldStatus = order.ShippingStatus;
         order.ShippingStatus = status;
         //order.ClosedBy = CurrentUser.Name;
-        order.CancellationDate = DateTime.Now;
+        if (status != ShippingStatus.Completed)
+        {
+            order.CancellationDate = DateTime.Now;
+        }
+
+        if (status == ShippingStatus.Completed || status == ShippingStatus.Closed)
+        {
+            order.OrderStatus = OrderStatus.Closed;
+        }
 
         await OrderRepository.UpdateAsync(order);
         await UnitOfWorkManager.Current.SaveChangesAsync();
@@ -2052,6 +2060,9 @@ public class OrderAppService : PikachuAppService, IOrderAppService
         order.ClosedBy = CurrentUser.Name;
         order.CancellationDate = DateTime.Now;
 
+        var oldOrderStatus = order.OrderStatus;
+        order.OrderStatus = OrderStatus.Closed;
+
         await OrderRepository.UpdateAsync(order);
         await UnitOfWorkManager.Current.SaveChangesAsync();
         await SendEmailAsync(order.Id);
@@ -2061,12 +2072,20 @@ public class OrderAppService : PikachuAppService, IOrderAppService
 
         // **Log Order History for Order Closure**
         await OrderHistoryManager.AddOrderHistoryAsync(
-     order.Id,
-     "OrderClosed", // Localization key
-     new object[] { L[oldShippingStatus.ToString()].Name, L[order.ShippingStatus.ToString()].Name }, // Localized placeholders
-     currentUserId,
-     currentUserName
- );
+             order.Id,
+             "OrderClosed", // Localization key
+             new object[] { L[oldShippingStatus.ToString()].Name, L[order.ShippingStatus.ToString()].Name }, // Localized placeholders
+             currentUserId,
+             currentUserName
+         );
+
+        await OrderHistoryManager.AddOrderHistoryAsync(
+             order.Id,
+             "OrderClosed", // Localization key
+             new object[] { L[oldOrderStatus.ToString()].Name, L[order.OrderStatus.ToString()].Name }, // Localized placeholders
+             currentUserId,
+             currentUserName
+         );
 
         return ObjectMapper.Map<Order, OrderDto>(order);
     }
@@ -2078,6 +2097,9 @@ public class OrderAppService : PikachuAppService, IOrderAppService
         order.ShippingStatus = ShippingStatus.Completed;
         order.CompletedBy = CurrentUser.Name;
         order.CompletionTime = DateTime.Now;
+
+        var oldOrderStatus = order.OrderStatus;
+        order.OrderStatus = OrderStatus.Closed;
 
         await OrderRepository.UpdateAsync(order);
         await UnitOfWorkManager.Current.SaveChangesAsync();
@@ -2115,12 +2137,20 @@ public class OrderAppService : PikachuAppService, IOrderAppService
 
         // **Log Order History for Order Completion**
         await OrderHistoryManager.AddOrderHistoryAsync(
-     order.Id,
-     "OrderCompleted", // Localization key
-     new object[] { L[oldShippingStatus.ToString()].Name, L[order.ShippingStatus.ToString()].Name }, // Localized placeholders
-     currentUserId,
-     currentUserName
- );
+             order.Id,
+             "OrderCompleted", // Localization key
+             new object[] { L[oldShippingStatus.ToString()].Name, L[order.ShippingStatus.ToString()].Name }, // Localized placeholders
+             currentUserId,
+             currentUserName
+         );
+
+        await OrderHistoryManager.AddOrderHistoryAsync(
+             order.Id,
+             "OrderCompleted", // Localization key
+             new object[] { L[oldOrderStatus.ToString()].Name, L[order.OrderStatus.ToString()].Name }, // Localized placeholders
+             currentUserId,
+             currentUserName
+         );
 
         return returnResult;
 
@@ -2323,11 +2353,11 @@ public class OrderAppService : PikachuAppService, IOrderAppService
                     nameof(CloseOrderBackgroundJob), order.OrderNo, order.Id, order.OrderStatus, order.ShippingStatus);
 
 
-                if (order.ShippingStatus != ShippingStatus.Closed)
+                if (order.ShippingStatus != ShippingStatus.Completed)
                 {
                     var oldShippingStatus = order.ShippingStatus;
-                    order.ShippingStatus = ShippingStatus.Closed;
-                    var shippingStatusHistory = new OrderHistory(Guid.NewGuid(), order.Id, "OrderClosedDueToInActivity", JsonConvert.SerializeObject(new object[] { "Shipping", oldShippingStatus.ToString(), order.ShippingStatus.ToString() }), null, "CloseOrderJob");
+                    order.ShippingStatus = ShippingStatus.Completed;
+                    var shippingStatusHistory = new OrderHistory(Guid.NewGuid(), order.Id, "OrderCompletedDueToInActivity", JsonConvert.SerializeObject(new object[] { "Shipping", oldShippingStatus.ToString(), order.ShippingStatus.ToString() }), null, "CloseOrderJob");
                     orderHistoryList.Add(shippingStatusHistory);
                 }
 
