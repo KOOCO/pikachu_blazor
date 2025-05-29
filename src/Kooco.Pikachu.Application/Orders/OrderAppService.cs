@@ -271,6 +271,10 @@ public class OrderAppService : PikachuAppService, IOrderAppService
                     throw new UserFriendlyException("409", "以下商品庫存不足,請刷新後再試: " + errorMessage);
                 }
             }
+            if (order.TotalAmount == 0)
+            {
+                order.ShippingStatus = ShippingStatus.PrepareShipment;
+            }
 
             await OrderRepository.InsertAsync(order);
 
