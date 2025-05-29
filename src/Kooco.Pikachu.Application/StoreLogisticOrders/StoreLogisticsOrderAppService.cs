@@ -50,6 +50,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
     GreenWorldLogisticsCreateUpdateDto GreenWorld { get; set; }
     GreenWorldLogisticsCreateUpdateDto GreenWorldC2C { get; set; }
     HomeDeliveryCreateUpdateDto HomeDelivery { get; set; }
+    EcPayHomeDeliveryCreateUpdateDto EcPayHomeDelivery { get; set; }
     PostOfficeCreateUpdateDto PostOffice { get; set; }
     SevenToElevenCreateUpdateDto SevenToEleven { get; set; }
     SevenToElevenCreateUpdateDto SevenToElevenFrozen { get; set; }
@@ -102,6 +103,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
         _configuration = configuration;
         GreenWorld = new();
         HomeDelivery = new();
+        EcPayHomeDelivery = new();
         PostOffice = new();
         SevenToEleven = new();
         SevenToElevenFrozen = new();
@@ -184,9 +186,12 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
     }
     public async Task<ResponseResultDto> CreateHomeDeliveryShipmentOrderAsync(Guid orderId, Guid orderDeliveryId, DeliveryMethod? deliveryMethod = null)
     {
-        ResponseResultDto result = new();
+        
+        ResponseResultDto result = new ResponseResultDto();
+
         try
         {
+           
             var order = await _orderRepository.GetAsync(orderId);
             //await _orderRepository.EnsurePropertyLoadedAsync(order, o => o.GroupBuy);
             var orderDeliverys = await _deliveryRepository.GetWithDetailsAsync(orderId);
@@ -206,6 +211,11 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
                 HomeDelivery = ObjectMapper.Map<LogisticsProviderSettingsDto, HomeDeliveryCreateUpdateDto>(homeDelivery);
             }
 
+            var ecpayhomeDelivery = providers.Where(p => p.LogisticProvider is LogisticProviders.EcPayHomeDelivery).FirstOrDefault();
+            if (ecpayhomeDelivery != null)
+            {
+                EcPayHomeDelivery = ObjectMapper.Map<LogisticsProviderSettingsDto, EcPayHomeDeliveryCreateUpdateDto>(ecpayhomeDelivery);
+            }
             var postOffice = providers.FirstOrDefault(p => p.LogisticProvider is LogisticProviders.PostOffice);
             if (postOffice is not null)
             {
@@ -277,7 +287,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
             var merchantTradeNo = AddNumericSuffix(order.OrderNo);
             request.AddHeader("Accept", "text/html");
             request.AddHeader("Content-Type", "application/x-www-form-urlencoded");
-            request.AddParameter("MerchantID", GreenWorld.StoreCode);
+            request.AddParameter("MerchantID", EcPayHomeDelivery.StoreCode);
             request.AddParameter("MerchantTradeDate", marchentDate);
             request.AddParameter("LogisticsType", "HOME");
             request.AddParameter("Temperature", temperature);
@@ -286,10 +296,10 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
                                                      ? "POST" : "TCAT");
             request.AddParameter("GoodsAmount", Convert.ToInt32(orderDelivery.Items.Sum(x => x.TotalAmount)));
             request.AddParameter("GoodsWeight", PostOffice.Weight);
-            request.AddParameter("SenderName", GreenWorld.SenderName);
-            request.AddParameter("SenderPhone", GreenWorld.SenderPhoneNumber);
-            request.AddParameter("SenderZipCode", GreenWorld.SenderPostalCode);
-            request.AddParameter("SenderAddress", GreenWorld.SenderAddress);
+            request.AddParameter("SenderName", EcPayHomeDelivery.SenderName);
+            request.AddParameter("SenderPhone", EcPayHomeDelivery.SenderPhoneNumber);
+            request.AddParameter("SenderZipCode", EcPayHomeDelivery.SenderPostalCode);
+            request.AddParameter("SenderAddress", EcPayHomeDelivery.SenderAddress);
             request.AddParameter("ReceiverName", order.RecipientName);
             request.AddParameter("ReceiverCellPhone", order.RecipientPhone);
             request.AddParameter("ReceiverZipCode", order.PostalCode);
@@ -297,8 +307,8 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
             request.AddParameter("ServerReplyURL", serverReplyURL);
             //request.AddParameter("ReceiverStoreID", "123");
             request.AddParameter("CheckMacValue", GenerateCheckMac(
-                greenWorld.HashKey, greenWorld.HashIV, GreenWorld.StoreCode, merchantTradeNo, marchentDate, "HOME", orderDelivery.DeliveryMethod is DeliveryMethod.PostOffice || deliveryMethod is DeliveryMethod.PostOffice ? "POST" : "TCAT", Convert.ToInt32(orderDelivery.Items.Sum(x => x.TotalAmount)), PostOffice.Weight, GreenWorld.SenderName, GreenWorld.SenderPhoneNumber,
-                GreenWorld.SenderPostalCode, GreenWorld.SenderAddress, order.RecipientName, order.RecipientPhone, order.PostalCode, receiverAddress, serverReplyURL, temperature));
+                ecpayhomeDelivery.HashKey, ecpayhomeDelivery.HashIV, EcPayHomeDelivery.StoreCode, merchantTradeNo, marchentDate, "HOME", orderDelivery.DeliveryMethod is DeliveryMethod.PostOffice || deliveryMethod is DeliveryMethod.PostOffice ? "POST" : "TCAT", Convert.ToInt32(orderDelivery.Items.Sum(x => x.TotalAmount)), PostOffice.Weight, EcPayHomeDelivery.SenderName, EcPayHomeDelivery.SenderPhoneNumber,
+                EcPayHomeDelivery.SenderPostalCode, EcPayHomeDelivery.SenderAddress, order.RecipientName, order.RecipientPhone, order.PostalCode, receiverAddress, serverReplyURL, temperature));
             //request.AddParameter("IsCollection", "N");
             request.AddParameter("MerchantTradeNo", merchantTradeNo);
 
@@ -605,6 +615,10 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
 
         if (greenWorldC2C is not null) GreenWorldC2C = ObjectMapper.Map<LogisticsProviderSettingsDto, GreenWorldLogisticsCreateUpdateDto>(greenWorldC2C);
 
+        LogisticsProviderSettingsDto? ecpayHomeDelivery = providers.Where(p => p.LogisticProvider == LogisticProviders.EcPayHomeDelivery).FirstOrDefault();
+
+        if (ecpayHomeDelivery is not null) EcPayHomeDelivery = ObjectMapper.Map<LogisticsProviderSettingsDto, EcPayHomeDeliveryCreateUpdateDto>(ecpayHomeDelivery);
+
         LogisticsProviderSettingsDto? tCat = providers.FirstOrDefault(f => f.LogisticProvider is LogisticProviders.TCat);
 
         if (tCat is not null) TCatLogistics = ObjectMapper.Map<LogisticsProviderSettingsDto, TCatLogisticsCreateUpdateDto>(tCat);
@@ -643,9 +657,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
 
             else if (allPayLogisticsId.Key.Contains("SevenToEleven1") ||
                      allPayLogisticsId.Key.Contains("PostOffice") ||
-                     allPayLogisticsId.Key.Contains("BlackCat1") ||
-                     allPayLogisticsId.Key.Contains("BlackCatFreeze") ||
-                     allPayLogisticsId.Key.Contains("BlackCatFrozen") ||
+                     
                      allPayLogisticsId.Key.Contains("FamilyMart1") ||
                      allPayLogisticsId.Key.Contains("SevenToElevenFrozen"))
             {
@@ -662,7 +674,24 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
 
                 request.AddParameter("CheckMacValue", GenerateCheckMacValue(greenWorld!.HashKey, greenWorld!.HashIV, parameters));
             }
+            else if (
+                 allPayLogisticsId.Key.Contains("BlackCat1") ||
+                 allPayLogisticsId.Key.Contains("BlackCatFreeze") ||
+                 allPayLogisticsId.Key.Contains("BlackCatFrozen"))
+            {
+                request = new(_configuration["EcPay:PrintTradeDocument"], Method.Post);
 
+                request.AddParameter("MerchantID", EcPayHomeDelivery.StoreCode);
+                request.AddParameter("AllPayLogisticsID", allPayLogisticsId.Value);
+
+                parameters = new()
+                {
+                    { "MerchantID", EcPayHomeDelivery.StoreCode },
+                    { "AllPayLogisticsID", allPayLogisticsId.Value }
+                };
+
+                request.AddParameter("CheckMacValue", GenerateCheckMacValue(ecpayHomeDelivery!.HashKey, ecpayHomeDelivery!.HashIV, parameters));
+            }
             else if (allPayLogisticsId.Key.Contains("FamilyMartC2C"))
             {
                 request = new(_configuration["EcPay:PrintFAMIC2COrderInfo"], Method.Post);
