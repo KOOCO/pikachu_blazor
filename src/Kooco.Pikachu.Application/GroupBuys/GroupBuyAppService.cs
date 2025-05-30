@@ -830,7 +830,7 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
                             var matchingTimes = homeDeliveryTimes.Where(t => !string.IsNullOrEmpty(t)).ToList();
                             response.HomeDeliveryType[method] = matchingTimes.Count > 0 ? matchingTimes : ["No time preference"];
                         }
-                        else if (method.Contains("TCatDelivery") || method.Contains("BlackCat"))
+                        else if (method.Contains("TCatDeliveryNormal")|| method.Contains("TCatDeliveryFreeze")|| method.Contains("TCatDeliveryFrozen") || method.Contains("BlackCat"))
                         {
                             var matchingTimes = blackCatTCatPickupTimes.Where(t => !string.IsNullOrEmpty(t)).ToList();
                             response.HomeDeliveryType[method] = matchingTimes.Count > 0 ? matchingTimes : ["No time preference"];
@@ -839,9 +839,14 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
                         {
                             response.HomeDeliveryType[method] = ["Not Specified"];
                         }
-                        else if (method.Contains("SevenToEleven") || method.Contains("FamilyMart") || method.Contains("TCatDeliverySevenEleven"))
+                        else if (method.Contains("SevenToEleven") || method.Contains("FamilyMart"))
                         {
                             response.ConvenienceStoreType[method] = [string.Empty];
+                        }
+                        else if (method.Contains("TCatDeliverySevenEleven"))
+                        {
+
+                            response.ConvenienceStoreType[method] = ["Inapplicable"];
                         }
                     }
                     else if (method.Contains("SelfPickup"))
