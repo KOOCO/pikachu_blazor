@@ -707,21 +707,21 @@ public class ItemAppService :
                     itemsDict[itemNo] = new CreateItemDto
                     {
                         ItemName = worksheet.Cells[row, 2].Text,
-                        ItemDescription = worksheet.Cells[row, 3].Text,
+                        ItemDescription = worksheet.Cells[row, 6].Text,
                         ItemBadgeDto = new ItemBadgeDto
                         {
-                            ItemBadge = worksheet.Cells[row, 4].Text,
-                            ItemBadgeColor = worksheet.Cells[row, 5].Text
+                            ItemBadge = worksheet.Cells[row, 3].Text,
+                            ItemBadgeColor = worksheet.Cells[row, 4].Text
                         },
-                        ItemDescriptionTitle = worksheet.Cells[row, 6].Text,
-                        Attribute1Name = worksheet.Cells[row, 7].Text, // ItemStyle1
-                        Attribute2Name = worksheet.Cells[row, 8].Text, // ItemStyle2
-                        Attribute3Name = worksheet.Cells[row, 9].Text, // ItemStyle3
+                        ItemDescriptionTitle = worksheet.Cells[row, 5].Text,
+                        Attribute1Name = worksheet.Cells[row, 7].Text,
+                        Attribute2Name = worksheet.Cells[row, 8].Text,
+                        Attribute3Name = worksheet.Cells[row, 9].Text,
                         ItemTags = null,
                         IsFreeShipping = worksheet.Cells[row, 10].Text.Equals("Yes", StringComparison.OrdinalIgnoreCase),
                         IsReturnable = worksheet.Cells[row, 11].Text.Equals("Yes", StringComparison.OrdinalIgnoreCase),
                         TaxTypeId = taxType?.Id ?? 0,
-                        ShareProfit = float.TryParse(worksheet.Cells[row, 27].Text, out var profit) ? profit : 0,
+                        ShareProfit = 0,
                         ItemDetails = new List<CreateItemDetailsDto>()
                     };
                 }
@@ -737,21 +737,20 @@ public class ItemAppService :
                     PreOrderableQuantity = float.TryParse(worksheet.Cells[row, 19].Text, out var preOrderQty) ? preOrderQty : null,
                     SaleablePreOrderQuantity = float.TryParse(worksheet.Cells[row, 20].Text, out var saleablePreOrder) ? saleablePreOrder : null,
                     InventoryAccount = worksheet.Cells[row, 21].Text,
-                    Attribute1Value = worksheet.Cells[row, 22].Text, // Attribute1Value
-                    Attribute2Value = worksheet.Cells[row, 23].Text, // Attribute2Value
-                    Attribute3Value = worksheet.Cells[row, 24].Text, // Attribute3Value
+                    Attribute1Value = worksheet.Cells[row, 22].Text,
+                    Attribute2Value = worksheet.Cells[row, 23].Text,
+                    Attribute3Value = worksheet.Cells[row, 24].Text,
                     ItemName = string.Join("/",
-                        new[]
-                        {
-            worksheet.Cells[row, 22].Text,
-            worksheet.Cells[row, 23].Text,
-            worksheet.Cells[row, 24].Text
+                        new[] {
+                        worksheet.Cells[row, 22].Text,
+                        worksheet.Cells[row, 23].Text,
+                        worksheet.Cells[row, 24].Text
                         }.Where(v => !string.IsNullOrWhiteSpace(v))
                     ),
                     Image = null,
                     ItemDescription = worksheet.Cells[row, 25].Text,
                     SortNo = int.TryParse(worksheet.Cells[row, 26].Text, out var sortNo) ? sortNo : 0,
-                    Status = worksheet.Cells[row, 27].Text.Equals("Active", StringComparison.OrdinalIgnoreCase)
+                    Status = true
                 });
             }
             catch (Exception ex)
@@ -838,6 +837,7 @@ public class ItemAppService :
             }
         }
     }
+
 
 
 
