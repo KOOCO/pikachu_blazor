@@ -56,10 +56,10 @@ public class MemberAppService(IObjectMapper objectMapper, IMemberRepository memb
         }
 
         var totalCount = await memberRepository.GetCountAsync(input.Filter, input.MemberType, input.SelectedMemberTags,
-            input.MinCreationTime, input.MaxCreationTime, input.MinOrderCount, input.MaxOrderCount, input.MinSpent, input.MaxSpent, isSystemAssigned: true);
+            input.MinCreationTime, input.MaxCreationTime, input.MinOrderCount, input.MaxOrderCount, input.MinSpent, input.MaxSpent);
 
         var items = await memberRepository.GetListAsync(input.SkipCount, input.MaxResultCount, input.Sorting, input.Filter, input.MemberType, input.SelectedMemberTags,
-            input.MinCreationTime, input.MaxCreationTime, input.MinOrderCount, input.MaxOrderCount, input.MinSpent, input.MaxSpent, isSystemAssigned: true);
+            input.MinCreationTime, input.MaxCreationTime, input.MinOrderCount, input.MaxOrderCount, input.MinSpent, input.MaxSpent);
 
         return new PagedResultDto<MemberDto>
         {

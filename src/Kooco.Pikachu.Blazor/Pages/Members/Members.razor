@@ -2,12 +2,13 @@
 @attribute [Authorize(PikachuPermissions.Members.Default)]
 @using Kooco.Pikachu.Localization
 @using Kooco.Pikachu.Members
+@using Kooco.Pikachu.Members.MemberTags
 @using Kooco.Pikachu.Permissions
 @using Kooco.Pikachu.TierManagement
 @using Microsoft.Extensions.Localization
 @inherits PikachuComponentBase
 @inject IMemberAppService MemberAppService
-@inject IVipTierSettingAppService VipTierSettingAppService
+@inject IMemberTagAppService MemberTagAppService
 @inject NavigationManager NavigationManager
 @inject ExcelDownloadHelper ExcelDownloadHelper
 
@@ -70,8 +71,8 @@
                     <AntDesign.Select Mode="AntDesign.SelectMode.Multiple"
                                       @bind-Values="@Filters.SelectedMemberTags"
                                       MaxTagCount="AntDesign.Select.ResponsiveTag.Responsive"
-                                      HideSelected
                                       AllowClear
+                                      EnableSearch
                                       TItem="string"
                                       TItemValue="string">
                         <SelectOptions>

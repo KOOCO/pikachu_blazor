@@ -1,7 +1,5 @@
-using AngleSharp.Common;
 using Blazorise;
 using Blazorise.DataGrid;
-using Kooco.Pikachu.Blazor.Pages.Members.MemberTags;
 using Kooco.Pikachu.Members;
 using Microsoft.AspNetCore.Components;
 using System;
@@ -48,8 +46,8 @@ public partial class Members
         {
             try
             {
-                var tierNameOptions = await VipTierSettingAppService.GetVipTierNamesAsync();
-                MemberTagOptions = [.. tierNameOptions.Concat(MemberConsts.MemberTags.Names)];
+                var tierNameOptions = await MemberTagAppService.GetMemberTagNamesAsync();
+                MemberTagOptions = [.. tierNameOptions.Where(tierName => !MemberConsts.MemberTags.Names.Contains(tierName))];
             }
             catch (Exception ex)
             {
