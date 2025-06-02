@@ -13,4 +13,5 @@ public interface IMemberTagAppService : IApplicationService
     Task DeleteManyAsync(List<string> tagsList);
     Task<List<string>> GetMemberTagNamesAsync();
     Task SetIsEnabledAsync(string name, bool isEnabled);
+    Task<MemberTagFilterDto> GetMemberTagFilterAsync(string tagName);
 }

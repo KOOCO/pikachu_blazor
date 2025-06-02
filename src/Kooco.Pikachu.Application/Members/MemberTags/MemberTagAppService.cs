@@ -21,18 +21,21 @@ public class MemberTagAppService : PikachuAppService, IMemberTagAppService
     private readonly IMemberTagRepository _memberTagRepository;
     private readonly IMemberRepository _memberRepository;
     private readonly IRepository<VipTierSetting, Guid> _vipTierSettingRepository;
+    private readonly IRepository<MemberTagFilter, Guid> _memberTagFilterRepository;
 
     public MemberTagAppService(
         IMemberTagRepository memberTagRepository,
         IMemberRepository memberRepository,
         MemberTagManager memberTagManager,
-        IRepository<VipTierSetting, Guid> vipTierSettingRepository
+        IRepository<VipTierSetting, Guid> vipTierSettingRepository,
+        IRepository<MemberTagFilter, Guid> memberTagFilterRepository
         )
     {
         _memberTagRepository = memberTagRepository;
         _memberRepository = memberRepository;
         _memberTagManager = memberTagManager;
         _vipTierSettingRepository = vipTierSettingRepository;
+        _memberTagFilterRepository = memberTagFilterRepository;
     }
 
     public async Task AddTagForUsersAsync(AddTagForUsersDto input)
@@ -44,6 +47,12 @@ public class MemberTagAppService : PikachuAppService, IMemberTagAppService
 
             var allExistingTags = await _memberTagRepository.GetListAsync(tag => tag.Name == existingTag.Name);
             await _memberTagRepository.DeleteManyAsync(allExistingTags);
+
+            var existingFilter = await _memberTagFilterRepository.FindAsync(x => x.Tag == existingTag.Name);
+            if (existingFilter != null)
+            {
+                await _memberTagFilterRepository.DeleteAsync(existingFilter);
+            }
 
             await CurrentUnitOfWork!.SaveChangesAsync();
         }
@@ -60,6 +69,18 @@ public class MemberTagAppService : PikachuAppService, IMemberTagAppService
         var memberIds = await queryable.Select(member => member.Id).ToListAsync();
 
         await _memberTagManager.AddTagForUsersAsync(input.Name, memberIds);
+
+        var filterCheck = await _memberTagFilterRepository.FindAsync(x => x.Tag == input.Name);
+
+        if (filterCheck != null)
+        {
+            await _memberTagFilterRepository.DeleteAsync(filterCheck);
+        }
+
+        var memberTagFilter = new MemberTagFilter(GuidGenerator.Create(), input.Name, input.MemberTypes, input.MemberTags,
+            input.AmountSpent, input.OrdersCompleted, input.MinRegistrationDate, input.MaxRegistrationDate);
+
+        await _memberTagFilterRepository.InsertAsync(memberTagFilter);
     }
 
     public async Task<long> CountMembersAsync(AddTagForUsersDto input)
@@ -86,11 +107,20 @@ public class MemberTagAppService : PikachuAppService, IMemberTagAppService
     {
         var existing = await _memberTagRepository.GetListAsync(tag => tagsList.Contains(tag.Name));
         await _memberTagRepository.DeleteManyAsync(existing);
+
+        var existingFilters = await _memberTagFilterRepository.GetListAsync(filter => tagsList.Contains(filter.Tag));
+        await _memberTagFilterRepository.DeleteManyAsync(existingFilters);
     }
 
     public async Task SetIsEnabledAsync(string name, bool isEnabled)
     {
         await _memberTagRepository.SetIsEnabledAsync(name, isEnabled);
+    }
+
+    public async Task<MemberTagFilterDto> GetMemberTagFilterAsync(string tagName)
+    {
+        var memberTagFilter = await _memberTagFilterRepository.FindAsync(x => x.Tag == tagName);
+        return ObjectMapper.Map<MemberTagFilter, MemberTagFilterDto>(memberTagFilter);
     }
 
     public async Task<List<string>> GetMemberTagNamesAsync()

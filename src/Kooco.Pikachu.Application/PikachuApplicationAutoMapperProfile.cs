@@ -376,6 +376,15 @@ public class PikachuApplicationAutoMapperProfile : Profile
         CreateMap<VipTierDto, UpdateVipTierDto>();
 
         CreateMap<MemberTag, MemberTagDto>();
+        CreateMap<MemberTagFilter, MemberTagFilterDto>();
+        CreateMap<MemberTagFilterDto, AddTagForUsersDto>()
+            .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Tag))
+            .ForMember(dest => dest.RegistrationDateRange, opt => opt.MapFrom(src =>
+                new DateTime?[]
+                {
+                    src.MinRegistrationDate,
+                    src.MaxRegistrationDate
+                }));
 
         CreateMap<GroupBuyItemsPrice, GroupBuyItemsPriceDto>();
         CreateMap<GroupBuyItemGroupImageModule, GroupBuyItemGroupImageModuleDto>();

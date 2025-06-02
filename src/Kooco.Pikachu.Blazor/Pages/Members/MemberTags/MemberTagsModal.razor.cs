@@ -39,9 +39,16 @@ public partial class MemberTagsModal
         OpenTagModal();
     }
 
-    public void Edit(Guid id, string name)
+    public async Task Edit(Guid id, string name)
     {
-        Input = new() { EditingId = id, Name = name };
+        var memberTagFilter = await MemberTagAppService.GetMemberTagFilterAsync(name);
+
+        Input = ObjectMapper.Map<MemberTagFilterDto, AddTagForUsersDto>(memberTagFilter);
+
+        Input ??= new() { Name = name };
+
+        Input.EditingId = id;
+
         OpenTagModal();
     }
 
