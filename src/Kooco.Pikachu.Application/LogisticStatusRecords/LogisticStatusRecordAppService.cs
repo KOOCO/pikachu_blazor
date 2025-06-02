@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Kooco.Pikachu.Domain.LogisticStatusRecords;
+using Microsoft.Extensions.Configuration;
 using Volo.Abp.Domain.Repositories;
 
 namespace Kooco.Pikachu.LogisticStatusRecords
@@ -10,12 +11,14 @@ namespace Kooco.Pikachu.LogisticStatusRecords
     public class LogisticStatusRecordAppService : PikachuAppService, ILogisticStatusRecordAppService
     {
         private readonly IRepository<LogisticStatusRecord, int> _logisticStatusRecordRepository;
+        private readonly TCatSFTPService _tcatSftpService;
 
-        public LogisticStatusRecordAppService(IRepository<LogisticStatusRecord, int> logisticStatusRecordRepository)
+        public LogisticStatusRecordAppService(IRepository<LogisticStatusRecord, int> logisticStatusRecordRepository, TCatSFTPService tcatSftpService)
         {
+            _tcatSftpService = tcatSftpService;
             _logisticStatusRecordRepository = logisticStatusRecordRepository;
         }
-        
+
         /// <summary>
         /// 嘗試解析自定義格式的日期時間字串
         /// </summary>
@@ -26,18 +29,18 @@ namespace Kooco.Pikachu.LogisticStatusRecords
             {
                 return standardDt;
             }
-            
+
             // 嘗試解析格式為 "yyyyMMddHHmmss" 的字串
             if (datetimeStr.Length == 14 && DateTime.TryParseExact(
-                datetimeStr, 
-                "yyyyMMddHHmmss", 
+                datetimeStr,
+                "yyyyMMddHHmmss",
                 System.Globalization.CultureInfo.InvariantCulture,
-                System.Globalization.DateTimeStyles.None, 
+                System.Globalization.DateTimeStyles.None,
                 out var customDt))
             {
                 return customDt;
             }
-            
+
             return null;
         }
 
@@ -61,7 +64,7 @@ namespace Kooco.Pikachu.LogisticStatusRecords
             };
 
             await _logisticStatusRecordRepository.InsertAsync(record);
-            
+
             return ObjectMapper.Map<LogisticStatusRecord, LogisticStatusRecordDto>(record);
         }
 
@@ -85,8 +88,13 @@ namespace Kooco.Pikachu.LogisticStatusRecords
             }).ToList();
 
             await _logisticStatusRecordRepository.InsertManyAsync(records);
-            
+
             return records.Select(r => ObjectMapper.Map<LogisticStatusRecord, LogisticStatusRecordDto>(r)).ToList();
+        }
+
+        public async Task Read()
+        {
+            await _tcatSftpService.ExecuteAsync();
         }
     }
 }
