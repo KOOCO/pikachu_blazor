@@ -1346,8 +1346,8 @@
     "Areyousureyouwanttoreturnthisorder": "您確認要執行退貨嗎？",
     "RecipientInformation": "收件人資訊",
     "Remarks": "收件人備註",
-    "MinRegistrationDate": "注冊開始日期",
-    "MaxRegistrationDate": "注冊結束日期",
+    "MinRegistrationDate": "註冊開始日期",
+    "MaxRegistrationDate": "註冊結束日期",
     "MinOrders": "最小訂單數",
     "MaxOrders": "最大訂單數",
     "MinSpent": "最低消費金額",
@@ -1529,7 +1529,12 @@
     "TaxTypesInstructions": "TaxTypes(稅別) 可填：Taxable (應稅) 或 Non Taxable (免稅)。(需填寫英文)",
     "UploadTemplateInstruction": "將填寫完成的檔案上傳至下方。",
     "DownloadTemplate": "下載範本",
-    "Close": "關閉"
+    "Close": "關閉",
+    "ReportUrl": "報表連結",
+    "TotalQuantity": "訂單總數",
+    "SalesAmount/SalesAmountExcludingShipping": "銷售金額（不含運費）/ 銷售金額（含運費）",
+    "RecipientMailbox": "收件人信箱",
+    "Refunded": "已退款"
 
 
 
