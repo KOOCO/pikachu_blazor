@@ -72,7 +72,7 @@
                 <DataGridColumn TItem="MemberTagDto"
                                 TextAlignment="TextAlignment.Center">
                     <DisplayTemplate>
-                        <Button Class="btn-link" Clicked="() => TagModal?.Edit(context.Id, context.Name)">@L["Edit"]</Button>
+                        <Button Class="btn-link" Clicked="() => Edit(context)">@L["Edit"]</Button>
                     </DisplayTemplate>
                 </DataGridColumn>
                 <DataGridColumn TItem="MemberTagDto"

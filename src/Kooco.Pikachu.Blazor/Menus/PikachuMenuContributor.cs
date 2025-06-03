@@ -417,7 +417,7 @@ public class PikachuMenuContributor : IMenuContributor
             displayName: l["Menu:EmailSettings"],
             url: "/EmailSettings",
             icon: "fas fa-gears",
-            requiredPermissionName: PikachuPermissions.EmailSettings
+            requiredPermissionName: SettingManagementPermissions.Emailing
             ));
 
         emailManagement.AddItem(new ApplicationMenuItem(
@@ -478,9 +478,9 @@ public class PikachuMenuContributor : IMenuContributor
         //remove administration item from menu
         //context.Menu.Items.Remove( administration );
 
-        if (!await context.IsGrantedAsync(SettingManagementPermissions.Emailing))
-        {
+        //if (!await context.IsGrantedAsync(SettingManagementPermissions.Emailing))
+        //{
             administration.TryRemoveMenuItem(SettingManagementMenus.GroupName);
-        }
+        //}
     }
 }

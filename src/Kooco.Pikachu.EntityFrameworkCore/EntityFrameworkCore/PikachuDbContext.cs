@@ -166,6 +166,7 @@ public class PikachuDbContext(DbContextOptions<PikachuDbContext> options) :
 
     public DbSet<VipTierSetting> VipTierSettings { get; set; }
     public DbSet<MemberTag> MemberTags { get; set; }
+    public DbSet<MemberTagFilter> MemberTagFilters { get; set; }
     public DbSet<GroupBuyItemsPrice> GroupBuyItemsPriceses { get; set; }
 
     // Tenant
@@ -742,6 +743,16 @@ public class PikachuDbContext(DbContextOptions<PikachuDbContext> options) :
             b.ToTable(PikachuConsts.DbTablePrefix + "MemberTags", PikachuConsts.DbSchema);
             b.ConfigureByConvention();
         });
+
+        builder.Entity<MemberTagFilter>(b =>
+        {
+            b.ToTable(PikachuConsts.DbTablePrefix + "MemberTagFilters", PikachuConsts.DbSchema);
+            b.ConfigureByConvention();
+
+            b.Property(x => x.Tag).HasMaxLength(MemberTagConsts.MemberTagNameMaxLength);
+            b.HasIndex(x => x.Tag);
+        });
+
         builder.Entity<GroupBuyItemsPrice>(b =>
         {
             b.ToTable(PikachuConsts.DbTablePrefix + "GroupBuyItemsPriceses", PikachuConsts.DbSchema, table => table.HasComment(""));

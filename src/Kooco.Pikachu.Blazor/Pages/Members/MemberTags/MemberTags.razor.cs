@@ -108,6 +108,11 @@ public partial class MemberTags
         await InvokeAsync(StateHasChanged);
     }
 
+    async Task Edit(MemberTagDto context)
+    {
+        await TagModal.Edit(context.Id, context.Name);
+    }
+
     private static bool RowSelectableHandler(RowSelectableEventArgs<MemberTagDto> rowSelectableEventArgs)
         => rowSelectableEventArgs.SelectReason is not DataGridSelectReason.RowClick;
 }
