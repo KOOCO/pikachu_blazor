@@ -6,6 +6,7 @@
 @using Microsoft.Extensions.Localization;
 @using Volo.Abp.AspNetCore.Components.Messages;
 @using Volo.Abp.ObjectMapping;
+@using Volo.Abp.SettingManagement.Blazor.Pages.SettingManagement.EmailSettingGroup
 
 @inject ITenantEmailSettingsAppService _tenantEmailSettingsAppService;
 @inject IUiMessageService _uiMessageService;
@@ -13,10 +14,9 @@
 @inject IObjectMapper ObjectMapper;
 @inject IStringLocalizer<PikachuResource> L;
 @attribute [Authorize]
-<h3>@L["EmailSettings"]</h3>
-<LoadingIndicator @ref="Loading" FullScreen></LoadingIndicator>
+@* <LoadingIndicator @ref="Loading" FullScreen></LoadingIndicator> *@
 
- <Card>
+@*  <Card>
      <CardBody>
          <EditForm Model="@EmailSettings" OnValidSubmit="UpdateEmailSettingsAsync">
              <DataAnnotationsValidator />
@@ -70,4 +70,18 @@
              </div>
          </EditForm>
      </CardBody>
- </Card>
+ </Card> *@
+
+<Div Class="rounded-cards">
+    <Row>
+        <Column ColumnSize="ColumnSize.Is2"></Column>
+        <Column ColumnSize="ColumnSize.Is12.Is8.OnDesktop">
+            <h4 class="text-dark">@L["EmailSettings"]</h4>
+            <Card>
+                <CardBody>
+                    <EmailSettingGroupViewComponent />
+                </CardBody>
+            </Card>
+        </Column>
+    </Row>
+</Div>
