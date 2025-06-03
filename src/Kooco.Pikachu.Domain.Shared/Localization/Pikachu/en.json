@@ -1566,6 +1566,7 @@
     "ToUsePoints": "To Use Points",
     "SaleableQuantitycannotbegreaterthanCurrentStock": "Saleable Quantity cannot be greater than Current Stock.",
     "ItemDetailsInstructions": "If one item have multiple item details add item that times with same item no.",
-    "TaxTypesInstructions": "TaxTypes: Taxable and Non Taxable"
+    "TaxTypesInstructions": "TaxTypes: Taxable and Non Taxable",
+    "SelectCity": "Select City"
   }
 }

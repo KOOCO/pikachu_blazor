@@ -603,7 +603,7 @@
                                                                         @* <input class="form-control form-control-sm @errorClass" @bind-value="@ModificationTrack.NewCity" /> *@
 
                                                                         <select class="form-select form-select-sm @errorClass" @onchange=@((e) => ModificationTrack.NewCity = Convert.ToString(e.Value))>
-                                                                            <option value=""> Select City </option>
+                                                                            <option value="">@L["SelectCity"] </option>
                                                                             @foreach (var city in LogisticsConsts.MainIslands)
                                                                             {
                                                                                 <option value="@city">@city</option>
