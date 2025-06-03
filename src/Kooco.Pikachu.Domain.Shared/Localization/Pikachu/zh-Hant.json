@@ -1534,7 +1534,19 @@
     "TotalQuantity": "訂單總數",
     "SalesAmount/SalesAmountExcludingShipping": "銷售金額（不含運費）/ 銷售金額（含運費）",
     "RecipientMailbox": "收件人信箱",
-    "Refunded": "已退款"
+    "Refunded": "已退款",
+    "TradeDescription": "交易訊息",
+    "CreditCheckCode": "商家檢查碼",
+    "CashFlowReconciliation": "金流對帳表",
+    "TransactionType": "交易類型",
+    "TransactionStatus": "交易狀態",
+    "PaymentChannel": "金流渠道",
+    "VoidDate": "作廢日期",
+    "VoidUser": "作廢人員",
+    "Succeeded void invoice": "已折讓",
+    "Voided": "已作廢",
+    "VoidReason": "作廢原因"
+
 
 
 
