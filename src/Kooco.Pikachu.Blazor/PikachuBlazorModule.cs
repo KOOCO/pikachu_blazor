@@ -1,8 +1,10 @@
 using Blazorise.Bootstrap5;
+using Blazorise.FluentValidation;
 using Blazorise.Icons.FontAwesome;
 using Blazorise.RichTextEdit;
 using DinkToPdf;
 using DinkToPdf.Contracts;
+using FluentValidation;
 using Hangfire;
 using Hangfire.SqlServer;
 using Kooco.Pikachu.BackgroundWorkers;
@@ -11,10 +13,15 @@ using Kooco.Pikachu.Blazor.Menus;
 using Kooco.Pikachu.Blazor.OpenIddict;
 using Kooco.Pikachu.Blazor.Pages.TenantManagement;
 using Kooco.Pikachu.EntityFrameworkCore;
+using Kooco.Pikachu.ImageCompressors;
 using Kooco.Pikachu.Interfaces;
 using Kooco.Pikachu.Localization;
+using Kooco.Pikachu.LogisticStatusRecords;
 using Kooco.Pikachu.MultiTenancy;
+using Kooco.Pikachu.Orders;
+using Kooco.Pikachu.PaymentGateways.LinePay;
 using Kooco.Pikachu.Services;
+using Kooco.Pikachu.UserShoppingCredits;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Extensions.DependencyInjection;
@@ -24,9 +31,12 @@ using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using MudBlazor.Services;
 using OpenIddict.Validation.AspNetCore;
+using Serilog;
+using Serilog.Events;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -59,15 +69,6 @@ using Volo.Abp.TenantManagement.Blazor.Server;
 using Volo.Abp.UI.Navigation;
 using Volo.Abp.UI.Navigation.Urls;
 using Volo.Abp.VirtualFileSystem;
-using Serilog;
-using Serilog.Events;
-using Kooco.Pikachu.PaymentGateways.LinePay;
-using Microsoft.Extensions.Options;
-using Kooco.Pikachu.UserShoppingCredits;
-using Kooco.Pikachu.Orders;
-using Blazorise.FluentValidation;
-using FluentValidation;
-using Kooco.Pikachu.ImageCompressors;
 
 namespace Kooco.Pikachu.Blazor;
 
@@ -522,6 +523,12 @@ public class PikachuBlazorModule : AbpModule
             "CloseOrderBackgroundJob",
             job => job.ExecuteAsync(new CloseOrderBackgroundJobArgs()),
             Cron.Daily(1)
+        );
+
+        RecurringJob.AddOrUpdate<LogisticStatusRecordJob>(
+            "LogisticStatusRecord",
+            job => job.ExecuteAsync(),
+            "30 10,21 * * *"
         );
     }
 

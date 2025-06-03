@@ -1,5 +1,6 @@
 ﻿using Kooco.Pikachu.Domain.LogisticStatusRecords;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Renci.SshNet;
 using System;
 using System.Collections.Generic;
@@ -15,19 +16,24 @@ public class TCatSFTPService : ITransientDependency
 {
     private readonly IRepository<LogisticStatusRecord, int> _logisticStatusRecordRepository;
     private readonly IConfiguration _configuration;
+    private readonly ILogger<TCatSFTPService> _logger;
     private SftpConfig Config { get; set; } = new();
 
     public TCatSFTPService(
         IRepository<LogisticStatusRecord, int> logisticStatusRecordRepository,
-        IConfiguration configuration)
+        IConfiguration configuration,
+        ILogger<TCatSFTPService> logger)
     {
         _logisticStatusRecordRepository = logisticStatusRecordRepository;
         _configuration = configuration;
+        _logger = logger;
         _configuration.GetSection("T-Cat").Bind(Config);
     }
 
     public async Task ExecuteAsync()
     {
+        _logger.LogInformation("Starting T-Cat SFTP service execution.");
+
         string remoteDirectory = "/Receive/";
         string fileExt = ".SOD";
 
@@ -36,24 +42,35 @@ public class TCatSFTPService : ITransientDependency
 
         if (sftp.IsConnected)
         {
-            Console.WriteLine("Connected to SFTP");
+            _logger.LogInformation("Connected to SFTP");
 
             var remoteFiles = sftp.ListDirectory(remoteDirectory)
                                   .Where(f => !f.Name.StartsWith('.') && f.Name.EndsWith(fileExt, StringComparison.OrdinalIgnoreCase));
 
-
             var latestFile = remoteFiles
-                .Where(file => file.Name.Equals("KGO052918.SOD", StringComparison.OrdinalIgnoreCase))
                 .OrderByDescending(file => file.LastWriteTimeUtc)
                 .FirstOrDefault();
 
+            if (latestFile == null)
+            {
+                _logger.LogInformation("File not found");
+            }
+
             if (latestFile != null)
             {
+                _logger.LogInformation("Processing File {FileName}", latestFile.FullName);
+
                 using var stream = sftp.OpenRead(latestFile.FullName);
                 using var reader = new StreamReader(stream);
 
                 string content = await reader.ReadToEndAsync();
-                if (string.IsNullOrWhiteSpace(content)) return;
+                if (string.IsNullOrWhiteSpace(content))
+                {
+                    sftp.Disconnect();
+                    _logger.LogInformation("{FileName} is empty", latestFile.FullName);
+                    _logger.LogInformation("Finished T-Cat SFTP service execution.");
+                    return;
+                }
 
                 var lines = content.SplitToLines()
                     .Where(x => !string.IsNullOrWhiteSpace(x))
@@ -104,15 +121,17 @@ public class TCatSFTPService : ITransientDependency
 
                 if (toUpdate.Count > 0)
                 {
+                    _logger.LogInformation("Updating {UpdateCount} records", toUpdate.Count);
                     await _logisticStatusRecordRepository.UpdateManyAsync(toUpdate);
                 }
             }
 
             sftp.Disconnect();
+            _logger.LogInformation("Finished T-Cat SFTP service execution.");
         }
         else
         {
-            Console.WriteLine("Failed to connect to SFTP server.");
+            _logger.LogInformation("Failed to connect to SFTP server.");
         }
     }
 

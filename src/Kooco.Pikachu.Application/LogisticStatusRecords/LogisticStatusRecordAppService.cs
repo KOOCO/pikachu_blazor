@@ -1,9 +1,8 @@
+using Kooco.Pikachu.Domain.LogisticStatusRecords;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Kooco.Pikachu.Domain.LogisticStatusRecords;
-using Microsoft.Extensions.Configuration;
 using Volo.Abp.Domain.Repositories;
 
 namespace Kooco.Pikachu.LogisticStatusRecords
