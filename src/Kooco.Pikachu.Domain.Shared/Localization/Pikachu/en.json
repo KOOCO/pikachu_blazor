@@ -1567,6 +1567,12 @@
     "SaleableQuantitycannotbegreaterthanCurrentStock": "Saleable Quantity cannot be greater than Current Stock.",
     "ItemDetailsInstructions": "If one item have multiple item details add item that times with same item no.",
     "TaxTypesInstructions": "TaxTypes: Taxable and Non Taxable",
-    "SelectCity": "Select City"
+    "SelectCity": "Select City",
+    "InventoryManagement": "Inventory Management",
+    "Menu:Inventory": "Inventory",
+    "MinCurrentStock": "Min Current Stock",
+    "MaxCurrentStock": "Max Current Stock",
+    "MinAvailableStock": "Min Available Stock",
+    "MaxAvailableStock": "Max Available Stock"
   }
 }
