@@ -103,6 +103,13 @@ public class PikachuMenuContributor : IMenuContributor
             requiredPermissionName: PikachuPermissions.ProductCategories.Default
             ));
 
+        productmangment.AddItem(new ApplicationMenuItem(
+            name: "Inventory",
+            icon: "fas fa-layer-group",
+            displayName: l["Menu:Inventory"],
+            url: "Inventory-Management/Inventory"
+            ));
+
         var groupMangment = new ApplicationMenuItem(
                  PikachuMenus.GroupBuyManagement,
                  displayName: l["Menu:GroupBuyManagement"],
