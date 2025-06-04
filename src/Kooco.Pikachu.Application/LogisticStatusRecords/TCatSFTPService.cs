@@ -1,4 +1,7 @@
 ﻿using Kooco.Pikachu.Domain.LogisticStatusRecords;
+using Kooco.Pikachu.EnumValues;
+using Kooco.Pikachu.Orders.Repositories;
+using Kooco.Pikachu.Orders.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Renci.SshNet;
@@ -15,19 +18,27 @@ namespace Kooco.Pikachu.LogisticStatusRecords;
 public class TCatSFTPService : ITransientDependency
 {
     private readonly IRepository<LogisticStatusRecord, int> _logisticStatusRecordRepository;
-    private readonly IConfiguration _configuration;
+    private readonly IOrderDeliveryRepository _orderDeliveryRepository;
+    private readonly IOrderRepository _orderRepository;
     private readonly ILogger<TCatSFTPService> _logger;
+    public readonly OrderHistoryManager _orderHistoryManager;
     private SftpConfig Config { get; set; } = new();
 
     public TCatSFTPService(
         IRepository<LogisticStatusRecord, int> logisticStatusRecordRepository,
-        IConfiguration configuration,
-        ILogger<TCatSFTPService> logger)
+        IOrderDeliveryRepository orderDeliveryRepository,
+        IOrderRepository orderRepository,
+        ILogger<TCatSFTPService> logger,
+        OrderHistoryManager orderHistoryManager,
+        IConfiguration configuration
+        )
     {
         _logisticStatusRecordRepository = logisticStatusRecordRepository;
-        _configuration = configuration;
+        _orderDeliveryRepository = orderDeliveryRepository;
+        _orderRepository = orderRepository;
         _logger = logger;
-        _configuration.GetSection("T-Cat").Bind(Config);
+        _orderHistoryManager = orderHistoryManager;
+        configuration.GetSection("T-Cat").Bind(Config);
     }
 
     public async Task ExecuteAsync()
@@ -83,24 +94,27 @@ public class TCatSFTPService : ITransientDependency
 
                 var latestParsedLines = parsedLines
                     .GroupBy(x => x.Order.ConsignmentNoteNumber)
-                    .Select(g => g.OrderByDescending(x => x.Order.ShipmentStatusDate).FirstOrDefault()!)
+                    .Select(g => g.OrderByDescending(x => x.Order.ShipmentStatusDate).FirstOrDefault())
                     .Where(x => x != null)
                     .ToList();
 
-                var orderIds = latestParsedLines.Select(x => x.Order.ConsignmentNoteNumber).Distinct().ToList();
+                var logisticIds = latestParsedLines.Select(x => x!.Order.ConsignmentNoteNumber).Distinct().ToList();
+
+                var orderDeliveries = await _orderDeliveryRepository.GetListByLogisticsIdsAsync(logisticIds);
 
                 var records = (await _logisticStatusRecordRepository.GetListAsync(r =>
-                    orderIds.Contains(r.OrderId)))
+                    logisticIds.Contains(r.OrderId)))
                     .GroupBy(r => r.OrderId)
                     .Select(g => g.OrderByDescending(r => r.DatetimeParsed).FirstOrDefault())
                     .Where(r => r != null)
                     .ToList();
 
                 List<LogisticStatusRecord> toUpdate = [];
+                List<Guid> orderIdsToUpdate = [];
 
                 foreach (var entry in latestParsedLines)
                 {
-                    var order = entry.Order;
+                    var order = entry!.Order;
                     var line = entry.Line;
 
                     var record = records.FirstOrDefault(r => r!.OrderId == order.ConsignmentNoteNumber);
@@ -116,13 +130,85 @@ public class TCatSFTPService : ITransientDependency
                         record.RawLine = line;
 
                         toUpdate.Add(record);
+
+                        var orderDelivery = orderDeliveries.FirstOrDefault(od => od.AllPayLogisticsID == record.OrderId);
+                        if (orderDelivery != null)
+                        {
+                            var status = DeliveryStatusMapper.MapStatus(order.StatusId);
+                            if (status != null)
+                            {
+                                orderDelivery.DeliveryStatus = status.Value;
+                                orderIdsToUpdate.Add(orderDelivery.OrderId);
+                            }
+                            else
+                            {
+                                await _orderHistoryManager.AddOrderHistoryAsync(
+                                    orderDelivery.OrderId,
+                                    "T-CatAbnormalStatus",
+                                    [orderDelivery.DeliveryNo ?? string.Empty, record.StatusCode, record.StatusMessage],
+                                    null,
+                                    null
+                                );
+                            }
+                        }
                     }
+                }
+
+                if (toUpdate.Count == 0)
+                {
+                    _logger.LogInformation("No records to update.");
                 }
 
                 if (toUpdate.Count > 0)
                 {
                     _logger.LogInformation("Updating {UpdateCount} records", toUpdate.Count);
                     await _logisticStatusRecordRepository.UpdateManyAsync(toUpdate);
+                }
+
+                orderIdsToUpdate = [.. orderIdsToUpdate.Distinct()];
+
+                if (orderIdsToUpdate.Count > 0)
+                {
+                    var ordersToUpdate = await _orderRepository.GetListAsync(o => orderIdsToUpdate.Contains(o.Id));
+
+                    foreach (var order in ordersToUpdate)
+                    {
+                        var thisOrderDeliveries = orderDeliveries
+                            .Where(od => od.OrderId == order.Id)
+                            .Select(od => od.DeliveryStatus)
+                            .ToList();
+
+                        if (thisOrderDeliveries.Count != 0)
+                        {
+                            var lowestOrderValue = thisOrderDeliveries
+                                .Min(GetStatusRank);
+
+                            var latestStatusAllPassed = DeliveryStatusProgression[lowestOrderValue];
+
+                            var shippingStatus = latestStatusAllPassed switch
+                            {
+                                DeliveryStatus.Processing => ShippingStatus.PrepareShipment,
+                                DeliveryStatus.ToBeShipped => ShippingStatus.ToBeShipped,
+                                DeliveryStatus.Shipped => ShippingStatus.Shipped,
+                                DeliveryStatus.Delivered => ShippingStatus.Delivered,
+                                DeliveryStatus.Completed => ShippingStatus.Completed,
+                                _ => order.ShippingStatus
+                            };
+
+                            if (shippingStatus != order.ShippingStatus)
+                            {
+                                await _orderHistoryManager.AddOrderHistoryAsync(
+                                    order.Id,
+                                    "ShippingStatusChanged",
+                                    [order.ShippingStatus, shippingStatus],
+                                    null,
+                                    null
+                                );
+
+                                order.ShippingStatus = shippingStatus;
+                            }
+                        }
+                    }
                 }
             }
 
@@ -163,6 +249,20 @@ public class TCatSFTPService : ITransientDependency
         return null;
     }
 
+    private static readonly List<DeliveryStatus> DeliveryStatusProgression =
+    [
+        DeliveryStatus.Processing,
+        DeliveryStatus.ToBeShipped,
+        DeliveryStatus.Shipped,
+        DeliveryStatus.Delivered,
+        DeliveryStatus.Completed
+    ];
+
+    // To get index-based rank:
+    int GetStatusRank(DeliveryStatus status) =>
+        DeliveryStatusProgression.IndexOf(status);
+
+
     private class SftpConfig
     {
         public string Host { get; set; }
@@ -182,5 +282,58 @@ public class TCatSFTPService : ITransientDependency
         public string StatusId { get; set; }
         public string StatusDescription { get; set; }
         public string SpecificationReplyCode { get; set; }
+    }
+
+    private static class DeliveryStatusMapper
+    {
+        private static readonly Dictionary<string, DeliveryStatus> StatusIdMap = new()
+        {
+            // PrepareShipment
+            ["00001"] = DeliveryStatus.Shipped,
+            ["00006"] = DeliveryStatus.Shipped,
+            ["00027"] = DeliveryStatus.Shipped,
+            ["00019"] = DeliveryStatus.Shipped,
+            ["00020"] = DeliveryStatus.Shipped,
+            ["00013"] = DeliveryStatus.Shipped,
+            ["00015"] = DeliveryStatus.Shipped,
+            ["00219"] = DeliveryStatus.Shipped,
+            ["168"] = DeliveryStatus.Shipped,
+            ["202"] = DeliveryStatus.Shipped,
+            ["204"] = DeliveryStatus.Shipped,
+            ["205"] = DeliveryStatus.Shipped,
+            ["00002"] = DeliveryStatus.Shipped,
+            ["00008"] = DeliveryStatus.Shipped,
+            ["00009"] = DeliveryStatus.Shipped,
+            ["00010"] = DeliveryStatus.Shipped,
+            ["00011"] = DeliveryStatus.Shipped,
+            ["216"] = DeliveryStatus.Shipped,
+            ["208"] = DeliveryStatus.Shipped,
+            ["209"] = DeliveryStatus.Shipped,
+            ["308"] = DeliveryStatus.Shipped,
+            ["420"] = DeliveryStatus.Shipped,
+
+            // Delivered
+            ["00003"] = DeliveryStatus.Delivered,
+
+            // Return
+            ["00017"] = DeliveryStatus.Shipped,
+            ["00016"] = DeliveryStatus.Shipped,
+            ["00301"] = DeliveryStatus.Shipped,
+            ["00399"] = DeliveryStatus.Shipped,
+            ["309"] = DeliveryStatus.Shipped,
+
+            //Closed(Abnormal)
+            //["00023"] = DeliveryStatus.Closed,
+            //["00024"] = DeliveryStatus.Closed,
+            //["00025"] = DeliveryStatus.Closed,
+            //["186"] = DeliveryStatus.Closed,
+        };
+
+        public static DeliveryStatus? MapStatus(string statusId)
+        {
+            return StatusIdMap.TryGetValue(statusId, out var status)
+                ? status
+                : null;
+        }
     }
 }

@@ -31,4 +31,6 @@ public interface IOrderDeliveryRepository : IRepository<OrderDelivery, Guid>
     /// 按出貨狀態取得所有出貨訂單
     /// </summary>
     Task<List<OrderDelivery>> GetByStatusAsync(Guid tenantId, DeliveryStatus status, CancellationToken ct);
+
+    Task<List<OrderDelivery>> GetListByLogisticsIdsAsync(List<string> allPayLogisticsIds, CancellationToken cancellationToken = default);
 }

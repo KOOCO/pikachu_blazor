@@ -66,4 +66,20 @@ public class OrderDeliveryRepository(IDbContextProvider<PikachuDbContext> dbCont
                 od.DeliveryStatus == status)
             .ToListAsync(cancellationToken: ct);
     }
+
+    public async Task<List<OrderDelivery>> GetListByLogisticsIdsAsync(List<string> allPayLogisticsIds, CancellationToken cancellationToken = default)
+    {
+        var queryable = await GetQueryableAsync();
+
+        var orderIds = queryable
+            .Where(od => allPayLogisticsIds.Contains(od.AllPayLogisticsID))
+            .Select(od => od.OrderId)
+            .Distinct();
+
+        var orderDeliveries = await queryable
+            .Where(od => orderIds.Contains(od.OrderId))
+            .ToListAsync(cancellationToken);
+
+        return orderDeliveries;
+    }
 }
