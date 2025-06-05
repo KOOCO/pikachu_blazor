@@ -1551,12 +1551,12 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
             deliveryMethod is DeliveryMethod.FamilyMartC2C ||
             deliveryMethod is DeliveryMethod.SevenToElevenC2C)
         {
-            request.AddParameter("CheckMacValue", GenerateRequestString(GreenWorld.HashKey, GreenWorld.HashIV, GreenWorld.StoreCode, merchantTradeNo, marchentDate, "CVS", logisticSubType, Convert.ToInt32(orderDelivery.Items.Sum(x => x.TotalAmount)), GreenWorld.SenderName, order.RecipientName, order.RecipientPhone,
+            request.AddParameter("CheckMacValue", GenerateRequestString(GreenWorld.HashKey, GreenWorld.HashIV, GreenWorld.StoreCode, merchantTradeNo, marchentDate, "CVS", logisticSubType, Convert.ToInt32(orderDelivery.Items.Sum(x => x.TotalAmount)+order.DeliveryCost), GreenWorld.SenderName, order.RecipientName, order.RecipientPhone,
                 serverReplyURL, order.StoreId, goodsName, GreenWorld.SenderPhoneNumber, isCollection: isCollection));
         }
         else
         {
-            request.AddParameter("CheckMacValue", GenerateRequestString(GreenWorld.HashKey, GreenWorld.HashIV, GreenWorld.StoreCode, merchantTradeNo, marchentDate, "CVS", logisticSubType, Convert.ToInt32(orderDelivery.Items.Sum(x => x.TotalAmount)), GreenWorld.SenderName, order.RecipientName, order.RecipientPhone,
+            request.AddParameter("CheckMacValue", GenerateRequestString(GreenWorld.HashKey, GreenWorld.HashIV, GreenWorld.StoreCode, merchantTradeNo, marchentDate, "CVS", logisticSubType, Convert.ToInt32(orderDelivery.Items.Sum(x => x.TotalAmount) + order.DeliveryCost), GreenWorld.SenderName, order.RecipientName, order.RecipientPhone,
                     serverReplyURL, order.StoreId, isCollection: isCollection));
         }
 
