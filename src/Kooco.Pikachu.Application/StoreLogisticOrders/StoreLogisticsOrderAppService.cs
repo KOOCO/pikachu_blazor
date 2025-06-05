@@ -1120,7 +1120,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
                      orderDelivery.Items.First().DeliveryTemperature is ItemStorageTemperature.Frozen) thermosphere = "0003";
 
             int collectionAmount = order.PaymentMethod is PaymentMethods.CashOnDelivery ?
-                                    GetCollectionAmount(orderDelivery.Items.Sum(s => s.TotalAmount), order.DeliveryCost, true) :
+                                    GetCollectionAmount(orderDelivery.Items.Sum(s => s.TotalAmount), order.DeliveryCost,order.DiscountAmount,order.CreditDeductionAmount, true) :
                                     0;
         var newOrderNo = AddNumericSuffix(order.OrderNo);
             PrintOBTB2SRequest request = new()
@@ -1336,13 +1336,15 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
         return (int)totalValue;
     }
 
-    public int GetCollectionAmount(decimal? totalAmount, decimal? deliveryCost, bool isFor711 = false)
+    public int GetCollectionAmount(decimal? totalAmount, decimal? deliveryCost, decimal? discountAmount,decimal? shoppingCreditDiscount, bool isFor711 = false)
     {
         decimal totalAmountValue = totalAmount is not null ? totalAmount.Value : 0.00m;
 
         decimal deliveryCostValue = deliveryCost is not null ? deliveryCost.Value : 0.00m;
-
-        decimal totalValue = totalAmountValue + deliveryCostValue;
+        decimal discountValue = discountAmount is not null ? discountAmount.Value : 0.00m;
+        decimal shoppingCreditValue = shoppingCreditDiscount is not null ? shoppingCreditDiscount.Value : 0.00m;
+        decimal totalDiscountValue = discountValue + shoppingCreditValue;
+        decimal totalValue = (totalAmountValue + deliveryCostValue)-(totalDiscountValue);
 
         totalValue = totalValue.IsBetween(0, isFor711 ? 20000 : 100001) ? totalValue : 0;
 
