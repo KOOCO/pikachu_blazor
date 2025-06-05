@@ -198,7 +198,7 @@ public class GroupBuyUpdateDto :  IHasConcurrencyStamp
     public string? NotifyMessage { get; set; }
     public bool IsDefaultPaymentGateWay { get; set; }
     public string? PaymentMethod { get; set; }
-    public List<string> InstallmentPeriods { get; set; } = [];
+    public bool IsInstallmentsEnabled { get; set; }
     public string? GroupBuyCondition { get; set; }
     public string? CustomerInformation { get; set; }
     public bool HideCredention { get; set; }

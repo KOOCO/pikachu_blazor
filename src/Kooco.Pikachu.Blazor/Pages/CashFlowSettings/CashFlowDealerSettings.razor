@@ -296,14 +296,10 @@
                 <div class="row justify-content-center mb-2">
                     <div class="col-2 text-end">
                         <label class="form-label" for="g-enable-disable-switch"></label>
-                        @L["InstallmentPeriods"]
+                        @L["Installments"]
                     </div>
                     <div class="col-6">
-                        @foreach (var period in Constant.InstallmentPeriods)
-                        {
-                            <Switch Inline TValue="bool" Checked="@EcPay.InstallmentPeriods.Contains(period)"
-                                    CheckedChanged="(e) => OnInstallmentPeriodChange(e, period)">@L["InstallmentPeriods." + period]</Switch>
-                        }
+                        <Switch Inline TValue="bool" @bind-Checked="@EcPay.IsInstallmentsEnabled" />
                     </div>
                 </div>
             }

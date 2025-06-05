@@ -202,19 +202,7 @@ public class GroupBuy : FullAuditedAggregateRoot<Guid>, IMultiTenant
     public string? ExcludeShippingMethod { get; set; }
     public bool IsDefaultPaymentGateWay { get; set; }
     public string? PaymentMethod { get; set; }
-    public string? InstallmentPeriodsJson { get; set; }
-
-    [NotMapped]
-    public List<string> InstallmentPeriods
-    {
-        get
-        {
-            return !string.IsNullOrWhiteSpace(InstallmentPeriodsJson)
-                ? (JsonSerializer.Deserialize<List<string>>(InstallmentPeriodsJson) ?? [])
-                : [];
-        }
-    }
-
+    public bool IsInstallmentsEnabled { get; set; }
     public string? GroupBuyCondition { get; set; }
     public string? GroupBuyConditionDescription { get; set; }
     public string? CustomerInformation { get; set; }

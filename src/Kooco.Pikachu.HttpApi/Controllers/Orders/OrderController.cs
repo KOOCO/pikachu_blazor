@@ -204,7 +204,7 @@ public class OrderController : AbpController, IOrderAppService
             oPayment.Send.EncryptType = 1;
 
             if (isInstallments && paymentMethodsValue == PaymentMethods.CreditCard)
-                oPayment.SendExtend.CreditInstallment = string.Join(",", ecPay.InstallmentPeriods);
+                oPayment.SendExtend.CreditInstallment = string.Join(",", Constant.InstallmentPeriods);
 
             foreach (OrderItemDto item in order.OrderItems)
             {

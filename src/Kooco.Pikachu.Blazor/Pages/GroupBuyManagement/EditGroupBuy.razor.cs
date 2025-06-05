@@ -287,7 +287,6 @@ public partial class EditGroupBuy
             if (EditValidationsRef is not null) await EditValidationsRef.ClearAll();
             //
             PaymentGateways = await PaymentGatewayAppService.GetAllAsync();
-            CheckForDisabledInstallmentOptions();
             StateHasChanged();
             //await Loading.Hide();
         }
@@ -303,36 +302,12 @@ public partial class EditGroupBuy
         }
     }
 
-    void CheckForDisabledInstallmentOptions()
-    {
-        var ecpay = PaymentGateways.Where(x => x.PaymentIntegrationType == PaymentIntegrationType.EcPay).FirstOrDefault();
-        if (ecpay == null || !ecpay.IsCreditCardEnabled || ecpay.InstallmentPeriods.Count == 0)
-        {
-            EditGroupBuyDto.InstallmentPeriods.Clear();
-        }
-        else
-        {
-            EditGroupBuyDto.InstallmentPeriods.RemoveAll(ip => !ecpay.InstallmentPeriods.Contains(ip));
-        }
-    }
-    public bool IsInstallmentPeriodEnabled(string period)
+    public bool IsInstallmentPeriodEnabled()
     {
         var ecpay = PaymentGateways.Where(x => x.PaymentIntegrationType == PaymentIntegrationType.EcPay).FirstOrDefault();
         if (!CreditCard || ecpay == null) return true;
 
-        return !ecpay.InstallmentPeriods.Contains(period);
-    }
-
-    void OnInstallmentPeriodChange(bool value, string period)
-    {
-        if (value)
-        {
-            EditGroupBuyDto.InstallmentPeriods.Add(period);
-        }
-        else
-        {
-            EditGroupBuyDto.InstallmentPeriods.Remove(period);
-        }
+        return !ecpay.IsInstallmentsEnabled;
     }
 
     void OnCreditCardCheckedChange(bool value)
@@ -340,7 +315,7 @@ public partial class EditGroupBuy
         CreditCard = value;
         if (!CreditCard)
         {
-            EditGroupBuyDto.InstallmentPeriods = [];
+            EditGroupBuyDto.IsInstallmentsEnabled = false;
         }
     }
 

@@ -587,24 +587,12 @@ public partial class CreateGroupBuy
         }
     }
 
-    public bool IsInstallmentPeriodEnabled(string period)
+    public bool IsInstallmentPeriodEnabled()
     {
         var ecpay = PaymentGateways.Where(x => x.PaymentIntegrationType == PaymentIntegrationType.EcPay).FirstOrDefault();
         if (!CreditCard || ecpay == null) return true;
 
-        return !ecpay.InstallmentPeriods.Contains(period);
-    }
-
-    void OnInstallmentPeriodChange(bool value, string period)
-    {
-        if (value)
-        {
-            CreateGroupBuyDto.InstallmentPeriods.Add(period);
-        }
-        else
-        {
-            CreateGroupBuyDto.InstallmentPeriods.Remove(period);
-        }
+        return !ecpay.IsInstallmentsEnabled;
     }
 
     void OnCreditCardCheckedChange(bool value)
@@ -612,7 +600,7 @@ public partial class CreateGroupBuy
         CreditCard = value;
         if (!CreditCard)
         {
-            CreateGroupBuyDto.InstallmentPeriods = [];
+            CreateGroupBuyDto.IsInstallmentsEnabled = false;
         }
     }
 

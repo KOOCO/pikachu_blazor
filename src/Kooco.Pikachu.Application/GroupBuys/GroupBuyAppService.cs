@@ -139,7 +139,7 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
                                                     input.BlackCatDeliveryTime, input.HomeDeliveryDeliveryTime, input.DeliveredByStoreDeliveryTime, input.TaxType, input.ProductType,
                                                     input.ColorSchemeType, input.PrimaryColor, input.SecondaryColor, input.BackgroundColor, input.SecondaryBackgroundColor, input.AlertColor, input.BlockColor, input.ProductDetailsDisplayMethod, input.NotificationBar);
         result.AddOnProduct = input.AddOnProduct;
-        result.InstallmentPeriodsJson = JsonSerializer.Serialize(input.InstallmentPeriods);
+        result.IsInstallmentsEnabled = input.IsInstallmentsEnabled;
 
         if (!input.FacebookLink.IsNullOrEmpty()) result.FacebookLink = input.FacebookLink;
 
@@ -236,7 +236,7 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
                 var oldstamp = groupBuy.ConcurrencyStamp;
                 await _groupBuyRepository.EnsureCollectionLoadedAsync(groupBuy, x => x.ItemGroups);
                 ObjectMapper.Map(input, groupBuy);
-                groupBuy.InstallmentPeriodsJson = JsonSerializer.Serialize(input.InstallmentPeriods);
+                groupBuy.IsInstallmentsEnabled = input.IsInstallmentsEnabled;
 
                 await ProcessItemGroups(groupBuy, input.ItemGroups.ToList());
 
@@ -415,6 +415,7 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
                                                     input.SelfPickupDeliveryTime, input.BlackCatDeliveryTime, input.HomeDeliveryDeliveryTime, input.DeliveredByStoreDeliveryTime, input.TaxType, input.ProductType,
                                                     input.ColorSchemeType, input.PrimaryColor, input.SecondaryColor, input.BackgroundColor, input.SecondaryBackgroundColor, input.AlertColor, input.BlockColor, input.ProductDetailsDisplayMethod, input.NotificationBar);
         result.TemplateType = input.TemplateType;
+        result.IsInstallmentsEnabled = input.IsInstallmentsEnabled;
         if (input.ItemGroups != null && input.ItemGroups.Any())
         {
             foreach (var group in input.ItemGroups)

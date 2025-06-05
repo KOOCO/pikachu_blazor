@@ -6,6 +6,7 @@ namespace Kooco.Pikachu.PaymentGateways
     public class UpdateEcPayDto
     {
         public bool IsCreditCardEnabled { get; set; }
+        public bool IsInstallmentsEnabled { get; set; }
         public bool IsBankTransferEnabled { get; set; }
 
         [Required(ErrorMessage = "This Field Is Required")]
@@ -22,7 +23,5 @@ namespace Kooco.Pikachu.PaymentGateways
 
         [Required(ErrorMessage = "This Field Is Required")]
         public string CreditCheckCode { get; set; }
-
-        public List<string> InstallmentPeriods { get; set; } = [];
     }
 }

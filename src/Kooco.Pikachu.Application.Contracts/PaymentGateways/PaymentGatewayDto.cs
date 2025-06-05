@@ -29,7 +29,7 @@ namespace Kooco.Pikachu.PaymentGateways
         public string? TradeDescription { get; set; }
         public string? CreditCheckCode { get; set; }
         public bool IsCreditCardEnabled { get; set; }
+        public bool IsInstallmentsEnabled { get; set; }
         public bool IsBankTransferEnabled { get; set; }
-        public List<string> InstallmentPeriods { get; set; }
     }
 }

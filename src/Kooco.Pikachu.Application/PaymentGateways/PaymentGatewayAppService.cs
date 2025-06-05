@@ -63,13 +63,13 @@ namespace Kooco.Pikachu.PaymentGateways
             if (ecPay != null)
             {
                 ecPay.IsCreditCardEnabled = input.IsCreditCardEnabled;
+                ecPay.IsInstallmentsEnabled = input.IsInstallmentsEnabled;
                 ecPay.IsBankTransferEnabled = input.IsBankTransferEnabled;
                 ecPay.MerchantId = _stringEncryptionService.Encrypt(input.MerchantId);
                 ecPay.HashKey = _stringEncryptionService.Encrypt(input.HashKey);
                 ecPay.HashIV = _stringEncryptionService.Encrypt(input.HashIV);
                 ecPay.TradeDescription = _stringEncryptionService.Encrypt(input.TradeDescription);
                 ecPay.CreditCheckCode = _stringEncryptionService.Encrypt(input.CreditCheckCode);
-                ecPay.InstallmentPeriodsJson = JsonSerializer.Serialize(input.InstallmentPeriods);
                 await _paymentGatewayRepository.UpdateAsync(ecPay);
             }
             else
@@ -78,13 +78,13 @@ namespace Kooco.Pikachu.PaymentGateways
                 {
                     PaymentIntegrationType = PaymentIntegrationType.EcPay,
                     IsCreditCardEnabled = input.IsCreditCardEnabled,
+                    IsInstallmentsEnabled = input.IsInstallmentsEnabled,
                     IsBankTransferEnabled = input.IsBankTransferEnabled,
                     MerchantId = _stringEncryptionService.Encrypt(input.MerchantId),
                     HashKey = _stringEncryptionService.Encrypt(input.HashKey),
                     HashIV = _stringEncryptionService.Encrypt(input.HashIV),
                     TradeDescription = _stringEncryptionService.Encrypt(input.TradeDescription),
                     CreditCheckCode = _stringEncryptionService.Encrypt(input.CreditCheckCode),
-                    InstallmentPeriodsJson = JsonSerializer.Serialize(input.InstallmentPeriods)
                 };
 
                 await _paymentGatewayRepository.InsertAsync(newEcPay);

@@ -782,18 +782,10 @@
                     CheckedChanged="OnCreditCardCheckedChange">
                         @L["CreditCard"]
                     </Check>
-                    <div class="row justify-content-center mb-2">
-                        <div class="col-12">
-                            @foreach (var period in Constant.InstallmentPeriods)
-                            {
-                                <Check Inline TValue="bool" Checked="@EditGroupBuyDto.InstallmentPeriods.Contains(period)"
-                                CheckedChanged="(e) => OnInstallmentPeriodChange(e, period)"
-                                Disabled="IsInstallmentPeriodEnabled(period)">
-                                    @L["InstallmentPeriods." + period]
-                                </Check>
-                            }
-                        </div>
-                    </div>
+                    <Check Inline TValue="bool" @bind-Checked="@EditGroupBuyDto.IsInstallmentsEnabled"
+                                Disabled="IsInstallmentPeriodEnabled()">
+                        @L["Installments"]
+                    </Check>
                     <Check TValue="bool"
                     Disabled=@EditGroupBuyDto.IsEnterprise
                     @bind-Checked="@BankTransfer">

@@ -1,8 +1,5 @@
 ﻿using Kooco.Pikachu.EnumValues;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Text.Json;
 using Volo.Abp.Domain.Entities.Auditing;
 using Volo.Abp.MultiTenancy;
 
@@ -36,18 +33,7 @@ namespace Kooco.Pikachu.PaymentGateways
         public string? TradeDescription { get; set; }
         public string? CreditCheckCode { get; set; }
         public bool IsCreditCardEnabled { get; set; }
+        public bool IsInstallmentsEnabled { get; set; }
         public bool IsBankTransferEnabled { get; set; }
-        public string InstallmentPeriodsJson { get; set; }
-
-        [NotMapped]
-        public List<string> InstallmentPeriods
-        {
-            get
-            {
-                return !string.IsNullOrWhiteSpace(InstallmentPeriodsJson)
-                    ? (JsonSerializer.Deserialize<List<string>>(InstallmentPeriodsJson) ?? [])
-                    : [];
-            }
-        }
     }
 }

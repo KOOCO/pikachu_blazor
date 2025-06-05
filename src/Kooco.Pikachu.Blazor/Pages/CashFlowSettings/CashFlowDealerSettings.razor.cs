@@ -86,7 +86,7 @@ public partial class CashFlowDealerSettings
         {
             if (!EcPay.IsCreditCardEnabled)
             {
-                EcPay.InstallmentPeriods.Clear();
+                EcPay.IsInstallmentsEnabled = false;
             }
             await Loading.Show();
             await _paymentGatewayAppService.UpdateEcPayAsync(EcPay);
@@ -201,18 +201,6 @@ public partial class CashFlowDealerSettings
         {
             await Loading.Hide();
             StateHasChanged();
-        }
-    }
-
-    void OnInstallmentPeriodChange(bool value, string period)
-    {
-        if (value)
-        {
-            EcPay.InstallmentPeriods.Add(period);
-        }
-        else
-        {
-            EcPay.InstallmentPeriods.Remove(period);
         }
     }
     #endregion
