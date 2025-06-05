@@ -80,6 +80,7 @@ public class CampaignAppService : PikachuAppService, ICampaignAppService
         return ObjectMapper.Map<Campaign, CampaignDto>(campaign);
     }
 
+    [AllowAnonymous]
     public async Task<CampaignDto> GetAsync(Guid id, bool withDetails = false)
     {
         var campaign = withDetails
@@ -89,6 +90,7 @@ public class CampaignAppService : PikachuAppService, ICampaignAppService
         return ObjectMapper.Map<Campaign, CampaignDto>(campaign);
     }
 
+    [AllowAnonymous]
     public async Task<PagedResultDto<CampaignDto>> GetListAsync(GetCampaignListDto input)
     {
         var totalCount = await _campaignRepository.CountAsync(input.Filter, input.IsEnabled, input.StartDate, input.EndDate);
