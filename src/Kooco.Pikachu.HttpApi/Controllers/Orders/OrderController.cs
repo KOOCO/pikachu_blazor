@@ -112,7 +112,7 @@ public class OrderController : AbpController, IOrderAppService
     }
 
     [HttpGet("ecpay-proceed-to-checkout")]
-    public async Task<IActionResult> ProceedToCheckout(Guid orderId, string clientBackUrl, PaymentMethods paymentMethodsValue, bool isInstallments = false)
+    public async Task<IActionResult> ProceedToCheckout(Guid orderId, string clientBackUrl, PaymentMethods paymentMethodsValue, string? installmentOption = null)
     {
         OrderDto order = await _ordersAppService.GetWithDetailsAsync(orderId);
 
@@ -203,8 +203,13 @@ public class OrderController : AbpController, IOrderAppService
             oPayment.Send.CustomField4 = string.Empty;
             oPayment.Send.EncryptType = 1;
 
-            if (isInstallments && paymentMethodsValue == PaymentMethods.CreditCard)
-                oPayment.SendExtend.CreditInstallment = string.Join(",", ecPay.InstallmentPeriods);
+            if (!string.IsNullOrWhiteSpace(installmentOption) && paymentMethodsValue == PaymentMethods.CreditCard)
+            {
+                if (Constant.InstallmentPeriods.Contains(installmentOption))
+                {
+                    oPayment.SendExtend.CreditInstallment = installmentOption;
+                }
+            }
 
             foreach (OrderItemDto item in order.OrderItems)
             {
