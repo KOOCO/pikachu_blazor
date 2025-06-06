@@ -32,6 +32,7 @@ using Kooco.Pikachu.Assembly;
 using DinkToPdf;
 using HtmlAgilityPack;
 using Kooco.Pikachu.Orders.Interfaces;
+using Microsoft.Extensions.Logging;
 
 namespace Kooco.Pikachu.Blazor.Pages.Orders;
 
@@ -1346,6 +1347,7 @@ public partial class OrderDetails
         try
         {
             OrderDeliveryId = deliveryOrder.Id;
+            Logger.LogInformation("Executing shipment notify for: {deliveryMethod}", deliveryOrder.DeliveryMethod);
 
             if (deliveryOrder.DeliveryMethod is DeliveryMethod.SevenToEleven1 ||
                 deliveryOrder.DeliveryMethod is DeliveryMethod.FamilyMart1 ||
@@ -1642,8 +1644,9 @@ public partial class OrderDetails
             loading = false;
             await InvokeAsync(StateHasChanged);
         }
-        catch (Exception e)
+        catch (Exception ex)
         {
+            await HandleErrorAsync(ex);
             await GetOrderDetailsAsync();
             loading = false;
             await InvokeAsync(StateHasChanged);
