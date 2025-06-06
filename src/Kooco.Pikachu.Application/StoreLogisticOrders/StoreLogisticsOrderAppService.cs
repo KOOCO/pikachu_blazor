@@ -1535,7 +1535,8 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
             request.AddParameter("GoodsName", goodsName);
             request.AddParameter("SenderCellPhone", GreenWorld.SenderPhoneNumber);
         }
-        request.AddParameter("GoodsAmount", Convert.ToInt32(orderDelivery.Items.Sum(x => x.TotalAmount)));
+        var goodsAmount = Convert.ToInt32(orderDelivery.Items.Sum(x => x.TotalAmount) + order.DeliveryCost);
+        request.AddParameter("GoodsAmount", goodsAmount);
         request.AddParameter("SenderName", GreenWorld.SenderName);
         request.AddParameter("ReceiverName", order.RecipientName);
         request.AddParameter("ReceiverCellPhone", order.RecipientPhone);
@@ -1553,12 +1554,12 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
             deliveryMethod is DeliveryMethod.FamilyMartC2C ||
             deliveryMethod is DeliveryMethod.SevenToElevenC2C)
         {
-            request.AddParameter("CheckMacValue", GenerateRequestString(GreenWorld.HashKey, GreenWorld.HashIV, GreenWorld.StoreCode, merchantTradeNo, marchentDate, "CVS", logisticSubType, Convert.ToInt32(orderDelivery.Items.Sum(x => x.TotalAmount)+order.DeliveryCost), GreenWorld.SenderName, order.RecipientName, order.RecipientPhone,
+            request.AddParameter("CheckMacValue", GenerateRequestString(GreenWorld.HashKey, GreenWorld.HashIV, GreenWorld.StoreCode, merchantTradeNo, marchentDate, "CVS", logisticSubType, goodsAmount, GreenWorld.SenderName, order.RecipientName, order.RecipientPhone,
                 serverReplyURL, order.StoreId, goodsName, GreenWorld.SenderPhoneNumber, isCollection: isCollection));
         }
         else
         {
-            request.AddParameter("CheckMacValue", GenerateRequestString(GreenWorld.HashKey, GreenWorld.HashIV, GreenWorld.StoreCode, merchantTradeNo, marchentDate, "CVS", logisticSubType, Convert.ToInt32(orderDelivery.Items.Sum(x => x.TotalAmount) + order.DeliveryCost), GreenWorld.SenderName, order.RecipientName, order.RecipientPhone,
+            request.AddParameter("CheckMacValue", GenerateRequestString(GreenWorld.HashKey, GreenWorld.HashIV, GreenWorld.StoreCode, merchantTradeNo, marchentDate, "CVS", logisticSubType, goodsAmount, GreenWorld.SenderName, order.RecipientName, order.RecipientPhone,
                     serverReplyURL, order.StoreId, isCollection: isCollection));
         }
 
@@ -1570,9 +1571,9 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
         {
             if (result.ResponseCode is "1")
             {
-                using (var uow = UnitOfWorkManager.Begin(requiresNew: true, isTransactional: false))
-                {
-                    var newOrderDelivery = await _deliveryRepository.GetAsync(orderDeliveryId);
+                //using (var uow = UnitOfWorkManager.Begin(requiresNew: true, isTransactional: false))
+                //{
+                    var newOrderDelivery = orderDelivery; //await _deliveryRepository.GetAsync(orderDeliveryId);
                     newOrderDelivery.DeliveryNo = result.ShippingInfo.BookingNote ?? string.Empty;
                     var oldDeliveryStatus = newOrderDelivery.DeliveryStatus;
                     
@@ -1618,7 +1619,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
                         merchantTradeNo,
                         newOrderDelivery.AllPayLogisticsID);
 
-                    await uow.SaveChangesAsync();
+                    //await uow.SaveChangesAsync();
                     await _orderRepository.UpdateAsync(order);
                     // **Get Current User (Editor)**
                     var currentUserId = CurrentUser.Id ?? Guid.Empty;
@@ -1631,7 +1632,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
                         new object[] { newOrderDelivery.DeliveryNo }, // Dynamic placeholder for delivery number
                         currentUserId,
                         currentUserName);
-                }
+                //}
 
                 await SendEmailAsync(orderId, ShippingStatus.ToBeShipped);
             }
