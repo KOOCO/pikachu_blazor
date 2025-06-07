@@ -94,4 +94,10 @@ public class StoreLogisticOrderController(
     {
         throw new NotImplementedException();
     }
+
+    [HttpPost("create-ecpay-home-delivery-shipment-order")]
+    public Task<ResponseResultDto> CreateEcPayHomeDeliveryShipmentOrderAsync(Guid orderId, Guid orderDeliveryId, DeliveryMethod? deliveryMethod = null)
+    {
+        return _storeLogisticsOrderAppService.CreateEcPayHomeDeliveryShipmentOrderAsync(orderId, orderDeliveryId, deliveryMethod);
+    }
 }

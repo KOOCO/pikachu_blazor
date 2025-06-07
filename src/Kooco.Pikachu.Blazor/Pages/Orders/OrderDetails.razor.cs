@@ -1471,11 +1471,27 @@ public partial class OrderDetails
                             await _storeLogisticsOrderAppService.IssueInvoiceAync(Order.Id);
                         }
                     }
+                    else if(logisticProvider is LogisticProviders.EcPayHomeDelivery)
+                    {
+                        ResponseResultDto result = await _storeLogisticsOrderAppService.CreateEcPayHomeDeliveryShipmentOrderAsync(
+                            Order.Id,
+                            OrderDeliveryId,
+                            deliveryMethod);
+                        if (result.ResponseCode is not "1")
+                        {
+                            await _uiMessageService.Error(result.ResponseMessage);
+                            loading = false;
+                        }
+                        else if (result.ResponseCode is "1")
+                        {
+                            await _storeLogisticsOrderAppService.IssueInvoiceAync(Order.Id);
+                        }
+                    }
                     else if (logisticProvider is LogisticProviders.TCat && deliveryMethod is DeliveryMethod.TCatDeliveryNormal)
                     {
                         PrintObtResponse? response = await _storeLogisticsOrderAppService.GenerateDeliveryNumberForTCatDeliveryAsync(
-                            Order.Id, 
-                            deliveryOrder.Id, 
+                            Order.Id,
+                            deliveryOrder.Id,
                             deliveryMethod);
                         if (response is null || response.Data is null)
                         {
@@ -1489,8 +1505,8 @@ public partial class OrderDetails
                     else if (logisticProvider is LogisticProviders.TCat && deliveryMethod is DeliveryMethod.TCatDeliverySevenElevenNormal)
                     {
                         PrintOBTB2SResponse? response = await _storeLogisticsOrderAppService.GenerateDeliveryNumberForTCat711DeliveryAsync(
-                            Order.Id, 
-                            deliveryOrder.Id, 
+                            Order.Id,
+                            deliveryOrder.Id,
                             deliveryMethod);
                         if (response is null || response.Data is null)
                         {

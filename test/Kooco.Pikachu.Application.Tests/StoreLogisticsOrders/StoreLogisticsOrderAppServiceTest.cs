@@ -1,5 +1,6 @@
 ﻿using Autofac.Core;
 using Castle.Core.Smtp;
+using Kooco.Pikachu.DeliveryTemperatureCosts;
 using Kooco.Pikachu.Emails;
 using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Groupbuys;
@@ -56,6 +57,8 @@ namespace Kooco.Pikachu.StoreLogisticsOrders
         private readonly StoreLogisticsOrderAppService _service;
         private readonly IDataFilter<IMultiTenant> _multiTenantFilter;
         private readonly Mock<OrderHistoryManager> _orderManager;
+        private readonly Mock<IDeliveryTemperatureCostRepository> _deliveryTemperatureCostRepositoryMock;
+
         public StoreLogisticsOrderAppServiceTest()
         {
             _orderRepositoryMock = new Mock<IOrderRepository>();
@@ -74,6 +77,7 @@ namespace Kooco.Pikachu.StoreLogisticsOrders
             _emailAppServiceMock = new Mock<IEmailAppService>();
             _multiTenantFilter = GetRequiredService<IDataFilter<IMultiTenant>>();
             _orderManager = new Mock<OrderHistoryManager>();
+            _deliveryTemperatureCostRepositoryMock = new Mock<IDeliveryTemperatureCostRepository>();
 
             _service = new StoreLogisticsOrderAppService(
                 _orderDeliveryRepositoryMock.Object,
@@ -90,7 +94,8 @@ namespace Kooco.Pikachu.StoreLogisticsOrders
                 _emailSenderMock.Object,
                 _tenantSettingsAppServiceMock.Object,
                 _emailAppServiceMock.Object,
-                _orderManager.Object
+                _orderManager.Object,
+                _deliveryTemperatureCostRepositoryMock.Object
             );
         }
         private void SetProtectedProperty<T>(T obj, string propertyName, object value)

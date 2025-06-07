@@ -38,5 +38,11 @@ namespace Kooco.Pikachu.StoreLogisticOrders
         Task<Dictionary<string, string>> OnSevenElevenC2CShippingLabelAsync(
             Dictionary<string, string> allPayLogisticsIds,
             Dictionary<string, string>? DeliveryNumbers);
+
+        Task<ResponseResultDto> CreateEcPayHomeDeliveryShipmentOrderAsync(
+            Guid orderId,
+            Guid orderDeliveryId,
+            DeliveryMethod? deliveryMethod = null
+            );
     }
 }

@@ -1,9 +1,11 @@
-﻿using Kooco.Pikachu.Emails;
+﻿using Kooco.Pikachu.DeliveryTemperatureCosts;
+using Kooco.Pikachu.Emails;
 using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Groupbuys;
 using Kooco.Pikachu.GroupBuys;
 using Kooco.Pikachu.Localization;
 using Kooco.Pikachu.LogisticsProviders;
+using Kooco.Pikachu.LogisticsSettings;
 using Kooco.Pikachu.OrderDeliveries;
 using Kooco.Pikachu.Orders;
 using Kooco.Pikachu.Orders.Entities;
@@ -34,6 +36,7 @@ using Volo.Abp;
 using Volo.Abp.Application.Services;
 using Volo.Abp.BackgroundJobs;
 using Volo.Abp.Data;
+using Volo.Abp.Domain.Entities;
 using Volo.Abp.Emailing;
 using Volo.Abp.Uow;
 
@@ -76,6 +79,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
     private readonly IEmailSender _emailSender;
     private readonly IEmailAppService _emailAppService;
     private readonly OrderHistoryManager _orderHistoryManager;
+    private readonly IDeliveryTemperatureCostRepository _deliveryTemperatureCostRepository;
     #endregion
 
     #region Constructor
@@ -94,7 +98,8 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
         IEmailSender emailSender,
         ITenantSettingsAppService tenantSettingsAppService,
         IEmailAppService emailAppService,
-        OrderHistoryManager orderHistoryManager
+        OrderHistoryManager orderHistoryManager,
+        IDeliveryTemperatureCostRepository deliveryTemperatureCostRepository
     )
     {
         _orderRepository = orderRepository;
@@ -122,6 +127,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
         _tenantSettingsAppService = tenantSettingsAppService;
         _emailAppService = emailAppService;
         _orderHistoryManager = orderHistoryManager;
+        _deliveryTemperatureCostRepository = deliveryTemperatureCostRepository;
     }
     #endregion
 
@@ -387,6 +393,164 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
                     await SendEmailAsync(orderId, ShippingStatus.ToBeShipped);
                 }
                
+            }
+            return result;
+        }
+        catch (Exception ex)
+        {
+            Logger.LogWarning("main catch block");
+            Logger.LogException(ex);
+
+            return result;
+        }
+    }
+
+    public async Task<ResponseResultDto> CreateEcPayHomeDeliveryShipmentOrderAsync(
+        Guid orderId,
+        Guid orderDeliveryId,
+        DeliveryMethod? deliveryMethod = null
+        )
+    {
+        ResponseResultDto result = new();
+
+        try
+        {
+            var order = await _orderRepository.GetAsync(orderId);
+
+            var orderDelivery = (await _deliveryRepository.GetWithDetailsAsync(orderId))
+                .FirstOrDefault(f => f.Id == orderDeliveryId)
+                ?? throw new EntityNotFoundException(typeof(OrderDelivery), orderDeliveryId);
+
+            var ecPayHomeDelivery = (await _logisticsProvidersAppService.GetAllAsync())
+                .Where(provider => provider.LogisticProvider == LogisticProviders.EcPayHomeDelivery)
+                .FirstOrDefault()
+                ?? throw new EntityNotFoundException(typeof(LogisticsProviderSettings), LogisticProviders.EcPayHomeDelivery);
+
+            string temperature = deliveryMethod switch
+            {
+                DeliveryMethod.BlackCatFreeze => "0002",
+                DeliveryMethod.BlackCatFrozen => "0003",
+                DeliveryMethod.PostOffice when orderDelivery.DeliveryMethod is DeliveryMethod.PostOffice => "0001",
+                DeliveryMethod.BlackCat1 when orderDelivery.DeliveryMethod is DeliveryMethod.PostOffice => "0001",
+                _ => "0001"
+            };
+
+            var deliveredByStore = (await _deliveryTemperatureCostRepository.GetListAsync())
+                .Where(d => d.Temperature == Enum.Parse<ItemStorageTemperature>((Convert.ToInt32(temperature) - 1).ToString()))
+                .FirstOrDefault()
+                ?? throw new UserFriendlyException("Delivered By Store is not setup");
+
+            RestClient client = new();
+            RestRequest request = new(_configuration["EcPay:LogisticApi"], Method.Post);
+            string marchentDate = DateTime.Now.ToString("yyyy/MM/dd");
+            string receiverAddress = string.Concat(_L[order.City].Name, order.AddressDetails);
+            HttpRequest? domainRequest = _httpContextAccessor?.HttpContext?.Request;
+            string? domainName = $"{domainRequest?.Scheme}://{domainRequest?.Host.Value}";
+
+            var goodsAmount = Convert.ToInt32(orderDelivery.Items.Sum(x => x.TotalAmount));
+
+            var logisticSubTypes = deliveredByStore.DeliveryMethod is DeliveryMethod.PostOffice ||
+                                                     deliveryMethod is DeliveryMethod.PostOffice
+                                                     ? "POST" : "TCAT";
+
+            string serverReplyURL = $"{domainName}/api/app/orders/ecpay-logisticsStatus-callback";
+            var merchantTradeNo = AddNumericSuffix(order.OrderNo);
+            request.AddHeader("Accept", "text/html");
+            request.AddHeader("Content-Type", "application/x-www-form-urlencoded");
+            request.AddParameter("MerchantID", EcPayHomeDelivery.StoreCode);
+            request.AddParameter("MerchantTradeDate", marchentDate);
+            request.AddParameter("LogisticsType", "HOME");
+            request.AddParameter("Temperature", temperature);
+            request.AddParameter("LogisticsSubType", logisticSubTypes);
+            request.AddParameter("GoodsAmount", goodsAmount);
+            request.AddParameter("GoodsWeight", PostOffice.Weight);
+            request.AddParameter("SenderName", EcPayHomeDelivery.SenderName);
+            request.AddParameter("SenderPhone", EcPayHomeDelivery.SenderPhoneNumber);
+            request.AddParameter("SenderZipCode", EcPayHomeDelivery.SenderPostalCode);
+            request.AddParameter("SenderAddress", EcPayHomeDelivery.SenderAddress);
+            request.AddParameter("ReceiverName", order.RecipientName);
+            request.AddParameter("ReceiverCellPhone", order.RecipientPhone);
+            request.AddParameter("ReceiverZipCode", order.PostalCode);
+            request.AddParameter("ReceiverAddress", receiverAddress);
+            request.AddParameter("ServerReplyURL", serverReplyURL);
+            request.AddParameter("CheckMacValue", GenerateCheckMac(
+                ecPayHomeDelivery.HashKey, ecPayHomeDelivery.HashIV, EcPayHomeDelivery.StoreCode, merchantTradeNo,
+                marchentDate, "HOME", logisticSubTypes, goodsAmount, PostOffice.Weight, EcPayHomeDelivery.SenderName,
+                EcPayHomeDelivery.SenderPhoneNumber, EcPayHomeDelivery.SenderPostalCode, EcPayHomeDelivery.SenderAddress,
+                order.RecipientName, order.RecipientPhone, order.PostalCode, receiverAddress, serverReplyURL, temperature));
+            request.AddParameter("MerchantTradeNo", merchantTradeNo);
+
+            RestResponse response = await client.ExecuteAsync(request);
+            result = ParseApiResponse(response.Content?.ToString() ?? "");
+            try
+            {
+                if (result.ResponseCode is "1")
+                {
+                    var newOrderDelivery = orderDelivery;// await _deliveryRepository.GetAsync(orderDeliveryId);
+                                                         // Capture old delivery details before updating
+
+                    var oldDeliveryStatus = newOrderDelivery.DeliveryStatus;
+                    newOrderDelivery.DeliveryNo = result.ShippingInfo.BookingNote;
+                    newOrderDelivery.AllPayLogisticsID = result.ShippingInfo.AllPayLogisticsID;
+                    newOrderDelivery.DeliveryStatus = DeliveryStatus.ToBeShipped;
+
+                    if (orderDelivery?.DeliveryMethod is DeliveryMethod.DeliveredByStore &&
+                        deliveryMethod is not null)
+                    {
+                        newOrderDelivery.ActualDeliveryMethod = deliveryMethod;
+                    }
+
+                    // **Get Current User (Editor)**
+                    var currentUserId = CurrentUser.Id ?? Guid.Empty;
+                    var currentUserName = CurrentUser.UserName ?? "System";
+
+                    // **Log Order History for Delivery Update**
+                    await _orderHistoryManager.AddOrderHistoryAsync(
+                        newOrderDelivery.OrderId,
+                        "GenerateDeliveryNumberLog", // Localization key
+                        new object[] { newOrderDelivery.DeliveryNo }, // Dynamic placeholder for delivery number
+                        currentUserId,
+                        currentUserName);
+
+                    order.ShippingStatus = ShippingStatus.ToBeShipped;
+                    order = await _orderRepository.GetAsync(orderId);
+                    GenerateAndStoreMerchantTradeNoAsync(
+                        order,
+                        merchantTradeNo,
+                        newOrderDelivery.AllPayLogisticsID);
+                    await _orderRepository.UpdateAsync(order);
+
+                    await SendEmailAsync(orderId, ShippingStatus.ToBeShipped);
+                }
+            }
+            catch (AbpDbConcurrencyException e)
+            {
+                Logger.LogError(e.Message);
+                Logger.LogWarning("Issue on Home Delivery Shipment");
+                if (result.ResponseCode is "1")
+                {
+                    using (var uow = UnitOfWorkManager.Begin(requiresNew: true, isTransactional: false))
+                    {
+                        var newOrderDelivery = await _deliveryRepository.GetAsync(orderDeliveryId);
+                        newOrderDelivery.DeliveryNo = result.ShippingInfo.BookingNote;
+                        newOrderDelivery.AllPayLogisticsID = result.ShippingInfo.AllPayLogisticsID;
+                        newOrderDelivery.DeliveryStatus = DeliveryStatus.ToBeShipped;
+
+                        if (orderDelivery.DeliveryMethod is DeliveryMethod.DeliveredByStore &&
+                            deliveryMethod is not null)
+                        {
+                            newOrderDelivery.ActualDeliveryMethod = deliveryMethod;
+                        }
+
+                        await uow.SaveChangesAsync();
+                        order.ShippingStatus = ShippingStatus.ToBeShipped;
+
+                        await _orderRepository.UpdateAsync(order);
+                    }
+
+                    await SendEmailAsync(orderId, ShippingStatus.ToBeShipped);
+                }
+
             }
             return result;
         }
