@@ -585,6 +585,7 @@ public class ItemAppService :
     {
         var list = (await _itemRepository.GetQueryableAsync())
             .Select(x => new KeyValueDto { Id = x.Id, Name = x.ItemName })
+            .OrderBy(x => x.Name)
             .ToList();
 
         return list;

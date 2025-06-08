@@ -105,7 +105,7 @@ public class PikachuMenuContributor : IMenuContributor
 
         productmangment.AddItem(new ApplicationMenuItem(
             name: "Inventory",
-            icon: "fas fa-layer-group",
+            icon: "fas fa-boxes-stacked",
             displayName: l["Menu:Inventory"],
             url: "Inventory-Management/Inventory"
             ));

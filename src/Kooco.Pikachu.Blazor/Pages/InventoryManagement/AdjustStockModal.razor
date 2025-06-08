@@ -1,0 +1,96 @@
+﻿@using Kooco.Pikachu.Localization
+@using Volo.Abp.AspNetCore.Components.Web
+@using Kooco.Pikachu.InventoryManagement
+@inherits PikachuComponentBase
+@inject AbpBlazorMessageLocalizerHelper<PikachuResource> LH
+
+<Modal @ref="ModalRef">
+    <ModalContent Centered Size="ModalSize.Large">
+        <Form>
+            <ModalHeader>
+                <ModalTitle>
+                    <h4 class="text-dark m-0">@L["AdjustStock"]</h4>
+                </ModalTitle>
+                <CloseButton />
+            </ModalHeader>
+            <ModalBody>
+                <Validations @ref="@ValidationsRef" Model="@Entity" ValidateOnLoad="false">
+                    <Validation MessageLocalizer="@LH.Localize">
+                        <Field>
+                            <FieldLabel required>@L["StockType"]</FieldLabel>
+                            <Select TValue="InventoryStockType?" @bind-SelectedValue="Entity.StockType">
+                                <Feedback>
+                                    <ValidationError />
+                                </Feedback>
+                                <ChildContent>
+                                    <SelectItem TValue="InventoryStockType?" Value="(InventoryStockType?)null"></SelectItem>
+                                    @foreach (var option in StockTypeOptions)
+                                    {
+                                        <SelectItem TValue="InventoryStockType" Value="option">@L["Enum:InventoryStockType." + (int)option]</SelectItem>
+                                    }
+                                </ChildContent>
+                            </Select>
+                        </Field>
+                    </Validation>
+                    <Row>
+                        <Column ColumnSize="ColumnSize.Is6">
+                            <Validation MessageLocalizer="@LH.Localize">
+                                <Field>
+                                    <FieldLabel required>@L["ActionType"]</FieldLabel>
+                                    <Select TValue="InventoryActionType?" @bind-SelectedValue="Entity.ActionType">
+                                        <Feedback>
+                                            <ValidationError />
+                                        </Feedback>
+                                        <ChildContent>
+                                            <SelectItem TValue="InventoryActionType?" Value="(InventoryActionType?)null"></SelectItem>
+                                            @foreach (var option in ActionTypeOptions)
+                                            {
+                                                <SelectItem TValue="InventoryActionType" Value="option">@L["Enum:InventoryActionType." + (int)option]</SelectItem>
+                                            }
+                                        </ChildContent>
+                                    </Select>
+                                </Field>
+                            </Validation>
+                        </Column>
+                        <Column ColumnSize="ColumnSize.Is6">
+                            <Validation MessageLocalizer="@LH.Localize">
+                                <Field>
+                                    <FieldLabel required>@L["Amount"]</FieldLabel>
+                                    <NumericEdit TValue="int?" @bind-Value="@Entity.Amount">
+                                        <Feedback>
+                                            <ValidationError />
+                                        </Feedback>
+                                    </NumericEdit>
+                                </Field>
+                            </Validation>
+                        </Column>
+                    </Row>
+                    <Validation MessageLocalizer="@LH.Localize">
+                        <Field>
+                            <FieldLabel required>@L["Description"]</FieldLabel>
+                            <MemoEdit Rows="5" @bind-Text="@Entity.Description">
+                                <Feedback>
+                                    <ValidationError />
+                                </Feedback>
+                            </MemoEdit>
+                        </Field>
+                    </Validation>
+                </Validations>
+            </ModalBody>
+            <ModalFooter>
+                <PikachuButton Class="pk-btn-sm pk-btn-danger"
+                               Clicked="Hide"
+                               Disabled="IsLoading"
+                               Style="width: 75px;">
+                    @L["Cancel"]
+                </PikachuButton>
+                <PikachuButton Class="pk-btn-sm pk-btn-primary"
+                               Clicked="Save"
+                               Loading="IsLoading"
+                               Style="width: 75px;">
+                    @L["Save"]
+                </PikachuButton>
+            </ModalFooter>
+        </Form>
+    </ModalContent>
+</Modal>

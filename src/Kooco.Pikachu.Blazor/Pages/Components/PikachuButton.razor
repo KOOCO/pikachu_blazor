@@ -1,9 +1,9 @@
-﻿<button class="pk-btn @Class" @onclick="Clicked" disabled="@(Disabled || Loading)" type="@Type">
+﻿<button class="pk-btn @Class" style="@Style" @onclick="Clicked" disabled="@(Disabled || Loading)" type="@Type">
     @if (Loading)
     {
         <div class="spinner-border" role="status"></div>
     }
-    @if(!Loading && !string.IsNullOrWhiteSpace(IconClass))
+    @if (!Loading && !string.IsNullOrWhiteSpace(IconClass))
     {
         <i class="@IconClass"></i>
     }
@@ -31,6 +31,9 @@
 
     [Parameter]
     public string IconClass { get; set; } = "";
+
+    [Parameter]
+    public string Style { get; set; } = "";
 
     private async Task ClickedHandler()
     {

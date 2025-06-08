@@ -1,0 +1,95 @@
+﻿@inherits PikachuComponentBase
+
+<Modal @ref="ModalRef">
+    <ModalContent Centered Size="ModalSize.Fullscreen">
+        <ModalHeader>
+            <ModalTitle>
+                @if (Inventory != null)
+                {
+                    <Span>@Inventory?.ItemName - @Inventory.Attributes</Span>
+                }
+            </ModalTitle>
+            <Div Class="text-end">
+                <PikachuButton Class="pk-btn-sm pk-btn-primary"
+                               Clicked="Export"
+                               Loading="IsExporting"
+                               Disabled="IsLoading"
+                               IconClass="fas fa-file-download">
+                    @L["ExportAll"]
+                </PikachuButton>
+                <PikachuButton Class="pk-btn-sm pk-btn-secondary"
+                               Clicked="AdjustStock"
+                               Disabled="IsExporting || IsLoading">
+                    @L["AdjustStock"]
+                </PikachuButton>
+                <PikachuButton Class="pk-btn-sm pk-btn-danger ms-2"
+                               Clicked="Hide"
+                               Disabled="IsExporting || IsLoading">
+                    @L["Close"]
+                </PikachuButton>
+            </Div>
+        </ModalHeader>
+        <ModalBody>
+            <Table Bordered Striped>
+                <TableHeader>
+                    <TableRow>
+                        <TableHeaderCell>@L["SKU"]</TableHeaderCell>
+                        <TableHeaderCell>@L["Timestamp"]</TableHeaderCell>
+                        <TableHeaderCell>@L["Action"]</TableHeaderCell>
+                        <TableHeaderCell>@L["CurrentStock"]</TableHeaderCell>
+                        <TableHeaderCell>@L["AvailableStock"]</TableHeaderCell>
+                        <TableHeaderCell>@L["PreOrderQuantity"]</TableHeaderCell>
+                        <TableHeaderCell>@L["AvailablePreOrderQuantity"]</TableHeaderCell>
+                        <TableHeaderCell TextAlignment="TextAlignment.Center">@L["View"]</TableHeaderCell>
+                    </TableRow>
+                </TableHeader>
+                <TableBody>
+                    @if (IsLoading)
+                    {
+                        <TableRow>
+                            <TableRowCell ColumnSpan="8">
+                                <Div Class="text-center pt-3">
+                                    <Div Class="spinner-border text-primary" Style="height: 3rem; width: 3rem;"></Div>
+                                </Div>
+                            </TableRowCell>
+                        </TableRow>
+                    }
+                    else
+                    {
+                        if (InventoryLogList?.Count > 0)
+                        {
+                            foreach (var log in InventoryLogList)
+                            {
+                                <TableRow>
+                                    <TableRowCell>@log.Sku</TableRowCell>
+                                    <TableRowCell>@DateTime.Now.ToString("MM/dd/yyyy HH:mm:ss")</TableRowCell>
+                                    <TableRowCell>Stock Added</TableRowCell>
+                                    <TableRowCell>@log.CurrentStock</TableRowCell>
+                                    <TableRowCell>@log.AvailableStock</TableRowCell>
+                                    <TableRowCell>@log.PreOrderQuantity</TableRowCell>
+                                    <TableRowCell>@log.AvailablePreOrderQuantity</TableRowCell>
+                                    <TableRowCell TextAlignment="TextAlignment.Center">
+                                        <Button Class="pk-btn-icon indigo">
+                                            <Icon Name="IconName.Eye"></Icon>
+                                        </Button>
+                                    </TableRowCell>
+                                </TableRow>
+                            }
+                        }
+                        else
+                        {
+                            <TableRow>
+                                <TableRowCell ColumnSpan="8">
+                                    <Div Class="text-center pt-3">
+                                        <h5 class="text-muted">@L["NoStockAdjustmentDescription"]</h5>
+                                    </Div>
+                                </TableRowCell>
+                            </TableRow>
+                        }
+                    }
+                </TableBody>
+            </Table>
+        </ModalBody>
+    </ModalContent>
+</Modal>
+<AdjustStockModal @ref="AdjustStockModalRef" />

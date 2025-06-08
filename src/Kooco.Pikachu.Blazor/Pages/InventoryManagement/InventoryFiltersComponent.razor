@@ -3,10 +3,11 @@
 @using Kooco.Pikachu.Items.Dtos
 @inherits PikachuComponentBase
 @inject IItemAppService ItemAppService
+@inject IInventoryAppService InventoryAppService
 
 @if (Filters != null)
 {
-    <Card>
+    <Card Margin="Margin.Is2.FromTop">
         <CardBody>
             <Row>
                 <Column ColumnSize="ColumnSize.Is10">
@@ -28,23 +29,23 @@
             @if (FiltersVisible)
             {
                 <Row Margin="Margin.Is2.FromTop" VerticalGutter="10">
-                    <Column ColumnSize="ColumnSize.Is3">
+                    <Column ColumnSize="ColumnSize.Is2">
                         <FieldLabel>@L["MinCurrentStock"]</FieldLabel>
                         <AntDesign.InputNumber @bind-Value="Filters.MinCurrentStock" />
                     </Column>
-                    <Column ColumnSize="ColumnSize.Is3">
+                    <Column ColumnSize="ColumnSize.Is2">
                         <FieldLabel>@L["MaxCurrentStock"]</FieldLabel>
                         <AntDesign.InputNumber @bind-Value="Filters.MaxCurrentStock" />
                     </Column>
-                    <Column ColumnSize="ColumnSize.Is3">
+                    <Column ColumnSize="ColumnSize.Is2">
                         <FieldLabel>@L["MinAvailableStock"]</FieldLabel>
                         <AntDesign.InputNumber @bind-Value="Filters.MinAvailableStock" />
                     </Column>
-                    <Column ColumnSize="ColumnSize.Is3">
+                    <Column ColumnSize="ColumnSize.Is2">
                         <FieldLabel>@L["MaxAvailableStock"]</FieldLabel>
                         <AntDesign.InputNumber @bind-Value="Filters.MaxAvailableStock" />
                     </Column>
-                    <Column ColumnSize="ColumnSize.Is3">
+                    <Column ColumnSize="ColumnSize.Is2">
                         <FieldLabel>@L["Item"]</FieldLabel>
                         <AntDesign.Select TItem="Guid?"
                                           TItemValue="Guid?"
@@ -55,6 +56,51 @@
                                 @foreach (var item in ItemOptions)
                                 {
                                     <AntDesign.SelectOption TItem="Guid?" TItemValue="Guid?" Value="@item.Id" Label="@item.Name" />
+                                }
+                            </SelectOptions>
+                        </AntDesign.Select>
+                    </Column>
+                    <Column ColumnSize="ColumnSize.Is2">
+                        <FieldLabel>@L["Warehouse"]</FieldLabel>
+                        <AntDesign.Select TItem="string"
+                                          TItemValue="string"
+                                          EnableSearch
+                                          AllowClear
+                                          @bind-Value="Filters.Warehouse">
+                            <SelectOptions>
+                                @foreach (var item in WarehouseOptions)
+                                {
+                                    <AntDesign.SelectOption TItem="string" TItemValue="string" Value="@item" Label="@item" />
+                                }
+                            </SelectOptions>
+                        </AntDesign.Select>
+                    </Column>
+                    <Column ColumnSize="ColumnSize.Is2">
+                        <FieldLabel>@L["SKU"]</FieldLabel>
+                        <AntDesign.Select TItem="string"
+                                          TItemValue="string"
+                                          EnableSearch
+                                          AllowClear
+                                          @bind-Value="Filters.Sku">
+                            <SelectOptions>
+                                @foreach (var item in SkuOptions)
+                                {
+                                    <AntDesign.SelectOption TItem="string" TItemValue="string" Value="@item" Label="@item" />
+                                }
+                            </SelectOptions>
+                        </AntDesign.Select>
+                    </Column>
+                    <Column ColumnSize="ColumnSize.Is2">
+                        <FieldLabel>@L["Attributes"]</FieldLabel>
+                        <AntDesign.Select TItem="string"
+                                          TItemValue="string"
+                                          EnableSearch
+                                          AllowClear
+                                          @bind-Value="Filters.Attributes">
+                            <SelectOptions>
+                                @foreach (var item in AttributesOptions)
+                                {
+                                    <AntDesign.SelectOption TItem="string" TItemValue="string" Value="@item" Label="@item" />
                                 }
                             </SelectOptions>
                         </AntDesign.Select>
@@ -88,11 +134,20 @@
 
     IReadOnlyList<KeyValueDto> ItemOptions { get; set; } = [];
 
+    IReadOnlyList<string> WarehouseOptions { get; set; } = [];
+
+    IReadOnlyList<string> SkuOptions { get; set; } = [];
+
+    IReadOnlyList<string> AttributesOptions { get; set; } = [];
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            ItemOptions = await ItemAppService.GetAllItemsLookupAsync();
+            ItemOptions = await ItemAppService.LookupAsync();
+            WarehouseOptions = await InventoryAppService.GetWarehouseLookupAsync();
+            SkuOptions = await InventoryAppService.GetSkuLookupAsync();
+            AttributesOptions = await InventoryAppService.GetAttributesLookupAsync();
         }
         await base.OnAfterRenderAsync(firstRender);
     }
