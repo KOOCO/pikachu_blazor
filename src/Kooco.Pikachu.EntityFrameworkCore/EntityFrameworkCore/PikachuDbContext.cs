@@ -54,6 +54,7 @@ using Kooco.Pikachu.Members.MemberTags;
 using Kooco.Pikachu.Campaigns;
 using Kooco.Pikachu.EdmManagement;
 using Kooco.Pikachu.Domain.LogisticStatusRecords;
+using Kooco.Pikachu.InventoryManagement;
 
 namespace Kooco.Pikachu.EntityFrameworkCore;
 
@@ -181,6 +182,7 @@ public class PikachuDbContext(DbContextOptions<PikachuDbContext> options) :
     public DbSet<CampaignAddOnProduct> CampaignAddOnProducts { get; set; }
 
     public DbSet<Edm> Edms { get; set; }
+    public DbSet<InventoryLog> InventoryLogs { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -846,6 +848,16 @@ public class PikachuDbContext(DbContextOptions<PikachuDbContext> options) :
 
             b.HasOne(x => x.GroupBuy).WithMany().HasForeignKey(x => x.GroupBuyId);
             b.HasOne(x => x.Campaign).WithMany().HasForeignKey(x => x.CampaignId);
+        });
+
+        builder.Entity<InventoryLog>(b =>
+        {
+            b.ToTable(PikachuConsts.DbTablePrefix + "InventoryLogs", PikachuConsts.DbSchema);
+            b.ConfigureByConvention();
+
+            b.HasOne(x => x.Item).WithMany().HasForeignKey(x => x.ItemId).OnDelete(DeleteBehavior.Restrict);
+            b.HasOne(x => x.ItemDetail).WithMany().HasForeignKey(x => x.ItemDetailId).OnDelete(DeleteBehavior.Restrict);
+            b.HasOne(x => x.Order).WithMany().HasForeignKey(x => x.OrderId).OnDelete(DeleteBehavior.Restrict);
         });
     }
 }
