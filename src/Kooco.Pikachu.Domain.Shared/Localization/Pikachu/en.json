@@ -1574,6 +1574,17 @@
     "MaxCurrentStock": "Max Current Stock",
     "MinAvailableStock": "Min Available Stock",
     "MaxAvailableStock": "Max Available Stock",
+    "AdjustStock": "Adjust Stock",
+    "StockType": "Stock Type",
+    "ActionType": "Action Type",
+    "Enum:InventoryStockType.0": "Current Stock",
+    "Enum:InventoryStockType.1": "Available Stock",
+    "Enum:InventoryStockType.2": "Pre Order Quantity",
+    "Enum:InventoryStockType.3": "Available Pre Order Quantity",
+    "Enum:InventoryActionType.0": "Add Stock",
+    "Enum:InventoryActionType.1": "Deduct Stock",
+    "Enum:InventoryActionType.2": "Item Sold",
+    "NoStockAdjustmentDescription": "No stock changes have been logged for this item yet.",
     "T-CatAbnormalStatus": "Abnormal Status detected for T-Cat Order #{0}. The status code {1} suggests {2}"
   }
 }

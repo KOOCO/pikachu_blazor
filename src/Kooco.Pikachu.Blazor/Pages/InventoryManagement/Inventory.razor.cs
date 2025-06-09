@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
 using BreadcrumbItem = Volo.Abp.BlazoriseUI.BreadcrumbItem;
 
-namespace Kooco.Pikachu.Blazor.Pages.ItemManagement.InventoryManagement;
+namespace Kooco.Pikachu.Blazor.Pages.InventoryManagement;
 
 public partial class Inventory
 {
@@ -21,8 +21,10 @@ public partial class Inventory
     private int TotalCount { get; set; }
     private GetInventoryDto Filters { get; set; }
     private List<InventoryDto> Selected { get; set; }
+    private bool IsLoading { get; set; }
     private bool IsExportingSelected { get; set; }
     private bool IsExportingAll { get; set; }
+    private InventoryLogs InventoryLogsRef { get; set; }
 
     public Inventory()
     {
@@ -33,7 +35,6 @@ public partial class Inventory
     {
         PageTitle = L[PageTitle];
         BreadcrumbItems.Add(new BreadcrumbItem(PageTitle));
-        await GetInventoryListAsync();
         await base.OnInitializedAsync();
     }
 
@@ -41,6 +42,7 @@ public partial class Inventory
     {
         try
         {
+            IsLoading = true;
             var result = await InventoryAppService.GetListAsync(
                 new GetInventoryDto
                 {
@@ -49,6 +51,9 @@ public partial class Inventory
                     Sorting = CurrentSorting,
                     Filter = Filters.Filter,
                     ItemId = Filters.ItemId,
+                    Warehouse = Filters.Warehouse,
+                    Sku = Filters.Sku,
+                    Attributes = Filters.Attributes,
                     MinCurrentStock = Filters.MinCurrentStock,
                     MaxCurrentStock = Filters.MaxCurrentStock,
                     MinAvailableStock = Filters.MinAvailableStock,
@@ -58,9 +63,11 @@ public partial class Inventory
 
             InventoryList = result.Items;
             TotalCount = (int)result.TotalCount;
+            IsLoading = false;
         }
         catch (Exception ex)
         {
+            IsLoading = false;
             await HandleErrorAsync(ex);
         }
     }
@@ -78,44 +85,40 @@ public partial class Inventory
         await InvokeAsync(StateHasChanged);
     }
 
-    private void Edit(InventoryDto member)
+    async Task Edit(InventoryDto inventory)
     {
-        //NavigationManager.NavigateTo("/Members/Details/" + member.Id);
+        await InventoryLogsRef.Show(inventory);
     }
 
-    private async Task ExportAsync()
+    private async Task ExportAsync(bool exportAll)
     {
-        if (Selected is not { Count: > 0 }) return;
         try
         {
-            IsExportingSelected = true;
-            await Task.Delay(2000);
-            //await ExcelDownloadHelper.DownloadExcelAsync(SelectedMembers, L["Members"] + ".xlsx");
+            SetExportingState(exportAll, true);
+
+            var items = exportAll ? null : Selected;
+            if (!exportAll && (items is null || items.Count == 0)) return;
+
+            var inventoryFile = await InventoryAppService.GetListAsExcelAsync(items);
+            await ExcelDownloadHelper.DownloadExcelAsync(inventoryFile);
+
             Selected = [];
-            IsExportingSelected = false;
         }
         catch (Exception ex)
         {
             await HandleErrorAsync(ex);
-            IsExportingSelected = false;
+        }
+        finally
+        {
+            SetExportingState(exportAll, false);
         }
     }
 
-    private async Task ExportAllAsync()
+    private void SetExportingState(bool exportAll, bool isExporting)
     {
-        try
-        {
-            IsExportingAll = true;
-            await Task.Delay(2000);
-            //var allMembers = await MemberAppService.GetAllAsync();
-            //await ExcelDownloadHelper.DownloadExcelAsync(allMembers, L["Members"] + ".xlsx");
-            IsExportingAll = false;
-        }
-        catch (Exception ex)
-        {
-            await HandleErrorAsync(ex);
-            IsExportingAll = false;
-        }
+        IsExportingAll = exportAll && isExporting;
+        IsExportingSelected = !exportAll && isExporting;
+        StateHasChanged();
     }
 
     private async Task ApplyFilters()
