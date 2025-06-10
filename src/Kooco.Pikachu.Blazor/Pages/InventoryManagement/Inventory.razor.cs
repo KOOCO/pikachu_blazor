@@ -87,7 +87,7 @@ public partial class Inventory
 
     async Task Edit(InventoryDto inventory)
     {
-        await InventoryLogsRef.Show(inventory);
+        NavigationManager.NavigateTo($"Inventory-Management/Inventory-Logs/{inventory.ItemId}/{inventory.ItemDetailId}");
     }
 
     private async Task ExportAsync(bool exportAll)

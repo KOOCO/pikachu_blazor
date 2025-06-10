@@ -1,4 +1,5 @@
-﻿using MiniExcelLibs;
+﻿using Kooco.Pikachu.Items;
+using MiniExcelLibs;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -7,6 +8,7 @@ using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Content;
+using Volo.Abp.Domain.Entities;
 
 namespace Kooco.Pikachu.InventoryManagement;
 
@@ -18,6 +20,19 @@ public class InventoryAppService : PikachuAppService, IInventoryAppService
     public InventoryAppService(IInventoryRepository inventoryRepository)
     {
         _inventoryRepository = inventoryRepository;
+    }
+
+    public async Task<InventoryDto> GetAsync(Guid itemId, Guid itemDetailId)
+    {
+        var queryable = await _inventoryRepository.GetFilteredQueryableAsync(
+            itemId: itemId, 
+            itemDetailIds: [itemDetailId]
+            );
+
+        return queryable
+            .Select(x => ObjectMapper.Map<InventoryModel, InventoryDto>(x))
+            .FirstOrDefault()
+            ?? throw new EntityNotFoundException(typeof(ItemDetails));
     }
 
     public async Task<PagedResultDto<InventoryDto>> GetListAsync(GetInventoryDto input)

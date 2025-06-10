@@ -3,6 +3,7 @@
 @using Kooco.Pikachu.InventoryManagement
 @inherits PikachuComponentBase
 @inject AbpBlazorMessageLocalizerHelper<PikachuResource> LH
+@inject IInventoryLogAppService InventoryLogAppService
 
 <Modal @ref="ModalRef">
     <ModalContent Centered Size="ModalSize.Large">

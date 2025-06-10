@@ -412,6 +412,7 @@ public class PikachuApplicationAutoMapperProfile : Profile
             .ForMember(dest => dest.GroupBuyName, opt => opt.MapFrom(src => src.GroupBuy != null ? src.GroupBuy.GroupBuyName : null));
         CreateMap<EdmDto, CreateEdmDto>();
 
-        CreateMap<InventoryModel, InventoryDto>(); 
+        CreateMap<InventoryModel, InventoryDto>();
+        CreateMap<InventoryLog, InventoryLogDto>();
     }
 }

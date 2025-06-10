@@ -2256,14 +2256,22 @@ public class OrderAppService : PikachuAppService, IOrderAppService
         return string.Concat(orderNo, randomNumeric);
     }
 
-    public async Task UpdateLogisticStatusAsync(string merchantTradeNo, string rtnMsg, int rtnCode = 0)
+    public async Task UpdateLogisticStatusAsync(string merchantTradeNo, string rtnMsg,string? allPayLogisticsID=null,  int rtnCode = 0)
     {
         var order = await OrderRepository.MatchOrderExtraPropertiesByMerchantTradeNoAsync(merchantTradeNo);
+
         if (order is null)
         {
             return;
         }
+        OrderDelivery? orderDelivery = null;
 
+        if (!string.IsNullOrWhiteSpace(allPayLogisticsID))
+        {
+            using (DataFilter.Disable<IMultiTenant>())
+                orderDelivery = await OrderDeliveryRepository
+                    .FirstOrDefaultAsync(x => x.AllPayLogisticsID == allPayLogisticsID);
+        }
         // Capture old logistics status and shipping status before updating
         var oldLogisticsStatus = order.EcpayLogisticsStatus;
         var oldShippingStatus = order.ShippingStatus;
@@ -2346,18 +2354,35 @@ public class OrderAppService : PikachuAppService, IOrderAppService
                 (toBeShippedCodes.TryGetValue(deliveryMethod, out var toBeShippedRtnCodes) && toBeShippedRtnCodes.Contains(rtnCode)))
             {
                 order.ShippingStatus = ShippingStatus.ToBeShipped;
+                if (orderDelivery != null)
+                {
+                    orderDelivery.DeliveryStatus = DeliveryStatus.ToBeShipped;
+                }
             }
             else if (shippedCodes.TryGetValue(deliveryMethod, out var shippedRtnCodes) && shippedRtnCodes.Contains(rtnCode))
             {
                 order.ShippingStatus = ShippingStatus.Shipped;
+                if (orderDelivery != null)
+                {
+                    orderDelivery.DeliveryStatus = DeliveryStatus.Shipped;
+                }
+
             }
             else if (deliveredCodes.TryGetValue(deliveryMethod, out var deliveredRtnCodes) && deliveredRtnCodes.Contains(rtnCode))
             {
                 order.ShippingStatus = ShippingStatus.Delivered;
+                if (orderDelivery != null)
+                {
+                    orderDelivery.DeliveryStatus = DeliveryStatus.Delivered;
+                }
             }
             else if (completedCodes.TryGetValue(deliveryMethod, out var completedRtnCodes) && completedRtnCodes.Contains(rtnCode))
             {
                 order.ShippingStatus = ShippingStatus.Completed;
+                if (orderDelivery != null)
+                {
+                    orderDelivery.DeliveryStatus = DeliveryStatus.Completed;
+                }
             }
             else if (returnedCodes.TryGetValue(deliveryMethod, out var returnedRtnCodes) && returnedRtnCodes.Contains(rtnCode))
             {
@@ -2374,6 +2399,10 @@ public class OrderAppService : PikachuAppService, IOrderAppService
         }
 
         await OrderRepository.UpdateAsync(order);
+        if (orderDelivery != null)
+        {
+            await OrderDeliveryRepository.UpdateAsync(orderDelivery);
+        }
     }
 
     [AllowAnonymous]

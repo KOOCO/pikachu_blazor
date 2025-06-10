@@ -15,7 +15,7 @@ namespace Kooco.Pikachu.Orders.Interfaces
     {
         Task AddValuesAsync(Guid id, string checkMacValue, string merchantTradeNo, PaymentMethods? paymentMethod = null);
         string GenerateMerchantTradeNo(string orderNo);
-        Task UpdateLogisticStatusAsync(string merchantTradeNo, string rtnMsg, int rtnCode = 0);
+        Task UpdateLogisticStatusAsync(string merchantTradeNo, string rtnMsg,string? allPayLogisticsID=null, int rtnCode = 0);
         Task AddValuesAsync(Guid id, string checkMacValue, string merchantTradeNo);
         Task<OrderDto> GetOrderAsync(Guid groupBuyId, string orderNo, string extraInfo);
         Task<OrderDto> UpdateOrderPaymentMethodAsync(OrderPaymentMethodRequest request);
