@@ -24,7 +24,6 @@ public partial class Inventory
     private bool IsLoading { get; set; }
     private bool IsExportingSelected { get; set; }
     private bool IsExportingAll { get; set; }
-    private InventoryLogs InventoryLogsRef { get; set; }
 
     public Inventory()
     {
@@ -85,7 +84,7 @@ public partial class Inventory
         await InvokeAsync(StateHasChanged);
     }
 
-    async Task Edit(InventoryDto inventory)
+    void Edit(InventoryDto inventory)
     {
         NavigationManager.NavigateTo($"Inventory-Management/Inventory-Logs/{inventory.ItemId}/{inventory.ItemDetailId}");
     }

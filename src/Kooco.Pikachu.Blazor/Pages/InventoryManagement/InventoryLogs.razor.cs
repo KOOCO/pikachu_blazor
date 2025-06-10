@@ -1,3 +1,6 @@
+using Blazorise;
+using Kooco.Pikachu.Blazor.Helpers;
+using Kooco.Pikachu.Blazor.Pages.ItemManagement;
 using Kooco.Pikachu.InventoryManagement;
 using Microsoft.AspNetCore.Components;
 using System;
@@ -17,10 +20,12 @@ public partial class InventoryLogs
     protected BreadcrumbItem InventoryBreadcrumb { get; set; }
     protected List<BreadcrumbItem> BreadcrumbItems { get; set; } = [];
     private InventoryDto Inventory { get; set; }
+    private InventoryLogDto SelectedLog { get; set; }
     private IReadOnlyList<InventoryLogDto> InventoryLogList { get; set; } = [];
     private bool IsLoading { get; set; }
     private bool IsExporting { get; set; }
     private AdjustStockModal AdjustStockModalRef { get; set; }
+    private Modal ViewModalRef { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -65,9 +70,23 @@ public partial class InventoryLogs
 
     async Task Export()
     {
-        IsExporting = true;
-        await Task.Delay(2000);
-        IsExporting = false;
+        try
+        {
+            IsExporting = true;
+
+            var inventoryLogFile = await InventoryLogAppService.GetListAsExcelAsync([.. InventoryLogList]);
+
+            await ExcelDownloadHelper.DownloadExcelAsync(inventoryLogFile);
+
+        }
+        catch (Exception ex)
+        {
+            await HandleErrorAsync(ex);
+        }
+        finally
+        {
+            IsExporting = false;
+        }
     }
 
     async Task AdjustStock()
@@ -80,6 +99,19 @@ public partial class InventoryLogs
         if (saved)
         {
             await GetLogsAsync();
+        }
+    }
+
+    async Task View(InventoryLogDto log)
+    {
+        if (log.ActionType == InventoryActionType.ItemSold)
+        {
+            NavigationManager.NavigateTo("Orders/Order-Details/" + log.OrderId);
+        }
+        else
+        {
+            SelectedLog = log;
+            await ViewModalRef.Show();
         }
     }
 }

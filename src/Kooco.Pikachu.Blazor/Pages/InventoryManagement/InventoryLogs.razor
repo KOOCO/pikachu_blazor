@@ -4,7 +4,21 @@
 @inject IInventoryAppService InventoryAppService
 @inject IInventoryLogAppService InventoryLogAppService
 @inject NavigationManager NavigationManager
+@inject ExcelDownloadHelper ExcelDownloadHelper
 
+<style>
+    .table.table-striped > tbody > tr:nth-of-type(odd) > td, .table.table-bordered > tbody > tr:nth-of-type(odd) > td {
+        background-color: transparent;
+        color: #1f1f1f !important;
+        font-weight: 500;
+    }
+
+    .table.table-striped > tbody > tr:nth-of-type(even) > td, .table.table-bordered > tbody > tr:nth-of-type(even) > td {
+        background-color: transparent;
+        color: #1f1f1f !important;
+        font-weight: 500;
+    }
+</style>
 <PageHeader Title="@PageTitle" BreadcrumbItems="@BreadcrumbItems">
     <Div Class="d-flex align-items-end justify-content-end gap-1">
         <PikachuButton Class="pk-btn-sm pk-btn-primary"
@@ -29,7 +43,7 @@
 
 <Card>
     <CardBody>
-        <Table Bordered Striped>
+        <Table Bordered Class="text-dark">
             <TableHeader>
                 <TableRow>
                     <TableHeaderCell>@L["SKU"]</TableHeaderCell>
@@ -62,7 +76,20 @@
                             <TableRow>
                                 <TableRowCell>@log.Sku</TableRowCell>
                                 <TableRowCell>@log.CreationTime.ToString("MM/dd/yyyy HH:mm:ss")</TableRowCell>
-                                <TableRowCell>Stock Added</TableRowCell>
+                                <TableRowCell>
+                                    @switch (log.ActionType)
+                                    {
+                                        case InventoryActionType.AddStock:
+                                            @L["StockAdded"]
+                                            break;
+                                        case InventoryActionType.DeductStock:
+                                            @L["StockDeducted"]
+                                            break;
+                                        case InventoryActionType.ItemSold:
+                                            @L["ItemSold", log.OrderNumber]
+                                            break;
+                                    }
+                                </TableRowCell>
                                 <TableRowCell>
                                     <InventoryLogsAmountComponent Value="log" ExpectedStockType="InventoryStockType.CurrentStock" />
                                 </TableRowCell>
@@ -76,7 +103,7 @@
                                     <InventoryLogsAmountComponent Value="log" ExpectedStockType="InventoryStockType.AvailablePreOrderQuantity" />
                                 </TableRowCell>
                                 <TableRowCell TextAlignment="TextAlignment.Center">
-                                    <Button Class="pk-btn-icon indigo">
+                                    <Button Class="pk-btn-icon indigo" Clicked="() => View(log)">
                                         <Icon Name="IconName.Eye"></Icon>
                                     </Button>
                                 </TableRowCell>
@@ -98,4 +125,30 @@
         </Table>
     </CardBody>
 </Card>
+
 <AdjustStockModal @ref="AdjustStockModalRef" OnClosed="OnStockAdjustment" />
+
+<Modal @ref="ViewModalRef">
+    <ModalContent Centered Size="ModalSize.Large">
+        <Form>
+            <ModalHeader>
+                <ModalTitle>
+                    <h4 class="text-dark m-0">@SelectedLog?.Sku</h4>
+                </ModalTitle>
+                <CloseButton />
+            </ModalHeader>
+            <ModalBody>
+                <Paragraph>
+                    @SelectedLog?.Description
+                </Paragraph>
+            </ModalBody>
+            <ModalFooter>
+                <PikachuButton Class="pk-btn-sm pk-btn-danger"
+                               Clicked="ViewModalRef.Hide"
+                               Style="width: 75px;">
+                    @L["Close"]
+                </PikachuButton>
+            </ModalFooter>
+        </Form>
+    </ModalContent>
+</Modal>

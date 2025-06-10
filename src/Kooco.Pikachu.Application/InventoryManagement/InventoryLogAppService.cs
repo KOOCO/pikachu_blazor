@@ -1,7 +1,11 @@
-﻿using System;
+﻿using MiniExcelLibs;
+using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Volo.Abp;
+using Volo.Abp.Content;
 
 namespace Kooco.Pikachu.InventoryManagement;
 
@@ -46,5 +50,63 @@ public class InventoryLogAppService : PikachuAppService, IInventoryLogAppService
     {
         var inventoryLogs = await _inventoryLogRepository.GetListAsync(itemId, itemDetailId);
         return ObjectMapper.Map<List<InventoryLog>, List<InventoryLogDto>>(inventoryLogs);
+    }
+
+    public async Task<IRemoteStreamContent> GetListAsExcelAsync(List<InventoryLogDto> input)
+    {
+        var headers = new Dictionary<string, string>
+        {
+            { "SKU", L["SKU"] },
+            { "Timestamp", L["Timestamp"] },
+            { "Action", L["Action"] },
+            { "CurrentStock", L["CurrentStock"] },
+            { "AvailableStock", L["AvailableStock"] },
+            { "PreOrderQuantity", L["PreOrderQuantity"] },
+            { "AvailablePreOrderQuantity", L["AvailablePreOrderQuantity"] }
+        };
+
+        var excelData = input.Select(log => new Dictionary<string, object>
+        {
+            { headers["SKU"], log.Sku },
+            { headers["Timestamp"], log.CreationTime.ToString("MM/dd/yyyy HH:mm:ss") },
+            { headers["Action"], Action(log) },
+            { headers["CurrentStock"], AmountString(InventoryStockType.CurrentStock, log) },
+            { headers["AvailableStock"], AmountString(InventoryStockType.AvailableStock, log) },
+            { headers["PreOrderQuantity"], AmountString(InventoryStockType.PreOrderQuantity, log) },
+            { headers["AvailablePreOrderQuantity"], AmountString(InventoryStockType.AvailablePreOrderQuantity, log) }
+        });
+
+        if (!excelData.Any())
+        {
+            excelData =
+            [
+                headers.ToDictionary(k => k.Value, k => (object)string.Empty)
+            ];
+        }
+
+        var memoryStream = new MemoryStream();
+        await memoryStream.SaveAsAsync(excelData);
+        memoryStream.Seek(0, SeekOrigin.Begin);
+
+        string fileName = L["InventoryLogs"] + $" - {DateTime.Now:yyyy-MM-dd HH:mm:ss}.xlsx";
+        return new RemoteStreamContent(memoryStream, fileName, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+    }
+
+    static string AmountString(InventoryStockType expectedStockType, InventoryLogDto value)
+    {
+        return value == null || value.StockType != expectedStockType
+            ? "+0"
+            : (value.ActionType == InventoryActionType.AddStock ? "+" : "-") + value.Amount;
+    }
+
+    private string Action(InventoryLogDto value)
+    {
+        return value.ActionType switch
+        {
+            InventoryActionType.AddStock => L["StockAdded"],
+            InventoryActionType.DeductStock => L["StockDeducted"],
+            InventoryActionType.ItemSold => L["ItemSold", value.OrderNumber],
+            _ => string.Empty,
+        };
     }
 }

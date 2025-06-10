@@ -410,14 +410,16 @@
                                         <NumericEdit Class="form-control form-control-sm"
                                                      @bind-Value="@item.StockOnHand"
                                                      @onchange="(e) => OnStockOnHandChanged(e, item)"
-                                                     Style="min-width: 100px;" />
+                                                     Style="min-width: 100px;"
+                                                     Disabled="@item.Id.HasValue"/>
                                     </TableRowCell>
                                     <TableRowCell>
                                          <div class="position-relative" @onmouseenter="() => ShowTooltipFor(item)" @onmouseleave="HideTooltip">
                                                 <NumericEdit class="@GetInputClass(item)"
                                                              @bind-Value="@item.SaleableQuantity"
                                                              @onchange="(e) => OnSaleableQuantityChanged(e, item)"
-                                                             style="min-width: 100px;" />
+                                                             style="min-width: 100px;"
+                                                             Disabled="@item.Id.HasValue"/>
 
                                                 @if (ValidationErrors.ContainsKey(item) && TooltipVisibleItem == item)
                                                 {
@@ -429,10 +431,18 @@
                                     </TableRowCell>
 
                                     <TableRowCell>
-                                        <NumericEdit Class="form-control form-control-sm" Style="min-width: 100px;" @bind-Value="@item.PreOrderableQuantity"></NumericEdit>
+                                        <NumericEdit Class="form-control form-control-sm" 
+                                                     Style="min-width: 100px;" 
+                                                     @bind-Value="@item.PreOrderableQuantity"
+                                                     Disabled="@item.Id.HasValue">
+                                        </NumericEdit>
                                     </TableRowCell>
                                     <TableRowCell>
-                                        <NumericEdit Class="form-control form-control-sm" Style="min-width: 100px;" @bind-Value="@item.SaleablePreOrderQuantity"></NumericEdit>
+                                        <NumericEdit Class="form-control form-control-sm" 
+                                                     Style="min-width: 100px;" 
+                                                     @bind-Value="@item.SaleablePreOrderQuantity"
+                                                     Disabled="@item.Id.HasValue">
+                                        </NumericEdit>
                                     </TableRowCell>
                                     <TableRowCell>
                                         <NumericEdit class="form-control form-control-sm" Style="min-width: 100px;" @bind-Value="@item.LimitQuantity"></NumericEdit>
