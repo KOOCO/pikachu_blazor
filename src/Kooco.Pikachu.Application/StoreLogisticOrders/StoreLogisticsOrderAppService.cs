@@ -1,4 +1,5 @@
 ﻿using Kooco.Pikachu.DeliveryTemperatureCosts;
+using Kooco.Pikachu.DeliveryTempratureCosts;
 using Kooco.Pikachu.Emails;
 using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Groupbuys;
@@ -37,6 +38,7 @@ using Volo.Abp.Application.Services;
 using Volo.Abp.BackgroundJobs;
 using Volo.Abp.Data;
 using Volo.Abp.Domain.Entities;
+using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Emailing;
 using Volo.Abp.Uow;
 
@@ -79,7 +81,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
     private readonly IEmailSender _emailSender;
     private readonly IEmailAppService _emailAppService;
     private readonly OrderHistoryManager _orderHistoryManager;
-    private readonly IDeliveryTemperatureCostRepository _deliveryTemperatureCostRepository;
+    private readonly IRepository<DeliveryTemperatureCost, Guid> _deliveryTemperatureCostRepository;
     #endregion
 
     #region Constructor
@@ -99,7 +101,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
         ITenantSettingsAppService tenantSettingsAppService,
         IEmailAppService emailAppService,
         OrderHistoryManager orderHistoryManager,
-        IDeliveryTemperatureCostRepository deliveryTemperatureCostRepository
+        IRepository<DeliveryTemperatureCost, Guid> deliveryTemperatureCostRepository
     )
     {
         _orderRepository = orderRepository;

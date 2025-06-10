@@ -1471,7 +1471,8 @@ public partial class OrderDetails
                             await _storeLogisticsOrderAppService.IssueInvoiceAync(Order.Id);
                         }
                     }
-                    else if(logisticProvider is LogisticProviders.EcPayHomeDelivery)
+
+                    else if (logisticProvider is LogisticProviders.EcPayHomeDelivery && (deliveryMethod is DeliveryMethod.PostOffice || deliveryMethod is DeliveryMethod.BlackCat1))
                     {
                         ResponseResultDto result = await _storeLogisticsOrderAppService.CreateEcPayHomeDeliveryShipmentOrderAsync(
                             Order.Id,
