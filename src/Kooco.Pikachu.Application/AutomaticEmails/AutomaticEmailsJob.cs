@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using Volo.Abp.BackgroundJobs;
 using Volo.Abp.DependencyInjection;
 using Volo.Abp.Emailing;
+using Volo.Abp.MultiTenancy;
 
 namespace Kooco.Pikachu.AutomaticEmails
 {
@@ -20,16 +21,19 @@ namespace Kooco.Pikachu.AutomaticEmails
         private readonly IEmailSender _emailSender;
         private readonly IGroupBuyAppService _groupBuyAppService;
         private readonly IAutomaticEmailAppService _automaticEmailAppService;
+        private readonly ICurrentTenant _currentTenant;
 
         public AutomaticEmailsJob(
             IEmailSender emailSender,
             IGroupBuyAppService groupBuyAppService,
-            IAutomaticEmailAppService automaticEmailAppService
+            IAutomaticEmailAppService automaticEmailAppService,
+            ICurrentTenant currentTenant
             )
         {
             _emailSender = emailSender;
             _groupBuyAppService = groupBuyAppService;
             _automaticEmailAppService = automaticEmailAppService;
+            _currentTenant = currentTenant;
         }
 
         public override async Task ExecuteAsync(Guid id)
@@ -81,7 +85,10 @@ namespace Kooco.Pikachu.AutomaticEmails
 
                     args.RecipientsList?.ForEach(mailMessage.To.Add);
 
-                    await _emailSender.SendAsync(mailMessage);
+                    using (_currentTenant.Change(args.TenantId))
+                    {
+                        await _emailSender.SendAsync(mailMessage);
+                    }
                     await _automaticEmailAppService.UpdateJobStatusAsync(id, JobStatus.Success, args.TenantId);
                 }
             }
