@@ -350,9 +350,10 @@ public class OrderController : AbpController, IOrderAppService
                 CVSValidationNo = Request.Form["CVSValidationNo"],
                 BookingNote = Request.Form["BookingNote"],
                 CheckMacValue = Request.Form["CheckMacValue"],
+                AllPayLogisticsID = Request.Form["AllPayLogisticsID"]
             };
 
-            await _ordersAppService.UpdateLogisticStatusAsync(ecpayRequest.MerchantTradeNo!, ecpayRequest.RtnMsg!, ecpayRequest.RtnCode);
+            await _ordersAppService.UpdateLogisticStatusAsync(ecpayRequest.MerchantTradeNo!, ecpayRequest.RtnMsg!, ecpayRequest.AllPayLogisticsID, ecpayRequest.RtnCode);
 
             return Ok("1|OK");
         }
@@ -596,9 +597,9 @@ public class OrderController : AbpController, IOrderAppService
     }
 
     [HttpPost("update-logisticsStatus")]
-    public Task UpdateLogisticStatusAsync(string merchantTradeNo, string rtnMsg, int rtnCode = 0)
+    public Task UpdateLogisticStatusAsync(string merchantTradeNo, string rtnMsg,string? allPayLogisticsID=null, int rtnCode = 0)
     {
-        return _ordersAppService.UpdateLogisticStatusAsync(merchantTradeNo, rtnMsg);
+        return _ordersAppService.UpdateLogisticStatusAsync(merchantTradeNo, rtnMsg, allPayLogisticsID);
     }
 
     [HttpPost("change-order-status/{id}/{status}")]

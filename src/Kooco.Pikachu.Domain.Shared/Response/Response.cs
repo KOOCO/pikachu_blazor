@@ -208,4 +208,5 @@ public class EcpayRequest()
     public string CVSValidationNo { get; set; }
     public string BookingNote { get; set; }
     public string CheckMacValue { get; set; }
+    public string AllPayLogisticsID { get; set; }
 }
