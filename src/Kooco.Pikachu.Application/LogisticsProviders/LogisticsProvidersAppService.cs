@@ -1096,7 +1096,7 @@ public class LogisticsProvidersAppService : ApplicationService, ILogisticsProvid
                 { "MainIslands", result.MainIslands },
                 { "IsOuterIslands", result.IsOuterIslands },
                 { "OuterIslands", result.OuterIslands },
-                 {"IsEnable",result.IsEnabled },
+               
             };
 
             return keyValuePairs;
