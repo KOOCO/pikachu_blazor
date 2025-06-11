@@ -5,6 +5,7 @@ using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Freebies;
 using Kooco.Pikachu.Groupbuys;
 using Kooco.Pikachu.GroupBuys;
+using Kooco.Pikachu.InventoryManagement;
 using Kooco.Pikachu.Items;
 using Kooco.Pikachu.Members;
 using Kooco.Pikachu.Members.MemberTags;
@@ -197,10 +198,12 @@ public class OrderAppService : PikachuAppService, IOrderAppService
                             else
                             {
                                 // Proceed with updating the stock if sufficient
-                                details.SaleableQuantity = details.SaleableQuantity - item.Quantity;
-                                details.StockOnHand = details.StockOnHand - item.Quantity;
+                                //details.SaleableQuantity = details.SaleableQuantity - item.Quantity;
+                                //details.StockOnHand = details.StockOnHand - item.Quantity;
 
-                                await ItemDetailsRepository.UpdateAsync(details);
+                                await InventoryLogManager.ItemSoldAsync(order, details, item.Quantity);
+
+                                //await ItemDetailsRepository.UpdateAsync(details);
                             }
                         }
 
@@ -234,10 +237,12 @@ public class OrderAppService : PikachuAppService, IOrderAppService
                                             else
                                             {
                                                 // Proceed with updating the stock if sufficient
-                                                detail.SaleableQuantity -= totalOrderQuantity;
-                                                detail.StockOnHand -= totalOrderQuantity;
+                                                //detail.SaleableQuantity -= totalOrderQuantity;
+                                                //detail.StockOnHand -= totalOrderQuantity;
 
-                                                await ItemDetailsRepository.UpdateAsync(detail);
+                                                await InventoryLogManager.ItemSoldAsync(order, detail, totalOrderQuantity);
+
+                                                //await ItemDetailsRepository.UpdateAsync(detail);
                                             }
                                         }
                                     }
@@ -2895,4 +2900,5 @@ public class OrderAppService : PikachuAppService, IOrderAppService
     public required IMemberRepository MemberRepository { get; init; }
     public required ITenantTripartiteRepository TenantTripartiteRepository { get; init; }
     public required ICampaignRepository CampaignRepository { get; init; }
+    public required InventoryLogManager InventoryLogManager { get; init; }
 }

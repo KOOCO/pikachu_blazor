@@ -24,7 +24,7 @@
         </PikachuButton>
         <PikachuButton Class="pk-btn-sm pk-btn-primary"
                        Clicked="() => ExportAsync(exportAll: true)"
-                       Disabled="IsExportingSelected"
+                       Disabled="IsExportingSelected || TotalCount == 0"
                        Loading="IsExportingAll"
                        IconClass="fas fa-file-download">
             @L["ExportAll"]
