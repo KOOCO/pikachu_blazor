@@ -1567,6 +1567,22 @@ public partial class OrderDetails
                             await _storeLogisticsOrderAppService.IssueInvoiceAync(Order.Id);
                         }
                     }
+                    else if (logisticProvider is LogisticProviders.EcPayHomeDelivery && (deliveryMethod is DeliveryMethod.BlackCatFreeze))
+                    {
+                        ResponseResultDto result = await _storeLogisticsOrderAppService.CreateEcPayHomeDeliveryShipmentOrderAsync(
+                            Order.Id,
+                            OrderDeliveryId,
+                            deliveryMethod);
+                        if (result.ResponseCode is not "1")
+                        {
+                            await _uiMessageService.Error(result.ResponseMessage);
+                            loading = false;
+                        }
+                        else if (result.ResponseCode is "1")
+                        {
+                            await _storeLogisticsOrderAppService.IssueInvoiceAync(Order.Id);
+                        }
+                    }
                 }
                 else if (temperature is ItemStorageTemperature.Frozen)
                 {
@@ -1625,6 +1641,22 @@ public partial class OrderDetails
                         if (result.ResponseCode is not "1")
                         {
                             await _uiMessageService.Error(result.ResponseMessage);
+                        }
+                        else if (result.ResponseCode is "1")
+                        {
+                            await _storeLogisticsOrderAppService.IssueInvoiceAync(Order.Id);
+                        }
+                    }
+                    else if (logisticProvider is LogisticProviders.EcPayHomeDelivery && (deliveryMethod is DeliveryMethod.BlackCatFrozen))
+                    {
+                        ResponseResultDto result = await _storeLogisticsOrderAppService.CreateEcPayHomeDeliveryShipmentOrderAsync(
+                            Order.Id,
+                            OrderDeliveryId,
+                            deliveryMethod);
+                        if (result.ResponseCode is not "1")
+                        {
+                            await _uiMessageService.Error(result.ResponseMessage);
+                            loading = false;
                         }
                         else if (result.ResponseCode is "1")
                         {
