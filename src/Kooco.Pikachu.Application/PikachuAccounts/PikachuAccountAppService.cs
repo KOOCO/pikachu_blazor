@@ -1,5 +1,6 @@
 ﻿using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Identity;
+using Kooco.Pikachu.Members;
 using Kooco.Pikachu.PikachuAccounts.ExternalUsers;
 using Kooco.Pikachu.Tenants;
 using Kooco.Pikachu.Users;
@@ -25,7 +26,7 @@ using IdentityUser = Volo.Abp.Identity.IdentityUser;
 namespace Kooco.Pikachu.PikachuAccounts;
 
 [RemoteService(IsEnabled = false)]
-public class PikachuAccountAppService(IConfiguration configuration, IdentityUserManager identityUserManager,
+public class PikachuAccountAppService(IConfiguration configuration, IMemberRepository memberRepository, IdentityUserManager identityUserManager,
     IIdentityRoleRepository identityRoleRepository, IMemoryCache memoryCache, IEmailSender emailSender,
     IMyIdentityUserRepository identityUserRepository, IExternalUserAppService externalUserAppService,
     ITenantSettingsAppService tenantSettingsAppService) : PikachuAppService, IPikachuAccountAppService
@@ -56,6 +57,8 @@ public class PikachuAccountAppService(IConfiguration configuration, IdentityUser
     public async Task<PikachuLoginResponseDto> LoginAsync(PikachuLoginInputDto input)
     {
         ValidateLogin(input);
+        var isMember = await memberRepository.FindMemberByEmailAsync(input.UserNameOrEmailAddress);
+      
 
         var selfUrl = configuration["App:SelfUrl"] ?? "";
 
@@ -125,7 +128,7 @@ public class PikachuAccountAppService(IConfiguration configuration, IdentityUser
         };
     }
 
-    private static void ValidateLogin(PikachuLoginInputDto input)
+    private static async void ValidateLogin(PikachuLoginInputDto input)
     {
         var result = new List<ValidationResult>();
         var requiredMembers = new List<string>();
@@ -146,6 +149,7 @@ public class PikachuAccountAppService(IConfiguration configuration, IdentityUser
             {
                 requiredMembers.Add(nameof(input.Password));
             }
+        
         }
         else
         {

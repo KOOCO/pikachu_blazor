@@ -11,6 +11,7 @@ namespace Kooco.Pikachu.Members;
 public interface IMemberRepository : IIdentityUserRepository, IRepository<IdentityUser, Guid>
 {
     Task<MemberModel> GetMemberAsync(Guid memberId);
+    Task<MemberModel> FindMemberByEmailAsync(string Email);
 
     Task<long> GetCountAsync(string? filter = null, string? memberType = null, IEnumerable<string>? selectedMemberTags = null,
         DateTime? minCreationTime = null, DateTime? maxCreationTime = null, int? minOrderCount = null, int? maxOrderCount = null,

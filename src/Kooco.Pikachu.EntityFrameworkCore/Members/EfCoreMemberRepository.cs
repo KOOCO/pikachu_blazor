@@ -28,7 +28,8 @@ public class EfCoreMemberRepository(IDbContextProvider<PikachuDbContext> pikachu
     public async Task<MemberModel> GetMemberAsync(Guid memberId)
     {
         var dbContext = await GetPikachuDbContextAsync();
-        var user = await dbContext.Users.FirstOrDefaultAsync(m => m.Id == memberId)
+        var memberRole = await dbContext.Roles.FirstOrDefaultAsync(x => x.Name == MemberConsts.Role);
+        var user = await dbContext.Users.Include(x=>x.Roles).Where(user => memberRole != null && user.Roles.Any(role => role.RoleId == memberRole.Id)).FirstOrDefaultAsync(m => m.Id == memberId)
             ?? throw new EntityNotFoundException(typeof(IdentityUser), memberId);
 
         return new MemberModel
@@ -48,7 +49,30 @@ public class EfCoreMemberRepository(IDbContextProvider<PikachuDbContext> pikachu
                 .ThenBy(tag => tag.Name)]
         };
     }
+    public async Task<MemberModel> FindMemberByEmailAsync(string Email)
+    {
+        var dbContext = await GetPikachuDbContextAsync();
+        var memberRole = await dbContext.Roles.FirstOrDefaultAsync(x => x.Name == MemberConsts.Role);
+        var user = await dbContext.Users.Include(x => x.Roles).Where(user => memberRole != null && user.Roles.Any(role => role.RoleId == memberRole.Id)).FirstOrDefaultAsync(m => m.NormalizedEmail == Email.ToUpper()||m.NormalizedUserName==Email.ToUpper())
+            ?? throw new EntityNotFoundException("Member Not Found");
 
+        return new MemberModel
+        {
+            Id = user.Id,
+            UserName = user.UserName,
+            Name = user.Name,
+            PhoneNumber = user.PhoneNumber,
+            Email = user.Email,
+            Birthday = (DateTime?)user.GetProperty(Constant.Birthday, null),
+            TotalOrders = dbContext.Orders.Where(x => x.UserId == user.Id).Count(),
+            TotalSpent = (int)dbContext.Orders.Where(x => x.UserId == user.Id && (x.OrderStatus != EnumValues.OrderStatus.Exchange && x.OrderStatus != EnumValues.OrderStatus.Refund)).Sum(x => x.TotalAmount),
+            MemberTags = [.. dbContext.MemberTags.AsNoTracking()
+                .Where(x => x.UserId == user.Id)
+                .OrderBy(tag => !MemberConsts.MemberTags.Names.Contains(tag.Name))
+                .ThenBy(tag => !tag.VipTierId.HasValue)
+                .ThenBy(tag => tag.Name)]
+        };
+    }
     public async Task<long> GetCountAsync(string? filter = null, string? memberType = null, IEnumerable<string>? selectedMemberTags = null,
         DateTime? minCreationTime = null, DateTime? maxCreationTime = null, int? minOrderCount = null, int? maxOrderCount = null,
         int? minSpent = null, int? maxSpent = null, bool? isSystemAssigned = null)
