@@ -57,7 +57,10 @@ public class PikachuAccountAppService(IConfiguration configuration, IMemberRepos
     public async Task<PikachuLoginResponseDto> LoginAsync(PikachuLoginInputDto input)
     {
         ValidateLogin(input);
-        var isMember = await memberRepository.FindMemberByEmailAsync(input.UserNameOrEmailAddress);
+        if (!input.UserNameOrEmailAddress.IsNullOrWhiteSpace())
+        {
+            var isMember = await memberRepository.FindMemberByEmailAsync(input.UserNameOrEmailAddress);
+        }
       
 
         var selfUrl = configuration["App:SelfUrl"] ?? "";
