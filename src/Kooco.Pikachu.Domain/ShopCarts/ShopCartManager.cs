@@ -29,26 +29,27 @@ public class ShopCartManager(IShopCartRepository shopCartRepository, IItemReposi
         return shopCart;
     }
 
-    public async Task<ShopCart> AddCartItem(ShopCart shopCart, int quantity, int unitPrice, Guid? itemId, 
+    public async Task<ShopCart> AddCartItem(ShopCart shopCart, int quantity, int groupBuyPrice, int sellingPrice, Guid? itemId, 
         Guid? itemDetailId, Guid? setItemId)
     {
         Check.NotNull(shopCart, nameof(shopCart));
         Check.Range(quantity, nameof(quantity), 0, int.MaxValue);
-        Check.Range(unitPrice, nameof(unitPrice), 0, int.MaxValue);
+        Check.Range(groupBuyPrice, nameof(groupBuyPrice), 0, int.MaxValue);
+        Check.Range(sellingPrice, nameof(sellingPrice), 0, int.MaxValue);
 
         await ValidateCartItemAsync(itemId, itemDetailId, setItemId);
-        shopCart.AddCartItem(GuidGenerator.Create(), quantity, unitPrice, itemId, itemDetailId, setItemId);
+        shopCart.AddCartItem(GuidGenerator.Create(), quantity, groupBuyPrice,sellingPrice, itemId, itemDetailId, setItemId);
         return shopCart;
     }
 
-    public async Task<CartItem> UpdateCartItemAsync(ShopCart shopCart, Guid cartItemId, int quantity, int unitPrice, 
+    public async Task<CartItem> UpdateCartItemAsync(ShopCart shopCart, Guid cartItemId, int quantity, int groupBuyPrice,
         Guid? itemId, Guid? itemDetailId, Guid? setItemId)
     {
         Check.NotNull(shopCart, nameof(shopCart));
         Check.NotDefaultOrNull<Guid>(cartItemId, nameof(cartItemId));
         Check.NotDefaultOrNull<Guid>(itemId, nameof(itemId));
         Check.Range(quantity, nameof(quantity), 0, int.MaxValue);
-        Check.Range(unitPrice, nameof(unitPrice), 0, int.MaxValue);
+        Check.Range(groupBuyPrice, nameof(groupBuyPrice), 0, int.MaxValue);
 
         var cartItem = shopCart.CartItems.FirstOrDefault(x => x.Id == cartItemId)
                             ?? throw new EntityNotFoundException(typeof(CartItem), cartItemId);
@@ -66,9 +67,9 @@ public class ShopCartManager(IShopCartRepository shopCartRepository, IItemReposi
             cartItem.ChangeQuantity(quantity);
         }
 
-        if (unitPrice != cartItem.UnitPrice)
+        if (groupBuyPrice != cartItem.GroupBuyPrice)
         {
-            cartItem.ChangeUnitPrice(unitPrice);
+            cartItem.ChangeGroupBuyPrice(groupBuyPrice);
         }
 
         return cartItem;

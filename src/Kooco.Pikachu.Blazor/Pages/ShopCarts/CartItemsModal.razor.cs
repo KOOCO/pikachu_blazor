@@ -140,7 +140,8 @@ public partial class CartItemsModal
                 Image = data.Image,
                 Stock = data.Stock ?? 0,
                 Quantity = data.Stock > 0 ? 1 : 0,
-                UnitPrice = data.UnitPrice,
+                GroupBuyPrice = data.GroupBuyPrice,
+                SellingPrice = data.SellingPrice,
                 Details = data.Details,
             });
 
@@ -153,7 +154,8 @@ public partial class CartItemsModal
         if (detailId.HasValue)
         {
             var detail = item.Details.FirstOrDefault(detail => detail.Id == detailId);
-            item.UnitPrice = (int?)detail?.UnitPrice ?? 0;
+            item.GroupBuyPrice = (int?)detail?.GroupBuyPrice ?? 0;
+            item.SellingPrice = (int?)detail?.SellingPrice ?? 0;
             item.Stock = detail?.Stock ?? 0;
             item.IsInvalid = false;
         }

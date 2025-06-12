@@ -62,9 +62,10 @@ public class EdmTemplateBuilder
                 shopCartItemsTemplate
                     .Replace("{{ItemName}}", ci.Item?.ItemName ?? ci.SetItem?.SetItemName)
                     .Replace("{{ItemDetails}}", "")
-                    .Replace("{{UnitPrice}}", ci.UnitPrice.ToString("N2"))
+                    .Replace("{{GroupBuyPrice}}", ci.GroupBuyPrice.ToString("N2"))
+                    .Replace("{{SellingPrice}}", ci.SellingPrice.ToString("N2"))
                     .Replace("{{ItemQuantity}}", ci.Quantity.ToString("N0"))
-                    .Replace("{{ItemTotal}}", (ci.UnitPrice * ci.Quantity).ToString("N2"))));
+                    .Replace("{{ItemTotal}}", (ci.GroupBuyPrice * ci.Quantity).ToString("N2"))));
 
             memberTemplate = memberTemplate.Replace(EdmTemplatePlaceholders.ShopCartItems, memberItemsTemplate);
         }

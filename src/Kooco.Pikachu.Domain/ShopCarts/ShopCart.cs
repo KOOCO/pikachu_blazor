@@ -22,9 +22,9 @@ public class ShopCart(Guid id, Guid userId) : FullAuditedAggregateRoot<Guid>(id)
     public virtual ICollection<CartItem> CartItems { get; set; } = new List<CartItem>();
 
 
-    public ShopCart AddCartItem(Guid id, int quantity, int unitPrice, Guid? itemId, Guid? itemDetailId, Guid? setItemId)
+    public ShopCart AddCartItem(Guid id, int quantity, int groupBuyPrice,int sellingPrice ,Guid? itemId, Guid? itemDetailId, Guid? setItemId)
     {
-        var cartItem = new CartItem(id, Id, quantity, unitPrice, itemId, itemDetailId, setItemId);
+        var cartItem = new CartItem(id, Id, quantity, groupBuyPrice,sellingPrice, itemId, itemDetailId, setItemId);
         CartItems ??= new List<CartItem>();
         ValidateExistingCartItem(cartItem.ItemId, cartItem.ItemDetailId, cartItem.SetItemId);
         CartItems.Add(cartItem);

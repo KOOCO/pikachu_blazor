@@ -17,9 +17,10 @@ public class CartItemWithDetailsDto
     public string? ItemDetail { get; set; }
     public string? Image { get; set; }
     public int Quantity { get; set; }
-    public int UnitPrice { get; set; }
+    public int GroupBuyPrice { get; set; }
+    public int SellingPrice { get; set; }
     public int Stock { get; set; }
-    public int Amount => Quantity * UnitPrice;
+    public int Amount => Quantity * GroupBuyPrice;
     public IEnumerable<CartItemDetailsDto> Details { get; set; } = [];
     public bool IsInvalid { get; set; }
 }

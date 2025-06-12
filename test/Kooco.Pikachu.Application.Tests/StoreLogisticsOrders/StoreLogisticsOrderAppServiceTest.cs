@@ -1,6 +1,7 @@
 ﻿using Autofac.Core;
 using Castle.Core.Smtp;
 using Kooco.Pikachu.DeliveryTemperatureCosts;
+using Kooco.Pikachu.DeliveryTempratureCosts;
 using Kooco.Pikachu.Emails;
 using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Groupbuys;
@@ -30,6 +31,7 @@ using Volo.Abp;
 using Volo.Abp.BackgroundJobs;
 using Volo.Abp.Data;
 using Volo.Abp.Domain.Entities;
+using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Emailing;
 using Volo.Abp.MultiTenancy;
 using Xunit;
@@ -57,7 +59,7 @@ namespace Kooco.Pikachu.StoreLogisticsOrders
         private readonly StoreLogisticsOrderAppService _service;
         private readonly IDataFilter<IMultiTenant> _multiTenantFilter;
         private readonly Mock<OrderHistoryManager> _orderManager;
-        private readonly Mock<IDeliveryTemperatureCostRepository> _deliveryTemperatureCostRepositoryMock;
+        private readonly Mock<IRepository<DeliveryTemperatureCost, Guid>> _deliveryTemperatureCostRepositoryMock;
 
         public StoreLogisticsOrderAppServiceTest()
         {
@@ -77,7 +79,7 @@ namespace Kooco.Pikachu.StoreLogisticsOrders
             _emailAppServiceMock = new Mock<IEmailAppService>();
             _multiTenantFilter = GetRequiredService<IDataFilter<IMultiTenant>>();
             _orderManager = new Mock<OrderHistoryManager>();
-            _deliveryTemperatureCostRepositoryMock = new Mock<IDeliveryTemperatureCostRepository>();
+            _deliveryTemperatureCostRepositoryMock = new Mock<IRepository<DeliveryTemperatureCost, Guid>>();
 
             _service = new StoreLogisticsOrderAppService(
                 _orderDeliveryRepositoryMock.Object,

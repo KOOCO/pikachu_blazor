@@ -101,7 +101,7 @@ public class EfCoreShopCartRepository(IDbContextProvider<PikachuDbContext> dbCon
             User = sc.User,
             GroupBuyId = sc.GroupBuyId,
             TotalItems = sc.CartItems.Sum(ci => ci.Quantity),
-            TotalAmount = sc.CartItems.Sum(ci => (ci.Quantity * ci.UnitPrice))
+            TotalAmount = sc.CartItems.Sum(ci => (ci.Quantity * ci.GroupBuyPrice))
         });
 
         var results = await projectedQuery
@@ -205,7 +205,8 @@ public class EfCoreShopCartRepository(IDbContextProvider<PikachuDbContext> dbCon
                 Id = ci.Id,
                 ShopCartId = ci.ShopCartId,
                 Quantity = ci.Quantity,
-                UnitPrice = ci.UnitPrice,
+                GroupBuyPrice = ci.GroupBuyPrice,
+                SellingPrice=ci.SellingPrice,
                 ItemId = ci.ItemId,
                 ItemDetailId = ci.ItemDetailId,
                 SetItemId = ci.SetItemId,

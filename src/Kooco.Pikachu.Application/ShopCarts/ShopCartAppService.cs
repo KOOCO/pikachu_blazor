@@ -51,7 +51,7 @@ public class ShopCartAppService(ShopCartManager shopCartManager, IShopCartReposi
 
             else
             {
-                await shopCartManager.AddCartItem(shopCart, inputItem.Quantity, inputItem.UnitPrice, inputItem.ItemId, inputItem.ItemDetailId, inputItem.SetItemId);
+                await shopCartManager.AddCartItem(shopCart, inputItem.Quantity, inputItem.GroupBuyPrice, inputItem.SellingPrice, inputItem.ItemId, inputItem.ItemDetailId, inputItem.SetItemId);
             }
         }
 
@@ -149,7 +149,7 @@ public class ShopCartAppService(ShopCartManager shopCartManager, IShopCartReposi
         }
         else
         {
-            await shopCartManager.AddCartItem(shopCart, input.Quantity, input.UnitPrice, input.ItemId, input.ItemDetailId, input.SetItemId);
+            await shopCartManager.AddCartItem(shopCart, input.Quantity, input.GroupBuyPrice,input.SellingPrice, input.ItemId, input.ItemDetailId, input.SetItemId);
         }
         await shopCartRepository.UpdateAsync(shopCart);
 
@@ -245,11 +245,11 @@ public class ShopCartAppService(ShopCartManager shopCartManager, IShopCartReposi
             {
                 var existingItem = shopCart.CartItems.First(ci => ci.Id == cartItem.Id);
                 existingItem.SetQuantity(cartItem.Quantity);
-                existingItem.ChangeUnitPrice(cartItem.UnitPrice);
+                existingItem.ChangeGroupBuyPrice(cartItem.GroupBuyPrice);
             }
             else
             {
-                await shopCartManager.AddCartItem(shopCart, cartItem.Quantity, cartItem.UnitPrice, cartItem.ItemId, cartItem.ItemDetailId, cartItem.SetItemId);
+                await shopCartManager.AddCartItem(shopCart, cartItem.Quantity, cartItem.GroupBuyPrice,cartItem.SellingPrice, cartItem.ItemId, cartItem.ItemDetailId, cartItem.SetItemId);
             }
         }
 

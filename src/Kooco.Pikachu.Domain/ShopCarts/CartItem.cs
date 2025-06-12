@@ -13,11 +13,12 @@ public class CartItem : FullAuditedEntity<Guid>, IMultiTenant
     public Guid ShopCartId { get; private set; }
     public Guid? ItemId { get; private set; }
     public int Quantity { get; set; }
-    public int UnitPrice { get; private set; }
+    public int GroupBuyPrice { get; private set; }
+    public int SellingPrice { get;private set; }   // Newly added
     public Guid? TenantId { get; set; }
     public Guid? ItemDetailId { get; private set; }
     public Guid? SetItemId { get; private set; }
-
+ 
     [ForeignKey(nameof(ShopCartId))]
     public virtual ShopCart? ShopCart { get; set; }
 
@@ -34,7 +35,8 @@ public class CartItem : FullAuditedEntity<Guid>, IMultiTenant
         Guid id,
         Guid shopCartId,
         int quantity,
-        int unitPrice,
+        int groupBuyPrice,
+        int sellingPrice,
         Guid? itemId,
         Guid? itemDetailId,
         Guid? setItemId
@@ -42,7 +44,8 @@ public class CartItem : FullAuditedEntity<Guid>, IMultiTenant
     {
         ShopCartId = shopCartId;
         SetQuantity(quantity);
-        SetUnitPrice(unitPrice);
+        SetGroupBuyPrice(groupBuyPrice);
+        SetSellingPrice(sellingPrice);
         SpecifyItemOrSetItem(itemId, itemDetailId, setItemId);
     }
 
@@ -76,14 +79,18 @@ public class CartItem : FullAuditedEntity<Guid>, IMultiTenant
         Quantity = Check.Range(quantity, nameof(quantity), 0, int.MaxValue);
     }
 
-    public CartItem ChangeUnitPrice(int unitPrice)
+    public CartItem ChangeGroupBuyPrice(int groupBuyPrice)
     {
-        SetUnitPrice(unitPrice);
+        SetGroupBuyPrice(groupBuyPrice);
         return this;
     }
 
-    private void SetUnitPrice(int unitPrice)
+    private void SetGroupBuyPrice(int groupBuyPrice)
     {
-        UnitPrice = Check.Range(unitPrice, nameof(unitPrice), 0, int.MaxValue);
+        GroupBuyPrice = Check.Range(groupBuyPrice, nameof(groupBuyPrice), 0, int.MaxValue);
+    }
+    private void SetSellingPrice(int sellingPrice)
+    {
+        SellingPrice = Check.Range(sellingPrice, nameof(sellingPrice), 0, int.MaxValue);
     }
 }

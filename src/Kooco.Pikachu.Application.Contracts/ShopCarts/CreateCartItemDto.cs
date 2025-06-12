@@ -9,8 +9,9 @@ public class CreateCartItemDto
     public int Quantity { get; set; }
 
     [Range(0, int.MaxValue)]
-    public int UnitPrice { get; set; }
-
+    public int GroupBuyPrice { get; set; }
+    [Range(0, int.MaxValue)]
+    public int SellingPrice { get; set; }
     public Guid? ItemId { get; set; }
     public Guid? ItemDetailId { get; set; }
     public Guid? SetItemId { get; set; }
