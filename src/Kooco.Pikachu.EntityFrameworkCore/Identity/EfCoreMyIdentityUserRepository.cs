@@ -29,4 +29,18 @@ public class EfCoreMyIdentityUserRepository(IDbContextProvider<IIdentityDbContex
 
         return user;
     }
+
+    public async Task<IdentityUser?> FindByNameOrEmailAsync(string userNameOrEmail)
+    {
+        userNameOrEmail = userNameOrEmail.ToUpper();
+
+        var queryable = await GetQueryableAsync();
+
+        var user = await queryable
+            .Where(user => user.NormalizedUserName == userNameOrEmail || user.NormalizedEmail == userNameOrEmail)
+            .Include(user => user.Roles)
+            .FirstOrDefaultAsync();
+
+        return user;
+    }
 }

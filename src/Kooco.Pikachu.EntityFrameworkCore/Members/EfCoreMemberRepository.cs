@@ -49,6 +49,7 @@ public class EfCoreMemberRepository(IDbContextProvider<PikachuDbContext> pikachu
                 .ThenBy(tag => tag.Name)]
         };
     }
+
     public async Task<MemberModel> FindMemberByEmailAsync(string Email)
     {
         var dbContext = await GetPikachuDbContextAsync();
@@ -73,6 +74,7 @@ public class EfCoreMemberRepository(IDbContextProvider<PikachuDbContext> pikachu
                 .ThenBy(tag => tag.Name)]
         };
     }
+
     public async Task<long> GetCountAsync(string? filter = null, string? memberType = null, IEnumerable<string>? selectedMemberTags = null,
         DateTime? minCreationTime = null, DateTime? maxCreationTime = null, int? minOrderCount = null, int? maxOrderCount = null,
         int? minSpent = null, int? maxSpent = null, bool? isSystemAssigned = null)

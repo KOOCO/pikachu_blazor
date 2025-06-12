@@ -18,9 +18,11 @@ using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Account;
 using Volo.Abp.Data;
+using Volo.Abp.Domain.Entities;
 using Volo.Abp.Emailing;
 using Volo.Abp.Identity;
 using Volo.Abp.Validation;
+using IdentityRole = Volo.Abp.Identity.IdentityRole;
 using IdentityUser = Volo.Abp.Identity.IdentityUser;
 
 namespace Kooco.Pikachu.PikachuAccounts;
@@ -57,11 +59,6 @@ public class PikachuAccountAppService(IConfiguration configuration, IMemberRepos
     public async Task<PikachuLoginResponseDto> LoginAsync(PikachuLoginInputDto input)
     {
         ValidateLogin(input);
-        if (!input.UserNameOrEmailAddress.IsNullOrWhiteSpace())
-        {
-            var isMember = await memberRepository.FindMemberByEmailAsync(input.UserNameOrEmailAddress);
-        }
-      
 
         var selfUrl = configuration["App:SelfUrl"] ?? "";
 
@@ -85,6 +82,7 @@ public class PikachuAccountAppService(IConfiguration configuration, IMemberRepos
         JsonElement root = doc.RootElement;
 
         var result = new PikachuLoginResponseDto(response.IsSuccessStatusCode);
+
         if (result.Success)
         {
             root.TryGetProperty("access_token", out JsonElement accessTokenElement);
@@ -92,14 +90,35 @@ public class PikachuAccountAppService(IConfiguration configuration, IMemberRepos
             if (accessTokenElement.ValueKind == JsonValueKind.String)
             {
                 result.AccessToken = accessTokenElement.GetString();
+                
+                await AddMemberRoleIfNotExists(input);
             }
         }
+
         root.TryGetProperty("error_description", out JsonElement errorDescriptionElement);
+
         if (errorDescriptionElement.ValueKind == JsonValueKind.String)
         {
             result.ErrorDescription = errorDescriptionElement.GetString();
         }
+
         return result;
+    }
+
+    private async Task AddMemberRoleIfNotExists(PikachuLoginInputDto input)
+    {
+        var user = (input.Method == LoginMethod.UserNameOrPassword
+                    ? await identityUserRepository.FindByNameOrEmailAsync(input.UserNameOrEmailAddress)
+                    : await identityUserRepository.FindByExternalIdAsync(input.Method.Value, input.ThirdPartyToken))
+                    ?? throw new EntityNotFoundException(typeof(IdentityUser), input.UserNameOrEmailAddress);
+
+        var memberRole = await identityRoleRepository.FindByNormalizedNameAsync(MemberConsts.Role)
+            ?? throw new EntityNotFoundException(typeof(IdentityRole), MemberConsts.Role);
+
+        if (!user.IsInRole(memberRole.Id))
+        {
+            user.AddRole(memberRole.Id);
+        }
     }
 
     private async Task<Dictionary<string, object>> SetupLoginParams(PikachuLoginInputDto input)
@@ -131,7 +150,7 @@ public class PikachuAccountAppService(IConfiguration configuration, IMemberRepos
         };
     }
 
-    private static async void ValidateLogin(PikachuLoginInputDto input)
+    private static void ValidateLogin(PikachuLoginInputDto input)
     {
         var result = new List<ValidationResult>();
         var requiredMembers = new List<string>();
@@ -152,7 +171,6 @@ public class PikachuAccountAppService(IConfiguration configuration, IMemberRepos
             {
                 requiredMembers.Add(nameof(input.Password));
             }
-        
         }
         else
         {
