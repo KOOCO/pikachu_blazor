@@ -822,7 +822,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
             }
 
             else if (allPayLogisticsId.Key.Contains("SevenToEleven1") ||
-                     allPayLogisticsId.Key.Contains("PostOffice") ||
+                    
                      
                      allPayLogisticsId.Key.Contains("FamilyMart1") ||
                      allPayLogisticsId.Key.Contains("SevenToElevenFrozen"))
@@ -841,6 +841,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
                 request.AddParameter("CheckMacValue", GenerateCheckMacValue(greenWorld!.HashKey, greenWorld!.HashIV, parameters));
             }
             else if (
+                 allPayLogisticsId.Key.Contains("PostOffice") ||
                  allPayLogisticsId.Key.Contains("BlackCat1") ||
                  allPayLogisticsId.Key.Contains("BlackCatFreeze") ||
                  allPayLogisticsId.Key.Contains("BlackCatFrozen"))
