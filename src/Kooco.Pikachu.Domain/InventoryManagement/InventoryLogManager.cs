@@ -1,5 +1,9 @@
 ﻿using Kooco.Pikachu.Items;
+using Kooco.Pikachu.Localization;
+using Kooco.Pikachu.Orders.Entities;
+using Microsoft.Extensions.Localization;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Domain.Services;
@@ -10,14 +14,17 @@ public class InventoryLogManager : DomainService
 {
     private readonly IInventoryLogRepository _inventoryLogRepository;
     private readonly IItemDetailsRepository _itemDetailsRepository;
+    private readonly IStringLocalizer<PikachuResource> _l;
 
     public InventoryLogManager(
         IInventoryLogRepository inventoryLogRepository,
-        IItemDetailsRepository itemDetailsRepository
+        IItemDetailsRepository itemDetailsRepository,
+        IStringLocalizer<PikachuResource> l
         )
     {
         _inventoryLogRepository = inventoryLogRepository;
         _itemDetailsRepository = itemDetailsRepository;
+        _l = l;
     }
 
     public async Task<InventoryLog> CreateAsync(
@@ -88,6 +95,62 @@ public class InventoryLogManager : DomainService
                 throw new InvalidOperationException($"Unsupported StockType: {inventoryLog.StockType}");
         }
 
+        //Available Stock can not be greater than Current Stock
+        if (itemDetail.SaleableQuantity > itemDetail.StockOnHand)
+        {
+            throw new InvalidInventoryStockException(_l["AvailableStock"], _l["CurrentStock"]);
+        }
+
+        //Available Pre Order Quantity can not be greater than Pre Order Quantity
+        if (itemDetail.SaleablePreOrderQuantity > itemDetail.PreOrderableQuantity)
+        {
+            throw new InvalidInventoryStockException(_l["AvailablePreOrderQuantity"], _l["PreOrderQuantity"]);
+        }
+
         await _itemDetailsRepository.UpdateAsync(itemDetail);
+    }
+
+    public async Task ItemSoldAsync(Order order, ItemDetails itemDetail, int amount)
+    {
+        var attributes = GetAttributes(itemDetail);
+        var description = "Item Sold: Order #" + order.OrderNo;
+
+        await CreateAsync(
+            itemDetail.ItemId,
+            itemDetail.Id,
+            itemDetail.SKU,
+            attributes,
+            InventoryStockType.CurrentStock,
+            InventoryActionType.ItemSold,
+            amount,
+            description,
+            order.Id,
+            order.OrderNo
+            );
+
+        await CreateAsync(
+            itemDetail.ItemId,
+            itemDetail.Id,
+            itemDetail.SKU,
+            attributes,
+            InventoryStockType.AvailableStock,
+            InventoryActionType.ItemSold,
+            amount,
+            description,
+            order.Id,
+            order.OrderNo
+            );
+    }
+
+    static string GetAttributes(ItemDetails itemDetail)
+    {
+        return
+            string.Join(" / ", new[]
+            {
+                itemDetail.Attribute1Value,
+                itemDetail.Attribute2Value,
+                itemDetail.Attribute3Value
+            }.Where(attr => !string.IsNullOrEmpty(attr)))
+            ?? "";
     }
 }

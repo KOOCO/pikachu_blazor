@@ -28,6 +28,7 @@ public partial class AdjustStockModal
             Attributes = inventory.Attributes,
         };
         StateHasChanged();
+        await Task.Delay(100);
         await ValidationsRef.ClearAll();
         await ModalRef.Show();
     }

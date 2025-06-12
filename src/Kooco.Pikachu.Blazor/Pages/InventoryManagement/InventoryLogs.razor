@@ -19,12 +19,18 @@
         font-weight: 500;
     }
 </style>
-<PageHeader Title="@PageTitle" BreadcrumbItems="@BreadcrumbItems">
+
+<PageHeader Title="" BreadcrumbItems="@BreadcrumbItems"></PageHeader>
+<Div Class="d-flex justify-content-between align-items-center">
+    <PikachuButton Clicked="Close">
+        <Icon Name="IconName.ArrowLeft" Class="me-1"></Icon>
+        <h4 class="d-inline-block m-0">@PageTitle</h4>
+    </PikachuButton>
     <Div Class="d-flex align-items-end justify-content-end gap-1">
         <PikachuButton Class="pk-btn-sm pk-btn-primary"
                        Clicked="Export"
                        Loading="IsExporting"
-                       Disabled="IsLoading"
+                       Disabled="IsLoading || InventoryLogList is not { Count: > 0 }"
                        IconClass="fas fa-file-download">
             @L["ExportAll"]
         </PikachuButton>
@@ -33,14 +39,8 @@
                        Disabled="IsExporting || IsLoading">
             @L["AdjustStock"]
         </PikachuButton>
-        <PikachuButton Class="pk-btn-sm pk-btn-danger ms-2"
-                       Clicked="Close"
-                       Disabled="IsExporting || IsLoading">
-            @L["Close"]
-        </PikachuButton>
     </Div>
-</PageHeader>
-
+</Div>
 <Card>
     <CardBody>
         <Table Bordered Class="text-dark">

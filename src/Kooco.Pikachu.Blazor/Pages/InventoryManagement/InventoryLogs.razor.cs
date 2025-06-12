@@ -106,7 +106,7 @@ public partial class InventoryLogs
     {
         if (log.ActionType == InventoryActionType.ItemSold)
         {
-            NavigationManager.NavigateTo("Orders/Order-Details/" + log.OrderId);
+            NavigationManager.NavigateTo("Orders/OrderDetails/" + log.OrderId);
         }
         else
         {
