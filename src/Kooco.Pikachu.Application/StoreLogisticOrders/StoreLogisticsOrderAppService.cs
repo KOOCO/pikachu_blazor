@@ -290,7 +290,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
             {
                 temperature = "0001";
             }
-
+            var goodAmount = Convert.ToInt32(orderDelivery.Items.Sum(x => x.TotalAmount) + order.DeliveryCost - (order.DiscountAmount + order.CreditDeductionAmount));
             string serverReplyURL = $"{domainName}/api/app/orders/ecpay-logisticsStatus-callback";
             var merchantTradeNo = AddNumericSuffix(order.OrderNo);
             request.AddHeader("Accept", "text/html");
@@ -302,7 +302,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
             request.AddParameter("LogisticsSubType", orderDelivery.DeliveryMethod is DeliveryMethod.PostOffice || 
                                                      deliveryMethod is DeliveryMethod.PostOffice 
                                                      ? "POST" : "TCAT");
-            request.AddParameter("GoodsAmount", Convert.ToInt32(orderDelivery.Items.Sum(x => x.TotalAmount)));
+            request.AddParameter("GoodsAmount", goodAmount);
             request.AddParameter("GoodsWeight", PostOffice.Weight);
             request.AddParameter("SenderName", EcPayHomeDelivery.SenderName);
             request.AddParameter("SenderPhone", EcPayHomeDelivery.SenderPhoneNumber);
@@ -315,7 +315,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
             request.AddParameter("ServerReplyURL", serverReplyURL);
             //request.AddParameter("ReceiverStoreID", "123");
             request.AddParameter("CheckMacValue", GenerateCheckMac(
-                ecpayhomeDelivery.HashKey, ecpayhomeDelivery.HashIV, EcPayHomeDelivery.StoreCode, merchantTradeNo, marchentDate, "HOME", orderDelivery.DeliveryMethod is DeliveryMethod.PostOffice || deliveryMethod is DeliveryMethod.PostOffice ? "POST" : "TCAT", Convert.ToInt32(orderDelivery.Items.Sum(x => x.TotalAmount)), PostOffice.Weight, EcPayHomeDelivery.SenderName, EcPayHomeDelivery.SenderPhoneNumber,
+                ecpayhomeDelivery.HashKey, ecpayhomeDelivery.HashIV, EcPayHomeDelivery.StoreCode, merchantTradeNo, marchentDate, "HOME", orderDelivery.DeliveryMethod is DeliveryMethod.PostOffice || deliveryMethod is DeliveryMethod.PostOffice ? "POST" : "TCAT", goodAmount, PostOffice.Weight, EcPayHomeDelivery.SenderName, EcPayHomeDelivery.SenderPhoneNumber,
                 EcPayHomeDelivery.SenderPostalCode, EcPayHomeDelivery.SenderAddress, order.RecipientName, order.RecipientPhone, order.PostalCode, receiverAddress, serverReplyURL, temperature));
             //request.AddParameter("IsCollection", "N");
             request.AddParameter("MerchantTradeNo", merchantTradeNo);
@@ -449,7 +449,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
             HttpRequest? domainRequest = _httpContextAccessor?.HttpContext?.Request;
             string? domainName = $"{domainRequest?.Scheme}://{domainRequest?.Host.Value}";
 
-            var goodsAmount = Convert.ToInt32(orderDelivery.Items.Sum(x => x.TotalAmount));
+            var goodsAmount = Convert.ToInt32((orderDelivery.Items.Sum(x => x.TotalAmount)+order.DeliveryCost)-(order.CreditDeductionAmount+order.DiscountAmount));
 
             var logisticSubTypes = deliveredByStore.DeliveryMethod is DeliveryMethod.PostOffice ||
                                                      deliveryMethod is DeliveryMethod.PostOffice
@@ -1140,7 +1140,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
                     IsSwipe = isSwipe,
                     IsMobilePay = isSwipe,
                     IsDeclare = isDeclare,
-                    DeclareAmount = isDeclare is "Y" ? GetDeclareAmount(orderDelivery.Items.Sum(s => s.TotalAmount), order.DeliveryCost) : 0,
+                    DeclareAmount = isDeclare is "Y" ? GetDeclareAmount(orderDelivery.Items.Sum(s => s.TotalAmount), order.DeliveryCost,order.CreditDeductionAmount + order.DiscountAmount) : 0,
                     ProductTypeId = GetProductType(groupBuy.ProductType),
                     ProductName = GetProductName(groupBuy.GroupBuyName),
                     Memo = string.Empty
@@ -1475,13 +1475,14 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
         return totalValue > 20000;
     }
 
-    public int GetDeclareAmount(decimal? totalAmount, decimal? deliveryCost)
+    public int GetDeclareAmount(decimal? totalAmount, decimal? deliveryCost, decimal? totalDeduction)
     {
         decimal totalAmountValue = totalAmount is not null ? totalAmount.Value : 0.00m;
 
         decimal deliveryCostValue = deliveryCost is not null ? deliveryCost.Value : 0.00m;
 
-        decimal totalValue = totalAmountValue + deliveryCostValue;
+        decimal totalDeductionValue = totalDeduction is not null ? totalDeduction.Value : 0.00m;
+        decimal totalValue = (totalAmountValue + deliveryCostValue) - totalDeductionValue;
 
         totalValue = totalValue.IsBetween(20000, 100001) ? totalValue : 0;
 
@@ -1497,7 +1498,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
         decimal totalAmountValue = totalAmount is not null ? totalAmount.Value : 0.00m;
         decimal deliveryCostValue = deliveryCost is not null ? deliveryCost.Value : 0.00m;
         decimal totalDeductionValue = totalDeduction is not null ? totalDeduction.Value : 0.00m;
-        decimal totalValue = totalAmountValue + deliveryCostValue - totalDeductionValue;
+        decimal totalValue = (totalAmountValue + deliveryCostValue) - totalDeductionValue;
         totalValue = totalValue.IsBetween(0, isFor711 ? 20000 : 100001) ? totalValue : 0;
 
         return (int)totalValue;
@@ -1702,7 +1703,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
             request.AddParameter("GoodsName", goodsName);
             request.AddParameter("SenderCellPhone", GreenWorld.SenderPhoneNumber);
         }
-        var goodsAmount = Convert.ToInt32(orderDelivery.Items.Sum(x => x.TotalAmount) + order.DeliveryCost);
+        var goodsAmount = Convert.ToInt32((orderDelivery.Items.Sum(x => x.TotalAmount) +order.DeliveryCost)-(order.CreditDeductionAmount+order.DiscountAmount) );
         request.AddParameter("GoodsAmount", goodsAmount);
         request.AddParameter("SenderName", GreenWorld.SenderName);
         request.AddParameter("ReceiverName", order.RecipientName);
