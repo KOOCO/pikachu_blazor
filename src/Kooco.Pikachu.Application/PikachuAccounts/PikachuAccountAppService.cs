@@ -19,6 +19,7 @@ using Volo.Abp;
 using Volo.Abp.Account;
 using Volo.Abp.Data;
 using Volo.Abp.Domain.Entities;
+using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Emailing;
 using Volo.Abp.Identity;
 using Volo.Abp.Validation;
@@ -107,14 +108,19 @@ public class PikachuAccountAppService(IConfiguration configuration, IMemberRepos
 
     private async Task AddMemberRoleIfNotExists(PikachuLoginInputDto input)
     {
+        ExternalUserDto externalUser = null;
+        if (input.Method != LoginMethod.UserNameOrPassword)
+        {
+             externalUser = await SetupExternalUserAsync(input.Method.Value, input.ThirdPartyToken);
+        }
         var user = (input.Method == LoginMethod.UserNameOrPassword
                     ? await identityUserRepository.FindByNameOrEmailAsync(input.UserNameOrEmailAddress)
-                    : await identityUserRepository.FindByExternalIdAsync(input.Method.Value, input.ThirdPartyToken))
+                    : await identityUserRepository.FindByExternalIdAsync(input.Method.Value, externalUser.ExternalId))
                     ?? throw new EntityNotFoundException(typeof(IdentityUser), input.UserNameOrEmailAddress);
 
         var memberRole = await identityRoleRepository.FindByNormalizedNameAsync(MemberConsts.Role)
             ?? throw new EntityNotFoundException(typeof(IdentityRole), MemberConsts.Role);
-
+       
         if (!user.IsInRole(memberRole.Id))
         {
             user.AddRole(memberRole.Id);
