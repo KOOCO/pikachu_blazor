@@ -1,6 +1,7 @@
 ﻿using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Items;
 using Kooco.Pikachu.Items.Dtos;
+using Microsoft.AspNetCore.Authorization;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -254,5 +255,12 @@ public class ShopCartAppService(ShopCartManager shopCartManager, IShopCartReposi
         }
 
         await shopCartRepository.UpdateAsync(shopCart);
+    }
+
+    [AllowAnonymous]
+    public async Task<List<VerifyCartItemDto>> VerifyCartItemsAsync(Guid userId, Guid groupBuyId)
+    {
+        var cartItems = await shopCartRepository.VerifyCartItemsAsync(userId, groupBuyId);
+        return ObjectMapper.Map<List<VerifyCartItemModel>, List<VerifyCartItemDto>>(cartItems);
     }
 }

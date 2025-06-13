@@ -252,6 +252,7 @@ public class PikachuApplicationAutoMapperProfile : Profile
         CreateMap<CartItemWithDetailsModel, CartItemWithDetailsDto>();
         CreateMap<ItemWithDetailsModel, ItemWithDetailsDto>();
         CreateMap<CartItemDetailsModel, CartItemDetailsDto>();
+        CreateMap<VerifyCartItemModel, VerifyCartItemDto>();
 
         #region GroupPurchaseOverview Mappings
         CreateMap<GroupPurchaseOverview, GroupPurchaseOverviewDto>().ReverseMap();

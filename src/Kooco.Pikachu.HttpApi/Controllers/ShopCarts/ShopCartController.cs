@@ -2,6 +2,7 @@
 using Kooco.Pikachu.ShopCarts;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Application.Dtos;
@@ -72,5 +73,11 @@ public class ShopCartController(IShopCartAppService shopCartAppService) : Pikach
     public Task ClearCartItemsAsync(Guid userId, Guid groupBuyId)
     {
         return shopCartAppService.ClearCartItemsAsync(userId, groupBuyId);
+    }
+
+    [HttpPost("cart-items/{userId}/{groupBuyId}/verify")]
+    public Task<List<VerifyCartItemDto>> VerifyCartItemsAsync(Guid userId, Guid groupBuyId)
+    {
+        return shopCartAppService.VerifyCartItemsAsync(userId, groupBuyId);
     }
 }

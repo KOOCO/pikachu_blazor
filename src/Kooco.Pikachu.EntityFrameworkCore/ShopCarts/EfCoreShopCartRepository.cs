@@ -206,7 +206,7 @@ public class EfCoreShopCartRepository(IDbContextProvider<PikachuDbContext> dbCon
                 ShopCartId = ci.ShopCartId,
                 Quantity = ci.Quantity,
                 GroupBuyPrice = ci.GroupBuyPrice,
-                SellingPrice=ci.SellingPrice,
+                SellingPrice = ci.SellingPrice,
                 ItemId = ci.ItemId,
                 ItemDetailId = ci.ItemDetailId,
                 SetItemId = ci.SetItemId,
@@ -429,4 +429,62 @@ public class EfCoreShopCartRepository(IDbContextProvider<PikachuDbContext> dbCon
                 .ThenInclude(ci => ci.SetItem)
             .ToListAsync();
     }
+
+    public async Task<List<VerifyCartItemModel>> VerifyCartItemsAsync(Guid userId, Guid groupBuyId)
+    {
+        var dbContext = await GetDbContextAsync();
+
+        var cartItems = await dbContext.ShopCarts
+            .AsNoTracking()
+            .Where(sc => sc.UserId == userId && sc.GroupBuyId == groupBuyId)
+            .SelectMany(sc => sc.CartItems.Select(ci => new VerifyCartItemModel
+            {
+                ItemId = ci.ItemId,
+                ItemDetailId = ci.ItemDetailId,
+                SetItemId = ci.SetItemId
+            }))
+            .ToListAsync();
+
+        var itemDetailIds = cartItems
+            .Where(ci => ci.ItemDetailId.HasValue)
+            .Select(ci => ci.ItemDetailId!.Value)
+            .Distinct()
+            .ToList();
+
+        var setItemIds = cartItems
+            .Where(ci => ci.SetItemId.HasValue)
+            .Select(ci => ci.SetItemId!.Value)
+            .Distinct()
+            .ToList();
+
+        var itemDetailsDict = await dbContext.ItemDetails
+            .Where(id => itemDetailIds.Contains(id.Id))
+            .ToDictionaryAsync(id => id.Id, id => new { id.SaleableQuantity, id.SaleablePreOrderQuantity });
+
+        var setItemsDict = await dbContext.SetItems
+            .Where(si => setItemIds.Contains(si.Id))
+            .ToDictionaryAsync(si => si.Id, si => new { si.SaleableQuantity, si.SaleablePreOrderQuantity });
+
+        foreach (var cartItem in cartItems)
+        {
+            if (cartItem.SetItemId.HasValue && setItemsDict.TryGetValue(cartItem.SetItemId.Value, out var setItem))
+            {
+                cartItem.SaleableQuantity = setItem.SaleableQuantity ?? 0;
+                cartItem.SaleablePreOrderQuantity = setItem.SaleablePreOrderQuantity ?? 0;
+            }
+            else if (cartItem.ItemDetailId.HasValue && itemDetailsDict.TryGetValue(cartItem.ItemDetailId.Value, out var itemDetail))
+            {
+                cartItem.SaleableQuantity = (int?)itemDetail.SaleableQuantity ?? 0;
+                cartItem.SaleablePreOrderQuantity = (int?)itemDetail.SaleablePreOrderQuantity ?? 0;
+            }
+            else
+            {
+                cartItem.SaleableQuantity = 0;
+                cartItem.SaleablePreOrderQuantity = 0;
+            }
+        }
+
+        return cartItems;
+    }
+
 }
