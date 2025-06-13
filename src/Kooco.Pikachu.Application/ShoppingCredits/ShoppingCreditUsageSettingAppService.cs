@@ -1,11 +1,6 @@
-﻿using AutoMapper.Internal.Mappers;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System;
 using System.Threading.Tasks;
 using Volo.Abp;
-using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
 
 namespace Kooco.Pikachu.ShoppingCredits
@@ -13,8 +8,6 @@ namespace Kooco.Pikachu.ShoppingCredits
     [RemoteService(IsEnabled = false)]
     public class ShoppingCreditUsageSettingAppService(IShoppingCreditUsageSettingRepository shoppingCreditUsageSettingRepository,ShoppingCreditUsageSettingManager shoppingCreditUsageSettingManager) : PikachuAppService, IShoppingCreditUsageSettingAppService
     {
-     
-
         /// <summary>
         /// Retrieves a ShoppingCreditsUsageSetting by its ID
         /// </summary>
@@ -24,6 +17,7 @@ namespace Kooco.Pikachu.ShoppingCredits
 
             return ObjectMapper.Map<ShoppingCreditUsageSetting, ShoppingCreditUsageSettingDto>(shoppingCreditUsageSetting);
         }
+
         /// <summary>
         /// Retrieves a ShoppingCreditsUsageSetting by its ID
         /// </summary>
@@ -37,6 +31,7 @@ namespace Kooco.Pikachu.ShoppingCredits
             }
             return ObjectMapper.Map<ShoppingCreditUsageSetting, ShoppingCreditUsageSettingDto>(shoppingCreditUsageSetting);
         }
+
         /// <summary>
         /// Creates a new ShoppingCreditsUsageSetting
         /// </summary>
@@ -64,6 +59,12 @@ namespace Kooco.Pikachu.ShoppingCredits
         public async Task DeleteAsync(Guid id)
         {
             await shoppingCreditUsageSettingRepository.DeleteAsync(id);
+        }
+
+        public async Task<ShoppingCreditUsageSettingByGroupBuyDto> GetFirstByGroupBuyIdAsync(Guid groupBuyId)
+        {
+            var shoppingCreditUsageSetting = await shoppingCreditUsageSettingRepository.GetFirstByGroupBuyIdAsync(groupBuyId);
+            return ObjectMapper.Map<ShoppingCreditUsageSetting, ShoppingCreditUsageSettingByGroupBuyDto>(shoppingCreditUsageSetting);
         }
     }
 }

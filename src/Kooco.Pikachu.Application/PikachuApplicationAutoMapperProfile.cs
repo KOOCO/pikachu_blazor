@@ -237,6 +237,7 @@ public class PikachuApplicationAutoMapperProfile : Profile
         CreateMap<PikachuLoginResponseDto, MemberLoginResponseDto>();
 
         CreateMap<ShoppingCreditUsageSetting, ShoppingCreditUsageSettingDto>();
+        CreateMap<ShoppingCreditUsageSetting, ShoppingCreditUsageSettingByGroupBuyDto>();
         CreateMap<ShoppingCreditUsageSettingDto, CreateUpdateShoppingCreditUsageSettingDto>();
         CreateMap<ShoppingCreditUsageSpecificGroupbuy, ShoppingCreditUsageSpecificGroupbuyDto>();
         CreateMap<ShoppingCreditUsageSpecificProduct, ShoppingCreditUsageSpecificProductDto>();

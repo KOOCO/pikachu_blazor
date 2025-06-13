@@ -2,9 +2,6 @@
 using Kooco.Pikachu.ShoppingCredits;
 using Microsoft.AspNetCore.Mvc;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Volo.Abp;
 
@@ -47,6 +44,10 @@ namespace Kooco.Pikachu.Controllers.ShoppingCredits
             return await _shoppingCreditUsageSettingAppService.UpdateAsync(id, input);
         }
 
-
+        [HttpGet("first-by-group-buy/{groupBuyId}")]
+        public Task<ShoppingCreditUsageSettingByGroupBuyDto> GetFirstByGroupBuyIdAsync(Guid groupBuyId)
+        {
+            return _shoppingCreditUsageSettingAppService.GetFirstByGroupBuyIdAsync(groupBuyId);
+        }
     }
 }

@@ -37,5 +37,7 @@ namespace Kooco.Pikachu.ShoppingCredits
         /// </summary>
         /// <param name="id">The ID of the ShoppingCreditsUsageSetting to delete</param>
         //Task DeleteAsync(Guid id);
+
+        Task<ShoppingCreditUsageSettingByGroupBuyDto> GetFirstByGroupBuyIdAsync(Guid groupBuyId);
     }
 }
