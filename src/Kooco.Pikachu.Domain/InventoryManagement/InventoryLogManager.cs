@@ -3,7 +3,6 @@ using Kooco.Pikachu.Localization;
 using Kooco.Pikachu.Orders.Entities;
 using Microsoft.Extensions.Localization;
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Domain.Services;
@@ -46,15 +45,47 @@ public class InventoryLogManager : DomainService
         Check.NotNullOrWhiteSpace(attributes, nameof(attributes), InventoryLogConsts.MaxAttributesLength);
         Check.NotNullOrWhiteSpace(description, nameof(description), InventoryLogConsts.MaxDescriptionLength);
 
+        if (actionType != InventoryActionType.AddStock)
+        {
+            amount *= -1;
+        }
+
+        int stockOnHand = 0;
+        int saleableQuantity = 0;
+        int preOrderQuantity = 0;
+        int saleablePreOrderQuantity = 0;
+
+        switch (stockType)
+        {
+            case InventoryStockType.CurrentStock:
+                stockOnHand = amount;
+                break;
+            case InventoryStockType.AvailableStock:
+                stockOnHand = actionType == InventoryActionType.AddStock ? amount : 0;
+                saleableQuantity = amount;
+                break;
+            case InventoryStockType.PreOrderQuantity:
+                preOrderQuantity = amount;
+                break;
+            case InventoryStockType.AvailablePreOrderQuantity:
+                preOrderQuantity = actionType == InventoryActionType.AddStock ? amount : 0;
+                saleablePreOrderQuantity = amount;
+                break;
+            default:
+                throw new InvalidOperationException($"Unsupported StockType: {stockType}");
+        }
+
         var inventoryLog = new InventoryLog(
             GuidGenerator.Create(),
             itemId,
             itemDetailId,
             sku,
             attributes,
-            stockType,
             actionType,
-            amount,
+            stockOnHand,
+            saleableQuantity,
+            preOrderQuantity,
+            saleablePreOrderQuantity,
             description,
             orderId,
             orderNumber
@@ -73,35 +104,18 @@ public class InventoryLogManager : DomainService
 
         var itemDetail = await _itemDetailsRepository.GetAsync(inventoryLog.ItemDetailId);
 
-        var signedAmount = inventoryLog.ActionType == InventoryActionType.AddStock
-            ? inventoryLog.Amount
-            : inventoryLog.Amount * -1;
+        itemDetail.StockOnHand += inventoryLog.StockOnHand;
+        itemDetail.SaleableQuantity += inventoryLog.SaleableQuantity;
+        itemDetail.PreOrderableQuantity += inventoryLog.PreOrderQuantity;
+        itemDetail.SaleablePreOrderQuantity += inventoryLog.SaleablePreOrderQuantity;
 
-        switch (inventoryLog.StockType)
-        {
-            case InventoryStockType.CurrentStock:
-                itemDetail.StockOnHand += signedAmount;
-                break;
-            case InventoryStockType.AvailableStock:
-                itemDetail.SaleableQuantity += signedAmount;
-                break;
-            case InventoryStockType.PreOrderQuantity:
-                itemDetail.PreOrderableQuantity += signedAmount;
-                break;
-            case InventoryStockType.AvailablePreOrderQuantity:
-                itemDetail.SaleablePreOrderQuantity += signedAmount;
-                break;
-            default:
-                throw new InvalidOperationException($"Unsupported StockType: {inventoryLog.StockType}");
-        }
-
-        //Available Stock can not be greater than Current Stock
+        // Available Stock can not be greater than Current Stock
         if (itemDetail.SaleableQuantity > itemDetail.StockOnHand)
         {
             throw new InvalidInventoryStockException(_l["AvailableStock"], _l["CurrentStock"]);
         }
 
-        //Available Pre Order Quantity can not be greater than Pre Order Quantity
+        // Available Pre Order Quantity can not be greater than Pre Order Quantity
         if (itemDetail.SaleablePreOrderQuantity > itemDetail.PreOrderableQuantity)
         {
             throw new InvalidInventoryStockException(_l["AvailablePreOrderQuantity"], _l["PreOrderQuantity"]);
@@ -110,47 +124,60 @@ public class InventoryLogManager : DomainService
         await _itemDetailsRepository.UpdateAsync(itemDetail);
     }
 
-    public async Task ItemSoldAsync(Order order, ItemDetails itemDetail, int amount)
+    public async Task<InventoryLog> ItemSoldAsync(Order order, ItemDetails itemDetail, int amount)
     {
-        var attributes = GetAttributes(itemDetail);
+        var attributes = InventoryLogConsts.GetAttributes(
+            itemDetail.Attribute1Value,
+            itemDetail.Attribute2Value,
+            itemDetail.Attribute3Value
+            );
+
         var description = "Item Sold: Order #" + order.OrderNo;
 
-        await CreateAsync(
+        int signedAmount = amount * -1;
+
+        int saleableQuantity;
+        int stockOnHand;
+        int saleablePreOrderQuantity = 0;
+        int preOrderQuantity = 0;
+        
+        if (itemDetail.SaleableQuantity - amount >= 0 && itemDetail.StockOnHand - amount >= 0)
+        {
+            saleableQuantity = signedAmount;
+            stockOnHand = signedAmount;
+        }
+        else if (itemDetail.SaleableQuantity + itemDetail.SaleablePreOrderQuantity - amount >= 0 && itemDetail.StockOnHand + itemDetail.PreOrderableQuantity - amount >= 0)
+        {
+            saleableQuantity = signedAmount;
+            stockOnHand = signedAmount;
+            saleablePreOrderQuantity = signedAmount + ((int?)itemDetail.SaleableQuantity ?? 0);
+            preOrderQuantity = signedAmount + (itemDetail.StockOnHand ?? 0);
+        }
+        else
+        {
+            throw new UserFriendlyException("Insufficient stock for " + itemDetail.SKU);
+        }
+
+        var inventoryLog = new InventoryLog(
+            GuidGenerator.Create(),
             itemDetail.ItemId,
             itemDetail.Id,
             itemDetail.SKU,
             attributes,
-            InventoryStockType.CurrentStock,
             InventoryActionType.ItemSold,
-            amount,
+            stockOnHand,
+            saleableQuantity,
+            preOrderQuantity,
+            saleablePreOrderQuantity,
             description,
             order.Id,
             order.OrderNo
             );
 
-        await CreateAsync(
-            itemDetail.ItemId,
-            itemDetail.Id,
-            itemDetail.SKU,
-            attributes,
-            InventoryStockType.AvailableStock,
-            InventoryActionType.ItemSold,
-            amount,
-            description,
-            order.Id,
-            order.OrderNo
-            );
-    }
+        await _inventoryLogRepository.InsertAsync(inventoryLog);
 
-    static string GetAttributes(ItemDetails itemDetail)
-    {
-        return
-            string.Join(" / ", new[]
-            {
-                itemDetail.Attribute1Value,
-                itemDetail.Attribute2Value,
-                itemDetail.Attribute3Value
-            }.Where(attr => !string.IsNullOrEmpty(attr)))
-            ?? "";
+        await AdjustItemDetailStockAsync(inventoryLog);
+
+        return inventoryLog;
     }
 }

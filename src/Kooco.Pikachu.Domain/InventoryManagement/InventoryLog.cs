@@ -19,9 +19,11 @@ public class InventoryLog : FullAuditedEntity<Guid>, IMultiTenant
 
     [MaxLength(InventoryLogConsts.MaxAttributesLength)]
     public string? Attributes { get; private set; }
-    public InventoryStockType StockType { get; set; }
     public InventoryActionType ActionType { get; set; }
-    public int Amount { get; private set; }
+    public int StockOnHand { get; private set; }
+    public int SaleableQuantity { get; private set; }
+    public int PreOrderQuantity { get; private set; }
+    public int SaleablePreOrderQuantity { get; private set; }
 
     [MaxLength(InventoryLogConsts.MaxDescriptionLength)]
     public string? Description { get; private set; }
@@ -44,9 +46,11 @@ public class InventoryLog : FullAuditedEntity<Guid>, IMultiTenant
         Guid itemDetailId,
         string sku,
         string attributes,
-        InventoryStockType stockType,
         InventoryActionType actionType,
-        int amount,
+        int stockOnHand,
+        int saleableQuantity,
+        int preOrderQuantity,
+        int saleablePreOrderQuantity,
         string? description,
         Guid? orderId = null,
         string? orderNumber = null
@@ -55,9 +59,8 @@ public class InventoryLog : FullAuditedEntity<Guid>, IMultiTenant
         SetItem(itemId, itemDetailId);
         SetSku(sku);
         SetAttributes(attributes);
-        SetStockType(stockType);
         SetActionType(actionType);
-        SetAmount(amount);
+        SetAmount(stockOnHand, saleableQuantity, preOrderQuantity, saleablePreOrderQuantity);
         SetDescription(description);
         SetOrder(orderId, orderNumber);
     }
@@ -76,6 +79,7 @@ public class InventoryLog : FullAuditedEntity<Guid>, IMultiTenant
             nameof(Sku),
             maxLength: InventoryLogConsts.MaxSkuLength
             );
+
         return this;
     }
 
@@ -86,17 +90,7 @@ public class InventoryLog : FullAuditedEntity<Guid>, IMultiTenant
             nameof(Attributes),
             maxLength: InventoryLogConsts.MaxAttributesLength
             );
-        return this;
-    }
 
-    public InventoryLog SetStockType(InventoryStockType stockType)
-    {
-        if (!Enum.IsDefined(stockType))
-        {
-            throw new ArgumentOutOfRangeException(nameof(stockType), "Invalid stock type provided.");
-        }
-
-        StockType = Check.NotNull(stockType, nameof(stockType));
         return this;
     }
 
@@ -110,9 +104,12 @@ public class InventoryLog : FullAuditedEntity<Guid>, IMultiTenant
         return this;
     }
 
-    public InventoryLog SetAmount(int amount)
+    public InventoryLog SetAmount(int stockOnHand, int saleableQuantity, int preOrderQuantity, int saleablePreOrderQuantity)
     {
-        Amount = amount;
+        StockOnHand = stockOnHand;
+        SaleableQuantity = saleableQuantity;
+        PreOrderQuantity = preOrderQuantity;
+        SaleablePreOrderQuantity = saleablePreOrderQuantity;
         return this;
     }
 

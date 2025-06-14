@@ -12,9 +12,11 @@ public class InventoryLogDto : FullAuditedEntityDto<Guid>, IMultiTenant
     public Guid ItemDetailId { get; set; }
     public string? Sku { get; set; }
     public string? Attributes { get; set; }
-    public InventoryStockType StockType { get; set; }
     public InventoryActionType ActionType { get; set; }
-    public int Amount { get; set; }
+    public int StockOnHand { get; set; }
+    public int SaleableQuantity { get; set; }
+    public int PreOrderQuantity { get; set; }
+    public int SaleablePreOrderQuantity { get; set; }
     public string? Description { get; set; }
     public Guid? OrderId { get; set; }
     public string? OrderNumber { get; set; }

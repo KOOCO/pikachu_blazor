@@ -1,19 +1,18 @@
 ﻿@using Kooco.Pikachu.InventoryManagement
 
 <Span>
-    @if (Value.StockType != ExpectedStockType)
+    @if (Value == 0)
     {
         <Span>+0</Span>
     }
     else
     {
-        <Span Class="@(Value.ActionType == InventoryActionType.AddStock ? "text-success" : "text-danger")">
-            <Span>@(Value.ActionType == InventoryActionType.AddStock ? "+" : "-")</Span>@Value.Amount.ToString("N0")
+        <Span Class="@(Value > 0 ? "text-success" : "text-danger")">
+            @InventoryLogConsts.GetAmountString(Value)
         </Span>
     }
 </Span>
 
 @code {
-    [Parameter] public InventoryStockType? ExpectedStockType { get; set; }
-    [Parameter] public InventoryLogDto? Value { get; set; }
+    [Parameter] public int Value { get; set; }
 }

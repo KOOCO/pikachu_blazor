@@ -91,16 +91,16 @@
                                     }
                                 </TableRowCell>
                                 <TableRowCell>
-                                    <InventoryLogsAmountComponent Value="log" ExpectedStockType="InventoryStockType.CurrentStock" />
+                                    <InventoryLogsAmountComponent Value="log.StockOnHand" />
                                 </TableRowCell>
                                 <TableRowCell>
-                                    <InventoryLogsAmountComponent Value="log" ExpectedStockType="InventoryStockType.AvailableStock" />
+                                    <InventoryLogsAmountComponent Value="log.SaleableQuantity" />
                                 </TableRowCell>
                                 <TableRowCell>
-                                    <InventoryLogsAmountComponent Value="log" ExpectedStockType="InventoryStockType.PreOrderQuantity" />
+                                    <InventoryLogsAmountComponent Value="log.PreOrderQuantity" />
                                 </TableRowCell>
                                 <TableRowCell>
-                                    <InventoryLogsAmountComponent Value="log" ExpectedStockType="InventoryStockType.AvailablePreOrderQuantity" />
+                                    <InventoryLogsAmountComponent Value="log.SaleablePreOrderQuantity" />
                                 </TableRowCell>
                                 <TableRowCell TextAlignment="TextAlignment.Center">
                                     <Button Class="pk-btn-icon indigo" Clicked="() => View(log)">

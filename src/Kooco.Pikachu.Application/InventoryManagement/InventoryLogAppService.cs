@@ -70,10 +70,10 @@ public class InventoryLogAppService : PikachuAppService, IInventoryLogAppService
             { headers["SKU"], log.Sku },
             { headers["Timestamp"], log.CreationTime.ToString("MM/dd/yyyy HH:mm:ss") },
             { headers["Action"], Action(log) },
-            { headers["CurrentStock"], AmountString(InventoryStockType.CurrentStock, log) },
-            { headers["AvailableStock"], AmountString(InventoryStockType.AvailableStock, log) },
-            { headers["PreOrderQuantity"], AmountString(InventoryStockType.PreOrderQuantity, log) },
-            { headers["AvailablePreOrderQuantity"], AmountString(InventoryStockType.AvailablePreOrderQuantity, log) }
+            { headers["CurrentStock"], Amount(log.StockOnHand) },
+            { headers["AvailableStock"], Amount(log.SaleableQuantity) },
+            { headers["PreOrderQuantity"], Amount(log.PreOrderQuantity) },
+            { headers["AvailablePreOrderQuantity"], Amount(log.SaleablePreOrderQuantity) }
         });
 
         if (!excelData.Any())
@@ -92,11 +92,9 @@ public class InventoryLogAppService : PikachuAppService, IInventoryLogAppService
         return new RemoteStreamContent(memoryStream, fileName, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
     }
 
-    static string AmountString(InventoryStockType expectedStockType, InventoryLogDto value)
+    static string Amount(int value)
     {
-        return value == null || value.StockType != expectedStockType
-            ? "+0"
-            : (value.ActionType == InventoryActionType.AddStock ? "+" : "-") + value.Amount;
+        return InventoryLogConsts.GetAmountString(value);
     }
 
     private string Action(InventoryLogDto value)
