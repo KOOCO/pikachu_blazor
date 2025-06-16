@@ -81,6 +81,7 @@ namespace Kooco.Pikachu.Blazor.Pages.Identity.UsersManagement
             if (base.NewEntity.Name.IsNullOrEmpty()) await _UiMessageService.Error(l[PikachuResource.NameCannotBeEmpty]);
 
             else await base.CreateEntityAsync();
+            await GetCategorizedListAsync();
         }
 
         protected async override Task UpdateEntityAsync()
@@ -88,6 +89,7 @@ namespace Kooco.Pikachu.Blazor.Pages.Identity.UsersManagement
             if (base.EditingEntity.Name.IsNullOrEmpty()) await _UiMessageService.Error(l[PikachuResource.NameCannotBeEmpty]);
 
             else await base.UpdateEntityAsync();
+            await GetCategorizedListAsync();
         }
 
         protected override async Task OnSearchTextChanged(string value)
