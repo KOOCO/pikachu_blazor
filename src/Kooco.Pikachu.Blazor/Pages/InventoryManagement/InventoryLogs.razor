@@ -27,6 +27,13 @@
         <h4 class="d-inline-block m-0">@PageTitle</h4>
     </PikachuButton>
     <Div Class="d-flex align-items-end justify-content-end gap-1">
+        <PikachuButton Class="pk-btn-sm"
+                       Clicked="Refresh"
+                       Loading="IsLoading"
+                       Disabled="IsExporting"
+                       IconClass="fas fa-refresh">
+            @L["Refresh"]
+        </PikachuButton>
         <PikachuButton Class="pk-btn-sm pk-btn-primary"
                        Clicked="Export"
                        Loading="IsExporting"
@@ -43,86 +50,97 @@
 </Div>
 <Card>
     <CardBody>
-        <Table Bordered Class="text-dark">
-            <TableHeader>
-                <TableRow>
-                    <TableHeaderCell>@L["SKU"]</TableHeaderCell>
-                    <TableHeaderCell>@L["Timestamp"]</TableHeaderCell>
-                    <TableHeaderCell>@L["Action"]</TableHeaderCell>
-                    <TableHeaderCell>@L["CurrentStock"]</TableHeaderCell>
-                    <TableHeaderCell>@L["AvailableStock"]</TableHeaderCell>
-                    <TableHeaderCell>@L["PreOrderQuantity"]</TableHeaderCell>
-                    <TableHeaderCell>@L["AvailablePreOrderQuantity"]</TableHeaderCell>
-                    <TableHeaderCell TextAlignment="TextAlignment.Center">@L["View"]</TableHeaderCell>
-                </TableRow>
-            </TableHeader>
-            <TableBody>
-                @if (IsLoading)
-                {
-                    <TableRow>
-                        <TableRowCell ColumnSpan="8">
-                            <Div Class="text-center pt-3">
-                                <Div Class="spinner-border text-primary" Style="height: 3rem; width: 3rem;"></Div>
-                            </Div>
-                        </TableRowCell>
-                    </TableRow>
-                }
-                else
-                {
-                    if (InventoryLogList?.Count > 0)
-                    {
-                        foreach (var log in InventoryLogList)
+        <DataGrid TItem="InventoryLogDto"
+                  Data="InventoryLogList"
+                  ReadData="OnDataGridReadAsync"
+                  TotalItems="TotalCount"
+                  ShowPager="true"
+                  PageSize="PageSize"
+                  CurrentPage="CurrentPage"
+                  Hoverable
+                  Narrow
+                  Responsive
+                  Bordered>
+            <DataGridColumns>
+                <DataGridColumn TItem="InventoryLogDto"
+                                Field="@nameof(InventoryLogDto.Sku)"
+                                Caption="@L["SKU"]">
+                </DataGridColumn>
+                <DataGridColumn TItem="InventoryLogDto"
+                                Field="@nameof(InventoryLogDto.CreationTime)"
+                                Caption="@L["Timestamp"]">
+                    <DisplayTemplate>
+                        @context.CreationTime.ToString("MM/dd/yyyy HH:mm:ss")
+                    </DisplayTemplate>
+                </DataGridColumn>
+                <DataGridColumn TItem="InventoryLogDto"
+                                Field="@nameof(InventoryLogDto.ActionType)"
+                                Caption="@L["Action"]">
+                    <DisplayTemplate>
+                        @switch (context.ActionType)
                         {
-                            <TableRow>
-                                <TableRowCell>@log.Sku</TableRowCell>
-                                <TableRowCell>@log.CreationTime.ToString("MM/dd/yyyy HH:mm:ss")</TableRowCell>
-                                <TableRowCell>
-                                    @switch (log.ActionType)
-                                    {
-                                        case InventoryActionType.AddStock:
-                                            @L["StockAdded"]
-                                            break;
-                                        case InventoryActionType.DeductStock:
-                                            @L["StockDeducted"]
-                                            break;
-                                        case InventoryActionType.ItemSold:
-                                            @L["ItemSold", log.OrderNumber]
-                                            break;
-                                    }
-                                </TableRowCell>
-                                <TableRowCell>
-                                    <InventoryLogsAmountComponent Value="log.StockOnHand" />
-                                </TableRowCell>
-                                <TableRowCell>
-                                    <InventoryLogsAmountComponent Value="log.SaleableQuantity" />
-                                </TableRowCell>
-                                <TableRowCell>
-                                    <InventoryLogsAmountComponent Value="log.PreOrderQuantity" />
-                                </TableRowCell>
-                                <TableRowCell>
-                                    <InventoryLogsAmountComponent Value="log.SaleablePreOrderQuantity" />
-                                </TableRowCell>
-                                <TableRowCell TextAlignment="TextAlignment.Center">
-                                    <Button Class="pk-btn-icon indigo" Clicked="() => View(log)">
-                                        <Icon Name="IconName.Eye"></Icon>
-                                    </Button>
-                                </TableRowCell>
-                            </TableRow>
+                            case InventoryActionType.AddStock:
+                                @L["StockAdded"]
+                                break;
+                            case InventoryActionType.DeductStock:
+                                @L["StockDeducted"]
+                                break;
+                            case InventoryActionType.ItemSold:
+                                @L["ItemSold", context.OrderNumber]
+                                break;
                         }
-                    }
-                    else
-                    {
-                        <TableRow>
-                            <TableRowCell ColumnSpan="8">
-                                <Div Class="text-center pt-3">
-                                    <h5 class="text-muted">@L["NoStockAdjustmentDescription"]</h5>
-                                </Div>
-                            </TableRowCell>
-                        </TableRow>
-                    }
-                }
-            </TableBody>
-        </Table>
+                    </DisplayTemplate>
+                </DataGridColumn>
+                <DataGridColumn TItem="InventoryLogDto"
+                                Field="@nameof(InventoryLogDto.StockOnHand)"
+                                Caption="@L["CurrentStock"]">
+                    <DisplayTemplate>
+                        <InventoryLogsAmountComponent Value="@context.StockOnHand" />
+                    </DisplayTemplate>
+                </DataGridColumn>
+                <DataGridColumn TItem="InventoryLogDto"
+                                Field="@nameof(InventoryLogDto.SaleableQuantity)"
+                                Caption="@L["AvailableStock"]">
+                    <DisplayTemplate>
+                        <InventoryLogsAmountComponent Value="@context.SaleableQuantity" />
+                    </DisplayTemplate>
+                </DataGridColumn>
+                <DataGridColumn TItem="InventoryLogDto"
+                                Field="@nameof(InventoryLogDto.PreOrderQuantity)"
+                                Caption="@L["PreOrderQuantity"]">
+                    <DisplayTemplate>
+                        <InventoryLogsAmountComponent Value="@context.PreOrderQuantity" />
+                    </DisplayTemplate>
+                </DataGridColumn>
+                <DataGridColumn TItem="InventoryLogDto"
+                                Field="@nameof(InventoryLogDto.SaleablePreOrderQuantity)"
+                                Caption="@L["AvailablePreOrderQuantity"]">
+                    <DisplayTemplate>
+                        <InventoryLogsAmountComponent Value="@context.SaleablePreOrderQuantity" />
+                    </DisplayTemplate>
+                </DataGridColumn>
+                <DataGridColumn TItem="InventoryLogDto"
+                                Sortable="false"
+                                Caption="@L["View"]"
+                                Width="30px">
+                    <DisplayTemplate>
+                        <Button Class="pk-btn-icon indigo" Clicked="() => View(context)">
+                            <Icon Name="IconName.Eye"></Icon>
+                        </Button>
+                    </DisplayTemplate>
+                </DataGridColumn>
+            </DataGridColumns>
+            <LoadingTemplate>
+                <Div Class="text-center pt-3">
+                    <Div Class="spinner-border text-primary" Style="height: 3rem; width: 3rem;"></Div>
+                </Div>
+            </LoadingTemplate>
+            <EmptyTemplate>
+                <Div Class="text-center pt-3">
+                    <h5 class="text-muted">@L["NoStockAdjustmentDescription"]</h5>
+                </Div>
+            </EmptyTemplate>
+        </DataGrid>
     </CardBody>
 </Card>
 

@@ -134,29 +134,7 @@ public class InventoryLogManager : DomainService
 
         var description = "Item Sold: Order #" + order.OrderNo;
 
-        int signedAmount = amount * -1;
-
-        int saleableQuantity;
-        int stockOnHand;
-        int saleablePreOrderQuantity = 0;
-        int preOrderQuantity = 0;
-        
-        if (itemDetail.SaleableQuantity - amount >= 0 && itemDetail.StockOnHand - amount >= 0)
-        {
-            saleableQuantity = signedAmount;
-            stockOnHand = signedAmount;
-        }
-        else if (itemDetail.SaleableQuantity + itemDetail.SaleablePreOrderQuantity - amount >= 0 && itemDetail.StockOnHand + itemDetail.PreOrderableQuantity - amount >= 0)
-        {
-            saleableQuantity = signedAmount;
-            stockOnHand = signedAmount;
-            saleablePreOrderQuantity = signedAmount + ((int?)itemDetail.SaleableQuantity ?? 0);
-            preOrderQuantity = signedAmount + (itemDetail.StockOnHand ?? 0);
-        }
-        else
-        {
-            throw new UserFriendlyException("Insufficient stock for " + itemDetail.SKU);
-        }
+        var itemSoldLog = CreateItemSoldLog(itemDetail, amount);
 
         var inventoryLog = new InventoryLog(
             GuidGenerator.Create(),
@@ -165,10 +143,10 @@ public class InventoryLogManager : DomainService
             itemDetail.SKU,
             attributes,
             InventoryActionType.ItemSold,
-            stockOnHand,
-            saleableQuantity,
-            preOrderQuantity,
-            saleablePreOrderQuantity,
+            itemSoldLog.StockOnHand,
+            itemSoldLog.SaleableQuantity,
+            itemSoldLog.PreOrderQuantity,
+            itemSoldLog.SaleablePreOrderQuantity,
             description,
             order.Id,
             order.OrderNo
@@ -180,4 +158,43 @@ public class InventoryLogManager : DomainService
 
         return inventoryLog;
     }
+
+    private static ItemSoldLog CreateItemSoldLog(ItemDetails itemDetail, int amount)
+    {
+        int saleableQuantity = (int)(itemDetail.SaleableQuantity ?? 0);
+        int stockOnHand = itemDetail.StockOnHand ?? 0;
+        int saleablePreOrderQuantity = (int)(itemDetail.SaleablePreOrderQuantity ?? 0);
+        int preOrderableQuantity = (int)(itemDetail.PreOrderableQuantity ?? 0);
+
+        bool enoughAvailable = saleableQuantity >= 0
+            ? (saleableQuantity + saleablePreOrderQuantity) >= amount
+            : saleablePreOrderQuantity >= amount;
+
+        bool enoughStock = stockOnHand >= 0
+            ? (stockOnHand + preOrderableQuantity) >= amount
+            : preOrderableQuantity >= amount;
+
+        if (!enoughAvailable || !enoughStock)
+        {
+            throw new UserFriendlyException("Insufficient stock for " + itemDetail.SKU);
+        }
+
+        int saleableQuantityLog = -amount;
+        int stockOnHandLog = -amount;
+        int saleablePreOrderQuantityLog = 0;
+        int preOrderQuantityLog = 0;
+
+        if (amount > saleableQuantity)
+        {
+            saleablePreOrderQuantityLog = saleableQuantity > 0 ? saleableQuantity - amount : -amount;
+        }
+        if (amount > stockOnHand)
+        {
+            preOrderQuantityLog = stockOnHand > 0 ? stockOnHand - amount : -amount;
+        }
+
+        return new ItemSoldLog(saleableQuantityLog, stockOnHandLog, saleablePreOrderQuantityLog, preOrderQuantityLog);
+    }
+
+    private record ItemSoldLog(int SaleableQuantity, int StockOnHand, int SaleablePreOrderQuantity, int PreOrderQuantity);
 }

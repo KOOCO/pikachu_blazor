@@ -190,13 +190,13 @@ public class OrderAppService : PikachuAppService, IOrderAppService
                         if (details != null)
                         {
                             // Check if the available quantity is sufficient
-                            if (details.SaleableQuantity < item.Quantity)
-                            {
-                                // Add item to insufficientItems list
-                                insufficientItems.Add($"Item: {details.ItemName}, Requested: {item.Quantity}, Available: {details.SaleablePreOrderQuantity},Details:{JsonConvert.SerializeObject(details)}");
-                            }
-                            else
-                            {
+                            //if (details.SaleableQuantity < item.Quantity)
+                            //{
+                            //    // Add item to insufficientItems list
+                            //    insufficientItems.Add($"Item: {details.ItemName}, Requested: {item.Quantity}, Available: {details.SaleablePreOrderQuantity},Details:{JsonConvert.SerializeObject(details)}");
+                            //}
+                            //else
+                            //{
                                 // Proceed with updating the stock if sufficient
                                 //details.SaleableQuantity = details.SaleableQuantity - item.Quantity;
                                 //details.StockOnHand = details.StockOnHand - item.Quantity;
@@ -204,7 +204,7 @@ public class OrderAppService : PikachuAppService, IOrderAppService
                                 await InventoryLogManager.ItemSoldAsync(order, details, item.Quantity);
 
                                 //await ItemDetailsRepository.UpdateAsync(details);
-                            }
+                            //}
                         }
 
                         if (item.SetItemId.HasValue)
@@ -229,13 +229,13 @@ public class OrderAppService : PikachuAppService, IOrderAppService
                                         if (detail != null)
                                         {
                                             // Check if the available quantity is sufficient
-                                            if (detail.SaleableQuantity < totalOrderQuantity)
-                                            {
-                                                // Add item to insufficientItems list
-                                                insufficientItems.Add($"Item: {detail.ItemName}, Requested: {item.Quantity}, Available: {detail.SaleablePreOrderQuantity},Details:{JsonConvert.SerializeObject(detail)}");
-                                            }
-                                            else
-                                            {
+                                            //if (detail.SaleableQuantity < totalOrderQuantity)
+                                            //{
+                                            //    // Add item to insufficientItems list
+                                            //    insufficientItems.Add($"Item: {detail.ItemName}, Requested: {item.Quantity}, Available: {detail.SaleablePreOrderQuantity},Details:{JsonConvert.SerializeObject(detail)}");
+                                            //}
+                                            //else
+                                            //{
                                                 // Proceed with updating the stock if sufficient
                                                 //detail.SaleableQuantity -= totalOrderQuantity;
                                                 //detail.StockOnHand -= totalOrderQuantity;
@@ -243,7 +243,7 @@ public class OrderAppService : PikachuAppService, IOrderAppService
                                                 await InventoryLogManager.ItemSoldAsync(order, detail, totalOrderQuantity);
 
                                                 //await ItemDetailsRepository.UpdateAsync(detail);
-                                            }
+                                            //}
                                         }
                                     }
                                 }

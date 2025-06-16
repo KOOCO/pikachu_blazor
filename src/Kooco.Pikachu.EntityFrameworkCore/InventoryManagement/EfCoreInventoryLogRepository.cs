@@ -16,13 +16,38 @@ public class EfCoreInventoryLogRepository : EfCoreRepository<PikachuDbContext, I
     {
     }
 
-    public async Task<List<InventoryLog>> GetListAsync(Guid itemId, Guid itemDetailId)
+    public async Task<long> CountAsync(Guid itemId, Guid itemDetailId)
+    {
+        var queryable = await GetFilteredQueryableAsync(itemId, itemDetailId);
+        return await queryable.LongCountAsync();
+    }
+
+    public async Task<List<InventoryLog>> GetListAsync(
+        Guid itemId,
+        Guid itemDetailId,
+        int skipCount = 0,
+        int maxResultCount = 30,
+        string? sorting = null
+        )
+    {
+        if (string.IsNullOrWhiteSpace(sorting))
+        {
+            sorting = nameof(InventoryLog.CreationTime) + " DESC";
+        }
+
+        var queryable = await GetFilteredQueryableAsync(itemId, itemDetailId);
+
+        return await queryable
+            .OrderBy(sorting)
+            .PageBy(skipCount, maxResultCount)
+            .ToListAsync();
+    }
+
+    public async Task<IQueryable<InventoryLog>> GetFilteredQueryableAsync(Guid itemId, Guid itemDetailId)
     {
         var queryable = (await GetQueryableAsync()).AsNoTracking();
 
-        return await queryable
-            .Where(q => q.ItemId == itemId && q.ItemDetailId == itemDetailId)
-            .OrderByDescending(q => q.CreationTime)
-            .ToListAsync();
+        return queryable
+            .Where(q => q.ItemId == itemId && q.ItemDetailId == itemDetailId);
     }
 }

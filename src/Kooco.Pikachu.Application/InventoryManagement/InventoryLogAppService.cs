@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Volo.Abp;
+using Volo.Abp.Application.Dtos;
 using Volo.Abp.Content;
 
 namespace Kooco.Pikachu.InventoryManagement;
@@ -46,14 +47,29 @@ public class InventoryLogAppService : PikachuAppService, IInventoryLogAppService
         return ObjectMapper.Map<InventoryLog, InventoryLogDto>(inventoryLog);
     }
 
-    public async Task<List<InventoryLogDto>> GetListAsync(Guid itemId, Guid itemDetailId)
+    public async Task<PagedResultDto<InventoryLogDto>> GetListAsync(GetInventoryLogListDto input)
     {
-        var inventoryLogs = await _inventoryLogRepository.GetListAsync(itemId, itemDetailId);
-        return ObjectMapper.Map<List<InventoryLog>, List<InventoryLogDto>>(inventoryLogs);
+        var totalCount = await _inventoryLogRepository.CountAsync(input.ItemId, input.ItemDetailId);
+
+        var items = await _inventoryLogRepository.GetListAsync(
+            input.ItemId,
+            input.ItemDetailId,
+            input.SkipCount,
+            input.MaxResultCount,
+            input.Sorting
+            );
+
+        return new PagedResultDto<InventoryLogDto>
+        {
+            TotalCount = totalCount,
+            Items = ObjectMapper.Map<List<InventoryLog>, List<InventoryLogDto>>(items)
+        };
     }
 
-    public async Task<IRemoteStreamContent> GetListAsExcelAsync(List<InventoryLogDto> input)
+    public async Task<IRemoteStreamContent> GetListAsExcelAsync(Guid itemId, Guid itemDetailId)
     {
+        var inventoryLogs = await _inventoryLogRepository.GetFilteredQueryableAsync(itemId, itemDetailId);
+        var input = ObjectMapper.Map<List<InventoryLog>, List<InventoryLogDto>>([.. inventoryLogs]);
         var headers = new Dictionary<string, string>
         {
             { "SKU", L["SKU"] },

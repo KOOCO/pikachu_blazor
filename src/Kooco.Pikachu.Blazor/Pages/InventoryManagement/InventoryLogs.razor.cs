@@ -1,6 +1,6 @@
 using Blazorise;
+using Blazorise.DataGrid;
 using Kooco.Pikachu.Blazor.Helpers;
-using Kooco.Pikachu.Blazor.Pages.ItemManagement;
 using Kooco.Pikachu.InventoryManagement;
 using Microsoft.AspNetCore.Components;
 using System;
@@ -22,6 +22,10 @@ public partial class InventoryLogs
     private InventoryDto Inventory { get; set; }
     private InventoryLogDto SelectedLog { get; set; }
     private IReadOnlyList<InventoryLogDto> InventoryLogList { get; set; } = [];
+    private int PageSize { get; } = 30;
+    private int CurrentPage { get; set; } = 1;
+    private string CurrentSorting { get; set; }
+    private int TotalCount { get; set; }
     private bool IsLoading { get; set; }
     private bool IsExporting { get; set; }
     private AdjustStockModal AdjustStockModalRef { get; set; }
@@ -41,8 +45,21 @@ public partial class InventoryLogs
         Inventory = await InventoryAppService.GetAsync(ItemId, ItemDetailId);
         PageTitle = string.Join(" - ", new[] { Inventory.ItemName, Inventory.Attributes }.Where(x => !string.IsNullOrWhiteSpace(x)));
         BreadcrumbItems.AddRange([InventoryBreadcrumb, new(PageTitle)]);
-        await GetLogsAsync();
+        
         await base.OnInitializedAsync();
+    }
+
+    private async Task OnDataGridReadAsync(DataGridReadDataEventArgs<InventoryLogDto> e)
+    {
+        CurrentSorting = e.Columns
+            .Where(c => c.SortDirection != SortDirection.Default)
+            .Select(c => c.Field + (c.SortDirection == SortDirection.Descending ? " DESC" : ""))
+            .JoinAsString(",");
+        CurrentPage = e.Page;
+
+        await GetLogsAsync();
+
+        await InvokeAsync(StateHasChanged);
     }
 
     async Task GetLogsAsync()
@@ -50,7 +67,20 @@ public partial class InventoryLogs
         try
         {
             IsLoading = true;
-            InventoryLogList = await InventoryLogAppService.GetListAsync(ItemId, ItemDetailId);
+            StateHasChanged();
+
+            var result = await InventoryLogAppService
+                .GetListAsync(new GetInventoryLogListDto
+                {
+                    ItemId = ItemId,
+                    ItemDetailId = ItemDetailId,
+                    MaxResultCount = PageSize,
+                    SkipCount = (CurrentPage - 1) * PageSize,
+                    Sorting = CurrentSorting
+                });
+            
+            InventoryLogList = result.Items;
+            TotalCount = (int)result.TotalCount;
             StateHasChanged();
         }
         catch (Exception ex)
@@ -74,7 +104,7 @@ public partial class InventoryLogs
         {
             IsExporting = true;
 
-            var inventoryLogFile = await InventoryLogAppService.GetListAsExcelAsync([.. InventoryLogList]);
+            var inventoryLogFile = await InventoryLogAppService.GetListAsExcelAsync(ItemId, ItemDetailId);
 
             await ExcelDownloadHelper.DownloadExcelAsync(inventoryLogFile);
 
@@ -113,5 +143,14 @@ public partial class InventoryLogs
             SelectedLog = log;
             await ViewModalRef.Show();
         }
+    }
+
+    async Task Refresh()
+    {
+        CurrentPage = 1;
+
+        await GetLogsAsync();
+
+        await InvokeAsync(StateHasChanged);
     }
 }
