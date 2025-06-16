@@ -191,7 +191,7 @@ public class TCatSFTPService : ITransientDependency
                                 DeliveryStatus.ToBeShipped => ShippingStatus.ToBeShipped,
                                 DeliveryStatus.Shipped => ShippingStatus.Shipped,
                                 DeliveryStatus.Delivered => ShippingStatus.Delivered,
-                                DeliveryStatus.Completed => ShippingStatus.Completed,
+                                DeliveryStatus.PickedUp => ShippingStatus.PickedUp,
                                 _ => order.ShippingStatus
                             };
 
@@ -255,7 +255,7 @@ public class TCatSFTPService : ITransientDependency
         DeliveryStatus.ToBeShipped,
         DeliveryStatus.Shipped,
         DeliveryStatus.Delivered,
-        DeliveryStatus.Completed
+        DeliveryStatus.PickedUp
     ];
 
     // To get index-based rank:

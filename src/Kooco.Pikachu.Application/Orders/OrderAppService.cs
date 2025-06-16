@@ -2152,7 +2152,7 @@ public class OrderAppService : PikachuAppService, IOrderAppService
         if (order.InvoiceNumber.IsNullOrEmpty())
         {
             var invoiceSetting = await TenantTripartiteRepository.FindByTenantAsync(CurrentTenant.Id.Value);
-            if (invoiceSetting.StatusOnInvoiceIssue == DeliveryStatus.Completed)
+            if (invoiceSetting.StatusOnInvoiceIssue == DeliveryStatus.PickedUp)
             {
                 if (order.GroupBuy.IssueInvoice)
                 {
@@ -2301,7 +2301,16 @@ public class OrderAppService : PikachuAppService, IOrderAppService
         {
             var toBeShippedCodes = new Dictionary<DeliveryMethod, int[]>
             {
-                { DeliveryMethod.PostOffice, new[] { 320 } }
+                
+                { DeliveryMethod.SevenToEleven1, new[] { 300 } },
+                { DeliveryMethod.SevenToElevenC2C, new[] { 300 } },
+                { DeliveryMethod.SevenToElevenFrozen, new[] { 300 } },
+                { DeliveryMethod.FamilyMart1, new[] { 300 } },
+                { DeliveryMethod.FamilyMartC2C, new[] { 300 } },
+                { DeliveryMethod.PostOffice, new[] { 320 } },
+                { DeliveryMethod.BlackCat1, new[] { 300 } },
+                { DeliveryMethod.BlackCatFreeze, new[] { 300 } },
+                { DeliveryMethod.BlackCatFrozen, new[] { 300 } }
             };
 
             var shippedCodes = new Dictionary<DeliveryMethod, int[]>
@@ -2311,10 +2320,10 @@ public class OrderAppService : PikachuAppService, IOrderAppService
                 { DeliveryMethod.SevenToElevenFrozen, new[] { 2063 } },
                 { DeliveryMethod.FamilyMart1, new[] { 3018 } },
                 { DeliveryMethod.FamilyMartC2C, new[] { 3018 } },
-                { DeliveryMethod.PostOffice, new[] { 3301 } },
-                { DeliveryMethod.BlackCat1, new[] { 3006 } },
-                { DeliveryMethod.BlackCatFreeze, new[] { 3006 } },
-                { DeliveryMethod.BlackCatFrozen, new[] { 3006 } }
+                { DeliveryMethod.PostOffice, new[] { 3301, 3302, 3303, 3312, 3313 } },
+                { DeliveryMethod.BlackCat1, new[] { 3001, 3002, 3004, 3005, 3006, 3007, 3008, 3009, 3010, 3011, 3012, 3013, 3014 } },
+                { DeliveryMethod.BlackCatFreeze, new[] { 3001, 3002, 3004, 3005, 3006, 3007, 3008, 3009, 3010, 3011, 3012, 3013, 3014 } },
+                { DeliveryMethod.BlackCatFrozen, new[] { 3001, 3002, 3004, 3005, 3006, 3007, 3008, 3009, 3010, 3011, 3012, 3013, 3014 } }
             };
 
             var deliveredCodes = new Dictionary<DeliveryMethod, int[]>
@@ -2324,7 +2333,10 @@ public class OrderAppService : PikachuAppService, IOrderAppService
                 { DeliveryMethod.SevenToElevenFrozen, new[] { 2001, 2024 } },
                 { DeliveryMethod.FamilyMart1, new[] { 3029 } },
                 { DeliveryMethod.FamilyMartC2C, new[] { 3029 } },
-                { DeliveryMethod.PostOffice, new[] { 3308 } }
+                { DeliveryMethod.PostOffice, new[] { 3308, 3309, 3314 } },
+                 { DeliveryMethod.BlackCat1, new[] { 3003 } },
+                { DeliveryMethod.BlackCatFreeze, new[] { 3003 } },
+                { DeliveryMethod.BlackCatFrozen, new[] { 3003 } }
             };
 
             var completedCodes = new Dictionary<DeliveryMethod, int[]>
@@ -2347,7 +2359,7 @@ public class OrderAppService : PikachuAppService, IOrderAppService
                 { DeliveryMethod.SevenToElevenFrozen, new[] { 2065, 2074 } },
                 { DeliveryMethod.FamilyMart1, new[] { 3020 } },
                 { DeliveryMethod.FamilyMartC2C, new[] { 3020 } },
-                { DeliveryMethod.PostOffice, new[] { 3310 } },
+                { DeliveryMethod.PostOffice, new[] { 3306, 3310, 3311 } },
                 { DeliveryMethod.BlackCat1, new[] { 325 } },
                 { DeliveryMethod.BlackCatFreeze, new[] { 325 } },
                 { DeliveryMethod.BlackCatFrozen, new[] { 325 } }
@@ -2383,10 +2395,10 @@ public class OrderAppService : PikachuAppService, IOrderAppService
             }
             else if (completedCodes.TryGetValue(deliveryMethod, out var completedRtnCodes) && completedRtnCodes.Contains(rtnCode))
             {
-                order.ShippingStatus = ShippingStatus.Completed;
+                order.ShippingStatus = ShippingStatus.PickedUp;
                 if (orderDelivery != null)
                 {
-                    orderDelivery.DeliveryStatus = DeliveryStatus.Completed;
+                    orderDelivery.DeliveryStatus = DeliveryStatus.PickedUp;
                 }
             }
             else if (returnedCodes.TryGetValue(deliveryMethod, out var returnedRtnCodes) && returnedRtnCodes.Contains(rtnCode))
