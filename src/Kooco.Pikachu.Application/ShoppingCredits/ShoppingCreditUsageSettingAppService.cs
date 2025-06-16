@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Domain.Repositories;
@@ -63,8 +64,16 @@ namespace Kooco.Pikachu.ShoppingCredits
 
         public async Task<ShoppingCreditUsageSettingByGroupBuyDto> GetFirstByGroupBuyIdAsync(Guid groupBuyId)
         {
-            var shoppingCreditUsageSetting = await shoppingCreditUsageSettingRepository.GetFirstByGroupBuyIdAsync(groupBuyId);
-            return ObjectMapper.Map<ShoppingCreditUsageSetting, ShoppingCreditUsageSettingByGroupBuyDto>(shoppingCreditUsageSetting);
+            var shoppingCreditUsageSetting = await shoppingCreditUsageSettingRepository.FirstOrDefaultAsync();
+            if (shoppingCreditUsageSetting is not null)
+            {
+                await shoppingCreditUsageSettingRepository.EnsureCollectionLoadedAsync(shoppingCreditUsageSetting, x => x.SpecificGroupbuys);
+                await shoppingCreditUsageSettingRepository.EnsureCollectionLoadedAsync(shoppingCreditUsageSetting, x => x.SpecificProducts);
+            }
+            var dto = ObjectMapper.Map<ShoppingCreditUsageSetting, ShoppingCreditUsageSettingByGroupBuyDto>(shoppingCreditUsageSetting);
+            dto.AllowUsage = shoppingCreditUsageSetting.UsableGroupbuysScope == "AllGroupbuys" 
+                || shoppingCreditUsageSetting.SpecificGroupbuys.Any(gb => gb.GroupbuyId == groupBuyId);
+            return dto;
         }
     }
 }
