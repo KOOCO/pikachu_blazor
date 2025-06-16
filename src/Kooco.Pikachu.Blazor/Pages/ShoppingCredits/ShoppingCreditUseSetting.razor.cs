@@ -87,7 +87,8 @@ namespace Kooco.Pikachu.Blazor.Pages.ShoppingCredits
             }
             await base.OnInitializedAsync();
         }
-
+         
+       
         private async Task HandleValidSubmit()
         {
             messageStore?.Clear();
@@ -143,7 +144,28 @@ namespace Kooco.Pikachu.Blazor.Pages.ShoppingCredits
             IsUpdating = false;
         }
 
+        private  Task OnUsableGroupbuysScopeChanged(string newValue)
+        {
+            CreateUpdateUsage.UsableGroupbuysScope = newValue;
+            if (newValue == "SpecificGroupbuys")
+            {
+                SelectedGroupBuy=[] ;
+            }
 
+            return Task.CompletedTask;
+
+        }
+        private Task OnUsableProductsScopeChanged(string newValue)
+        {
+            CreateUpdateUsage.UsableProductsScope = newValue;
+            if (newValue == "SpecificProducts")
+            {
+                SelectedProducts = [];
+            }
+
+            return Task.CompletedTask;
+
+        }
         private void OnCheckChanged(bool value, string itemName)
         {
             var selected = new List<string>();

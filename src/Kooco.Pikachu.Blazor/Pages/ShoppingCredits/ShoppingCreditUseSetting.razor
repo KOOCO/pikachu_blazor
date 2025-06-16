@@ -120,18 +120,16 @@
 
                     <Column ColumnSize="ColumnSize.Is9">
                         <Column ColumnSize="ColumnSize.Is12">
-                            <Validation MessageLocalizer="@LH.Localize">
+                           
                                 <Label>@L["UsableforGroupbuying"]</Label>
-                                <RadioGroup Orientation="Orientation.Vertical" TValue="string" @bind-CheckedValue="CreateUpdateUsage.UsableGroupbuysScope" Name="Groupbuys">
+                                <RadioGroup Orientation="Orientation.Vertical" TValue="string" CheckedValue="@CreateUpdateUsage.UsableGroupbuysScope" CheckedValueChanged="OnUsableGroupbuysScopeChanged" Name="Groupbuys">
                                     <ChildContent>
                                         <Radio Value="@("AllGroupbuys")">@L["AllGroupbuys"]</Radio>
                                         <Radio Value="@("SpecificGroupbuys")">@L["SpecificGroupbuys"]</Radio>
                                     </ChildContent>
-                                    <Feedback>
-                                        <ValidationError />
-                                    </Feedback>
+                                  
                                 </RadioGroup>
-                            </Validation>
+                       
                         </Column>
                         @if (CreateUpdateUsage.UsableGroupbuysScope == "SpecificGroupbuys")
                         {
@@ -160,17 +158,15 @@
 
                         <Column ColumnSize="ColumnSize.Is12">
                             <Label>@L["UseableforProducts"]</Label>
-                            <Validation MessageLocalizer="@LH.Localize">
-                                <RadioGroup Orientation="Orientation.Vertical" TValue="string" @bind-CheckedValue="CreateUpdateUsage.UsableProductsScope" Name="Products">
+                           
+                                <RadioGroup Orientation="Orientation.Vertical" TValue="string" CheckedValue="CreateUpdateUsage.UsableProductsScope" CheckedValueChanged="OnUsableProductsScopeChanged" Name="Products">
                                     <ChildContent>
                                         <Radio Value="@("AllProducts")">@L["AllProducts"]</Radio>
                                         <Radio Value="@("SpecificProducts")">@L["SpecificProducts"]</Radio>
                                     </ChildContent>
-                                    <Feedback>
-                                        <ValidationError />
-                                    </Feedback>
+                                  
                                 </RadioGroup>
-                            </Validation>
+                            
                         </Column>
                         @if (CreateUpdateUsage.UsableProductsScope == "SpecificProducts")
                         {
