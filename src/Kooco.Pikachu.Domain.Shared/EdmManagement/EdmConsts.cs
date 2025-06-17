@@ -78,18 +78,23 @@ public class EdmTemplateConsts
 
 public class EdmTemplatePlaceholders
 {
-    public const string MemberName = "{{MemberName}}";
-    public const string GroupBuyName = "{{GroupBuyName}}";
+    public const string AddOnProductAmount = "{{AddOnProductAmount}}";
+    public const string ApplicableProductName = "{{ApplicableProductName_OR_所有商品}}";
     public const string CampaignName = "{{CampaignName}}";
     public const string CampaignPeriod = "{{CampaignPeriod}}";
+    public const string CapCashbackAmount = "{{CapCashbackAmount}}";
     public const string Discount = "{{Discount}}";
-    public const string Threshold = "{{Threshold}}";
+    public const string DiscountCode = "{{DiscountCode_OR_無需折扣碼}}";
+    public const string GroupBuyName = "{{GroupBuyName}}";
     public const string LimitPerOrder = "{{LimitPerOrder}}";
-    public const string DiscountCode = "{{DiscountCode}}";
-    public const string MinimumSpendAmount = "{{MinimumSpendAmount}}";
     public const string MaximumUsePerPerson = "{{MaximumUsePerPerson}}";
-    public const string ValidForDays = "{{ValidForDays}}";
+    public const string MemberName = "{{MemberName}}";
+    public const string MinimumSpendAmount = "{{MinimumSpendAmount}}";
+    public const string ProductName = "{{ProductName}}";
+    public const string Threshold = "{{Threshold}}";
+    public const string ValidForDays = "{{獲取後ValidForDays天內使用_OR_不限時間}}";
 
+    public const string DateFormat = "yyyy/MM/dd";
     public const string TemplateTypeMain = "{{edm_template_type_main}}";
     public const string CampaignProperties = "{{edm_campaign_properties}}";
     public const string PromotionModule = "{{edm_promotion_module_template}}";
@@ -109,11 +114,12 @@ public class EdmTemplatePlaceholders
 
     public static string[] GetAllInsertable()
     {
-        return [.. GetAll().Where(x => !x.Contains('_'))];
+        var nonInsertables = new[] { TemplateTypeMain, CampaignProperties, PromotionModule, ShopCartItems };
+        return [.. GetAll().Where(x => !nonInsertables.Contains(x))];
     }
 
     public static string[] GetAll()
     {
-        return ReflectionHelper.GetPublicConstantsRecursively(typeof(EdmTemplatePlaceholders));
+        return [.. ReflectionHelper.GetPublicConstantsRecursively(typeof(EdmTemplatePlaceholders)).OrderBy(x => x)];
     }
 }

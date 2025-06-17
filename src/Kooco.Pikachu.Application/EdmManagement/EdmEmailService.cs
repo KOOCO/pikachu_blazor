@@ -1,8 +1,6 @@
 ﻿using Hangfire;
-using Kooco.Pikachu.Campaigns;
 using Kooco.Pikachu.Members;
 using Kooco.Pikachu.ShopCarts;
-using Kooco.Pikachu.Tenants;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using RestSharp;
@@ -18,37 +16,31 @@ namespace Kooco.Pikachu.EdmManagement;
 
 public class EdmEmailService : ITransientDependency
 {
-    private readonly IEdmRepository _edmRepository;
     private readonly IEmailSender _emailSender;
     private readonly IMemberRepository _memberRepository;
     private readonly ICurrentTenant _currentTenant;
-    private readonly ICampaignRepository _campaignRepository;
     private readonly ILogger<EdmEmailService> _logger;
-    private readonly ITenantSettingsAppService _tenantSettingsAppService;
     private readonly IShopCartRepository _shopCartRepository;
     private readonly IConfiguration _configuration;
+    private readonly EdmTemplateBuilder _edmTemplateBuilder;
 
     public EdmEmailService(
-        IEdmRepository edmRepository,
         IEmailSender emailSender,
         IMemberRepository memberRepository,
         ICurrentTenant currentTenant,
-        ICampaignRepository campaignRepository,
         ILogger<EdmEmailService> logger,
-        ITenantSettingsAppService tenantSettingsAppService,
         IShopCartRepository shopCartRepository,
-        IConfiguration configuration
+        IConfiguration configuration,
+        EdmTemplateBuilder edmTemplateBuilder
         )
     {
-        _edmRepository = edmRepository;
         _emailSender = emailSender;
         _memberRepository = memberRepository;
         _currentTenant = currentTenant;
-        _campaignRepository = campaignRepository;
         _logger = logger;
-        _tenantSettingsAppService = tenantSettingsAppService;
         _shopCartRepository = shopCartRepository;
         _configuration = configuration;
+        _edmTemplateBuilder = edmTemplateBuilder;
     }
 
     public Task EnqueueJob(Edm edm)
@@ -137,15 +129,7 @@ public class EdmEmailService : ITransientDependency
 
                 var subject = edm.Subject;
 
-                var groupBuyName = await _edmRepository.GetGroupBuyNameAsync(edm.GroupBuyId);
-
-                var tenantSettings = await _tenantSettingsAppService.FirstOrDefaultAsync();
-
-                var campaign = edm.CampaignId.HasValue
-                    ? await _campaignRepository.GetWithDetailsAsync(edm.CampaignId.Value)
-                    : null;
-
-                var template = EdmTemplateBuilder.Build(edm, tenantSettings, campaign, groupBuyName);
+                var template = await _edmTemplateBuilder.BuildAsync(edm);
 
                 foreach (var (id, name, email) in members)
                 {
