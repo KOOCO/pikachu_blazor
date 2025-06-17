@@ -1163,9 +1163,9 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
 
         try
         {
-            using (var uow = UnitOfWorkManager.Begin(requiresNew: true, isTransactional: false))
-            {
-                var newOrderDelivery = await _deliveryRepository.GetAsync(orderDeliveryId);
+            //using (var uow = UnitOfWorkManager.Begin(requiresNew: true, isTransactional: false))
+            //{
+                var newOrderDelivery = orderDelivery;//await _deliveryRepository.GetAsync(orderDeliveryId);
                 newOrderDelivery.SrvTranId = printObtResponse.SrvTranId;
                 newOrderDelivery.FileNo = printObtResponse.Data.FileNo;
                 newOrderDelivery.AllPayLogisticsID = printObtResponse.SrvTranId;
@@ -1183,7 +1183,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
 
 
                 order.ShippingStatus = ShippingStatus.ToBeShipped;
-                await uow.SaveChangesAsync();
+                //await uow.SaveChangesAsync();
                 await _orderRepository.UpdateAsync(order);
                 // **Get Current User (Editor)**
                 var currentUserId = CurrentUser.Id ?? Guid.Empty;
@@ -1198,7 +1198,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
                     currentUserName
                 );
 
-            }
+            //}
             await SendEmailAsync(orderId, ShippingStatus.ToBeShipped);
         }
         catch (AbpDbConcurrencyException e)
