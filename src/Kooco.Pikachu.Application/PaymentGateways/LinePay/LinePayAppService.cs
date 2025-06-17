@@ -94,21 +94,25 @@ public class LinePayAppService : PikachuAppService, ILinePayAppService
                 await _orderRepository.UpdateAsync(order);
                 return responseDto;
             }
-            var oldShippingStatus = order.ShippingStatus;
-            order.OrderStatus = OrderStatus.Closed;
-            order.ShippingStatus = ShippingStatus.Closed;
-            // **Get Current User (Editor)**
-            var currentUserId = CurrentUser.Id ?? Guid.Empty;
-            var currentUserName = CurrentUser.UserName ?? "System";
+            if (order.TotalAmount != 0)
+            {
+                var oldShippingStatus = order.ShippingStatus;
+                order.OrderStatus = OrderStatus.Closed;
+                order.ShippingStatus = ShippingStatus.Closed;
+                // **Get Current User (Editor)**
+                var currentUserId = CurrentUser.Id ?? Guid.Empty;
+                var currentUserName = CurrentUser.UserName ?? "System";
 
-            // **Log Order History for Order Closure**
-            await _orderHistoryManager.AddOrderHistoryAsync(
-         order.Id,
-         "OrderClosed", // Localization key
-         new object[] { _l[oldShippingStatus.ToString()].Name, _l[order.ShippingStatus.ToString()].Name }, // Localized placeholders
-         currentUserId,
-         currentUserName
-     );
+                // **Log Order History for Order Closure**
+                await _orderHistoryManager.AddOrderHistoryAsync(
+             order.Id,
+             "OrderClosed", // Localization key
+             new object[] { _l[oldShippingStatus.ToString()].Name, _l[order.ShippingStatus.ToString()].Name }, // Localized placeholders
+             currentUserId,
+             currentUserName
+         );
+               
+            }
             Logger.LogError(@"Error in Line Pay Payment Request: {response}", response.ToString());
             return responseDto;
         }
