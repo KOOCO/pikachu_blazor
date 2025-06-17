@@ -61,14 +61,12 @@ public class InventoryLogManager : DomainService
                 stockOnHand = amount;
                 break;
             case InventoryStockType.AvailableStock:
-                stockOnHand = actionType == InventoryActionType.AddStock ? amount : 0;
                 saleableQuantity = amount;
                 break;
             case InventoryStockType.PreOrderQuantity:
                 preOrderQuantity = amount;
                 break;
             case InventoryStockType.AvailablePreOrderQuantity:
-                preOrderQuantity = actionType == InventoryActionType.AddStock ? amount : 0;
                 saleablePreOrderQuantity = amount;
                 break;
             default:
