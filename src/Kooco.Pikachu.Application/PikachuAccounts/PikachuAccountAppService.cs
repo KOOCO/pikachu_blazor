@@ -22,6 +22,7 @@ using Volo.Abp.Domain.Entities;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Emailing;
 using Volo.Abp.Identity;
+using Volo.Abp.Uow;
 using Volo.Abp.Validation;
 using IdentityRole = Volo.Abp.Identity.IdentityRole;
 using IdentityUser = Volo.Abp.Identity.IdentityUser;
@@ -70,6 +71,8 @@ public class PikachuAccountAppService(IConfiguration configuration, IMemberRepos
         request.AddHeader("Content-Type", ContentType.FormUrlEncoded);
         request.AddHeader("__tenant", CurrentTenant.Name);
 
+        var newlyAddedMember = await AddMemberRoleIfNotExists(input);
+
         var param = await SetupLoginParams(input);
 
         foreach (var kvp in param)
@@ -84,6 +87,11 @@ public class PikachuAccountAppService(IConfiguration configuration, IMemberRepos
 
         var result = new PikachuLoginResponseDto(response.IsSuccessStatusCode);
 
+        if (!result.Success && newlyAddedMember)
+        {
+            await RemoveMemberRole(input);
+        }
+
         if (result.Success)
         {
             root.TryGetProperty("access_token", out JsonElement accessTokenElement);
@@ -91,8 +99,6 @@ public class PikachuAccountAppService(IConfiguration configuration, IMemberRepos
             if (accessTokenElement.ValueKind == JsonValueKind.String)
             {
                 result.AccessToken = accessTokenElement.GetString();
-                
-                await AddMemberRoleIfNotExists(input);
             }
         }
 
@@ -106,13 +112,19 @@ public class PikachuAccountAppService(IConfiguration configuration, IMemberRepos
         return result;
     }
 
-    private async Task AddMemberRoleIfNotExists(PikachuLoginInputDto input)
+    private async Task<bool> AddMemberRoleIfNotExists(PikachuLoginInputDto input)
     {
-        ExternalUserDto externalUser = null;
+        using var uow = UnitOfWorkManager.Begin(
+            new AbpUnitOfWorkOptions { IsTransactional = true },
+            requiresNew: true
+            );
+
+        ExternalUserDto externalUser = null!;
         if (input.Method != LoginMethod.UserNameOrPassword)
         {
-             externalUser = await SetupExternalUserAsync(input.Method.Value, input.ThirdPartyToken);
+            externalUser = await SetupExternalUserAsync(input.Method.Value, input.ThirdPartyToken);
         }
+
         var user = (input.Method == LoginMethod.UserNameOrPassword
                     ? await identityUserRepository.FindByNameOrEmailAsync(input.UserNameOrEmailAddress)
                     : await identityUserRepository.FindByExternalIdAsync(input.Method.Value, externalUser.ExternalId))
@@ -120,10 +132,44 @@ public class PikachuAccountAppService(IConfiguration configuration, IMemberRepos
 
         var memberRole = await identityRoleRepository.FindByNormalizedNameAsync(MemberConsts.Role)
             ?? throw new EntityNotFoundException(typeof(IdentityRole), MemberConsts.Role);
-       
+
         if (!user.IsInRole(memberRole.Id))
         {
             user.AddRole(memberRole.Id);
+            await identityUserRepository.UpdateAsync(user);
+            await uow.CompleteAsync();
+            return true;
+        }
+
+        return false;
+    }
+
+    private async Task RemoveMemberRole(PikachuLoginInputDto input)
+    {
+        using var uow = UnitOfWorkManager.Begin(
+            new AbpUnitOfWorkOptions { IsTransactional = true },
+            requiresNew: true
+        );
+
+        ExternalUserDto externalUser = null!;
+        if (input.Method != LoginMethod.UserNameOrPassword)
+        {
+            externalUser = await SetupExternalUserAsync(input.Method.Value, input.ThirdPartyToken);
+        }
+
+        var user = (input.Method == LoginMethod.UserNameOrPassword
+                    ? await identityUserRepository.FindByNameOrEmailAsync(input.UserNameOrEmailAddress)
+                    : await identityUserRepository.FindByExternalIdAsync(input.Method.Value, externalUser.ExternalId))
+                    ?? throw new EntityNotFoundException(typeof(IdentityUser), input.UserNameOrEmailAddress);
+
+        var memberRole = await identityRoleRepository.FindByNormalizedNameAsync(MemberConsts.Role)
+            ?? throw new EntityNotFoundException(typeof(IdentityRole), MemberConsts.Role);
+
+        if (user.IsInRole(memberRole.Id))
+        {
+            user.RemoveRole(memberRole.Id);
+            await identityUserRepository.UpdateAsync(user);
+            await uow.CompleteAsync();
         }
     }
 
