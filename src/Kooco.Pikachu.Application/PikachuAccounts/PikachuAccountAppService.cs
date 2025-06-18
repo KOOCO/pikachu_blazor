@@ -136,6 +136,14 @@ public class PikachuAccountAppService(IConfiguration configuration, IMemberRepos
         if (!user.IsInRole(memberRole.Id))
         {
             user.AddRole(memberRole.Id);
+            
+            var memberAndUserRole = await identityRoleRepository.FindByNormalizedNameAsync(MemberConsts.MemberAndUserRole)
+                ?? throw new EntityNotFoundException(typeof(IdentityRole), MemberConsts.MemberAndUserRole);
+            if (!user.IsInRole(memberAndUserRole.Id))
+            {
+                user.AddRole(memberAndUserRole.Id);
+            }
+
             await identityUserRepository.UpdateAsync(user);
             await uow.CompleteAsync();
             return true;
@@ -165,9 +173,25 @@ public class PikachuAccountAppService(IConfiguration configuration, IMemberRepos
         var memberRole = await identityRoleRepository.FindByNormalizedNameAsync(MemberConsts.Role)
             ?? throw new EntityNotFoundException(typeof(IdentityRole), MemberConsts.Role);
 
+        var memberAndUserRole = await identityRoleRepository.FindByNormalizedNameAsync(MemberConsts.MemberAndUserRole)
+            ?? throw new EntityNotFoundException(typeof(IdentityRole), MemberConsts.MemberAndUserRole);
+
+        bool isUpdated = false;
+
+        if (user.IsInRole(memberAndUserRole.Id))
+        {
+            user.RemoveRole(memberAndUserRole.Id);
+            isUpdated = true;
+        }
+
         if (user.IsInRole(memberRole.Id))
         {
             user.RemoveRole(memberRole.Id);
+            isUpdated = true;
+        }
+
+        if (isUpdated)
+        {
             await identityUserRepository.UpdateAsync(user);
             await uow.CompleteAsync();
         }

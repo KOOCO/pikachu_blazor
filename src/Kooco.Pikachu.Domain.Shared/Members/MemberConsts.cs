@@ -6,6 +6,7 @@ namespace Kooco.Pikachu.Members;
 public static class MemberConsts
 {
     public const string Role = "MEMBER";
+    public const string MemberAndUserRole = "MEMBER AND USER";
 
     public const string MembersManagement = "MembersManagement";
 

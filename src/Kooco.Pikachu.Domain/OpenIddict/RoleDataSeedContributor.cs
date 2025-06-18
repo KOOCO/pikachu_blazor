@@ -23,7 +23,7 @@ public class RoleDataSeedContributor(
         using (CurrentTenant.Change(CurrentTenant.Id))
         {
             /* Member Role */
-            #region MemberRole
+            #region Member Role
             var memberRole = await roleRepository.FindByNormalizedNameAsync(MemberConsts.Role.ToUpper());
             if (memberRole is null)
             {
@@ -53,6 +53,19 @@ public class RoleDataSeedContributor(
                 memberPermissionNames,
                 context?.TenantId
                );
+            #endregion
+
+            /* Member And User Role */
+            #region Member And User Role
+            var memberAndUserRole = await roleRepository.FindByNormalizedNameAsync(MemberConsts.MemberAndUserRole.ToUpper());
+            if (memberAndUserRole is null)
+            {
+                memberAndUserRole = new IdentityRole(Guid.NewGuid(), MemberConsts.MemberAndUserRole, CurrentTenant.Id)
+                {
+                    IsPublic = true
+                };
+                await roleRepository.InsertAsync(memberAndUserRole, autoSave: true);
+            }
             #endregion
         }
     }

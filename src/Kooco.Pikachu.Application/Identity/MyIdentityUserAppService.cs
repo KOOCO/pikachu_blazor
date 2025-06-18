@@ -66,10 +66,12 @@ public class MyIdentityUserAppService : IdentityUserAppService, IMyIdentityUserA
         var queryable = await _identityUserRepository.WithDetailsAsync();
         if (userTypes.HasValue && userTypes != UserTypes.All)
         {
-            var role = await RoleRepository.FindByNormalizedNameAsync(MemberConsts.Role);
+            var memberRole = await RoleRepository.FindByNormalizedNameAsync(MemberConsts.Role);
+            var memberAndUserRole = await RoleRepository.FindByNormalizedNameAsync(MemberConsts.MemberAndUserRole);
+
             queryable = queryable
-                .WhereIf(userTypes == UserTypes.Frontend, x => x.Roles.Any(r => role != null && r.RoleId == role.Id))
-                .WhereIf(userTypes == UserTypes.Backend, x => !x.Roles.Any(r => role == null || r.RoleId == role.Id));
+                .WhereIf(userTypes == UserTypes.Frontend, x => x.Roles.Any(r => memberRole != null && r.RoleId == memberRole.Id))
+                .WhereIf(userTypes == UserTypes.Backend, x => memberRole == null || !x.Roles.Any(r => r.RoleId == memberRole.Id) || x.Roles.Any(r => memberAndUserRole != null && r.RoleId == memberAndUserRole.Id));
         }
 
         return queryable;

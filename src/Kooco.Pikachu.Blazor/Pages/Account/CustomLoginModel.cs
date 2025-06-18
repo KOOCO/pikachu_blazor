@@ -33,7 +33,9 @@ public class CustomLoginModel : LoginModel
 
         if (user != null)
         {
-            var isMember = await UserManager.IsInRoleAsync(user, MemberConsts.Role);
+            var isMember = await UserManager.IsInRoleAsync(user, MemberConsts.Role)
+                && !(await UserManager.IsInRoleAsync(user, MemberConsts.MemberAndUserRole));
+
             if (isMember)
             {
                 Alerts.Danger("Login is not allowed.");
