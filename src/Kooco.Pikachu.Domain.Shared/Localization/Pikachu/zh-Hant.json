@@ -54,7 +54,7 @@
     "Availability": "上架",
     "AVAILABILITY": "上/下架",
     "AvailablePreorderQuantity": "可預訂數量",
-    "AvailableStock": "可銷售數量",
+    "AvailableStock": "可銷售庫存",
     "BankTransfer": "銀行轉帳",
     "Before13PM": "13時前",
     "Between14To18PM": "14-18時",
@@ -1174,7 +1174,7 @@
     "SetItemPrice": "組合商品價格",
     "InventoryReport": "庫存報表",
     "PreOrderQuantity": "預售數量",
-    "AvailablePreOrderQuantity": "可預訂數量",
+    "AvailablePreOrderQuantity": "可銷售預售數量",
     "SelectGroupsBuys": "選擇特定團購",
     "Uncondition": "無限制",
     "WhenOrderReach": "當訂單達到",
@@ -1555,12 +1555,24 @@
     "RecipientName": "收件人姓名",
     "Cancelled": "取消",
     "Wouldyouliketoproceedwiththereturn": "您確定要執行退貨嗎?",
-    "Wouldyouliketoproceedwiththeexchange": "您確定要執行換貨嗎?"
-
-
-
-
-
-
+    "Wouldyouliketoproceedwiththeexchange": "您確定要執行換貨嗎?",
+    "Attributes": "規格",
+    "Warehouse": "倉庫名稱",
+    "Edit": "編輯",
+    "Inventory": "庫存管理",
+    "Menu:Inventory": "庫存管理",
+    "InventoryManagement": "庫存管理",
+    "Timestamp": "時間",
+    "Enum:InventoryActionType.0": "Add Stock",
+    "Enum:InventoryActionType.1": "Deduct Stock",
+    "Enum:InventoryActionType.2": "商品售出",
+    "StockAdded": "手動入庫",
+    "StockDeducted": "手動出庫",
+    "ItemSold": "商品售出: 訂單 #{0}",
+    "AdjustStock": "手動調整庫存",
+    "View": "查看紀錄",
+    "StockType": "選擇庫存類別",
+    "ActionType": "選擇操作",
+    "AdjustStockAmount": "數量"
   }
 }
