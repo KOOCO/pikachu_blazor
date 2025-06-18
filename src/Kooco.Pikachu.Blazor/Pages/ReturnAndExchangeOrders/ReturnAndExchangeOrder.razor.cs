@@ -122,6 +122,11 @@ namespace Kooco.Pikachu.Blazor.Pages.ReturnAndExchangeOrders
                 loading = true;
                 if (selectedValue == OrderReturnStatus.Succeeded)
                 {
+                    string msg = "";
+                    if (rowData.OrderStatus == OrderStatus.Returned)
+                    {
+                        msg = "Wouldyouliketoproceedwiththereturn";
+                    }
                     var confirmed = await _uiMessageService.Confirm(L["Wouldyouliketoproceedwiththerefund"]);
                     if (confirmed)
                     {

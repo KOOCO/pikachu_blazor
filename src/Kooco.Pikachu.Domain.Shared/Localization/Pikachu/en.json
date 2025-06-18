@@ -1323,6 +1323,8 @@
     "DoYouApprovetheRefund": "Do you approve the refund?",
     "RefundApprovel": "Refund Approvel",
     "Wouldyouliketoproceedwiththerefund": "Would you like to proceed with the refund ?",
+    "Wouldyouliketoproceedwiththereturn": "Would you like to proceed with the return ?",
+    "Wouldyouliketoproceedwiththeexchange": "Would you like to proceed with the exchange ?",
     "Areyousureyouwanttoreturnthisorder": "Are You Sure You Want To Return This Order ?",
     "OnlyOneB2COrC2CCanBeEnabledFamilyMart": "Only one of Family Mart B2C or C2C can be enabled at once.",
     "OnlyOneB2COrC2CCanBeEnabled711": "Only one of 7-11 B2C or C2C can be enabled at once.",

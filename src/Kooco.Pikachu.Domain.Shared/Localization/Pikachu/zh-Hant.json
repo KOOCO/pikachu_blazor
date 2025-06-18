@@ -1553,7 +1553,9 @@
     "PleaseSelectOrderItem": "請先勾選訂單項目再進行編輯。",
     "OrderSplitFromTitle": "訂單拆單來源",
     "RecipientName": "收件人姓名",
-    "Cancelled": "取消"
+    "Cancelled": "取消",
+    "Wouldyouliketoproceedwiththereturn": "您確定要執行退貨嗎?",
+    "Wouldyouliketoproceedwiththeexchange": "您確定要執行換貨嗎?"
 
 
 
