@@ -127,7 +127,11 @@ namespace Kooco.Pikachu.Blazor.Pages.ReturnAndExchangeOrders
                     {
                         msg = "Wouldyouliketoproceedwiththereturn";
                     }
-                    var confirmed = await _uiMessageService.Confirm(L["Wouldyouliketoproceedwiththerefund"]);
+                    else {
+                        msg = "Wouldyouliketoproceedwiththeexchange";
+
+                    }
+                    var confirmed = await _uiMessageService.Confirm(L[msg]);
                     if (confirmed)
                     {
                         await _orderAppService.ChangeReturnStatusAsync(rowData.Id, selectedValue, true);
