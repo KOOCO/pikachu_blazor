@@ -85,13 +85,16 @@ public class InventoryLog : FullAuditedEntity<Guid>, IMultiTenant
 
     public InventoryLog SetAttributes(string? attributes)
     {
-        Attributes = Check.NotNullOrWhiteSpace(
-            attributes,
-            nameof(Attributes),
-            maxLength: InventoryLogConsts.MaxAttributesLength
-            );
+        if (!attributes.IsNullOrWhiteSpace())
+        {
+            Check.Length(attributes, nameof(attributes), InventoryLogConsts.MaxAttributesLength);
+        }
+
+        Attributes = attributes;
 
         return this;
+
+       
     }
 
     public InventoryLog SetActionType(InventoryActionType actionType)
