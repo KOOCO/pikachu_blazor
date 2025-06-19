@@ -290,7 +290,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
             {
                 temperature = "0001";
             }
-            var goodAmount = Convert.ToInt32(orderDelivery.Items.Sum(x => x.TotalAmount) + order.DeliveryCost - (order.DiscountAmount + order.CreditDeductionAmount));
+            var goodAmount = Convert.ToInt32((orderDelivery.Items.Sum(x => x.TotalAmount) + order.DeliveryCost??0) - (order.DiscountAmount??0 + order.CreditDeductionAmount));
             string serverReplyURL = $"{domainName}/api/app/orders/ecpay-logisticsStatus-callback";
             var merchantTradeNo = AddNumericSuffix(order.OrderNo);
             request.AddHeader("Accept", "text/html");
