@@ -4,5 +4,6 @@ public enum InventoryActionType
 {
     AddStock,
     DeductStock,
-    ItemSold
+    ItemSold,
+    AddOnProductSold
 }

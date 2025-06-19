@@ -38,6 +38,7 @@ public class ItemAppService :
     private readonly HtmlSanitizer _htmlSanitizer;
     private readonly IEnumValueAppService _enumValueService;
     private readonly IStringLocalizer<PikachuResource> _l;
+    private readonly IItemDetailsRepository _itemDetailsRepository;
     #endregion
 
     #region Constructor
@@ -46,7 +47,8 @@ public class ItemAppService :
         ISetItemRepository setItemRepository,
         ItemManager itemManager,
         IEnumValueAppService enumValueService,
-        IStringLocalizer<PikachuResource> l
+        IStringLocalizer<PikachuResource> l,
+        IItemDetailsRepository itemDetailsRepository
     )
         : base(repository)
     {
@@ -56,6 +58,7 @@ public class ItemAppService :
         _htmlSanitizer = new HtmlSanitizer();
         _enumValueService = enumValueService;
         _l = l;
+        _itemDetailsRepository = itemDetailsRepository;
     }
     #endregion
 
@@ -596,6 +599,17 @@ public class ItemAppService :
         var list = (await _itemRepository.GetListAsync()).Select(x => new KeyValueDto { Id = x.Id, Name = x.ItemName }).ToList();
          
         return list;
+    }
+
+    public async Task<List<KeyValueDto>> GetItemDetailLookupAsync(Guid itemId)
+    {
+        var itemDetails = (await _itemDetailsRepository.GetQueryableAsync())
+            .Where(itemDetail => itemDetail.ItemId == itemId)
+            .Select(x => new KeyValueDto { Id = x.Id, Name = x.SKU })
+            .OrderBy(x => x.Name)
+            .ToList();
+
+        return itemDetails;
     }
 
     public async Task<ItemDto> GetSKUAndItemAsync(Guid itemId, Guid itemDetailId)

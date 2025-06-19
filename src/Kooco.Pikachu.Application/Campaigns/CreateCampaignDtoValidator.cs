@@ -266,6 +266,10 @@ public class CreateCampaignAddOnProductDtoValidator : AbstractValidator<CreateCa
             .NotNull()
             .WithMessage(l["TheFieldIsRequired", l[nameof(CreateCampaignAddOnProductDto.ProductId)]]);
 
+        RuleFor(x => x.ItemDetailId)
+            .NotNull()
+            .WithMessage(l["TheFieldIsRequired", l["SKU"]]);
+
         RuleFor(x => x.ProductAmount)
             .NotNull()
             .WithMessage(l["TheFieldIsRequired", l[nameof(CreateCampaignAddOnProductDto.ProductAmount)]]);

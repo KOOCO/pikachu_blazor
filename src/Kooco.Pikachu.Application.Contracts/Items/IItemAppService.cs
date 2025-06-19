@@ -36,4 +36,5 @@ public interface IItemAppService :
     Task DeleteItemBadgeAsync(ItemBadgeDto input);
     Task<IRemoteStreamContent> ExportItemListToExcelAsync(List<Guid> itemIds);
     Task ImportItemsFromExcelAsync(IRemoteStreamContent file);
+    Task<List<KeyValueDto>> GetItemDetailLookupAsync(Guid itemId);
 }

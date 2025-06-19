@@ -115,6 +115,7 @@ public class CampaignBuilder
         manager.AddAddOnProduct(
             campaign,
             Require(dto.ProductId, nameof(dto.ProductId)),
+            Require(dto.ItemDetailId, nameof(dto.ItemDetailId)),
             Require(dto.ProductAmount, nameof(dto.ProductAmount)),
             Require(dto.LimitPerOrder, nameof(dto.LimitPerOrder)),
             Require(dto.IsUnlimitedQuantity, nameof(dto.IsUnlimitedQuantity)),

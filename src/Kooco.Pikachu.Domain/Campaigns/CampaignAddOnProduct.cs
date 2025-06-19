@@ -10,6 +10,7 @@ public class CampaignAddOnProduct : Entity<Guid>
 {
     public Guid CampaignId { get; set; }
     public Guid ProductId { get; set; }
+    public Guid ItemDetailId { get; set; }
     public int ProductAmount { get; private set; }
     public int LimitPerOrder { get; private set; }
     public bool IsUnlimitedQuantity { get; private set; }
@@ -23,13 +24,14 @@ public class CampaignAddOnProduct : Entity<Guid>
 
     [ForeignKey(nameof(ProductId))]
     public virtual Item Product { get; set; }
-    
+
     private CampaignAddOnProduct() { }
 
     internal CampaignAddOnProduct(
         Guid id,
         Guid campaignId,
         Guid productId,
+        Guid itemDetailId,
         int productAmount,
         int limitPerOrder,
         bool isUnlimitedQuantity,
@@ -41,6 +43,7 @@ public class CampaignAddOnProduct : Entity<Guid>
     {
         CampaignId = campaignId;
         ProductId = productId;
+        ItemDetailId = itemDetailId;
         SetProduct(productAmount);
         SetOrderLimit(limitPerOrder);
         SetQuantity(isUnlimitedQuantity, availableQuantity);

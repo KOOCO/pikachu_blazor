@@ -1,9 +1,7 @@
 ﻿using Asp.Versioning;
-using Kooco.Pikachu.AntBlazorModels.Upload;
 using Kooco.Pikachu.Items;
 using Kooco.Pikachu.Items.Dtos;
 using Kooco.Pikachu.ProductCategories;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -13,7 +11,6 @@ using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 using Volo.Abp.AspNetCore.Mvc;
 using Volo.Abp.Content;
-using IFormFile = Microsoft.AspNetCore.Http.IFormFile;
 
 namespace Kooco.Pikachu.Controllers.Items;
 
@@ -169,5 +166,11 @@ public class ItemController(
     public Task ImportItemsFromExcelAsync(IRemoteStreamContent file)
     {
         return _itemAppService.ImportItemsFromExcelAsync(file);
+    }
+
+    [HttpGet("item-detail-lookup/{itemId}")]
+    public Task<List<KeyValueDto>> GetItemDetailLookupAsync(Guid itemId)
+    {
+        return _itemAppService.GetItemDetailLookupAsync(itemId);
     }
 }

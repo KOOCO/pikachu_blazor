@@ -122,7 +122,7 @@ public class InventoryLogManager : DomainService
         await _itemDetailsRepository.UpdateAsync(itemDetail);
     }
 
-    public async Task<InventoryLog> ItemSoldAsync(Order order, ItemDetails itemDetail, int amount)
+    public async Task<InventoryLog> ItemSoldAsync(Order order, ItemDetails itemDetail, int amount, bool isAddOnProduct = false)
     {
         var attributes = InventoryLogConsts.GetAttributes(
             itemDetail.Attribute1Value,
@@ -130,17 +130,19 @@ public class InventoryLogManager : DomainService
             itemDetail.Attribute3Value
             );
 
-        var description = "Item Sold: Order #" + order.OrderNo;
+        var description = $"{(isAddOnProduct ? "Add-on Product Sold" : "Item Sold")}: Order #" + order.OrderNo;
 
         var itemSoldLog = CreateItemSoldLog(itemDetail, amount);
 
+        var actionType = isAddOnProduct ? InventoryActionType.AddOnProductSold : InventoryActionType.ItemSold;
+        
         var inventoryLog = new InventoryLog(
             GuidGenerator.Create(),
             itemDetail.ItemId,
             itemDetail.Id,
             itemDetail.SKU,
             attributes,
-            InventoryActionType.ItemSold,
+            actionType,
             itemSoldLog.StockOnHand,
             itemSoldLog.SaleableQuantity,
             itemSoldLog.PreOrderQuantity,

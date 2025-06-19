@@ -1,8 +1,11 @@
 ﻿@using Kooco.Pikachu.Campaigns
+@using Kooco.Pikachu.Items
 @using Kooco.Pikachu.Items.Dtos
 @using Kooco.Pikachu.Localization
 @using Volo.Abp.AspNetCore.Components.Web
 @inherits PikachuComponentBase
+@inject IItemAppService ItemAppService
+
 <Divider></Divider>
 <Field>
     <FieldLabel required>@L["AddOnProduct"]</FieldLabel>
@@ -13,7 +16,7 @@
                       EnableSearch
                       AllowClear
                       Class="@ValidationClass(nameof(Entity.AddOnProduct.ProductId))"
-                      OnSelectedItemsChanged="() => EditContext.NotifyFieldChanged(new FieldIdentifier(Entity.AddOnProduct, nameof(Entity.AddOnProduct.ProductId)))"
+                      OnSelectedItemChanged="(e) => OnProductChanged(e)"
                       @bind-Value="Entity.AddOnProduct.ProductId">
         <SelectOptions>
             @foreach (var item in ProductOptions)
@@ -24,6 +27,23 @@
     </AntDesign.Select>
     <ValidationMessage For="() => Entity.AddOnProduct.ProductId" />
 </Field>
+<Validation MessageLocalizer="@LH.Localize">
+    <Field>
+        <FieldLabel required>@L["SKU"]</FieldLabel>
+        <Select TValue="Guid?" @bind-SelectedValue="Entity.AddOnProduct.ItemDetailId">
+            <Feedback>
+                <ValidationError />
+            </Feedback>
+            <ChildContent>
+                <SelectItem TValue="Guid?" Value="(Guid?)null"></SelectItem>
+                @foreach (var item in SkuOptions)
+                {
+                    <SelectItem TValue="Guid?" Value="item.Id">@item.Name</SelectItem>
+                }
+            </ChildContent>
+        </Select>
+    </Field>
+</Validation>
 <Row>
     <Column ColumnSize="ColumnSize.Is6">
         <Validation MessageLocalizer="@LH.Localize">
@@ -132,9 +152,37 @@
     [Parameter] public AbpBlazorMessageLocalizerHelper<PikachuResource> LH { get; set; }
     [Parameter] public IReadOnlyList<KeyValueDto> ProductOptions { get; set; } = [];
 
+    private List<KeyValueDto> SkuOptions { get; set; } = [];
+    private bool IsFirstLoad { get; set; } = true;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await OnProductChanged(Entity.AddOnProduct?.ProductId);
+        }
+    }
+
     string ValidationClass(string propertyName)
     {
         var fieldIdentifier = new FieldIdentifier(Entity.AddOnProduct, propertyName);
         return EditContext.GetValidationMessages(fieldIdentifier).Any() ? "is-invalid" : string.Empty;
+    }
+
+    async Task OnProductChanged(Guid? productId)
+    {
+        EditContext.NotifyFieldChanged(new FieldIdentifier(Entity.AddOnProduct, nameof(Entity.AddOnProduct.ProductId)));
+
+        SkuOptions = [];
+        if (!IsFirstLoad)
+        {
+            Entity.AddOnProduct.ItemDetailId = null;
+        }
+
+        if (productId.HasValue)
+        {
+            SkuOptions = await ItemAppService.GetItemDetailLookupAsync(productId.Value);
+            IsFirstLoad = false;
+        }
     }
 }

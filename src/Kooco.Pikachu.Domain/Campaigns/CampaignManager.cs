@@ -225,7 +225,7 @@ public class CampaignManager : DomainService
         return shoppingCredit;
     }
 
-    public CampaignAddOnProduct AddAddOnProduct(Campaign campaign, Guid productId, int productAmount, int limitPerOrder,
+    public CampaignAddOnProduct AddAddOnProduct(Campaign campaign, Guid productId, Guid itemDetailId, int productAmount, int limitPerOrder,
         bool isUnlimitedQuantity, int? availableQuantity, AddOnDisplayPrice displayPrice, AddOnProductCondition productCondition,
         int? threshold)
     {
@@ -233,7 +233,7 @@ public class CampaignManager : DomainService
         EnsurePromotionModule(campaign, PromotionModule.AddOnProduct);
 
         campaign.AddOnProduct = new CampaignAddOnProduct(GuidGenerator.Create(), campaign.Id, productId,
-            productAmount, limitPerOrder, isUnlimitedQuantity, availableQuantity, displayPrice,
+            itemDetailId, productAmount, limitPerOrder, isUnlimitedQuantity, availableQuantity, displayPrice,
             productCondition, threshold);
 
         return campaign.AddOnProduct;
