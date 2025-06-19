@@ -1035,7 +1035,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
         string spec = string.Empty; 
         string isSwipe = string.Empty;
         string isCollection = string.Empty; 
-        int collectionAmount = 0; 
+        int? collectionAmount = 0; 
         string deliveryTime = string.Empty;
         var itemStorageTemp = orderDelivery.Items.First().DeliveryTemperature;
 
@@ -1062,6 +1062,11 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
             isSwipe = tCat.Payment && 
                       tCat.TCatPaymentMethod is TCatPaymentMethod.CardAndMobilePaymentsAccepted
                 ? "Y" : "N";
+            if (isSwipe is "Y")
+            {
+                isCollection = "N";
+                collectionAmount = null;
+            }
             deliveryTime = receivingTime switch
             {
                 ReceivingTime.Before13PM => "01",

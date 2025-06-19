@@ -1,4 +1,5 @@
 ﻿using Kooco.Pikachu.EnumValues;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -87,7 +88,8 @@ public class OrderOBT
     public string DeliveryTime { get; set; }
     public string IsFreight { get; set; }
     public string IsCollection { get; set; }
-    public int CollectionAmount { get; set; }
+    [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+    public int? CollectionAmount { get; set; }
     public string IsSwipe { get; set; }
     public string IsMobilePay { get; set; }
     public string IsDeclare { get; set; }
