@@ -25,4 +25,6 @@ public interface IEdmRepository : IRepository<Edm, Guid>
         EdmSendFrequency? sendFrequency = null);
 
     Task<string> GetGroupBuyNameAsync(Guid groupBuyId);
+
+    Task<(string? addOnProductName, List<string> applicableProducts)> GetProductNames(Guid? productId, List<Guid>? applicableProductIds);
 }

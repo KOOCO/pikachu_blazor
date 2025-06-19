@@ -78,4 +78,21 @@ public class EfCoreEdmRepository : EfCoreRepository<PikachuDbContext, Edm, Guid>
             .Select(gb => gb.GroupBuyName)
             .FirstOrDefaultAsync();
     }
+
+    public async Task<(string? addOnProductName, List<string> applicableProducts)> GetProductNames(Guid? productId, List<Guid>? applicableProductIds)
+    {
+        var dbContext = await GetDbContextAsync();
+
+        var productName = await dbContext.Items
+            .Where(item => item.Id == productId)
+            .Select(item => item.ItemName)
+            .FirstOrDefaultAsync();
+
+        var applicableProducts = await dbContext.Items
+            .Where(item => applicableProductIds != null && applicableProductIds.Contains(item.Id))
+            .Select(item => item.ItemName)
+            .ToListAsync();
+
+        return (productName, applicableProducts);
+    }
 }

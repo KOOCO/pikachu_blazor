@@ -89,7 +89,7 @@ public class EdmTemplatePlaceholders
     public const string LimitPerOrder = "{{LimitPerOrder}}";
     public const string MaximumUsePerPerson = "{{MaximumUsePerPerson}}";
     public const string MemberName = "{{MemberName}}";
-    public const string MinimumSpendAmount = "{{MinimumSpendAmount}}";
+    public const string MinimumSpendAmount = "{{$MinimumSpendAmount_OR_無限制}}";
     public const string ProductName = "{{ProductName}}";
     public const string Threshold = "{{Threshold}}";
     public const string ValidForDays = "{{獲取後ValidForDays天內使用_OR_不限時間}}";

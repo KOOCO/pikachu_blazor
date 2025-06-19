@@ -2,7 +2,6 @@
 using Kooco.Pikachu.Items;
 using Kooco.Pikachu.ShopCarts;
 using Kooco.Pikachu.Tenants;
-using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,18 +17,16 @@ public class EdmTemplateBuilder : ITransientDependency
     private readonly IEdmRepository _edmRepository;
     private readonly ICampaignRepository _campaignRepository;
     private readonly ITenantSettingsAppService _tenantSettingsAppService;
-    private readonly IItemRepository _itemAppService;
 
     public EdmTemplateBuilder(
         IEdmRepository edmRepository,
         ICampaignRepository campaignRepository,
-        ITenantSettingsAppService tenantSettingsAppService,
-        IItemRepository itemAppService)
+        ITenantSettingsAppService tenantSettingsAppService
+        )
     {
         _edmRepository = edmRepository;
         _campaignRepository = campaignRepository;
         _tenantSettingsAppService = tenantSettingsAppService;
-        _itemAppService = itemAppService;
     }
 
     public async Task<string> BuildAsync(Edm edm)
@@ -71,7 +68,7 @@ public class EdmTemplateBuilder : ITransientDependency
             .Replace(EdmTemplatePlaceholders.DiscountCode, discountCode)
             .Replace(EdmTemplatePlaceholders.GroupBuyName, groupBuyName ?? NA)
             .Replace(EdmTemplatePlaceholders.LimitPerOrder, campaign?.AddOnProduct?.LimitPerOrder.ToString() ?? NA)
-            .Replace(EdmTemplatePlaceholders.MinimumSpendAmount, campaign?.Discount?.MinimumSpendAmount?.ToString() ?? NA)
+            .Replace(EdmTemplatePlaceholders.MinimumSpendAmount, campaign?.Discount?.MinimumSpendAmount.HasValue == true ? $"${campaign?.Discount?.MinimumSpendAmount}" : "無限制")
             .Replace(EdmTemplatePlaceholders.MaximumUsePerPerson, campaign?.Discount?.MaximumUsePerPerson.ToString() ?? NA)
             .Replace(EdmTemplatePlaceholders.Threshold, campaign?.AddOnProduct?.Threshold?.ToString() ?? NA)
             .Replace(EdmTemplatePlaceholders.ValidForDays, campaign?.ShoppingCredit?.ValidForDays?.ToString() ?? "不限時間");
@@ -115,24 +112,9 @@ public class EdmTemplateBuilder : ITransientDependency
         List<string> applicableProductNames = [];
         string? applicableProducts = "";
 
-        var itemQueryable = await _itemAppService.GetQueryableAsync();
+        var productIds = campaign?.Products?.Select(product => product.ProductId).ToList();
 
-        if (campaign?.AddOnProduct != null)
-        {
-            addOnProductName = await itemQueryable
-                .Where(item => item.Id == campaign.AddOnProduct.ProductId)
-                .Select(item => item.ItemName)
-                .FirstOrDefaultAsync();
-        }
-
-        if (campaign?.Products is { Count: > 0 })
-        {
-            var productIds = campaign.Products.Select(product => product.ProductId);
-            applicableProductNames = await itemQueryable
-                .Where(item => productIds.Contains(item.Id))
-                .Select(item => item.ItemName)
-                .ToListAsync();
-        }
+        (addOnProductName, applicableProductNames) = await _edmRepository.GetProductNames(campaign?.AddOnProduct?.ProductId, productIds);
 
         applicableProducts = campaign?.ApplyToAllProducts == false
                 ? applicableProductNames?.JoinAsString(", ")
