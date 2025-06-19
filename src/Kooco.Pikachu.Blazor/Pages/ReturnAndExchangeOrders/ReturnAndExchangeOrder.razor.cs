@@ -138,7 +138,7 @@ namespace Kooco.Pikachu.Blazor.Pages.ReturnAndExchangeOrders
                     }
                     else
                     {
-                        await _orderAppService.ChangeReturnStatusAsync(rowData.Id, selectedValue, false);
+                        return;
                     }
                 }
                 else
