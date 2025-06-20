@@ -109,6 +109,7 @@ public class PikachuDbContext(DbContextOptions<PikachuDbContext> options) :
     public DbSet<Freebie> Freebies { get; set; }
     public DbSet<FreebieGroupBuys> FreebieGroupBuys { get; set; }
     public DbSet<Order> Orders { get; set; }
+    public DbSet<AppliedCampaign> AppliedCampaigns { get; set; }
     public DbSet<StoreComment> StoreComments { get; set; }
     public DbSet<Refund> Refunds { get; set; }
     public DbSet<PaymentGateway> PaymentGateways { get; set; }
@@ -321,7 +322,18 @@ public class PikachuDbContext(DbContextOptions<PikachuDbContext> options) :
             }
 
             b.HasMany(x => x.OrderTransactions).WithOne(x => x.Order).HasForeignKey(x => x.OrderId);
+            b.HasMany(x => x.AppliedCampaigns).WithOne(x => x.Order).HasForeignKey(x => x.OrderId);
         });
+
+        builder.Entity<AppliedCampaign>(b =>
+        {
+            b.ToTable(PikachuConsts.DbTablePrefix + "AppliedCampaigns", PikachuConsts.DbSchema);
+            b.ConfigureByConvention();
+            
+            b.HasOne(x => x.Order).WithMany(x => x.AppliedCampaigns).HasForeignKey(x => x.OrderId);
+            b.HasOne(x => x.Campaign).WithMany().HasForeignKey(x => x.CampaignId);
+        });
+
         builder.Entity<OrderDelivery>(b =>
         {
             b.ToTable(PikachuConsts.DbTablePrefix + "OrderDeliveries", PikachuConsts.DbSchema, table => table.HasComment(""));

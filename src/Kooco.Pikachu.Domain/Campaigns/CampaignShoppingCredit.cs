@@ -86,7 +86,8 @@ public class CampaignShoppingCredit : Entity<Guid>
 
     public void DeductBudget(int deduction)
     {
-        Budget -= deduction;
+        var deductedBudget = Budget - deduction;
+        SetBudget(deductedBudget);
     }
 
     public CampaignStageSetting AddStageSetting(Guid id, int spend, int pointsToReceive)

@@ -154,7 +154,6 @@ public class OrderAppService : PikachuAppService, IOrderAppService
             order.DeliveryCostForFrozen = input.DeliveryCostForFrozen;
             order.DeliveryCost = input.DeliveryCost;
             order.DiscountAmount = input.DiscountCodeAmount;
-            order.CampaignId = input.CampaignId;
 
             if (input.IsTest)
             {
@@ -189,22 +188,7 @@ public class OrderAppService : PikachuAppService, IOrderAppService
 
                         if (details != null)
                         {
-                            // Check if the available quantity is sufficient
-                            //if (details.SaleableQuantity < item.Quantity)
-                            //{
-                            //    // Add item to insufficientItems list
-                            //    insufficientItems.Add($"Item: {details.ItemName}, Requested: {item.Quantity}, Available: {details.SaleablePreOrderQuantity},Details:{JsonConvert.SerializeObject(details)}");
-                            //}
-                            //else
-                            //{
-                                // Proceed with updating the stock if sufficient
-                                //details.SaleableQuantity = details.SaleableQuantity - item.Quantity;
-                                //details.StockOnHand = details.StockOnHand - item.Quantity;
-
-                                await InventoryLogManager.ItemSoldAsync(order, details, item.Quantity);
-
-                                //await ItemDetailsRepository.UpdateAsync(details);
-                            //}
+                            await InventoryLogManager.ItemSoldAsync(order, details, item.Quantity);
                         }
 
                         if (item.SetItemId.HasValue)
@@ -228,22 +212,7 @@ public class OrderAppService : PikachuAppService, IOrderAppService
                                                     && x.Attribute3Value == setItemDetail.Attribute3Value);
                                         if (detail != null)
                                         {
-                                            // Check if the available quantity is sufficient
-                                            //if (detail.SaleableQuantity < totalOrderQuantity)
-                                            //{
-                                            //    // Add item to insufficientItems list
-                                            //    insufficientItems.Add($"Item: {detail.ItemName}, Requested: {item.Quantity}, Available: {detail.SaleablePreOrderQuantity},Details:{JsonConvert.SerializeObject(detail)}");
-                                            //}
-                                            //else
-                                            //{
-                                                // Proceed with updating the stock if sufficient
-                                                //detail.SaleableQuantity -= totalOrderQuantity;
-                                                //detail.StockOnHand -= totalOrderQuantity;
-
-                                                await InventoryLogManager.ItemSoldAsync(order, detail, totalOrderQuantity);
-
-                                                //await ItemDetailsRepository.UpdateAsync(detail);
-                                            //}
+                                            await InventoryLogManager.ItemSoldAsync(order, detail, totalOrderQuantity);
                                         }
                                     }
                                 }
@@ -315,18 +284,10 @@ public class OrderAppService : PikachuAppService, IOrderAppService
             }
             if (order.UserId != null && order.UserId != Guid.Empty)
             {
+                await ProcessAppliedCampaigns(order, input);
+
                 if (order.cashback_amount > 0)
                 {
-                    if (order.CampaignId.HasValue)
-                    {
-                        var campaign = await CampaignRepository.FirstOrDefaultAsync(c => c.Id == order.CampaignId);
-                        if (campaign != null && campaign.PromotionModule == PromotionModule.ShoppingCredit)
-                        {
-                            await CampaignRepository.EnsurePropertyLoadedAsync(campaign, c => c.ShoppingCredit);
-                            campaign.ShoppingCredit?.DeductBudget((int)order.cashback_amount);
-                        }
-                    }
-
                     var newcashback = await UserShoppingCreditAppService.RecordShoppingCreditAsync(new RecordUserShoppingCreditDto
                     {
                         Amount = (int)order.cashback_amount,
@@ -433,6 +394,64 @@ public class OrderAppService : PikachuAppService, IOrderAppService
             }
 
             return ObjectMapper.Map<Order, OrderDto>(order);
+        }
+    }
+
+    private async Task ProcessAppliedCampaigns(Order order, CreateUpdateOrderDto input)
+    {
+        if (input.AppliedCampaigns?.Count > 0)
+        {
+            var applicableCampaigns = input.AppliedCampaigns
+                .Where(c => c.CampaignId.HasValue && c.Amount.HasValue)
+                .Select(c => new { CampaignId = c.CampaignId.Value, Amount = c.Amount.Value });
+
+            if (!applicableCampaigns.Any()) return;
+
+            var campaignIds = applicableCampaigns.Select(c => c.CampaignId).ToList();
+
+            var campaigns = await CampaignRepository.GetListAsync(campaignIds);
+
+            foreach (var inputCampaign in applicableCampaigns)
+            {
+                var campaign = campaigns.Where(c => c.Id == inputCampaign.CampaignId).FirstOrDefault();
+                if (campaign != null)
+                {
+                    bool isValid = false;
+
+                    if (campaign.PromotionModule == PromotionModule.Discount && campaign.Discount != null)
+                    {
+                        campaign.Discount.DeductAvailableQuantity(inputCampaign.Amount);
+                        isValid = true;
+                    }
+                    if (campaign.PromotionModule == PromotionModule.ShoppingCredit && campaign.ShoppingCredit != null)
+                    {
+                        campaign.ShoppingCredit.DeductBudget(inputCampaign.Amount);
+                        isValid = true;
+                    }
+                    if (campaign.PromotionModule == PromotionModule.AddOnProduct && campaign.AddOnProduct != null)
+                    {
+                        var itemDetail = await ItemDetailsRepository.FirstOrDefaultAsync(x => x.Id == campaign.AddOnProduct.ItemDetailId);
+                        if (itemDetail != null)
+                        {
+                            campaign.AddOnProduct.DeductAvailableQuantity(inputCampaign.Amount);
+
+                            await InventoryLogManager.ItemSoldAsync(
+                                order,
+                                itemDetail,
+                                inputCampaign.Amount,
+                                isAddOnProduct: true
+                                );
+
+                            isValid = true;
+                        }
+                    }
+
+                    if (isValid)
+                    {
+                        order.AddAppliedCampaign(campaign.Id, campaign.PromotionModule, inputCampaign.Amount);
+                    }
+                }
+            }
         }
     }
 
@@ -2261,7 +2280,7 @@ public class OrderAppService : PikachuAppService, IOrderAppService
         return string.Concat(orderNo, randomNumeric);
     }
 
-    public async Task UpdateLogisticStatusAsync(string merchantTradeNo, string rtnMsg,string? allPayLogisticsID=null,  int rtnCode = 0)
+    public async Task UpdateLogisticStatusAsync(string merchantTradeNo, string rtnMsg, string? allPayLogisticsID = null, int rtnCode = 0)
     {
         var order = await OrderRepository.MatchOrderExtraPropertiesByMerchantTradeNoAsync(merchantTradeNo);
 
@@ -2301,7 +2320,7 @@ public class OrderAppService : PikachuAppService, IOrderAppService
         {
             var toBeShippedCodes = new Dictionary<DeliveryMethod, int[]>
             {
-                
+
                 { DeliveryMethod.SevenToEleven1, new[] { 300 } },
                 { DeliveryMethod.SevenToElevenC2C, new[] { 300 } },
                 { DeliveryMethod.SevenToElevenFrozen, new[] { 300 } },
@@ -2465,7 +2484,7 @@ public class OrderAppService : PikachuAppService, IOrderAppService
         if (paymentResult.SimulatePaid is 0)
         {
             Order order = new();
-            
+
             using (DataFilter.Disable<IMultiTenant>())
             {
                 if (paymentResult.OrderId is null)

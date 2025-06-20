@@ -76,7 +76,13 @@ public class CreateUpdateOrderDto
     public ReceivingTime? ReceivingTimeFreeze { get; set; }
     public ReceivingTime? ReceivingTimeFrozen { get; set; }
     public decimal? DeliveryCost { get; set; }
-    public Guid? CampaignId { get; set; }
+    public List<CreateAppliedCampaignDto>? AppliedCampaigns { get; set; }
     public List<CreateUpdateOrderItemDto> OrderItems { get; set; }
     public bool IsTest { get; set; }
+}
+
+public class CreateAppliedCampaignDto
+{
+    public Guid? CampaignId { get; set; }
+    public int? Amount { get; set; }
 }

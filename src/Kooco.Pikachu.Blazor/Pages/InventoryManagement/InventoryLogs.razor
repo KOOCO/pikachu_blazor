@@ -88,6 +88,9 @@
                             case InventoryActionType.ItemSold:
                                 @L["ItemSold", context.OrderNumber]
                                 break;
+                            case InventoryActionType.AddOnProductSold:
+                                @L["AddOnProductSold", context.OrderNumber]
+                                break;
                         }
                     </DisplayTemplate>
                 </DataGridColumn>

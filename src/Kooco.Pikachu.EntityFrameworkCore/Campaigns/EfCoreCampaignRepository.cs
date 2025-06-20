@@ -76,4 +76,16 @@ public class EfCoreCampaignRepository : EfCoreRepository<PikachuDbContext, Campa
             .Where(c => c.IsEnabled)
             .LongCountAsync();
     }
+
+    public async Task<List<Campaign>> GetListAsync(List<Guid> campaignIds)
+    {
+        var queryable = await GetQueryableAsync();
+        return await queryable
+            .Where(c => campaignIds.Contains(c.Id))
+            .Include(c => c.Discount)
+            .Include(c => c.ShoppingCredit)
+                .ThenInclude(sc => sc.StageSettings)
+            .Include(c => c.AddOnProduct)
+            .ToListAsync();
+    }
 }

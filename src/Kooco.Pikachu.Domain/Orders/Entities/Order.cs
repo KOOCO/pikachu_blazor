@@ -605,11 +605,8 @@ public class Order : FullAuditedAggregateRoot<Guid>, IMultiTenant
     /// 訂單交易列表
     /// </summary>
     public ICollection<OrderTransaction> OrderTransactions { get; set; } = new List<OrderTransaction>();
-    
-    public Guid? CampaignId { get; set; }
 
-    [ForeignKey(nameof(CampaignId))]
-    public virtual Campaign Campaign { get; set; }
+    public ICollection<AppliedCampaign> AppliedCampaigns { get; set; } = [];
 
     public Order() { }
 
@@ -811,5 +808,18 @@ public class Order : FullAuditedAggregateRoot<Guid>, IMultiTenant
         )
     {
         StoreComments.AddIfNotContains(new StoreComment(comment));
+    }
+
+    public AppliedCampaign AddAppliedCampaign(Guid campaignId, PromotionModule module, int amount)
+    {
+        var appliedCampaign = new AppliedCampaign(Guid.NewGuid(), Id, campaignId, module, amount);
+        return AddAppliedCampaign(appliedCampaign);
+    }
+
+    public AppliedCampaign AddAppliedCampaign(AppliedCampaign appliedCampaign)
+    {
+        AppliedCampaigns ??= [];
+        AppliedCampaigns.Add(appliedCampaign);
+        return appliedCampaign;
     }
 }

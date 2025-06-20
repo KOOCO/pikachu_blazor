@@ -137,6 +137,7 @@ public class PikachuApplicationAutoMapperProfile : Profile
 
         CreateMap<OrderDto, CreateOrderDto>().ReverseMap();
         CreateMap<Refund, RefundDto>();
+        CreateMap<AppliedCampaign, AppliedCampaignDto>();
 
         CreateMap<PaymentGateway, PaymentGatewayDto>();
         CreateMap<PaymentGatewayDto, UpdateLinePayDto>();

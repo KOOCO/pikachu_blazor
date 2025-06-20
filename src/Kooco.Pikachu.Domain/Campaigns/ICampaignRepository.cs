@@ -13,4 +13,5 @@ public interface ICampaignRepository : IRepository<Campaign, Guid>
     Task<List<Campaign>> GetListAsync(int skipCount, int maxResultCount, string? sorting, string? filter, bool? isEnabled, DateTime? startDate, DateTime? endDate);
     Task<IQueryable<Campaign>> GetFilteredQueryableAsync(string? filter, bool? isEnabled, DateTime? startDate, DateTime? endDate);
     Task<long> GetActiveCampaignsCountAsync();
+    Task<List<Campaign>> GetListAsync(List<Guid> campaignIds);
 }

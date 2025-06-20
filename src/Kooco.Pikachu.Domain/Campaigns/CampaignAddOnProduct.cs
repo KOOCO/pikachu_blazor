@@ -76,6 +76,15 @@ public class CampaignAddOnProduct : Entity<Guid>
         }
     }
 
+    public void DeductAvailableQuantity(int amount)
+    {
+        if (!IsUnlimitedQuantity)
+        {
+            var deductedAvailableQuantity = AvailableQuantity - amount;
+            SetQuantity(IsUnlimitedQuantity, deductedAvailableQuantity);
+        }
+    }
+
     public void SetProductCondition(AddOnProductCondition condition, int? threshold)
     {
         ProductCondition = condition;

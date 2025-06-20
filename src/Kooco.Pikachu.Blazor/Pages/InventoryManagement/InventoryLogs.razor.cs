@@ -134,7 +134,8 @@ public partial class InventoryLogs
 
     async Task View(InventoryLogDto log)
     {
-        if (log.ActionType == InventoryActionType.ItemSold)
+        if (log.ActionType == InventoryActionType.ItemSold
+            || log.ActionType == InventoryActionType.AddOnProductSold)
         {
             NavigationManager.NavigateTo("Orders/OrderDetails/" + log.OrderId);
         }

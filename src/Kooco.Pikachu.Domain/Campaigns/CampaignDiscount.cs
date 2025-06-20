@@ -70,6 +70,12 @@ public class CampaignDiscount : Entity<Guid>
     public void SetAvailableQuantity(int quantity) => AvailableQuantity = Check.Range(quantity, nameof(AvailableQuantity), 0);
     public void SetMaximumUsePerPerson(int maximumUsePerPerson) => MaximumUsePerPerson = Check.Range(maximumUsePerPerson, nameof(MaximumUsePerPerson), 0);
 
+    public void DeductAvailableQuantity(int amount)
+    {
+        var deductedAvailableQuantity = AvailableQuantity - amount;
+        SetAvailableQuantity(deductedAvailableQuantity);
+    }
+
     public void SetIsDiscountCodeRequired(bool isRequired, string? code = null)
     {
         IsDiscountCodeRequired = isRequired;
