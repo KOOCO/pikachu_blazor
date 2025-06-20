@@ -312,10 +312,11 @@
                                     Sortable="false"
                                     TextAlignment="TextAlignment.Center">
                         <DisplayTemplate>
-                            <Button Type="ButtonType.Button"
+                              <Copy Text="@context.EntryURL" ShouldDisplayText="false" IsLink="false" ShouldDisplayIcon="true"></Copy>
+                        @*     <Button Type="ButtonType.Button"
                                     Clicked="@(() => CopyLinkToClipboard(context.EntryURL))">
                                 <i class="fa fa-link" />
-                            </Button>
+                            </Button> *@
                         </DisplayTemplate>
                     </DataGridColumn>
                     <DataGridColumn TItem="GroupBuyDto"
