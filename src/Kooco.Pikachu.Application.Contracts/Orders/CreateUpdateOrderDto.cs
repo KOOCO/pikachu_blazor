@@ -37,8 +37,8 @@ public class CreateUpdateOrderDto
     public Guid? UserId { get; set; }
     public int CreditDeductionAmount { get; set; }
     public Guid? CreditDeductionRecordId { get; set; }
-    public Guid? DiscountCodeId { get; set; }
-    public int? DiscountCodeAmount { get; set; }
+    //public Guid? DiscountCodeId { get; set; }
+    //public int? DiscountCodeAmount { get; set; }
     public decimal cashback_amount { get; set; }
     public Guid? cashback_record_id { get; set; }
     public string? RecipientNameDbsNormal { get; set; }
@@ -77,6 +77,7 @@ public class CreateUpdateOrderDto
     public ReceivingTime? ReceivingTimeFrozen { get; set; }
     public decimal? DeliveryCost { get; set; }
     public List<CreateAppliedCampaignDto>? AppliedCampaigns { get; set; }
+    public int DiscountAmount { get; set; }
     public List<CreateUpdateOrderItemDto> OrderItems { get; set; }
     public bool IsTest { get; set; }
 }

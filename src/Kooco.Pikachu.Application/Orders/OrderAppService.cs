@@ -114,8 +114,8 @@ public class OrderAppService : PikachuAppService, IOrderAppService
                 creditDeductionRecordId: input.CreditDeductionRecordId,
                 creditRefundAmount: input.cashback_amount,
                 creditRefundRecordId: input.cashback_record_id,
-                discountAmountId: input.DiscountCodeId,
-                discountCodeAmount: input.DiscountCodeAmount,
+                //discountAmountId: input.DiscountCodeId,
+                //discountCodeAmount: input.DiscountCodeAmount,
                 recipientNameDbsNormal: input.RecipientNameDbsNormal,
                 recipientNameDbsFreeze: input.RecipientNameDbsFreeze,
                 recipientNameDbsFrozen: input.RecipientNameDbsFrozen,
@@ -153,7 +153,7 @@ public class OrderAppService : PikachuAppService, IOrderAppService
             order.DeliveryCostForFreeze = input.DeliveryCostForFreeze;
             order.DeliveryCostForFrozen = input.DeliveryCostForFrozen;
             order.DeliveryCost = input.DeliveryCost;
-            order.DiscountAmount = input.DiscountCodeAmount;
+            order.DiscountAmount = input.DiscountAmount;
 
             if (input.IsTest)
             {
