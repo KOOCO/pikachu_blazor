@@ -15,16 +15,16 @@ public class EdmEmailingJob(
     IEdmRepository edmRepository,
     IDataFilter<IMultiTenant> multiTenantFilter,
     ILogger<EdmEmailingJob> logger
-    ) : AsyncBackgroundJob<Guid>, ITransientDependency
+    ) : AsyncBackgroundJob<EdmEmailingJobArgs>, ITransientDependency
 {
-    public override async Task ExecuteAsync(Guid args)
+    public override async Task ExecuteAsync(EdmEmailingJobArgs args)
     {
         logger.LogInformation("EDM Emailing Job: Starting for ID: {edmId}", args);
 
         Edm edm;
         using (multiTenantFilter.Disable())
         {
-            edm = await edmRepository.GetAsync(args);
+            edm = await edmRepository.GetAsync(args.EdmId);
         }
 
         if (edm.TemplateType == EdmTemplateType.ShoppingCart)

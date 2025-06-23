@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Volo.Abp.BackgroundJobs;
 using Volo.Abp.DependencyInjection;
 using Volo.Abp.Emailing;
 using Volo.Abp.MultiTenancy;
@@ -22,6 +23,7 @@ public class EdmEmailService : ITransientDependency
     private readonly ILogger<EdmEmailService> _logger;
     private readonly IShopCartRepository _shopCartRepository;
     private readonly IConfiguration _configuration;
+    private readonly IBackgroundJobManager _backgroundJobManager;
     private readonly EdmTemplateBuilder _edmTemplateBuilder;
 
     public EdmEmailService(
@@ -31,6 +33,7 @@ public class EdmEmailService : ITransientDependency
         ILogger<EdmEmailService> logger,
         IShopCartRepository shopCartRepository,
         IConfiguration configuration,
+        IBackgroundJobManager backgroundJobManager,
         EdmTemplateBuilder edmTemplateBuilder
         )
     {
@@ -40,10 +43,11 @@ public class EdmEmailService : ITransientDependency
         _logger = logger;
         _shopCartRepository = shopCartRepository;
         _configuration = configuration;
+        _backgroundJobManager = backgroundJobManager;
         _edmTemplateBuilder = edmTemplateBuilder;
     }
 
-    public Task EnqueueJob(Edm edm)
+    public async Task EnqueueJob(Edm edm)
     {
         string? jobId = null;
 
@@ -66,7 +70,7 @@ public class EdmEmailService : ITransientDependency
 
             RecurringJob.AddOrUpdate<EdmEmailingJob>(
                 jobId,
-                job => job.ExecuteAsync(edm.Id),
+                job => job.ExecuteAsync(new EdmEmailingJobArgs { EdmId = edm.Id }),
                 cron,
                 new RecurringJobOptions { TimeZone = TimeZoneInfo.Utc }
             );
@@ -82,14 +86,17 @@ public class EdmEmailService : ITransientDependency
 
             CancelJob(edm);
 
-            jobId = BackgroundJob.Schedule<EdmEmailingJob>(
-                sender => sender.ExecuteAsync(edm.Id),
-                scheduledUtc
-            );
+            jobId = await _backgroundJobManager.EnqueueAsync(
+                new EdmEmailingJobArgs { EdmId = edm.Id },
+                delay: scheduledUtc - DateTime.UtcNow
+                );
+            //jobId = BackgroundJob.Schedule<EdmEmailingJob>(
+            //    sender => sender.ExecuteAsync(edm.Id),
+            //    scheduledUtc
+            //);
         }
 
         edm.SetJobId(jobId);
-        return Task.CompletedTask;
     }
 
     public void CancelJob(Edm edm)
