@@ -332,7 +332,7 @@
                 @foreach (var memberTag in Selected.MemberTags)
                 {
                     <Div Class="mb-1">
-                        <Copy Text="@memberTag" IconAlignment="Alignment.Start"></Copy>
+                        <Copy @key=@memberTag Text="@memberTag" IconAlignment="Alignment.Start"></Copy>
                     </Div>
                 }
             }
