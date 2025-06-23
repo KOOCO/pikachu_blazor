@@ -13,7 +13,7 @@ public static class CampaignConsts
     {
         public const string All = "All";
         public const string AllMembers = "AllMembers";
-
+        public const string SpecificMembers = "SpecificMembers";
         public static readonly List<string> Values = [All, AllMembers];
     }
 }

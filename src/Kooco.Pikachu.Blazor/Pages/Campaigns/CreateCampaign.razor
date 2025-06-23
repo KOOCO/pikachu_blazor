@@ -29,9 +29,10 @@
     .form-group[mb0] {
         margin-bottom: 0px;
     }
-       input.is-valid ~ .form-check-label {
-    color: #505150!important;
-}
+
+    input.is-valid ~ .form-check-label {
+        color: #505150 !important;
+    }
 </style>
 
 <Div Class="rounded-cards">
@@ -40,7 +41,7 @@
             <Icon Name="IconName.ArrowLeft" Class="me-1"></Icon>
         </PikachuButton>
         <h4 class="text-dark m-0">
-            @(Id.HasValue ? L["EditCampaign"] : L["CreateNewCampaign"])
+            @(Id.HasValue? L["EditCampaign"] : L["CreateNewCampaign"])
         </h4>
     </Div>
     <Form>
@@ -98,24 +99,48 @@
                                 </Validation>
                                 <Field>
                                     <FieldLabel required>@L["TargetAudience"]</FieldLabel>
-                                    <AntDesign.Select Mode="AntDesign.SelectMode.Multiple"
-                                                      Size="AntDesign.InputSize.Large"
-                                                      TItem="string"
-                                                      TItemValue="string"
-                                                      MaxTagCount="AntDesign.Select.ResponsiveTag.Responsive"
-                                                      EnableSearch
-                                                      AllowClear
-                                                      HideSelected
-                                                      Class="@ValidationClass(nameof(Entity.TargetAudience))"
-                                                      @bind-Values="Entity.TargetAudience">
-                                        <SelectOptions>
-                                            @foreach (var item in TargetAudienceOptions)
-                                            {
-                                                <AntDesign.SelectOption TItemValue="string" TItem="string" Value=@item Label=@L[item] />
-                                            }
-                                        </SelectOptions>
-                                    </AntDesign.Select>
-                                    <ValidationMessage For="() => Entity.TargetAudience" />
+                                    <RadioGroup Orientation="Orientation.Vertical"
+                                                TValue="string"
+                                                Name="TargetAudience"
+                                                CheckedValue="@TargetAudienceCheckedValue"
+                                                CheckedValueChanged="@OnTargetAudienceChanged">
+                                        <ChildContent>
+                                            <Radio TValue="string" Value="@CampaignConsts.TargetAudience.All">@L["All"]</Radio>
+                                            <Radio TValue="string" Value="@CampaignConsts.TargetAudience.AllMembers">@L["AllMembers"]</Radio>
+                                            <Radio TValue="string" Value="@CampaignConsts.TargetAudience.SpecificMembers">@L["SpecificMembers"]</Radio>
+                                        </ChildContent>
+                                        <Feedback>
+                                            <ValidationError />
+                                        </Feedback>
+                                    </RadioGroup>
+                                    @if (TargetAudienceCheckedValue == CampaignConsts.TargetAudience.SpecificMembers)
+                                    {
+                                        <Field indent mb0>
+                                            <AntDesign.Select Mode="AntDesign.SelectMode.Multiple"
+                                                              Size="AntDesign.InputSize.Large"
+                                                              TItem="string"
+                                                              TItemValue="string"
+                                                              MaxTagCount="AntDesign.Select.ResponsiveTag.Responsive"
+                                                              EnableSearch
+                                                              AllowClear
+                                                              HideSelected
+                                                              Placeholder="@L["SelectTargetAudience"]"
+                                                              Class="@ValidationClass(nameof(Entity.TargetAudience))"
+                                                              @bind-Values="Entity.TargetAudience">
+                                                <SelectOptions>
+                                                    @foreach (var item in TargetAudienceOptions)
+                                                    {
+                                                        <AntDesign.SelectOption TItemValue="string" TItem="string" Value=@item Label=@L[item] />
+                                                    }
+                                                </SelectOptions>
+                                            </AntDesign.Select>
+                                            <ValidationMessage For="() => Entity.TargetAudience" />
+                                        </Field>
+                                    }
+                                    @if (TargetAudienceCheckedValue != CampaignConsts.TargetAudience.SpecificMembers)
+                                    {
+                                        <ValidationMessage For="() => Entity.TargetAudience" />
+                                    }
                                 </Field>
                                 <Field>
                                     <FieldLabel required>@L["PromotionModule"]</FieldLabel>

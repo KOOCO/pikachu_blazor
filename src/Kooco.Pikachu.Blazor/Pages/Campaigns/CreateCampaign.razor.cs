@@ -19,7 +19,8 @@ public partial class CreateCampaign
     private IReadOnlyList<string> TargetAudienceOptions { get; set; } = [];
     private IReadOnlyList<KeyValueDto> GroupBuyOptions { get; set; } = [];
     private IReadOnlyList<KeyValueDto> ProductOptions { get; set; } = [];
-    private bool Loading { get; set; } = false;
+    private bool Loading { get; set; }
+    private string? TargetAudienceCheckedValue { get; set; }
 
     private Validations ValidationsRef;
     private readonly ValidationMessageStore _messageStore;
@@ -41,6 +42,11 @@ public partial class CreateCampaign
     {
         try
         {
+            GroupBuyOptions = await GroupBuyAppService.GetGroupBuyLookupAsync();
+            ProductOptions = await ItemAppService.LookupAsync();
+            TargetAudienceOptions = await MemberTagAppService.GetMemberTagNamesAsync();
+            StateHasChanged();
+
             if (Id.HasValue)
             {
                 if (!await AuthorizationService.IsGrantedAsync(PikachuPermissions.Campaigns.Edit))
@@ -53,14 +59,16 @@ public partial class CreateCampaign
                 Entity.Discount ??= new();
                 Entity.ShoppingCredit ??= new();
                 Entity.AddOnProduct ??= new();
+                TargetAudienceCheckedValue = Entity.TargetAudience.Contains(CampaignConsts.TargetAudience.All)
+                    ? CampaignConsts.TargetAudience.All
+                    : (Entity.TargetAudience.Contains(CampaignConsts.TargetAudience.AllMembers)
+                        ? CampaignConsts.TargetAudience.AllMembers
+                        : CampaignConsts.TargetAudience.SpecificMembers
+                        );
                 StateHasChanged();
                 ValidationsRef?.ClearAll();
             }
-
-            GroupBuyOptions = await GroupBuyAppService.GetGroupBuyLookupAsync();
-            ProductOptions = await ItemAppService.LookupAsync();
-            var memberTags = await MemberTagAppService.GetMemberTagNamesAsync();
-            TargetAudienceOptions = [.. CampaignConsts.TargetAudience.Values, .. memberTags];
+            
             StateHasChanged();
         }
         catch (Exception ex)
@@ -154,5 +162,23 @@ public partial class CreateCampaign
     {
         var fieldIdentifier = new FieldIdentifier(Entity, propertyName);
         return _editContext.GetValidationMessages(fieldIdentifier).Any() ? "is-invalid" : string.Empty;
+    }
+
+    void OnTargetAudienceChanged(string? value)
+    {
+        TargetAudienceCheckedValue = value;
+
+        if (value == CampaignConsts.TargetAudience.All || value == CampaignConsts.TargetAudience.AllMembers)
+        {
+            Entity.TargetAudience = [value];
+        }
+        else
+        {
+            Entity.TargetAudience = Entity.TargetAudience
+                .Where(value => value != CampaignConsts.TargetAudience.All
+                && value != CampaignConsts.TargetAudience.AllMembers);
+        }
+
+        StateHasChanged();
     }
 }

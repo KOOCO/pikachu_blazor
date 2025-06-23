@@ -2,6 +2,8 @@
 using Kooco.Pikachu.Localization;
 using Microsoft.Extensions.Localization;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 
 namespace Kooco.Pikachu.Campaigns;
@@ -18,6 +20,26 @@ public class CreateCampaignDtoValidator : AbstractValidator<CreateCampaignDto>
         AddRequiredRule(x => x.EndDate);
         AddRequiredRule(x => x.TargetAudience);
         AddRequiredRule(x => x.PromotionModule);
+
+        RuleFor(x => x.TargetAudience)
+            .NotNull()
+            .NotEmpty()
+            .WithMessage(l["TheFieldIsRequired", l[nameof(CreateCampaignDto.TargetAudience)]])
+            .Must(audience =>
+            {
+                var list = audience?.ToList() ?? [];
+
+                if (list.Contains(CampaignConsts.TargetAudience.All))
+                    return list.Count == 1 && list[0] == CampaignConsts.TargetAudience.All;
+
+                if (list.Contains(CampaignConsts.TargetAudience.AllMembers))
+                    return list.Count == 1 && list[0] == CampaignConsts.TargetAudience.AllMembers;
+
+                return list.Count != 0 &&
+                       !list.Contains(CampaignConsts.TargetAudience.All) &&
+                       !list.Contains(CampaignConsts.TargetAudience.AllMembers);
+            })
+            .WithMessage("TargetAudienceValidationError");
 
         RuleFor(x => x.EndDate)
             .GreaterThan(x => x.StartDate);
