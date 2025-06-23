@@ -89,11 +89,7 @@ public class EdmEmailService : ITransientDependency
             jobId = await _backgroundJobManager.EnqueueAsync(
                 new EdmEmailingJobArgs { EdmId = edm.Id },
                 delay: scheduledUtc - DateTime.UtcNow
-                );
-            //jobId = BackgroundJob.Schedule<EdmEmailingJob>(
-            //    sender => sender.ExecuteAsync(edm.Id),
-            //    scheduledUtc
-            //);
+            );
         }
 
         edm.SetJobId(jobId);
