@@ -13,6 +13,9 @@ public class CampaignDto : FullAuditedEntityDto<Guid>
     public PromotionModule PromotionModule { get; set; }
     public bool ApplyToAllGroupBuys { get; set; }
     public bool? ApplyToAllProducts { get; set; }
+    public bool UseableWithAllDiscounts { get; set; }
+    public bool UseableWithAllShoppingCredits { get; set; }
+    public bool UseableWithAllAddOnProducts { get; set; }
     public bool IsEnabled { get; set; }
     public Guid? TenantId { get; set; }
     public virtual ICollection<CampaignGroupBuyDto> GroupBuys { get; set; } = [];
@@ -21,4 +24,7 @@ public class CampaignDto : FullAuditedEntityDto<Guid>
     public virtual CampaignShoppingCreditDto ShoppingCredit { get; set; }
     public virtual CampaignAddOnProductDto AddOnProduct { get; set; }
     public IEnumerable<string> TargetAudience { get; set; }
+    public virtual IEnumerable<UseableCampaignDto> AllowedDiscounts { get; set; } = [];
+    public virtual IEnumerable<UseableCampaignDto> AllowedShoppingCredits { get; set; } = [];
+    public virtual IEnumerable<UseableCampaignDto> AllowedAddOnProducts { get; set; } = [];
 }

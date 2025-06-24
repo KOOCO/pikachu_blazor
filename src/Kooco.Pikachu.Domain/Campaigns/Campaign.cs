@@ -23,9 +23,11 @@ public class Campaign : FullAuditedAggregateRoot<Guid>, IMultiTenant
     public Guid? TenantId { get; set; }
     public virtual ICollection<CampaignGroupBuy> GroupBuys { get; set; } = [];
     public virtual ICollection<CampaignProduct> Products { get; set; } = [];
+    public virtual UseableCampaign UseableCampaign { get; set; }
     public virtual CampaignDiscount Discount { get; internal set; }
     public virtual CampaignShoppingCredit ShoppingCredit { get; internal set; }
     public virtual CampaignAddOnProduct AddOnProduct { get; internal set; }
+
 
     [NotMapped]
     public IEnumerable<string> TargetAudience

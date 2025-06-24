@@ -26,7 +26,13 @@ public class CampaignBuilder
             Require(_input.ApplyToAllGroupBuys, nameof(_input.ApplyToAllGroupBuys)),
             _input.GroupBuyIds,
             _input.ApplyToAllProducts,
-            _input.ProductIds
+            _input.ProductIds,
+            Require(_input.UseableWithAllDiscounts, nameof(_input.UseableWithAllDiscounts)),
+            _input.AllowedDiscountIds,
+            Require(_input.UseableWithAllShoppingCredits, nameof(_input.UseableWithAllShoppingCredits)),
+            _input.AllowedShoppingCreditIds,
+            Require(_input.UseableWithAllAddOnProducts, nameof(_input.UseableWithAllAddOnProducts)),
+            _input.AllowedAddOnProductIds
         );
 
         HandleModules(campaign, manager);
@@ -47,7 +53,13 @@ public class CampaignBuilder
             Require(_input.ApplyToAllGroupBuys, nameof(_input.ApplyToAllGroupBuys)),
             _input.GroupBuyIds,
             _input.ApplyToAllProducts,
-            _input.ProductIds
+            _input.ProductIds,
+            Require(_input.UseableWithAllDiscounts, nameof(_input.UseableWithAllDiscounts)),
+            _input.AllowedDiscountIds,
+            Require(_input.UseableWithAllShoppingCredits, nameof(_input.UseableWithAllShoppingCredits)),
+            _input.AllowedShoppingCreditIds,
+            Require(_input.UseableWithAllAddOnProducts, nameof(_input.UseableWithAllAddOnProducts)),
+            _input.AllowedAddOnProductIds
         );
 
         HandleModules(campaign, manager);

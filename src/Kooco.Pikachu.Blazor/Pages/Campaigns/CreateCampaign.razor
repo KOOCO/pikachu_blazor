@@ -104,14 +104,9 @@
                                                 Name="TargetAudience"
                                                 CheckedValue="@TargetAudienceCheckedValue"
                                                 CheckedValueChanged="@OnTargetAudienceChanged">
-                                        <ChildContent>
-                                            <Radio TValue="string" Value="@CampaignConsts.TargetAudience.All">@L["All"]</Radio>
-                                            <Radio TValue="string" Value="@CampaignConsts.TargetAudience.AllMembers">@L["AllMembers"]</Radio>
-                                            <Radio TValue="string" Value="@CampaignConsts.TargetAudience.SpecificMembers">@L["SpecificMembers"]</Radio>
-                                        </ChildContent>
-                                        <Feedback>
-                                            <ValidationError />
-                                        </Feedback>
+                                        <Radio TValue="string" Value="@CampaignConsts.TargetAudience.All">@L["All"]</Radio>
+                                        <Radio TValue="string" Value="@CampaignConsts.TargetAudience.AllMembers">@L["AllMembers"]</Radio>
+                                        <Radio TValue="string" Value="@CampaignConsts.TargetAudience.SpecificMembers">@L["SpecificMembers"]</Radio>
                                     </RadioGroup>
                                     @if (TargetAudienceCheckedValue == CampaignConsts.TargetAudience.SpecificMembers)
                                     {
@@ -266,6 +261,11 @@
                                         <Check TValue="bool" @bind-Checked="Entity.ShoppingCredit.ApplicableToAddOnProducts">@L["AddOnProducts"]</Check>
                                         <Check TValue="bool" @bind-Checked="Entity.ShoppingCredit.ApplicableToShippingFees">@L["ShippingFees"]</Check>
                                     </Field>
+                                }
+
+                                @if (Entity.PromotionModule.HasValue)
+                                {
+                                    <CampaignUsageComponent Entity="Entity" EditContext="_editContext" LH="LH" CampaignOptions="CampaignOptions" />
                                 }
                             </CardBody>
                         </Card>

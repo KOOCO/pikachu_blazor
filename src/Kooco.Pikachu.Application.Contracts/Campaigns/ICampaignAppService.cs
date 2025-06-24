@@ -17,4 +17,5 @@ public interface ICampaignAppService : IApplicationService
     Task SetIsEnabledAsync(Guid id, bool isEnabled);
     Task<long> GetActiveCampaignsCountAsync();
     Task<List<KeyValueDto>> GetLookupAsync();
+    Task<List<CampaignLookupWithModuleDto>> GetCampaignLookupWithModuleAsync();
 }

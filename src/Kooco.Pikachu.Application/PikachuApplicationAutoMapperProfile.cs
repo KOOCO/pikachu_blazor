@@ -401,10 +401,15 @@ public class PikachuApplicationAutoMapperProfile : Profile
         CreateMap<CampaignGroupBuy, CampaignGroupBuyDto>();
         CreateMap<CampaignProduct, CampaignProductDto>();
         CreateMap<CampaignStageSetting, CampaignStageSettingDto>();
+        CreateMap<UseableCampaign, UseableCampaignDto>();
 
         CreateMap<CampaignDto, CreateCampaignDto>()
             .ForMember(dest => dest.GroupBuyIds, opt => opt.MapFrom(src => src.GroupBuys != null ? src.GroupBuys.Select(gb => gb.GroupBuyId) : new List<Guid>()))
-            .ForMember(dest => dest.ProductIds, opt => opt.MapFrom(src => src.Products != null ? src.Products.Select(gb => gb.ProductId) : new List<Guid>()));
+            .ForMember(dest => dest.ProductIds, opt => opt.MapFrom(src => src.Products != null ? src.Products.Select(p => p.ProductId) : new List<Guid>()))
+            .ForMember(dest => dest.AllowedDiscountIds, opt => opt.MapFrom(src => src.AllowedDiscounts != null ? src.AllowedDiscounts.Select(d => d.AllowedCampaignId) : new List<Guid>()))
+            .ForMember(dest => dest.AllowedShoppingCreditIds, opt => opt.MapFrom(src => src.AllowedShoppingCredits != null ? src.AllowedShoppingCredits.Select(d => d.AllowedCampaignId) : new List<Guid>()))
+            .ForMember(dest => dest.AllowedAddOnProductIds, opt => opt.MapFrom(src => src.AllowedAddOnProducts != null ? src.AllowedAddOnProducts.Select(d => d.AllowedCampaignId) : new List<Guid>()));
+        
         CreateMap<CampaignDiscountDto, CreateCampaignDiscountDto>();
         CreateMap<CampaignShoppingCreditDto, CreateCampaignShoppingCreditDto>();
         CreateMap<CampaignAddOnProductDto, CreateCampaignAddOnProductDto>();

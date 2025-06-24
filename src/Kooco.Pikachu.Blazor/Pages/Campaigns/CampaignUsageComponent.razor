@@ -1,0 +1,150 @@
+﻿@using Kooco.Pikachu.Campaigns
+@using Kooco.Pikachu.Items.Dtos
+@using Kooco.Pikachu.Localization
+@using Volo.Abp.AspNetCore.Components.Web
+@inherits PikachuComponentBase
+
+<Divider></Divider>
+<h5>@L["AllowToBeUsedWithOtherCampaigns"]</h5>
+
+<Validation MessageLocalizer="@LH.Localize">
+    <Field>
+        <FieldLabel required>@L["Discount"]</FieldLabel>
+        <RadioGroup Orientation="Orientation.Vertical" TValue="bool?" Name="DiscountUsage" @bind-CheckedValue="@Entity.UseableWithAllDiscounts">
+            <ChildContent>
+                <Radio TValue="bool?" Value="@true">@L["All"]</Radio>
+                <Radio TValue="bool?" Value="@false">@L["SpecificDiscounts"]</Radio>
+            </ChildContent>
+            <Feedback>
+                <ValidationError />
+            </Feedback>
+        </RadioGroup>
+        @if (Entity.UseableWithAllDiscounts == false)
+        {
+            <Field indent mb0>
+                <AntDesign.Select Mode="AntDesign.SelectMode.Multiple"
+                                  Size="AntDesign.InputSize.Large"
+                                  TItem="Guid"
+                                  TItemValue="Guid"
+                                  Placeholder="@L["SelectDiscounts"]"
+                                  EnableSearch
+                                  AllowClear
+                                  MaxTagCount="AntDesign.Select.ResponsiveTag.Responsive"
+                                  Class="@ValidationClass(nameof(Entity.AllowedDiscountIds))"
+                                  OnSelectedItemsChanged="() => EditContext.NotifyFieldChanged(new FieldIdentifier(Entity, nameof(Entity.AllowedDiscountIds)))"
+                                  @bind-Values="Entity.AllowedDiscountIds">
+                    <SelectOptions>
+                        @foreach (var item in DiscountOptions)
+                        {
+                            <AntDesign.SelectOption TItemValue="Guid" TItem="Guid" Value=@item.Id Label=@item.Name />
+                        }
+                    </SelectOptions>
+                </AntDesign.Select>
+                <ValidationMessage For="() => Entity.AllowedDiscountIds" />
+            </Field>
+        }
+    </Field>
+</Validation>
+
+<Validation MessageLocalizer="@LH.Localize">
+    <Field>
+        <FieldLabel required>@L["ShoppingCredit"]</FieldLabel>
+        <RadioGroup Orientation="Orientation.Vertical" TValue="bool?" Name="ShoppingCreditUsage" @bind-CheckedValue="@Entity.UseableWithAllShoppingCredits">
+            <ChildContent>
+                <Radio TValue="bool?" Value="@true">@L["All"]</Radio>
+                <Radio TValue="bool?" Value="@false">@L["SpecificShoppingCredits"]</Radio>
+            </ChildContent>
+            <Feedback>
+                <ValidationError />
+            </Feedback>
+        </RadioGroup>
+        @if (Entity.UseableWithAllShoppingCredits == false)
+        {
+            <Field indent mb0>
+                <AntDesign.Select Mode="AntDesign.SelectMode.Multiple"
+                                  Size="AntDesign.InputSize.Large"
+                                  TItem="Guid"
+                                  TItemValue="Guid"
+                                  Placeholder="@L["SelectShoppingCredits"]"
+                                  EnableSearch
+                                  AllowClear
+                                  MaxTagCount="AntDesign.Select.ResponsiveTag.Responsive"
+                                  Class="@ValidationClass(nameof(Entity.AllowedShoppingCreditIds))"
+                                  OnSelectedItemsChanged="() => EditContext.NotifyFieldChanged(new FieldIdentifier(Entity, nameof(Entity.AllowedShoppingCreditIds)))"
+                                  @bind-Values="Entity.AllowedShoppingCreditIds">
+                    <SelectOptions>
+                        @foreach (var item in ShoppingCreditOptions)
+                        {
+                            <AntDesign.SelectOption TItemValue="Guid" TItem="Guid" Value=@item.Id Label=@item.Name />
+                        }
+                    </SelectOptions>
+                </AntDesign.Select>
+                <ValidationMessage For="() => Entity.AllowedShoppingCreditIds" />
+            </Field>
+        }
+    </Field>
+</Validation>
+
+<Validation MessageLocalizer="@LH.Localize">
+    <Field>
+        <FieldLabel required>@L["AddOnProduct"]</FieldLabel>
+        <RadioGroup Orientation="Orientation.Vertical" TValue="bool?" Name="AddOnProductUsage" @bind-CheckedValue="@Entity.UseableWithAllAddOnProducts">
+            <ChildContent>
+                <Radio TValue="bool?" Value="@true">@L["All"]</Radio>
+                <Radio TValue="bool?" Value="@false">@L["SpecificAddOnProducts"]</Radio>
+            </ChildContent>
+            <Feedback>
+                <ValidationError />
+            </Feedback>
+        </RadioGroup>
+        @if (Entity.UseableWithAllAddOnProducts == false)
+        {
+            <Field indent mb0>
+                <AntDesign.Select Mode="AntDesign.SelectMode.Multiple"
+                                  Size="AntDesign.InputSize.Large"
+                                  TItem="Guid"
+                                  TItemValue="Guid"
+                                  Placeholder="@L["SelectAddOnProducts"]"
+                                  EnableSearch
+                                  AllowClear
+                                  MaxTagCount="AntDesign.Select.ResponsiveTag.Responsive"
+                                  Class="@ValidationClass(nameof(Entity.AllowedAddOnProductIds))"
+                                  OnSelectedItemsChanged="() => EditContext.NotifyFieldChanged(new FieldIdentifier(Entity, nameof(Entity.AllowedAddOnProductIds)))"
+                                  @bind-Values="Entity.AllowedAddOnProductIds">
+                    <SelectOptions>
+                        @foreach (var item in AddOnProductOptions)
+                        {
+                            <AntDesign.SelectOption TItemValue="Guid" TItem="Guid" Value=@item.Id Label=@item.Name />
+                        }
+                    </SelectOptions>
+                </AntDesign.Select>
+                <ValidationMessage For="() => Entity.AllowedAddOnProductIds" />
+            </Field>
+        }
+    </Field>
+</Validation>
+@code {
+    [Parameter] public CreateCampaignDto Entity { get; set; }
+    [Parameter] public EditContext EditContext { get; set; }
+    [Parameter] public AbpBlazorMessageLocalizerHelper<PikachuResource> LH { get; set; }
+    [Parameter] public IReadOnlyList<CampaignLookupWithModuleDto> CampaignOptions { get; set; } = [];
+
+    private IReadOnlyList<CampaignLookupWithModuleDto> DiscountOptions { get; set; } = [];
+    private IReadOnlyList<CampaignLookupWithModuleDto> ShoppingCreditOptions { get; set; } = [];
+    private IReadOnlyList<CampaignLookupWithModuleDto> AddOnProductOptions { get; set; } = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        DiscountOptions = [.. CampaignOptions.Where(l => l.Module == PromotionModule.Discount)];
+        ShoppingCreditOptions = [.. CampaignOptions.Where(l => l.Module == PromotionModule.ShoppingCredit)];
+        AddOnProductOptions = [.. CampaignOptions.Where(l => l.Module == PromotionModule.AddOnProduct)];
+
+        await base.OnInitializedAsync();
+    }
+
+    string ValidationClass(string propertyName)
+    {
+        var fieldIdentifier = new FieldIdentifier(Entity, propertyName);
+        return EditContext.GetValidationMessages(fieldIdentifier).Any() ? "is-invalid" : string.Empty;
+    }
+}

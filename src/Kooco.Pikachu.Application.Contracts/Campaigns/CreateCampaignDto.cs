@@ -11,10 +11,21 @@ public class CreateCampaignDto
     public string? Description { get; set; }
     public IEnumerable<string> TargetAudience { get; set; } = [];
     public PromotionModule? PromotionModule { get; set; }
+
     public bool? ApplyToAllGroupBuys { get; set; }
     public IEnumerable<Guid> GroupBuyIds { get; set; } = [];
+
     public bool? ApplyToAllProducts { get; set; }
     public IEnumerable<Guid> ProductIds { get; set; } = [];
+
+    public bool? UseableWithAllDiscounts { get; set; }
+    public IEnumerable<Guid> AllowedDiscountIds { get; set; } = [];
+
+    public bool? UseableWithAllShoppingCredits { get; set; }
+    public IEnumerable<Guid> AllowedShoppingCreditIds { get; set; } = [];
+
+    public bool? UseableWithAllAddOnProducts { get; set; }
+    public IEnumerable<Guid> AllowedAddOnProductIds { get; set; } = [];
 
     public CreateCampaignDiscountDto Discount { get; set; } = new();
     public CreateCampaignShoppingCreditDto ShoppingCredit { get; set; } = new();

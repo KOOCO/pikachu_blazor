@@ -19,6 +19,8 @@ public partial class CreateCampaign
     private IReadOnlyList<string> TargetAudienceOptions { get; set; } = [];
     private IReadOnlyList<KeyValueDto> GroupBuyOptions { get; set; } = [];
     private IReadOnlyList<KeyValueDto> ProductOptions { get; set; } = [];
+    private IReadOnlyList<CampaignLookupWithModuleDto> CampaignOptions { get; set; } = [];
+
     private bool Loading { get; set; }
     private string? TargetAudienceCheckedValue { get; set; }
 
@@ -45,6 +47,8 @@ public partial class CreateCampaign
             GroupBuyOptions = await GroupBuyAppService.GetGroupBuyLookupAsync();
             ProductOptions = await ItemAppService.LookupAsync();
             TargetAudienceOptions = await MemberTagAppService.GetMemberTagNamesAsync();
+            CampaignOptions = await CampaignAppService.GetCampaignLookupWithModuleAsync();
+
             StateHasChanged();
 
             if (Id.HasValue)

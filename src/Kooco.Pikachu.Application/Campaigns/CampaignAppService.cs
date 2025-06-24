@@ -134,4 +134,15 @@ public class CampaignAppService : PikachuAppService, ICampaignAppService
                 Name = q.Name
             })];
     }
+
+    public async Task<List<CampaignLookupWithModuleDto>> GetCampaignLookupWithModuleAsync()
+    {
+        return [.. (await _campaignRepository.GetQueryableAsync())
+            .Select(q => new CampaignLookupWithModuleDto
+            {
+                Id = q.Id,
+                Name = q.Name,
+                Module = q.PromotionModule
+            })];
+    }
 }

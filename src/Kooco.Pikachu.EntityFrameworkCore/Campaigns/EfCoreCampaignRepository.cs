@@ -29,6 +29,7 @@ public class EfCoreCampaignRepository : EfCoreRepository<PikachuDbContext, Campa
             .Include(c => c.AddOnProduct)
             .Include(c => c.GroupBuys)
             .Include(c => c.Products)
+            .Include(c => c.UseableCampaigns)
             .FirstOrDefaultAsync();
 
         return campaign ?? throw new EntityNotFoundException(typeof(Campaign), id);

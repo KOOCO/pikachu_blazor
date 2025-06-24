@@ -63,4 +63,10 @@ public class CampaignController(ICampaignAppService campaignAppService) : Pikach
     {
         return campaignAppService.UpdateAsync(id, input);
     }
+
+    [HttpGet("lookup-with-module")]
+    public Task<List<CampaignLookupWithModuleDto>> GetCampaignLookupWithModuleAsync()
+    {
+        return campaignAppService.GetCampaignLookupWithModuleAsync();
+    }
 }

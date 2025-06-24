@@ -2,7 +2,6 @@
 using Kooco.Pikachu.Localization;
 using Microsoft.Extensions.Localization;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 
@@ -22,9 +21,6 @@ public class CreateCampaignDtoValidator : AbstractValidator<CreateCampaignDto>
         AddRequiredRule(x => x.PromotionModule);
 
         RuleFor(x => x.TargetAudience)
-            .NotNull()
-            .NotEmpty()
-            .WithMessage(l["TheFieldIsRequired", l[nameof(CreateCampaignDto.TargetAudience)]])
             .Must(audience =>
             {
                 var list = audience?.ToList() ?? [];
@@ -39,7 +35,8 @@ public class CreateCampaignDtoValidator : AbstractValidator<CreateCampaignDto>
                        !list.Contains(CampaignConsts.TargetAudience.All) &&
                        !list.Contains(CampaignConsts.TargetAudience.AllMembers);
             })
-            .WithMessage("TargetAudienceValidationError");
+            .When(x => x.TargetAudience.Any())
+            .WithMessage(l["TargetAudienceValidationError"]);
 
         RuleFor(x => x.EndDate)
             .GreaterThan(x => x.StartDate);
@@ -66,6 +63,25 @@ public class CreateCampaignDtoValidator : AbstractValidator<CreateCampaignDto>
                 .When(x => x.PromotionModule.HasValue && x.ApplyToAllProducts != null && x.ApplyToAllProducts == false)
                 .WithMessage(l["TheFieldIsRequired", l[nameof(CreateCampaignDto.ProductIds)]]);
         });
+
+        AddRequiredRule(x => x.UseableWithAllDiscounts, "Discount");
+        AddRequiredRule(x => x.UseableWithAllShoppingCredits, "ShoppingCredit");
+        AddRequiredRule(x => x.UseableWithAllAddOnProducts, "AddOnProduct");
+
+        RuleFor(x => x.AllowedDiscountIds)
+            .NotEmpty()
+            .When(x => x.UseableWithAllDiscounts == false)
+            .WithMessage(l["TheFieldIsRequired", l["Discount"]]);
+
+        RuleFor(x => x.AllowedShoppingCreditIds)
+            .NotEmpty()
+            .When(x => x.UseableWithAllShoppingCredits == false)
+            .WithMessage(l["TheFieldIsRequired", l["ShoppingCredit"]]);
+
+        RuleFor(x => x.AllowedAddOnProductIds)
+            .NotEmpty()
+            .When(x => x.UseableWithAllAddOnProducts == false)
+            .WithMessage(l["TheFieldIsRequired", l["AddOnProduct"]]);
 
         When(x => x.PromotionModule == PromotionModule.Discount, () =>
         {

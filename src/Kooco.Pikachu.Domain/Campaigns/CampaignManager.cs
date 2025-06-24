@@ -28,9 +28,25 @@ public class CampaignManager : DomainService
         _addOnProductRepository = addOnProductRepository;
     }
 
-    public async Task<Campaign> CreateAsync(string name, DateTime startDate, DateTime endDate, string? description,
-        IEnumerable<string> targetAudience, PromotionModule promotionModule, bool applyToAllGroupBuys,
-        IEnumerable<Guid> groupBuyIds, bool? applyToAllProducts, IEnumerable<Guid> productIds, bool autoSave = true)
+    public async Task<Campaign> CreateAsync(
+        string name,
+        DateTime startDate,
+        DateTime endDate,
+        string? description,
+        IEnumerable<string> targetAudience,
+        PromotionModule promotionModule,
+        bool applyToAllGroupBuys,
+        IEnumerable<Guid> groupBuyIds,
+        bool? applyToAllProducts,
+        IEnumerable<Guid> productIds,
+        bool useableWithAllDiscounts,
+        IEnumerable<Guid> allowedDiscountIds,
+        bool useableWithAllShoppingCredits,
+        IEnumerable<Guid> allowedShoppingCreditIds,
+        bool useableWithAllAddOnProducts,
+        IEnumerable<Guid> allowedAddOnProductIds,
+        bool autoSave = true
+        )
     {
         if (!targetAudience.Any())
         {
@@ -51,8 +67,17 @@ public class CampaignManager : DomainService
             throw new CampaignWithSameNameAlreadyExistsException(name);
         }
 
-        var campaign = new Campaign(GuidGenerator.Create(), name, startDate, endDate, description, targetAudience,
-            promotionModule, applyToAllGroupBuys, applyToAllProducts);
+        var campaign = new Campaign(
+            GuidGenerator.Create(),
+            name,
+            startDate,
+            endDate,
+            description,
+            targetAudience,
+            promotionModule,
+            applyToAllGroupBuys,
+            applyToAllProducts
+            );
 
         if (autoSave)
         {
@@ -61,13 +86,32 @@ public class CampaignManager : DomainService
 
         AddGroupBuys(campaign, groupBuyIds, false);
         AddProducts(campaign, productIds, false);
+        AddAllowedDiscounts(campaign, useableWithAllDiscounts, allowedDiscountIds);
+        AddAllowedShoppingCredits(campaign, useableWithAllShoppingCredits, allowedShoppingCreditIds);
+        AddAllowedAddOnProducts(campaign, useableWithAllAddOnProducts, allowedAddOnProductIds);
 
         return campaign;
     }
 
-    public async Task<Campaign> UpdateAsync(Campaign campaign, string name, DateTime startDate, DateTime endDate, string? description,
-        IEnumerable<string> targetAudience, PromotionModule promotionModule, bool applyToAllGroupBuys,
-        IEnumerable<Guid> groupBuyIds, bool? applyToAllProducts, IEnumerable<Guid> productIds)
+    public async Task<Campaign> UpdateAsync(
+        Campaign campaign, 
+        string name, 
+        DateTime startDate, 
+        DateTime endDate, 
+        string? description,
+        IEnumerable<string> targetAudience, 
+        PromotionModule promotionModule, 
+        bool applyToAllGroupBuys,
+        IEnumerable<Guid> groupBuyIds, 
+        bool? applyToAllProducts, 
+        IEnumerable<Guid> productIds,
+        bool useableWithAllDiscounts,
+        IEnumerable<Guid> allowedDiscountIds,
+        bool useableWithAllShoppingCredits,
+        IEnumerable<Guid> allowedShoppingCreditIds,
+        bool useableWithAllAddOnProducts,
+        IEnumerable<Guid> allowedAddOnProductIds
+        )
     {
         Check.NotNull(campaign, nameof(campaign));
         if (!targetAudience.Any())
@@ -104,6 +148,9 @@ public class CampaignManager : DomainService
 
         AddGroupBuys(campaign, groupBuyIds, false);
         AddProducts(campaign, productIds, false);
+        AddAllowedDiscounts(campaign, useableWithAllDiscounts, allowedDiscountIds);
+        AddAllowedShoppingCredits(campaign, useableWithAllShoppingCredits, allowedShoppingCreditIds);
+        AddAllowedAddOnProducts(campaign, useableWithAllAddOnProducts, allowedAddOnProductIds);
 
         if (campaign.PromotionModule != oldPromotionModule)
         {
@@ -186,6 +233,172 @@ public class CampaignManager : DomainService
         }
     }
 
+    public void AddAllowedDiscounts(Campaign campaign, bool useableWithAllDiscounts, IEnumerable<Guid> allowedDiscountIds)
+    {
+        if (!useableWithAllDiscounts && !allowedDiscountIds.Any())
+        {
+            throw new BusinessException("Required", nameof(allowedDiscountIds));
+        }
+
+        //campaign.UseableWithAllDiscounts = useableWithAllDiscounts;
+        
+        //campaign.UseableCampaigns.RemoveAll(uc => 
+        //    uc.PromotionModule == PromotionModule.Discount 
+        //    && !allowedDiscountIds.Contains(uc.AllowedCampaignId)
+        //    );
+        
+        //if (campaign.UseableWithAllDiscounts)
+        //{
+        //    campaign.UseableCampaigns.RemoveAll(uc => uc.PromotionModule == PromotionModule.Discount);
+        //}
+        //else
+        //{
+        //    foreach (var allowedDiscountId in allowedDiscountIds)
+        //    {
+        //        AddAllowedDiscount(campaign, allowedDiscountId);
+        //    }
+        //}
+    }
+
+    public UseableCampaign AddAllowedDiscount(Campaign campaign, Guid allowedDiscountId)
+    {
+        Check.NotNull(campaign, nameof(Campaign));
+        Check.NotDefaultOrNull<Guid>(allowedDiscountId, nameof(allowedDiscountId));
+
+        //campaign.UseableCampaigns
+        //    .RemoveAll(uc => 
+        //    uc.PromotionModule != PromotionModule.Discount 
+        //    && uc.AllowedCampaignId == allowedDiscountId
+        //    );
+
+        //var alreadyAdded = campaign.UseableCampaigns
+        //    .FirstOrDefault(uc =>
+        //    uc.PromotionModule == PromotionModule.Discount
+        //    && uc.AllowedCampaignId == allowedDiscountId 
+        //    );
+
+        //if (alreadyAdded == null)
+        //{
+        //    return campaign.AddAllowedDiscount(GuidGenerator.Create(), allowedDiscountId);
+        //}
+        //else
+        //{
+        //    return alreadyAdded;
+        //}
+        return null!;
+    }
+
+    public void AddAllowedShoppingCredits(Campaign campaign, bool useableWithAllShoppingCredits, IEnumerable<Guid> allowedShoppingCreditIds)
+    {
+        if (!useableWithAllShoppingCredits && !allowedShoppingCreditIds.Any())
+        {
+            throw new BusinessException("Required", nameof(allowedShoppingCreditIds));
+        }
+
+        //campaign.UseableWithAllShoppingCredits = useableWithAllShoppingCredits;
+
+        //campaign.UseableCampaigns.RemoveAll(uc =>
+        //    uc.PromotionModule == PromotionModule.ShoppingCredit
+        //    && !allowedShoppingCreditIds.Contains(uc.AllowedCampaignId)
+        //    );
+
+        //if (campaign.UseableWithAllShoppingCredits)
+        //{
+        //    campaign.UseableCampaigns.RemoveAll(uc => uc.PromotionModule == PromotionModule.ShoppingCredit);
+        //}
+        //else
+        //{
+        //    foreach (var allowedShoppingCreditId in allowedShoppingCreditIds)
+        //    {
+        //        AddAllowedShoppingCredit(campaign, allowedShoppingCreditId);
+        //    }
+        //}
+    }
+
+    public UseableCampaign AddAllowedShoppingCredit(Campaign campaign, Guid allowedShoppingCreditId)
+    {
+        Check.NotNull(campaign, nameof(Campaign));
+        Check.NotDefaultOrNull<Guid>(allowedShoppingCreditId, nameof(allowedShoppingCreditId));
+
+        //campaign.UseableCampaigns
+        //    .RemoveAll(uc =>
+        //    uc.PromotionModule != PromotionModule.ShoppingCredit
+        //    && uc.AllowedCampaignId == allowedShoppingCreditId
+        //    );
+
+        //var alreadyAdded = campaign.UseableCampaigns
+        //    .FirstOrDefault(uc =>
+        //    uc.PromotionModule == PromotionModule.ShoppingCredit
+        //    && uc.AllowedCampaignId == allowedShoppingCreditId
+        //    );
+
+        //if (alreadyAdded == null)
+        //{
+        //    return campaign.AddAllowedShoppingCredit(GuidGenerator.Create(), allowedShoppingCreditId);
+        //}
+        //else
+        //{
+        //    return alreadyAdded;
+        //}
+
+        return null!;
+    }
+
+    public void AddAllowedAddOnProducts(Campaign campaign, bool useableWithAllAddOnProducts, IEnumerable<Guid> allowedAddOnProductIds)
+    {
+        if (!useableWithAllAddOnProducts && !allowedAddOnProductIds.Any())
+        {
+            throw new BusinessException("Required", nameof(allowedAddOnProductIds));
+        }
+
+        //campaign.UseableWithAllAddOnProducts = useableWithAllAddOnProducts;
+
+        //campaign.UseableCampaigns.RemoveAll(uc =>
+        //    uc.PromotionModule == PromotionModule.AddOnProduct
+        //    && !allowedAddOnProductIds.Contains(uc.AllowedCampaignId)
+        //    );
+
+        //if (campaign.UseableWithAllAddOnProducts)
+        //{
+        //    campaign.UseableCampaigns.RemoveAll(uc => uc.PromotionModule == PromotionModule.AddOnProduct);
+        //}
+        //else
+        //{
+        //    foreach (var allowedAddOnProductId in allowedAddOnProductIds)
+        //    {
+        //        AddAllowedAddOnProduct(campaign, allowedAddOnProductId);
+        //    }
+        //}
+    }
+
+    public UseableCampaign AddAllowedAddOnProduct(Campaign campaign, Guid allowedAddOnProductId)
+    {
+        Check.NotNull(campaign, nameof(Campaign));
+        Check.NotDefaultOrNull<Guid>(allowedAddOnProductId, nameof(allowedAddOnProductId));
+
+        //campaign.UseableCampaigns
+        //    .RemoveAll(uc =>
+        //    uc.PromotionModule != PromotionModule.AddOnProduct
+        //    && uc.AllowedCampaignId == allowedAddOnProductId
+        //    );
+
+        //var alreadyAdded = campaign.UseableCampaigns
+        //    .FirstOrDefault(uc =>
+        //    uc.PromotionModule == PromotionModule.AddOnProduct
+        //    && uc.AllowedCampaignId == allowedAddOnProductId
+        //    );
+
+        //if (alreadyAdded == null)
+        //{
+        //    return campaign.AddAllowedAddOnProduct(GuidGenerator.Create(), allowedAddOnProductId);
+        //}
+        //else
+        //{
+        //    return alreadyAdded;
+        //}
+        return null!;
+    }
+
     public CampaignDiscount AddCampaignDiscount(Campaign campaign, bool isDiscountCodeRequired, string? discountCode, int availableQuantity,
         int maximumUsePerPerson, DiscountMethod discountMethod, int? minimumSpendAmount, bool? applyToAllShippingMethods,
         IEnumerable<DeliveryMethod> deliveryMethods, DiscountType discountType, int? discountAmount, int? discountPercentage, double? capAmount)
@@ -210,7 +423,7 @@ public class CampaignManager : DomainService
         int maxPointsToReceive = stageSettings.OrderByDescending(ss => ss.pointsToReceive).Select(ss => ss.pointsToReceive).FirstOrDefault();
 
         var shoppingCredit = new CampaignShoppingCredit(GuidGenerator.Create(), campaign.Id, canExpire,
-            validForDays, calculationMethod, calculationPercentage, capAmount, applicableToAddOnProducts, 
+            validForDays, calculationMethod, calculationPercentage, capAmount, applicableToAddOnProducts,
             applicableToShippingFees, budget, maxPointsToReceive);
 
         if (calculationMethod == CalculationMethod.StagedCalculation)
