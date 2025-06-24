@@ -2176,6 +2176,10 @@ public partial class OrderDetails
 
             foreach (OrderDeliveryDto? delivery in orderDeliveries)
             {
+                if (delivery.ActualDeliveryMethod != null)
+                {
+                    delivery.DeliveryMethod = delivery.ActualDeliveryMethod.Value;
+                }
                 if (!string.IsNullOrWhiteSpace(delivery.AllPayLogisticsID) &&
                     (!(delivery.DeliveryMethod is EnumValues.DeliveryMethod.SelfPickup ||
                      delivery.DeliveryMethod is EnumValues.DeliveryMethod.HomeDelivery ||
