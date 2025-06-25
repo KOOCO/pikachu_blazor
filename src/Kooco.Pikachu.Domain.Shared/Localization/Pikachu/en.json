@@ -1603,6 +1603,8 @@
     "LimitPerOrder": "Limit Per Order",
     "DisplayPrice": "Display Price",
     "ProductId": "Product",
-    "ProductCondition": "Product Condition"
+    "ProductCondition": "Product Condition",
+    "FreeOrder": "Free Order",
+    "NotIssued": "Not Issued"
   }
 }

@@ -1578,6 +1578,8 @@
     "View": "查看紀錄",
     "StockType": "選擇庫存類別",
     "ActionType": "選擇操作",
-    "AdjustStockAmount": "數量"
+    "AdjustStockAmount": "數量",
+    "FreeOrder": "免費訂單",
+    "NotIssued": "不開立"
   }
 }
