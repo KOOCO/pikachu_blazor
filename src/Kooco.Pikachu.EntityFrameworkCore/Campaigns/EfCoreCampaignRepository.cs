@@ -52,6 +52,7 @@ public class EfCoreCampaignRepository : EfCoreRepository<PikachuDbContext, Campa
             .Include(c => c.AddOnProduct)
             .Include(c => c.GroupBuys)
             .Include(c => c.Products)
+            .Include(c => c.UseableCampaigns)
             .OrderBy(string.IsNullOrWhiteSpace(sorting) ? CampaignConsts.DefaultSorting : sorting)
             .PageBy(skipCount, maxResultCount)
             .ToListAsync();
