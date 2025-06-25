@@ -1318,7 +1318,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
                     SenderMobile = TCatLogistics.SenderPhoneNumber,
                     SenderZipCode = TCatLogistics.SenderPostalCode,
                     SenderAddress = TCatLogistics.SenderAddress,
-                    IsCollection = order.PaymentMethod is PaymentMethods.CashOnDelivery ? "Y" : "N",
+                    IsCollection = order.PaymentMethod is PaymentMethods.CashOnDelivery && collectionAmount > 0 ? "Y" : "N",
                     CollectionAmount = collectionAmount,
                     Memo = string.Empty
                 }
@@ -1341,11 +1341,11 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
 
             try
             {
-            using (var uow = UnitOfWorkManager.Begin(
-               requiresNew: true, isTransactional: false
-           ))
-            {
-                var newOrderDelivery = await _deliveryRepository.GetAsync(orderDeliveryId);
+           // using (var uow = UnitOfWorkManager.Begin(
+           //    requiresNew: true, isTransactional: false
+           //))
+           {
+                var newOrderDelivery = orderDelivery;// await _deliveryRepository.GetAsync(orderDeliveryId);
                 newOrderDelivery.SrvTranId = printObtB2SResponse.SrvTranId;
                 newOrderDelivery.FileNo = printObtB2SResponse.Data.FileNo;
                 newOrderDelivery.AllPayLogisticsID = printObtB2SResponse.Data.Orders.First().OBTNumber;
@@ -1363,7 +1363,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
 
 
                 order.ShippingStatus = ShippingStatus.ToBeShipped;
-                await uow.SaveChangesAsync();
+                //await uow.SaveChangesAsync();
                 await _orderRepository.UpdateAsync(order);
                 // **Get Current User (Editor)**
                 var currentUserId = CurrentUser.Id ?? Guid.Empty;
