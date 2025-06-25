@@ -7,27 +7,24 @@ namespace Kooco.Pikachu.Campaigns;
 
 public class UseableCampaign : Entity<Guid>, IMultiTenant
 {
-    public Guid UseableCampaignGroupId { get; set; }
+    public Guid CampaignId { get; set; }
     public Guid AllowedCampaignId { get; set; }
     public PromotionModule PromotionModule { get; set; }
     public Guid? TenantId { get; set; }
 
-    [ForeignKey(nameof(UseableCampaignGroupId))]
-    public virtual UseableCampaignGroup UseableCampaignGroup { get; set; }
-
-    [ForeignKey(nameof(AllowedCampaignId))]
-    public virtual Campaign AllowedCampaign { get; set; }
+    [ForeignKey(nameof(CampaignId))]
+    public virtual Campaign Campaign { get; set; }
 
     private UseableCampaign() { }
 
     public UseableCampaign(
         Guid id,
-        Guid useableCampaignGroupId,
+        Guid campaignId,
         Guid allowedCampaignId,
         PromotionModule promotionModule
         ) : base(id)
     {
-        UseableCampaignGroupId = useableCampaignGroupId;
+        CampaignId = campaignId;
         AllowedCampaignId = allowedCampaignId;
         PromotionModule = promotionModule;
     }

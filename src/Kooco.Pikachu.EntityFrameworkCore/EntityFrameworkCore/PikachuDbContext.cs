@@ -329,7 +329,7 @@ public class PikachuDbContext(DbContextOptions<PikachuDbContext> options) :
         {
             b.ToTable(PikachuConsts.DbTablePrefix + "AppliedCampaigns", PikachuConsts.DbSchema);
             b.ConfigureByConvention();
-            
+
             b.HasOne(x => x.Order).WithMany(x => x.AppliedCampaigns).HasForeignKey(x => x.OrderId);
             b.HasOne(x => x.Campaign).WithMany().HasForeignKey(x => x.CampaignId);
         });
@@ -805,10 +805,6 @@ public class PikachuDbContext(DbContextOptions<PikachuDbContext> options) :
                 .WithOne(x => x.Campaign)
                 .HasForeignKey(x => x.CampaignId)
                 .OnDelete(DeleteBehavior.Cascade);
-
-            b.HasMany(x => x.UseableCampaigns)
-                .WithOne(x => x.Campaign)
-                .HasForeignKey(x => x.CampaignId);
         });
 
         builder.Entity<UseableCampaign>(b =>
@@ -816,21 +812,10 @@ public class PikachuDbContext(DbContextOptions<PikachuDbContext> options) :
             b.ToTable(PikachuConsts.DbTablePrefix + "UseableCampaigns", PikachuConsts.DbSchema);
             b.ConfigureByConvention();
 
-            b.Property(x => x.PromotionModule)
-                .IsRequired();
-
             b.HasOne(x => x.Campaign)
-                .WithMany(c => c.UseableCampaigns)
+                .WithMany(x => x.UseableCampaigns)
                 .HasForeignKey(x => x.CampaignId)
                 .OnDelete(DeleteBehavior.Cascade);
-
-            b.HasOne(x => x.AllowedCampaign)
-                .WithMany()
-                .HasForeignKey(x => x.AllowedCampaignId)
-                .OnDelete(DeleteBehavior.Cascade);
-
-            b.HasIndex(x => new { x.CampaignId, x.AllowedCampaignId, x.PromotionModule })
-                .IsUnique();
         });
 
         builder.Entity<CampaignDiscount>(b =>

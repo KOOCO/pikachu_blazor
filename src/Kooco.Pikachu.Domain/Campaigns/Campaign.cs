@@ -19,26 +19,38 @@ public class Campaign : FullAuditedAggregateRoot<Guid>, IMultiTenant
     public PromotionModule PromotionModule { get; set; }
     public bool ApplyToAllGroupBuys { get; set; }
     public bool? ApplyToAllProducts { get; private set; }
+    public bool UseableWithAllDiscounts { get; internal set; }
+    public bool UseableWithAllShoppingCredits { get; internal set; }
+    public bool UseableWithAllAddOnProducts { get; internal set; }
     public bool IsEnabled { get; set; }
     public Guid? TenantId { get; set; }
     public virtual ICollection<CampaignGroupBuy> GroupBuys { get; set; } = [];
     public virtual ICollection<CampaignProduct> Products { get; set; } = [];
-    public virtual UseableCampaign UseableCampaign { get; set; }
     public virtual CampaignDiscount Discount { get; internal set; }
     public virtual CampaignShoppingCredit ShoppingCredit { get; internal set; }
     public virtual CampaignAddOnProduct AddOnProduct { get; internal set; }
-
+    public virtual ICollection<UseableCampaign> UseableCampaigns { get; set; } = [];
 
     [NotMapped]
-    public IEnumerable<string> TargetAudience
-    {
-        get
-        {
-            return !string.IsNullOrWhiteSpace(TargetAudienceJson)
+    public IEnumerable<string> TargetAudience => 
+        !string.IsNullOrWhiteSpace(TargetAudienceJson)
                 ? JsonSerializer.Deserialize<List<string>>(TargetAudienceJson)!
                 : [];
-        }
-    }
+
+    [NotMapped]
+    public virtual IEnumerable<UseableCampaign> AllowedDiscounts =>
+        UseableCampaigns
+            .Where(x => x.PromotionModule == PromotionModule.Discount);
+
+    [NotMapped]
+    public virtual IEnumerable<UseableCampaign> AllowedShoppingCredits =>
+        UseableCampaigns
+            .Where(x => x.PromotionModule == PromotionModule.ShoppingCredit);
+
+    [NotMapped]
+    public virtual IEnumerable<UseableCampaign> AllowedAddOnProducts =>
+        UseableCampaigns
+            .Where(x => x.PromotionModule == PromotionModule.AddOnProduct);
 
     private Campaign() { }
 
@@ -99,6 +111,24 @@ public class Campaign : FullAuditedAggregateRoot<Guid>, IMultiTenant
         var product = new CampaignProduct(id, Id, productId);
         Products.Add(product);
         return product;
+    }
+    public UseableCampaign AddAllowedDiscount(Guid id, Guid campaignId)
+    {
+        var allowedDiscount = new UseableCampaign(id, Id, campaignId, PromotionModule.Discount);
+        UseableCampaigns.Add(allowedDiscount);
+        return allowedDiscount;
+    }
+    public UseableCampaign AddAllowedShoppingCredit(Guid id, Guid campaignId)
+    {
+        var allowedShoppingCredit = new UseableCampaign(id, Id, campaignId, PromotionModule.ShoppingCredit);
+        UseableCampaigns.Add(allowedShoppingCredit);
+        return allowedShoppingCredit;
+    }
+    public UseableCampaign AddAllowedAddOnProduct(Guid id, Guid campaignId)
+    {
+        var allowedAddOnProduct = new UseableCampaign(id, Id, campaignId, PromotionModule.AddOnProduct);
+        UseableCampaigns.Add(allowedAddOnProduct);
+        return allowedAddOnProduct;
     }
 }
 
