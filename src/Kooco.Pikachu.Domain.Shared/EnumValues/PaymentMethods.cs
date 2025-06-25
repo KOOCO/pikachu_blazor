@@ -9,5 +9,6 @@ public enum PaymentMethods
    CreditCard,
    BankTransfer,
    LinePay,
-   CashOnDelivery
+   CashOnDelivery,
+   FreeOrder
 }

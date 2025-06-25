@@ -1708,7 +1708,10 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
             request.AddParameter("GoodsName", goodsName);
             request.AddParameter("SenderCellPhone", GreenWorld.SenderPhoneNumber);
         }
-        var goodsAmount = Convert.ToInt32((orderDelivery.Items.Sum(x => x.TotalAmount) +order.DeliveryCost)-(order.CreditDeductionAmount+order.DiscountAmount) );
+        var goodsAmount = Convert.ToInt32(
+    (orderDelivery.Items.Sum(x => x.TotalAmount) + order.DeliveryCost)
+    - ((order.CreditDeductionAmount) + (order.DiscountAmount ?? 0))
+);
         request.AddParameter("GoodsAmount", goodsAmount);
         request.AddParameter("SenderName", GreenWorld.SenderName);
         request.AddParameter("ReceiverName", order.RecipientName);

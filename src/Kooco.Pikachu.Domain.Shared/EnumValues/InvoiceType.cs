@@ -3,5 +3,6 @@ public enum InvoiceType
 {
     PersonalInvoice,
     CellphoneInvoice,
-    BusinessInvoice
+    BusinessInvoice,
+    NotIssued
 }

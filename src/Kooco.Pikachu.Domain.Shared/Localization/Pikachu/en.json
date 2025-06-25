@@ -1611,6 +1611,8 @@
     "SelectShoppingCredits": "Select Shopping Credits",
     "SpecificAddOnProducts": "Specific Add-On Products",
     "SelectAddOnProducts": "Select Add-On Products",
-    "ShoppingCredit": "Shopping Credit"
+    "ShoppingCredit": "Shopping Credit",
+    "FreeOrder": "Free Order",
+    "NotIssued": "Not Issued"
   }
 }
