@@ -139,7 +139,10 @@
                                 Field="@nameof(OrderDto.PaymentMethod)"
                                 Caption="@L["PaymentMethod"]">
                     <DisplayTemplate>
-                        @L[context.PaymentMethod?.ToString()]
+                        @if (context.PaymentMethod.HasValue)
+                        {
+                            @L[context.PaymentMethod.ToString()]
+                        }
                     </DisplayTemplate>
                 </DataGridColumn>
                 <DataGridColumn TItem="OrderDto"
