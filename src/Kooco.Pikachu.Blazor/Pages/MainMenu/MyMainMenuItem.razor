@@ -26,16 +26,23 @@
 		<a href="@url" target="@MenuItem.MenuItem.Target"
 		   class="lpx-menu-item-link lpx-menu-item my-2 @(MenuItem.IsActive ? "selected" : "") @cssClass"
 		   id="@MenuItem.MenuItem.ElementId">
-			<span class="lpx-menu-item-icon"><i class="lpx-icon @(MenuItem.MenuItem.Icon ?? "")" aria-hidden="true"></i></span>
+			
+			<span class="lpx-menu-item-icon">
+			
+				<i class="lpx-icon @(MenuItem.MenuItem.Icon ?? "")" aria-hidden="true"></i></span>
 
 			<span class="lpx-menu-item-text hidden-in-hover-trigger">
 				@MenuItem.MenuItem.DisplayName
-				@if (MenuItem.MenuItem.CustomData.TryGetValue("data-notification-count", out var count) && count != null &&
-						count.ToString() != "0")
-				{
-					<span class="notification-badge">@count</span>
-				}
+				
 			</span>
+			@if (MenuItem.MenuItem.CustomData.TryGetValue("data-notification-count", out var count) && count != null &&
+					count.ToString() != "0")
+			{
+				<span style="margin-bottom: 8px;margin-top: 4px;" class="badge rounded-pill bg-danger">
+
+					@count
+				</span>
+			}
 		</a>
 	}
 	else
@@ -43,15 +50,22 @@
 		<a href="@url" target="@MenuItem.MenuItem.Target"
 			class="lpx-menu-item-link lpx-menu-item my-2 @(MenuItem.IsActive ? "selected" : "") @cssClass"
 			id="@MenuItem.MenuItem.ElementId">
-			<span class="lpx-menu-item-icon"><i class="lpx-icon @(MenuItem.MenuItem.Icon ?? "")" aria-hidden="true"></i></span>
+			
+			<span class="lpx-menu-item-icon">
+				
+				<i class="lpx-icon @(MenuItem.MenuItem.Icon ?? "")" aria-hidden="true"></i></span>
 
 			<span class="lpx-menu-item-text hidden-in-hover-trigger">@MenuItem.MenuItem.DisplayName
-				@if (MenuItem.MenuItem.CustomData.TryGetValue("data-notification-count", out var count) && count != null &&
-						count.ToString() != "0")
-				{
-					<span class="notification-badge">@count</span>
-				}
+				
 			</span>
+			@if (MenuItem.MenuItem.CustomData.TryGetValue("data-notification-count", out var count) && count != null &&
+					count.ToString() != "0")
+			{
+				<span style="margin-bottom: 8px;margin-top: 4px;" class="badge rounded-pill bg-danger">
+
+					@count
+				</span>
+			}
 		</a>
 	}
 }
