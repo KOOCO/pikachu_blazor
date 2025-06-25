@@ -94,16 +94,16 @@ public class CampaignManager : DomainService
     }
 
     public async Task<Campaign> UpdateAsync(
-        Campaign campaign, 
-        string name, 
-        DateTime startDate, 
-        DateTime endDate, 
+        Campaign campaign,
+        string name,
+        DateTime startDate,
+        DateTime endDate,
         string? description,
-        IEnumerable<string> targetAudience, 
-        PromotionModule promotionModule, 
+        IEnumerable<string> targetAudience,
+        PromotionModule promotionModule,
         bool applyToAllGroupBuys,
-        IEnumerable<Guid> groupBuyIds, 
-        bool? applyToAllProducts, 
+        IEnumerable<Guid> groupBuyIds,
+        bool? applyToAllProducts,
         IEnumerable<Guid> productIds,
         bool useableWithAllDiscounts,
         IEnumerable<Guid> allowedDiscountIds,
@@ -114,6 +114,10 @@ public class CampaignManager : DomainService
         )
     {
         Check.NotNull(campaign, nameof(campaign));
+        if (promotionModule == PromotionModule.AddOnProduct)
+        {
+            applyToAllProducts = null;
+        }
         if (!targetAudience.Any())
         {
             throw new BusinessException("Required", nameof(targetAudience));
