@@ -1580,6 +1580,20 @@
     "ActionType": "選擇操作",
     "AdjustStockAmount": "數量",
     "FreeOrder": "免費訂單",
-    "NotIssued": "不開立"
+    "NotIssued": "不開立",
+    "AllowToBeUsedWithOtherCampaigns": "允許與其他優惠活動同時使用",
+    "SpecificDiscounts": "特定折扣優惠",
+    "SelectDiscounts": "選擇折扣優惠",
+    "SpecificShoppingCredits": "特定購物金活動",
+    "SelectShoppingCredits": "選擇購物金活動",
+    "SpecificAddOnProducts": "特定加購商品活動",
+    "SelectAddOnProducts": "選擇加購商品活動",
+    "Useable:Discount": "選擇折扣優惠",
+    "Useable:ShoppingCredit": "選擇購物金活動",
+    "Useable:AddOnProduct": "選擇加購商品活動",
+    "Enum:CampaignUsagePolicy.0": "無",
+    "Enum:CampaignUsagePolicy.1": "全部",
+    "Enum:CampaignUsagePolicy.2": "特定",
+    "None": "無"
   }
 }

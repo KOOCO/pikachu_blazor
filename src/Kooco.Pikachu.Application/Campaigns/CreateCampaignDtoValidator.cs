@@ -64,23 +64,23 @@ public class CreateCampaignDtoValidator : AbstractValidator<CreateCampaignDto>
                 .WithMessage(l["TheFieldIsRequired", l[nameof(CreateCampaignDto.ProductIds)]]);
         });
 
-        AddRequiredRule(x => x.UseableWithAllDiscounts, "Discount");
-        AddRequiredRule(x => x.UseableWithAllShoppingCredits, "ShoppingCredit");
-        AddRequiredRule(x => x.UseableWithAllAddOnProducts, "AddOnProduct");
+        AddRequiredRule(x => x.DiscountUsagePolicy, "Discount");
+        AddRequiredRule(x => x.ShoppingCreditUsagePolicy, "ShoppingCredit");
+        AddRequiredRule(x => x.AddOnProductUsagePolicy, "AddOnProduct");
 
         RuleFor(x => x.AllowedDiscountIds)
             .NotEmpty()
-            .When(x => x.UseableWithAllDiscounts == false)
+            .When(x => x.DiscountUsagePolicy == CampaignUsagePolicy.Specific)
             .WithMessage(l["TheFieldIsRequired", l["Discount"]]);
 
         RuleFor(x => x.AllowedShoppingCreditIds)
             .NotEmpty()
-            .When(x => x.UseableWithAllShoppingCredits == false)
+            .When(x => x.ShoppingCreditUsagePolicy == CampaignUsagePolicy.Specific)
             .WithMessage(l["TheFieldIsRequired", l["ShoppingCredit"]]);
 
         RuleFor(x => x.AllowedAddOnProductIds)
             .NotEmpty()
-            .When(x => x.UseableWithAllAddOnProducts == false)
+            .When(x => x.AddOnProductUsagePolicy == CampaignUsagePolicy.Specific)
             .WithMessage(l["TheFieldIsRequired", l["AddOnProduct"]]);
 
         When(x => x.PromotionModule == PromotionModule.Discount, () =>

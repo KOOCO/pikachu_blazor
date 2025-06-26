@@ -27,11 +27,11 @@ public class CampaignBuilder
             _input.GroupBuyIds,
             _input.ApplyToAllProducts,
             _input.ProductIds,
-            Require(_input.UseableWithAllDiscounts, nameof(_input.UseableWithAllDiscounts)),
+            Require(_input.DiscountUsagePolicy, nameof(_input.DiscountUsagePolicy)),
             _input.AllowedDiscountIds,
-            Require(_input.UseableWithAllShoppingCredits, nameof(_input.UseableWithAllShoppingCredits)),
+            Require(_input.ShoppingCreditUsagePolicy, nameof(_input.ShoppingCreditUsagePolicy)),
             _input.AllowedShoppingCreditIds,
-            Require(_input.UseableWithAllAddOnProducts, nameof(_input.UseableWithAllAddOnProducts)),
+            Require(_input.AddOnProductUsagePolicy, nameof(_input.AddOnProductUsagePolicy)),
             _input.AllowedAddOnProductIds
         );
 
@@ -54,11 +54,11 @@ public class CampaignBuilder
             _input.GroupBuyIds,
             _input.ApplyToAllProducts,
             _input.ProductIds,
-            Require(_input.UseableWithAllDiscounts, nameof(_input.UseableWithAllDiscounts)),
+            Require(_input.DiscountUsagePolicy, nameof(_input.DiscountUsagePolicy)),
             _input.AllowedDiscountIds,
-            Require(_input.UseableWithAllShoppingCredits, nameof(_input.UseableWithAllShoppingCredits)),
+            Require(_input.ShoppingCreditUsagePolicy, nameof(_input.ShoppingCreditUsagePolicy)),
             _input.AllowedShoppingCreditIds,
-            Require(_input.UseableWithAllAddOnProducts, nameof(_input.UseableWithAllAddOnProducts)),
+            Require(_input.AddOnProductUsagePolicy, nameof(_input.AddOnProductUsagePolicy)),
             _input.AllowedAddOnProductIds
         );
 

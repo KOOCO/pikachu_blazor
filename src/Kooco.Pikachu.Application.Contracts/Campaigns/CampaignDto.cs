@@ -13,9 +13,9 @@ public class CampaignDto : FullAuditedEntityDto<Guid>
     public PromotionModule PromotionModule { get; set; }
     public bool ApplyToAllGroupBuys { get; set; }
     public bool? ApplyToAllProducts { get; set; }
-    public bool UseableWithAllDiscounts { get; set; }
-    public bool UseableWithAllShoppingCredits { get; set; }
-    public bool UseableWithAllAddOnProducts { get; set; }
+    public CampaignUsagePolicy DiscountUsagePolicy { get; set; }
+    public CampaignUsagePolicy ShoppingCreditUsagePolicy { get; set; }
+    public CampaignUsagePolicy AddOnProductUsagePolicy { get; set; }
     public bool IsEnabled { get; set; }
     public Guid? TenantId { get; set; }
     public virtual ICollection<CampaignGroupBuyDto> GroupBuys { get; set; } = [];

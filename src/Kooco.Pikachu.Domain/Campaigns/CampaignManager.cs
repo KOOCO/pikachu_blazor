@@ -39,11 +39,11 @@ public class CampaignManager : DomainService
         IEnumerable<Guid> groupBuyIds,
         bool? applyToAllProducts,
         IEnumerable<Guid> productIds,
-        bool useableWithAllDiscounts,
+        CampaignUsagePolicy discountUsagePolicy,
         IEnumerable<Guid> allowedDiscountIds,
-        bool useableWithAllShoppingCredits,
+        CampaignUsagePolicy shoppingCreditUsagePolicy,
         IEnumerable<Guid> allowedShoppingCreditIds,
-        bool useableWithAllAddOnProducts,
+        CampaignUsagePolicy addOnProductUsagePolicy,
         IEnumerable<Guid> allowedAddOnProductIds,
         bool autoSave = true
         )
@@ -86,9 +86,9 @@ public class CampaignManager : DomainService
 
         AddGroupBuys(campaign, groupBuyIds, false);
         AddProducts(campaign, productIds, false);
-        AddAllowedDiscounts(campaign, useableWithAllDiscounts, allowedDiscountIds);
-        AddAllowedShoppingCredits(campaign, useableWithAllShoppingCredits, allowedShoppingCreditIds);
-        AddAllowedAddOnProducts(campaign, useableWithAllAddOnProducts, allowedAddOnProductIds);
+        AddAllowedDiscounts(campaign, discountUsagePolicy, allowedDiscountIds);
+        AddAllowedShoppingCredits(campaign, shoppingCreditUsagePolicy, allowedShoppingCreditIds);
+        AddAllowedAddOnProducts(campaign, addOnProductUsagePolicy, allowedAddOnProductIds);
 
         return campaign;
     }
@@ -105,11 +105,11 @@ public class CampaignManager : DomainService
         IEnumerable<Guid> groupBuyIds,
         bool? applyToAllProducts,
         IEnumerable<Guid> productIds,
-        bool useableWithAllDiscounts,
+        CampaignUsagePolicy discountUsagePolicy,
         IEnumerable<Guid> allowedDiscountIds,
-        bool useableWithAllShoppingCredits,
+        CampaignUsagePolicy shoppingCreditUsagePolicy,
         IEnumerable<Guid> allowedShoppingCreditIds,
-        bool useableWithAllAddOnProducts,
+        CampaignUsagePolicy addOnProductUsagePolicy,
         IEnumerable<Guid> allowedAddOnProductIds
         )
     {
@@ -152,9 +152,9 @@ public class CampaignManager : DomainService
 
         AddGroupBuys(campaign, groupBuyIds, false);
         AddProducts(campaign, productIds, false);
-        AddAllowedDiscounts(campaign, useableWithAllDiscounts, allowedDiscountIds);
-        AddAllowedShoppingCredits(campaign, useableWithAllShoppingCredits, allowedShoppingCreditIds);
-        AddAllowedAddOnProducts(campaign, useableWithAllAddOnProducts, allowedAddOnProductIds);
+        AddAllowedDiscounts(campaign, discountUsagePolicy, allowedDiscountIds);
+        AddAllowedShoppingCredits(campaign, shoppingCreditUsagePolicy, allowedShoppingCreditIds);
+        AddAllowedAddOnProducts(campaign, addOnProductUsagePolicy, allowedAddOnProductIds);
 
         if (campaign.PromotionModule != oldPromotionModule)
         {
@@ -237,165 +237,98 @@ public class CampaignManager : DomainService
         }
     }
 
-    public void AddAllowedDiscounts(Campaign campaign, bool useableWithAllDiscounts, IEnumerable<Guid> allowedDiscountIds)
+    public void AddAllowedDiscounts(
+        Campaign campaign,
+        CampaignUsagePolicy discountUsagePolicy,
+        IEnumerable<Guid> allowedDiscountIds
+        )
     {
-        if (!useableWithAllDiscounts && !allowedDiscountIds.Any())
+        if (discountUsagePolicy == CampaignUsagePolicy.Specific && !allowedDiscountIds.Any())
         {
             throw new BusinessException("Required", nameof(allowedDiscountIds));
         }
 
-        campaign.UseableWithAllDiscounts = useableWithAllDiscounts;
-
-        campaign.UseableCampaigns.RemoveAll(uc =>
-            uc.PromotionModule == PromotionModule.Discount
-            && !allowedDiscountIds.Contains(uc.AllowedCampaignId)
-            );
-
-        if (campaign.UseableWithAllDiscounts)
-        {
-            campaign.UseableCampaigns.RemoveAll(uc => uc.PromotionModule == PromotionModule.Discount);
-        }
-        else
-        {
-            foreach (var allowedDiscountId in allowedDiscountIds)
-            {
-                AddAllowedDiscount(campaign, allowedDiscountId);
-            }
-        }
+        campaign.DiscountUsagePolicy = discountUsagePolicy;
+        
+        AddUseableCampaigns(campaign, allowedDiscountIds, PromotionModule.Discount, discountUsagePolicy);
     }
 
-    public UseableCampaign AddAllowedDiscount(Campaign campaign, Guid allowedDiscountId)
+    public void AddAllowedShoppingCredits(
+        Campaign campaign,
+        CampaignUsagePolicy shoppingCreditUsagePolicy,
+        IEnumerable<Guid> allowedShoppingCreditIds
+        )
     {
-        Check.NotNull(campaign, nameof(Campaign));
-        Check.NotDefaultOrNull<Guid>(allowedDiscountId, nameof(allowedDiscountId));
-
-        campaign.UseableCampaigns
-            .RemoveAll(uc =>
-            uc.PromotionModule != PromotionModule.Discount
-            && uc.AllowedCampaignId == allowedDiscountId
-            );
-
-        var alreadyAdded = campaign.UseableCampaigns
-            .FirstOrDefault(uc =>
-            uc.PromotionModule == PromotionModule.Discount
-            && uc.AllowedCampaignId == allowedDiscountId
-            );
-
-        if (alreadyAdded == null)
-        {
-            return campaign.AddAllowedDiscount(GuidGenerator.Create(), allowedDiscountId);
-        }
-        else
-        {
-            return alreadyAdded;
-        }
-    }
-
-    public void AddAllowedShoppingCredits(Campaign campaign, bool useableWithAllShoppingCredits, IEnumerable<Guid> allowedShoppingCreditIds)
-    {
-        if (!useableWithAllShoppingCredits && !allowedShoppingCreditIds.Any())
+        if (shoppingCreditUsagePolicy == CampaignUsagePolicy.Specific && !allowedShoppingCreditIds.Any())
         {
             throw new BusinessException("Required", nameof(allowedShoppingCreditIds));
         }
 
-        campaign.UseableWithAllShoppingCredits = useableWithAllShoppingCredits;
-
-        campaign.UseableCampaigns.RemoveAll(uc =>
-            uc.PromotionModule == PromotionModule.ShoppingCredit
-            && !allowedShoppingCreditIds.Contains(uc.AllowedCampaignId)
-            );
-
-        if (campaign.UseableWithAllShoppingCredits)
-        {
-            campaign.UseableCampaigns.RemoveAll(uc => uc.PromotionModule == PromotionModule.ShoppingCredit);
-        }
-        else
-        {
-            foreach (var allowedShoppingCreditId in allowedShoppingCreditIds)
-            {
-                AddAllowedShoppingCredit(campaign, allowedShoppingCreditId);
-            }
-        }
+        campaign.ShoppingCreditUsagePolicy = shoppingCreditUsagePolicy;
+        
+        AddUseableCampaigns(campaign, allowedShoppingCreditIds, PromotionModule.ShoppingCredit, shoppingCreditUsagePolicy);
     }
 
-    public UseableCampaign AddAllowedShoppingCredit(Campaign campaign, Guid allowedShoppingCreditId)
+    public void AddAllowedAddOnProducts(
+        Campaign campaign,
+        CampaignUsagePolicy addOnUsagePolicy,
+        IEnumerable<Guid> allowedAddOnProductIds
+        )
     {
-        Check.NotNull(campaign, nameof(Campaign));
-        Check.NotDefaultOrNull<Guid>(allowedShoppingCreditId, nameof(allowedShoppingCreditId));
-
-        campaign.UseableCampaigns
-            .RemoveAll(uc =>
-            uc.PromotionModule != PromotionModule.ShoppingCredit
-            && uc.AllowedCampaignId == allowedShoppingCreditId
-            );
-
-        var alreadyAdded = campaign.UseableCampaigns
-            .FirstOrDefault(uc =>
-            uc.PromotionModule == PromotionModule.ShoppingCredit
-            && uc.AllowedCampaignId == allowedShoppingCreditId
-            );
-
-        if (alreadyAdded == null)
-        {
-            return campaign.AddAllowedShoppingCredit(GuidGenerator.Create(), allowedShoppingCreditId);
-        }
-        else
-        {
-            return alreadyAdded;
-        }
-    }
-
-    public void AddAllowedAddOnProducts(Campaign campaign, bool useableWithAllAddOnProducts, IEnumerable<Guid> allowedAddOnProductIds)
-    {
-        if (!useableWithAllAddOnProducts && !allowedAddOnProductIds.Any())
+        if (addOnUsagePolicy == CampaignUsagePolicy.Specific && !allowedAddOnProductIds.Any())
         {
             throw new BusinessException("Required", nameof(allowedAddOnProductIds));
         }
 
-        campaign.UseableWithAllAddOnProducts = useableWithAllAddOnProducts;
+        campaign.AddOnProductUsagePolicy = addOnUsagePolicy;
 
-        campaign.UseableCampaigns.RemoveAll(uc =>
-            uc.PromotionModule == PromotionModule.AddOnProduct
-            && !allowedAddOnProductIds.Contains(uc.AllowedCampaignId)
-            );
-
-        if (campaign.UseableWithAllAddOnProducts)
-        {
-            campaign.UseableCampaigns.RemoveAll(uc => uc.PromotionModule == PromotionModule.AddOnProduct);
-        }
-        else
-        {
-            foreach (var allowedAddOnProductId in allowedAddOnProductIds)
-            {
-                AddAllowedAddOnProduct(campaign, allowedAddOnProductId);
-            }
-        }
+        AddUseableCampaigns(campaign, allowedAddOnProductIds, PromotionModule.AddOnProduct, addOnUsagePolicy);
     }
 
-    public UseableCampaign AddAllowedAddOnProduct(Campaign campaign, Guid allowedAddOnProductId)
+    public void AddUseableCampaigns(
+        Campaign campaign,
+        IEnumerable<Guid> allowedIds,
+        PromotionModule promotionModule,
+        CampaignUsagePolicy usagePolicy
+        )
     {
         Check.NotNull(campaign, nameof(Campaign));
-        Check.NotDefaultOrNull<Guid>(allowedAddOnProductId, nameof(allowedAddOnProductId));
 
-        campaign.UseableCampaigns
-            .RemoveAll(uc =>
-            uc.PromotionModule != PromotionModule.AddOnProduct
-            && uc.AllowedCampaignId == allowedAddOnProductId
-            );
-
-        var alreadyAdded = campaign.UseableCampaigns
-            .FirstOrDefault(uc =>
-            uc.PromotionModule == PromotionModule.AddOnProduct
-            && uc.AllowedCampaignId == allowedAddOnProductId
-            );
-
-        if (alreadyAdded == null)
+        if (usagePolicy != CampaignUsagePolicy.Specific)
         {
-            return campaign.AddAllowedAddOnProduct(GuidGenerator.Create(), allowedAddOnProductId);
+            campaign.UseableCampaigns.RemoveAll(uc => uc.PromotionModule == promotionModule);
         }
         else
         {
-            return alreadyAdded;
+            campaign.UseableCampaigns.RemoveAll(uc =>
+                uc.PromotionModule == promotionModule
+                && !allowedIds.Contains(uc.AllowedCampaignId)
+                );
+
+            foreach (var allowedId in allowedIds)
+            {
+                Check.NotDefaultOrNull<Guid>(allowedId, nameof(allowedId));
+
+                campaign.UseableCampaigns.RemoveAll(uc =>
+                    uc.PromotionModule != promotionModule
+                    && uc.AllowedCampaignId == allowedId
+                    );
+
+                var alreadyAdded = campaign.UseableCampaigns
+                    .FirstOrDefault(uc =>
+                    uc.PromotionModule == promotionModule
+                    && uc.AllowedCampaignId == allowedId
+                    );
+
+                if (alreadyAdded == null)
+                {
+                    campaign.AddUseableCampaign(
+                        GuidGenerator.Create(),
+                        allowedId,
+                        promotionModule
+                        );
+                }
+            }
         }
     }
 

@@ -1612,6 +1612,12 @@
     "SpecificAddOnProducts": "Specific Add-On Products",
     "SelectAddOnProducts": "Select Add-On Products",
     "ShoppingCredit": "Shopping Credit",
+    "Enum:CampaignUsagePolicy.0": "None",
+    "Enum:CampaignUsagePolicy.1": "All",
+    "Enum:CampaignUsagePolicy.2": "Specific",
+    "Useable:Discount": "Discount",
+    "Useable:ShoppingCredit": "Shopping Credit",
+    "Useable:AddOnProduct": "Add-On Product",
     "FreeOrder": "Free Order",
     "NotIssued": "Not Issued"
   }

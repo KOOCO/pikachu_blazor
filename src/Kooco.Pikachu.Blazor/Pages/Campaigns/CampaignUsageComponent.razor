@@ -9,17 +9,18 @@
 
 <Validation MessageLocalizer="@LH.Localize">
     <Field>
-        <FieldLabel required>@L["Discount"]</FieldLabel>
-        <RadioGroup Orientation="Orientation.Vertical" TValue="bool?" Name="DiscountUsage" @bind-CheckedValue="@Entity.UseableWithAllDiscounts">
+        <FieldLabel required>@L["Useable:Discount"]</FieldLabel>
+        <RadioGroup Orientation="Orientation.Vertical" TValue="CampaignUsagePolicy?" Name="DiscountUsage" @bind-CheckedValue="@Entity.DiscountUsagePolicy">
             <ChildContent>
-                <Radio TValue="bool?" Value="@true">@L["All"]</Radio>
-                <Radio TValue="bool?" Value="@false">@L["SpecificDiscounts"]</Radio>
+                <Radio TValue="CampaignUsagePolicy?" Value="@CampaignUsagePolicy.None">@L["None"]</Radio>
+                <Radio TValue="CampaignUsagePolicy?" Value="@CampaignUsagePolicy.All">@L["All"]</Radio>
+                <Radio TValue="CampaignUsagePolicy?" Value="@CampaignUsagePolicy.Specific">@L["SpecificDiscounts"]</Radio>
             </ChildContent>
             <Feedback>
                 <ValidationError />
             </Feedback>
         </RadioGroup>
-        @if (Entity.UseableWithAllDiscounts == false)
+        @if (Entity.DiscountUsagePolicy == CampaignUsagePolicy.Specific)
         {
             <Field indent mb0>
                 <AntDesign.Select Mode="AntDesign.SelectMode.Multiple"
@@ -48,17 +49,18 @@
 
 <Validation MessageLocalizer="@LH.Localize">
     <Field>
-        <FieldLabel required>@L["ShoppingCredit"]</FieldLabel>
-        <RadioGroup Orientation="Orientation.Vertical" TValue="bool?" Name="ShoppingCreditUsage" @bind-CheckedValue="@Entity.UseableWithAllShoppingCredits">
+        <FieldLabel required>@L["Useable:ShoppingCredit"]</FieldLabel>
+        <RadioGroup Orientation="Orientation.Vertical" TValue="CampaignUsagePolicy?" Name="ShoppingCreditUsage" @bind-CheckedValue="@Entity.ShoppingCreditUsagePolicy">
             <ChildContent>
-                <Radio TValue="bool?" Value="@true">@L["All"]</Radio>
-                <Radio TValue="bool?" Value="@false">@L["SpecificShoppingCredits"]</Radio>
+                <Radio TValue="CampaignUsagePolicy?" Value="@CampaignUsagePolicy.None">@L["None"]</Radio>
+                <Radio TValue="CampaignUsagePolicy?" Value="@CampaignUsagePolicy.All">@L["All"]</Radio>
+                <Radio TValue="CampaignUsagePolicy?" Value="@CampaignUsagePolicy.Specific">@L["SpecificShoppingCredits"]</Radio>
             </ChildContent>
             <Feedback>
                 <ValidationError />
             </Feedback>
         </RadioGroup>
-        @if (Entity.UseableWithAllShoppingCredits == false)
+        @if (Entity.ShoppingCreditUsagePolicy == CampaignUsagePolicy.Specific)
         {
             <Field indent mb0>
                 <AntDesign.Select Mode="AntDesign.SelectMode.Multiple"
@@ -87,17 +89,18 @@
 
 <Validation MessageLocalizer="@LH.Localize">
     <Field>
-        <FieldLabel required>@L["AddOnProduct"]</FieldLabel>
-        <RadioGroup Orientation="Orientation.Vertical" TValue="bool?" Name="AddOnProductUsage" @bind-CheckedValue="@Entity.UseableWithAllAddOnProducts">
+        <FieldLabel required>@L["Useable:AddOnProduct"]</FieldLabel>
+        <RadioGroup Orientation="Orientation.Vertical" TValue="CampaignUsagePolicy?" Name="AddOnProductUsage" @bind-CheckedValue="@Entity.AddOnProductUsagePolicy">
             <ChildContent>
-                <Radio TValue="bool?" Value="@true">@L["All"]</Radio>
-                <Radio TValue="bool?" Value="@false">@L["SpecificAddOnProducts"]</Radio>
+                <Radio TValue="CampaignUsagePolicy?" Value="@CampaignUsagePolicy.None">@L["None"]</Radio>
+                <Radio TValue="CampaignUsagePolicy?" Value="@CampaignUsagePolicy.All">@L["All"]</Radio>
+                <Radio TValue="CampaignUsagePolicy?" Value="@CampaignUsagePolicy.Specific">@L["SpecificAddOnProducts"]</Radio>
             </ChildContent>
             <Feedback>
                 <ValidationError />
             </Feedback>
         </RadioGroup>
-        @if (Entity.UseableWithAllAddOnProducts == false)
+        @if (Entity.AddOnProductUsagePolicy == CampaignUsagePolicy.Specific)
         {
             <Field indent mb0>
                 <AntDesign.Select Mode="AntDesign.SelectMode.Multiple"

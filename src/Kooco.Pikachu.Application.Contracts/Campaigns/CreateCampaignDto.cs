@@ -18,13 +18,13 @@ public class CreateCampaignDto
     public bool? ApplyToAllProducts { get; set; }
     public IEnumerable<Guid> ProductIds { get; set; } = [];
 
-    public bool? UseableWithAllDiscounts { get; set; }
+    public CampaignUsagePolicy? DiscountUsagePolicy { get; set; }
     public IEnumerable<Guid> AllowedDiscountIds { get; set; } = [];
 
-    public bool? UseableWithAllShoppingCredits { get; set; }
+    public CampaignUsagePolicy? ShoppingCreditUsagePolicy { get; set; }
     public IEnumerable<Guid> AllowedShoppingCreditIds { get; set; } = [];
 
-    public bool? UseableWithAllAddOnProducts { get; set; }
+    public CampaignUsagePolicy? AddOnProductUsagePolicy { get; set; }
     public IEnumerable<Guid> AllowedAddOnProductIds { get; set; } = [];
 
     public CreateCampaignDiscountDto Discount { get; set; } = new();

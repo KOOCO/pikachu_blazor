@@ -12,6 +12,7 @@ using Kooco.Pikachu.OrderItems;
 using Kooco.Pikachu.Orders.Interfaces;
 using Kooco.Pikachu.Orders.Repositories;
 using Kooco.Pikachu.Orders.Services;
+using Kooco.Pikachu.OrderTradeNos;
 using Kooco.Pikachu.StoreLogisticOrders;
 using Kooco.Pikachu.Tenants;
 using Kooco.Pikachu.Tenants.Repositories;
@@ -60,6 +61,7 @@ namespace Kooco.Pikachu.StoreLogisticsOrders
         private readonly IDataFilter<IMultiTenant> _multiTenantFilter;
         private readonly Mock<OrderHistoryManager> _orderManager;
         private readonly Mock<IRepository<DeliveryTemperatureCost, Guid>> _deliveryTemperatureCostRepositoryMock;
+        private readonly Mock<IOrderTradeNoRepository> _orderTradeNoRepository;
 
         public StoreLogisticsOrderAppServiceTest()
         {
@@ -80,6 +82,7 @@ namespace Kooco.Pikachu.StoreLogisticsOrders
             _multiTenantFilter = GetRequiredService<IDataFilter<IMultiTenant>>();
             _orderManager = new Mock<OrderHistoryManager>();
             _deliveryTemperatureCostRepositoryMock = new Mock<IRepository<DeliveryTemperatureCost, Guid>>();
+            _orderTradeNoRepository = new Mock<IOrderTradeNoRepository>();
 
             _service = new StoreLogisticsOrderAppService(
                 _orderDeliveryRepositoryMock.Object,
@@ -97,7 +100,8 @@ namespace Kooco.Pikachu.StoreLogisticsOrders
                 _tenantSettingsAppServiceMock.Object,
                 _emailAppServiceMock.Object,
                 _orderManager.Object,
-                _deliveryTemperatureCostRepositoryMock.Object
+                _deliveryTemperatureCostRepositoryMock.Object,
+                _orderTradeNoRepository.Object
             );
         }
         private void SetProtectedProperty<T>(T obj, string propertyName, object value)

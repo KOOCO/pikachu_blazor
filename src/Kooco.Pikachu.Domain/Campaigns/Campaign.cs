@@ -19,9 +19,9 @@ public class Campaign : FullAuditedAggregateRoot<Guid>, IMultiTenant
     public PromotionModule PromotionModule { get; set; }
     public bool ApplyToAllGroupBuys { get; set; }
     public bool? ApplyToAllProducts { get; private set; }
-    public bool UseableWithAllDiscounts { get; internal set; }
-    public bool UseableWithAllShoppingCredits { get; internal set; }
-    public bool UseableWithAllAddOnProducts { get; internal set; }
+    public CampaignUsagePolicy DiscountUsagePolicy { get; internal set; }
+    public CampaignUsagePolicy ShoppingCreditUsagePolicy { get; internal set; }
+    public CampaignUsagePolicy AddOnProductUsagePolicy { get; internal set; }
     public bool IsEnabled { get; set; }
     public Guid? TenantId { get; set; }
     public virtual ICollection<CampaignGroupBuy> GroupBuys { get; set; } = [];
@@ -32,7 +32,7 @@ public class Campaign : FullAuditedAggregateRoot<Guid>, IMultiTenant
     public virtual ICollection<UseableCampaign> UseableCampaigns { get; set; } = [];
 
     [NotMapped]
-    public IEnumerable<string> TargetAudience => 
+    public IEnumerable<string> TargetAudience =>
         !string.IsNullOrWhiteSpace(TargetAudienceJson)
                 ? JsonSerializer.Deserialize<List<string>>(TargetAudienceJson)!
                 : [];
@@ -114,21 +114,21 @@ public class Campaign : FullAuditedAggregateRoot<Guid>, IMultiTenant
     }
     public UseableCampaign AddAllowedDiscount(Guid id, Guid campaignId)
     {
-        var allowedDiscount = new UseableCampaign(id, Id, campaignId, PromotionModule.Discount);
-        UseableCampaigns.Add(allowedDiscount);
-        return allowedDiscount;
+        return AddUseableCampaign(id, campaignId, PromotionModule.Discount);
     }
     public UseableCampaign AddAllowedShoppingCredit(Guid id, Guid campaignId)
     {
-        var allowedShoppingCredit = new UseableCampaign(id, Id, campaignId, PromotionModule.ShoppingCredit);
-        UseableCampaigns.Add(allowedShoppingCredit);
-        return allowedShoppingCredit;
+        return AddUseableCampaign(id, campaignId, PromotionModule.ShoppingCredit);
     }
     public UseableCampaign AddAllowedAddOnProduct(Guid id, Guid campaignId)
     {
-        var allowedAddOnProduct = new UseableCampaign(id, Id, campaignId, PromotionModule.AddOnProduct);
-        UseableCampaigns.Add(allowedAddOnProduct);
-        return allowedAddOnProduct;
+        return AddUseableCampaign(id, campaignId, PromotionModule.AddOnProduct);
+    }
+    public UseableCampaign AddUseableCampaign(Guid id, Guid campaignId, PromotionModule promotionModule)
+    {
+        var useableCampaign = new UseableCampaign(id, Id, campaignId, promotionModule);
+        UseableCampaigns.Add(useableCampaign);
+        return useableCampaign;
     }
 }
 
