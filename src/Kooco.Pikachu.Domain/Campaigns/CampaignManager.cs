@@ -346,18 +346,41 @@ public class CampaignManager : DomainService
         return campaign.Discount;
     }
 
-    public CampaignShoppingCredit AddShoppingCredit(Campaign campaign, bool canExpire, int? validForDays,
-        CalculationMethod calculationMethod, double? calculationPercentage, double? capAmount, bool applicableToAddOnProducts,
-        bool applicableToShippingFees, int budget, List<(int spend, int pointsToReceive)> stageSettings)
+    public CampaignShoppingCredit AddShoppingCredit(
+        Campaign campaign, 
+        bool canExpire, 
+        int? validForDays,
+        CalculationMethod calculationMethod, 
+        double? calculationPercentage, 
+        double? capAmount, 
+        bool applicableToAddOnProducts,
+        bool applicableToShippingFees, 
+        int budget,
+        CampaignSpendCondition spendCondition,
+        int? threshold,
+        List<(int spend, int pointsToReceive)> stageSettings
+        )
     {
         Check.NotNull(campaign, nameof(Campaign));
         EnsurePromotionModule(campaign, PromotionModule.ShoppingCredit);
 
         int maxPointsToReceive = stageSettings.OrderByDescending(ss => ss.pointsToReceive).Select(ss => ss.pointsToReceive).FirstOrDefault();
 
-        var shoppingCredit = new CampaignShoppingCredit(GuidGenerator.Create(), campaign.Id, canExpire,
-            validForDays, calculationMethod, calculationPercentage, capAmount, applicableToAddOnProducts,
-            applicableToShippingFees, budget, maxPointsToReceive);
+        var shoppingCredit = new CampaignShoppingCredit(
+            GuidGenerator.Create(), 
+            campaign.Id, 
+            canExpire,
+            validForDays, 
+            calculationMethod, 
+            calculationPercentage, 
+            capAmount, 
+            applicableToAddOnProducts,
+            applicableToShippingFees, 
+            budget, 
+            maxPointsToReceive,
+            spendCondition,
+            threshold
+            );
 
         if (calculationMethod == CalculationMethod.StagedCalculation)
         {
@@ -371,16 +394,35 @@ public class CampaignManager : DomainService
         return shoppingCredit;
     }
 
-    public CampaignAddOnProduct AddAddOnProduct(Campaign campaign, Guid productId, Guid itemDetailId, int productAmount, int limitPerOrder,
-        bool isUnlimitedQuantity, int? availableQuantity, AddOnDisplayPrice displayPrice, AddOnProductCondition productCondition,
-        int? threshold)
+    public CampaignAddOnProduct AddAddOnProduct(
+        Campaign campaign, 
+        Guid productId, 
+        Guid itemDetailId, 
+        int productAmount, 
+        int limitPerOrder,
+        bool isUnlimitedQuantity, 
+        int? availableQuantity, 
+        AddOnDisplayPrice displayPrice, 
+        CampaignSpendCondition spendCondition,
+        int? threshold
+        )
     {
         Check.NotNull(campaign, nameof(Campaign));
         EnsurePromotionModule(campaign, PromotionModule.AddOnProduct);
 
-        campaign.AddOnProduct = new CampaignAddOnProduct(GuidGenerator.Create(), campaign.Id, productId,
-            itemDetailId, productAmount, limitPerOrder, isUnlimitedQuantity, availableQuantity, displayPrice,
-            productCondition, threshold);
+        campaign.AddOnProduct = new CampaignAddOnProduct(
+            GuidGenerator.Create(), 
+            campaign.Id, 
+            productId,
+            itemDetailId, 
+            productAmount, 
+            limitPerOrder, 
+            isUnlimitedQuantity, 
+            availableQuantity, 
+            displayPrice,
+            spendCondition, 
+            threshold
+            );
 
         return campaign.AddOnProduct;
     }

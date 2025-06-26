@@ -14,7 +14,8 @@ public class CreateCampaignShoppingCreditDto
     public bool ApplicableToAddOnProducts { get; set; }
     public bool ApplicableToShippingFees { get; set; }
     public int? Budget { get; set; }
-
+    public CampaignSpendCondition? SpendCondition { get; set; }
+    public int? Threshold { get; set; }
     public int StageSettingsCount { get { return StageSettings?.Count ?? 0; } }
     public bool IsAnyStageSettingSelected { get { return StageSettings?.Any(ss => ss.IsSelected) ?? false; } }
     public void AddStageSetting() => StageSettings?.Add(new());

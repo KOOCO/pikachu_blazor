@@ -17,6 +17,8 @@ public class CampaignShoppingCredit : Entity<Guid>
     public double? CapAmount { get; private set; }
     public bool ApplicableToAddOnProducts { get; set; }
     public bool ApplicableToShippingFees { get; set; }
+    public CampaignSpendCondition SpendCondition { get; private set; }
+    public int? Threshold { get; private set; }
     public int Budget { get; private set; }
     public ICollection<CampaignStageSetting> StageSettings { get; set; }
 
@@ -36,7 +38,9 @@ public class CampaignShoppingCredit : Entity<Guid>
         bool applicableToAddOnProducts,
         bool applicableToShippingFees,
         int budget,
-        int maxPointsToReceive
+        int maxPointsToReceive,
+        CampaignSpendCondition spendCondition,
+        int? threshold
         ) : base(id)
     {
         CampaignId = campaignId;
@@ -45,6 +49,7 @@ public class CampaignShoppingCredit : Entity<Guid>
         ApplicableToAddOnProducts = applicableToAddOnProducts;
         ApplicableToShippingFees = applicableToShippingFees;
         SetBudget(budget);
+        SetSpendCondition(spendCondition, threshold);
         StageSettings = new List<CampaignStageSetting>();
     }
 
@@ -76,6 +81,21 @@ public class CampaignShoppingCredit : Entity<Guid>
         {
             CalculationPercentage = null;
             CapAmount = maxPointsToReceive;
+        }
+    }
+
+    public void SetSpendCondition(CampaignSpendCondition condition, int? threshold)
+    {
+        SpendCondition = condition;
+
+        if (condition == CampaignSpendCondition.MustMeetSpecifiedThreshold)
+        {
+            Check.NotNull(threshold, nameof(Threshold));
+            Threshold = Check.Range(threshold.Value, nameof(Threshold), 0);
+        }
+        else
+        {
+            Threshold = null;
         }
     }
 

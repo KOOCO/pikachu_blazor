@@ -16,7 +16,7 @@ public class CampaignAddOnProduct : Entity<Guid>
     public bool IsUnlimitedQuantity { get; private set; }
     public int? AvailableQuantity { get; private set; }
     public AddOnDisplayPrice DisplayPrice { get; set; }
-    public AddOnProductCondition ProductCondition { get; private set; }
+    public CampaignSpendCondition SpendCondition { get; private set; }
     public int? Threshold { get; private set; }
 
     [ForeignKey(nameof(CampaignId))]
@@ -37,7 +37,7 @@ public class CampaignAddOnProduct : Entity<Guid>
         bool isUnlimitedQuantity,
         int? availableQuantity,
         AddOnDisplayPrice displayPrice,
-        AddOnProductCondition productCondition,
+        CampaignSpendCondition spendCondition,
         int? threshold
         ) : base(id)
     {
@@ -48,7 +48,7 @@ public class CampaignAddOnProduct : Entity<Guid>
         SetOrderLimit(limitPerOrder);
         SetQuantity(isUnlimitedQuantity, availableQuantity);
         DisplayPrice = displayPrice;
-        SetProductCondition(productCondition, threshold);
+        SetSpendCondition(spendCondition, threshold);
     }
 
     public void SetProduct(int productAmount)
@@ -85,11 +85,11 @@ public class CampaignAddOnProduct : Entity<Guid>
         }
     }
 
-    public void SetProductCondition(AddOnProductCondition condition, int? threshold)
+    public void SetSpendCondition(CampaignSpendCondition condition, int? threshold)
     {
-        ProductCondition = condition;
+        SpendCondition = condition;
 
-        if (condition == AddOnProductCondition.MustMeetSpecifiedThreshold)
+        if (condition == CampaignSpendCondition.MustMeetSpecifiedThreshold)
         {
             Check.NotNull(threshold, nameof(Threshold));
             Threshold = Check.Range(threshold.Value, nameof(Threshold), 0);

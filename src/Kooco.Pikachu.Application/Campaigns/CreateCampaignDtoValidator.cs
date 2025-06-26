@@ -277,6 +277,21 @@ public class CreateCampaignShoppingCreditDtoValidator : AbstractValidator<Create
                 .SetValidator(new StageSettingsDtoValidator(l))
                 .When(x => x.StageSettings != null);
         });
+
+        RuleFor(x => x.SpendCondition)
+            .NotNull()
+            .WithMessage(l["TheFieldIsRequired", l[nameof(CreateCampaignShoppingCreditDto.SpendCondition)]]);
+
+        When(x => x.SpendCondition == CampaignSpendCondition.MustMeetSpecifiedThreshold, () =>
+        {
+            RuleFor(x => x.Threshold)
+                .NotNull()
+                .WithMessage(l["TheFieldIsRequired", l[nameof(CreateCampaignShoppingCreditDto.Threshold)]]);
+
+            RuleFor(x => x.Threshold)
+                .GreaterThanOrEqualTo(0)
+                .When(x => x.Threshold != null);
+        });
     }
 }
 
@@ -342,11 +357,11 @@ public class CreateCampaignAddOnProductDtoValidator : AbstractValidator<CreateCa
             .NotNull()
             .WithMessage(l["TheFieldIsRequired", l[nameof(CreateCampaignAddOnProductDto.DisplayPrice)]]);
 
-        RuleFor(x => x.ProductCondition)
+        RuleFor(x => x.SpendCondition)
             .NotNull()
-            .WithMessage(l["TheFieldIsRequired", l[nameof(CreateCampaignAddOnProductDto.ProductCondition)]]);
+            .WithMessage(l["TheFieldIsRequired", l[nameof(CreateCampaignAddOnProductDto.SpendCondition)]]);
 
-        When(x => x.ProductCondition == AddOnProductCondition.MustMeetSpecifiedThreshold, () =>
+        When(x => x.SpendCondition == CampaignSpendCondition.MustMeetSpecifiedThreshold, () =>
         {
             RuleFor(x => x.Threshold)
                 .NotNull()

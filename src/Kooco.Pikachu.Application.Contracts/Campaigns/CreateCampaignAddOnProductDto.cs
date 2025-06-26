@@ -11,6 +11,6 @@ public class CreateCampaignAddOnProductDto
     public bool? IsUnlimitedQuantity { get; set; }
     public int? AvailableQuantity { get; set; }
     public AddOnDisplayPrice? DisplayPrice { get; set; }
-    public AddOnProductCondition? ProductCondition { get; set; }
+    public CampaignSpendCondition? SpendCondition { get; set; }
     public int? Threshold { get; set; }
 }

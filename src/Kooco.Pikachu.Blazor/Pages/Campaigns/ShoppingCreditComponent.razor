@@ -125,6 +125,35 @@
     </Div>
 }
 <Divider></Divider>
+<Validation MessageLocalizer="@LH.Localize">
+    <Field>
+        <FieldLabel required>@L["Conditions"]</FieldLabel>
+        <RadioGroup Orientation="Orientation.Vertical" TValue="CampaignSpendCondition?" Name="ShoppingCreditSpendCondition" @bind-CheckedValue="@Entity.ShoppingCredit.SpendCondition">
+            <ChildContent>
+                @foreach (CampaignSpendCondition campaignSpendCondition in Enum.GetValues<CampaignSpendCondition>())
+                {
+                    <Radio TValue="CampaignSpendCondition?" Value="@campaignSpendCondition">@L["Enum:CampaignSpendCondition." + (int)campaignSpendCondition]</Radio>
+                }
+            </ChildContent>
+            <Feedback>
+                <ValidationError />
+            </Feedback>
+        </RadioGroup>
+        @if (Entity.ShoppingCredit.SpendCondition == CampaignSpendCondition.MustMeetSpecifiedThreshold)
+        {
+            <Validation MessageLocalizer="@LH.Localize">
+                <Field indent mb0>
+                    <NumericEdit @bind-Value="Entity.ShoppingCredit.Threshold">
+                        <Feedback>
+                            <ValidationError />
+                        </Feedback>
+                    </NumericEdit>
+                </Field>
+            </Validation>
+        }
+    </Field>
+</Validation>
+<Divider></Divider>
 <Field>
     <FieldLabel required>@L["Budget"]</FieldLabel>
     <AntDesign.InputNumber Size="AntDesign.InputSize.Large"

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Humanizer;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Volo.Abp;
@@ -118,6 +119,8 @@ public class CampaignBuilder
             credit.ApplicableToAddOnProducts,
             credit.ApplicableToShippingFees,
             Require(credit.Budget, nameof(credit.Budget)),
+            Require(credit.SpendCondition, nameof(credit.SpendCondition)),
+            credit.Threshold,
             stages
         );
     }
@@ -133,7 +136,7 @@ public class CampaignBuilder
             Require(dto.IsUnlimitedQuantity, nameof(dto.IsUnlimitedQuantity)),
             dto.AvailableQuantity,
             Require(dto.DisplayPrice, nameof(dto.DisplayPrice)),
-            Require(dto.ProductCondition, nameof(dto.ProductCondition)),
+            Require(dto.SpendCondition, nameof(dto.SpendCondition)),
             dto.Threshold
         );
     }

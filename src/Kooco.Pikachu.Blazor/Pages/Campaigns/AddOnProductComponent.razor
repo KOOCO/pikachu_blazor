@@ -120,18 +120,18 @@
 <Validation MessageLocalizer="@LH.Localize">
     <Field>
         <FieldLabel required>@L["Conditions"]</FieldLabel>
-        <RadioGroup Orientation="Orientation.Vertical" TValue="AddOnProductCondition?" Name="ProductCondition" @bind-CheckedValue="@Entity.AddOnProduct.ProductCondition">
+        <RadioGroup Orientation="Orientation.Vertical" TValue="CampaignSpendCondition?" Name="AddOnProductSpendCondition" @bind-CheckedValue="@Entity.AddOnProduct.SpendCondition">
             <ChildContent>
-                @foreach (AddOnProductCondition addOnProductCondition in Enum.GetValues<AddOnProductCondition>())
+                @foreach (CampaignSpendCondition campaignSpendCondition in Enum.GetValues<CampaignSpendCondition>())
                 {
-                    <Radio TValue="AddOnProductCondition?" Value="@addOnProductCondition">@L["Enum:AddOnProductCondition." + (int)addOnProductCondition]</Radio>
+                    <Radio TValue="CampaignSpendCondition?" Value="@campaignSpendCondition">@L["Enum:CampaignSpendCondition." + (int)campaignSpendCondition]</Radio>
                 }
             </ChildContent>
             <Feedback>
                 <ValidationError />
             </Feedback>
         </RadioGroup>
-        @if (Entity.AddOnProduct.ProductCondition == AddOnProductCondition.MustMeetSpecifiedThreshold)
+        @if (Entity.AddOnProduct.SpendCondition == CampaignSpendCondition.MustMeetSpecifiedThreshold)
         {
             <Validation MessageLocalizer="@LH.Localize">
                 <Field indent mb0>
@@ -155,14 +155,6 @@
     private List<KeyValueDto> SkuOptions { get; set; } = [];
     private bool IsFirstLoad { get; set; } = true;
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            await OnProductChanged(Entity.AddOnProduct?.ProductId);
-        }
-    }
-
     string ValidationClass(string propertyName)
     {
         var fieldIdentifier = new FieldIdentifier(Entity.AddOnProduct, propertyName);
@@ -181,8 +173,13 @@
 
         if (productId.HasValue)
         {
-            SkuOptions = await ItemAppService.GetItemDetailLookupAsync(productId.Value);
+            await GetDetails(productId.Value);
             IsFirstLoad = false;
         }
+    }
+
+    async Task GetDetails(Guid productId)
+    {
+        SkuOptions = await ItemAppService.GetItemDetailLookupAsync(productId);
     }
 }

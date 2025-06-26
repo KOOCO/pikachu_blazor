@@ -15,5 +15,7 @@ public class CampaignShoppingCreditDto : EntityDto<Guid>
     public bool ApplicableToAddOnProducts { get; set; }
     public bool ApplicableToShippingFees { get; set; }
     public int Budget { get; set; }
+    public CampaignSpendCondition SpendCondition { get; set; }
+    public int? Threshold { get; set; }
     public ICollection<CampaignStageSettingDto> StageSettings { get; set; }
 }

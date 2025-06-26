@@ -1,6 +1,6 @@
 ﻿namespace Kooco.Pikachu.Campaigns;
 
-public enum AddOnProductCondition
+public enum CampaignSpendCondition
 {
     NoMinimumSpendingRequirement,
     MustMeetSpecifiedThreshold
