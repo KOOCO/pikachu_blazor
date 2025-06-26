@@ -454,7 +454,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
             HttpRequest? domainRequest = _httpContextAccessor?.HttpContext?.Request;
             string? domainName = $"{domainRequest?.Scheme}://{domainRequest?.Host.Value}";
 
-            var goodsAmount = Convert.ToInt32((orderDelivery.Items.Sum(x => x.TotalAmount)+order.DeliveryCost)-(order.CreditDeductionAmount+order.DiscountAmount??0));
+            var goodsAmount = Convert.ToInt32((orderDelivery.Items.Sum(x => x.TotalAmount) + order.DeliveryCost ?? 0) - (order.DiscountAmount ?? 0 + order.CreditDeductionAmount));
 
             var logisticSubTypes = deliveredByStore.DeliveryMethod is DeliveryMethod.PostOffice ||
                                                      deliveryMethod is DeliveryMethod.PostOffice
