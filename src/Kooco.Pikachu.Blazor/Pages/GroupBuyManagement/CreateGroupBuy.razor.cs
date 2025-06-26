@@ -92,7 +92,7 @@ public partial class CreateGroupBuy
 
     string bannerBlobName;
     protected Validations EditValidationsRef;
-    private BlazoredTextEditor NotifyEmailHtml { get; set; }
+    //private BlazoredTextEditor NotifyEmailHtml { get; set; }
     private BlazoredTextEditor GroupBuyConditionHtml { get; set; }
     private BlazoredTextEditor CustomerInformationHtml { get; set; }
     private BlazoredTextEditor ExchangePolicyHtml { get; set; }
@@ -2794,7 +2794,7 @@ public partial class CreateGroupBuy
                 }
             }
 
-            CreateGroupBuyDto.NotifyMessage = await NotifyEmailHtml.GetHTML();
+            //CreateGroupBuyDto.NotifyMessage = await NotifyEmailHtml.GetHTML();
             //CreateGroupBuyDto.GroupBuyConditionDescription = await GroupBuyHtml.GetHTML();
 
             //CreateGroupBuyDto.CustomerInformationDescription = await CustomerInformationHtml.GetHTML();

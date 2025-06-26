@@ -88,7 +88,7 @@ public partial class EditGroupBuy
     private readonly ISetItemAppService _setItemAppService;
     private BlazoredTextEditor CustomerInformationHtml { get; set; }
     private BlazoredTextEditor ExchangePolicyHtml { get; set; }
-    private BlazoredTextEditor NotifyEmailHtml { get; set; }
+    //private BlazoredTextEditor NotifyEmailHtml { get; set; }
     protected Validations EditValidationsRef;
 
     private FilePicker BannerPickerCustom { get; set; }
@@ -851,7 +851,7 @@ public partial class EditGroupBuy
         //await CustomerInformationHtml.LoadHTMLContent(EditGroupBuyDto.CustomerInformationDescription);
         await ExchangePolicyHtml.LoadHTMLContent(EditGroupBuyDto.ExchangePolicyDescription);
         await GroupBuyConditionHtml.LoadHTMLContent(EditGroupBuyDto.GroupBuyConditionDescription);
-        await NotifyEmailHtml.LoadHTMLContent(EditGroupBuyDto.NotifyMessage);
+        //await NotifyEmailHtml.LoadHTMLContent(EditGroupBuyDto.NotifyMessage);
     }
 
     private async Task LoadItemGroups(bool isRefreshItemGroup = false)
@@ -3083,7 +3083,7 @@ public partial class EditGroupBuy
                 }
             }
 
-            EditGroupBuyDto.NotifyMessage = await NotifyEmailHtml.GetHTML();
+            //EditGroupBuyDto.NotifyMessage = await NotifyEmailHtml.GetHTML();
             //EditGroupBuyDto.GroupBuyConditionDescription = await GroupBuyHtml.GetHTML();
 
             //EditGroupBuyDto.CustomerInformationDescription = await CustomerInformationHtml.GetHTML();
