@@ -13,6 +13,7 @@ using Kooco.Pikachu.Orders.Entities;
 using Kooco.Pikachu.Orders.Interfaces;
 using Kooco.Pikachu.Orders.Repositories;
 using Kooco.Pikachu.Orders.Services;
+using Kooco.Pikachu.OrderTradeNos;
 using Kooco.Pikachu.Response;
 using Kooco.Pikachu.Tenants;
 using Kooco.Pikachu.Tenants.Repositories;
@@ -52,6 +53,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
     private readonly IOrderDeliveryRepository _deliveryRepository;
     private readonly ILogisticsProvidersAppService _logisticsProvidersAppService;
     private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly IOrderTradeNoRepository _orderTradeNoRepository;
     GreenWorldLogisticsCreateUpdateDto GreenWorld { get; set; }
     GreenWorldLogisticsCreateUpdateDto GreenWorldC2C { get; set; }
     HomeDeliveryCreateUpdateDto HomeDelivery { get; set; }
@@ -101,7 +103,8 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
         ITenantSettingsAppService tenantSettingsAppService,
         IEmailAppService emailAppService,
         OrderHistoryManager orderHistoryManager,
-        IRepository<DeliveryTemperatureCost, Guid> deliveryTemperatureCostRepository
+        IRepository<DeliveryTemperatureCost, Guid> deliveryTemperatureCostRepository,
+        IOrderTradeNoRepository orderTradeNoRepository
     )
     {
         _orderRepository = orderRepository;
@@ -130,6 +133,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
         _emailAppService = emailAppService;
         _orderHistoryManager = orderHistoryManager;
         _deliveryTemperatureCostRepository = deliveryTemperatureCostRepository;
+        _orderTradeNoRepository = orderTradeNoRepository;
     }
     #endregion
 
@@ -293,6 +297,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
             var goodAmount = Convert.ToInt32((orderDelivery.Items.Sum(x => x.TotalAmount) + order.DeliveryCost??0) - (order.DiscountAmount??0 + order.CreditDeductionAmount));
             string serverReplyURL = $"{domainName}/api/app/orders/ecpay-logisticsStatus-callback";
             var merchantTradeNo = AddNumericSuffix(order.OrderNo);
+            await _orderTradeNoRepository.InsertAsync(new OrderTradeNo { MarchentTradeNo = merchantTradeNo, OrderId = order.Id });
             request.AddHeader("Accept", "text/html");
             request.AddHeader("Content-Type", "application/x-www-form-urlencoded");
             request.AddParameter("MerchantID", EcPayHomeDelivery.StoreCode);
@@ -449,7 +454,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
             HttpRequest? domainRequest = _httpContextAccessor?.HttpContext?.Request;
             string? domainName = $"{domainRequest?.Scheme}://{domainRequest?.Host.Value}";
 
-            var goodsAmount = Convert.ToInt32((orderDelivery.Items.Sum(x => x.TotalAmount)+order.DeliveryCost)-(order.CreditDeductionAmount+order.DiscountAmount));
+            var goodsAmount = Convert.ToInt32((orderDelivery.Items.Sum(x => x.TotalAmount)+order.DeliveryCost)-(order.CreditDeductionAmount+order.DiscountAmount??0));
 
             var logisticSubTypes = deliveredByStore.DeliveryMethod is DeliveryMethod.PostOffice ||
                                                      deliveryMethod is DeliveryMethod.PostOffice
@@ -457,6 +462,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
 
             string serverReplyURL = $"{domainName}/api/app/orders/ecpay-logisticsStatus-callback";
             var merchantTradeNo = AddNumericSuffix(order.OrderNo);
+            await _orderTradeNoRepository.InsertAsync(new OrderTradeNo { MarchentTradeNo = merchantTradeNo, OrderId = order.Id });
             request.AddHeader("Accept", "text/html");
             request.AddHeader("Content-Type", "application/x-www-form-urlencoded");
             request.AddParameter("MerchantID", EcPayHomeDelivery.StoreCode);
@@ -1111,6 +1117,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
 
         DayOfWeek TodaysDay = DateTime.Today.DayOfWeek;
         var newOrderNo = AddNumericSuffix(order.OrderNo);
+        await _orderTradeNoRepository.InsertAsync(new OrderTradeNo { MarchentTradeNo = newOrderNo, OrderId = order.Id });
         PrintOBTRequest request = new()
         {
             CustomerId = TCatLogistics.CustomerId,
@@ -1295,7 +1302,8 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
                                     GetCollectionAmount(orderDelivery.Items.Sum(s => s.TotalAmount), order.DeliveryCost,order.DiscountAmount,order.CreditDeductionAmount, true) :
                                     0;
         var newOrderNo = AddNumericSuffix(order.OrderNo);
-            PrintOBTB2SRequest request = new()
+        await _orderTradeNoRepository.InsertAsync(new OrderTradeNo { MarchentTradeNo = newOrderNo, OrderId = order.Id });
+        PrintOBTB2SRequest request = new()
             {
                 CustomerId = TCatLogistics.CustomerId,
                 CustomerToken = TCatLogistics.CustomerToken,
@@ -1659,6 +1667,8 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
         string goodsName = groupbuy.GroupBuyName;
         goodsName = Regex.Replace(goodsName, validatePattern, "");
         var merchantTradeNo = AddNumericSuffix(order.OrderNo);
+
+        await _orderTradeNoRepository.InsertAsync(new OrderTradeNo { MarchentTradeNo = merchantTradeNo, OrderId = order.Id });
 
         HttpRequest? domainRequest = _httpContextAccessor?.HttpContext?.Request;
 

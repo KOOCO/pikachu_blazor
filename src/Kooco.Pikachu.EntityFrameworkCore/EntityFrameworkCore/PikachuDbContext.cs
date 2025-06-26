@@ -55,6 +55,7 @@ using Kooco.Pikachu.Campaigns;
 using Kooco.Pikachu.EdmManagement;
 using Kooco.Pikachu.Domain.LogisticStatusRecords;
 using Kooco.Pikachu.InventoryManagement;
+using Kooco.Pikachu.OrderTradeNos;
 
 namespace Kooco.Pikachu.EntityFrameworkCore;
 
@@ -144,7 +145,7 @@ public class PikachuDbContext(DbContextOptions<PikachuDbContext> options) :
     // Order
     public DbSet<OrderMessage> OrderMessages { get; set; }
     public DbSet<OrderInvoice> OrderInvoices { get; set; }
-
+    public DbSet<OrderTradeNo> OrderTradeNos { get; set; }
     public DbSet<LogisticStatusRecord> LogisticStatusRecords { get; set; }
 
     public DbSet<WebsiteBasicSetting> WebsiteBasicSettings { get; set; }
@@ -253,6 +254,13 @@ public class PikachuDbContext(DbContextOptions<PikachuDbContext> options) :
             b.ConfigureByConvention();
 
             b.HasMany(x => x.ItemGroups).WithOne();
+        });
+        builder.Entity<OrderTradeNo>(b =>
+        {
+            b.ToTable(PikachuConsts.DbTablePrefix + "OrderTradeNos", PikachuConsts.DbSchema, table => table.HasComment(""));
+            b.ConfigureByConvention();
+
+            
         });
 
         builder.Entity<GroupBuyItemGroup>(b =>

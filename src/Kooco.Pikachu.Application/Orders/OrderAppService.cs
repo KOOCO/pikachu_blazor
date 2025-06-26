@@ -14,6 +14,7 @@ using Kooco.Pikachu.Orders.Entities;
 using Kooco.Pikachu.Orders.Interfaces;
 using Kooco.Pikachu.Orders.Repositories;
 using Kooco.Pikachu.Orders.Services;
+using Kooco.Pikachu.OrderTradeNos;
 using Kooco.Pikachu.OrderTransactions;
 using Kooco.Pikachu.PaymentGateways;
 using Kooco.Pikachu.Permissions;
@@ -2282,19 +2283,22 @@ public class OrderAppService : PikachuAppService, IOrderAppService
 
     public async Task UpdateLogisticStatusAsync(string merchantTradeNo, string rtnMsg, string? allPayLogisticsID = null, int rtnCode = 0)
     {
-        var order = await OrderRepository.MatchOrderExtraPropertiesByMerchantTradeNoAsync(merchantTradeNo);
-
+        var tradeNo =await OrderTradeNoRepository.FindByMarchentTradeNoAsync(merchantTradeNo);
+        var order = tradeNo?.Order;
         if (order is null)
         {
             return;
         }
         OrderDelivery? orderDelivery = null;
-
+        List<OrderDelivery> orderDeliveries = new List<OrderDelivery>();
         if (!string.IsNullOrWhiteSpace(allPayLogisticsID))
         {
             using (DataFilter.Disable<IMultiTenant>())
+            {
                 orderDelivery = await OrderDeliveryRepository
                     .FirstOrDefaultAsync(x => x.AllPayLogisticsID == allPayLogisticsID);
+                orderDeliveries= await OrderDeliveryRepository.GetListAsync(x => x.OrderId == order.Id);
+            }
         }
         // Capture old logistics status and shipping status before updating
         var oldLogisticsStatus = order.EcpayLogisticsStatus;
@@ -2385,53 +2389,61 @@ public class OrderAppService : PikachuAppService, IOrderAppService
             };
 
             var deliveryMethod = order.DeliveryMethod.Value;
+            DeliveryStatus? updatedDeliveryStatus = null;
 
             if ((deliveryMethod != DeliveryMethod.PostOffice && rtnCode == 300) ||
                 (toBeShippedCodes.TryGetValue(deliveryMethod, out var toBeShippedRtnCodes) && toBeShippedRtnCodes.Contains(rtnCode)))
             {
-                order.ShippingStatus = ShippingStatus.ToBeShipped;
-                if (orderDelivery != null)
-                {
-                    orderDelivery.DeliveryStatus = DeliveryStatus.ToBeShipped;
-                }
+                updatedDeliveryStatus = DeliveryStatus.ToBeShipped;
             }
             else if (shippedCodes.TryGetValue(deliveryMethod, out var shippedRtnCodes) && shippedRtnCodes.Contains(rtnCode))
             {
-                order.ShippingStatus = ShippingStatus.Shipped;
-                if (orderDelivery != null)
-                {
-                    orderDelivery.DeliveryStatus = DeliveryStatus.Shipped;
-                }
-
+                updatedDeliveryStatus = DeliveryStatus.Shipped;
             }
             else if (deliveredCodes.TryGetValue(deliveryMethod, out var deliveredRtnCodes) && deliveredRtnCodes.Contains(rtnCode))
             {
-                order.ShippingStatus = ShippingStatus.Delivered;
-                if (orderDelivery != null)
-                {
-                    orderDelivery.DeliveryStatus = DeliveryStatus.Delivered;
-                }
+                updatedDeliveryStatus = DeliveryStatus.Delivered;
             }
             else if (completedCodes.TryGetValue(deliveryMethod, out var completedRtnCodes) && completedRtnCodes.Contains(rtnCode))
             {
-                order.ShippingStatus = ShippingStatus.PickedUp;
-                if (orderDelivery != null)
-                {
-                    orderDelivery.DeliveryStatus = DeliveryStatus.PickedUp;
-                }
+                updatedDeliveryStatus = DeliveryStatus.PickedUp;
             }
             else if (returnedCodes.TryGetValue(deliveryMethod, out var returnedRtnCodes) && returnedRtnCodes.Contains(rtnCode))
             {
-                order.ShippingStatus = ShippingStatus.Return;
+                updatedDeliveryStatus = DeliveryStatus.Returned;
             }
 
-            await OrderHistoryManager.AddOrderHistoryAsync(
-                order.Id,
-                "ShippingStatusUpdated", // Localization key
-                new object[] { L[oldShippingStatus.ToString()].Name, L[order.ShippingStatus.ToString()].Name },
-                currentUserId,
-                currentUserName
-            );
+            // If a delivery status was set
+            if (updatedDeliveryStatus != null && orderDelivery != null)
+            {
+                orderDelivery.DeliveryStatus = updatedDeliveryStatus.Value;
+
+                // Get all delivery statuses
+                var allStatuses = orderDeliveries
+                    
+                    .Select(x => x.DeliveryStatus)
+                    .ToList();
+
+                var current = updatedDeliveryStatus.Value;
+                bool allSame = allStatuses.All(s => s == current);
+                bool allGreater = allStatuses.Where(s => s != current).All(s => s > current);
+                bool anyLower = allStatuses.Any(s => s < current);
+
+                if (allSame || (allGreater && !anyLower))
+                {
+                    order.ShippingStatus = MapDeliveryToShippingStatus(current);
+                }
+            }
+            if (order.ShippingStatus != oldShippingStatus)
+            {
+                await OrderHistoryManager.AddOrderHistoryAsync(
+                    order.Id,
+                    "ShippingStatusUpdated", // Localization key
+                    new object[] { L[oldShippingStatus.ToString()].Name, L[order.ShippingStatus.ToString()].Name },
+                    currentUserId,
+                    currentUserName
+                );
+            }
         }
 
         await OrderRepository.UpdateAsync(order);
@@ -2439,6 +2451,18 @@ public class OrderAppService : PikachuAppService, IOrderAppService
         {
             await OrderDeliveryRepository.UpdateAsync(orderDelivery);
         }
+    }
+    private ShippingStatus MapDeliveryToShippingStatus(DeliveryStatus status)
+    {
+        return status switch
+        {
+            DeliveryStatus.ToBeShipped => ShippingStatus.ToBeShipped,
+            DeliveryStatus.Shipped => ShippingStatus.Shipped,
+            DeliveryStatus.Delivered => ShippingStatus.Delivered,
+            DeliveryStatus.PickedUp => ShippingStatus.PickedUp,
+            DeliveryStatus.Returned => ShippingStatus.Return,
+            _ => ShippingStatus.PrepareShipment
+        };
     }
 
     [AllowAnonymous]
@@ -2932,4 +2956,5 @@ public class OrderAppService : PikachuAppService, IOrderAppService
     public required ITenantTripartiteRepository TenantTripartiteRepository { get; init; }
     public required ICampaignRepository CampaignRepository { get; init; }
     public required InventoryLogManager InventoryLogManager { get; init; }
+    public required IOrderTradeNoRepository OrderTradeNoRepository { get; init; }
 }

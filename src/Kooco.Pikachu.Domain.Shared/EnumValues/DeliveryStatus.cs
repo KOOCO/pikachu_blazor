@@ -29,4 +29,5 @@ public enum DeliveryStatus
     /// 已完成：表示訂單已經完成。
     /// </summary>
     PickedUp,
+    Returned
 }
