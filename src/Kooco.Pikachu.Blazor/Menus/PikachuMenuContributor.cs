@@ -74,16 +74,16 @@ public class PikachuMenuContributor : IMenuContributor
             url: "/SetItem"
             ));
         }
-        if (await context.IsGrantedAsync(PikachuPermissions.InventoryReport))
-        {
-            productmangment.AddItem(new ApplicationMenuItem(
-            name: "InventoryReport",
-            icon: "fas fa-newspaper",
-            displayName: l["Menu:InventoryReport"],
-            //displayName: "庫存報表",
-            url: "/Items/InventoryReport")
-            );
-        }
+        //if (await context.IsGrantedAsync(PikachuPermissions.InventoryReport))
+        //{
+        //    productmangment.AddItem(new ApplicationMenuItem(
+        //    name: "InventoryReport",
+        //    icon: "fas fa-newspaper",
+        //    displayName: l["Menu:InventoryReport"],
+        //    //displayName: "庫存報表",
+        //    url: "/Items/InventoryReport")
+        //    );
+        //}
         if (await context.IsGrantedAsync(PikachuPermissions.FreebieSetting))
         {
             productmangment.AddItem(new ApplicationMenuItem(
@@ -263,20 +263,20 @@ public class PikachuMenuContributor : IMenuContributor
             );
 
 
-        promotions.AddItem(new ApplicationMenuItem(
-               name: "AddOnProducts",
-               displayName: l["AddOnProducts"],
-               url: "/add-on-products",
-               requiredPermissionName: PikachuPermissions.AddOnProducts.Default)
-               );
+        //promotions.AddItem(new ApplicationMenuItem(
+        //       name: "AddOnProducts",
+        //       displayName: l["AddOnProducts"],
+        //       url: "/add-on-products",
+        //       requiredPermissionName: PikachuPermissions.AddOnProducts.Default)
+        //       );
 
-        promotions.AddItem(new ApplicationMenuItem(
-               name: "DiscountCodes",
+        //promotions.AddItem(new ApplicationMenuItem(
+        //       name: "DiscountCodes",
 
-               displayName: l["DiscountCodes"],
-               url: "/discount-code",
-               requiredPermissionName: PikachuPermissions.DiscountCodes.Default)
-               );
+        //       displayName: l["DiscountCodes"],
+        //       url: "/discount-code",
+        //       requiredPermissionName: PikachuPermissions.DiscountCodes.Default)
+        //       );
         promotions.AddItem(new ApplicationMenuItem(
             name: "ShoppingCredits",
 
