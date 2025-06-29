@@ -1595,6 +1595,17 @@
     "Enum:CampaignUsagePolicy.0": "無",
     "Enum:CampaignUsagePolicy.1": "全部",
     "Enum:CampaignUsagePolicy.2": "特定",
-    "None": "無"
+    "None": "無",
+    "WholeOrder": "整筆訂單",
+    "SelectItems": "選擇項目",
+    "PleaseSelectItemsToReturn": "請選擇要退貨的項目",
+    "OrderItemsExchangeInitiatedTitle": "換貨申請已提交",
+    "OrderItemsExchangeInitiated": "已為訂單 #{0} 提交換貨申請，並建立新換貨訂單 #{1}。",
+    "OrderItemsExchangeCreatedTitle": "換貨訂單已建立",
+    "OrderItemsExchangeCreated": "已從訂單 #{0} 建立新換貨訂單 #{1}。",
+    "OrderItemsReturnInitiatedTitle": "退貨申請已提交",
+    "OrderItemsReturnInitiated": "已為訂單 #{0} 提交退貨申請，並建立新退貨訂單 #{1}。",
+    "OrderItemsReturnCreatedTitle": "退貨訂單已建立",
+    "OrderItemsReturnCreated": "已從訂單 #{0} 建立新退貨訂單 #{1}。"
   }
 }

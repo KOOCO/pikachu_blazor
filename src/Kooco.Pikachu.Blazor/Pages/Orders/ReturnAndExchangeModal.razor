@@ -1,0 +1,126 @@
+﻿@using Kooco.Pikachu.EnumValues
+@using Kooco.Pikachu.OrderItems
+@using Kooco.Pikachu.Orders.Interfaces
+@using Kooco.Pikachu.ReturnAndExchange
+@inherits PikachuComponentBase
+@inject IReturnAndExchangeAppService ReturnAndExchangeAppService
+@* @inject IOrderAppService OrderAppService *@
+@inject NavigationManager NavigationManager
+
+<Modal @ref="Modal">
+    <ModalContent IsCentered="true" Size="ModalSize.ExtraLarge">
+        <ModalHeader>
+            <ModalTitle>@L[IsReturn ? "ReturnOrder" : "ExchangeOrder"]</ModalTitle>
+            <CloseButton />
+        </ModalHeader>
+        <ModalBody>
+            <Div Class="row">
+                <Div Class="col-6">
+                    <Label>
+                        @L["PaymentStatus"]: @(PaymentStatus)
+                    </Label>
+                </Div>
+            </Div>
+
+            <Div>
+                <Field>
+                    <RadioGroup Orientation="Orientation.Vertical"
+                                TValue="bool"
+                                @bind-CheckedValue="IsWholeOrder">
+                        <Radio Value="true">@L["WholeOrder"]</Radio>
+                        <Radio Value="false">@L["SelectItems"]</Radio>
+                    </RadioGroup>
+                </Field>
+            </Div>
+            @if (!IsWholeOrder)
+            {
+                <Div>
+                    <Table Bordered Striped>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHeaderCell ColumnSpan="2"></TableHeaderCell>
+                                <TableHeaderCell>@L["Quantity"]</TableHeaderCell>
+                                <TableHeaderCell>@L["UnitPrice"]</TableHeaderCell>
+                                <TableHeaderCell>@L["Subtotal"]</TableHeaderCell>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            @if (Order?.OrderItems != null)
+                            {
+                                @foreach (var item in Order.OrderItems)
+                                {
+                                    <TableRow>
+                                        <TableRowCell>
+                                            @if (item.Quantity > 0)
+                                            {
+                                                <Check TValue="bool" @bind-Checked="item.IsSelected" />
+                                            }
+                                            else
+                                            {
+                                                <Check TValue="bool" Disabled @bind-Checked="item.IsSelected" />
+                                            }
+                                        </TableRowCell>
+                                        <TableRowCell>
+                                            @if (item.ItemType == ItemType.Item)
+                                            {
+                                                var firstImage = item.Item?.Images?.FirstOrDefault()?.ImageUrl;
+                                                @if (!string.IsNullOrEmpty(firstImage))
+                                                {
+                                                    <img src="@firstImage" class="img-fluid me-2" style="height: 50px; width: auto;" />
+                                                }
+                                                @item.Item?.ItemName
+                                            }
+
+                                            @if (item.ItemType == ItemType.SetItem)
+                                            {
+                                                var firstImage = item.SetItem?.Images?.FirstOrDefault()?.ImageUrl;
+                                                @if (!string.IsNullOrEmpty(firstImage))
+                                                {
+                                                    <img src="@firstImage" class="img-fluid me-2" style="height: 50px; width: auto;" />
+                                                }
+                                                @item.SetItem?.SetItemName
+                                            }
+
+                                            @if (item.ItemType == ItemType.Freebie)
+                                            {
+                                                var firstImage = item.Freebie?.Images?.FirstOrDefault()?.ImageUrl;
+                                                @if (!string.IsNullOrEmpty(firstImage))
+                                                {
+                                                    <img src="@firstImage" class="img-fluid me-2" style="height: 50px; width: auto;" />
+                                                }
+                                                @item.Freebie?.ItemName
+                                            }
+                                        </TableRowCell>
+                                        <TableRowCell Style="max-width: 150px;">
+                                            @if (item.IsSelected)
+                                            {
+                                                <NumericEdit TValue="int" @bind-Value="item.SelectedQuantity" Min="1" Max="item.Quantity" Style="max-width: 150px;" />
+                                            }
+                                            else
+                                            {
+                                                @item.Quantity
+                                            }
+                                        </TableRowCell>
+                                        <TableRowCell><span>$@item.ItemPrice.ToString("N2")</span></TableRowCell>
+                                        <TableRowCell>$@item.TotalAmount.ToString("N2")</TableRowCell>
+                                    </TableRow>
+                                }
+                                <TableRow>
+                                    <TableRowCell ColumnSpan="4" TextAlignment="TextAlignment.End" TextWeight="TextWeight.Bold" TextColor="TextColor.Dark">@L["TotalAmount"]</TableRowCell>
+                                    <TableRowCell TextWeight="TextWeight.Bold" TextColor="TextColor.Dark">
+                                        $@Order.OrderItems.Where(x => x.IsSelected == true).Sum(x => x.ItemPrice * x.SelectedQuantity).ToString("N2")
+                                    </TableRowCell>
+                                </TableRow>
+                            }
+                        </TableBody>
+                    </Table>
+                </Div>
+            }
+
+        </ModalBody>
+        <ModalFooter>
+            <Button Color="Color.Secondary" Clicked="@Hide">@L["Cancel"]</Button>
+            <Button Color="Color.Danger" Clicked="@OnSubmit">@L[IsReturn ? "ReturnOrder" : "ExchangeOrder"]</Button>
+        </ModalFooter>
+    </ModalContent>
+</Modal>

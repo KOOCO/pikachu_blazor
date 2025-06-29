@@ -1690,13 +1690,13 @@
                        Order.OrderStatus is not OrderStatus.Refund)
                         {
                             <Button Type="ButtonType.Button"
-                                    Clicked="ReturnOrder"
-                                    Class="btn btn-sm btn-secondary me-1">
+                                    Class="btn btn-sm btn-secondary me-1"
+                                    Clicked="() => OpenReturnAndExchange(true)">
                                 @L["ReturnOrder"]
                             </Button>
                             <Button Type="ButtonType.Button"
-                                    Clicked="ExchangeOrder"
-                                    Class="btn btn-sm btn-secondary me-1">
+                                    Class="btn btn-sm btn-secondary me-1"
+                                    Clicked="() => OpenReturnAndExchange(false)">
                                 @L["ExchangeItem"]
                             </Button>
                         }
@@ -3137,3 +3137,8 @@
         </EditForm>
     </ModalContent>
 </Modal>
+
+@if(Order != null)
+{
+    <ReturnAndExchangeModal @ref="ReturnAndExchangeModal" Order="Order" PaymentStatus="@PaymentStatus" />
+}

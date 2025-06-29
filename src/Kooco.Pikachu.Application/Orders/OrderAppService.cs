@@ -1089,7 +1089,7 @@ public class OrderAppService : PikachuAppService, IOrderAppService
             var invoiceSetting = await TenantTripartiteRepository.FindByTenantAsync(currentUserId);
             if (order.InvoiceNumber.IsNullOrEmpty())
             {
-                if (invoiceSetting.StatusOnInvoiceIssue == DeliveryStatus.Delivered)
+                if (invoiceSetting?.StatusOnInvoiceIssue == DeliveryStatus.Delivered)
                 {
                     if (order.GroupBuy.IssueInvoice)
                     {
@@ -1714,69 +1714,6 @@ public class OrderAppService : PikachuAppService, IOrderAppService
         }
     }
 
-    public async Task ExchangeOrderAsync(Guid id)
-    {
-        var order = await OrderRepository.GetAsync(id);
-        // Capture old statuses before updating
-        var oldReturnStatus = order.ReturnStatus;
-        var oldOrderStatus = order.OrderStatus;
-        order.ReturnStatus = OrderReturnStatus.Pending;
-        order.OrderStatus = OrderStatus.Exchange;
-
-        await OrderRepository.UpdateAsync(order);
-        // **Get Current User (Editor)**
-        var currentUserId = CurrentUser.Id ?? Guid.Empty;
-        var currentUserName = CurrentUser.UserName ?? "System";
-
-        // **Log Order History for Exchange**
-        await OrderHistoryManager.AddOrderHistoryAsync(
-     order.Id,
-     "OrderExchangeInitiated", // Localization key
-     new object[]
-     {
-        L[oldReturnStatus.ToString()]?.Value,
-        L[order.ReturnStatus.ToString()]?.Value,
-        L[oldOrderStatus.ToString()]?.Value,
-        L[order.OrderStatus.ToString()]?.Value
-     }, // Dynamic placeholders for localized statuses
-     currentUserId,
-     currentUserName
- );
-
-
-
-    }
-    public async Task ReturnOrderAsync(Guid id)
-    {
-        var order = await OrderRepository.GetAsync(id);
-        // Capture old statuses before updating
-        var oldReturnStatus = order.ReturnStatus;
-        var oldOrderStatus = order.OrderStatus;
-        order.ReturnStatus = OrderReturnStatus.Pending;
-        order.OrderStatus = OrderStatus.Returned;
-
-        await OrderRepository.UpdateAsync(order);
-        // **Get Current User (Editor)**
-        var currentUserId = CurrentUser.Id ?? Guid.Empty;
-        var currentUserName = CurrentUser.UserName ?? "System";
-
-        // **Log Order History for Return**
-        await OrderHistoryManager.AddOrderHistoryAsync(
-       order.Id,
-       "OrderReturnInitiated", // Localization key
-       new object[]
-       {
-        L[oldReturnStatus.ToString()].Name,
-        L[order.ReturnStatus.ToString()].Name,
-        L[oldOrderStatus.ToString()].Name,
-        L[order.OrderStatus.ToString()].Name
-       }, // Dynamic placeholders for localized statuses
-       currentUserId,
-       currentUserName
-   );
-
-
-    }
     public async Task UpdateOrderItemsAsync(Guid id, List<UpdateOrderItemDto> orderItems)
     {
         var order = await OrderRepository.GetWithDetailsAsync(id);

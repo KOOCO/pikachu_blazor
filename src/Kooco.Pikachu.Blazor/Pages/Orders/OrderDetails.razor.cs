@@ -90,6 +90,8 @@ public partial class OrderDetails
     private string? editingMessageId { get; set; }
     private string editingMessageText { get; set; } = "";
 
+    private ReturnAndExchangeModal ReturnAndExchangeModal;
+
     private void ToggleConversationWindow()
     {
         IsConversationWindowCollapsed = !IsConversationWindowCollapsed;
@@ -2074,27 +2076,6 @@ public partial class OrderDetails
         }
     }
 
-    async void ReturnOrder()
-    {
-        var confirmed = await _uiMessageService.Confirm(L["Areyousureyouwanttoreturnthisorder"]);
-        if (!confirmed)
-        {
-            return;
-        }
-        await _orderAppService.ReturnOrderAsync(Order.Id);
-        NavigationManager.NavigateTo("Orders");
-        await JSRuntime.InvokeVoidAsync("reloadOrderPage");
-
-
-
-    }
-    async void ExchangeOrder()
-    {
-
-        await _orderAppService.ExchangeOrderAsync(Order.Id);
-        NavigationManager.NavigateTo("Orders");
-
-    }
     void CalculateTotal(UpdateOrderItemDto item)
     {
         var index = EditingItems.IndexOf(item);
@@ -3310,6 +3291,11 @@ public partial class OrderDetails
             loading = false;
             await HandleErrorAsync(ex);
         }
+    }
+
+    private async Task OpenReturnAndExchange(bool isReturn)
+    {
+        await ReturnAndExchangeModal.Show(isReturn);
     }
     #endregion
 }

@@ -555,7 +555,8 @@
     "BlackCatFrozen": "B-Frozen",
     "SetGroupBuyPrice": "Set GroupBuy Price",
     "InvoiceIssueStatus": "Invoice Issue Status",
-    "ReturnOrder": "Return",
+    "ReturnOrder": "Return Order",
+    "ExchangeOrder": "Exchange Order",
     "PleaseEnterThresholdAmount": "Please Enter Threshold Amount",
     "Exchange": "Exchange",
     "Reject": "Reject",
@@ -1620,6 +1621,19 @@
     "Useable:ShoppingCredit": "Shopping Credit",
     "Useable:AddOnProduct": "Add-On Product",
     "FreeOrder": "Free Order",
-    "NotIssued": "Not Issued"
+    "NotIssued": "Not Issued",
+    "WholeOrder": "Whole Order",
+    "SelectItems": "Select Items",
+    "PleaseSelectItemsToReturn": "Please select items to return",
+    "AreYouSureYouWantToExchangeThisOrder": "Are you sure you want to exchange this order?",
+    "PleaseSelectItemsToExchange": "Please select items to exchange",
+    "OrderItemsExchangeInitiatedTitle": "Exchange Request Submitted",
+    "OrderItemsExchangeInitiated": "Exchange requested for Order #{0}. New exchange Order #{1} created.",
+    "OrderItemsExchangeCreatedTitle": "Exchange Order Created",
+    "OrderItemsExchangeCreated": "New exchange Order #{1} created from Order #{0}.",
+    "OrderItemsReturnInitiatedTitle": "Return Request Submitted",
+    "OrderItemsReturnInitiated": "Return requested for Order #{0}. New return Order #{1} created.",
+    "OrderItemsReturnCreatedTitle": "Return Order Created",
+    "OrderItemsReturnCreated": "New return Order #{1} created from Order #{0}."
   }
 }

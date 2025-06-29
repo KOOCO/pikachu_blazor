@@ -8,6 +8,7 @@ using Kooco.Pikachu.Orders;
 using Kooco.Pikachu.Orders.Interfaces;
 using Kooco.Pikachu.PaymentGateways;
 using Kooco.Pikachu.Response;
+using Kooco.Pikachu.ReturnAndExchange;
 using Kooco.Pikachu.StoreLogisticOrders;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -41,6 +42,7 @@ public class OrderController : AbpController, IOrderAppService
     private readonly IGroupBuyAppService _GroupBuyAppService;
 
     private readonly IStoreLogisticsOrderAppService _SLOAppservice;
+    private readonly IReturnAndExchangeAppService _returnAndExchangeAppService;
     #endregion
 
     #region Constructor
@@ -48,7 +50,8 @@ public class OrderController : AbpController, IOrderAppService
         IOrderAppService ordersAppService,
         IConfiguration Configuration,
         IGroupBuyAppService GroupBuyAppService,
-        IStoreLogisticsOrderAppService SLOAppservice
+        IStoreLogisticsOrderAppService SLOAppservice,
+        IReturnAndExchangeAppService returnAndExchangeAppService
     )
     {
         _ordersAppService = ordersAppService;
@@ -56,6 +59,7 @@ public class OrderController : AbpController, IOrderAppService
         _GroupBuyAppService = GroupBuyAppService;
 
         _SLOAppservice = SLOAppservice;
+        _returnAndExchangeAppService = returnAndExchangeAppService;
     }
     #endregion
 
@@ -492,7 +496,7 @@ public class OrderController : AbpController, IOrderAppService
     [HttpPost("exchange-order")]
     public Task ExchangeOrderAsync(Guid id)
     {
-        return _ordersAppService.ExchangeOrderAsync(id);
+        return _returnAndExchangeAppService.ExchangeOrderAsync(id);
     }
 
     [HttpGet("get-tenant-order-list")]
@@ -566,7 +570,7 @@ public class OrderController : AbpController, IOrderAppService
     [HttpPost("return-order")]
     public Task ReturnOrderAsync(Guid id)
     {
-        return _ordersAppService.ReturnOrderAsync(id);
+        return _returnAndExchangeAppService.ReturnOrderAsync(id);
     }
 
     [HttpPost("update-orders-if-IsEnterpricePurchase")]

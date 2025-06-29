@@ -39,7 +39,6 @@ namespace Kooco.Pikachu.Orders.Interfaces
         Task<OrderDto> MergeOrdersAsync(List<Guid> Ids);
         Task<OrderDto> SplitOrderAsync(List<Guid> OrderItemIds, Guid OrderId);
         Task<OrderDto> RefundOrderItems(List<Guid> OrderItemIds, Guid OrderId);
-        Task ExchangeOrderAsync(Guid id);
         Task<PagedResultDto<OrderDto>> GetTenantOrderListAsync(GetOrderListDto input);
         Task<PagedResultDto<OrderDto>> GetReconciliationListAsync(GetOrderListDto input);
         Task<IRemoteStreamContent> GetReconciliationListAsExcelFileAsync(GetOrderListDto input);
@@ -51,7 +50,6 @@ namespace Kooco.Pikachu.Orders.Interfaces
         Task CreditNoteInvoice(Guid id, string reason);
         Task RefundAmountAsync(double amount, Guid OrderId);
         Task<PagedResultDto<GroupBuyReportOrderDto>> GetReportListAsync(GetOrderListDto input, bool hideCredentials = false);
-        Task ReturnOrderAsync(Guid id);
         Task<OrderDto> ChangeOrderStatus(Guid id, ShippingStatus status);
 
         Task UpdateOrdersIfIsEnterpricePurchaseAsync(Guid groupBuyId);
