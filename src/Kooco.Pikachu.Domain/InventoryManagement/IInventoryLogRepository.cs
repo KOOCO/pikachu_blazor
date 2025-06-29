@@ -18,4 +18,6 @@ public interface IInventoryLogRepository : IRepository<InventoryLog, Guid>
         );
 
     Task<IQueryable<InventoryLog>> GetFilteredQueryableAsync(Guid itemId, Guid itemDetailId);
+
+    Task<string> GetCreatorNameAsync(Guid creatorId);
 }

@@ -157,12 +157,27 @@
                 <ModalTitle>
                     <h4 class="text-dark m-0">@SelectedLog?.Sku</h4>
                 </ModalTitle>
-                <CloseButton />
             </ModalHeader>
             <ModalBody>
-                <Paragraph>
+                <h5>@L["Description"]</h5>
+                <h5 class="text-dark" style="font-size: 1rem; line-height: 1.5;">
                     @SelectedLog?.Description
-                </Paragraph>
+                </h5>
+                <Divider></Divider>
+                <Div Class="mt-3 d-flex align-items-center justify-content-between">
+                    <h5>
+                        @L["Editor"]:
+                        <span class="text-dark">
+                            @SelectedCreatorName
+                        </span>
+                    </h5>
+                    <h5>
+                        @L["EditedAt"]:
+                        <span class="text-dark">
+                            @SelectedLog?.CreationTime.ToString("yyyy/MM/dd HH:mm")
+                        </span>
+                    </h5>
+                </Div>
             </ModalBody>
             <ModalFooter>
                 <PikachuButton Class="pk-btn-sm pk-btn-danger"

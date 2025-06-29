@@ -10,5 +10,6 @@ public interface IInventoryLogAppService : IApplicationService
 {
     Task<InventoryLogDto> CreateAsync(CreateInventoryLogDto input);
     Task<PagedResultDto<InventoryLogDto>> GetListAsync(GetInventoryLogListDto input);
+    Task<string?> GetCreatorNameAsync(Guid creatorId);
     Task<IRemoteStreamContent> GetListAsExcelAsync(Guid itemId, Guid itemDetailId);
 }

@@ -21,6 +21,7 @@ public partial class InventoryLogs
     protected List<BreadcrumbItem> BreadcrumbItems { get; set; } = [];
     private InventoryDto Inventory { get; set; }
     private InventoryLogDto SelectedLog { get; set; }
+    private string SelectedCreatorName { get; set; }
     private IReadOnlyList<InventoryLogDto> InventoryLogList { get; set; } = [];
     private int PageSize { get; } = 30;
     private int CurrentPage { get; set; } = 1;
@@ -45,7 +46,7 @@ public partial class InventoryLogs
         Inventory = await InventoryAppService.GetAsync(ItemId, ItemDetailId);
         PageTitle = string.Join(" - ", new[] { Inventory.ItemName, Inventory.Attributes }.Where(x => !string.IsNullOrWhiteSpace(x)));
         BreadcrumbItems.AddRange([InventoryBreadcrumb, new(PageTitle)]);
-        
+
         await base.OnInitializedAsync();
     }
 
@@ -78,7 +79,7 @@ public partial class InventoryLogs
                     SkipCount = (CurrentPage - 1) * PageSize,
                     Sorting = CurrentSorting
                 });
-            
+
             InventoryLogList = result.Items;
             TotalCount = (int)result.TotalCount;
             StateHasChanged();
@@ -143,6 +144,24 @@ public partial class InventoryLogs
         {
             SelectedLog = log;
             await ViewModalRef.Show();
+            await GetCreatorName();
+        }
+    }
+
+    async Task GetCreatorName()
+    {
+        try
+        {
+            SelectedCreatorName = null!;
+            if (!SelectedLog.CreatorId.HasValue)
+            {
+                return;
+            }
+            SelectedCreatorName = await InventoryLogAppService.GetCreatorNameAsync(SelectedLog.CreatorId.Value);
+        }
+        catch (Exception ex)
+        {
+            await HandleErrorAsync(ex);
         }
     }
 

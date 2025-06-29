@@ -50,4 +50,15 @@ public class EfCoreInventoryLogRepository : EfCoreRepository<PikachuDbContext, I
         return queryable
             .Where(q => q.ItemId == itemId && q.ItemDetailId == itemDetailId);
     }
+
+    public async Task<string> GetCreatorNameAsync(Guid creatorId)
+    {
+        var dbContext = await GetDbContextAsync();
+
+        return await dbContext.Users
+            .IgnoreQueryFilters()
+            .Where(user => user.Id == creatorId)
+            .Select(user => user.UserName)
+            .FirstOrDefaultAsync();
+    }
 }

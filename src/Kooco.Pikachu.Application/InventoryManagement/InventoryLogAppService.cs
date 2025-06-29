@@ -66,6 +66,11 @@ public class InventoryLogAppService : PikachuAppService, IInventoryLogAppService
         };
     }
 
+    public async Task<string?> GetCreatorNameAsync(Guid creatorId)
+    {
+        return await _inventoryLogRepository.GetCreatorNameAsync(creatorId);
+    }
+
     public async Task<IRemoteStreamContent> GetListAsExcelAsync(Guid itemId, Guid itemDetailId)
     {
         var inventoryLogs = await _inventoryLogRepository.GetFilteredQueryableAsync(itemId, itemDetailId);
