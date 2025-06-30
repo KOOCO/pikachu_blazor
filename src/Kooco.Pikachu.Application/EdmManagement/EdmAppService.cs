@@ -37,7 +37,7 @@ public class EdmAppService : PikachuAppService, IEdmAppService
         await _validator.ValidateAndThrowAsync(input);
 
         var edm = await _edmManager.CreateAsync(input.TemplateType.Value, input.CampaignId,
-            input.ApplyToAllMembers.Value, input.MemberTags, input.GroupBuyId,
+            input.ApplyToAllMembers.Value, input.MemberTags, input.GroupBuyId.Value,
             input.StartDate.Value, input.EndDate, input.SendTime.Value, input.SendFrequency,
             input.Subject, input.Message);
 
@@ -56,7 +56,7 @@ public class EdmAppService : PikachuAppService, IEdmAppService
         _edmEmailService.CancelJob(edm);
 
         await _edmManager.UpdateAsync(edm, input.TemplateType.Value, input.CampaignId,
-            input.ApplyToAllMembers.Value, input.MemberTags, input.GroupBuyId,
+            input.ApplyToAllMembers.Value, input.MemberTags, input.GroupBuyId.Value,
             input.StartDate.Value, input.EndDate, input.SendTime.Value, input.SendFrequency,
             input.Subject, input.Message);
 

@@ -132,7 +132,7 @@ public class CampaignAppService : PikachuAppService, ICampaignAppService
             {
                 Id = q.Id,
                 Name = q.Name
-            })];
+            }).OrderBy(q => q.Name)];
     }
 
     public async Task<List<CampaignLookupWithModuleDto>> GetCampaignLookupWithModuleAsync()

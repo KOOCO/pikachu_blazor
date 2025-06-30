@@ -1,5 +1,6 @@
 using Blazored.TextEditor;
 using Blazorise;
+using Kooco.Pikachu.Campaigns;
 using Kooco.Pikachu.EdmManagement;
 using Kooco.Pikachu.Items.Dtos;
 using Kooco.Pikachu.Permissions;
@@ -19,9 +20,13 @@ public partial class CreateEdm
     private CreateEdmDto Entity { get; set; } = new();
     private IReadOnlyList<KeyValueDto> CampaignOptions { get; set; } = [];
     private IReadOnlyList<KeyValueDto> GroupBuyOptions { get; set; } = [];
+    private IReadOnlyList<KeyValueDto> FilteredGroupBuyOptions { get; set; } = [];
     private IReadOnlyList<string> MemberTagOptions { get; set; } = [];
+    private IReadOnlyList<string> FilteredMemberTagOptions { get; set; } = [];
     private IReadOnlyList<EdmTemplateType> TemplateTypeOptions { get; set; } = [.. Enum.GetValues<EdmTemplateType>()];
     private IReadOnlyList<EdmSendFrequency> SendFrequencyOptions { get; set; } = [.. Enum.GetValues<EdmSendFrequency>()];
+    private CampaignDto SelectedCampaign { get; set; }
+    private bool CanSelectAllMembers { get; set; }
     private string SelectedTab { get; set; }
     private bool Loading { get; set; }
 
@@ -31,6 +36,7 @@ public partial class CreateEdm
     private BlazoredTextEditor MessageHtml;
     private bool _htmlLoaded = false;
     private bool _htmlNeedsLoading = false;
+    private bool _firstLoad = true;
 
     public CreateEdm()
     {
@@ -56,6 +62,9 @@ public partial class CreateEdm
             CampaignOptions = await CampaignAppService.GetLookupAsync();
             MemberTagOptions = await MemberTagAppService.GetMemberTagNamesAsync();
 
+            FilteredGroupBuyOptions = [.. GroupBuyOptions];
+            FilteredMemberTagOptions = [.. MemberTagOptions];
+
             if (Id.HasValue)
             {
                 var edm = await EdmAppService.GetAsync(Id.Value);
@@ -65,6 +74,7 @@ public partial class CreateEdm
                 await ValidationsRef.ClearAll();
 
                 _htmlNeedsLoading = true;
+                _firstLoad = Entity.TemplateType == EdmTemplateType.Campaign;
             }
         }
         catch (Exception ex)
@@ -110,13 +120,18 @@ public partial class CreateEdm
         if (templateType != Entity.TemplateType)
         {
             Entity.TemplateType = templateType;
-            if (Entity.TemplateType == EdmTemplateType.ShoppingCart)
+
+            Entity.CampaignId = null;
+
+            ResetOptions();
+
+            Entity.Subject = Entity.TemplateType == EdmTemplateType.ShoppingCart
+                ? L["EdmTemplateTypeShoppingCartSubject"]
+                : Entity.Subject = string.Empty;
+
+            if (!_firstLoad)
             {
-                Entity.Subject = L["EdmTemplateTypeShoppingCartSubject"];
-            }
-            else
-            {
-                Entity.Subject = string.Empty;
+                ClearCampaignFields();
             }
 
             MessageHtml?.LoadHTMLContent(string.Empty);
@@ -135,10 +150,8 @@ public partial class CreateEdm
         {
             if (!Entity.CampaignId.HasValue) return;
 
-            var campaign = await CampaignAppService.GetAsync(Entity.CampaignId.Value);
-
             template = template
-                .Replace(EdmTemplatePlaceholders.PromotionModule, EdmTemplateConsts.GetTemplate(campaign.PromotionModule))
+                .Replace(EdmTemplatePlaceholders.PromotionModule, EdmTemplateConsts.GetTemplate(SelectedCampaign.PromotionModule))
                 .Replace("\n", "");
         }
 
@@ -147,17 +160,54 @@ public partial class CreateEdm
         StateHasChanged();
     }
 
-    void OnCampaignChanged(Guid? campaignId)
+    async Task OnCampaignChanged(Guid? campaignId)
     {
         _editContext.NotifyFieldChanged(new FieldIdentifier(Entity, nameof(Entity.CampaignId)));
 
+        SelectedCampaign = null!;
         if (campaignId.HasValue)
         {
-            var campaign = CampaignOptions.FirstOrDefault(c => c.Id == campaignId);
-            if (campaign != null)
-            {
-                Entity.Subject = campaign.Name;
-            }
+            SelectedCampaign = await CampaignAppService.GetAsync(campaignId.Value, true);
+        }
+
+        ClearCampaignFields();
+        ResetOptions();
+    }
+
+    void ClearCampaignFields()
+    {
+        if (_firstLoad)
+        {
+            _firstLoad = false;
+            return;
+        }
+
+        CanSelectAllMembers = true;
+        Entity.ApplyToAllMembers = null;
+        Entity.GroupBuyId = null;
+        Entity.MemberTags = [];
+    }
+
+    void ResetOptions()
+    {
+        CanSelectAllMembers = true;
+        FilteredMemberTagOptions = [.. MemberTagOptions];
+        FilteredGroupBuyOptions = [.. GroupBuyOptions];
+
+        if (Entity.TemplateType == EdmTemplateType.Campaign && SelectedCampaign != null)
+        {
+            Entity.Subject = SelectedCampaign.Name;
+
+            CanSelectAllMembers = SelectedCampaign.TargetAudience.Contains(CampaignConsts.TargetAudience.All)
+                || SelectedCampaign.TargetAudience.Contains(CampaignConsts.TargetAudience.AllMembers);
+
+            FilteredMemberTagOptions = CanSelectAllMembers
+                ? [.. MemberTagOptions]
+                : [.. MemberTagOptions.Where(tag => SelectedCampaign.TargetAudience.Any(audience => tag == audience))];
+
+            FilteredGroupBuyOptions = SelectedCampaign.ApplyToAllGroupBuys
+                ? [.. GroupBuyOptions]
+                : [.. GroupBuyOptions.Where(gb => SelectedCampaign.GroupBuys.Any(cgb => cgb.GroupBuyId == gb.Id))];
         }
     }
 

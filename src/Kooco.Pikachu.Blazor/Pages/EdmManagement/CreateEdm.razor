@@ -109,58 +109,62 @@
                             <Validation MessageLocalizer="@LH.Localize">
                                 <Field>
                                     <FieldLabel required>@L["MemberTags"]</FieldLabel>
-                                    <RadioGroup Orientation="Orientation.Vertical" TValue="bool?" Name="MemberTypes" @bind-CheckedValue="@Entity.ApplyToAllMembers">
+                                    <RadioGroup Orientation="Orientation.Vertical"
+                                                TValue="bool?"
+                                                Name="MemberTypes"
+                                                @bind-CheckedValue="@Entity.ApplyToAllMembers"
+                                                Disabled="Entity.TemplateType == EdmTemplateType.Campaign && !Entity.CampaignId.HasValue">
                                         <ChildContent>
-                                            <Radio TValue="bool?" Value="@true">@L["AllMembers"]</Radio>
+                                            <Radio TValue="bool?" Value="@true" Disabled="!CanSelectAllMembers">@L["AllMembers"]</Radio>
                                             <Radio TValue="bool?" Value="@false">@L["SpecificMemberTags"]</Radio>
                                         </ChildContent>
                                         <Feedback>
                                             <ValidationError />
                                         </Feedback>
                                     </RadioGroup>
-                                    @if (Entity.ApplyToAllMembers == false)
-                                    {
-                                        <Field indent>
-                                            <AntDesign.Select Mode="AntDesign.SelectMode.Multiple"
-                                                              Size="AntDesign.InputSize.Large"
-                                                              TItem="string"
-                                                              TItemValue="string"
-                                                              Placeholder="@L["SelectMemberTags"]"
-                                                              MaxTagCount="AntDesign.Select.ResponsiveTag.Responsive"
-                                                              EnableSearch
-                                                              AllowClear
-                                                              HideSelected
-                                                              Class="@ValidationClass(nameof(Entity.MemberTags))"
-                                                              @bind-Values="Entity.MemberTags">
-                                                <SelectOptions>
-                                                    @foreach (var item in MemberTagOptions)
-                                                    {
-                                                        <AntDesign.SelectOption TItemValue="string" TItem="string" Value=@item Label=@L[item] />
-                                                    }
-                                                </SelectOptions>
-                                            </AntDesign.Select>
-                                            <ValidationMessage For="() => Entity.MemberTags" />
-                                        </Field>
-                                    }
+                                    <Field indent>
+                                        <AntDesign.Select Mode="AntDesign.SelectMode.Multiple"
+                                                          Size="AntDesign.InputSize.Large"
+                                                          TItem="string"
+                                                          TItemValue="string"
+                                                          Placeholder="@L["SelectMemberTags"]"
+                                                          MaxTagCount="AntDesign.Select.ResponsiveTag.Responsive"
+                                                          EnableSearch
+                                                          AllowClear
+                                                          ShowArrowIcon
+                                                          HideSelected
+                                                          Class="@ValidationClass(nameof(Entity.MemberTags))"
+                                                          Disabled="Entity.ApplyToAllMembers != false"
+                                                          @bind-Values="Entity.MemberTags">
+                                            <SelectOptions>
+                                                @foreach (var item in FilteredMemberTagOptions)
+                                                {
+                                                    <AntDesign.SelectOption TItemValue="string" TItem="string" Value=@item Label=@L[item] />
+                                                }
+                                            </SelectOptions>
+                                        </AntDesign.Select>
+                                        <ValidationMessage For="() => Entity.MemberTags" />
+                                    </Field>
                                 </Field>
                             </Validation>
                             <Field>
                                 <FieldLabel required>@L["GroupBuy"]</FieldLabel>
                                 <Field>
                                     <AntDesign.Select Size="AntDesign.InputSize.Large"
-                                                      TItem="Guid"
-                                                      TItemValue="Guid"
+                                                      TItem="Guid?"
+                                                      TItemValue="Guid?"
                                                       Placeholder="@L["SelectGroupBuy"]"
                                                       EnableSearch
                                                       AllowClear
                                                       HideSelected
                                                       Class="@ValidationClass(nameof(Entity.GroupBuyId))"
                                                       OnSelectedItemChanged="() => _editContext.NotifyFieldChanged(new FieldIdentifier(Entity, nameof(Entity.GroupBuyId)))"
+                                                      Disabled="Entity.TemplateType == EdmTemplateType.Campaign && !Entity.CampaignId.HasValue"
                                                       @bind-Value="Entity.GroupBuyId">
                                         <SelectOptions>
-                                            @foreach (var item in GroupBuyOptions)
+                                            @foreach (var item in FilteredGroupBuyOptions)
                                             {
-                                                <AntDesign.SelectOption TItemValue="Guid" TItem="Guid" Value=@item.Id Label=@item.Name />
+                                                <AntDesign.SelectOption TItemValue="Guid?" TItem="Guid?" Value=@item.Id Label=@item.Name />
                                             }
                                         </SelectOptions>
                                     </AntDesign.Select>

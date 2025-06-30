@@ -9,7 +9,7 @@ public class CreateEdmDto
     public Guid? CampaignId { get; set; }
     public bool? ApplyToAllMembers { get; set; }
     public IEnumerable<string> MemberTags { get; set; }
-    public Guid GroupBuyId { get; set; }
+    public Guid? GroupBuyId { get; set; }
     public DateTime? StartDate { get; set; }
     public DateTime? EndDate { get; set; }
     public DateTime? SendTime { get; set; }

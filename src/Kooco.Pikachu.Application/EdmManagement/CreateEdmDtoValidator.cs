@@ -29,7 +29,7 @@ public class CreateEdmDtoValidator : AbstractValidator<CreateEdmDto>
             .WithMessage(Required(nameof(CreateEdmDto.MemberTags)));
 
         RuleFor(x => x.GroupBuyId)
-            .NotEmpty()
+            .NotNull()
             .WithMessage(Required("GroupBuy"));
 
         RuleFor(x => x.StartDate)
