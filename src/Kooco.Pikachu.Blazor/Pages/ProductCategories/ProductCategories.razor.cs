@@ -1,5 +1,6 @@
 using Blazorise;
 using Blazorise.DataGrid;
+using Blazorise.Extensions;
 using Kooco.Pikachu.Permissions;
 using Kooco.Pikachu.ProductCategories;
 using Microsoft.AspNetCore.Authorization;
@@ -14,11 +15,12 @@ namespace Kooco.Pikachu.Blazor.Pages.ProductCategories;
 public partial class ProductCategories
 {
     private IReadOnlyList<ProductCategoryDto> ProductCategoryList { get; set; }
+    private IReadOnlyList<ProductCategoryDto> ProductSubCategoryList { get; set; }
     private int PageSize { get; } = LimitedResultRequestDto.DefaultMaxResultCount;
     private int CurrentPage { get; set; } = 1;
     private string CurrentSorting { get; set; }
     private int TotalCount { get; set; }
-
+    private HashSet<Guid> rowsWithDetail = [];
     private bool CanCreateProductCategory { get; set; }
     private bool CanEditProductCategory { get; set; }
     private bool CanDeleteProductCategory { get; set; }
@@ -34,6 +36,7 @@ public partial class ProductCategories
     public ProductCategories()
     {
         ProductCategoryList = [];
+        ProductSubCategoryList = [];
         Filters = new();
         Selected = new();
     }
@@ -50,7 +53,23 @@ public partial class ProductCategories
         CanEditProductCategory = await AuthorizationService.IsGrantedAsync(PikachuPermissions.ProductCategories.Edit);
         CanDeleteProductCategory = await AuthorizationService.IsGrantedAsync(PikachuPermissions.ProductCategories.Delete);
     }
+    async Task<bool> DisplayDetailRow(ProductCategoryDto category)
+    {
+        ProductSubCategoryList = await ProductCategoryAppService.GetSubCategoryListAsync(category.Id);
+        return ProductSubCategoryList.Count > 0 ? true : false;
 
+
+    }
+    
+
+    async void RowClicked(DataGridRowMouseEventArgs<ProductCategoryDto> clickedRow)
+    {
+        var id = clickedRow.Item.Id;
+        if (!rowsWithDetail.Add(id))
+            rowsWithDetail.Remove(id);
+      ProductSubCategoryList=  await ProductCategoryAppService.GetSubCategoryListAsync(id);
+        await InvokeAsync(StateHasChanged);
+    }
     private async Task GetProductCategoriesAsync()
     {
         try
@@ -92,12 +111,18 @@ public partial class ProductCategories
     {
         NavigationManager.NavigateTo("/Product-Categories/Create");
     }
-
+    private void CreateSub()
+    {
+        NavigationManager.NavigateTo("/Product-Categories/Create"+true);
+    }
     private void Edit(ProductCategoryDto productCategory)
     {
         NavigationManager.NavigateTo("/Product-Categories/Edit/" + productCategory.Id);
     }
-
+    private void EditSub(ProductCategoryDto productCategory)
+    {
+        NavigationManager.NavigateTo("/Product-Categories/Edit/" + productCategory.Id+"/"+true);
+    }
     private async Task DeleteAsync(ProductCategoryDto productCategory)
     {
         try

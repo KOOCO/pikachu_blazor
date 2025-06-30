@@ -24,7 +24,7 @@ public class ProductCategoryAppService(ProductCategoryManager productCategoryMan
     {
         Check.NotNull(input, nameof(input));
 
-        var productCategory = await productCategoryManager.CreateAsync(input.Name, input.Description);
+        var productCategory = await productCategoryManager.CreateAsync(input.Name,input.ZHName, input.Description,input.MainCategoryId);
 
         AddCollections(productCategory, input.ProductCategoryImages, input.CategoryProducts, clearExisting: false);
 
@@ -48,7 +48,11 @@ public class ProductCategoryAppService(ProductCategoryManager productCategoryMan
 
         return ObjectMapper.Map<ProductCategory, ProductCategoryDto>(await productCategory);
     }
-
+    public async Task<List<ProductCategoryDto>> GetSubCategoryListAsync(Guid mainCategoryId)
+    {
+        var items = (await productCategoryRepository.GetQueryableAsync()).Where(x => x.MainCategoryId == mainCategoryId).ToList();
+        return ObjectMapper.Map<List<ProductCategory>, List<ProductCategoryDto>>(items);
+    }
     public async Task<PagedResultDto<ProductCategoryDto>> GetListAsync(GetProductCategoryListDto input)
     {
         var totalCount = await productCategoryRepository.GetCountAsync(input.Filter);
@@ -67,7 +71,7 @@ public class ProductCategoryAppService(ProductCategoryManager productCategoryMan
     {
         var productCategory = await productCategoryRepository.GetWithDetailsAsync(id);
 
-        await productCategoryManager.UpdateAsync(productCategory, input.Name, input.Description);
+        await productCategoryManager.UpdateAsync(productCategory, input.Name,input.ZHName, input.Description,input.MainCategoryId);
 
         AddCollections(productCategory, input.ProductCategoryImages, input.CategoryProducts, clearExisting: true);
 
@@ -137,7 +141,12 @@ public class ProductCategoryAppService(ProductCategoryManager productCategoryMan
         var queryable = await productCategoryRepository.GetQueryableAsync();
         return [.. queryable.Select(x => new KeyValueDto { Id = x.Id, Name = x.Name })];
     }
-
+    [AllowAnonymous]
+    public async Task<List<KeyValueDto>> GetMainProductCategoryLookupAsync()
+    {
+        var queryable = await productCategoryRepository.GetQueryableAsync();
+        return [.. queryable.Where(x=>x.MainCategoryId==null).Select(x => new KeyValueDto { Id = x.Id, Name = x.Name })];
+    }
     [AllowAnonymous]
     public async Task<string?> GetDefaultImageUrlAsync(Guid id)
     {

@@ -1,4 +1,5 @@
 ﻿@page "/Product-Categories/Edit/{Id:guid}"
+@page "/Product-Categories/Edit/{Id:guid}/{IsSubCategory:bool}"
 @using Blazored.TextEditor
 @using Blazorise.Components
 @using Kooco.Pikachu.AzureStorage.Image
@@ -71,6 +72,16 @@
                                 </TextEdit>
                             </Field>
                         </Validation>
+                         <Validation MessageLocalizer="@LH.Localize">
+                            <Field>
+                                <FieldLabel>@L["ZHName"] *</FieldLabel>
+                                <TextEdit @bind-Text="@EditingEntity.ZHName">
+                                    <Feedback>
+                                        <ValidationError />
+                                    </Feedback>
+                                </TextEdit>
+                            </Field>
+                        </Validation>
                         <Field>
                             <FieldLabel>@L["Description"]</FieldLabel>
                             <BlazoredTextEditor @ref="@DescriptionHtml" Placeholder="@L["Composeanepic"]">
@@ -110,6 +121,32 @@
                             </BlazoredTextEditor>
                         </Field>
                     </Column>
+                       @if(IsSubCategory)
+                    {
+                          <Column ColumnSize="ColumnSize.Is12.Is3.OnDesktop">
+                       
+                    </Column>
+                    <Column ColumnSize="ColumnSize.Is12.Is9.OnDesktop">
+                           <Validation  Validator="ValidationRule.IsSelected"   MessageLocalizer="@LH.Localize">
+                           <Field>
+                                <FieldLabel>@L["SelectMainCategory"] *</FieldLabel>
+                       <SelectList 
+    TItem="KeyValueDto"
+    TValue="Guid?"
+    Data="@MainCategoryList"
+    @bind-SelectedValue="@EditingEntity.MainCategoryId"
+    TextField="@(item => item.Name)"
+    ValueField="@(item => item.Id)"
+     DefaultItemText="@L["SelectMainCategory"]"
+>
+    <Feedback>
+        <ValidationError />
+    </Feedback>
+</SelectList>
+                                    </Field>
+                                    </Validation>
+                    </Column>
+                    }
                 </Row>
                 <Divider></Divider>
                 <Row>

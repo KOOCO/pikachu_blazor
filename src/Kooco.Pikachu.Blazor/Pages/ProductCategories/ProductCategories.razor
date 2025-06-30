@@ -5,6 +5,7 @@
 @inherits PikachuComponentBase
 @inject IProductCategoryAppService ProductCategoryAppService
 @inject NavigationManager NavigationManager
+@using System.Globalization
 
 <Div>
     <Row>
@@ -16,7 +17,12 @@
             <Column ColumnSize="ColumnSize.Is12.Is6.OnDesktop" TextAlignment="TextAlignment.End">
                 <PikachuButton Class="pk-btn-sm pk-btn-primary" Clicked="Create">
                     <Icon Name="IconName.Add"></Icon>
-                    @L["AddNew"]
+                    @L["AddMain"]
+                </PikachuButton>
+
+                <PikachuButton Class="pk-btn-sm pk-btn-primary" Clicked="CreateSub">
+                    <Icon Name="IconName.Add"></Icon>
+                    @L["AddSub"]
                 </PikachuButton>
             </Column>
         }
@@ -35,22 +41,25 @@
 <Card>
     <CardBody>
         <DataGrid TItem="ProductCategoryDto"
-                  Data="ProductCategoryList"
-                  ReadData="OnDataGridReadAsync"
-                  TotalItems="TotalCount"
-                  ShowPager="true"
-                  PageSize="PageSize"
-                  CurrentPage="CurrentPage"
-                  Hoverable
-                  Narrow
-                  Responsive
-                  Striped>
+        Data="ProductCategoryList"
+        ReadData="OnDataGridReadAsync"
+        TotalItems="TotalCount"
+        ShowPager="true"
+        PageSize="PageSize"
+        CurrentPage="CurrentPage"
+        @bind-SelectedRow="Selected"
+        RowClicked="RowClicked"
+        DetailRowTrigger="@((e)=>e.Item.Id == Selected?.Id)"
+        Hoverable
+        Narrow
+        Responsive
+        Striped>
             <DataGridColumns>
                 <DataGridColumn Width="150px"
-                                TItem="ProductCategoryDto"
-                                Field="@nameof(ProductCategoryDto.Id)"
-                                Sortable="false"
-                                Caption="@L["Actions"]">
+                TItem="ProductCategoryDto"
+                Field="@nameof(ProductCategoryDto.Id)"
+                Sortable="false"
+                Caption="@L["Actions"]">
                     <DisplayTemplate>
                         <Dropdown>
                             <DropdownToggle Color="Color.Primary">
@@ -74,24 +83,40 @@
                     </DisplayTemplate>
                 </DataGridColumn>
                 <DataGridColumn TItem="ProductCategoryDto"
-                                Field="@nameof(ProductCategoryDto.Name)"
-                                Caption="@L["Name"]">
+                Field="@nameof(ProductCategoryDto.Name)"
+                Caption="@L["Name"]">
+                    <DisplayTemplate >
+                        @if (CultureInfo.CurrentCulture.TwoLetterISOLanguageName == "zh")
+                        {
+                            if(context.ZHName.IsNullOrEmpty())
+                            {
+                                @context.Name;
+                            }
+                            else{
+                                @context.ZHName;
+                            }
+                        }
+                        else
+                        {
+                            @context.Name;
+                        }
+                    </DisplayTemplate>
                 </DataGridColumn>
                 <DataGridColumn TItem="ProductCategoryDto"
-                                Field="@nameof(ProductCategoryDto.Description)"
-                                Caption="@L["Description"]"
-                                TextAlignment="TextAlignment.Center"
-                                HeaderTextAlignment="TextAlignment.Center">
+                Field="@nameof(ProductCategoryDto.Description)"
+                Caption="@L["Description"]"
+                TextAlignment="TextAlignment.Center"
+                HeaderTextAlignment="TextAlignment.Center">
                     <DisplayTemplate>
                         <Icon Name="IconName.Eye" Clicked="() => ViewDescription(context)" Class="cursor-pointer"></Icon>
                     </DisplayTemplate>
                 </DataGridColumn>
                 <DataGridColumn TItem="ProductCategoryDto"
-                                Field="@nameof(ProductCategoryDto.ProductCategoryImages)"
-                                Sortable="false"
-                                Caption="@L["CarousalImages"]"
-                                TextAlignment="TextAlignment.Center"
-                                HeaderTextAlignment="TextAlignment.Center">
+                Field="@nameof(ProductCategoryDto.ProductCategoryImages)"
+                Sortable="false"
+                Caption="@L["CarousalImages"]"
+                TextAlignment="TextAlignment.Center"
+                HeaderTextAlignment="TextAlignment.Center">
                     <DisplayTemplate>
                         @if (context.ProductCategoryImages.Count > 0)
                         {
@@ -100,6 +125,92 @@
                     </DisplayTemplate>
                 </DataGridColumn>
             </DataGridColumns>
+            <DetailRowTemplate >
+
+
+                <h4>@L["SubCategories"]</h4>
+                <DataGrid TItem="ProductCategoryDto"
+                Data="ProductSubCategoryList"
+
+                Hoverable
+
+                Responsive
+                Striped>
+                    <DataGridColumns>
+                        <DataGridColumn Width="150px"
+                        TItem="ProductCategoryDto"
+                        Field="@nameof(ProductCategoryDto.Id)"
+                        Sortable="false"
+                        Caption="@L["Actions"]">
+                            <DisplayTemplate Context="row">
+                                <Dropdown>
+                                    <DropdownToggle Color="Color.Primary">
+                                        @L["Actions"]
+                                    </DropdownToggle>
+                                    <DropdownMenu>
+                                        @if (CanEditProductCategory)
+                                        {
+                                            <DropdownItem Clicked="() => EditSub(row)">
+                                                @L["Edit"]
+                                            </DropdownItem>
+                                        }
+                                        @if (CanDeleteProductCategory)
+                                        {
+                                            <DropdownItem Clicked="() => DeleteAsync(row)">
+                                                @L["Delete"]
+                                            </DropdownItem>
+                                        }
+                                    </DropdownMenu>
+                                </Dropdown>
+                            </DisplayTemplate>
+                        </DataGridColumn>
+                        <DataGridColumn TItem="ProductCategoryDto"
+                        Field="@nameof(ProductCategoryDto.Name)"
+                        Caption="@L["Name"]">
+                            <DisplayTemplate Context="item">
+                                @if (CultureInfo.CurrentCulture.TwoLetterISOLanguageName == "zh")
+                                {
+                                    if(item.ZHName.IsNullOrEmpty())
+                                    {
+                                        @item.Name;
+                                    }
+            else{
+            @item.ZHName;
+            }
+        }
+        else
+        {
+            @item.Name;
+        }
+    </DisplayTemplate>
+                </DataGridColumn>
+                <DataGridColumn TItem="ProductCategoryDto"
+                                Field="@nameof(ProductCategoryDto.Description)"
+                                Caption="@L["Description"]"
+                                TextAlignment="TextAlignment.Center"
+                                HeaderTextAlignment="TextAlignment.Center">
+                    <DisplayTemplate Context="row">
+                        <Icon Name="IconName.Eye" Clicked="() => ViewDescription(row)" Class="cursor-pointer"></Icon>
+                    </DisplayTemplate>
+                </DataGridColumn>
+                <DataGridColumn TItem="ProductCategoryDto"
+                                Field="@nameof(ProductCategoryDto.ProductCategoryImages)"
+                                Sortable="false"
+                                Caption="@L["CarousalImages"]"
+                                TextAlignment="TextAlignment.Center"
+                                HeaderTextAlignment="TextAlignment.Center">
+                    <DisplayTemplate Context="row">
+                        @if (row.ProductCategoryImages.Count > 0)
+                        {
+                            <Icon Name="IconName.Eye" Clicked="() => ViewCarousal(row)" Class="cursor-pointer"></Icon>
+                        }
+                    </DisplayTemplate>
+                </DataGridColumn>
+            </DataGridColumns>
+        
+        </DataGrid>
+        
+    </DetailRowTemplate>
         </DataGrid>
     </CardBody>
 </Card>

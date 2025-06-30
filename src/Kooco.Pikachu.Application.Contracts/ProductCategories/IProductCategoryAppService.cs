@@ -17,4 +17,6 @@ public interface IProductCategoryAppService : IApplicationService
     Task<List<CreateUpdateProductCategoryImageDto>> UploadImagesAsync(List<CreateUpdateProductCategoryImageDto> input, bool deleteExisting = false);
     Task<List<KeyValueDto>> GetProductCategoryLookupAsync();
     Task<string?> GetDefaultImageUrlAsync(Guid id);
+    Task<List<KeyValueDto>> GetMainProductCategoryLookupAsync();
+    Task<List<ProductCategoryDto>> GetSubCategoryListAsync(Guid mainCategoryId);
 }
