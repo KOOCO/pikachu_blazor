@@ -14,11 +14,11 @@ public class CartItem : FullAuditedEntity<Guid>, IMultiTenant
     public Guid? ItemId { get; private set; }
     public int Quantity { get; set; }
     public int GroupBuyPrice { get; private set; }
-    public int SellingPrice { get;private set; }   // Newly added
+    public int SellingPrice { get; private set; }
     public Guid? TenantId { get; set; }
     public Guid? ItemDetailId { get; private set; }
     public Guid? SetItemId { get; private set; }
- 
+
     [ForeignKey(nameof(ShopCartId))]
     public virtual ShopCart? ShopCart { get; set; }
 
@@ -89,6 +89,7 @@ public class CartItem : FullAuditedEntity<Guid>, IMultiTenant
     {
         GroupBuyPrice = Check.Range(groupBuyPrice, nameof(groupBuyPrice), 0, int.MaxValue);
     }
+
     private void SetSellingPrice(int sellingPrice)
     {
         SellingPrice = Check.Range(sellingPrice, nameof(sellingPrice), 0, int.MaxValue);

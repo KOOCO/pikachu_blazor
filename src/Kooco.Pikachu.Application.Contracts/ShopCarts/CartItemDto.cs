@@ -9,6 +9,7 @@ public class CartItemDto : FullAuditedEntityDto<Guid>
     public Guid? ItemId { get; set; }
     public int Quantity { get; set; }
     public int GroupBuyPrice { get; set; }
+    public int SellingPrice { get; set; }
     public string? ItemName { get; set; }
     public Guid? ItemDetailId { get; set; }
     public Guid? SetItemId { get; set; }
