@@ -20,6 +20,8 @@ public partial class EditProductCategory
 {
     [Parameter]
     public Guid Id { get; set; }
+    [Parameter]
+    public bool IsSubCategory { get; set; } = false;
     private ProductCategoryDto Selected { get; set; }
     private UpdateProductCategoryDto EditingEntity { get; set; }
     private Validations ValidationsRef;
@@ -32,11 +34,12 @@ public partial class EditProductCategory
     private string? SelectedAutoCompleteText { get; set; }
     private List<ItemWithItemTypeDto> ItemsLookup { get; set; }
     private bool RowLoading { get; set; } = false;
-
+    private List<KeyValueDto> MainCategoryList { get; set; }
     public EditProductCategory()
     {
         EditingEntity = new();
         ItemsLookup = [];
+        MainCategoryList = [];
     }
 
     protected override async Task OnInitializedAsync()
@@ -58,11 +61,17 @@ public partial class EditProductCategory
             try
             {
                 await JSRuntime.InvokeVoidAsync("updateDropText");
+                if (IsSubCategory)
+                {
+                    MainCategoryList = await ProductCategoryAppService.GetMainProductCategoryLookupAsync();
+                }
                 Selected = await ProductCategoryAppService.GetAsync(Id, true);
                 EditingEntity = ObjectMapper.Map<ProductCategoryDto, UpdateProductCategoryDto>(Selected);
                 ItemsLookup = await ItemAppService.GetItemsLookupAsync();
                 await LoadHtmlContent();
+               
                 await PopulateItems();
+              
                 StateHasChanged();
             }
             catch (Exception ex)

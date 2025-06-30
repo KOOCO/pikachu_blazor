@@ -6,6 +6,7 @@ using Kooco.Pikachu.Blazor.Helpers;
 using Kooco.Pikachu.Extensions;
 using Kooco.Pikachu.Items.Dtos;
 using Kooco.Pikachu.ProductCategories;
+using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Logging;
 using Microsoft.JSInterop;
 using System;
@@ -24,16 +25,18 @@ public partial class CreateProductCategory
     private bool IsLoading { get; set; }
     private FilePicker FilePicker;
     private int CurrentIndex { get; set; }
-
+    [Parameter]
+    public bool IsSubCategory { get; set; } = false;
     private Autocomplete<ItemWithItemTypeDto, Guid?> AutocompleteField { get; set; }
     private string? SelectedAutoCompleteText { get; set; }
     private List<ItemWithItemTypeDto> ItemsLookup { get; set; }
     private bool RowLoading { get; set; } = false;
-
+    private List<KeyValueDto> MainCategoryList { get; set; }
     public CreateProductCategory()
     {
         NewEntity = new();
         ItemsLookup = [];
+        MainCategoryList = [];
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -44,6 +47,10 @@ public partial class CreateProductCategory
             {
                 await JSRuntime.InvokeVoidAsync("updateDropText");
                 ItemsLookup = await ItemAppService.GetItemsLookupAsync();
+                if (IsSubCategory)
+                {
+                    MainCategoryList = await ProductCategoryAppService.GetMainProductCategoryLookupAsync();
+                }
                 StateHasChanged();
             }
             catch (Exception ex)

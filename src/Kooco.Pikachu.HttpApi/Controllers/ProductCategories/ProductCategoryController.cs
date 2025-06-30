@@ -45,11 +45,21 @@ public class ProductCategoryController(IProductCategoryAppService productCategor
     {
         return productCategoryAppService.GetListAsync(input);
     }
+    [HttpGet("main-lookup")]
+    public Task<List<KeyValueDto>> GetMainProductCategoryLookupAsync()
+    {
+        return productCategoryAppService.GetMainProductCategoryLookupAsync();
+    }
 
     [HttpGet("lookup")]
     public Task<List<KeyValueDto>> GetProductCategoryLookupAsync()
     {
         return productCategoryAppService.GetProductCategoryLookupAsync();
+    }
+    [HttpGet("sub-category")]
+    public Task<List<ProductCategoryDto>> GetSubCategoryListAsync(Guid mainCategoryId)
+    {
+        return productCategoryAppService.GetSubCategoryListAsync(mainCategoryId);
     }
 
     [HttpPut("{id}")]

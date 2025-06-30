@@ -15,13 +15,13 @@ public class EfCoreProductCategoryRepository(IDbContextProvider<PikachuDbContext
     public async Task<long> GetCountAsync(string? filter)
     {
         var queryable = await GetFilteredQueryableAsync(filter);
-        return await queryable.LongCountAsync();
+        return await queryable.Where(x=>x.MainCategoryId==null).LongCountAsync();
     }
 
     public async Task<List<ProductCategory>> GetListAsync(int skipCount, int maxResultCount, string sorting, string? filter)
     {
         var queryable = await GetFilteredQueryableAsync(filter);
-        return await queryable
+        return await queryable.Where(x=>x.MainCategoryId==null)
             .OrderBy(sorting.IsNullOrWhiteSpace() ? ProductCategoryConsts.DefaultSorting : sorting)
             .PageBy(skipCount, maxResultCount)
             .Include(x => x.ProductCategoryImages)
@@ -30,7 +30,7 @@ public class EfCoreProductCategoryRepository(IDbContextProvider<PikachuDbContext
 
     public async Task<IQueryable<ProductCategory>> GetFilteredQueryableAsync(string? filter = null)
     {
-        var queryable = await GetQueryableAsync();
+        var queryable = (await GetQueryableAsync()).Where(x=>x.MainCategoryId==null);
         return queryable
             .WhereIf(!filter.IsNullOrEmpty(), x => x.Name.Contains(filter) || (x.Description != null && x.Description.Contains(filter)));
     }
@@ -43,7 +43,14 @@ public class EfCoreProductCategoryRepository(IDbContextProvider<PikachuDbContext
             .Where(category => name == category.Name.ToLower())
             .FirstOrDefaultAsync();
     }
-
+    public async Task<ProductCategory?> FindByZhNameAsync(string name)
+    {
+        name = name.ToLowerInvariant();
+        var queryable = await GetQueryableAsync();
+        return await queryable
+            .Where(category => name == category.ZHName.ToLower())
+            .FirstOrDefaultAsync();
+    }
     public async Task<ProductCategory> GetWithDetailsAsync(Guid id, bool includeItem = false)
     {
         var queryable = await GetQueryableAsync();
