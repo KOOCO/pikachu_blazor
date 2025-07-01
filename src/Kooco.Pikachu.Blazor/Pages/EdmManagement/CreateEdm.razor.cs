@@ -212,6 +212,10 @@ public partial class CreateEdm
             Entity.MemberTags = Entity.MemberTags
                 .Where(tag => FilteredMemberTagOptions.Contains(tag));
 
+            Entity.GroupBuyId = FilteredGroupBuyOptions
+                .Where(gbo => gbo.Id == Entity.GroupBuyId)
+                .FirstOrDefault()?.Id;
+
             StateHasChanged();
         }
     }
