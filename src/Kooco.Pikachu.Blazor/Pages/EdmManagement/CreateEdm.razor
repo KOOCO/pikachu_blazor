@@ -11,6 +11,7 @@
 @using Kooco.Pikachu.Localization
 @using Kooco.Pikachu.Members.MemberTags
 @using Volo.Abp.AspNetCore.Components.Web
+@using Kooco.Pikachu.Items.Dtos
 @using static Kooco.Pikachu.EdmManagement.EdmTemplateConsts
 @inherits PikachuComponentBase
 @inject AbpBlazorMessageLocalizerHelper<PikachuResource> LH
@@ -127,21 +128,17 @@
                                                           Size="AntDesign.InputSize.Large"
                                                           TItem="string"
                                                           TItemValue="string"
+                                                          DataSource="@FilteredMemberTagOptions"
                                                           Placeholder="@L["SelectMemberTags"]"
                                                           MaxTagCount="AntDesign.Select.ResponsiveTag.Responsive"
                                                           EnableSearch
                                                           AllowClear
-                                                          ShowArrowIcon
                                                           HideSelected
+                                                          ShowArrowIcon
+                                                          IgnoreItemChanges="false"
                                                           Class="@ValidationClass(nameof(Entity.MemberTags))"
                                                           Disabled="Entity.ApplyToAllMembers != false"
                                                           @bind-Values="Entity.MemberTags">
-                                            <SelectOptions>
-                                                @foreach (var item in FilteredMemberTagOptions)
-                                                {
-                                                    <AntDesign.SelectOption TItemValue="string" TItem="string" Value=@item Label=@L[item] />
-                                                }
-                                            </SelectOptions>
                                         </AntDesign.Select>
                                         <ValidationMessage For="() => Entity.MemberTags" />
                                     </Field>
@@ -151,22 +148,20 @@
                                 <FieldLabel required>@L["GroupBuy"]</FieldLabel>
                                 <Field>
                                     <AntDesign.Select Size="AntDesign.InputSize.Large"
-                                                      TItem="Guid?"
+                                                      TItem="KeyValueDto"
                                                       TItemValue="Guid?"
+                                                      DataSource="@FilteredGroupBuyOptions"
+                                                      LabelName="@nameof(KeyValueDto.Name)"
+                                                      ValueName="@nameof(KeyValueDto.Id)"
                                                       Placeholder="@L["SelectGroupBuy"]"
                                                       EnableSearch
                                                       AllowClear
                                                       HideSelected
+                                                      IgnoreItemChanges="false"
                                                       Class="@ValidationClass(nameof(Entity.GroupBuyId))"
                                                       OnSelectedItemChanged="() => _editContext.NotifyFieldChanged(new FieldIdentifier(Entity, nameof(Entity.GroupBuyId)))"
                                                       Disabled="Entity.TemplateType == EdmTemplateType.Campaign && !Entity.CampaignId.HasValue"
                                                       @bind-Value="Entity.GroupBuyId">
-                                        <SelectOptions>
-                                            @foreach (var item in FilteredGroupBuyOptions)
-                                            {
-                                                <AntDesign.SelectOption TItemValue="Guid?" TItem="Guid?" Value=@item.Id Label=@item.Name />
-                                            }
-                                        </SelectOptions>
                                     </AntDesign.Select>
                                     <ValidationMessage For="() => Entity.GroupBuyId" />
                                 </Field>

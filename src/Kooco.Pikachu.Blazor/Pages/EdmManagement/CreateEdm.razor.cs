@@ -208,6 +208,11 @@ public partial class CreateEdm
             FilteredGroupBuyOptions = SelectedCampaign.ApplyToAllGroupBuys
                 ? [.. GroupBuyOptions]
                 : [.. GroupBuyOptions.Where(gb => SelectedCampaign.GroupBuys.Any(cgb => cgb.GroupBuyId == gb.Id))];
+
+            Entity.MemberTags = Entity.MemberTags
+                .Where(tag => FilteredMemberTagOptions.Contains(tag));
+
+            StateHasChanged();
         }
     }
 
