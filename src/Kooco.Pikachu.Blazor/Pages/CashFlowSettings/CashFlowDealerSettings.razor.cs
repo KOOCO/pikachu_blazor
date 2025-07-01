@@ -19,9 +19,13 @@ public partial class CashFlowDealerSettings
     private bool IsChinaTrustNotExists = false;
 
     private bool IsEcPayNotExists = false;
+
+    private bool IsManualBankTransferNotExist = false;
+
     private UpdateOrderValidityDto OrderValidity { get; set; }
     private UpdateChinaTrustDto ChinaTrust { get; set; }
     private UpdateEcPayDto EcPay { get; set; }
+    private UpdateManualBankTransferDto ManualBankTransfer { get; set; }
     private LoadingIndicator Loading { get; set; }
     #endregion
     #region Constructor
@@ -31,6 +35,7 @@ public partial class CashFlowDealerSettings
         ChinaTrust = new UpdateChinaTrustDto();
         EcPay = new UpdateEcPayDto();
         OrderValidity = new UpdateOrderValidityDto();
+        ManualBankTransfer = new();
     }
     #endregion
 
@@ -57,6 +62,11 @@ public partial class CashFlowDealerSettings
 
             if (ecPay is not null) EcPay = ObjectMapper.Map<PaymentGatewayDto, UpdateEcPayDto>(ecPay);
 
+            var manualBankTransfer = paymentGateways.FirstOrDefault(x => x.PaymentIntegrationType is PaymentIntegrationType.ManualBankTransfer);
+            
+            ManualBankTransfer = ObjectMapper.Map<PaymentGatewayDto, UpdateManualBankTransferDto>(manualBankTransfer);
+
+            IsManualBankTransferNotExist = manualBankTransfer == null;
 
             var orderValidity = paymentGateways.Where(x => x.PaymentIntegrationType == PaymentIntegrationType.OrderValidatePeriod).FirstOrDefault();
             if (orderValidity != null)
@@ -201,6 +211,23 @@ public partial class CashFlowDealerSettings
         {
             await Loading.Hide();
             StateHasChanged();
+        }
+    }
+
+    async Task UpdateManualBankTransferAsync()
+    {
+        try
+        {
+            await Loading.Show();
+            await _paymentGatewayAppService.UpdateManualBankTransferAsync(ManualBankTransfer);
+        }
+        catch (Exception ex)
+        {
+            await HandleErrorAsync(ex);
+        }
+        finally
+        {
+            await Loading.Hide();
         }
     }
 

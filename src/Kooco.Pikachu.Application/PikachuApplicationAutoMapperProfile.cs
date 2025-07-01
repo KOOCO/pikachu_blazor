@@ -144,6 +144,8 @@ public class PikachuApplicationAutoMapperProfile : Profile
         CreateMap<PaymentGatewayDto, UpdateChinaTrustDto>();
         CreateMap<PaymentGatewayDto, UpdateEcPayDto>();
         CreateMap<PaymentGatewayDto, UpdateOrderValidityDto>();
+        CreateMap<PaymentGatewayDto, UpdateManualBankTransferDto>();
+        CreateMap<PaymentGateway, ManualBankTransferDto>();
 
         CreateMap<TenantEmailSettings, TenantEmailSettingsDto>();
         CreateMap<TenantEmailSettingsDto, CreateUpdateTenantEmailSettingsDto>();

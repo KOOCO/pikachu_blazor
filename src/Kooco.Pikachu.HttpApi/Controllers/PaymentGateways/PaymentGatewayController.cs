@@ -165,6 +165,17 @@ public class PaymentGatewayController(
         return _paymentGatewayAppService.GetLinePayAsync(decrypt);
     }
 
+    [HttpGet("manual-bank-transfer")]
+    public Task<ManualBankTransferDto?> GetManualBankTransferAsync()
+    {
+        return _paymentGatewayAppService.GetManualBankTransferAsync();
+    }
+
+    [HttpPut("manual-bank-transfer")]
+    public Task UpdateManualBankTransferAsync(UpdateManualBankTransferDto input)
+    {
+        return _paymentGatewayAppService.UpdateManualBankTransferAsync(input);
+    }
     #region Private Functions
     private string CloseWindowsScript()
     {
@@ -188,5 +199,6 @@ public class PaymentGatewayController(
             </script>
         ";
     }
+
     #endregion
 }

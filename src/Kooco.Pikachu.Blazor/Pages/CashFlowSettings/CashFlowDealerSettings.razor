@@ -5,6 +5,7 @@
 @using Volo.Abp.AspNetCore.Components.Messages;
 @using Volo.Abp.ObjectMapping;
 @using Blazorise.LoadingIndicator;
+@inherits PikachuComponentBase
 
 @inject IPaymentGatewayAppService _paymentGatewayAppService;
 @inject IUiMessageService _uiMessageService;
@@ -317,6 +318,119 @@
                 </div>
             </div>
             @if (IsEcPayNotExists)
+            {
+                <div class="row mt-3">
+                    <div class="col-12 text-center">
+                        <label class="form-label form-label-lg"><span class="text-danger">@L["PleaseFillInTheRequiredInformation"]</span></label>
+                    </div>
+                </div>
+            }
+            <div class="row mt-3">
+                <div class="col-12 text-center">
+                    <Button Type="ButtonType.Submit" Class="btn btn-sm btn-primary">
+                        <i class="fa fa-check me-1"></i>
+                        @L["SaveChanges"]
+                    </Button>
+                </div>
+            </div>
+        </EditForm>
+    </CardBody>
+</Card>
+
+<Card>
+    <CardHeader>
+        <h4>@L["ManualBankTransfer"]</h4>
+    </CardHeader>
+    <CardBody>
+        <EditForm Model="@ManualBankTransfer" OnValidSubmit="UpdateManualBankTransferAsync">
+            <DataAnnotationsValidator />
+            <div class="row justify-content-center mb-2">
+                <div class="col-2 text-end">
+                    <label class="form-label" for="c-enable-disable-switch"></label>
+                    @L["Enable/Disable"]
+                </div>
+                <div class="col-6">
+                    <Switch TValue="bool" id="c-enable-disable-switch" @bind-Checked="ManualBankTransfer.IsEnabled"></Switch>
+                </div>
+            </div>
+            <div class="row justify-content-center mb-2">
+                <div class="col-2 pt-2 text-end">
+                    <label class="form-label"></label>
+                    @L["AccountName"]
+                    <span class="text-danger"> *</span>
+                </div>
+                <div class="col-6">
+                    <InputText class="form-control" @bind-Value="ManualBankTransfer.AccountName"></InputText>
+                    <ValidationMessage For="@(() => ManualBankTransfer.AccountName)" />
+                </div>
+            </div>
+            <div class="row justify-content-center mb-2">
+                <div class="col-2 pt-2 text-end">
+                    <label class="form-label"></label>
+                    @L["BankName"]
+                    <span class="text-danger"> *</span>
+                </div>
+                <div class="col-6">
+                    <InputText class="form-control" @bind-Value="ManualBankTransfer.BankName"></InputText>
+                    <ValidationMessage For="@(() => ManualBankTransfer.BankName)" />
+                </div>
+            </div>
+            <div class="row justify-content-center mb-2">
+                <div class="col-2 pt-2 text-end">
+                    <label class="form-label"></label>
+                    @L["BranchName"]
+                    <span class="text-danger"> *</span>
+                </div>
+                <div class="col-6">
+                    <InputText class="form-control" @bind-Value="ManualBankTransfer.BranchName"></InputText>
+                    <ValidationMessage For="@(() => ManualBankTransfer.BranchName)" />
+                </div>
+            </div>
+            <div class="row justify-content-center mb-2">
+                <div class="col-2 pt-2 text-end">
+                    <label class="form-label"></label>
+                    @L["BankCode"]
+                    <span class="text-danger"> *</span>
+                </div>
+                <div class="col-6">
+                    <InputText class="form-control" @bind-Value="ManualBankTransfer.BankCode"></InputText>
+                    <ValidationMessage For="@(() => ManualBankTransfer.BankCode)" />
+                </div>
+            </div>
+            <div class="row justify-content-center mb-2">
+                <div class="col-2 pt-2 text-end">
+                    <label class="form-label"></label>
+                    @L["BankAccountNumber"]
+                    <span class="text-danger"> *</span>
+                </div>
+                <div class="col-6">
+                    <InputText class="form-control" @bind-Value="ManualBankTransfer.BankAccountNumber"></InputText>
+                    <ValidationMessage For="@(() => ManualBankTransfer.BankAccountNumber)" />
+                </div>
+            </div>
+            <div class="row justify-content-center mb-2">
+                <div class="col-2 pt-2 text-end">
+                    <label class="form-label"></label>
+                    @L["MinimumAmountLimit"]
+                    <span class="text-danger"> *</span>
+                </div>
+                <div class="col-6">
+                    <InputNumber class="form-control" @bind-Value="ManualBankTransfer.MinimumAmountLimit"></InputNumber>
+                    <ValidationMessage For="@(() => ManualBankTransfer.MinimumAmountLimit)" />
+                </div>
+            </div>
+            <div class="row justify-content-center mb-2">
+                <div class="col-2 pt-2 text-end">
+                    <label class="form-label"></label>
+                    @L["MaximumAmountLimit"]
+                    <span class="text-danger"> *</span>
+                </div>
+                <div class="col-6">
+                    <InputNumber class="form-control" @bind-Value="ManualBankTransfer.MaximumAmountLimit"></InputNumber>
+                    <ValidationMessage For="@(() => ManualBankTransfer.MaximumAmountLimit)" />
+                </div>
+            </div>
+            @if (IsManualBankTransferNotExist)
             {
                 <div class="row mt-3">
                     <div class="col-12 text-center">

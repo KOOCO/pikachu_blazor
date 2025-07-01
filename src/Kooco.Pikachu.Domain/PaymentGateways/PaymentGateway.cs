@@ -1,6 +1,7 @@
 ﻿using Kooco.Pikachu.EnumValues;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json;
 using Volo.Abp.Domain.Entities.Auditing;
@@ -37,7 +38,7 @@ namespace Kooco.Pikachu.PaymentGateways
         public string? CreditCheckCode { get; set; }
         public bool IsCreditCardEnabled { get; set; }
         public bool IsBankTransferEnabled { get; set; }
-        public string InstallmentPeriodsJson { get; set; }
+        public string? InstallmentPeriodsJson { get; set; }
 
         [NotMapped]
         public List<string> InstallmentPeriods
@@ -49,5 +50,14 @@ namespace Kooco.Pikachu.PaymentGateways
                     : [];
             }
         }
+
+        // Manual Bank Transfer
+        public string? AccountName { get; set; }
+        public string? BankName { get; set; }
+        public string? BranchName { get; set; }
+        public string? BankCode { get; set; }
+        public string? BankAccountNumber { get; set; }
+        public int? MinimumAmountLimit { get; set; }
+        public int? MaximumAmountLimit { get; set; }
     }
 }

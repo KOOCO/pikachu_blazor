@@ -7,6 +7,7 @@ namespace Kooco.Pikachu.EnumValues
         LinePay,
         ChinaTrust,
         EcPay,
-        OrderValidatePeriod
+        OrderValidatePeriod,
+        ManualBankTransfer
     }
 }

@@ -31,5 +31,14 @@ namespace Kooco.Pikachu.PaymentGateways
         public bool IsCreditCardEnabled { get; set; }
         public bool IsBankTransferEnabled { get; set; }
         public List<string> InstallmentPeriods { get; set; }
+
+        // Manual Bank Transfer
+        public string? AccountName { get; set; }
+        public string? BankName { get; set; }
+        public string? BranchName { get; set; }
+        public string? BankCode { get; set; }
+        public string? BankAccountNumber { get; set; }
+        public int? MinimumAmountLimit { get; set; }
+        public int? MaximumAmountLimit { get; set; }
     }
 }

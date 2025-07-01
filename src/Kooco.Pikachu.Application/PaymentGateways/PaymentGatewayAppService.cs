@@ -104,7 +104,14 @@ namespace Kooco.Pikachu.PaymentGateways
 
             return linePayDto;
         }
+        public async Task<ManualBankTransferDto?> GetManualBankTransferAsync()
+        {
+            var manualBankTransfer = await _paymentGatewayRepository
+                .FirstOrDefaultAsync(x => x.PaymentIntegrationType == PaymentIntegrationType.ManualBankTransfer);
+            if (manualBankTransfer == null) return default;
 
+            return ObjectMapper.Map<PaymentGateway, ManualBankTransferDto>(manualBankTransfer);
+        }
         public async Task UpdateLinePayAsync(UpdateLinePayDto input)
         {
             var linePay = await _paymentGatewayRepository.FirstOrDefaultAsync(x => x.PaymentIntegrationType == PaymentIntegrationType.LinePay);
@@ -151,6 +158,41 @@ namespace Kooco.Pikachu.PaymentGateways
                 await _paymentGatewayRepository.InsertAsync(validity);
             }
         }
+
+        public async Task UpdateManualBankTransferAsync(UpdateManualBankTransferDto input)
+        {
+            var manualBankTransfer = await _paymentGatewayRepository
+                .FirstOrDefaultAsync(x => x.PaymentIntegrationType == PaymentIntegrationType.ManualBankTransfer);
+            if (manualBankTransfer != null)
+            {
+                manualBankTransfer.IsEnabled = input.IsEnabled;
+                manualBankTransfer.AccountName = input.AccountName;
+                manualBankTransfer.BankName = input.BankName;
+                manualBankTransfer.BranchName = input.BranchName;
+                manualBankTransfer.BankCode = input.BankCode;
+                manualBankTransfer.BankAccountNumber = input.BankAccountNumber;
+                manualBankTransfer.MinimumAmountLimit = input.MinimumAmountLimit;
+                manualBankTransfer.MaximumAmountLimit = input.MaximumAmountLimit;
+                await _paymentGatewayRepository.UpdateAsync(manualBankTransfer);
+            }
+            else
+            {
+                manualBankTransfer = new PaymentGateway
+                {
+                    PaymentIntegrationType = PaymentIntegrationType.ManualBankTransfer,
+                    IsEnabled = input.IsEnabled,
+                    AccountName = input.AccountName,
+                    BankName = input.BankName,
+                    BranchName = input.BranchName,
+                    BankCode = input.BankCode,
+                    BankAccountNumber = input.BankAccountNumber,
+                    MinimumAmountLimit = input.MinimumAmountLimit,
+                    MaximumAmountLimit = input.MaximumAmountLimit
+                };
+                await _paymentGatewayRepository.InsertAsync(manualBankTransfer);
+            }
+        }
+
         public async Task<List<PaymentGatewayDto>> GetAllAsync()
         {
             List<PaymentGateway> paymentGateways = await _paymentGatewayRepository.GetListAsync();
@@ -167,6 +209,11 @@ namespace Kooco.Pikachu.PaymentGateways
 
         private PaymentGatewayDto Decrypt(PaymentGatewayDto paymentGatewayDto)
         {
+            if (paymentGatewayDto.PaymentIntegrationType == PaymentIntegrationType.ManualBankTransfer)
+            {
+                return paymentGatewayDto;
+            }
+
             PropertyInfo[] properties = typeof(PaymentGatewayDto).GetProperties();
 
             foreach (PropertyInfo property in properties)

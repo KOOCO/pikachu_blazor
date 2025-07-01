@@ -1641,6 +1641,14 @@
     "AddSub": "Add Sub",
     "EnglishName": "English Name",
     "ZHName": "ZH Name",
-    "SelectMainCategory": "Select Main Category"
+    "SelectMainCategory": "Select Main Category",
+    "ManualBankTransfer": "Manual Bank Transfer",
+    "AccountName": "Account Name",
+    "BankName": "Bank Name",
+    "BranchName": "Branch Name",
+    "BankCode": "Bank Code",
+    "BankAccountNumber": "Bank Account Number",
+    "MinimumAmountLimit": "Minimum Amount Limit",
+    "MaximumAmountLimit": "Maximum Amount Limit"
   }
 }

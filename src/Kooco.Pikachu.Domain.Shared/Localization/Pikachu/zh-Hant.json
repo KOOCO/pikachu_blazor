@@ -1613,6 +1613,14 @@
     "AddSub": "新增子類別",
     "EnglishName": "英文名稱",
     "ZHName": "中文名稱",
-    "SelectMainCategory": "選擇主類別"
+    "SelectMainCategory": "選擇主類別",
+    "ManualBankTransfer": "手動銀行轉帳",
+    "AccountName": "帳戶名稱",
+    "BankName": "銀行名稱",
+    "BranchName": "分行名稱",
+    "BankCode": "銀行代碼",
+    "BankAccountNumber": "銀行帳號",
+    "MinimumAmountLimit": "最低金額限制",
+    "MaximumAmountLimit": "最高金額限制"
   }
 }
