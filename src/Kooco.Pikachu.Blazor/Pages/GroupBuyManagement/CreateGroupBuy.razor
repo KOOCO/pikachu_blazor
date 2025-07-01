@@ -787,7 +787,7 @@
                         }
                     </div>
                 </div>
-                <Check TValue="bool" Disabled=@(CreateGroupBuyDto.IsEnterprise||isPaymentMethodEnabled()) @bind-Checked="@BankTransfer">@L["BankTransfer"]</Check>
+                <Check TValue="bool" Disabled=@(CreateGroupBuyDto.IsEnterprise||isPaymentMethodEnabled()) @bind-Checked="@BankTransfer">@L["EcPayVirtualBankTransfer"]</Check>
                 <Check TValue="bool" Disabled=@(CreateGroupBuyDto.IsEnterprise||isLinePayPaymentMethodEnabled()) @bind-Checked="@IsLinePay">@L["LinePay"]</Check>
                 <Check TValue="bool"
                 @bind-Checked="@IsCashOnDelivery">

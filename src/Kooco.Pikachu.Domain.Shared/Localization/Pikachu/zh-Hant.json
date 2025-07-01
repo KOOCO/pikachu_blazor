@@ -1621,6 +1621,8 @@
     "BankCode": "銀行代碼",
     "BankAccountNumber": "銀行帳號",
     "MinimumAmountLimit": "最低金額限制",
-    "MaximumAmountLimit": "最高金額限制"
+    "MaximumAmountLimit": "最高金額限制",
+    "VirtualBankTransfer": "虛擬帳號轉帳",
+    "EcPayVirtualBankTransfer": "綠界虛擬帳號轉帳"
   }
 }

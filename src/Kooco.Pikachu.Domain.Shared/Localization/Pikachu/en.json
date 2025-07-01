@@ -1649,6 +1649,8 @@
     "BankCode": "Bank Code",
     "BankAccountNumber": "Bank Account Number",
     "MinimumAmountLimit": "Minimum Amount Limit",
-    "MaximumAmountLimit": "Maximum Amount Limit"
+    "MaximumAmountLimit": "Maximum Amount Limit",
+    "VirtualBankTransfer": "Virtual Bank Transfer",
+    "EcPayVirtualBankTransfer": "ECPay Virtual Bank Transfer"
   }
 }
