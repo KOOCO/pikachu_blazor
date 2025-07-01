@@ -217,7 +217,26 @@
 <Modal @ref="DescriptionModal">
     <ModalContent Centered Size="ModalSize.ExtraLarge" Overflow="Overflow.Auto">
         <ModalHeader>
-            <h4>@Selected?.Name</h4>
+            <h4> @if (CultureInfo.CurrentCulture.TwoLetterISOLanguageName == "zh")
+                        {
+                            if(Selected.ZHName.IsNullOrEmpty())
+                            {
+                                @Selected.Name;
+                            }
+                            else{
+                                @Selected.ZHName;
+                            }
+                        }
+                        else
+                        {
+                             if(Selected.Name.IsNullOrEmpty())
+                            {
+                                @Selected.ZHName;
+                            }
+                            else{
+                                @Selected.Name;
+                            }
+                        }</h4>
             <CloseButton />
         </ModalHeader>
         <ModalBody>
@@ -229,7 +248,26 @@
 <Modal @ref="CarousalModal">
     <ModalContent Centered Size="ModalSize.ExtraLarge" Style="min-height: 500px;">
         <ModalHeader>
-            <h4>@Selected?.Name</h4>
+            <h4>  @if (CultureInfo.CurrentCulture.TwoLetterISOLanguageName == "zh")
+                        {
+                            if(Selected.ZHName.IsNullOrEmpty())
+                            {
+                                @Selected.Name;
+                            }
+                            else{
+                                @Selected.ZHName;
+                            }
+                        }
+                        else
+                        {
+                             if(Selected.Name.IsNullOrEmpty())
+                            {
+                                @Selected.ZHName;
+                            }
+                            else{
+                                @Selected.Name;
+                            }
+                        }</h4>
             <CloseButton />
         </ModalHeader>
         <ModalBody>

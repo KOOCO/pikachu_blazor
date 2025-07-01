@@ -1635,6 +1635,12 @@
     "OrderItemsReturnInitiated": "Return requested for Order #{0}. New return Order #{1} created.",
     "OrderItemsReturnCreatedTitle": "Return Order Created",
     "OrderItemsReturnCreated": "New return Order #{1} created from Order #{0}.",
-    "EditedAt": "Edited At"
+    "EditedAt": "Edited At",
+    "SubCategories": "Sub Categories",
+    "AddMain": "Add Main",
+    "AddSub": "Add Sub",
+    "EnglishName": "English Name",
+    "ZHName": "ZH Name",
+    "SelectMainCategory": "Select Main Category"
   }
 }

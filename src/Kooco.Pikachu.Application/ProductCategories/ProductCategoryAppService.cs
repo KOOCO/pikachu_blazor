@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -145,7 +146,19 @@ public class ProductCategoryAppService(ProductCategoryManager productCategoryMan
     public async Task<List<KeyValueDto>> GetMainProductCategoryLookupAsync()
     {
         var queryable = await productCategoryRepository.GetQueryableAsync();
-        return [.. queryable.Where(x=>x.MainCategoryId==null).Select(x => new KeyValueDto { Id = x.Id, Name = x.Name })];
+        var culture = CultureInfo.CurrentCulture.Name.ToLower(); // e.g., "en", "zh", "zh-cn", etc.
+
+        return [
+            .. queryable
+        .Where(x => x.MainCategoryId == null)
+        .Select(x => new KeyValueDto
+        {
+            Id = x.Id,
+            Name = culture.StartsWith("zh")
+                ? (x.ZHName ?? x.Name)
+                : (x.Name ?? x.ZHName)
+        })
+        ];
     }
     [AllowAnonymous]
     public async Task<string?> GetDefaultImageUrlAsync(Guid id)

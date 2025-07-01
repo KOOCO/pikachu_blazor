@@ -1607,6 +1607,12 @@
     "OrderItemsReturnInitiated": "已為訂單 #{0} 提交退貨申請，並建立新退貨訂單 #{1}。",
     "OrderItemsReturnCreatedTitle": "退貨訂單已建立",
     "OrderItemsReturnCreated": "已從訂單 #{0} 建立新退貨訂單 #{1}。",
-    "EditedAt": "編輯時間"
+    "EditedAt": "編輯時間",
+    "SubCategories": "子類別",
+    "AddMain": "新增主類別",
+    "AddSub": "新增子類別",
+    "EnglishName": "英文名稱",
+    "ZHName": "中文名稱",
+    "SelectMainCategory": "選擇主類別"
   }
 }
