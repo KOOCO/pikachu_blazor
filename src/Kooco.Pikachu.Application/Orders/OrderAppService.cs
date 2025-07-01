@@ -2262,41 +2262,41 @@ public class OrderAppService : PikachuAppService, IOrderAppService
             var toBeShippedCodes = new Dictionary<DeliveryMethod, int[]>
             {
 
-                { DeliveryMethod.SevenToEleven1, new[] { 300 } },
-                { DeliveryMethod.SevenToElevenC2C, new[] { 300 } },
-                { DeliveryMethod.SevenToElevenFrozen, new[] { 300 } },
-                { DeliveryMethod.FamilyMart1, new[] { 300 } },
-                { DeliveryMethod.FamilyMartC2C, new[] { 300 } },
+                { DeliveryMethod.SevenToEleven1, new[] { 300,310 } },
+                { DeliveryMethod.SevenToElevenC2C, new[] { 300,310 } },
+                { DeliveryMethod.SevenToElevenFrozen, new[] { 300,310 } },
+                { DeliveryMethod.FamilyMart1, new[] { 300,310 } },
+                { DeliveryMethod.FamilyMartC2C, new[] { 300,310 } },
                 { DeliveryMethod.PostOffice, new[] { 320 } },
-                { DeliveryMethod.BlackCat1, new[] { 300 } },
-                { DeliveryMethod.BlackCatFreeze, new[] { 300 } },
-                { DeliveryMethod.BlackCatFrozen, new[] { 300 } }
+                { DeliveryMethod.BlackCat1, new[] { 300 , 310 ,311} },
+                { DeliveryMethod.BlackCatFreeze, new[] { 300,310,311 } },
+                { DeliveryMethod.BlackCatFrozen, new[] { 300,310,311 } }
             };
 
             var shippedCodes = new Dictionary<DeliveryMethod, int[]>
             {
-                { DeliveryMethod.SevenToEleven1, new[] { 2063 } },
-                { DeliveryMethod.SevenToElevenC2C, new[] { 2063 } },
-                { DeliveryMethod.SevenToElevenFrozen, new[] { 2063 } },
-                { DeliveryMethod.FamilyMart1, new[] { 3018 } },
-                { DeliveryMethod.FamilyMartC2C, new[] { 3018 } },
-                { DeliveryMethod.PostOffice, new[] { 3301, 3302, 3303, 3312, 3313 } },
-                { DeliveryMethod.BlackCat1, new[] { 3001, 3002, 3004, 3005, 3006, 3007, 3008, 3009, 3010, 3011, 3012, 3013, 3014 } },
-                { DeliveryMethod.BlackCatFreeze, new[] { 3001, 3002, 3004, 3005, 3006, 3007, 3008, 3009, 3010, 3011, 3012, 3013, 3014 } },
-                { DeliveryMethod.BlackCatFrozen, new[] { 3001, 3002, 3004, 3005, 3006, 3007, 3008, 3009, 3010, 3011, 3012, 3013, 3014 } }
+                { DeliveryMethod.SevenToEleven1, new[] { 2001, 2024, 2030, 2041 } },
+                { DeliveryMethod.SevenToElevenC2C, new[] { 2030, 2041, 2043, 2068 } },
+                { DeliveryMethod.SevenToElevenFrozen, new[] { 2001, 2024, 2030, 2041 } },
+                { DeliveryMethod.FamilyMart1, new[] { 3024, 3032 } },
+                { DeliveryMethod.FamilyMartC2C, new[] { 3024, 3032 } },
+                { DeliveryMethod.PostOffice, new[] { 3301, 3302, 3312, 3313 } },
+                { DeliveryMethod.BlackCat1, new[] { 3001, 3002, 3004, 3005, 3006, 3007, 3008, 3009, 3010, 3013, 3014, 3118, 3119, 3120 } },
+                { DeliveryMethod.BlackCatFreeze, new[] { 3001, 3002, 3004, 3005, 3006, 3007, 3008, 3009, 3010, 3013, 3014, 3118, 3119, 3120 } },
+                { DeliveryMethod.BlackCatFrozen, new[] { 3001, 3002, 3004, 3005, 3006, 3007, 3008, 3009, 3010, 3013, 3014, 3118, 3119, 3120 } }
             };
 
             var deliveredCodes = new Dictionary<DeliveryMethod, int[]>
             {
-                { DeliveryMethod.SevenToEleven1, new[] { 2001, 2024 } },
-                { DeliveryMethod.SevenToElevenC2C, new[] { 2001, 2024 } },
-                { DeliveryMethod.SevenToElevenFrozen, new[] { 2001, 2024 } },
-                { DeliveryMethod.FamilyMart1, new[] { 3029 } },
-                { DeliveryMethod.FamilyMartC2C, new[] { 3029 } },
+                { DeliveryMethod.SevenToEleven1, new[] { 2063, 2073 } },
+                { DeliveryMethod.SevenToElevenC2C, new[] { 2073 } },
+                { DeliveryMethod.SevenToElevenFrozen, new[] { 2063, 2073 } },
+                { DeliveryMethod.FamilyMart1, new[] { 3018, 3029 } },
+                { DeliveryMethod.FamilyMartC2C, new[] { 3018, 3029 } },
                 { DeliveryMethod.PostOffice, new[] { 3308, 3309, 3314 } },
-                 { DeliveryMethod.BlackCat1, new[] { 3003 } },
-                { DeliveryMethod.BlackCatFreeze, new[] { 3003 } },
-                { DeliveryMethod.BlackCatFrozen, new[] { 3003 } }
+                 { DeliveryMethod.BlackCat1, new[] { 3003, 3011, 3012 } },
+                { DeliveryMethod.BlackCatFreeze, new[] { 3003, 3012 } },
+                { DeliveryMethod.BlackCatFrozen, new[] { 3003, 3012 } }
             };
 
             var completedCodes = new Dictionary<DeliveryMethod, int[]>
@@ -2306,23 +2306,21 @@ public class OrderAppService : PikachuAppService, IOrderAppService
                 { DeliveryMethod.SevenToElevenFrozen, new[] { 2067 } },
                 { DeliveryMethod.FamilyMart1, new[] { 3022 } },
                 { DeliveryMethod.FamilyMartC2C, new[] { 3022 } },
-                { DeliveryMethod.PostOffice, new[] { 3309 } },
-                { DeliveryMethod.BlackCat1, new[] { 311 } },
-                { DeliveryMethod.BlackCatFreeze, new[] { 311 } },
-                { DeliveryMethod.BlackCatFrozen, new[] { 311 } }
+                { DeliveryMethod.PostOffice, new[] { 3307 } },
+             
             };
 
             var returnedCodes = new Dictionary<DeliveryMethod, int[]>
             {
-                { DeliveryMethod.SevenToEleven1, new[] { 2065, 2074 } },
-                { DeliveryMethod.SevenToElevenC2C, new[] { 2065, 2074 } },
-                { DeliveryMethod.SevenToElevenFrozen, new[] { 2065, 2074 } },
-                { DeliveryMethod.FamilyMart1, new[] { 3020 } },
-                { DeliveryMethod.FamilyMartC2C, new[] { 3020 } },
+                { DeliveryMethod.SevenToEleven1, new[] { 2026, 2065, 2074, 2075, 2076 } },
+                { DeliveryMethod.SevenToElevenC2C, new[] { 2074, 2075, 2076, 2978 } },
+                { DeliveryMethod.SevenToElevenFrozen, new[] { 2026, 2065, 2074, 2075, 2076 } },
+                { DeliveryMethod.FamilyMart1, new[] { 3020, 3025 } },
+                { DeliveryMethod.FamilyMartC2C, new[] { 3020, 3025 } },
                 { DeliveryMethod.PostOffice, new[] { 3306, 3310, 3311 } },
-                { DeliveryMethod.BlackCat1, new[] { 325 } },
-                { DeliveryMethod.BlackCatFreeze, new[] { 325 } },
-                { DeliveryMethod.BlackCatFrozen, new[] { 325 } }
+                { DeliveryMethod.BlackCat1, new[] { 325, 5004 } },
+                { DeliveryMethod.BlackCatFreeze, new[] { 325, 5004 } },
+                { DeliveryMethod.BlackCatFrozen, new[] { 325, 5004 } }
             };
 
             var deliveryMethod = order.DeliveryMethod.Value;
