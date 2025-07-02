@@ -1,4 +1,6 @@
 ﻿using Kooco.Pikachu.EnumValues;
+using Kooco.Pikachu.GroupBuyItemsPriceses;
+using Kooco.Pikachu.GroupBuys;
 using Kooco.Pikachu.Items;
 using Kooco.Pikachu.Items.Dtos;
 using Microsoft.AspNetCore.Authorization;
@@ -16,7 +18,7 @@ namespace Kooco.Pikachu.ShopCarts;
 
 [RemoteService(IsEnabled = false)]
 //[Authorize]
-public class ShopCartAppService(ShopCartManager shopCartManager, IShopCartRepository shopCartRepository) : ApplicationService, IShopCartAppService
+public class ShopCartAppService(ShopCartManager shopCartManager, IShopCartRepository shopCartRepository,IGroupBuyAppService groupBuyAppService ) : ApplicationService, IShopCartAppService
 {
     public async Task<ShopCartDto> CreateAsync(CreateShopCartDto input)
     {
@@ -125,7 +127,8 @@ public class ShopCartAppService(ShopCartManager shopCartManager, IShopCartReposi
         Check.NotNull(input, nameof(input));
 
         ShopCart shopCart = await shopCartRepository.FindByUserIdAndGroupBuyIdAsync(userId, groupBuyId);
-
+        var groupbuyModule=(await groupBuyAppService.GetGroupBuyModulesAsync(groupBuyId)).Where(x=>x.GroupBuyModuleType==GroupBuyModuleType.ProductGroupModule);
+    
         if (shopCart is null) shopCart = await shopCartManager.CreateAsync(userId, groupBuyId);
 
         else
@@ -139,6 +142,14 @@ public class ShopCartAppService(ShopCartManager shopCartManager, IShopCartReposi
             foreach (CartItem cartItem in shopCart.CartItems.Where(w => w.ItemId == input.ItemId.Value && w.ItemDetailId == input.ItemDetailId.Value))
             {
                 cartItem.Quantity = input.Quantity;
+                var matchedDetail = groupbuyModule
+       .SelectMany(x => x.ItemGroupDetails)
+       .FirstOrDefault(z => z.ItemId == cartItem.ItemId && z.ItemDetailId == cartItem.ItemDetailId);
+
+                if (matchedDetail != null)
+                {
+                  cartItem.ChangeGroupBuyPrice(((int)matchedDetail.Item.ItemDetails.Where(x=>x.Id==cartItem.ItemDetailId).Select(x=>x.GroupBuyPrice).FirstOrDefault()));
+                }
             }
         }
         else if (shopCart.CartItems.Any(x => input.SetItemId.HasValue && x.SetItemId == input.SetItemId))
@@ -146,10 +157,39 @@ public class ShopCartAppService(ShopCartManager shopCartManager, IShopCartReposi
             foreach (CartItem cartItem in shopCart.CartItems.Where(w => w.SetItemId == input.SetItemId))
             {
                 cartItem.Quantity = input.Quantity;
+                var matchedDetail = groupbuyModule
+  .SelectMany(x => x.ItemGroupDetails)
+  .FirstOrDefault(z => z.SetItemId == cartItem.SetItemId);
+
+                if (matchedDetail != null)
+                {
+                  cartItem.ChangeGroupBuyPrice((int)(matchedDetail.SetItem.GroupBuyPrice));
+                }
             }
         }
         else
         {
+            if (input.ItemId.HasValue && input.ItemDetailId.HasValue)
+            {
+                var matchedDetail = groupbuyModule
+.SelectMany(x => x.ItemGroupDetails)
+.FirstOrDefault(z => z.ItemId == input.ItemId && z.ItemDetailId == input.ItemDetailId);
+
+                if (matchedDetail != null)
+                {
+                    input.GroupBuyPrice = (int)matchedDetail.Item.ItemDetails.Where(x => x.Id == input.ItemDetailId).Select(x => x.GroupBuyPrice).FirstOrDefault();
+                }
+            }
+            else { 
+            var matchedDetail = groupbuyModule
+.SelectMany(x => x.ItemGroupDetails)
+.FirstOrDefault(z => z.SetItemId == input.SetItemId);
+
+            if (matchedDetail != null)
+            {
+                input.GroupBuyPrice = (int)(matchedDetail.SetItem.GroupBuyPrice);
+            }
+        }
             await shopCartManager.AddCartItem(shopCart, input.Quantity, input.GroupBuyPrice,input.SellingPrice, input.ItemId, input.ItemDetailId, input.SetItemId);
         }
         await shopCartRepository.UpdateAsync(shopCart);
@@ -236,6 +276,7 @@ public class ShopCartAppService(ShopCartManager shopCartManager, IShopCartReposi
     {
         var shopCart = await shopCartRepository.GetAsync(id);
         await shopCartRepository.EnsureCollectionLoadedAsync(shopCart, sc => sc.CartItems);
+        var groupbuyModule = (await groupBuyAppService.GetGroupBuyModulesAsync(shopCart.GroupBuyId)).Where(x => x.GroupBuyModuleType == GroupBuyModuleType.ProductGroupModule);
 
         var existingIds = cartItems.Where(ci => ci.Id.HasValue).Select(ci => ci.Id.Value).ToList();
         shopCart.CartItems.RemoveAll(ci => !existingIds.Contains(ci.Id));
@@ -246,10 +287,54 @@ public class ShopCartAppService(ShopCartManager shopCartManager, IShopCartReposi
             {
                 var existingItem = shopCart.CartItems.First(ci => ci.Id == cartItem.Id);
                 existingItem.SetQuantity(cartItem.Quantity);
+                if (cartItem.ItemId.HasValue && cartItem.ItemDetailId.HasValue)
+                {
+                    var matchedDetail = groupbuyModule
+    .SelectMany(x => x.ItemGroupDetails)
+    .FirstOrDefault(z => z.ItemId == cartItem.ItemId && z.ItemDetailId == cartItem.ItemDetailId);
+
+                    if (matchedDetail != null)
+                    {
+                        cartItem.GroupBuyPrice = (int)matchedDetail.Item.ItemDetails.Where(x => x.Id == cartItem.ItemDetailId).Select(x => x.GroupBuyPrice).FirstOrDefault();
+                    }
+                }
+                else
+                {
+                    var matchedDetail = groupbuyModule
+        .SelectMany(x => x.ItemGroupDetails)
+        .FirstOrDefault(z => z.SetItemId == cartItem.SetItemId);
+
+                    if (matchedDetail != null)
+                    {
+                        cartItem.GroupBuyPrice = (int)matchedDetail.SetItem.GroupBuyPrice;
+                    }
+                }
                 existingItem.ChangeGroupBuyPrice(cartItem.GroupBuyPrice);
             }
             else
             {
+                if (cartItem.ItemId.HasValue && cartItem.ItemDetailId.HasValue)
+                {
+                    var matchedDetail = groupbuyModule
+    .SelectMany(x => x.ItemGroupDetails)
+    .FirstOrDefault(z => z.ItemId == cartItem.ItemId && z.ItemDetailId == cartItem.ItemDetailId);
+
+                    if (matchedDetail != null)
+                    {
+                        cartItem.GroupBuyPrice = (int)matchedDetail.Item.ItemDetails.Where(x => x.Id == cartItem.ItemDetailId).Select(x => x.GroupBuyPrice).FirstOrDefault();
+                    }
+                }
+                else
+                {
+                    var matchedDetail = groupbuyModule
+        .SelectMany(x => x.ItemGroupDetails)
+        .FirstOrDefault(z => z.SetItemId == cartItem.SetItemId);
+
+                    if (matchedDetail != null)
+                    {
+                        cartItem.GroupBuyPrice = (int)matchedDetail.SetItem.GroupBuyPrice;
+                    }
+                }
                 await shopCartManager.AddCartItem(shopCart, cartItem.Quantity, cartItem.GroupBuyPrice,cartItem.SellingPrice, cartItem.ItemId, cartItem.ItemDetailId, cartItem.SetItemId);
             }
         }
