@@ -1252,9 +1252,25 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
         return ObjectMapper.Map<GroupBuy, GroupBuyDto>(groupbuy);
     }
 
-    public async Task<GroupBuyReportDetailsDto> GetGroupBuyReportDetailsAsync(Guid id, DateTime? startDate = null, DateTime? endDate = null, OrderStatus? orderStatus = null)
+    public async Task<GroupBuyReportDetailsDto> GetGroupBuyReportDetailsAsync(
+        Guid id, 
+        DateTime? startDate = null, 
+        DateTime? endDate = null, 
+        OrderStatus? orderStatus = null,
+        DateTime? completionTimeFrom = null,
+        DateTime? completionTimeTo = null,
+        ShippingStatus? shippingStatus = null
+        )
     {
-        var data = await _groupBuyRepository.GetGroupBuyReportDetailsAsync(id, startDate, endDate, orderStatus);
+        var data = await _groupBuyRepository.GetGroupBuyReportDetailsAsync(
+            id, 
+            startDate, 
+            endDate, 
+            orderStatus,
+            completionTimeFrom,
+            completionTimeTo,
+            shippingStatus
+            );
         return ObjectMapper.Map<GroupBuyReportDetails, GroupBuyReportDetailsDto>(data);
     }
 
@@ -1305,10 +1321,34 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
         }
     }
 
-    public async Task<IRemoteStreamContent> GetListAsExcelFileAsync(Guid id, DateTime? startDate = null, DateTime? endDate = null, OrderStatus? orderStatus = null, bool isChinese = false)
+    public async Task<IRemoteStreamContent> GetListAsExcelFileAsync(
+        Guid id, 
+        DateTime? startDate = null, 
+        DateTime? endDate = null, 
+        OrderStatus? orderStatus = null,
+        DateTime? completionTimeFrom = null,
+        DateTime? completionTimeTo = null,
+        ShippingStatus? shippingStatus = null,
+        bool isChinese = false,
+        bool includeShippingFee = true
+        )
     {
         var groupBuy = await _groupBuyRepository.FirstOrDefaultAsync(x => x.Id == id);
-        var items = await _orderRepository.GetAllListAsync(0, int.MaxValue, "CreationTime desc", null, id, null, startDate, endDate, orderStatus);
+        var items = await _orderRepository.GetAllListAsync(
+            0, 
+            int.MaxValue, 
+            "CreationTime desc", 
+            null, 
+            id, 
+            null, 
+            startDate, 
+            endDate, 
+            orderStatus,
+            completionTimeFrom,
+            completionTimeTo,
+            shippingStatus
+            );
+
         var data = ObjectMapper.Map<List<Order>, List<OrderDto>>(items);
 
         if (groupBuy.ProtectPrivacyData)
@@ -1316,31 +1356,27 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
             data = data.HideCredentials();
         }
 
-        // Create a dictionary for localized headers
-        var headers = isChinese ? new Dictionary<string, string>
-        {
-            { "OrderNo", "訂單號" },
-            { "OrderDate", "訂單日期" },
-            { "CustomerName", "客戶名稱" },
-            { "Email", "電子郵件" },
-            { "OrderStatus", "訂單狀態" },
-            { "ShippingStatus", "運輸狀態" },
-            { "PaymentMethod", "付款方式" },
-            { "CheckoutAmount", "結帳金額" }
-        } :
-        new Dictionary<string, string>
-        {
-            { "OrderNo", _l["OrderNo"] },
-            { "OrderDate", _l["OrderDate"] },
-            { "CustomerName", _l["CustomerName"] },
-            { "Email", _l["Email"] },
-            { "OrderStatus", _l["OrderStatus"] },
-            { "ShippingStatus", _l["ShippingStatus"] },
-            { "PaymentMethod", _l["PaymentMethod"] },
-            { "CheckoutAmount", _l["CheckoutAmount"] }
-        };
+        var headers = new Dictionary<string, string>();
 
-        var excelData = data.Select(x => new Dictionary<string, object>
+        void AddHeader(string key, string zh, string en)
+        {
+            headers[key] = isChinese ? zh : _l[en];
+        }
+
+        AddHeader("OrderNo", "訂單編號", "OrderNo");
+        AddHeader("OrderDate", "訂購日期", "OrderDate");
+        AddHeader("CustomerName", "客戶名稱", "CustomerName");
+        AddHeader("Email", "Email", "Email");
+        AddHeader("OrderStatus", "訂單狀態", "OrderStatus");
+        AddHeader("ShippingStatus", "物流狀態", "ShippingStatus");
+        AddHeader("PaymentMethod", "付款方式", "PaymentMethod");
+        if (includeShippingFee)
+            AddHeader("ShippingFee", "運費", "ShippingFee");
+        AddHeader("TotalAmount", "訂單總金額", "TotalAmount");
+
+        var excelData = data.Select(x =>
+        {
+            var row = new Dictionary<string, object>
         {
             { headers["OrderNo"], x.OrderNo },
             { headers["OrderDate"], x.CreationTime.ToString("MM/d/yyyy h:mm:ss tt") },
@@ -1348,9 +1384,18 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
             { headers["Email"], x.CustomerEmail },
             { headers["OrderStatus"], _l[x.OrderStatus.ToString()] },
             { headers["ShippingStatus"], _l[x.ShippingStatus.ToString()] },
-            { headers["PaymentMethod"], _l[x.PaymentMethod.ToString()] },
-            { headers["CheckoutAmount"], "$ " + x.TotalAmount.ToString("N2") }
-        });
+            { headers["PaymentMethod"], _l[x.PaymentMethod.ToString()] }
+        };
+
+            if (includeShippingFee)
+            {
+                row.Add(headers["ShippingFee"], "$ " + (x.DeliveryCost + x.DeliveryCostForNormal + x.DeliveryCostForFreeze + x.DeliveryCostForFrozen));
+            }
+
+            row.Add(headers["TotalAmount"], "$ " + x.TotalAmount.ToString("N2"));
+
+            return row;
+        }).ToList();
 
         if (!excelData.Any())
         {
@@ -1380,7 +1425,7 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
                 RecurrenceType.Weekly => date.AddDays(-7),
                 _ => throw new ArgumentException("Invalid RecurrenceType"),
             };
-            return await GetListAsExcelFileAsync(id, startDate, endDate, null, true);
+            return await GetListAsExcelFileAsync(id, startDate, endDate, null, isChinese: true);
         }
     }
 

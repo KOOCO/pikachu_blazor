@@ -13,6 +13,8 @@ public class GroupBuyReportDetailsDto
     public decimal AmountReceivedExclShipping { get; set; }
     public decimal SalesAmountMinusShipping { get; set; }
     public decimal BloggersProfit { get; set; }
+    public int ProfitShare { get; set; }
+    public decimal ProfitShareAmount { get; set; }
     public DateTime StartDate { get; set; }
     public DateTime EndDate { get; set; }
 }

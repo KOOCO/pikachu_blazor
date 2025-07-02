@@ -33,16 +33,20 @@
     .tbl tr:nth-child(odd) {
         background-color: #F5F5F5; /* Even rows background color */
     }
+
+    .table.table-striped > tbody > tr:nth-of-type(even) > td, .table.table-bordered > tbody > tr:nth-of-type(even) > td {
+        background-color: transparent;
+    }
 </style>
 <LoadingIndicator @ref="Loading" FullScreen></LoadingIndicator>
- <div class="container">
+<div class="container">
     <div class="row">
         <div class="col-12 col-md-6 col-sm-12">
             <div class="d-flex justify-content-between">
                 <h3>@ReportDetails?.GroupBuyName</h3>
             </div>
         </div>
-        <div class="col-12 col-md-6 col-sm-12 mt-3 mt-sm-0">
+        <div class="col-12 col-md-12 col-sm-12 mt-3 mt-sm-0">
             <div class="d-flex align-items-center w-100">
                 <div class="form-group px-1">
                     <label for="start-date">@L["StartDate"]</label>
@@ -52,11 +56,29 @@
                     <label for="start-date">@L["EndDate"]</label>
                     <input type="date" class="form-control form-control-sm" @bind-value="@EndDate" />
                 </div>
+                <div class="form-group px-1">
+                    <label for="start-date">@L["CompletionFrom"]</label>
+                    <input type="date" class="form-control form-control-sm" @bind-value="@CompletionTimeFrom" />
+                </div>
+                <div class="form-group px-1">
+                    <label for="start-date">@L["CompletionTo"]</label>
+                    <input type="date" class="form-control form-control-sm" @bind-value="@CompletionTimeTo" />
+                </div>
                 <div class="form-group w-100 px-1">
                     <label for="start-date">@L["Status"]</label>
                     <select class="form-select form-select-sm" @bind="@OrderStatus">
                         <option value=""></option>
                         @foreach (var enumValue in Enum.GetValues(typeof(OrderStatus)))
+                        {
+                            <option value="@enumValue">@L[enumValue.ToString()]</option>
+                        }
+                    </select>
+                </div>
+                <div class="form-group w-100 px-1">
+                    <label for="start-date">@L["ShippingStatus"]</label>
+                    <select class="form-select form-select-sm" @bind="@ShippingStatus">
+                        <option value=""></option>
+                        @foreach (var enumValue in Enum.GetValues(typeof(ShippingStatus)))
                         {
                             <option value="@enumValue">@L[enumValue.ToString()]</option>
                         }
@@ -69,41 +91,35 @@
         </div>
     </div>
 
-     @if (ReportDetails != null)
-    {
-        <div class="row">
-            <div class="col-md-6 col-sm-12">
-                <Card>
-                    <CardBody>
-                        <table class="w-100">
-                            <tbody>
-                                <tr>
-                                    <td>@L["OrderQuantityPaid/TotalOrderQuantity"]:</td>
-                                    <td class="text-end">@ReportDetails.OrderQuantityPaid.ToString("N0") / @ReportDetails.TotalOrderQuantity.ToString("N0")</td>
-                                </tr>
-                                <tr>
-                                    <td>@L["SalesAmount/SalesAmountExcludingShipping"]:</td>
-                                    <td class="text-end">$@ReportDetails.SalesAmountExclShipping.ToString("N0")/$@ReportDetails.SalesAmount.ToString("N0")</td>
-                                </tr>
-                                <tr>
-                                    <td>@L["AmountReceived/AmountReceivedExcludingShipping"]:</td>
-                                    <td class="text-end">$@ReportDetails.AmountReceivedExclShipping.ToString("N0")/$@ReportDetails.AmountReceived.ToString("N0") </td>
-                                </tr>
-                              @*   <tr>
-                                    <td>@L["SalesAmountMinusShippingCosts"]:</td>
-                                    <td class="text-end">$@ReportDetails.SalesAmountMinusShipping.ToString("N0")</td>
-                                </tr> *@
-                                <tr>
-                                    <td>@L["BloggersShareProfit"]:</td>
-                                    <td class="text-end">$@ReportDetails.BloggersProfit.ToString("N1")</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </CardBody>
-                </Card>
-            </div>
+    <div class="row">
+        <div class="col-md-8 col-sm-12">
+            <Card>
+                <CardBody>
+                    <table class="w-100">
+                        <tbody>
+                            <tr>
+                                <td>@L["OrderQuantityPaid/TotalOrderQuantity"]:</td>
+                                <td class="text-end">@((ReportDetails?.OrderQuantityPaid ?? 0).ToString("N0")) / @((ReportDetails?.TotalOrderQuantity ?? 0).ToString("N0"))</td>
+                            </tr>
+                            <tr>
+                                <td>@L["SalesAmount/SalesAmountExcludingShipping"]:</td>
+                                <td class="text-end">$@((ReportDetails?.SalesAmountExclShipping ?? 0).ToString("N0")) / $@((ReportDetails?.SalesAmount ?? 0).ToString("N0"))</td>
+                            </tr>
+                            <tr>
+                                <td>@L["AmountReceived/AmountReceivedExcludingShipping"]:</td>
+                                <td class="text-end">$@((ReportDetails?.AmountReceivedExclShipping ?? 0).ToString("N0")) / $@((ReportDetails?.AmountReceived ?? 0).ToString("N0")) </td>
+                            </tr>
+                            <tr>
+                                <td>@L["ProfitShareEarnings"]:</td>
+                                <td class="text-end">$@((ReportDetails?.ProfitShareAmount ?? 0).ToString("N1"))</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </CardBody>
+            </Card>
         </div>
-    }
+    </div>
+
     @if (Orders != null && Orders.Count > 0)
     {
         <div class="row">
@@ -125,21 +141,24 @@
                               ReadData="OnDataGridReadAsync"
                               TotalItems="TotalCount"
                               DetailRowTrigger="@((e) => e.Item.OrderItems?.Count > 0 && e.Item.Id == SelectedOrder?.Id)"
-                                        Responsive
-                               ShowPager="true"
-                               PageSize="PageSize"
-                               RowClicked="ToggleRow"
-                               SortChanged="OnSortChange">
-                         <DataGridColumns>
-                             <DataGridCommandColumn />
+                              Responsive
+                              Bordered
+                              ShowPager="true"
+                              PageSize="PageSize"
+                              RowClicked="ToggleRow"
+                              SortChanged="OnSortChange">
+                        <DataGridColumns>
+                            <DataGridCommandColumn />
                             <DataGridColumn Field="@nameof(GroupBuyReportOrderDto.OrderNo)" Caption="@L["OrderNo"]">
-                                 <DisplayTemplate>
-                                     @{
-                                        var isExpanded = ExpandedRows.Contains(context.Id);
-                                        var chevronClass = isExpanded ? "fa fa-caret-up" : "fa fa-caret-down";
-                                    }
-                                    <i class="@chevronClass"></i>
-                                    @L[context.OrderNo]
+                                <DisplayTemplate>
+                                    <Span Class="text-nowrap">
+                                        @{
+                                            var isExpanded = ExpandedRows.Contains(context.Id);
+                                            var chevronClass = isExpanded ? "fa fa-caret-up" : "fa fa-caret-down";
+                                        }
+                                        <i class="@chevronClass"></i>
+                                        @L[context.OrderNo]
+                                    </Span>
                                 </DisplayTemplate>
                             </DataGridColumn>
                             <DataGridColumn Field="@nameof(GroupBuyReportOrderDto.CreationTime)" Caption="@L["OrderDate"]" />
@@ -160,7 +179,12 @@
                                     @L[context.PaymentMethod.ToString()]
                                 </DisplayTemplate>
                             </DataGridColumn>
-                            <DataGridColumn TextAlignment="TextAlignment.Center" Field="@nameof(GroupBuyReportOrderDto.TotalAmount)" Caption="@L["CheckoutAmount"]">
+                            <DataGridColumn TextAlignment="TextAlignment.End" Field="@nameof(GroupBuyReportOrderDto.ShippingFee)" Caption="@L["ShippingFee"]">
+                                <DisplayTemplate>
+                                    $ @context.ShippingFee?.ToString("N2")
+                                </DisplayTemplate>
+                            </DataGridColumn>
+                            <DataGridColumn TextAlignment="TextAlignment.End" Field="@nameof(GroupBuyReportOrderDto.TotalAmount)" Caption="@L["TotalAmount"]">
                                 <DisplayTemplate>
                                     $ @context.TotalAmount.ToString("N2")
                                 </DisplayTemplate>

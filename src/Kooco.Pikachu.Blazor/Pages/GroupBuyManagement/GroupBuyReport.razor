@@ -19,7 +19,7 @@
 @inject IJSRuntime JSRuntime;
 @attribute [Authorize]
 
-@if(Loading==true)
+@if (Loading == true)
 {
     <Skeleton Animation="SkeletonAnimation.Pulse">
         <div class="row">
@@ -32,8 +32,6 @@
             <!-- Right column for multiple button placeholders -->
             <div class="col-9 text-lg-end d-flex gap-2 justify-content-end">
                 <!-- Make each skeleton item narrower or wider to mimic small buttons -->
-                
-
                 <!-- Add more SkeletonItem lines if needed -->
             </div>
         </div>
@@ -47,61 +45,89 @@
         </CardBody>
     </Card>
 }
-<div style="@($"display: {(Loading ? "none" : "block")};" )">
-<div class="row">
-    <div class="col-6">
-        <h3>@L["GroupbuyReport"]</h3>
+<div style="@($"display: {(Loading ? "none" : "block")};")">
+    <div class="row">
+        <div class="col-6">
+            <h3>@L["GroupbuyReport"]</h3>
+        </div>
     </div>
-</div>
-<Card>
-    <CardBody>
-        <DataGrid TItem="GroupBuyReportDto"
-                  Data="GroupBuyReportList"
-                  ReadData="OnDataGridReadAsync"
-                  TotalItems="Total"
-                  ShowPager="true"
-                  PageSize="PageSize"
-                SortChanged="OnSortChange">
-            <DataGridColumns>
-                <DataGridColumn TItem="GroupBuyReportDto"
-                                Field="@nameof(GroupBuyReportDto.GroupBuyName)"
-                                Caption="@L["GroupBuyName"]"
-                                Width="50%">
-                    <DisplayTemplate>
-                        <a href="/GroupBuyManagement/GroupBuyReportDetails/@context.GroupBuyId" target="_blank">@context.GroupBuyName</a>
-                    </DisplayTemplate>
-                </DataGridColumn>
-                <DataGridColumn Caption="@L["ReportUrl"]" Sortable="false" TextAlignment="TextAlignment.Center">
-                    <DisplayTemplate>
-                        <a href="/GroupBuyManagement/GroupBuyExternalReportDetails/@context.GroupBuyId" target="_blank"><i class="fa fa-link"></i></a>
-                    </DisplayTemplate>
-                </DataGridColumn>
-                <DataGridColumn TItem="GroupBuyReportDto"
-                                Field="@nameof(GroupBuyReportDto.TotalQuantity)"
-                                Caption="@L["TotalQuantity"]"
-                                TextAlignment="TextAlignment.Center">
-                </DataGridColumn>
-                <DataGridColumn TItem="GroupBuyReportDto" Field="@nameof(GroupBuyReportDto.TotalAmount)"
-                                Caption="@L["TotalAmount"]"
-                                TextAlignment="TextAlignment.Center">
-                    <DisplayTemplate>
-                        $@context.TotalAmount.ToString("N0")
-                    </DisplayTemplate>
-                </DataGridColumn>
-                <DataGridColumn TItem="GroupBuyReportDto" Field="@nameof(GroupBuyReportDto.PaidAmount)"
-                                Caption="@L["PaidAmount"]"
-                                TextAlignment="TextAlignment.Center">
-                    <DisplayTemplate>
-                        $@context.PaidAmount.ToString("N0")
-                    </DisplayTemplate>
-                </DataGridColumn>
-            </DataGridColumns>
-            <FirstPageButtonTemplate>@L[PikachuResource.FirstPage]</FirstPageButtonTemplate>
-            <PreviousPageButtonTemplate>@L[PikachuResource.PrevPage]</PreviousPageButtonTemplate>
-            <NextPageButtonTemplate>@L[PikachuResource.NextPage]</NextPageButtonTemplate>
-            <LastPageButtonTemplate>@L[PikachuResource.LastPage]</LastPageButtonTemplate>
-        </DataGrid>
-    </CardBody>
-</Card>
+    <Card>
+        <CardBody>
+            <DataGrid TItem="GroupBuyReportDto"
+                      Data="GroupBuyReportList"
+                      ReadData="OnDataGridReadAsync"
+                      TotalItems="Total"
+                      ShowPager="true"
+                      PageSize="PageSize"
+                      SortChanged="OnSortChange"
+                      Bordered>
+                <DataGridColumns>
+                    <DataGridColumn TItem="GroupBuyReportDto"
+                                    Field="@nameof(GroupBuyReportDto.GroupBuyName)"
+                                    Caption="@L["GroupBuyName"]"
+                                    Width="30%">
+                        <DisplayTemplate>
+                            <a href="/GroupBuyManagement/GroupBuyReportDetails/@context.GroupBuyId" target="_blank">@context.GroupBuyName</a>
+                        </DisplayTemplate>
+                    </DataGridColumn>
+                    <DataGridColumn Caption="@L["ReportUrl"]" Sortable="false" TextAlignment="TextAlignment.Center">
+                        <DisplayTemplate>
+                            <a href="/GroupBuyManagement/GroupBuyExternalReportDetails/@context.GroupBuyId" target="_blank"><i class="fa fa-link"></i></a>
+                        </DisplayTemplate>
+                    </DataGridColumn>
+                    <DataGridColumn TItem="GroupBuyReportDto"
+                                    Field="@nameof(GroupBuyReportDto.TotalOrder)"
+                                    Caption="@L["TotalOrders"]"
+                                    TextAlignment="TextAlignment.Center">
+                        <DisplayTemplate>
+                            @context.TotalOrder.ToString("N0")
+                        </DisplayTemplate>
+                    </DataGridColumn>
+                    <DataGridColumn TItem="GroupBuyReportDto" Field="@nameof(GroupBuyReportDto.CompleteOrders)"
+                                    Caption="@L["CompleteOrders"]"
+                                    TextAlignment="TextAlignment.Center">
+                        <DisplayTemplate>
+                            @context.CompleteOrders.ToString("N0")
+                        </DisplayTemplate>
+                    </DataGridColumn>
+                    <DataGridColumn TItem="GroupBuyReportDto" Field="@nameof(GroupBuyReportDto.SalesAmount)"
+                                    Caption="@L["SalesAmountExclShipping"]"
+                                    HeaderTextAlignment="TextAlignment.Center"
+                                    TextAlignment="TextAlignment.End">
+                        <DisplayTemplate>
+                            $@context.SalesAmount.ToString("N0")
+                        </DisplayTemplate>
+                    </DataGridColumn>
+                    <DataGridColumn TItem="GroupBuyReportDto" Field="@nameof(GroupBuyReportDto.AmountReceived)"
+                                    Caption="@L["AmountReceivedExclShipping"]"
+                                    HeaderTextAlignment="TextAlignment.Center"
+                                    TextAlignment="TextAlignment.End">
+                        <DisplayTemplate>
+                            $@context.AmountReceived.ToString("N0")
+                        </DisplayTemplate>
+                    </DataGridColumn>
+                    <DataGridColumn TItem="GroupBuyReportDto" Field="@nameof(GroupBuyReportDto.ProfitShare)"
+                                    Caption="@L["ProfitShare%"]"
+                                    TextAlignment="TextAlignment.Center">
+                        <DisplayTemplate>
+                            @context.ProfitShare.ToString("N0")
+                        </DisplayTemplate>
+                    </DataGridColumn>
+                    <DataGridColumn TItem="GroupBuyReportDto" Field="@nameof(GroupBuyReportDto.ProfitShareAmount)"
+                                    Caption="@L["ProfitShareEarnings"]"
+                                    HeaderTextAlignment="TextAlignment.Center"
+                                    TextAlignment="TextAlignment.End">
+                        <DisplayTemplate>
+                            $@context.ProfitShareAmount.ToString("N0")
+                        </DisplayTemplate>
+                    </DataGridColumn>
+                </DataGridColumns>
+                <FirstPageButtonTemplate>@L[PikachuResource.FirstPage]</FirstPageButtonTemplate>
+                <PreviousPageButtonTemplate>@L[PikachuResource.PrevPage]</PreviousPageButtonTemplate>
+                <NextPageButtonTemplate>@L[PikachuResource.NextPage]</NextPageButtonTemplate>
+                <LastPageButtonTemplate>@L[PikachuResource.LastPage]</LastPageButtonTemplate>
+            </DataGrid>
+        </CardBody>
+    </Card>
 </div>
 

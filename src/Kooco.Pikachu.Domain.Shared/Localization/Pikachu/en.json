@@ -380,7 +380,7 @@
     "TotalAmount": "Total Amount",
     "PaidAmount": "Paid Amount",
     "ReportUrl": "Report Url",
-    "OrderQuantityPaid/TotalOrderQuantity": "Order Count (Paid) / Total Order Count",
+    "OrderQuantityPaid/TotalOrderQuantity": "Complete Order Count / Total Order Count",
     "SalesAmount/SalesAmountExcludingShipping": "Sales Amount (Excluding Shipping) / Sales Amount (Including Shipping)",
     "AmountReceived/AmountReceivedExcludingShipping": "Amount Received (Excluding Shipping) / Amount Received (Including Shipping)",
     "SalesAmountMinusShippingCosts": "Sales Amount (Minus Shipping Costs)",
@@ -1651,6 +1651,14 @@
     "MinimumAmountLimit": "Minimum Amount Limit",
     "MaximumAmountLimit": "Maximum Amount Limit",
     "VirtualBankTransfer": "Virtual Bank Transfer",
-    "EcPayVirtualBankTransfer": "ECPay Virtual Bank Transfer"
+    "EcPayVirtualBankTransfer": "ECPay Virtual Bank Transfer",
+    "CompleteOrders": "Complete Orders",
+    "SalesAmountExclShipping": "Sales Amount (Excluding Shipping Fee)",
+    "AmountReceivedExclShipping": "Amount Received (Excluding Shipping Fee)",
+    "ProfitShare%": "Profit Share (%)",
+    "ProfitShareEarnings": "Profit Share Earnings",
+    "CompletionFrom": "Completion From",
+    "CompletionTo": "Completion To",
+    "ShippingFee": "Shipping Fee"
   }
 }

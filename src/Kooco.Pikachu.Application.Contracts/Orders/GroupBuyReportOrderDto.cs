@@ -14,6 +14,7 @@ public class GroupBuyReportOrderDto
     public OrderStatus OrderStatus { get; set; }
     public ShippingStatus ShippingStatus { get; set; }
     public PaymentMethods? PaymentMethod { get; set; }
+    public decimal? ShippingFee { get; set; }
     public decimal TotalAmount { get; set; }
     public Guid GroupBuyId { get; set; }
     public List<GroupBuyReportOrderItemsDto> OrderItems { get; set; } = [];

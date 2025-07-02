@@ -28,6 +28,9 @@ public partial class GroupBuyReportDetails
     private string? Filter { get; set; }
     private DateTime? StartDate { get; set; }
     private DateTime? EndDate { get; set; }
+    private DateTime? CompletionTimeFrom { get; set; }
+    private DateTime? CompletionTimeTo { get; set; }
+    private ShippingStatus? ShippingStatus { get; set; }
     private OrderStatus? OrderStatus { get; set; }
 
     private readonly HashSet<Guid> ExpandedRows = [];
@@ -54,7 +57,15 @@ public partial class GroupBuyReportDetails
 
     async Task GetReportDetailsAsync()
     {
-        ReportDetails = await _groupBuyAppService.GetGroupBuyReportDetailsAsync(Guid.Parse(Id), StartDate, EndDate, OrderStatus);
+        ReportDetails = await _groupBuyAppService.GetGroupBuyReportDetailsAsync(
+            Guid.Parse(Id), 
+            StartDate, 
+            EndDate, 
+            OrderStatus,
+            CompletionTimeFrom,
+            CompletionTimeTo,
+            ShippingStatus
+            );
         StartDate = ReportDetails?.StartDate;
         EndDate = ReportDetails?.EndDate;
     }
@@ -74,7 +85,10 @@ public partial class GroupBuyReportDetails
                 GroupBuyId = Guid.Parse(Id),
                 StartDate = StartDate,
                 EndDate = EndDate,
-                OrderStatus = OrderStatus
+                OrderStatus = OrderStatus,
+                ShippingStatus = ShippingStatus,
+                CompletionTimeFrom = CompletionTimeFrom,
+                CompletionTimeTo = CompletionTimeTo,
             }, false);
             Orders = result?.Items.ToList() ?? [];
             TotalCount = (int?)result?.TotalCount ?? 0;
@@ -113,7 +127,15 @@ public partial class GroupBuyReportDetails
         try
         {
             await Loading.Show();
-            var remoteStreamContent = await _groupBuyAppService.GetListAsExcelFileAsync(Guid.Parse(Id),StartDate,EndDate,OrderStatus);
+            var remoteStreamContent = await _groupBuyAppService.GetListAsExcelFileAsync(
+                Guid.Parse(Id),
+                StartDate,
+                EndDate,
+                OrderStatus,
+                CompletionTimeFrom,
+                CompletionTimeTo,
+                ShippingStatus
+                );
             using var responseStream = remoteStreamContent.GetStream();
             // Create Excel file from the stream
             using var memoryStream = new MemoryStream();

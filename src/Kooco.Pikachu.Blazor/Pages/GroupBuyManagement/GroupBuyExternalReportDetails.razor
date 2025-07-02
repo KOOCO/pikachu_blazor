@@ -36,7 +36,7 @@
     }
 </style>
 <LoadingIndicator @ref="Loading" FullScreen></LoadingIndicator>
- <div class="container">
+<div class="container">
     <div class="row">
         <div class="col-12 col-md-6 col-sm-12">
             <div class="d-flex justify-content-between">
@@ -70,13 +70,13 @@
         </div>
     </div>
 
-     @if (ReportDetails != null)
+    @if (ReportDetails != null)
     {
         <div class="row">
-            <div class="col-md-6 col-sm-12">
+            <div class="col-md-8 col-sm-12">
                 <Card>
                     <CardBody>
-                        <table class="w-100">
+                        @* <table class="w-100">
                             <tbody>
                                 <tr>
                                     <td>@L["OrderQuantityPaid/TotalOrderQuantity"]</td>
@@ -97,6 +97,26 @@
                                 <tr>
                                     <td>@L["BloggersShareProfit"]</td>
                                     <td class="text-end">@ReportDetails.BloggersProfit.ToString("N0")</td>
+                                </tr>
+                            </tbody>
+                        </table> *@
+                        <table class="w-100">
+                            <tbody>
+                                <tr>
+                                    <td>@L["OrderQuantityPaid/TotalOrderQuantity"]:</td>
+                                    <td class="text-end">@((ReportDetails?.OrderQuantityPaid ?? 0).ToString("N0")) / @((ReportDetails?.TotalOrderQuantity ?? 0).ToString("N0"))</td>
+                                </tr>
+                                <tr>
+                                    <td>@L["SalesAmount/SalesAmountExcludingShipping"]:</td>
+                                    <td class="text-end">$@((ReportDetails?.SalesAmountExclShipping ?? 0).ToString("N0")) / $@((ReportDetails?.SalesAmount ?? 0).ToString("N0"))</td>
+                                </tr>
+                                <tr>
+                                    <td>@L["AmountReceived/AmountReceivedExcludingShipping"]:</td>
+                                    <td class="text-end">$@((ReportDetails?.AmountReceivedExclShipping ?? 0).ToString("N0")) / $@((ReportDetails?.AmountReceived ?? 0).ToString("N0")) </td>
+                                </tr>
+                                <tr>
+                                    <td>@L["ProfitShareEarnings"]:</td>
+                                    <td class="text-end">$@((ReportDetails?.ProfitShareAmount ?? 0).ToString("N1"))</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -126,21 +146,23 @@
                               ReadData="OnDataGridReadAsync"
                               TotalItems="TotalCount"
                               DetailRowTrigger="@((e) => e.Item.OrderItems?.Count > 0 && e.Item.Id == SelectedOrder?.Id)"
-                                        Responsive
-                               ShowPager="true"
-                               PageSize="PageSize"
-                               RowClicked="ToggleRow"
-                               SortChanged="OnSortChange">
-                         <DataGridColumns>
-                             <DataGridCommandColumn />
-                             <DataGridColumn Field="@nameof(OrderDto.OrderNo)" Caption="@L["OrderNo"]">
-                                 <DisplayTemplate>
-                                     @{
-                                        var isExpanded = ExpandedRows.Contains(context.Id);
-                                        var chevronClass = isExpanded ? "fa fa-caret-up" : "fa fa-caret-down";
-                                    }
-                                    <i class="@chevronClass"></i>
-                                    @L[context.OrderNo]
+                              Responsive
+                              ShowPager="true"
+                              PageSize="PageSize"
+                              RowClicked="ToggleRow"
+                              SortChanged="OnSortChange">
+                        <DataGridColumns>
+                            <DataGridCommandColumn />
+                            <DataGridColumn Field="@nameof(OrderDto.OrderNo)" Caption="@L["OrderNo"]">
+                                <DisplayTemplate>
+                                    <Span Class="text-nowrap">
+                                        @{
+                                            var isExpanded = ExpandedRows.Contains(context.Id);
+                                            var chevronClass = isExpanded ? "fa fa-caret-up" : "fa fa-caret-down";
+                                        }
+                                        <i class="@chevronClass"></i>
+                                        @L[context.OrderNo]
+                                    </Span>
                                 </DisplayTemplate>
                             </DataGridColumn>
                             <DataGridColumn Field="@nameof(OrderDto.CreationTime)" Caption="@L["OrderDate"]" />

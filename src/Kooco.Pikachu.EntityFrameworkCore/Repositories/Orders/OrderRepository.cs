@@ -125,9 +125,33 @@ public class OrderRepository(IDbContextProvider<PikachuDbContext> dbContextProvi
             }).ToList()
         }).ToListAsync();
     }
-    public async Task<List<Order>> GetAllListAsync(int skipCount, int maxResultCount, string? sorting, string? filter, Guid? groupBuyId, List<Guid> orderId, DateTime? startDate = null, DateTime? endDate = null, OrderStatus? orderStatus = null)
+    public async Task<List<Order>> GetAllListAsync(
+        int skipCount, 
+        int maxResultCount, 
+        string? sorting, 
+        string? filter, 
+        Guid? groupBuyId, 
+        List<Guid> orderId, 
+        DateTime? startDate = null, 
+        DateTime? endDate = null, 
+        OrderStatus? orderStatus = null,
+        DateTime? completionTimeFrom = null,
+        DateTime? completionTimeTo = null,
+        ShippingStatus? shippingStatus = null
+        )
     {
-        return await ApplyFiltersNew(await GetQueryableAsync(), filter, groupBuyId, orderId, startDate, endDate, orderStatus)
+        return await ApplyFiltersNew(
+            await GetQueryableAsync(), 
+            filter, 
+            groupBuyId, 
+            orderId, 
+            startDate, 
+            endDate, 
+            orderStatus,
+            shippingStatus,
+            completionTimeFrom,
+            completionTimeTo
+            )
             .OrderBy(sorting)
             .PageBy(skipCount, maxResultCount)
             .Include(o => o.GroupBuy)
@@ -141,9 +165,33 @@ public class OrderRepository(IDbContextProvider<PikachuDbContext> dbContextProvi
             .ToListAsync();
     }
 
-    public async Task<GroupBuyReportModelWithCount> GetReportListAsync(int skipCount, int maxResultCount, string? sorting, string? filter, Guid? groupBuyId, List<Guid> orderId, DateTime? startDate = null, DateTime? endDate = null, OrderStatus? orderStatus = null)
+    public async Task<GroupBuyReportModelWithCount> GetReportListAsync(
+        int skipCount, 
+        int maxResultCount, 
+        string? sorting, 
+        string? filter, 
+        Guid? groupBuyId, 
+        List<Guid> orderId, 
+        DateTime? startDate = null, 
+        DateTime? endDate = null, 
+        OrderStatus? orderStatus = null,
+        ShippingStatus? shippingStatus = null,
+        DateTime? completionTimeFrom = null,
+        DateTime? completionTimeTo = null
+        )
     {
-        var query = ApplyFiltersNew(await GetQueryableAsync(), filter, groupBuyId, orderId, startDate, endDate, orderStatus)
+        var query = ApplyFiltersNew(
+            await GetQueryableAsync(),
+            filter,
+            groupBuyId,
+            orderId,
+            startDate,
+            endDate,
+            orderStatus,
+            shippingStatus,
+            completionTimeFrom,
+            completionTimeTo
+            )
             .Include(o => o.GroupBuy)
             .Include(o => o.StoreComments)
             .Include(o => o.OrderItems)
@@ -162,6 +210,7 @@ public class OrderRepository(IDbContextProvider<PikachuDbContext> dbContextProvi
                 OrderStatus = o.OrderStatus,
                 ShippingStatus = o.ShippingStatus,
                 PaymentMethod = o.PaymentMethod,
+                ShippingFee = o.DeliveryCost + o.DeliveryCostForNormal + o.DeliveryCostForFreeze + o.DeliveryCostForFrozen,
                 TotalAmount = o.TotalAmount,
                 GroupBuyId = o.GroupBuyId,
                 OrderItems = o.OrderItems
@@ -270,13 +319,18 @@ public class OrderRepository(IDbContextProvider<PikachuDbContext> dbContextProvi
     #endregion
 
     #region Private Methods
-    private static IQueryable<Order> ApplyFiltersNew(IQueryable<Order> queryable,
-                                                     string? filter,
-                                                     Guid? groupBuyId,
-                                                     List<Guid> orderIds,
-                                                     DateTime? startDate = null,
-                                                     DateTime? endDate = null,
-                                                     OrderStatus? orderStatus = null)
+    private static IQueryable<Order> ApplyFiltersNew(
+        IQueryable<Order> queryable,
+        string? filter,
+        Guid? groupBuyId,
+        List<Guid> orderIds,
+        DateTime? startDate = null,
+        DateTime? endDate = null,
+        OrderStatus? orderStatus = null,
+        ShippingStatus? shippingStatus = null,
+        DateTime? completionTimeFrom = null,
+        DateTime? completionTimeTo = null
+        )
     {
         return queryable
             .WhereIf(groupBuyId.HasValue, x => x.GroupBuyId == groupBuyId)
@@ -287,7 +341,10 @@ public class OrderRepository(IDbContextProvider<PikachuDbContext> dbContextProvi
             ).WhereIf(orderIds != null && orderIds.Any(), x => orderIds.Contains(x.Id))
             .WhereIf(startDate.HasValue, x => x.CreationTime.Date >= startDate.Value.Date)
             .WhereIf(endDate.HasValue, x => x.CreationTime.Date <= endDate.Value.Date)
-            .WhereIf(orderStatus.HasValue, x => x.OrderStatus == orderStatus);
+            .WhereIf(orderStatus.HasValue, x => x.OrderStatus == orderStatus)
+            .WhereIf(shippingStatus.HasValue, x => x.ShippingStatus == shippingStatus)
+            .WhereIf(completionTimeFrom.HasValue, x => x.CompletionTime.HasValue && x.CompletionTime >= completionTimeFrom!.Value.Date)
+            .WhereIf(completionTimeTo.HasValue, x => x.CompletionTime.HasValue && x.CompletionTime.Value.Date <= completionTimeTo!.Value.Date);
         //.Where(x => x.IsRefunded == false);
         //.Where(x => x.OrderType != OrderType.MargeToNew);
     }

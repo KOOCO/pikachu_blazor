@@ -12,6 +12,8 @@ namespace Kooco.Pikachu.Orders
         public List<Guid>? OrderIds { get; set; } = [];
         public DateTime? StartDate { get; set; }
         public DateTime? EndDate { get; set; }
+        public DateTime? CompletionTimeFrom { get; set; }
+        public DateTime? CompletionTimeTo { get; set; }
         public OrderStatus? OrderStatus { get; set; }
         public ShippingStatus? ShippingStatus { get; set; }
         public DeliveryMethod? DeliveryMethod { get; set; }

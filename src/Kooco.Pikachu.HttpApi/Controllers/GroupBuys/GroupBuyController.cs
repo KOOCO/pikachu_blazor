@@ -188,15 +188,43 @@ public class GroupBuyController : AbpController, IGroupBuyAppService
     }
 
     [HttpGet("get-groupbuy-report-details/{id}")]
-    public Task<GroupBuyReportDetailsDto> GetGroupBuyReportDetailsAsync(Guid id, DateTime? startDate = null, DateTime? endDate = null, OrderStatus? orderStatus = null)
+    public Task<GroupBuyReportDetailsDto> GetGroupBuyReportDetailsAsync(
+        Guid id,
+        DateTime? startDate = null,
+        DateTime? endDate = null,
+        OrderStatus? orderStatus = null,
+        DateTime? completionTimeFrom = null,
+        DateTime? completionTimeTo = null,
+        ShippingStatus? shippingStatus = null
+        )
     {
         return _groupBuyAppService.GetGroupBuyReportDetailsAsync(id, startDate, endDate, orderStatus);
     }
 
     [HttpGet("get-as-excel/{id}")]
-    public Task<IRemoteStreamContent> GetListAsExcelFileAsync(Guid id, DateTime? startDate = null, DateTime? endDate = null, OrderStatus? orderStatus = null, bool isChinese = false)
+    public Task<IRemoteStreamContent> GetListAsExcelFileAsync(
+        Guid id, 
+        DateTime? startDate = null, 
+        DateTime? endDate = null, 
+        OrderStatus? orderStatus = null,
+        DateTime? completionTimeFrom = null,
+        DateTime? completionTimeTo = null,
+        ShippingStatus? shippingStatus = null,
+        bool isChinese = false,
+        bool includeShippingFee = true
+        )
     {
-        return _groupBuyAppService.GetListAsExcelFileAsync(id, startDate, endDate);
+        return _groupBuyAppService.GetListAsExcelFileAsync(
+            id, 
+            startDate, 
+            endDate,
+            orderStatus,
+            completionTimeFrom,
+            completionTimeTo,
+            shippingStatus,
+            isChinese,
+            includeShippingFee
+            );
     }
 
     [HttpGet("get-attachment/{id}/{tenantId}/{sendTime}/{recurrenceType}")]

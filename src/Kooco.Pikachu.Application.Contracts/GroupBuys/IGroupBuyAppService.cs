@@ -43,8 +43,26 @@ namespace Kooco.Pikachu.GroupBuys
         Task<GroupBuyDto> GetWithItemGroupsAsync(Guid id);
         Task<GroupBuyItemGroupDto> GetGroupBuyItemGroupAsync(Guid id);
         Task DeleteGroupBuyItemAsync(Guid id, Guid GroupBuyID);
-        Task<GroupBuyReportDetailsDto> GetGroupBuyReportDetailsAsync(Guid id, DateTime? startDate = null, DateTime? endDate = null, OrderStatus? orderStatus = null);
-        Task<IRemoteStreamContent> GetListAsExcelFileAsync(Guid id, DateTime? startDate = null, DateTime? endDate = null, OrderStatus? orderStatus = null, bool isChinese = false);
+        Task<GroupBuyReportDetailsDto> GetGroupBuyReportDetailsAsync(
+            Guid id, 
+            DateTime? startDate = null, 
+            DateTime? endDate = null, 
+            OrderStatus? orderStatus = null,
+            DateTime? completionTimeFrom = null,
+            DateTime? completionTimeTo = null,
+            ShippingStatus? shippingStatus = null
+            );
+        Task<IRemoteStreamContent> GetListAsExcelFileAsync(
+            Guid id, 
+            DateTime? startDate = null, 
+            DateTime? endDate = null, 
+            OrderStatus? orderStatus = null,
+            DateTime? completionTimeFrom = null,
+            DateTime? completionTimeTo = null,
+            ShippingStatus? shippingStatus = null,
+            bool isChinese = false,
+            bool includeShippingFee = true
+            );
         Task<IRemoteStreamContent> GetAttachmentAsync(Guid id, Guid? tenantId, DateTime sendTime, RecurrenceType recurrenceType);
         Task<List<KeyValueDto>> GetGroupBuyLookupAsync();
         Task<PagedResultDto<GroupBuyReportDto>> GetGroupBuyTenantReportListAsync(GetGroupBuyReportListDto input);

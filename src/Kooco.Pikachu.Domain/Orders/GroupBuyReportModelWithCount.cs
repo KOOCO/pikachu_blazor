@@ -20,6 +20,7 @@ public class GroupBuyReportOrderModel
     public OrderStatus OrderStatus { get; set; }
     public ShippingStatus ShippingStatus { get; set; }
     public PaymentMethods? PaymentMethod { get; set; }
+    public decimal? ShippingFee { get; set; }
     public decimal TotalAmount { get; set; }
     public Guid GroupBuyId { get; set; }
     public List<GroupBuyReportOrderItemsModel> OrderItems { get; set; } = [];

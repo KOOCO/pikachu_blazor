@@ -1290,7 +1290,20 @@ public class OrderAppService : PikachuAppService, IOrderAppService
             input.Sorting = $"{nameof(GroupBuyReportOrderModel.CreationTime)} desc";
         }
 
-        var data = await OrderRepository.GetReportListAsync(input.SkipCount, input.MaxResultCount, input.Sorting, input.Filter, input.GroupBuyId, input.OrderIds, input.StartDate, input.EndDate, input.OrderStatus);
+        var data = await OrderRepository.GetReportListAsync(
+            input.SkipCount, 
+            input.MaxResultCount, 
+            input.Sorting, 
+            input.Filter, 
+            input.GroupBuyId, 
+            input.OrderIds, 
+            input.StartDate, 
+            input.EndDate, 
+            input.OrderStatus,
+            input.ShippingStatus,
+            input.CompletionTimeFrom,
+            input.CompletionTimeTo
+            );
 
         var dtos = ObjectMapper.Map<List<GroupBuyReportOrderModel>, List<GroupBuyReportOrderDto>>(data.Items);
 

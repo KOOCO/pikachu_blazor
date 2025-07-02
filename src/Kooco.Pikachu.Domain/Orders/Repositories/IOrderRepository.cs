@@ -48,7 +48,10 @@ public interface IOrderRepository : IRepository<Order, Guid>
         List<Guid> orderId,
         DateTime? startDate = null,
         DateTime? endDate = null,
-        OrderStatus? orderStatus = null
+        OrderStatus? orderStatus = null,
+        DateTime? completionTimeFrom = null,
+        DateTime? completionTimeTo = null,
+        ShippingStatus? shippingStatus = null
         );
     Task<Order> MaxByOrderNumberAsync();
     Task<Order> GetWithDetailsAsync(Guid id);
@@ -69,5 +72,18 @@ public interface IOrderRepository : IRepository<Order, Guid>
     Task<string> GetOrderNoByOrderId(Guid OrderId);
     Task<List<Order>> GetOrdersToCloseAsync();
     Task<long> ReturnOrderNotificationCountAsync();
-    Task<GroupBuyReportModelWithCount> GetReportListAsync(int skipCount, int maxResultCount, string? sorting, string? filter, Guid? groupBuyId, List<Guid> orderId, DateTime? startDate = null, DateTime? endDate = null, OrderStatus? orderStatus = null);
+    Task<GroupBuyReportModelWithCount> GetReportListAsync(
+        int skipCount, 
+        int maxResultCount, 
+        string? sorting, 
+        string? filter, 
+        Guid? groupBuyId, 
+        List<Guid> orderId, 
+        DateTime? startDate = null, 
+        DateTime? endDate = null, 
+        OrderStatus? orderStatus = null,
+        ShippingStatus? shippingStatus = null,
+        DateTime? completionTimeFrom = null,
+        DateTime? completionTimeTo = null
+        );
 }

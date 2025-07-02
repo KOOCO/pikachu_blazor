@@ -115,7 +115,7 @@ public partial class GroupBuyExternalReportDetails
         try
         {
             await Loading.Show();
-            var remoteStreamContent = await _groupBuyAppService.GetListAsExcelFileAsync(Guid.Parse(Id));
+            var remoteStreamContent = await _groupBuyAppService.GetListAsExcelFileAsync(Guid.Parse(Id), StartDate, EndDate, OrderStatus, includeShippingFee: false);
             using var responseStream = remoteStreamContent.GetStream();
             // Create Excel file from the stream
             using var memoryStream = new MemoryStream();
