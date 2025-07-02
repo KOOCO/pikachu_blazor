@@ -114,10 +114,7 @@ public class CampaignManager : DomainService
         )
     {
         Check.NotNull(campaign, nameof(campaign));
-        if (promotionModule == PromotionModule.AddOnProduct)
-        {
-            applyToAllProducts = null;
-        }
+        
         if (!targetAudience.Any())
         {
             throw new BusinessException("Required", nameof(targetAudience));
@@ -203,10 +200,10 @@ public class CampaignManager : DomainService
 
     public void AddProducts(Campaign campaign, IEnumerable<Guid> productIds, bool throwException = true)
     {
-        var canAdd = campaign.ApplyToAllProducts == false && campaign.PromotionModule != PromotionModule.AddOnProduct;
+        var canAdd = campaign.ApplyToAllProducts == false;
         if (throwException && !canAdd)
         {
-            throw new BusinessException("Products can not be added to this Campaign. Either the module is incorrect or Apply to All Products is checked.");
+            throw new BusinessException("Products can not be added to this Campaign. Apply to All Products is checked.");
         }
 
         if (canAdd)

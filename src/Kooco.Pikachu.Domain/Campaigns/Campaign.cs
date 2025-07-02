@@ -93,7 +93,7 @@ public class Campaign : FullAuditedAggregateRoot<Guid>, IMultiTenant
     public void SetIsEnabled(bool isEnabled) => IsEnabled = isEnabled;
     public void SetApplyToAllProducts(bool? applyToAllProducts)
     {
-        if (PromotionModule != PromotionModule.AddOnProduct && !applyToAllProducts.HasValue)
+        if (!applyToAllProducts.HasValue)
         {
             throw new BusinessException("Apply To All Products is required");
         }

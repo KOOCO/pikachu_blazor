@@ -54,15 +54,12 @@ public class CreateCampaignDtoValidator : AbstractValidator<CreateCampaignDto>
             .When(x => x.PromotionModule.HasValue && x.ApplyToAllGroupBuys != null && x.ApplyToAllGroupBuys == false)
             .WithMessage(l["TheFieldIsRequired", l[nameof(CreateCampaignDto.GroupBuyIds)]]);
 
-        When(x => x.PromotionModule.HasValue && x.PromotionModule != PromotionModule.AddOnProduct, () =>
-        {
-            AddRequiredRule(x => x.ApplyToAllProducts);
+        AddRequiredRule(x => x.ApplyToAllProducts);
 
-            RuleFor(x => x.ProductIds)
-                .NotEmpty()
-                .When(x => x.PromotionModule.HasValue && x.ApplyToAllProducts != null && x.ApplyToAllProducts == false)
-                .WithMessage(l["TheFieldIsRequired", l[nameof(CreateCampaignDto.ProductIds)]]);
-        });
+        RuleFor(x => x.ProductIds)
+            .NotEmpty()
+            .When(x => x.PromotionModule.HasValue && x.ApplyToAllProducts != null && x.ApplyToAllProducts == false)
+            .WithMessage(l["TheFieldIsRequired", l[nameof(CreateCampaignDto.ProductIds)]]);
 
         AddRequiredRule(x => x.DiscountUsagePolicy, "Discount");
         AddRequiredRule(x => x.ShoppingCreditUsagePolicy, "ShoppingCredit");
