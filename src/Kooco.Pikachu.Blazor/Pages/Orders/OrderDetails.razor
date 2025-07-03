@@ -1669,34 +1669,34 @@
                         @if (Order.ShippingStatus is not ShippingStatus.WaitingForPayment && Order.IsRefunded is false)
                         {
                             <Button Type="ButtonType.Button"
-                                    Class="btn btn-sm btn-danger"
-                                    Clicked="OpenRefundModal">
+                            Class="btn btn-sm btn-danger"
+                            Clicked="OpenRefundModal">
                                 @L["ApplyRefund"]
                             </Button>
                         }
                         else
                         {
                             <Button Type="ButtonType.Button"
-                                    Disabled
-                                    Class="btn btn-sm btn-danger"
-                                    Clicked="OpenRefundModal">
+                            Disabled
+                            Class="btn btn-sm btn-danger"
+                            Clicked="OpenRefundModal">
                                 @L["ApplyRefund"]
                             </Button>
                         }
                         @if (Order?.OrderStatus is not OrderStatus.Returned &&
-                       Order?.OrderStatus is not OrderStatus.Exchange &&
-                       Order?.ShippingStatus is not ShippingStatus.WaitingForPayment &&
-                       Order?.ShippingStatus is not ShippingStatus.PrepareShipment &&
-                       Order.OrderStatus is not OrderStatus.Refund)
+                      Order?.OrderStatus is not OrderStatus.Exchange &&
+                      Order?.ShippingStatus is not ShippingStatus.WaitingForPayment &&
+                      Order?.ShippingStatus is not ShippingStatus.PrepareShipment &&
+                      Order.OrderStatus is not OrderStatus.Refund)
                         {
                             <Button Type="ButtonType.Button"
-                                    Class="btn btn-sm btn-secondary me-1"
-                                    Clicked="() => OpenReturnAndExchange(true)">
+                            Class="btn btn-sm btn-secondary me-1"
+                            Clicked="() => OpenReturnAndExchange(true)">
                                 @L["ReturnOrder"]
                             </Button>
                             <Button Type="ButtonType.Button"
-                                    Class="btn btn-sm btn-secondary me-1"
-                                    Clicked="() => OpenReturnAndExchange(false)">
+                            Class="btn btn-sm btn-secondary me-1"
+                            Clicked="() => OpenReturnAndExchange(false)">
                                 @L["ExchangeItem"]
                             </Button>
                         }
@@ -1722,32 +1722,32 @@
                             @if (Order.ShippingStatus is ShippingStatus.PrepareShipment && Order.OrderItems.Any(x => x.IsSelected == true) && (Order.OrderType is null || Order.OrderType is 0))
                             {
                                 <Button Clicked="SplitOrder"
-                                        Type="ButtonType.Button"
-                                        Class="btn btn-sm btn-secondary me-1">
+                                Type="ButtonType.Button"
+                                Class="btn btn-sm btn-secondary me-1">
                                     @L["SplitOrder"]
                                 </Button>
                             }
                             else if (Order.ShippingStatus is ShippingStatus.WaitingForPayment && Order.OrderItems.Any(x => x.IsSelected == true) && (Order.OrderType is null || Order.OrderType is 0))
                             {
                                 <Button Clicked="SplitOrder"
-                                        Type="ButtonType.Button"
-                                        Class="btn btn-sm btn-secondary me-1">
+                                Type="ButtonType.Button"
+                                Class="btn btn-sm btn-secondary me-1">
                                     @L["SplitOrder"]
                                 </Button>
                             }
                             else
                             {
                                 <Button Type="ButtonType.Button"
-                                        Disabled
-                                        Class="btn btn-sm btn-secondary me-1">
+                                Disabled
+                                Class="btn btn-sm btn-secondary me-1">
                                     @L["SplitOrder"]
                                 </Button>
                             }
                         }
                     }
                     <Button Type="ButtonType.Button"
-                            @onclick="NavigateToOrderShipmentDetails"
-                            Class="btn btn-sm btn-primary">
+                    @onclick="NavigateToOrderShipmentDetails"
+                    Class="btn btn-sm btn-primary">
                         <Icon Class="fa fa-print" />
                         @L["PrintOrder"]
                     </Button>
@@ -1766,9 +1766,9 @@
                         <div class="row">
                             <div class="col-12 d-flex justify-content-between">
                                 <Select TValue="ShippingStatus"
-                                        Class="form-select form-select-sm"
-                                        SelectedValue="@Order.ShippingStatus"
-                                        SelectedValueChanged="@(e => ShippingStatusChanged(e))">
+                                Class="form-select form-select-sm"
+                                SelectedValue="@Order.ShippingStatus"
+                                SelectedValueChanged="@(e => ShippingStatusChanged(e))">
                                     @if (Order.ShippingStatus is not ShippingStatus.Exchange)
                                     {
                                         <SelectItem />
@@ -2405,12 +2405,12 @@
             <Card>
                 <CardBody>
                     <DataGrid TItem="OrderDeliveryDto"
-                              Data="@OrderDeliveries"
-                              @bind-SelectedRow="@SelectedOrder"
-                              DetailRowTrigger="@((e) => e.Item.Items?.Count > 0 && e.Item.Id == SelectedOrder?.Id)"
-                              Responsive
-                              RowClicked="ToggleRow"
-                              Class=" rm-table-min-height">
+                    Data="@OrderDeliveries"
+                    @bind-SelectedRow="@SelectedOrder"
+                    DetailRowTrigger="@((e) => e.Item.Items?.Count > 0 && e.Item.Id == SelectedOrder?.Id)"
+                    Responsive
+                    RowClicked="ToggleRow"
+                    Class=" rm-table-min-height">
                         <DataGridColumns>
                             <DataGridCommandColumn />
                             <DataGridColumn Field="@nameof(OrderDeliveryDto.DeliveryNo)" Caption="@L["DeliveryNo"]">
@@ -2477,10 +2477,10 @@
                             </DataGridColumn>
 
                             <DataGridColumn Width="300px"
-                                            TItem="OrderDeliveryDto"
-                                            Field="@nameof(OrderDeliveryDto.Id)"
-                                            Sortable="false"
-                                            Caption="@L["Actions"]">
+                            TItem="OrderDeliveryDto"
+                            Field="@nameof(OrderDeliveryDto.Id)"
+                            Sortable="false"
+                            Caption="@L["Actions"]">
                                 <DisplayTemplate>
                                     @if (Order.OrderType != OrderType.MargeToNew && Order.OrderStatus != OrderStatus.Refund)
                                     {
@@ -2502,25 +2502,25 @@
                                     @L["ShipmentNotify"]
                                     </Button> *@
                                         <Button Type="ButtonType.Button"
-                                                Clicked="() => TestLabel(context)"
-                                                Class="btn btn-sm btn-secondary me-1"
-                                                hidden>
+                                        Clicked="() => TestLabel(context)"
+                                        Class="btn btn-sm btn-secondary me-1"
+                                        hidden>
                                             Test Label
                                         </Button>
                                         @if (context.DeliveryStatus is DeliveryStatus.ToBeShipped)
                                         {
                                             <Button Type="ButtonType.Button"
-                                                    Clicked="() => OrderItemShipped(context)"
-                                                    Class="btn btn-sm btn-secondary me-1">
+                                            Clicked="() => OrderItemShipped(context)"
+                                            Class="btn btn-sm btn-secondary me-1">
                                                 @L["Shipped"]
                                             </Button>
                                         }
                                         else
                                         {
                                             <Button Type="ButtonType.Button"
-                                                    Disabled
-                                                    Clicked="() => OrderItemShipped(context)"
-                                                    Class="btn btn-sm btn-secondary me-1">
+                                            Disabled
+                                            Clicked="() => OrderItemShipped(context)"
+                                            Class="btn btn-sm btn-secondary me-1">
                                                 @L["Shipped"]
                                             </Button>
                                         }
@@ -2535,12 +2535,9 @@
 
                                 isNormal = context.Items.Any(i => i.DeliveryTemperature is ItemStorageTemperature.Normal);
 
-                                isFreeze = context.Items.Any(i => i.DeliveryTemperature is ItemStorageTemperature.Freeze) &&
-                                OrderDeliveries.Count(a => a.Items.Any(af => af.DeliveryTemperature is ItemStorageTemperature.Normal)) is 0;
+                                isFreeze = context.Items.Any(i => i.DeliveryTemperature is ItemStorageTemperature.Freeze);
 
-                                isFrozen = context.Items.Any(i => i.DeliveryTemperature is ItemStorageTemperature.Frozen) &&
-                                OrderDeliveries.Count(a => a.Items.Any(af => af.DeliveryTemperature is ItemStorageTemperature.Normal)) is 0 &&
-                                OrderDeliveries.Count(a => a.Items.Any(af => af.DeliveryTemperature is ItemStorageTemperature.Freeze)) is 0;
+                                isFrozen = context.Items.Any(i => i.DeliveryTemperature is ItemStorageTemperature.Frozen);
                             }
                             <table class="table table-responsive rm-table-min-height table-striped text-center">
                                 <thead>
@@ -2629,8 +2626,8 @@
                                                     </td>
                                                     <td>
                                                         @if (!isDeliveryCostDisplayed && isNormal ||
-                                                       !isDeliveryCostDisplayed && isFreeze ||
-                                                       !isDeliveryCostDisplayed && isFrozen)
+                                                      !isDeliveryCostDisplayed && isFreeze ||
+                                                      !isDeliveryCostDisplayed && isFrozen)
                                                         {
                                                             if (Order.DeliveryMethod == DeliveryMethod.DeliveredByStore)
                                                             {
@@ -2656,8 +2653,8 @@
                                                     </td>
                                                     <td>
                                                         $@CalculateItemTotal(item, !isDeliveryCostDisplayed && isNormal ||
-                                                                !isDeliveryCostDisplayed && isFreeze ||
-                                                                !isDeliveryCostDisplayed && isFrozen).ToString("N2")
+                                                                        !isDeliveryCostDisplayed && isFreeze ||
+                                                                        !isDeliveryCostDisplayed && isFrozen).ToString("N2")
                                                     </td>
                                                 }
                                             </tr>
@@ -2695,6 +2692,12 @@
                                         }
                                         @if (Order.DeliveryMethod is DeliveryMethod.DeliveredByStore)
                                         {
+                                            double deliveryCost=0;
+                                             @foreach(var item in context.Items)
+                                                    {
+                                                        deliveryCost +=(double)GetDeliveryCost(item.DeliveryTemperature);
+
+                                                    }
                                             <tr>
                                                 <td class="text-center" style="width: 50%;" />
                                                 <td class="text-center" style="width: 10%;">Delivery Cost</td>
@@ -2702,9 +2705,7 @@
                                                 <td class="text-center" style="width: 10%;" />
                                                 <td class="text-center" style="width: 10%;" />
                                                 <td>
-                                                    $@(context.Items.GroupBy(s => s.DeliveryTemperatureCost)
-                                                       .Select(s => s.Key)
-                                                       .FirstOrDefault())
+                                                   $@deliveryCost.ToString("N2")
                                                 </td>
                                             </tr>
                                         }
@@ -2715,18 +2716,26 @@
                                             <td class="text-center" style="width: 10%;" />
                                             <td class="text-center" style="width: 10%;" />
                                             <td>
-                                                @{
-                                                    SetTotalAmount(context); Task.Delay(500);
-                                                }
+                                            @{
+                                               SetTotalAmount(context);
 
-                                                $@(
-                                                   (context.Items.Sum(s => s.TotalAmount)
-                                                   + (Order.DeliveryMethod is DeliveryMethod.DeliveredByStore
-                                                   ? context.Items.GroupBy(s => s.DeliveryTemperatureCost)
-                                                   .Select(s => s.Key)
-                                                   .FirstOrDefault()
-                                                   : context.TotalAmount!.Value)).ToString("N2")
-                                                   )
+                                                // Calculate delivery cost
+                                                 double totalDeliveryCost = 0;
+                                                 foreach (var item in context.Items)
+                                                 {
+                                                totalDeliveryCost += (double)GetDeliveryCost(item.DeliveryTemperature);
+                                                  }
+
+                                                  // Calculate the grand total
+                                             decimal itemsTotal = (context.Items.Sum(s => s.TotalAmount));
+                                             double deliveryOrContextTotal = (Order.DeliveryMethod == DeliveryMethod.DeliveredByStore)
+                                               ? totalDeliveryCost
+                                               : 0;
+
+                                                            decimal grandTotal = (itemsTotal + (decimal)deliveryOrContextTotal);
+                                                    }
+
+                                                @grandTotal.ToString("N2")
                                             </td>
                                         </tr>
                                     }

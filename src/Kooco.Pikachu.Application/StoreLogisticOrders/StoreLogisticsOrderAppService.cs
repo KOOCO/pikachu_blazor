@@ -1044,7 +1044,19 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
         int? collectionAmount = 0; 
         string deliveryTime = string.Empty;
         var itemStorageTemp = orderDelivery.Items.First().DeliveryTemperature;
-
+        decimal deliveryCost = 0;
+        if (orderDelivery.Items.Any(x=>x.DeliveryTemperature==ItemStorageTemperature.Normal))
+        {
+            deliveryCost += order.DeliveryCostForNormal??0;
+        }
+        if (orderDelivery.Items.Any(x => x.DeliveryTemperature == ItemStorageTemperature.Freeze))
+        {
+            deliveryCost += order.DeliveryCostForFreeze??0;
+        }
+        if (orderDelivery.Items.Any(x => x.DeliveryTemperature == ItemStorageTemperature.Frozen))
+        {
+            deliveryCost += order.DeliveryCostForFrozen??0;
+        }
         void SetThermalValues(
             string thermosphereCode,
             dynamic tCat,
@@ -1062,7 +1074,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
                                order.ShippingStatus >= ShippingStatus.PrepareShipment
                 ? GetCollectionAmountWithDeduction(
                     orderDelivery.Items.Sum(s => s.TotalAmount),
-                    order.DeliveryCost,
+                    deliveryCost,
                     order.CreditDeductionAmount + order.DiscountAmount)
                 : 0;
             isSwipe = tCat.Payment && 
@@ -1112,7 +1124,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
         string isDeclare = TCatLogistics.DeclaredValue &&
                            IsOrderAmountValid(
                                orderDelivery.Items.Sum(s => s.TotalAmount), 
-                               order.DeliveryCost) 
+                               deliveryCost) 
                            ? "Y" : "N";
 
         DayOfWeek TodaysDay = DateTime.Today.DayOfWeek;
