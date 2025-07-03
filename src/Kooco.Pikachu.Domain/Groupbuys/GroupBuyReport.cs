@@ -17,7 +17,7 @@ namespace Kooco.Pikachu.Groupbuys
         public decimal PaidAmount { get; set; }
         public int ProfitShare { get; set; }
         public decimal ProfitShareAmount => AmountReceived * (ProfitShare / 100m);
-        public decimal? SalesAmountDiscount { get; set; }
-        public decimal? AmountReceivedDiscount { get; set; }
+        public decimal? SalesAmountDevlieryCost { get; set; }
+        public decimal? AmountReceivedDeliveryCost { get; set; }
     }
 }

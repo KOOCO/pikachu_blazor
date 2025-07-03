@@ -1262,7 +1262,7 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
         ShippingStatus? shippingStatus = null
         )
     {
-        var data = await _groupBuyRepository.GetGroupBuyReportDetailsAsync(
+        var data = await _groupBuyRepository.GetNewGroupBuyReportDetailsAsync(
             id, 
             startDate, 
             endDate, 
@@ -1389,7 +1389,7 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
 
             if (includeShippingFee)
             {
-                row.Add(headers["ShippingFee"], "$ " + (x.DeliveryCost + x.DeliveryCostForNormal + x.DeliveryCostForFreeze + x.DeliveryCostForFrozen));
+                row.Add(headers["ShippingFee"], "$ " + (x.DeliveryCost));
             }
 
             row.Add(headers["TotalAmount"], "$ " + x.TotalAmount.ToString("N2"));

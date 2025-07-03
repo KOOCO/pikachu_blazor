@@ -210,7 +210,7 @@ public class OrderRepository(IDbContextProvider<PikachuDbContext> dbContextProvi
                 OrderStatus = o.OrderStatus,
                 ShippingStatus = o.ShippingStatus,
                 PaymentMethod = o.PaymentMethod,
-                ShippingFee = o.DeliveryCost + o.DeliveryCostForNormal + o.DeliveryCostForFreeze + o.DeliveryCostForFrozen,
+                ShippingFee = o.DeliveryCost,
                 TotalAmount = o.TotalAmount,
                 GroupBuyId = o.GroupBuyId,
                 OrderItems = o.OrderItems

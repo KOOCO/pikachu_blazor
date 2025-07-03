@@ -101,7 +101,8 @@ public interface IGroupBuyRepository : IRepository<GroupBuy, Guid>
     Task<GroupBuy> GetWithItemGroupsAsync(Guid id);
     Task<List<GroupBuyItemGroup>> GetGroupBuyItemGroupBuyGroupBuyIdAsync(Guid groupBuyId);
     Task<GroupBuyItemGroup> GetGroupBuyItemGroupAsync(Guid id);
-    Task<GroupBuyReportDetails> GetGroupBuyReportDetailsAsync(
+    Task<GroupBuyReportDetails> GetGroupBuyReportDetailsAsync(Guid id, DateTime? startDate = null, DateTime? endDate = null, OrderStatus? orderStatus = null);
+    Task<GroupBuyReportDetails> GetNewGroupBuyReportDetailsAsync(
         Guid id, 
         DateTime? startDate = null, 
         DateTime? endDate = null, 
