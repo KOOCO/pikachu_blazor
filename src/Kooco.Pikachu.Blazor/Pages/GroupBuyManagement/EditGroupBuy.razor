@@ -799,6 +799,7 @@
                     @bind-Checked="@BankTransfer">
                         @L["EcPayVirtualBankTransfer"]
                     </Check>
+                    <Check TValue="bool" Disabled=@EditGroupBuyDto.IsEnterprise @bind-Checked="@ManualBankTransfer">@L["ManualBankTransfer"]</Check>
                     <Check TValue="bool"
                     Disabled=@EditGroupBuyDto.IsEnterprise
                     @bind-Checked="@IsLinePay">

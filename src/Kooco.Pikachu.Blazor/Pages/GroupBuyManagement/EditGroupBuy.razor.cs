@@ -72,6 +72,7 @@ public partial class EditGroupBuy
     private List<CollapseItem> CollapseItem = new();
     bool CreditCard { get; set; }
     bool BankTransfer { get; set; }
+    bool ManualBankTransfer { get; set; }
     bool IsCashOnDelivery { get; set; }
     bool IsLinePay { get; set; }
     public List<string> SelfPickupTimeList = new List<string>();
@@ -272,6 +273,7 @@ public partial class EditGroupBuy
 
                 CreditCard = payments.Contains("Credit Card");
                 BankTransfer = payments.Contains("Bank Transfer");
+                ManualBankTransfer = payments.Contains("ManualBankTransfer");
                 IsCashOnDelivery = payments.Contains("Cash On Delivery");
                 IsLinePay = payments.Contains("LinePay");
             }
@@ -2865,6 +2867,7 @@ public partial class EditGroupBuy
 
             if (CreditCard) paymentMethods.Add("Credit Card");
             if (BankTransfer) paymentMethods.Add("Bank Transfer");
+            if (ManualBankTransfer) paymentMethods.Add("ManualBankTransfer");
             if (IsCashOnDelivery) paymentMethods.Add("Cash On Delivery");
             if (IsLinePay) paymentMethods.Add("LinePay");
             if (paymentMethods.Count > 0) EditGroupBuyDto.PaymentMethod = string.Join(" , ", paymentMethods);

@@ -98,6 +98,7 @@ public partial class CreateGroupBuy
     private BlazoredTextEditor ExchangePolicyHtml { get; set; }
     bool CreditCard { get; set; }
     bool BankTransfer { get; set; }
+    bool ManualBankTransfer { get; set; }
     bool IsCashOnDelivery { get; set; }
     bool IsLinePay { get; set; }
 
@@ -570,6 +571,19 @@ public partial class CreateGroupBuy
 
         }
     }
+
+    public bool isManualBankTransferEnabled()
+    {
+        var manual = PaymentGateways.Where(x => x.PaymentIntegrationType == PaymentIntegrationType.ManualBankTransfer).FirstOrDefault();
+
+        if (manual == null)
+        {
+            return true;
+        }
+
+        return !manual.IsEnabled;
+    }
+
     public bool isLinePayPaymentMethodEnabled()
     {
         var linePay = PaymentGateways.Where(x => x.PaymentIntegrationType == PaymentIntegrationType.LinePay).FirstOrDefault();
@@ -2574,6 +2588,7 @@ public partial class CreateGroupBuy
 
             if (CreditCard) paymentMethods.Add("Credit Card");
             if (BankTransfer) paymentMethods.Add("Bank Transfer");
+            if (ManualBankTransfer) paymentMethods.Add("ManualBankTransfer");
             if (IsCashOnDelivery) paymentMethods.Add("Cash On Delivery");
             if (IsLinePay) paymentMethods.Add("LinePay");
             if (paymentMethods.Count > 0) CreateGroupBuyDto.PaymentMethod = string.Join(" , ", paymentMethods);
