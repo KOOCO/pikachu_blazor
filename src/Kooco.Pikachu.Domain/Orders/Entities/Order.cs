@@ -767,7 +767,8 @@ public class Order : FullAuditedAggregateRoot<Guid>, IMultiTenant
         int quantity,
         string? sku,
         ItemStorageTemperature temperature,
-        decimal temperatureCost
+        decimal temperatureCost,
+        bool isAddOnProduct = false
         )
     {
         OrderItems.Add(new OrderItem(
@@ -783,7 +784,8 @@ public class Order : FullAuditedAggregateRoot<Guid>, IMultiTenant
                 quantity,
                 sku,
                 temperature,
-                temperatureCost
+                temperatureCost,
+                isAddOnProduct: isAddOnProduct
                 ));
     }
 

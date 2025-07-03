@@ -245,6 +245,8 @@ public class OrderAppService : PikachuAppService, IOrderAppService
                     string errorMessage = string.Join("; ", insufficientItems);
                     throw new UserFriendlyException("409", "以下商品庫存不足,請刷新後再試: " + errorMessage);
                 }
+
+                await ProcessAppliedCampaigns(order, input);
             }
             if (order.TotalAmount == 0)
             {
@@ -285,7 +287,6 @@ public class OrderAppService : PikachuAppService, IOrderAppService
             }
             if (order.UserId != null && order.UserId != Guid.Empty)
             {
-                await ProcessAppliedCampaigns(order, input);
 
                 if (order.cashback_amount > 0)
                 {
@@ -400,57 +401,92 @@ public class OrderAppService : PikachuAppService, IOrderAppService
 
     private async Task ProcessAppliedCampaigns(Order order, CreateUpdateOrderDto input)
     {
-        if (input.AppliedCampaigns?.Count > 0)
+        if (order.UserId == null || order.UserId == Guid.Empty)
         {
-            var applicableCampaigns = input.AppliedCampaigns
-                .Where(c => c.CampaignId.HasValue && c.Amount.HasValue)
-                .Select(c => new { CampaignId = c.CampaignId.Value, Amount = c.Amount.Value });
+            return;
+        }
 
-            if (!applicableCampaigns.Any()) return;
+        if (input.AppliedCampaigns == null || input.AppliedCampaigns.Count == 0)
+        {
+            return;
+        }
 
-            var campaignIds = applicableCampaigns.Select(c => c.CampaignId).ToList();
+        var applicableCampaigns = input.AppliedCampaigns
+            .Where(c => c.CampaignId.HasValue && c.Amount.HasValue)
+            .Select(c => new { CampaignId = c.CampaignId.Value, Amount = c.Amount.Value });
 
-            var campaigns = await CampaignRepository.GetListAsync(campaignIds);
+        if (!applicableCampaigns.Any()) return;
 
-            foreach (var inputCampaign in applicableCampaigns)
+        var campaignIds = applicableCampaigns.Select(c => c.CampaignId).ToList();
+
+        var campaigns = await CampaignRepository.GetListAsync(campaignIds);
+
+        foreach (var inputCampaign in applicableCampaigns)
+        {
+            var campaign = campaigns.Where(c => c.Id == inputCampaign.CampaignId).FirstOrDefault();
+            if (campaign != null)
             {
-                var campaign = campaigns.Where(c => c.Id == inputCampaign.CampaignId).FirstOrDefault();
-                if (campaign != null)
+                bool isValid = false;
+
+                if (campaign.PromotionModule == PromotionModule.Discount && campaign.Discount != null)
                 {
-                    bool isValid = false;
+                    campaign.Discount.DeductAvailableQuantity(inputCampaign.Amount);
+                    isValid = true;
+                }
+                if (campaign.PromotionModule == PromotionModule.ShoppingCredit && campaign.ShoppingCredit != null)
+                {
+                    campaign.ShoppingCredit.DeductBudget(inputCampaign.Amount);
+                    isValid = true;
+                }
+                if (campaign.PromotionModule == PromotionModule.AddOnProduct && campaign.AddOnProduct != null)
+                {
+                    var itemDetail = await ItemDetailsRepository.FirstOrDefaultAsync(x => x.Id == campaign.AddOnProduct.ItemDetailId);
+                    if (itemDetail != null)
+                    {
+                        campaign.AddOnProduct.DeductAvailableQuantity(inputCampaign.Amount);
 
-                    if (campaign.PromotionModule == PromotionModule.Discount && campaign.Discount != null)
-                    {
-                        campaign.Discount.DeductAvailableQuantity(inputCampaign.Amount);
-                        isValid = true;
-                    }
-                    if (campaign.PromotionModule == PromotionModule.ShoppingCredit && campaign.ShoppingCredit != null)
-                    {
-                        campaign.ShoppingCredit.DeductBudget(inputCampaign.Amount);
-                        isValid = true;
-                    }
-                    if (campaign.PromotionModule == PromotionModule.AddOnProduct && campaign.AddOnProduct != null)
-                    {
-                        var itemDetail = await ItemDetailsRepository.FirstOrDefaultAsync(x => x.Id == campaign.AddOnProduct.ItemDetailId);
-                        if (itemDetail != null)
+                        var item = await ItemRepository.FirstOrDefaultAsync(x => x.Id == itemDetail.ItemId);
+                        string spec = string.Join('/', new[]
                         {
-                            campaign.AddOnProduct.DeductAvailableQuantity(inputCampaign.Amount);
-
-                            await InventoryLogManager.ItemSoldAsync(
-                                order,
-                                itemDetail,
-                                inputCampaign.Amount,
-                                isAddOnProduct: true
-                                );
-
-                            isValid = true;
+                            itemDetail.Attribute1Value,
+                            itemDetail.Attribute2Value,
+                            itemDetail.Attribute3Value
                         }
-                    }
+                        .Where(x => !string.IsNullOrEmpty(x)));
 
-                    if (isValid)
-                    {
-                        order.AddAppliedCampaign(campaign.Id, campaign.PromotionModule, inputCampaign.Amount);
+                        OrderManager.AddOrderItem(
+                            order,
+                            itemDetail.ItemId,
+                            null,
+                            null,
+                            ItemType.Item,
+                            order.Id,
+                            spec,
+                            campaign.AddOnProduct.ProductAmount,
+                            inputCampaign.Amount * campaign.AddOnProduct.ProductAmount,
+                            inputCampaign.Amount,
+                            itemDetail.SKU,
+                            item?.ItemStorageTemperature ?? ItemStorageTemperature.Normal,
+                            0,
+                            isAddOnProduct: true
+                        );
+
+                        await InventoryLogManager.ItemSoldAsync(
+                            order,
+                            itemDetail,
+                            inputCampaign.Amount,
+                            isAddOnProduct: true
+                            );
+
+                        order.TotalQuantity += inputCampaign.Amount;
+
+                        isValid = true;
                     }
+                }
+
+                if (isValid)
+                {
+                    order.AddAppliedCampaign(campaign.Id, campaign.PromotionModule, inputCampaign.Amount);
                 }
             }
         }
@@ -1291,14 +1327,14 @@ public class OrderAppService : PikachuAppService, IOrderAppService
         }
 
         var data = await OrderRepository.GetReportListAsync(
-            input.SkipCount, 
-            input.MaxResultCount, 
-            input.Sorting, 
-            input.Filter, 
-            input.GroupBuyId, 
-            input.OrderIds, 
-            input.StartDate, 
-            input.EndDate, 
+            input.SkipCount,
+            input.MaxResultCount,
+            input.Sorting,
+            input.Filter,
+            input.GroupBuyId,
+            input.OrderIds,
+            input.StartDate,
+            input.EndDate,
             input.OrderStatus,
             input.ShippingStatus,
             input.CompletionTimeFrom,
@@ -2233,7 +2269,7 @@ public class OrderAppService : PikachuAppService, IOrderAppService
 
     public async Task UpdateLogisticStatusAsync(string merchantTradeNo, string rtnMsg, string? allPayLogisticsID = null, int rtnCode = 0)
     {
-        var tradeNo =await OrderTradeNoRepository.FindByMarchentTradeNoAsync(merchantTradeNo);
+        var tradeNo = await OrderTradeNoRepository.FindByMarchentTradeNoAsync(merchantTradeNo);
         var order = tradeNo?.Order;
         if (order is null)
         {
@@ -2247,7 +2283,7 @@ public class OrderAppService : PikachuAppService, IOrderAppService
             {
                 orderDelivery = await OrderDeliveryRepository
                     .FirstOrDefaultAsync(x => x.AllPayLogisticsID == allPayLogisticsID);
-                orderDeliveries= await OrderDeliveryRepository.GetListAsync(x => x.OrderId == order.Id);
+                orderDeliveries = await OrderDeliveryRepository.GetListAsync(x => x.OrderId == order.Id);
             }
         }
         // Capture old logistics status and shipping status before updating
@@ -2320,7 +2356,7 @@ public class OrderAppService : PikachuAppService, IOrderAppService
                 { DeliveryMethod.FamilyMart1, new[] { 3022 } },
                 { DeliveryMethod.FamilyMartC2C, new[] { 3022 } },
                 { DeliveryMethod.PostOffice, new[] { 3307 } },
-             
+
             };
 
             var returnedCodes = new Dictionary<DeliveryMethod, int[]>
@@ -2368,7 +2404,7 @@ public class OrderAppService : PikachuAppService, IOrderAppService
 
                 // Get all delivery statuses
                 var allStatuses = orderDeliveries
-                    
+
                     .Select(x => x.DeliveryStatus)
                     .ToList();
 
@@ -2887,6 +2923,7 @@ public class OrderAppService : PikachuAppService, IOrderAppService
     public required IBackgroundJobManager BackgroundJobManager { get; init; }
     public required IStringEncryptionService StringEncryptionService { get; init; }
     public required IItemDetailsRepository ItemDetailsRepository { get; init; }
+    public required IItemRepository ItemRepository { get; init; }
     public required IOrderInvoiceAppService ElectronicInvoiceAppService { get; init; }
     public required IFreebieRepository FreebieRepository { get; init; }
     public required IRefundAppService RefundAppService { get; init; }

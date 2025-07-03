@@ -163,7 +163,8 @@ public class OrderManager(IOrderRepository orderRepository, IGroupBuyRepository 
         int quantity,
         string? sku,
         ItemStorageTemperature temperature,
-        decimal temperatureCost
+        decimal temperatureCost,
+        bool isAddOnProduct = false
     )
     {
         order.AddOrderItem(
@@ -178,7 +179,8 @@ public class OrderManager(IOrderRepository orderRepository, IGroupBuyRepository 
             quantity,
             sku,
             temperature,
-            temperatureCost
+            temperatureCost,
+            isAddOnProduct
         );
     }
 

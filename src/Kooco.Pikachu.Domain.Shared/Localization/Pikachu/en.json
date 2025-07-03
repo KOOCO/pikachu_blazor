@@ -1659,6 +1659,7 @@
     "ProfitShareEarnings": "Profit Share Earnings",
     "CompletionFrom": "Completion From",
     "CompletionTo": "Completion To",
-    "ShippingFee": "Shipping Fee"
+    "ShippingFee": "Shipping Fee",
+    "(AddOnProduct)": "(Add-on Product)"
   }
 }

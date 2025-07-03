@@ -100,6 +100,8 @@ public class OrderItem : Entity<Guid>
     /// </summary>
     public Guid? DeliveryOrderId { get; set; }
 
+    public bool IsAddOnProduct { get; set; }
+
     public OrderItem() { }
     public OrderItem(
         Guid id,
@@ -116,7 +118,8 @@ public class OrderItem : Entity<Guid>
         ItemStorageTemperature itemStorageTemperature,
         decimal temperatureCost,
         int? discountPercentage = null,
-        Guid? deliveryOrderId = null
+        Guid? deliveryOrderId = null,
+        bool isAddOnProduct = false
         ) : base(id)
     {
         ItemId = itemId;
@@ -133,5 +136,6 @@ public class OrderItem : Entity<Guid>
         DeliveryTemperature = itemStorageTemperature;
         DeliveryTemperatureCost = temperatureCost;
         DeliveryOrderId = deliveryOrderId;
+        IsAddOnProduct = isAddOnProduct;
     }
 }

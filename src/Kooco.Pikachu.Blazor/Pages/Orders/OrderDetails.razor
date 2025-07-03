@@ -2182,7 +2182,7 @@
                                                         <img src="@firstImage" class="img-fluid me-2" style="height: 50px; width: auto;" />
                                                     }
                                                     <Span>
-                                                        @item.Item?.ItemName
+                                                        @item.Item?.ItemName @(item.IsAddOnProduct ? L["(AddOnProduct)"] : "")
                                                         <br />
                                                         @item.Spec
                                                     </Span>
