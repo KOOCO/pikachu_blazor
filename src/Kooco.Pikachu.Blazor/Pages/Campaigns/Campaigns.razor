@@ -86,7 +86,7 @@
         @if (FiltersVisible)
         {
             <Row Class="mt-2" VerticalGutter="10">
-                <Column ColumnSize="ColumnSize.Is3">
+                <Column ColumnSize="ColumnSize.Is2">
                     <Label>@L["Status"]</Label>
                     <Select TValue="bool?" @bind-SelectedValue="Filters.IsEnabled" Size="Size.Small">
                         <SelectItem Value="(bool?)null"></SelectItem>
@@ -94,11 +94,18 @@
                         <SelectItem Value="@false">@L["Inactive"]</SelectItem>
                     </Select>
                 </Column>
-                <Column ColumnSize="ColumnSize.Is3">
+                <Column ColumnSize="ColumnSize.Is2">
+                    <Label>@L["OnlyAvailable"]</Label>
+                    <Select TValue="bool" @bind-SelectedValue="Filters.OnlyAvailable" Size="Size.Small">
+                        <SelectItem Value="@false">@L["All"]</SelectItem>
+                        <SelectItem Value="@true">@L["OnlyAvailable"]</SelectItem>
+                    </Select>
+                </Column>
+                <Column ColumnSize="ColumnSize.Is2">
                     <Label>@L["StartDate"]</Label>
                     <AntDesign.DatePicker TValue="DateTime?" Picker="AntDesign.DatePickerType.Date" @bind-Value="Filters.StartDate" />
                 </Column>
-                <Column ColumnSize="ColumnSize.Is3">
+                <Column ColumnSize="ColumnSize.Is2">
                     <Label>@L["EndDate"]</Label>
                     <AntDesign.DatePicker TValue="DateTime?" Picker="AntDesign.DatePickerType.Date" @bind-Value="Filters.EndDate" />
                 </Column>

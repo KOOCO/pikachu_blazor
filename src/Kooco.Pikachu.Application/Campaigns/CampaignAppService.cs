@@ -93,9 +93,24 @@ public class CampaignAppService : PikachuAppService, ICampaignAppService
     [AllowAnonymous]
     public async Task<PagedResultDto<CampaignDto>> GetListAsync(GetCampaignListDto input)
     {
-        var totalCount = await _campaignRepository.CountAsync(input.Filter, input.IsEnabled, input.StartDate, input.EndDate);
-        var items = await _campaignRepository.GetListAsync(input.SkipCount, input.MaxResultCount, input.Sorting,
-            input.Filter, input.IsEnabled, input.StartDate, input.EndDate);
+        var totalCount = await _campaignRepository.CountAsync(
+            input.Filter,
+            input.IsEnabled,
+            input.StartDate,
+            input.EndDate,
+            input.OnlyAvailable
+            );
+
+        var items = await _campaignRepository.GetListAsync(
+            input.SkipCount, 
+            input.MaxResultCount, 
+            input.Sorting,
+            input.Filter, 
+            input.IsEnabled, 
+            input.StartDate, 
+            input.EndDate,
+            input.OnlyAvailable
+            );
 
         return new PagedResultDto<CampaignDto>
         {

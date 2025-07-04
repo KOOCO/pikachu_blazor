@@ -58,7 +58,8 @@ public partial class Campaigns
                     Filter = Filters.Filter,
                     IsEnabled = Filters.IsEnabled,
                     StartDate = Filters.StartDate,
-                    EndDate = Filters.EndDate
+                    EndDate = Filters.EndDate,
+                    OnlyAvailable = Filters.OnlyAvailable
                 }
             );
 

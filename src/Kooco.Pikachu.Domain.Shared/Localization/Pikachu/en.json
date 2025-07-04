@@ -1660,6 +1660,7 @@
     "CompletionFrom": "Completion From",
     "CompletionTo": "Completion To",
     "ShippingFee": "Shipping Fee",
-    "(AddOnProduct)": "(Add-on Product)"
+    "(AddOnProduct)": "(Add-on Product)",
+    "OnlyAvailable": "Only Available"
   }
 }

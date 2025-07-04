@@ -9,4 +9,5 @@ public class GetCampaignListDto : PagedAndSortedResultRequestDto
     public bool? IsEnabled { get; set; }
     public DateTime? StartDate { get; set; }
     public DateTime? EndDate { get; set; }
+    public bool OnlyAvailable { get; set; } = false;
 }

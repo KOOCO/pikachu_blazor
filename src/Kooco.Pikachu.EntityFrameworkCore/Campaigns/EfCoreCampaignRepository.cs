@@ -35,15 +35,30 @@ public class EfCoreCampaignRepository : EfCoreRepository<PikachuDbContext, Campa
         return campaign ?? throw new EntityNotFoundException(typeof(Campaign), id);
     }
 
-    public async Task<long> CountAsync(string? filter, bool? isEnabled, DateTime? startDate, DateTime? endDate)
+    public async Task<long> CountAsync(
+        string? filter,
+        bool? isEnabled,
+        DateTime? startDate,
+        DateTime? endDate,
+        bool onlyAvailable = false
+        )
     {
-        var queryable = await GetFilteredQueryableAsync(filter, isEnabled, startDate, endDate);
+        var queryable = await GetFilteredQueryableAsync(filter, isEnabled, startDate, endDate, onlyAvailable);
         return await queryable.LongCountAsync();
     }
 
-    public async Task<List<Campaign>> GetListAsync(int skipCount, int maxResultCount, string? sorting, string? filter, bool? isEnabled, DateTime? startDate, DateTime? endDate)
+    public async Task<List<Campaign>> GetListAsync(
+        int skipCount,
+        int maxResultCount,
+        string? sorting,
+        string? filter,
+        bool? isEnabled,
+        DateTime? startDate,
+        DateTime? endDate,
+        bool onlyAvailable = false
+        )
     {
-        var queryable = await GetFilteredQueryableAsync(filter, isEnabled, startDate, endDate);
+        var queryable = await GetFilteredQueryableAsync(filter, isEnabled, startDate, endDate, onlyAvailable);
         return await queryable
             .AsNoTracking()
             .Include(c => c.Discount)
@@ -58,17 +73,34 @@ public class EfCoreCampaignRepository : EfCoreRepository<PikachuDbContext, Campa
             .ToListAsync();
     }
 
-    public async Task<IQueryable<Campaign>> GetFilteredQueryableAsync(string? filter, bool? isEnabled, DateTime? startDate, DateTime? endDate)
+    public async Task<IQueryable<Campaign>> GetFilteredQueryableAsync(
+        string? filter,
+        bool? isEnabled,
+        DateTime? startDate,
+        DateTime? endDate,
+        bool onlyAvailable = false
+        )
     {
         filter ??= "";
 
         var queryable = await GetQueryableAsync();
-        return queryable
+        queryable = queryable
             .WhereIf(!filter.IsNullOrWhiteSpace(), x => x.Name.Contains(filter) || x.Id.ToString() == filter
              || (x.TargetAudienceJson != null && x.TargetAudienceJson.Contains(filter)))
             .WhereIf(isEnabled.HasValue, x => x.IsEnabled == isEnabled)
             .WhereIf(startDate.HasValue, x => x.StartDate.Date >= startDate!.Value.Date)
             .WhereIf(endDate.HasValue, x => x.EndDate.Date <= endDate!.Value.Date);
+
+        if (onlyAvailable)
+        {
+            queryable = queryable
+                .Where(c => c.IsEnabled && c.StartDate.Date <= DateTime.Today && c.EndDate.Date >= DateTime.Today)
+                .Where(c => (c.PromotionModule == PromotionModule.Discount && c.Discount.AvailableQuantity > 0)
+                || (c.PromotionModule == PromotionModule.ShoppingCredit && c.ShoppingCredit.Budget > 0)
+                || (c.PromotionModule == PromotionModule.AddOnProduct && (c.AddOnProduct.IsUnlimitedQuantity || c.AddOnProduct.AvailableQuantity > 0)));
+        }
+
+        return queryable;
     }
 
     public async Task<long> GetActiveCampaignsCountAsync()
