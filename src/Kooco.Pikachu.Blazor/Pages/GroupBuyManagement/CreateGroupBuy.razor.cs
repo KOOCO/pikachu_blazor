@@ -1,12 +1,11 @@
 ﻿using AngleSharp.Dom;
-using AntDesign;
 using Blazored.TextEditor;
 using Blazorise;
 using Blazorise.Cropper;
 using Blazorise.Extensions;
 using Blazorise.LoadingIndicator;
-using Kooco.Pikachu;
 using Kooco.Pikachu.AzureStorage.Image;
+using Kooco.Pikachu.Blazor.Helpers;
 using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.GroupBuyItemsPriceses;
 using Kooco.Pikachu.GroupBuyOrderInstructions;
@@ -22,14 +21,12 @@ using Kooco.Pikachu.Localization;
 using Kooco.Pikachu.LogisticsProviders;
 using Kooco.Pikachu.PaymentGateways;
 using Kooco.Pikachu.Tenants;
-using Kooco.Pikachu.Tenants.Requests;
 using Kooco.Pikachu.Tenants.Responses;
 using Microsoft.AspNetCore.Components;
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.PixelFormats;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
 using Newtonsoft.Json;
+using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using System;
 using System.Collections.Generic;
@@ -38,9 +35,8 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Volo.Abp.AspNetCore.Components.Messages;
-using Modal = Blazorise.Modal;
 using Image = SixLabors.ImageSharp.Image;
-using Kooco.Pikachu.Blazor.Helpers;
+using Modal = Blazorise.Modal;
 
 
 namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement;
@@ -97,7 +93,7 @@ public partial class CreateGroupBuy
     private BlazoredTextEditor CustomerInformationHtml { get; set; }
     private BlazoredTextEditor ExchangePolicyHtml { get; set; }
     bool CreditCard { get; set; }
-    bool BankTransfer { get; set; }
+    bool EcPayVirtualBankTransfer { get; set; }
     bool ManualBankTransfer { get; set; }
     bool IsCashOnDelivery { get; set; }
     bool IsLinePay { get; set; }
@@ -2043,7 +2039,7 @@ public partial class CreateGroupBuy
 
         if (CreateGroupBuyDto.IsEnterprise)
         {
-            IsCashOnDelivery = true; CreditCard = false; BankTransfer = false; IsLinePay = false;
+            IsCashOnDelivery = true; CreditCard = false; EcPayVirtualBankTransfer = false; IsLinePay = false;
             OnShippingMethodCheckedChange("SelfPickup", new ChangeEventArgs { Value = true });
             OnShippingMethodCheckedChange("DeliveredByStore", new ChangeEventArgs { Value = false });
             OnShippingMethodCheckedChange("HomeDelivery", new ChangeEventArgs { Value = false });
@@ -2587,7 +2583,7 @@ public partial class CreateGroupBuy
             List<string> paymentMethods = new List<string>();
 
             if (CreditCard) paymentMethods.Add("Credit Card");
-            if (BankTransfer) paymentMethods.Add("Bank Transfer");
+            if (EcPayVirtualBankTransfer) paymentMethods.Add("EcPayVirtualBankTransfer");
             if (ManualBankTransfer) paymentMethods.Add("ManualBankTransfer");
             if (IsCashOnDelivery) paymentMethods.Add("Cash On Delivery");
             if (IsLinePay) paymentMethods.Add("LinePay");

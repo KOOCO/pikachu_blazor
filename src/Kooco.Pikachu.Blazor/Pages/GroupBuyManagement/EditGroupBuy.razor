@@ -796,7 +796,7 @@
                     </div>
                     <Check TValue="bool"
                     Disabled=@EditGroupBuyDto.IsEnterprise
-                    @bind-Checked="@BankTransfer">
+                    @bind-Checked="@EcPayVirtualBankTransfer">
                         @L["EcPayVirtualBankTransfer"]
                     </Check>
                     <Check TValue="bool" Disabled=@EditGroupBuyDto.IsEnterprise @bind-Checked="@ManualBankTransfer">@L["ManualBankTransfer"]</Check>
