@@ -110,7 +110,7 @@
                                     Caption="@L["ProfitShare%"]"
                                     TextAlignment="TextAlignment.Center">
                         <DisplayTemplate>
-                            @context.ProfitShare.ToString("N0")
+                            @context.ProfitShare.ToString("N0")%
                         </DisplayTemplate>
                     </DataGridColumn>
                     <DataGridColumn TItem="GroupBuyReportDto" Field="@nameof(GroupBuyReportDto.ProfitShareAmount)"

@@ -18,7 +18,7 @@ public class GroupBuyReportDetails
     public decimal SalesAmountMinusShipping { get; set; }
     public decimal BloggersProfit { get; set; }
     public int ProfitShare { get; set; }
-    public decimal ProfitShareAmount => AmountReceived * (ProfitShare / 100m);
+    public decimal ProfitShareAmount => AmountReceivedExclShipping * (ProfitShare / 100m);
     public decimal? SalesAmountDiscount { get; set; }
     public decimal? AmountReceivedDiscount { get; set; }
     public DateTime? StartDate { get; set; }
