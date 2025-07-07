@@ -479,7 +479,8 @@ public class OrderAppService : PikachuAppService, IOrderAppService
                             );
 
                         order.TotalQuantity += inputCampaign.Amount;
-
+                        order.TotalAmount += campaign.AddOnProduct.ProductAmount;
+                        
                         isValid = true;
                     }
                 }
