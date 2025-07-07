@@ -501,7 +501,7 @@ public class EfCoreGroupBuyRepository : EfCoreRepository<PikachuDbContext, Group
                             .Include(x => x.OrderItems).ThenInclude(x => x.Item)
                             .WhereIf(startDate.HasValue, x => x.CreationTime >= startDate)
                             .WhereIf(endDate.HasValue, x => x.CreationTime < endDate)
-                            .WhereIf(orderStatus.HasValue && orderStatus != OrderStatus.Open, x => x.OrderStatus == orderStatus) // Apply filter only when status is not Open
+                            .WhereIf(orderStatus.HasValue, x => x.OrderStatus == orderStatus)
                             .WhereIf(completionTimeFrom.HasValue, x => x.CompletionTime.HasValue && x.CompletionTime.Value.Date >= completionTimeFrom!.Value.Date)
                             .WhereIf(completionTimeTo.HasValue, x => x.CompletionTime.HasValue && x.CompletionTime.Value.Date <= completionTimeTo!.Value.Date)
                             .WhereIf(shippingStatus.HasValue, x => x.ShippingStatus == shippingStatus)
