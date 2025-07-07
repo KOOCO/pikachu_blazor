@@ -2635,7 +2635,17 @@
                                                             }
                                                             else
                                                             {
-                                                                @(OrderDeliveryCost?.ToString("N2") ?? "0.00")
+                                                                
+    decimal total = OrderDeliveryCost ?? 0;
+    int count = OrderDeliveries?.Count() ?? 1;
+    int index = OrderDeliveries.IndexOf(context); // You must provide this per item
+    int baseAmount = (int)(total / count);
+    int totalDistributed = baseAmount * count;
+    int remainder = (int)Math.Round(total - totalDistributed);
+    int finalAmount = index == count - 1 ? baseAmount + remainder : baseAmount;
+
+
+                                                                @(finalAmount.ToString("N2") ?? "0.00")
                                                             }
 
                                                             isDeliveryCostDisplayed = true;

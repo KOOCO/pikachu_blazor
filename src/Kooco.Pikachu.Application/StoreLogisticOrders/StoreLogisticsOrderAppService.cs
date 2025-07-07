@@ -290,11 +290,29 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
             {
                 temperature = "0003";
             }
-            if (orderDelivery.DeliveryMethod is DeliveryMethod.PostOffice || deliveryMethod is DeliveryMethod.PostOffice)
+            if (orderDelivery.DeliveryMethod is DeliveryMethod.PostOffice || deliveryMethod is DeliveryMethod.BlackCat1)
             {
                 temperature = "0001";
             }
-            var goodAmount = Convert.ToInt32((orderDelivery.Items.Sum(x => x.TotalAmount) + order.DeliveryCost??0) - (order.DiscountAmount??0 + order.CreditDeductionAmount));
+            var totalDiscount = order.CreditDeductionAmount + (order.DiscountAmount ?? 0);
+            var deliveryDiscountMap = CalculateDiscountPerDelivery(orderDeliverys, totalDiscount);
+
+            // Later, for a specific delivery:
+            int deliveryDiscount = deliveryDiscountMap.TryGetValue(orderDelivery.Id, out var d) ? d : 0;
+            int goodAmount = 0;
+            var DeliveryTemp = orderDelivery.Items.Select(x => x.DeliveryTemperature).FirstOrDefault();
+            if (DeliveryTemp == ItemStorageTemperature.Normal)
+            {
+                goodAmount = Convert.ToInt32((orderDelivery.Items.Sum(x => x.TotalAmount) + order.DeliveryCostForNormal ?? 0) - deliveryDiscount);
+            }
+            if (DeliveryTemp == ItemStorageTemperature.Freeze)
+            {
+                goodAmount = Convert.ToInt32((orderDelivery.Items.Sum(x => x.TotalAmount) + order.DeliveryCostForFreeze ?? 0) - deliveryDiscount);
+            }
+            if (DeliveryTemp == ItemStorageTemperature.Frozen)
+            {
+                goodAmount = Convert.ToInt32((orderDelivery.Items.Sum(x => x.TotalAmount) + order.DeliveryCostForFrozen ?? 0) - deliveryDiscount);
+            }
             string serverReplyURL = $"{domainName}/api/app/orders/ecpay-logisticsStatus-callback";
             var merchantTradeNo = AddNumericSuffix(order.OrderNo);
             await _orderTradeNoRepository.InsertAsync(new OrderTradeNo { MarchentTradeNo = merchantTradeNo, OrderId = order.Id });
@@ -423,8 +441,8 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
         try
         {
             var order = await _orderRepository.GetAsync(orderId);
-
-            var orderDelivery = (await _deliveryRepository.GetWithDetailsAsync(orderId))
+            var orderDeliverys = await _deliveryRepository.GetWithDetailsAsync(orderId);
+            var orderDelivery = orderDeliverys
                 .FirstOrDefault(f => f.Id == orderDeliveryId)
                 ?? throw new EntityNotFoundException(typeof(OrderDelivery), orderDeliveryId);
 
@@ -454,7 +472,25 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
             HttpRequest? domainRequest = _httpContextAccessor?.HttpContext?.Request;
             string? domainName = $"{domainRequest?.Scheme}://{domainRequest?.Host.Value}";
 
-            var goodsAmount = Convert.ToInt32((orderDelivery.Items.Sum(x => x.TotalAmount) + order.DeliveryCost ?? 0) - (order.DiscountAmount ?? 0 + order.CreditDeductionAmount));
+            var totalDiscount = order.CreditDeductionAmount + (order.DiscountAmount ?? 0);
+            var deliveryDiscountMap = CalculateDiscountPerDelivery(orderDeliverys, totalDiscount);
+
+            // Later, for a specific delivery:
+            int deliveryDiscount = deliveryDiscountMap.TryGetValue(orderDelivery.Id, out var d) ? d : 0;
+            int goodsAmount = 0;
+            var DeliveryTemp = orderDelivery.Items.Select(x => x.DeliveryTemperature).FirstOrDefault();
+            if (DeliveryTemp == ItemStorageTemperature.Normal)
+            {
+                goodsAmount = Convert.ToInt32((orderDelivery.Items.Sum(x => x.TotalAmount) + order.DeliveryCostForNormal ?? 0) - deliveryDiscount);
+            }
+            if (DeliveryTemp == ItemStorageTemperature.Freeze)
+            {
+                goodsAmount = Convert.ToInt32((orderDelivery.Items.Sum(x => x.TotalAmount) + order.DeliveryCostForFreeze ?? 0) - deliveryDiscount);
+            }
+            if (DeliveryTemp == ItemStorageTemperature.Frozen)
+            {
+                goodsAmount = Convert.ToInt32((orderDelivery.Items.Sum(x => x.TotalAmount) + order.DeliveryCostForFrozen ?? 0) - deliveryDiscount);
+            }
 
             var logisticSubTypes = deliveredByStore.DeliveryMethod is DeliveryMethod.PostOffice ||
                                                      deliveryMethod is DeliveryMethod.PostOffice
@@ -1069,13 +1105,23 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
                            order.PaymentMethod is PaymentMethods.CashOnDelivery &&
                            order.ShippingStatus >= ShippingStatus.PrepareShipment
                 ? "Y" : "N";
+
+            var totalDiscount = order.CreditDeductionAmount + (order.DiscountAmount ?? 0);
+            var deliveryDiscountMap = CalculateDiscountPerDelivery(orderDeliveries, totalDiscount);
+
+            // Later, for a specific delivery:
+            int deliveryDiscount = deliveryDiscountMap.TryGetValue(orderDelivery.Id, out var d) ? d : 0;
+           
+           
+           
             collectionAmount = tCat.Payment &&
                                order.PaymentMethod is PaymentMethods.CashOnDelivery &&
                                order.ShippingStatus >= ShippingStatus.PrepareShipment
                 ? GetCollectionAmountWithDeduction(
                     orderDelivery.Items.Sum(s => s.TotalAmount),
                     deliveryCost,
-                    order.CreditDeductionAmount + order.DiscountAmount)
+                    deliveryDiscount
+                    )
                 : 0;
             isSwipe = tCat.Payment && 
                       tCat.TCatPaymentMethod is TCatPaymentMethod.CardAndMobilePaymentsAccepted
@@ -1309,9 +1355,26 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
 
             else if (orderDelivery.Items is { Count: > 0 } &&
                      orderDelivery.Items.First().DeliveryTemperature is ItemStorageTemperature.Frozen) thermosphere = "0003";
+        decimal deliveryCost = 0;
+        if (orderDelivery.Items.Any(x => x.DeliveryTemperature == ItemStorageTemperature.Normal))
+        {
+            deliveryCost += order.DeliveryCostForNormal ?? 0;
+        }
+        if (orderDelivery.Items.Any(x => x.DeliveryTemperature == ItemStorageTemperature.Freeze))
+        {
+            deliveryCost += order.DeliveryCostForFreeze ?? 0;
+        }
+        if (orderDelivery.Items.Any(x => x.DeliveryTemperature == ItemStorageTemperature.Frozen))
+        {
+            deliveryCost += order.DeliveryCostForFrozen ?? 0;
+        }
+        var totalDiscount = order.CreditDeductionAmount + (order.DiscountAmount ?? 0);
+        var deliveryDiscountMap = CalculateDiscountPerDelivery(orderDeliveries, totalDiscount);
 
-            int collectionAmount = order.PaymentMethod is PaymentMethods.CashOnDelivery ?
-                                    GetCollectionAmount(orderDelivery.Items.Sum(s => s.TotalAmount), order.DeliveryCost,order.DiscountAmount,order.CreditDeductionAmount, true) :
+        // Later, for a specific delivery:
+        int deliveryDiscount = deliveryDiscountMap.TryGetValue(orderDelivery.Id, out var d) ? d : 0;
+        int collectionAmount = order.PaymentMethod is PaymentMethods.CashOnDelivery ?
+                                    GetCollectionAmount(orderDelivery.Items.Sum(s => s.TotalAmount), deliveryCost, (decimal)deliveryDiscount,0, true) :
                                     0;
         var newOrderNo = AddNumericSuffix(order.OrderNo);
         await _orderTradeNoRepository.InsertAsync(new OrderTradeNo { MarchentTradeNo = newOrderNo, OrderId = order.Id });
@@ -1730,10 +1793,34 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
             request.AddParameter("GoodsName", goodsName);
             request.AddParameter("SenderCellPhone", GreenWorld.SenderPhoneNumber);
         }
-        var goodsAmount = Convert.ToInt32(
-    (orderDelivery.Items.Sum(x => x.TotalAmount) + order.DeliveryCost)
-    - ((order.CreditDeductionAmount) + (order.DiscountAmount ?? 0))
-);
+        var totalDiscount = order.CreditDeductionAmount + (order.DiscountAmount ?? 0);
+        var deliveryDiscountMap = CalculateDiscountPerDelivery(orderDeliverys, totalDiscount);
+
+        // Later, for a specific delivery:
+        int deliveryDiscount = deliveryDiscountMap.TryGetValue(orderDelivery.Id, out var d) ? d : 0;
+        int goodsAmount = 0;
+       var deliveryTemp= orderDelivery.Items.Select(x => x.DeliveryTemperature).FirstOrDefault();
+        if (deliveryTemp == ItemStorageTemperature.Normal)
+        {
+            goodsAmount = Convert.ToInt32(
+               (orderDelivery.Items.Sum(x => x.TotalAmount) + order.DeliveryCostForNormal)
+               - deliveryDiscount
+           );
+        }
+        if (deliveryTemp == ItemStorageTemperature.Freeze)
+        {
+            goodsAmount = Convert.ToInt32(
+               (orderDelivery.Items.Sum(x => x.TotalAmount) + order.DeliveryCostForFreeze)
+               - deliveryDiscount
+           );
+        }
+        if (deliveryTemp == ItemStorageTemperature.Freeze)
+        {
+            goodsAmount = Convert.ToInt32(
+            (orderDelivery.Items.Sum(x => x.TotalAmount) + order.DeliveryCostForFrozen)
+            - deliveryDiscount
+        );
+        }
         request.AddParameter("GoodsAmount", goodsAmount);
         request.AddParameter("SenderName", GreenWorld.SenderName);
         request.AddParameter("ReceiverName", order.RecipientName);
@@ -2275,6 +2362,51 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
     #endregion
 
     #region Private Functions
+    private static Dictionary<Guid, int> CalculateDiscountPerDelivery(
+    List<OrderDelivery> deliveries,
+    decimal totalDiscountAmount)
+    {
+        if (deliveries == null || !deliveries.Any() || totalDiscountAmount <= 0)
+            return new Dictionary<Guid, int>();
+
+        // Step 1: Flatten all item amounts and sum total
+        var deliveryAmountMap = deliveries.ToDictionary(
+            d => d.Id,
+            d => d.Items.Sum(i => i.TotalAmount)
+        );
+
+        decimal totalItemAmount = deliveryAmountMap.Sum(kvp => kvp.Value);
+        if (totalItemAmount == 0)
+            return deliveries.ToDictionary(d => d.Id, d => 0);
+
+        int totalDiscount = Convert.ToInt32(totalDiscountAmount);
+
+        // Step 2: Distribute proportionally using Math.Floor
+        var provisionalDiscounts = deliveryAmountMap
+            .Select(kvp => new {
+                DeliveryId = kvp.Key,
+                ProportionalDiscount = (int)Math.Floor((kvp.Value / totalItemAmount) * totalDiscount)
+            })
+            .ToList();
+
+        // Step 3: Fix rounding difference
+        int distributed = provisionalDiscounts.Sum(x => x.ProportionalDiscount);
+        int remainder = totalDiscount - distributed;
+
+        if (remainder != 0 && provisionalDiscounts.Count > 0)
+        {
+            var last = provisionalDiscounts[^1];
+            provisionalDiscounts[^1] = new
+            {
+                DeliveryId = last.DeliveryId,
+                ProportionalDiscount = last.ProportionalDiscount + remainder
+            };
+        }
+
+        // Step 4: Convert to dictionary
+        return provisionalDiscounts.ToDictionary(x => x.DeliveryId, x => x.ProportionalDiscount);
+    }
+
     private async Task SendEmailAsync(Guid id, ShippingStatus? shippingStatus = null)
     {
         await _emailAppService.SendOrderStatusEmailAsync(id, shippingStatus: shippingStatus);
