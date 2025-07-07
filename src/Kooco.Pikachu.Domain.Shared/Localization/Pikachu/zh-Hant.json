@@ -1629,6 +1629,8 @@
     "AmountReceivedExclShipping": "已收款金額 (不含運費)",
     "ProfitShare%": "分潤%",
     "ProfitShareEarnings": "分潤收益",
-    "ShippingFee": "運費"
+    "ShippingFee": "運費",
+    "CompletionFrom": "訂單完成起始日期",
+    "CompletionTo": "訂單完成結束日期"
   }
 }
