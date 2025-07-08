@@ -759,6 +759,20 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
         using (_dataFilter.Disable<IMultiTenant>())
         {
             GroupBuy item = await _groupBuyRepository.GetAsync(id);
+
+            var groupbuyModule = await GetGroupBuyModulesAsync(id);
+            var productModule = groupbuyModule.Where(x => x.GroupBuyModuleType == GroupBuyModuleType.ProductGroupModule).ToList();
+        bool HasDifferentItemTemperatures= productModule
+        .SelectMany(x => x.ItemGroupDetails)
+        .Where(x =>
+            (x.ItemType == ItemType.Item && x.Item != null) ||
+            (x.ItemType == ItemType.SetItem && x.SetItem != null))
+        .Select(x => x.ItemType == ItemType.Item
+            ? x.Item.ItemStorageTemperature
+            : x.SetItem.ItemStorageTemperature)
+        .Where(temp => temp != null) // Filter out null temperatures
+        .Distinct()
+        .Count() > 1;
             var response = new ShippingMethodResponse();
 
             // Deserialize relevant data
@@ -785,7 +799,7 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
             // Get all logistics providers
             using (CurrentTenant.Change(item.TenantId))
             {
-                var logisticsProviders = await _logisticsProvidersAppService.GetAllAsync();
+                var logisticsProviders =( await _logisticsProvidersAppService.GetAllAsync()).Where(x=>x.TenantId==item.TenantId).ToList();
 
 
                 var providerMapping = new Dictionary<DeliveryMethod, LogisticProviders>
@@ -823,7 +837,7 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
 
                 foreach (string method in shippingMethods ?? [])
                 {
-                    if (IsMethodEnabled(method))
+                    if (IsMethodEnabled(method) && !HasDifferentItemTemperatures)
                     {
                         if (method.Contains("HomeDelivery"))
                         {
