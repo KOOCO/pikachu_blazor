@@ -38,7 +38,7 @@ namespace Kooco.Pikachu.ShoppingCredits
         /// </summary>
         public async Task<ShoppingCreditUsageSettingDto> CreateAsync(CreateUpdateShoppingCreditUsageSettingDto input)
         {
-            var shoppingCreditUsageSetting = await shoppingCreditUsageSettingManager.CreateAsync(input.AllowUsage, input.DeductionMethod, input.UnifiedMaxDeductiblePoints, input.StagedSettings, input.ApplicableItems, input.UsableGroupbuysScope, input.UsableProductsScope, input.ProductIds, input.GroupbuyIds);
+            var shoppingCreditUsageSetting = await shoppingCreditUsageSettingManager.CreateAsync(input.AllowUsage, input.DeductionMethod, input.UnifiedMaxDeductiblePoints, input.StagedSettings, input.ApplicableItems, input.UsableGroupbuysScope, input.UsableProductsScope, input.ProductIds, input.GroupbuyIds, input.MaximumDeduction);
             return ObjectMapper.Map<ShoppingCreditUsageSetting, ShoppingCreditUsageSettingDto>(shoppingCreditUsageSetting);
         }
 
@@ -48,7 +48,7 @@ namespace Kooco.Pikachu.ShoppingCredits
         public async Task<ShoppingCreditUsageSettingDto> UpdateAsync(Guid id, CreateUpdateShoppingCreditUsageSettingDto input)
         {
             
-            var shoppingCreditUsageSetting = await shoppingCreditUsageSettingManager.UpdateAsync(id,input.AllowUsage, input.DeductionMethod, input.UnifiedMaxDeductiblePoints, input.StagedSettings, input.ApplicableItems, input.UsableGroupbuysScope, input.UsableProductsScope, input.ProductIds, input.GroupbuyIds);
+            var shoppingCreditUsageSetting = await shoppingCreditUsageSettingManager.UpdateAsync(id,input.AllowUsage, input.DeductionMethod, input.UnifiedMaxDeductiblePoints, input.StagedSettings, input.ApplicableItems, input.UsableGroupbuysScope, input.UsableProductsScope, input.ProductIds, input.GroupbuyIds, input.MaximumDeduction);
 
           
             return ObjectMapper.Map<ShoppingCreditUsageSetting, ShoppingCreditUsageSettingDto>(shoppingCreditUsageSetting);

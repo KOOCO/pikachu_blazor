@@ -14,7 +14,7 @@ namespace Kooco.Pikachu.ShoppingCredits
         public string? ApplicableItems { get; set; }
         public string UsableGroupbuysScope { get; set; }
         public string UsableProductsScope { get; set; }
-
+        public int MaximumDeduction { get; set; }
         public List<ShoppingCreditUsageSpecificProductDto> SpecificProducts { get; set; }
         public List<ShoppingCreditUsageSpecificGroupbuyDto> SpecificGroupbuys { get; set; }
     }

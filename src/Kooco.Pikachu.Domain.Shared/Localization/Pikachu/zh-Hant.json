@@ -1640,6 +1640,7 @@
     "ConfirmedBy": "確認人員",
     "ConfirmManualBankTransferMessage": "您確定要確認這筆付款嗎？",
     "PaymentConfirmedTitle": "已確認收款",
-    "PaymentConfirmed": "此筆款項已由 {0} 確認。"
+    "PaymentConfirmed": "此筆款項已由 {0} 確認。",
+    "MaximumDeduction": "最高折抵金額"
   }
 }

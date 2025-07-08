@@ -1670,6 +1670,7 @@
     "ConfirmedBy": "Confirmed By",
     "ConfirmManualBankTransferMessage": "Are you sure you want to confirm this payment?",
     "PaymentConfirmedTitle": "Payment Confirmed",
-    "PaymentConfirmed": "Payment was confirmed by {0}."
+    "PaymentConfirmed": "Payment was confirmed by {0}.",
+    "MaximumDeduction": "Maximum Deduction"
   }
 }

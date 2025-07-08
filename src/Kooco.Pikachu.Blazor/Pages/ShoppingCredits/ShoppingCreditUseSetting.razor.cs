@@ -129,13 +129,17 @@ namespace Kooco.Pikachu.Blazor.Pages.ShoppingCredits
             if (await ValidationsRef.ValidateAll())
             {
                 CreateUpdateUsage.StagedSettings = GetJson();
+                if (CreateUpdateUsage.DeductionMethod == "StagedCalculation")
+                {
+                    CreateUpdateUsage.MaximumDeduction = stagedSettings.OrderByDescending(x => x.Points).Select(x => x.Points).FirstOrDefault();
+                }
+
                 if (Id == Guid.Empty)
                 {
                     await ShoppingCreditUsageSettingAppService.CreateAsync(CreateUpdateUsage);
                 }
                 else
                 {
-
                     await ShoppingCreditUsageSettingAppService.UpdateAsync(Id, CreateUpdateUsage);
                 }
                 IsUpdating = false;

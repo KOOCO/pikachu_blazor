@@ -17,6 +17,9 @@ namespace Kooco.Pikachu.ShoppingCredits
         [Required]
         public int UnifiedMaxDeductiblePoints { get; set; }
 
+        [Range(0, int.MaxValue)]
+        public int MaximumDeduction { get; set; }
+
         public string StagedSettings { get; set; }
 
         [StringLength(255)]

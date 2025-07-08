@@ -17,13 +17,13 @@
 @inject NavigationManager NavigationManager
 <style>
     input.is-valid ~ .form-check-label {
-    color: #505150!important;
-}
+        color: #505150 !important;
+    }
 </style>
 <Div>
     <Row>
         <Column ColumnSize="ColumnSize.Is6">
-             <Heading Size="HeadingSize.Is3" @onclick="NavigateToList" style="cursor: pointer;" class="text-dark">@L["UseSettings"]</Heading>
+            <Heading Size="HeadingSize.Is3" @onclick="NavigateToList" style="cursor: pointer;" class="text-dark">@L["UseSettings"]</Heading>
         </Column>
 
     </Row>
@@ -66,10 +66,20 @@
                                 <Label>@L["DeductionMethod"]</Label>
                                 <RadioGroup Orientation="Orientation.Vertical" TValue="string" Name="DeductionMethod" @bind-CheckedValue="CreateUpdateUsage.DeductionMethod">
                                     <ChildContent>
-                                        <Radio Value="@("UnifiedCalculation")">@L["UnifiedCalculation:"]
+                                        <Radio Value="@("UnifiedCalculation")">
+                                            @L["UnifiedCalculation:"]
                                             @if (CreateUpdateUsage.DeductionMethod == "UnifiedCalculation")
                                             {
-                                                <NumericEdit @bind-Value="CreateUpdateUsage.UnifiedMaxDeductiblePoints" Max="100" TValue="int" /><label>%</label>
+                                                <Addons>
+                                                    <Addon AddonType="AddonType.Body">
+                                                        <NumericEdit @bind-Value="CreateUpdateUsage.UnifiedMaxDeductiblePoints" Max="100" TValue="int" />
+                                                    </Addon>
+                                                    <AddonLabel>%</AddonLabel>
+                                                </Addons>
+                                                <Field Class="m-0">
+                                                    <FieldLabel>@L["MaximumDeduction"]</FieldLabel>
+                                                    <NumericEdit @bind-Value="CreateUpdateUsage.MaximumDeduction" Min="0" TValue="int" />
+                                                </Field>
                                             }
                                         </Radio>
                                         <Radio Value="@("StagedCalculation")">@L["StagedCalculation"]</Radio>
@@ -120,28 +130,27 @@
 
                     <Column ColumnSize="ColumnSize.Is9">
                         <Column ColumnSize="ColumnSize.Is12">
-                           
-                                <Label>@L["UsableforGroupbuying"]</Label>
-                                <RadioGroup Orientation="Orientation.Vertical" TValue="string" CheckedValue="@CreateUpdateUsage.UsableGroupbuysScope" CheckedValueChanged="OnUsableGroupbuysScopeChanged" Name="Groupbuys">
-                                    <ChildContent>
-                                        <Radio Value="@("AllGroupbuys")">@L["AllGroupbuys"]</Radio>
-                                        <Radio Value="@("SpecificGroupbuys")">@L["SpecificGroupbuys"]</Radio>
-                                    </ChildContent>
-                                  
-                                </RadioGroup>
-                       
+
+                            <Label>@L["UsableforGroupbuying"]</Label>
+                            <RadioGroup Orientation="Orientation.Vertical" TValue="string" CheckedValue="@CreateUpdateUsage.UsableGroupbuysScope" CheckedValueChanged="OnUsableGroupbuysScopeChanged" Name="Groupbuys">
+                                <ChildContent>
+                                    <Radio Value="@("AllGroupbuys")">@L["AllGroupbuys"]</Radio>
+                                    <Radio Value="@("SpecificGroupbuys")">@L["SpecificGroupbuys"]</Radio>
+                                </ChildContent>
+
+                            </RadioGroup>
+
                         </Column>
                         @if (CreateUpdateUsage.UsableGroupbuysScope == "SpecificGroupbuys")
                         {
                             <Column ColumnSize="ColumnSize.Is12">
                                 <EditForm EditContext="editContext">
                                     <AntDesign.Select Mode="AntDesign.SelectMode.Multiple"
-                                    TItem="Guid"
-                                    TItemValue="Guid"
-                                    @bind-Values="@SelectedGroupBuy"
-                                    Placeholder="@L["SelectaGroupBuys"]"
-
-                                    EnableSearch>
+                                                      TItem="Guid"
+                                                      TItemValue="Guid"
+                                                      @bind-Values="@SelectedGroupBuy"
+                                                      Placeholder="@L["SelectaGroupBuys"]"
+                                                      EnableSearch>
                                         <SelectOptions>
                                             @foreach (var item in Groupbuys)
                                             {
@@ -158,36 +167,36 @@
 
                         <Column ColumnSize="ColumnSize.Is12">
                             <Label>@L["UseableforProducts"]</Label>
-                           
-                                <RadioGroup Orientation="Orientation.Vertical" TValue="string" CheckedValue="CreateUpdateUsage.UsableProductsScope" CheckedValueChanged="OnUsableProductsScopeChanged" Name="Products">
-                                    <ChildContent>
-                                        <Radio Value="@("AllProducts")">@L["AllProducts"]</Radio>
-                                        <Radio Value="@("SpecificProducts")">@L["SpecificProducts"]</Radio>
-                                    </ChildContent>
-                                  
-                                </RadioGroup>
-                            
+
+                            <RadioGroup Orientation="Orientation.Vertical" TValue="string" CheckedValue="CreateUpdateUsage.UsableProductsScope" CheckedValueChanged="OnUsableProductsScopeChanged" Name="Products">
+                                <ChildContent>
+                                    <Radio Value="@("AllProducts")">@L["AllProducts"]</Radio>
+                                    <Radio Value="@("SpecificProducts")">@L["SpecificProducts"]</Radio>
+                                </ChildContent>
+
+                            </RadioGroup>
+
                         </Column>
                         @if (CreateUpdateUsage.UsableProductsScope == "SpecificProducts")
                         {
                             <Column ColumnSize="ColumnSize.Is12">
                                 <EditForm EditContext="editContext">
                                     <AntDesign.Select Mode="AntDesign.SelectMode.Multiple"
-                                    TItem="Guid"
-                                    TItemValue="Guid"
-                                    @bind-Values="@SelectedProducts"
-                                    Placeholder="@L["SelectaProducts"]"
-                                    EnableSearch>
+                                                      TItem="Guid"
+                                                      TItemValue="Guid"
+                                                      @bind-Values="@SelectedProducts"
+                                                      Placeholder="@L["SelectaProducts"]"
+                                                      EnableSearch>
                                         <SelectOptions>
                                             @foreach (var item in Products)
                                             {
                                                 <AntDesign.SelectOption TItemValue="Guid" TItem="Guid" Value=@item.Id Label=@item.Name />
                                             }
                                         </SelectOptions>
-                                </AntDesign.Select>
-                                <ValidationMessage For="() => CreateUpdateUsage!.ProductIds" />
-                            </EditForm>
-                        </Column>
+                                    </AntDesign.Select>
+                                    <ValidationMessage For="() => CreateUpdateUsage!.ProductIds" />
+                                </EditForm>
+                            </Column>
                         }
                         <Column ColumnSize="ColumnSize.Is12">
                             <Label>@L["ApplicableItems"]</Label>
