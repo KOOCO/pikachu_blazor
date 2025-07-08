@@ -257,11 +257,27 @@ public class OrderAppService : PikachuAppService, IOrderAppService
 
             await UnitOfWorkManager.Current.SaveChangesAsync();
 
-            if (order.PaymentMethod is PaymentMethods.CashOnDelivery && order.ShippingStatus is ShippingStatus.PrepareShipment || order.TotalAmount == 0)
+            if (order.PaymentMethod != PaymentMethods.ManualBankTransfer || order.TotalAmount == 0)
             {
-                Order newOrder = await OrderRepository.GetWithDetailsAsync(order.Id);
-                await CreateOrderDeliveriesAsync(newOrder);
-                await UnitOfWorkManager.Current.SaveChangesAsync();
+                if (order.PaymentMethod is PaymentMethods.CashOnDelivery && order.ShippingStatus is ShippingStatus.PrepareShipment || order.TotalAmount == 0)
+                {
+                    Order newOrder = await OrderRepository.GetWithDetailsAsync(order.Id);
+                    await CreateOrderDeliveriesAsync(newOrder);
+                    await UnitOfWorkManager.Current.SaveChangesAsync();
+                }
+            }
+            else
+            {
+                order.ShippingStatus = ShippingStatus.WaitingForPayment;
+                var paymentRecord = new ManualBankTransferRecord(
+                    GuidGenerator.Create(),
+                    order.Id,
+                    input.Last5DigitsOfBankAccount,
+                    Convert.ToInt32(order.TotalAmount),
+                    DateTime.Now
+                    );
+
+                await ManualBankTransferRecordRepository.InsertAsync(paymentRecord);
             }
 
             if (order.DiscountCodeId != null)
@@ -480,7 +496,7 @@ public class OrderAppService : PikachuAppService, IOrderAppService
 
                         order.TotalQuantity += inputCampaign.Amount;
                         order.TotalAmount += campaign.AddOnProduct.ProductAmount;
-                        
+
                         isValid = true;
                     }
                 }
@@ -492,6 +508,55 @@ public class OrderAppService : PikachuAppService, IOrderAppService
             }
         }
     }
+
+    public async Task ConfirmManualBankTransferAsync(Guid orderId)
+    {
+        var currentUserId = CurrentUser.Id ?? throw new UserFriendlyException("User not found");
+        var paymentRecord = await ManualBankTransferRecordRepository.GetAsync(x => x.OrderId == orderId);
+        
+        var order = await OrderRepository.GetAsync(orderId);
+        
+        var oldShippingStatus = order.ShippingStatus;
+        order.ShippingStatus = ShippingStatus.PrepareShipment;
+        
+        paymentRecord.Confirm(currentUserId);
+
+        await CreateOrderDeliveriesAndInvoiceAsync(orderId);
+
+        await OrderHistoryManager.AddOrderHistoryAsync(
+                 order.Id,
+                 "PaymentConfirmed",
+                 [CurrentUser.UserName ?? ""],
+                 currentUserId,
+                 CurrentUser.UserName ?? "System"
+             );
+
+        await OrderHistoryManager.AddOrderHistoryAsync(
+                 order.Id,
+                 "ShippingStatusChanged",
+                 [L[oldShippingStatus.ToString()].Value, L[order.ShippingStatus.ToString()].Value],
+                 currentUserId,
+                 CurrentUser.UserName ?? "System"
+             );
+
+        await SendEmailAsync(order.Id);
+    }
+
+    public async Task<ManualBankTransferRecordDto> GetManualBankTransferRecordAsync(Guid orderId)
+    {
+        var paymentRecord = await ManualBankTransferRecordRepository.GetAsync(x => x.OrderId == orderId);
+
+        var dto = ObjectMapper.Map<ManualBankTransferRecord, ManualBankTransferRecordDto>(paymentRecord);
+
+        if (paymentRecord.ConfirmById.HasValue)
+        {
+            var user = await UserRepository.FindAsync(paymentRecord.ConfirmById.Value);
+            dto.ConfirmByName = user?.UserName;
+        }
+
+        return dto;
+    }
+
 
     /// <summary>
     /// get order by Order No
@@ -2943,4 +3008,5 @@ public class OrderAppService : PikachuAppService, IOrderAppService
     public required ICampaignRepository CampaignRepository { get; init; }
     public required InventoryLogManager InventoryLogManager { get; init; }
     public required IOrderTradeNoRepository OrderTradeNoRepository { get; init; }
+    public required IRepository<ManualBankTransferRecord, Guid> ManualBankTransferRecordRepository { get; init; }
 }

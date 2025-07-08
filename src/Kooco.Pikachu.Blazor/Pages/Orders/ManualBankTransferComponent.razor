@@ -1,0 +1,85 @@
+﻿@using Kooco.Pikachu.Orders
+@using Kooco.Pikachu.Orders.Interfaces
+@inherits PikachuComponentBase
+@inject IOrderAppService OrderAppService
+
+<Card>
+    <CardBody>
+        <p class="fw-bold">@L["ManualBankTransfer"]</p>
+        @if (Order != null && Record != null)
+        {
+            <Div>
+                <Paragraph>@L["Last5DigitsOfBankAccount"]: @Record.BankAccountNumber</Paragraph>
+                <Paragraph>@L["PaymentAmount"]: $@Order.TotalAmount.ToString("N0")</Paragraph>
+                <Paragraph>@L["ReceivedTime"]: @Order.CreationTime.ToString("MM/dd/yyyy HH:mm:ss")</Paragraph>
+            </Div>
+            @if (!Record.IsConfirmed)
+            {
+                <Div Class="text-end">
+                    <PikachuButton Class="pk-btn-danger" Clicked="Confirm" Loading="Loading">
+                        @L["ConfirmPayment"]
+                    </PikachuButton>
+                </Div>
+            }
+            else
+            {
+                <Div>
+                    <Paragraph>
+                        <Span Class="d-flex align-items-center justify-content-between">
+                            <Span>@L["ConfirmationTime"]: @Record.ConfirmationTime?.ToString("MM/dd/yyyy HH:mm:ss")</Span>
+                            <Span>@L["ConfirmedBy"]: @Record.ConfirmByName</Span>
+                        </Span>
+                    </Paragraph>
+                </Div>
+            }
+        }
+    </CardBody>
+</Card>
+
+@code {
+    [Parameter] public Guid OrderId { get; set; }
+    [Parameter] public OrderDto Order { get; set; }
+    [Parameter] public EventCallback OnConfirm { get; set; }
+
+    private ManualBankTransferRecordDto Record { get; set; }
+    private bool Loading { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try
+            {
+                Record = await OrderAppService.GetManualBankTransferRecordAsync(OrderId);
+                StateHasChanged();
+            }
+            catch (Exception ex)
+            {
+                await HandleErrorAsync(ex);
+            }
+        }
+    }
+
+    async Task Confirm()
+    {
+        try
+        {
+            var confirmation = await Message.Confirm(L["ConfirmManualBankTransferMessage"]);
+            if (confirmation)
+            {
+                Loading = true;
+                StateHasChanged();
+                await OrderAppService.ConfirmManualBankTransferAsync(OrderId);
+                Record = await OrderAppService.GetManualBankTransferRecordAsync(OrderId);
+                Loading = false;
+                await OnConfirm.InvokeAsync();
+                StateHasChanged();
+            }
+        }
+        catch (Exception ex)
+        {
+            Loading = false;
+            await HandleErrorAsync(ex);
+        }
+    }
+}

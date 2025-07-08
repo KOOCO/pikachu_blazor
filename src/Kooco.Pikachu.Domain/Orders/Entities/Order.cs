@@ -608,6 +608,8 @@ public class Order : FullAuditedAggregateRoot<Guid>, IMultiTenant
 
     public ICollection<AppliedCampaign> AppliedCampaigns { get; set; } = [];
 
+    public virtual ManualBankTransferRecord? ManualBankTransferRecord { get; set; }
+
     public Order() { }
 
     public Order(

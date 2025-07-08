@@ -424,5 +424,7 @@ public class PikachuApplicationAutoMapperProfile : Profile
 
         CreateMap<InventoryModel, InventoryDto>();
         CreateMap<InventoryLog, InventoryLogDto>();
+
+        CreateMap<ManualBankTransferRecord, ManualBankTransferRecordDto>();
     }
 }

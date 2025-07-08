@@ -1631,6 +1631,15 @@
     "ProfitShareEarnings": "分潤收益",
     "ShippingFee": "運費",
     "CompletionFrom": "訂單完成起始日期",
-    "CompletionTo": "訂單完成結束日期"
+    "CompletionTo": "訂單完成結束日期",
+    "Last5DigitsOfBankAccount": "銀行帳號末5碼",
+    "PaymentAmount": "付款金額",
+    "ReceivedTime": "入帳時間",
+    "ConfirmPayment": "確認收款",
+    "ConfirmationTime": "確認時間",
+    "ConfirmedBy": "確認人員",
+    "ConfirmManualBankTransferMessage": "您確定要確認這筆付款嗎？",
+    "PaymentConfirmedTitle": "已確認收款",
+    "PaymentConfirmed": "此筆款項已由 {0} 確認。"
   }
 }

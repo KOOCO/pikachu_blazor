@@ -1922,6 +1922,10 @@
                 </CardBody>
 
             </Card>
+            @if (Order?.PaymentMethod == PaymentMethods.ManualBankTransfer)
+            {
+                <ManualBankTransferComponent OrderId="Order.Id" Order="Order" OnConfirm="OnPaymentConfirm" />
+            }
             <Card>
                 <CardBody>
                     <div class="row">

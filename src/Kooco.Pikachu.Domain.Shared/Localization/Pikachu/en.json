@@ -1661,6 +1661,15 @@
     "CompletionTo": "Completion To",
     "ShippingFee": "Shipping Fee",
     "(AddOnProduct)": "(Add-on Product)",
-    "OnlyAvailable": "Only Available"
+    "OnlyAvailable": "Only Available",
+    "Last5DigitsOfBankAccount": "Last 5 Digits of Bank Account",
+    "PaymentAmount": "Payment Amount",
+    "ReceivedTime": "Received Time",
+    "ConfirmPayment": "Confirm Payment",
+    "ConfirmationTime": "Confirmation Time",
+    "ConfirmedBy": "Confirmed By",
+    "ConfirmManualBankTransferMessage": "Are you sure you want to confirm this payment?",
+    "PaymentConfirmedTitle": "Payment Confirmed",
+    "PaymentConfirmed": "Payment was confirmed by {0}."
   }
 }

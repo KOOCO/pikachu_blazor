@@ -220,6 +220,11 @@ public partial class OrderDetails
         }
     }
 
+    async Task OnPaymentConfirm()
+    {
+        await GetOrderDetailsAsync();
+    }
+
     public void ChangeStore(ChangeEventArgs e)
     {
         IsShowConvenienceStoreDetails = e.Value is not null && e.Value.ToString() is "convenienceStore" ? true : false;

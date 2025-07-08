@@ -661,5 +661,17 @@ public class OrderController : AbpController, IOrderAppService
         return _ordersAppService.GetOrderIdAsync(orderNo);
     }
 
+    [HttpPost("confirm-manual-bank-transfer/{orderId}")]
+    public Task ConfirmManualBankTransferAsync(Guid orderId)
+    {
+        return _ordersAppService.ConfirmManualBankTransferAsync(orderId);
+    }
+
+    [HttpGet("manual-bank-transfer/{orderId}")]
+    public Task<ManualBankTransferRecordDto> GetManualBankTransferRecordAsync(Guid orderId)
+    {
+        return _ordersAppService.GetManualBankTransferRecordAsync(orderId);
+    }
+
     #endregion
 }

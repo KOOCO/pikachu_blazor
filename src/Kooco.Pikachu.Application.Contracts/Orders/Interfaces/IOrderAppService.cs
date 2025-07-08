@@ -63,5 +63,7 @@ namespace Kooco.Pikachu.Orders.Interfaces
         Task CloseOrdersAsync();
         Task<long> GetReturnOrderNotificationCount();
         Task<Guid> GetOrderIdAsync(string orderNo);
+        Task ConfirmManualBankTransferAsync(Guid orderId);
+        Task<ManualBankTransferRecordDto> GetManualBankTransferRecordAsync(Guid orderId);
     }
 }

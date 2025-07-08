@@ -80,6 +80,7 @@ public class CreateUpdateOrderDto
     public int DiscountAmount { get; set; }
     public List<CreateUpdateOrderItemDto> OrderItems { get; set; }
     public bool IsTest { get; set; }
+    public string? Last5DigitsOfBankAccount { get; set; }
 }
 
 public class CreateAppliedCampaignDto

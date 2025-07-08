@@ -10,5 +10,6 @@ public enum PaymentMethods
    BankTransfer,
    LinePay,
    CashOnDelivery,
-   FreeOrder
+   FreeOrder,
+   ManualBankTransfer
 }

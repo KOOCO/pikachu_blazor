@@ -110,6 +110,7 @@ public class PikachuDbContext(DbContextOptions<PikachuDbContext> options) :
     public DbSet<Freebie> Freebies { get; set; }
     public DbSet<FreebieGroupBuys> FreebieGroupBuys { get; set; }
     public DbSet<Order> Orders { get; set; }
+    public DbSet<ManualBankTransferRecord> ManualBankTransferRecords { get; set; }
     public DbSet<AppliedCampaign> AppliedCampaigns { get; set; }
     public DbSet<StoreComment> StoreComments { get; set; }
     public DbSet<Refund> Refunds { get; set; }
@@ -260,7 +261,7 @@ public class PikachuDbContext(DbContextOptions<PikachuDbContext> options) :
             b.ToTable(PikachuConsts.DbTablePrefix + "OrderTradeNos", PikachuConsts.DbSchema, table => table.HasComment(""));
             b.ConfigureByConvention();
 
-            
+
         });
 
         builder.Entity<GroupBuyItemGroup>(b =>
@@ -331,6 +332,15 @@ public class PikachuDbContext(DbContextOptions<PikachuDbContext> options) :
 
             b.HasMany(x => x.OrderTransactions).WithOne(x => x.Order).HasForeignKey(x => x.OrderId);
             b.HasMany(x => x.AppliedCampaigns).WithOne(x => x.Order).HasForeignKey(x => x.OrderId);
+            b.HasOne(x => x.ManualBankTransferRecord).WithOne(x => x.Order).HasForeignKey<ManualBankTransferRecord>(x => x.OrderId).IsRequired(false);
+        });
+
+        builder.Entity<ManualBankTransferRecord>(b =>
+        {
+            b.ToTable(PikachuConsts.DbTablePrefix + "ManualBankTransferRecords", PikachuConsts.DbSchema);
+            b.ConfigureByConvention();
+
+            b.HasOne(x => x.Order).WithOne(x => x.ManualBankTransferRecord).HasForeignKey<ManualBankTransferRecord>(x => x.OrderId).IsRequired(false);
         });
 
         builder.Entity<AppliedCampaign>(b =>
