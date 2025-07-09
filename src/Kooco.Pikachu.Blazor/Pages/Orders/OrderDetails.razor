@@ -1828,19 +1828,38 @@
 
                             <Step Name="step5" Class="@((IsStepActive("step5") ? "step-active" : ""))">
                                 <Marker>
-                                    <Icon style="font-size: 27px;" class="fas fa-check-circle" />  <!-- Delivered -->
+                                     <Image Source="../images/icons/delivered icon.png"  Style="@GetStepImageStyle("step5")"  />  <!-- Delivered -->
                                 </Marker>
                                 <Caption>
+
                                     @L["Delivered"]
                                 </Caption>
                             </Step>
+                            @if(Order.Id!=Guid.Empty && IsSpecialConvenienceStoreMethod(Order.DeliveryMethod.Value))
+                            {
+                              <Step Name="step6" Class="@((IsStepActive("step6") ? "step-active" : ""))">
+                                <Marker>
+                                  <Image Source="../images/icons/Picked up icon.png" Style="@GetStepImageStyle("step6")" /> 
+                                </Marker>
+                                <Caption>
 
-                            <Step Name="step6" Class="@((IsStepActive("step6") ? "step-active" : ""))">
+                                    @L["PickedUp"]
+                                </Caption>
+                            </Step>
+                            }
+                            <Step Name="step7" Class="@((IsStepActive("step7") ? "step-active" : ""))">
                                 <Marker>
                                     <Icon style="font-size: 27px;" class="fas fa-flag-checkered" /> <!-- Closed -->
                                 </Marker>
                                 <Caption>
+                                    @if(Order.OrderStatus==OrderStatus.Returned||Order.OrderStatus==OrderStatus.Exchange)
+                                    {
                                     @L["Closed"]
+                                    }
+                                    else
+                                    {
+                                        @L["Complete"]
+                                    }
                                 </Caption>
                             </Step>
                         </Items>
@@ -1851,6 +1870,7 @@
                             <StepPanel Name="step4"></StepPanel>
                             <StepPanel Name="step5"></StepPanel>
                             <StepPanel Name="step6"></StepPanel>
+                            <StepPanel Name="step7"></StepPanel>
                         </Content>
                     </Steps>
 

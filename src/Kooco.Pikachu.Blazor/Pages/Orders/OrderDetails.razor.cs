@@ -182,7 +182,8 @@ public partial class OrderDetails
         { "step3", 3 },
         { "step4", 4 },
         { "step5", 5 },
-        { "step6", 6 }
+        { "step6", 6 },
+        { "step7", 7 }
     };
 
     private void UpdateStepByShippingStatus(ShippingStatus status)
@@ -193,10 +194,28 @@ public partial class OrderDetails
             ShippingStatus.PrepareShipment => "step2",
             ShippingStatus.ToBeShipped => "step3",
             ShippingStatus.Shipped => "step4",
-            ShippingStatus.Delivered or ShippingStatus.Return or ShippingStatus.Completed or ShippingStatus.Exchange => "step5",
-            ShippingStatus.Closed => "step6",
+            ShippingStatus.Delivered  => "step5",
+            ShippingStatus.PickedUp  => "step6",
+            ShippingStatus.Closed or ShippingStatus.Return or ShippingStatus.Completed or ShippingStatus.Exchange => "step7",
             _ => "step1" // Default to first step if status is unknown
         };
+    }
+    private static readonly HashSet<DeliveryMethod> TargetedDeliveryMethods = new()
+    {
+        DeliveryMethod.SevenToEleven1,
+        DeliveryMethod.SevenToElevenFrozen,
+        DeliveryMethod.SevenToElevenC2C,
+        DeliveryMethod.FamilyMart1,
+        DeliveryMethod.FamilyMartC2C,
+        DeliveryMethod.PostOffice,
+        DeliveryMethod.TCatDeliverySevenElevenNormal,
+        DeliveryMethod.TCatDeliverySevenElevenFreeze,
+        DeliveryMethod.TCatDeliverySevenElevenFrozen
+    };
+
+    public  bool IsSpecialConvenienceStoreMethod(DeliveryMethod method)
+    {
+        return TargetedDeliveryMethods.Contains(method);
     }
     protected async override Task OnAfterRenderAsync(bool isFirstRender)
     {
@@ -349,7 +368,12 @@ public partial class OrderDetails
     {
         return stepOrder[step] <= stepOrder[selectedStep];
     }
-
+    private string GetStepImageStyle(string stepName)
+    {
+        return IsStepActive(stepName)
+            ? "width:27px;height:27px;"
+            : "width:27px;height:27px;filter:contrast(0.5);";
+    }
     async Task SubmitStoreCommentsAsync()
     {
         try
