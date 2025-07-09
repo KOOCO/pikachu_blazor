@@ -134,7 +134,7 @@ public class TCatSFTPService : ITransientDependency
                         var orderDelivery = orderDeliveries.FirstOrDefault(od => od.AllPayLogisticsID == record.OrderId);
                         if (orderDelivery != null)
                         {
-                            var status = DeliveryStatusMapper.MapStatus(order.StatusId);
+                            var status = DeliveryStatusMapper.MapStatus(orderDelivery.DeliveryMethod, order.StatusId);
                             if (status != null)
                             {
                                 orderDelivery.DeliveryStatus = status.Value;
@@ -286,54 +286,144 @@ public class TCatSFTPService : ITransientDependency
 
     private static class DeliveryStatusMapper
     {
-        private static readonly Dictionary<string, DeliveryStatus> StatusIdMap = new()
+        private static readonly Dictionary<DeliveryMethod, Dictionary<string, DeliveryStatus>> StatusMap = new()
         {
-            // PrepareShipment
-            ["00001"] = DeliveryStatus.Shipped,
-            ["00006"] = DeliveryStatus.Shipped,
-            ["00027"] = DeliveryStatus.Shipped,
-            ["00019"] = DeliveryStatus.Shipped,
-            ["00020"] = DeliveryStatus.Shipped,
-            ["00013"] = DeliveryStatus.Shipped,
-            ["00015"] = DeliveryStatus.Shipped,
-            ["00219"] = DeliveryStatus.Shipped,
-            ["168"] = DeliveryStatus.Shipped,
-            ["202"] = DeliveryStatus.Shipped,
-            ["204"] = DeliveryStatus.Shipped,
-            ["205"] = DeliveryStatus.Shipped,
-            ["00002"] = DeliveryStatus.Shipped,
-            ["00008"] = DeliveryStatus.Shipped,
-            ["00009"] = DeliveryStatus.Shipped,
-            ["00010"] = DeliveryStatus.Shipped,
-            ["00011"] = DeliveryStatus.Shipped,
-            ["216"] = DeliveryStatus.Shipped,
-            ["208"] = DeliveryStatus.Shipped,
-            ["209"] = DeliveryStatus.Shipped,
-            ["308"] = DeliveryStatus.Shipped,
-            ["420"] = DeliveryStatus.Shipped,
-
-            // Delivered
-            ["00003"] = DeliveryStatus.Delivered,
-
-            // Return
-            ["00017"] = DeliveryStatus.Shipped,
-            ["00016"] = DeliveryStatus.Shipped,
-            ["00301"] = DeliveryStatus.Shipped,
-            ["00399"] = DeliveryStatus.Shipped,
-            ["309"] = DeliveryStatus.Shipped,
-
-            //Closed(Abnormal)
-            //["00023"] = DeliveryStatus.Closed,
-            //["00024"] = DeliveryStatus.Closed,
-            //["00025"] = DeliveryStatus.Closed,
-            //["186"] = DeliveryStatus.Closed,
+            [DeliveryMethod.TCatDeliveryNormal] = new()
+            {
+                ["00000"] = DeliveryStatus.ToBeShipped,
+                ["00001"] = DeliveryStatus.Shipped,
+                ["00006"] = DeliveryStatus.Shipped,
+                ["00013"] = DeliveryStatus.Shipped,
+                ["00015"] = DeliveryStatus.Shipped,
+                ["00019"] = DeliveryStatus.Shipped,
+                ["00020"] = DeliveryStatus.Shipped,
+                ["00219"] = DeliveryStatus.Shipped,
+                ["00003"] = DeliveryStatus.Delivered,
+                ["00017"] = DeliveryStatus.Returned,
+                ["00301"] = DeliveryStatus.Returned
+            },
+            [DeliveryMethod.TCatDeliverySevenElevenNormal] = new()
+            {
+                ["00000"] = DeliveryStatus.ToBeShipped,
+                ["00001"] = DeliveryStatus.Shipped,
+                ["202"] = DeliveryStatus.Shipped,
+                ["204"] = DeliveryStatus.Shipped,
+                ["208"] = DeliveryStatus.Delivered,
+                ["00003"] = DeliveryStatus.PickedUp,
+                ["00017"] = DeliveryStatus.Returned,
+                ["00301"] = DeliveryStatus.Returned
+            },
+            [DeliveryMethod.TCatDeliveryFreeze] = new()
+            {
+                ["00000"] = DeliveryStatus.ToBeShipped,
+                ["00001"] = DeliveryStatus.Shipped,
+                ["00006"] = DeliveryStatus.Shipped,
+                ["00013"] = DeliveryStatus.Shipped,
+                ["00015"] = DeliveryStatus.Shipped,
+                ["00019"] = DeliveryStatus.Shipped,
+                ["00020"] = DeliveryStatus.Shipped,
+                ["00219"] = DeliveryStatus.Shipped,
+                ["00003"] = DeliveryStatus.Delivered,
+                ["00017"] = DeliveryStatus.Returned,
+                ["00301"] = DeliveryStatus.Returned
+            },
+            [DeliveryMethod.TCatDeliverySevenElevenFreeze] = new()
+            {
+                ["00000"] = DeliveryStatus.ToBeShipped,
+                ["00001"] = DeliveryStatus.Shipped,
+                ["202"] = DeliveryStatus.Shipped,
+                ["204"] = DeliveryStatus.Shipped,
+                ["208"] = DeliveryStatus.Delivered,
+                ["00003"] = DeliveryStatus.PickedUp,
+                ["00017"] = DeliveryStatus.Returned,
+                ["00301"] = DeliveryStatus.Returned
+            },
+            [DeliveryMethod.TCatDeliveryFrozen] = new()
+            {
+                ["00000"] = DeliveryStatus.ToBeShipped,
+                ["00001"] = DeliveryStatus.Shipped,
+                ["00006"] = DeliveryStatus.Shipped,
+                ["00013"] = DeliveryStatus.Shipped,
+                ["00015"] = DeliveryStatus.Shipped,
+                ["00019"] = DeliveryStatus.Shipped,
+                ["00020"] = DeliveryStatus.Shipped,
+                ["00219"] = DeliveryStatus.Shipped,
+                ["00003"] = DeliveryStatus.Delivered,
+                ["00017"] = DeliveryStatus.Returned,
+                ["00301"] = DeliveryStatus.Returned
+            },
+            [DeliveryMethod.TCatDeliverySevenElevenFrozen] = new()
+            {
+                ["00000"] = DeliveryStatus.ToBeShipped,
+                ["00001"] = DeliveryStatus.Shipped,
+                ["202"] = DeliveryStatus.Shipped,
+                ["204"] = DeliveryStatus.Shipped,
+                ["208"] = DeliveryStatus.Delivered,
+                ["00003"] = DeliveryStatus.PickedUp,
+                ["00017"] = DeliveryStatus.Returned,
+                ["00301"] = DeliveryStatus.Returned
+            }
         };
 
-        public static DeliveryStatus? MapStatus(string statusId)
+        public static DeliveryStatus? MapStatus(DeliveryMethod logistics, string statusId)
         {
-            return StatusIdMap.TryGetValue(statusId, out var status)
+            return StatusMap.TryGetValue(logistics, out var statusMap) &&
+                   statusMap.TryGetValue(statusId, out var status)
                 ? status
                 : null;
         }
     }
+
+    //private static class DeliveryStatusMapper
+    //{
+    //    private static readonly Dictionary<string, DeliveryStatus> StatusIdMap = new()
+    //    {
+    //        // PrepareShipment
+    //        ["00001"] = DeliveryStatus.Shipped,
+    //        ["00006"] = DeliveryStatus.Shipped,
+    //        ["00027"] = DeliveryStatus.Shipped,
+    //        ["00019"] = DeliveryStatus.Shipped,
+    //        ["00020"] = DeliveryStatus.Shipped,
+    //        ["00013"] = DeliveryStatus.Shipped,
+    //        ["00015"] = DeliveryStatus.Shipped,
+    //        ["00219"] = DeliveryStatus.Shipped,
+    //        ["168"] = DeliveryStatus.Shipped,
+    //        ["202"] = DeliveryStatus.Shipped,
+    //        ["204"] = DeliveryStatus.Shipped,
+    //        ["205"] = DeliveryStatus.Shipped,
+    //        ["00002"] = DeliveryStatus.Shipped,
+    //        ["00008"] = DeliveryStatus.Shipped,
+    //        ["00009"] = DeliveryStatus.Shipped,
+    //        ["00010"] = DeliveryStatus.Shipped,
+    //        ["00011"] = DeliveryStatus.Shipped,
+    //        ["216"] = DeliveryStatus.Shipped,
+    //        ["208"] = DeliveryStatus.Shipped,
+    //        ["209"] = DeliveryStatus.Shipped,
+    //        ["308"] = DeliveryStatus.Shipped,
+    //        ["420"] = DeliveryStatus.Shipped,
+
+    //        // Delivered
+    //        ["00003"] = DeliveryStatus.Delivered,
+
+    //        // Return
+    //        ["00017"] = DeliveryStatus.Shipped,
+    //        ["00016"] = DeliveryStatus.Shipped,
+    //        ["00301"] = DeliveryStatus.Shipped,
+    //        ["00399"] = DeliveryStatus.Shipped,
+    //        ["309"] = DeliveryStatus.Shipped,
+
+    //        //Closed(Abnormal)
+    //        //["00023"] = DeliveryStatus.Closed,
+    //        //["00024"] = DeliveryStatus.Closed,
+    //        //["00025"] = DeliveryStatus.Closed,
+    //        //["186"] = DeliveryStatus.Closed,
+    //    };
+
+    //    public static DeliveryStatus? MapStatus(string statusId)
+    //    {
+    //        return StatusIdMap.TryGetValue(statusId, out var status)
+    //            ? status
+    //            : null;
+    //    }
+    //}
 }
