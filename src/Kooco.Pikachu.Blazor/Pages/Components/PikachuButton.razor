@@ -1,4 +1,4 @@
-﻿<button class="pk-btn @Class" style="@Style" @onclick="Clicked" disabled="@(Disabled || Loading)" type="@Type">
+﻿<button class="pk-btn @Class @(Hidden ? "d-none" : "")" style="@Style" @onclick="Clicked" disabled="@(Disabled || Loading)" type="@Type">
     @if (Loading)
     {
         <div class="spinner-border" role="status"></div>
@@ -34,6 +34,9 @@
 
     [Parameter]
     public string Style { get; set; } = "";
+
+    [Parameter]
+    public bool Hidden { get; set; }
 
     private async Task ClickedHandler()
     {

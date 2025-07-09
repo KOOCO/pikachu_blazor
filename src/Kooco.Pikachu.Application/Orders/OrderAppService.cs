@@ -1913,26 +1913,34 @@ public class OrderAppService : PikachuAppService, IOrderAppService
     public async Task CancelOrderAsync(Guid id)
     {
         var order = await OrderRepository.GetWithDetailsAsync(id);
-        // Capture the old status before updating
+        
         var oldOrderStatus = order.OrderStatus;
+        var oldShippingStatus = order.ShippingStatus;
+        order.ShippingStatus = ShippingStatus.Closed;
         order.OrderStatus = OrderStatus.Closed;
         order.CancellationDate = DateTime.Now;
         await OrderRepository.UpdateAsync(order);
         await UnitOfWorkManager.Current.SaveChangesAsync();
         await SendEmailAsync(order.Id, OrderStatus.Closed);
-        // **Get Current User (Editor)**
+
         var currentUserId = CurrentUser.Id ?? Guid.Empty;
         var currentUserName = CurrentUser.UserName ?? "System";
 
-        // **Log Order History for Cancellation**
         await OrderHistoryManager.AddOrderHistoryAsync(
-     order.Id,
-     "OrderCancelled", // Localization key
-     new object[] { L[oldOrderStatus.ToString()].Name }, // Localized previous status
-     currentUserId,
-     currentUserName
- );
+             order.Id,
+             "OrderCancelled",
+             [L[oldShippingStatus.ToString()].Name],
+             currentUserId,
+             currentUserName
+         );
 
+        await OrderHistoryManager.AddOrderHistoryAsync(
+             order.Id,
+             "OrderCancelled",
+             [L[oldOrderStatus.ToString()].Name],
+             currentUserId,
+             currentUserName
+         );
     }
     public async Task VoidInvoice(Guid id, string reason)
     {

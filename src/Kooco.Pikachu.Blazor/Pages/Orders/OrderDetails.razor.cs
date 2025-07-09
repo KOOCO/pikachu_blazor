@@ -96,7 +96,7 @@ public partial class OrderDetails
     {
         IsConversationWindowCollapsed = !IsConversationWindowCollapsed;
     }
-     async void NavigateToList()
+    async void NavigateToList()
     {
         await JSRuntime.InvokeVoidAsync("historyBack");
     }
@@ -194,8 +194,8 @@ public partial class OrderDetails
             ShippingStatus.PrepareShipment => "step2",
             ShippingStatus.ToBeShipped => "step3",
             ShippingStatus.Shipped => "step4",
-            ShippingStatus.Delivered  => "step5",
-            ShippingStatus.PickedUp  => "step6",
+            ShippingStatus.Delivered => "step5",
+            ShippingStatus.PickedUp => "step6",
             ShippingStatus.Closed or ShippingStatus.Return or ShippingStatus.Completed or ShippingStatus.Exchange => "step7",
             _ => "step1" // Default to first step if status is unknown
         };
@@ -213,7 +213,7 @@ public partial class OrderDetails
         DeliveryMethod.TCatDeliverySevenElevenFrozen
     };
 
-    public  bool IsSpecialConvenienceStoreMethod(DeliveryMethod method)
+    public bool IsSpecialConvenienceStoreMethod(DeliveryMethod method)
     {
         return TargetedDeliveryMethods.Contains(method);
     }
@@ -1318,17 +1318,15 @@ public partial class OrderDetails
     {
         try
         {
-            if (Order?.ShippingStatus == ShippingStatus.WaitingForPayment)
+            var confirmed = await _uiMessageService.Confirm(L["AreYouSureToCancelOrder?"]);
+            if (confirmed)
             {
-                var confirmed = await _uiMessageService.Confirm(L["AreYouSureToCancelOrder?"]);
-                if (confirmed)
-                {
-                    loading = true;
-                    await _orderAppService.CancelOrderAsync(OrderId);
-                    await GetOrderDetailsAsync();
-                    await InvokeAsync(StateHasChanged);
-                    loading = false;
-                }
+                loading = true;
+                StateHasChanged();
+                await _orderAppService.CancelOrderAsync(OrderId);
+                await GetOrderDetailsAsync();
+                await InvokeAsync(StateHasChanged);
+                loading = false;
             }
         }
         catch (Exception ex)
@@ -1387,7 +1385,7 @@ public partial class OrderDetails
                 deliveryOrder.DeliveryMethod is DeliveryMethod.SevenToElevenFrozen)
             {
                 ResponseResultDto result = await _storeLogisticsOrderAppService.CreateStoreLogisticsOrderAsync(
-                    Order.Id, 
+                    Order.Id,
                     deliveryOrder.Id);
                 if (result.ResponseCode is not "1")
                 {
@@ -1403,7 +1401,7 @@ public partial class OrderDetails
                      deliveryOrder.DeliveryMethod is DeliveryMethod.TCatDeliveryFrozen)
             {
                 PrintObtResponse? response = await _storeLogisticsOrderAppService.GenerateDeliveryNumberForTCatDeliveryAsync(
-                    Order.Id, 
+                    Order.Id,
                     deliveryOrder.Id);
                 if (response is null || response.Data is null)
                 {
@@ -1419,7 +1417,7 @@ public partial class OrderDetails
                      deliveryOrder.DeliveryMethod is DeliveryMethod.TCatDeliverySevenElevenFrozen)
             {
                 PrintOBTB2SResponse? response = await _storeLogisticsOrderAppService.GenerateDeliveryNumberForTCat711DeliveryAsync(
-                    Order.Id, 
+                    Order.Id,
                     deliveryOrder.Id);
                 if (response is null || response.Data is null)
                 {
@@ -1435,8 +1433,8 @@ public partial class OrderDetails
                      deliveryOrder.DeliveryMethod is DeliveryMethod.BlackCatFrozen)
             {
                 ResponseResultDto result = await _storeLogisticsOrderAppService.CreateHomeDeliveryShipmentOrderAsync(
-                    Order.Id, 
-                    OrderDeliveryId, 
+                    Order.Id,
+                    OrderDeliveryId,
                     deliveryOrder.DeliveryMethod);
                 if (result.ResponseCode is not "1")
                 {
@@ -1473,8 +1471,8 @@ public partial class OrderDetails
                         logisticProvider is LogisticProviders.GreenWorldLogisticsC2C && deliveryMethod is DeliveryMethod.SevenToElevenC2C)
                     {
                         ResponseResultDto result = await _storeLogisticsOrderAppService.CreateStoreLogisticsOrderAsync(
-                            Order.Id, 
-                            deliveryOrder.Id, 
+                            Order.Id,
+                            deliveryOrder.Id,
                             deliveryMethod);
                         if (result.ResponseCode is not "1")
                         {
@@ -1489,8 +1487,8 @@ public partial class OrderDetails
                              logisticProvider is LogisticProviders.GreenWorldLogistics && deliveryMethod is DeliveryMethod.BlackCat1)
                     {
                         ResponseResultDto result = await _storeLogisticsOrderAppService.CreateHomeDeliveryShipmentOrderAsync(
-                            Order.Id, 
-                            OrderDeliveryId, 
+                            Order.Id,
+                            OrderDeliveryId,
                             deliveryMethod);
                         if (result.ResponseCode is not "1")
                         {
@@ -1555,8 +1553,8 @@ public partial class OrderDetails
                     if (logisticProvider is LogisticProviders.GreenWorldLogistics && deliveryMethod is DeliveryMethod.BlackCatFreeze)
                     {
                         ResponseResultDto result = await _storeLogisticsOrderAppService.CreateHomeDeliveryShipmentOrderAsync(
-                            Order.Id, 
-                            OrderDeliveryId, 
+                            Order.Id,
+                            OrderDeliveryId,
                             deliveryMethod);
                         if (result.ResponseCode is not "1")
                         {
@@ -1571,8 +1569,8 @@ public partial class OrderDetails
                     else if (logisticProvider is LogisticProviders.TCat && deliveryMethod is DeliveryMethod.TCatDeliveryFreeze)
                     {
                         PrintObtResponse? response = await _storeLogisticsOrderAppService.GenerateDeliveryNumberForTCatDeliveryAsync(
-                            Order.Id, 
-                            deliveryOrder.Id, 
+                            Order.Id,
+                            deliveryOrder.Id,
                             deliveryMethod);
                         if (response is null || response.Data is null)
                         {
@@ -1586,8 +1584,8 @@ public partial class OrderDetails
                     else if (logisticProvider is LogisticProviders.TCat && deliveryMethod is DeliveryMethod.TCatDeliverySevenElevenFreeze)
                     {
                         PrintOBTB2SResponse? response = await _storeLogisticsOrderAppService.GenerateDeliveryNumberForTCat711DeliveryAsync(
-                            Order.Id, 
-                            deliveryOrder.Id, 
+                            Order.Id,
+                            deliveryOrder.Id,
                             deliveryMethod);
                         if (response is null || response.Data is null)
                         {
@@ -1620,8 +1618,8 @@ public partial class OrderDetails
                     if (logisticProvider is LogisticProviders.TCat && deliveryMethod is DeliveryMethod.TCatDeliveryFrozen)
                     {
                         PrintObtResponse? response = await _storeLogisticsOrderAppService.GenerateDeliveryNumberForTCatDeliveryAsync(
-                            Order.Id, 
-                            deliveryOrder.Id, 
+                            Order.Id,
+                            deliveryOrder.Id,
                             deliveryMethod);
                         if (response is null || response.Data is null)
                         {
@@ -1635,12 +1633,12 @@ public partial class OrderDetails
                     else if (logisticProvider is LogisticProviders.TCat && deliveryMethod is DeliveryMethod.TCatDeliverySevenElevenFrozen)
                     {
                         PrintOBTB2SResponse? response = await _storeLogisticsOrderAppService.GenerateDeliveryNumberForTCat711DeliveryAsync(
-                            Order.Id, 
-                            deliveryOrder.Id, 
+                            Order.Id,
+                            deliveryOrder.Id,
                             deliveryMethod);
                         if (response is null || response.Data is null)
-                        { 
-                            await _uiMessageService.Error(response.Message); 
+                        {
+                            await _uiMessageService.Error(response.Message);
                         }
                         else if (response.Data is not null)
                         {
@@ -1650,8 +1648,8 @@ public partial class OrderDetails
                     else if (logisticProvider is LogisticProviders.GreenWorldLogistics && deliveryMethod is DeliveryMethod.BlackCatFrozen)
                     {
                         ResponseResultDto result = await _storeLogisticsOrderAppService.CreateHomeDeliveryShipmentOrderAsync(
-                            Order.Id, 
-                            OrderDeliveryId, 
+                            Order.Id,
+                            OrderDeliveryId,
                             deliveryMethod);
                         if (result.ResponseCode is not "1")
                         {
@@ -1666,8 +1664,8 @@ public partial class OrderDetails
                     else if (logisticProvider is LogisticProviders.GreenWorldLogistics && deliveryMethod is DeliveryMethod.SevenToElevenFrozen)
                     {
                         ResponseResultDto result = await _storeLogisticsOrderAppService.CreateStoreLogisticsOrderAsync(
-                            Order.Id, 
-                            deliveryOrder.Id, 
+                            Order.Id,
+                            deliveryOrder.Id,
                             deliveryMethod);
                         if (result.ResponseCode is not "1")
                         {
@@ -1700,14 +1698,14 @@ public partial class OrderDetails
                      deliveryOrder.DeliveryMethod is DeliveryMethod.HomeDelivery)
             {
                 await _storeLogisticsOrderAppService.GenerateDeliveryNumberForSelfPickupAndHomeDeliveryAsync(
-                    Order.Id, 
+                    Order.Id,
                     deliveryOrder.Id);
                 await _storeLogisticsOrderAppService.IssueInvoiceAync(Order.Id);
             }
             else
             {
                 ResponseResultDto result = await _storeLogisticsOrderAppService.CreateHomeDeliveryShipmentOrderAsync(
-                    Order.Id, 
+                    Order.Id,
                     OrderDeliveryId);
                 if (result.ResponseCode is not "1")
                 {
@@ -1981,10 +1979,10 @@ public partial class OrderDetails
 
             UpdateOrder.DeliveryMethod = shipments.ShippingMethod;
 
-            var deliveryOrder= await _orderDeliveryAppService.UpdateShippingDetails(OrderDeliveryId, UpdateOrder);
+            var deliveryOrder = await _orderDeliveryAppService.UpdateShippingDetails(OrderDeliveryId, UpdateOrder);
 
             await CreateShipmentModal.Hide();
-             CreateOrderLogistics(deliveryOrder);
+            CreateOrderLogistics(deliveryOrder);
 
             await GetOrderDetailsAsync();
 
@@ -3325,6 +3323,57 @@ public partial class OrderDetails
     private async Task OpenReturnAndExchange(bool isReturn)
     {
         await ReturnAndExchangeModal.Show(isReturn);
+    }
+
+    private bool IsButtonHidden(string buttonName)
+    {
+        if (Order.ShippingStatus == ShippingStatus.Completed || Order.ShippingStatus == ShippingStatus.Closed)
+        {
+            return true;
+        }
+        if (buttonName == "Cancel")
+        {
+            var manualStatus = new[] { ShippingStatus.WaitingForPayment };
+            var codStatus = new[]
+            {
+                ShippingStatus.PrepareShipment,
+                ShippingStatus.ToBeShipped,
+                ShippingStatus.Shipped
+            };
+
+            bool isManualVisible = Order.PaymentMethod == PaymentMethods.ManualBankTransfer && manualStatus.Contains(Order.ShippingStatus);
+            bool isCodVisible = Order.PaymentMethod == PaymentMethods.CashOnDelivery && codStatus.Contains(Order.ShippingStatus);
+            return !isManualVisible && !isCodVisible;
+        }
+        if (buttonName == "Refund")
+        {
+            var codStatus = new[]
+            {
+                ShippingStatus.Delivered,
+                ShippingStatus.PickedUp
+            };
+            var otherPaymentStatus = new[]
+            {
+                ShippingStatus.PrepareShipment,
+                ShippingStatus.ToBeShipped,
+                ShippingStatus.Shipped,
+                ShippingStatus.Delivered,
+                ShippingStatus.PickedUp
+            };
+            bool isCodVisible = Order.PaymentMethod == PaymentMethods.CashOnDelivery && codStatus.Contains(Order.ShippingStatus);
+            bool otherPaymentVisible = Order.PaymentMethod != PaymentMethods.CashOnDelivery && otherPaymentStatus.Contains(Order.ShippingStatus);
+            return !otherPaymentVisible && !isCodVisible;
+        }
+        if (buttonName == "Return" || buttonName == "Exchange")
+        {
+            var visibleStatus = new[]
+            {
+                ShippingStatus.Delivered,
+                ShippingStatus.PickedUp
+            };
+            return !visibleStatus.Contains(Order.ShippingStatus);
+        }
+        return true;
     }
     #endregion
 }

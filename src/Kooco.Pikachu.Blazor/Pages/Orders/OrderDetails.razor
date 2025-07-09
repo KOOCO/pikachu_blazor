@@ -1653,17 +1653,8 @@
         </div>
 
         <div class="col-md-6 col-sm-12">
-            <div class="row mb-2">
+            @* <div class="row mb-2">
                 <div class="col-md-6 col-sm-12">
-                    @*  @if (Order?.ShippingStatus != ShippingStatus.WaitingForPayment || Order?.OrderStatus == OrderStatus.Closed)
-                    {
-                    var text = Order?.OrderStatus == OrderStatus.Closed ? "Closed" : "CancelOrder";
-                    <Button Type="ButtonType.Button" disabled Class="btn btn-sm btn-danger">@L[text]</Button>
-                    }
-                    else
-                    {
-                    <Button Type="ButtonType.Button" @onclick="CancelOrder" Class="btn btn-sm btn-danger">@L["CancelOrder"]</Button>
-                    } *@
                     @if (Order.OrderType is not OrderType.MargeToNew && Order.OrderStatus is not OrderStatus.Refund)
                     {
                         @if (Order.ShippingStatus is not ShippingStatus.WaitingForPayment && Order.IsRefunded is false)
@@ -1748,6 +1739,79 @@
                     <Button Type="ButtonType.Button"
                     @onclick="NavigateToOrderShipmentDetails"
                     Class="btn btn-sm btn-primary">
+                        <Icon Class="fa fa-print" />
+                        @L["PrintOrder"]
+                    </Button>
+                </div>
+            </div> *@
+
+            <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-2">
+                <div>
+                    <PikachuButton Class="pk-btn-sm pk-btn-danger"
+                            Clicked="CancelOrder"
+                            Hidden="@IsButtonHidden("Cancel")">
+                        @L["Cancel"]
+                    </PikachuButton>
+                    <PikachuButton Class="pk-btn-sm pk-btn-secondary"
+                            Clicked="OpenRefundModal"
+                            Hidden="@IsButtonHidden("Refund")">
+                        @L["ApplyRefund"]
+                    </PikachuButton>
+                    <PikachuButton Class="pk-btn-sm pk-btn-primary"
+                            Clicked="() => OpenReturnAndExchange(true)"
+                            Hidden="@IsButtonHidden("Return")">
+                        @L["ReturnOrder"]
+                    </PikachuButton>
+                    <PikachuButton Class="pk-btn-sm pk-btn-primary"
+                            Clicked="() => OpenReturnAndExchange(false)"
+                            Hidden="@IsButtonHidden("Exchange")">
+                        @L["ExchangeItem"]
+                    </PikachuButton>
+               </div>
+               <div>
+                    @if (Order.ShippingStatus == ShippingStatus.ToBeShipped)
+                    {
+                        <Dropdown>
+                            <Button Size="Size.ExtraSmall" class="btn btn-sm btn-primary" Clicked="OnPrintShippedLabel">@L["StandardPrinting"]</Button>
+                            <DropdownToggle Size="Size.ExtraSmall" Class="btn-sm" Color="Color.Primary" Split />
+                            <DropdownMenu>
+                                <DropdownItem Clicked="OnPrintShippedLabel10Cm">@L["ThermalPrinting"]</DropdownItem>
+                            </DropdownMenu>
+                        </Dropdown>
+                    }
+                    @if (Order.Id != Guid.Empty)
+                    {
+                        @if (Order.OrderType is not OrderType.MargeToNew && Order.OrderStatus is not OrderStatus.Refund)
+                        {
+                            @if (Order.ShippingStatus is ShippingStatus.PrepareShipment && Order.OrderItems.Any(x => x.IsSelected == true) && (Order.OrderType is null || Order.OrderType is 0))
+                            {
+                                <Button Clicked="SplitOrder"
+                                Type="ButtonType.Button"
+                                Class="btn btn-sm btn-secondary">
+                                    @L["SplitOrder"]
+                                </Button>
+                            }
+                            else if (Order.ShippingStatus is ShippingStatus.WaitingForPayment && Order.OrderItems.Any(x => x.IsSelected == true) && (Order.OrderType is null || Order.OrderType is 0))
+                            {
+                                <Button Clicked="SplitOrder"
+                                Type="ButtonType.Button"
+                                Class="btn btn-sm btn-secondary">
+                                    @L["SplitOrder"]
+                                </Button>
+                            }
+                            else
+                            {
+                                <Button Type="ButtonType.Button"
+                                Disabled
+                                Class="btn btn-sm btn-secondary me-1">
+                                    @L["SplitOrder"]
+                                </Button>
+                            }
+                        }
+                    }
+                    <Button Type="ButtonType.Button"
+                        @onclick="NavigateToOrderShipmentDetails"
+                        Class="btn btn-sm btn-primary">
                         <Icon Class="fa fa-print" />
                         @L["PrintOrder"]
                     </Button>
