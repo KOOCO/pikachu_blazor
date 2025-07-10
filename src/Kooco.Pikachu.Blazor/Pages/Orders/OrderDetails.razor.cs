@@ -207,7 +207,7 @@ public partial class OrderDetails
         DeliveryMethod.SevenToElevenC2C,
         DeliveryMethod.FamilyMart1,
         DeliveryMethod.FamilyMartC2C,
-        DeliveryMethod.PostOffice,
+        
         DeliveryMethod.TCatDeliverySevenElevenNormal,
         DeliveryMethod.TCatDeliverySevenElevenFreeze,
         DeliveryMethod.TCatDeliverySevenElevenFrozen
