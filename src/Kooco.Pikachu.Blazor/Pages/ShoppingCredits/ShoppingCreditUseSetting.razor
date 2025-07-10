@@ -146,19 +146,20 @@
                             <Column ColumnSize="ColumnSize.Is12">
                                 <EditForm EditContext="editContext">
                                     <AntDesign.Select Mode="AntDesign.SelectMode.Multiple"
-                                                      TItem="Guid"
+                                                  TItem="Guid"
                                                       TItemValue="Guid"
                                                       @bind-Values="@SelectedGroupBuy"
                                                       Placeholder="@L["SelectaGroupBuys"]"
+                                                     
                                                       EnableSearch>
                                         <SelectOptions>
                                             @foreach (var item in Groupbuys)
                                             {
-                                                <AntDesign.SelectOption TItemValue="Guid" TItem="Guid" Value=@item.Id Label=@item.GroupBuyName />
+                                                <AntDesign.SelectOption TItem="Guid"  TItemValue="Guid"  Value=@item.Id Label=@item.GroupBuyName />
                                             }
                                         </SelectOptions>
                                     </AntDesign.Select>
-                                    <ValidationMessage For="() => CreateUpdateUsage!.ProductIds" />
+                                    <ValidationMessage For="() => CreateUpdateUsage!.GroupbuyIds" />
                                 </EditForm>
 
                             </Column>
