@@ -2501,6 +2501,8 @@ public class OrderAppService : PikachuAppService, IOrderAppService
                     currentUserId,
                     currentUserName
                 );
+
+                await SendEmailAsync(order.Id);
             }
         }
 
