@@ -1,4 +1,5 @@
 ﻿using Kooco.Pikachu.Domain.LogisticStatusRecords;
+using Kooco.Pikachu.Emails;
 using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Orders.Repositories;
 using Kooco.Pikachu.Orders.Services;
@@ -20,6 +21,7 @@ public class TCatSFTPService : ITransientDependency
     private readonly IRepository<LogisticStatusRecord, int> _logisticStatusRecordRepository;
     private readonly IOrderDeliveryRepository _orderDeliveryRepository;
     private readonly IOrderRepository _orderRepository;
+    private readonly IEmailAppService _emailAppService;
     private readonly ILogger<TCatSFTPService> _logger;
     public readonly OrderHistoryManager _orderHistoryManager;
     private SftpConfig Config { get; set; } = new();
@@ -28,6 +30,7 @@ public class TCatSFTPService : ITransientDependency
         IRepository<LogisticStatusRecord, int> logisticStatusRecordRepository,
         IOrderDeliveryRepository orderDeliveryRepository,
         IOrderRepository orderRepository,
+        IEmailAppService emailAppService,
         ILogger<TCatSFTPService> logger,
         OrderHistoryManager orderHistoryManager,
         IConfiguration configuration
@@ -36,6 +39,7 @@ public class TCatSFTPService : ITransientDependency
         _logisticStatusRecordRepository = logisticStatusRecordRepository;
         _orderDeliveryRepository = orderDeliveryRepository;
         _orderRepository = orderRepository;
+        _emailAppService = emailAppService;
         _logger = logger;
         _orderHistoryManager = orderHistoryManager;
         configuration.GetSection("T-Cat").Bind(Config);
@@ -206,6 +210,7 @@ public class TCatSFTPService : ITransientDependency
                                 );
 
                                 order.ShippingStatus = shippingStatus;
+                                await _emailAppService.SendOrderStatusEmailAsync(order.Id, shippingStatus: shippingStatus);
                             }
                         }
                     }
