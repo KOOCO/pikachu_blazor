@@ -1,6 +1,7 @@
 ﻿using Kooco.Pikachu.Domain.LogisticStatusRecords;
 using Kooco.Pikachu.Emails;
 using Kooco.Pikachu.EnumValues;
+using Kooco.Pikachu.Orders.Entities;
 using Kooco.Pikachu.Orders.Repositories;
 using Kooco.Pikachu.Orders.Services;
 using Microsoft.Extensions.Configuration;
@@ -11,8 +12,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Volo.Abp.Data;
 using Volo.Abp.DependencyInjection;
 using Volo.Abp.Domain.Repositories;
+using Volo.Abp.MultiTenancy;
 
 namespace Kooco.Pikachu.LogisticStatusRecords;
 
@@ -23,7 +26,9 @@ public class TCatSFTPService : ITransientDependency
     private readonly IOrderRepository _orderRepository;
     private readonly IEmailAppService _emailAppService;
     private readonly ILogger<TCatSFTPService> _logger;
-    public readonly OrderHistoryManager _orderHistoryManager;
+    private readonly OrderHistoryManager _orderHistoryManager;
+    private readonly IDataFilter<IMultiTenant> _multiTenantDataFilter;
+    private readonly ICurrentTenant _currentTenant;
     private SftpConfig Config { get; set; } = new();
 
     public TCatSFTPService(
@@ -33,6 +38,8 @@ public class TCatSFTPService : ITransientDependency
         IEmailAppService emailAppService,
         ILogger<TCatSFTPService> logger,
         OrderHistoryManager orderHistoryManager,
+        IDataFilter<IMultiTenant> multiTenantDataFilter,
+        ICurrentTenant currentTenant,
         IConfiguration configuration
         )
     {
@@ -42,6 +49,8 @@ public class TCatSFTPService : ITransientDependency
         _emailAppService = emailAppService;
         _logger = logger;
         _orderHistoryManager = orderHistoryManager;
+        _multiTenantDataFilter = multiTenantDataFilter;
+        _currentTenant = currentTenant;
         configuration.GetSection("T-Cat").Bind(Config);
     }
 
@@ -104,14 +113,20 @@ public class TCatSFTPService : ITransientDependency
 
                 var logisticIds = latestParsedLines.Select(x => x!.Order.ConsignmentNoteNumber).Distinct().ToList();
 
-                var orderDeliveries = await _orderDeliveryRepository.GetListByLogisticsIdsAsync(logisticIds);
+                List<OrderDelivery> orderDeliveries = [];
+                List<LogisticStatusRecord> records = [];
 
-                var records = (await _logisticStatusRecordRepository.GetListAsync(r =>
-                    logisticIds.Contains(r.OrderId)))
-                    .GroupBy(r => r.OrderId)
-                    .Select(g => g.OrderByDescending(r => r.DatetimeParsed).FirstOrDefault())
-                    .Where(r => r != null)
-                    .ToList();
+                using (_multiTenantDataFilter.Disable())
+                {
+                    orderDeliveries = await _orderDeliveryRepository.GetListByLogisticsIdsAsync(logisticIds);
+
+                    records = (await _logisticStatusRecordRepository.GetListAsync(r =>
+                        logisticIds.Contains(r.OrderId)))
+                        .GroupBy(r => r.OrderId)
+                        .Select(g => g.OrderByDescending(r => r.DatetimeParsed).FirstOrDefault())
+                        .Where(r => r != null)
+                        .ToList()!;
+                }
 
                 List<LogisticStatusRecord> toUpdate = [];
                 List<Guid> orderIdsToUpdate = [];
@@ -146,13 +161,16 @@ public class TCatSFTPService : ITransientDependency
                             }
                             else
                             {
-                                await _orderHistoryManager.AddOrderHistoryAsync(
-                                    orderDelivery.OrderId,
-                                    "T-CatAbnormalStatus",
-                                    [orderDelivery.DeliveryNo ?? string.Empty, record.StatusCode, record.StatusMessage],
-                                    null,
-                                    null
-                                );
+                                using (_currentTenant.Change(orderDelivery.TenantId))
+                                {
+                                    await _orderHistoryManager.AddOrderHistoryAsync(
+                                        orderDelivery.OrderId,
+                                        "T-CatAbnormalStatus",
+                                        [orderDelivery.DeliveryNo ?? string.Empty, record.StatusCode, record.StatusMessage],
+                                        null,
+                                        null
+                                    );
+                                }
                             }
                         }
                     }
@@ -173,7 +191,11 @@ public class TCatSFTPService : ITransientDependency
 
                 if (orderIdsToUpdate.Count > 0)
                 {
-                    var ordersToUpdate = await _orderRepository.GetListAsync(o => orderIdsToUpdate.Contains(o.Id));
+                    List<Order> ordersToUpdate;
+                    using (_multiTenantDataFilter.Disable())
+                    {
+                        ordersToUpdate = await _orderRepository.GetListAsync(o => orderIdsToUpdate.Contains(o.Id));
+                    }
 
                     foreach (var order in ordersToUpdate)
                     {
@@ -201,13 +223,16 @@ public class TCatSFTPService : ITransientDependency
 
                             if (shippingStatus != order.ShippingStatus)
                             {
-                                await _orderHistoryManager.AddOrderHistoryAsync(
-                                    order.Id,
-                                    "ShippingStatusChanged",
-                                    [order.ShippingStatus, shippingStatus],
-                                    null,
-                                    null
-                                );
+                                using (_currentTenant.Change(order.TenantId))
+                                {
+                                    await _orderHistoryManager.AddOrderHistoryAsync(
+                                        order.Id,
+                                        "ShippingStatusChanged",
+                                        [order.ShippingStatus, shippingStatus],
+                                        null,
+                                        null
+                                    );
+                                }
 
                                 order.ShippingStatus = shippingStatus;
                                 await _emailAppService.SendOrderStatusEmailAsync(order.Id, shippingStatus: shippingStatus);
@@ -378,57 +403,4 @@ public class TCatSFTPService : ITransientDependency
                 : null;
         }
     }
-
-    //private static class DeliveryStatusMapper
-    //{
-    //    private static readonly Dictionary<string, DeliveryStatus> StatusIdMap = new()
-    //    {
-    //        // PrepareShipment
-    //        ["00001"] = DeliveryStatus.Shipped,
-    //        ["00006"] = DeliveryStatus.Shipped,
-    //        ["00027"] = DeliveryStatus.Shipped,
-    //        ["00019"] = DeliveryStatus.Shipped,
-    //        ["00020"] = DeliveryStatus.Shipped,
-    //        ["00013"] = DeliveryStatus.Shipped,
-    //        ["00015"] = DeliveryStatus.Shipped,
-    //        ["00219"] = DeliveryStatus.Shipped,
-    //        ["168"] = DeliveryStatus.Shipped,
-    //        ["202"] = DeliveryStatus.Shipped,
-    //        ["204"] = DeliveryStatus.Shipped,
-    //        ["205"] = DeliveryStatus.Shipped,
-    //        ["00002"] = DeliveryStatus.Shipped,
-    //        ["00008"] = DeliveryStatus.Shipped,
-    //        ["00009"] = DeliveryStatus.Shipped,
-    //        ["00010"] = DeliveryStatus.Shipped,
-    //        ["00011"] = DeliveryStatus.Shipped,
-    //        ["216"] = DeliveryStatus.Shipped,
-    //        ["208"] = DeliveryStatus.Shipped,
-    //        ["209"] = DeliveryStatus.Shipped,
-    //        ["308"] = DeliveryStatus.Shipped,
-    //        ["420"] = DeliveryStatus.Shipped,
-
-    //        // Delivered
-    //        ["00003"] = DeliveryStatus.Delivered,
-
-    //        // Return
-    //        ["00017"] = DeliveryStatus.Shipped,
-    //        ["00016"] = DeliveryStatus.Shipped,
-    //        ["00301"] = DeliveryStatus.Shipped,
-    //        ["00399"] = DeliveryStatus.Shipped,
-    //        ["309"] = DeliveryStatus.Shipped,
-
-    //        //Closed(Abnormal)
-    //        //["00023"] = DeliveryStatus.Closed,
-    //        //["00024"] = DeliveryStatus.Closed,
-    //        //["00025"] = DeliveryStatus.Closed,
-    //        //["186"] = DeliveryStatus.Closed,
-    //    };
-
-    //    public static DeliveryStatus? MapStatus(string statusId)
-    //    {
-    //        return StatusIdMap.TryGetValue(statusId, out var status)
-    //            ? status
-    //            : null;
-    //    }
-    //}
 }
