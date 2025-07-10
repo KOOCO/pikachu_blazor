@@ -631,8 +631,35 @@ public class OrderRepository(IDbContextProvider<PikachuDbContext> dbContextProvi
     {
         var dbContext = await GetDbContextAsync();
 
+        var deliveredMethods = new[]
+        {
+            DeliveryMethod.HomeDelivery,
+            DeliveryMethod.PostOffice,
+            DeliveryMethod.BlackCat1,
+            DeliveryMethod.BlackCatFreeze,
+            DeliveryMethod.BlackCatFrozen,
+            DeliveryMethod.TCatDeliveryNormal,
+            DeliveryMethod.TCatDeliveryFreeze,
+            DeliveryMethod.TCatDeliveryFrozen
+        };
+
+        var pickedUpMethods = new[]
+        {
+            DeliveryMethod.SevenToEleven1,
+            DeliveryMethod.SevenToElevenFrozen,
+            DeliveryMethod.SevenToElevenC2C,
+            DeliveryMethod.FamilyMart1,
+            DeliveryMethod.FamilyMartC2C,
+            DeliveryMethod.TCatDeliverySevenElevenNormal,
+            DeliveryMethod.TCatDeliverySevenElevenFreeze,
+            DeliveryMethod.TCatDeliverySevenElevenFrozen
+        };
+
         var ordersToClose = await dbContext.Orders
-            .Where(o => o.CreationTime < DateTime.Today.AddDays(-7) && (o.ShippingStatus == ShippingStatus.PickedUp || o.ShippingStatus == ShippingStatus.Delivered))
+            .Where(o => o.CreationTime < DateTime.Today.AddDays(-7))
+            .Where(o => o.DeliveryMethod != null
+            && ((o.ShippingStatus == ShippingStatus.Delivered && deliveredMethods.Contains(o.DeliveryMethod.Value))
+            || (o.ShippingStatus == ShippingStatus.PickedUp && pickedUpMethods.Contains(o.DeliveryMethod.Value))))
             .GroupJoin(
                 dbContext.OrderHistories,
                 order => order.Id,
