@@ -779,7 +779,35 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
             List<string>? shippingMethods = !string.IsNullOrEmpty(item?.ExcludeShippingMethod)
                 ? JsonSerializer.Deserialize<List<string>>(item.ExcludeShippingMethod)
                 : [];
+            if (item.AllowShipToOuterTaiwan && !item.AllowShipOversea)
+            {
+                var allowedMethods = new HashSet<DeliveryMethod>
+    {
+        DeliveryMethod.SelfPickup,
+        DeliveryMethod.BlackCat1,
+        DeliveryMethod.BlackCatFreeze,
+        DeliveryMethod.BlackCatFrozen,
+        DeliveryMethod.HomeDelivery,
+        DeliveryMethod.SevenToEleven1,
+        DeliveryMethod.SevenToElevenC2C,
+        DeliveryMethod.DeliveredByStore,
+        DeliveryMethod.TCatDeliveryNormal,
+        DeliveryMethod.TCatDeliveryFreeze,
+        DeliveryMethod.TCatDeliveryFrozen
+    };
 
+                shippingMethods = shippingMethods
+                    .Where(method =>
+                    {
+                        foreach (var allowed in allowedMethods)
+                        {
+                            if (method.Contains(allowed.ToString()))
+                                return true;
+                        }
+                        return false;
+                    })
+                    .ToList();
+            }
             List<string>? homeDeliveryTimes = !string.IsNullOrEmpty(item?.HomeDeliveryDeliveryTime)
                 ? JsonSerializer.Deserialize<List<string>>(item.HomeDeliveryDeliveryTime)
                 : [];
