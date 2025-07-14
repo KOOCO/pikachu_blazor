@@ -15,6 +15,7 @@ namespace Kooco.Pikachu.ShoppingCredits
         public string DeductionMethod { get; set; }
         public decimal UnifiedMaxDeductiblePoints { get; set; }
         public int MaximumDeduction { get; set; }
+        public int MinimumSpendAmount { get; set; }
         public string StagedSettings { get; set; } // You may need to handle this as a JSON object if required
         public string? ApplicableItems { get; set; }
         public string UsableGroupbuysScope { get; set; }
@@ -32,7 +33,8 @@ namespace Kooco.Pikachu.ShoppingCredits
             string applicableItems,
             string usableGroupbuysScope,
             string usableProductsScope,
-            int maximumDeduction
+            int maximumDeduction,
+            int minimumSpendAmount
         ) : base(id)
         {
             AllowUsage = allowUsage;
@@ -43,6 +45,7 @@ namespace Kooco.Pikachu.ShoppingCredits
             UsableGroupbuysScope = Check.NotNullOrWhiteSpace(usableGroupbuysScope, nameof(usableGroupbuysScope));
             UsableProductsScope = Check.NotNullOrWhiteSpace(usableProductsScope, nameof(usableProductsScope));
             MaximumDeduction = maximumDeduction;
+            MinimumSpendAmount = minimumSpendAmount;
 
             SpecificProducts = new List<ShoppingCreditUsageSpecificProduct>();
             SpecificGroupbuys = new List<ShoppingCreditUsageSpecificGroupbuy>();

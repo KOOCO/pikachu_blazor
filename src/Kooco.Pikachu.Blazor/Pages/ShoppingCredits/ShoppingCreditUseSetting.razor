@@ -80,6 +80,10 @@
                                                     <FieldLabel>@L["MaximumDeduction"]</FieldLabel>
                                                     <NumericEdit @bind-Value="CreateUpdateUsage.MaximumDeduction" Min="0" TValue="int" />
                                                 </Field>
+                                                <Field Class="m-0">
+                                                    <FieldLabel>@L["MinimumSpendAmount"]</FieldLabel>
+                                                    <NumericEdit @bind-Value="CreateUpdateUsage.MinimumSpendAmount" Min="0" TValue="int" />
+                                                </Field>
                                             }
                                         </Radio>
                                         <Radio Value="@("StagedCalculation")">@L["StagedCalculation"]</Radio>

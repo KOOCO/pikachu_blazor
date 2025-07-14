@@ -29,7 +29,9 @@ namespace Kooco.Pikachu.ShoppingCredits
             string usableProductsScope,
             List<Guid> specificProductIds,
             List<Guid> specificGroupbuyIds,
-            int maximumDeduction)
+            int maximumDeduction,
+            int minimumSpendAmount
+            )
         {
             var shoppingCreditUsageSetting = new ShoppingCreditUsageSetting(
                 GuidGenerator.Create(),
@@ -40,7 +42,8 @@ namespace Kooco.Pikachu.ShoppingCredits
                 applicableItems,
                 usableGroupbuysScope,
                 usableProductsScope,
-                maximumDeduction
+                maximumDeduction,
+                minimumSpendAmount
             );
 
             if (specificProductIds != null)
@@ -67,7 +70,9 @@ namespace Kooco.Pikachu.ShoppingCredits
             string usableProductsScope,
             List<Guid> specificProductIds,
             List<Guid> specificGroupbuyIds,
-            int maximumDeduction)
+            int maximumDeduction,
+            int minimumSpendAmount
+            )
         {
             var shoppingCreditUsageSetting = await _shoppingCreditUsageSettingRepository.GetAsync(id);
             await _shoppingCreditUsageSettingRepository.EnsureCollectionLoadedAsync(shoppingCreditUsageSetting, x => x.SpecificGroupbuys);
@@ -82,6 +87,7 @@ namespace Kooco.Pikachu.ShoppingCredits
             shoppingCreditUsageSetting.UsableGroupbuysScope= usableGroupbuysScope;
             shoppingCreditUsageSetting.UsableProductsScope= usableProductsScope;
             shoppingCreditUsageSetting.MaximumDeduction = maximumDeduction;
+            shoppingCreditUsageSetting.MinimumSpendAmount = minimumSpendAmount;
 
             if (specificProductIds != null)
             {

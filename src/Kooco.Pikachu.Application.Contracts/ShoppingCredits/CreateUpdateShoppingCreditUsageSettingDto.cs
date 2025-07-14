@@ -20,6 +20,9 @@ namespace Kooco.Pikachu.ShoppingCredits
         [Range(0, int.MaxValue)]
         public int MaximumDeduction { get; set; }
 
+        [Range(0, int.MaxValue)]
+        public int MinimumSpendAmount { get; set; }
+
         public string StagedSettings { get; set; }
 
         [StringLength(255)]
