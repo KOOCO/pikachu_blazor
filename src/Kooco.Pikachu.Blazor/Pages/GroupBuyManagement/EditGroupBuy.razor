@@ -547,7 +547,7 @@
             <div class="col-8">
                 @if (EditGroupBuyDto.ExcludeShippingMethod != null && EditGroupBuyDto.ExcludeShippingMethod.Contains("BlackCat1"))
                 {
-                    <label class="form-label">@L["BlackCat"] / @L[PikachuResource.TCatDelivery]<span class="text-danger"> </span></label>
+                    <label class="form-label">@L["EcpayBlackCat"] / @L[PikachuResource.TCatDelivery]<span class="text-danger"> </span></label>
                 }
                 else if (EditGroupBuyDto.ExcludeShippingMethod != null && EditGroupBuyDto.ExcludeShippingMethod.Contains("BlackCatFreeze"))
                 {
@@ -559,7 +559,7 @@
                 }
                 else
                 {
-                    <label class="form-label">@L["BlackCat"] / @L[PikachuResource.TCatDelivery]<span class="text-danger"> </span></label>
+                    <label class="form-label">@L["EcpayBlackCat"] / @L[PikachuResource.TCatDelivery]<span class="text-danger"> </span></label>
                 }
             </div>
             <div class="col-2"></div>
@@ -585,6 +585,7 @@
                                 <input type="checkbox"
                                 class="form-check-input"
                                 id="@island"
+                                 disabled="@((EditGroupBuyDto.BlackCatDeliveryTime.Contains("UnableToSpecifyDuringPeakPeriods")&& island!="UnableToSpecifyDuringPeakPeriods"))"
                                 checked="@(EditGroupBuyDto.BlackCatDeliveryTime is not null && EditGroupBuyDto.BlackCatDeliveryTime.Contains(island))"
                                 @onchange="(value) => BlackCatDeliveryTimeCheckedChange(island, value)" />
                                 @L[island]
@@ -669,7 +670,7 @@
                         @if ((EditGroupBuyDto.ExcludeShippingMethod is not null) &&
                       (EditGroupBuyDto.ExcludeShippingMethod.Contains("SelfPickup")))
                         {
-                            if (EditGroupBuyDto.SelfPickupDeliveryTime.IsNullOrWhiteSpace() || EditGroupBuyDto.SelfPickupDeliveryTime == "[]") EditGroupBuyDto.SelfPickupDeliveryTime = "[\"UnableToSpecifyDuringPeakPeriods\"]";
+                            if (EditGroupBuyDto.SelfPickupDeliveryTime.IsNullOrWhiteSpace() || EditGroupBuyDto.SelfPickupDeliveryTime == "[]") EditGroupBuyDto.SelfPickupDeliveryTime = "[\"Inapplicable\"]";
                             <label for="@(island)_SelfPickUp" class="form-label me-2">
                                 <input type="checkbox"
                                 class="form-check-input"

@@ -540,7 +540,7 @@
                 @if (CreateGroupBuyDto.ExcludeShippingMethod != null && CreateGroupBuyDto.ExcludeShippingMethod.Contains("BlackCat1"))
                 {
 
-                    <label class="form-label">@L["BlackCat"] / @L[PikachuResource.TCatDelivery]<span class="text-danger"> </span></label>
+                    <label class="form-label">@L["EcpayBlackCat"] / @L[PikachuResource.TCatDelivery]<span class="text-danger"> </span></label>
                 }
                 else if (CreateGroupBuyDto.ExcludeShippingMethod != null && CreateGroupBuyDto.ExcludeShippingMethod.Contains("BlackCatFreeze"))
                 {
@@ -554,7 +554,7 @@
                 }
                 else
                 {
-                    <label class="form-label">@L["BlackCat"]<span class="text-danger"> </span></label>
+                    <label class="form-label">@L["EcpayBlackCat"]<span class="text-danger"> </span></label>
                 }
             </div>
             <div class="col-2"></div>
@@ -584,6 +584,7 @@
                                 class="form-check-input"
                                 id="@island"
                                 checked="@(CreateGroupBuyDto.BlackCatDeliveryTime != null && CreateGroupBuyDto.BlackCatDeliveryTime.Contains(island))"
+                                disabled="@((CreateGroupBuyDto.BlackCatDeliveryTime.Contains("UnableToSpecifyDuringPeakPeriods")&& island!="UnableToSpecifyDuringPeakPeriods"))"
                                 @onchange="(value) => BlackCatDeliveryTimeCheckedChange(island, value)" />
                                 @L[island]
                             </label>
@@ -597,6 +598,7 @@
                                 type="checkbox"
                                 class="form-check-input"
                                 id="@island"
+                               
                                 checked="@(CreateGroupBuyDto.BlackCatDeliveryTime != null && CreateGroupBuyDto.BlackCatDeliveryTime.Contains(island))"
                                 @onchange="(value) => BlackCatDeliveryTimeCheckedChange(island, value)" />
                                 @L[island]
@@ -669,7 +671,7 @@
                         @if ((CreateGroupBuyDto.ExcludeShippingMethod is not null) &&
                      (CreateGroupBuyDto.ExcludeShippingMethod.Contains("SelfPickup")))
                         {
-                            if (CreateGroupBuyDto.SelfPickupDeliveryTime.IsNullOrWhiteSpace() || CreateGroupBuyDto.SelfPickupDeliveryTime == "[]") CreateGroupBuyDto.SelfPickupDeliveryTime = "[\"UnableToSpecifyDuringPeakPeriods\"]";
+                            if (CreateGroupBuyDto.SelfPickupDeliveryTime.IsNullOrWhiteSpace() || CreateGroupBuyDto.SelfPickupDeliveryTime == "[]") CreateGroupBuyDto.SelfPickupDeliveryTime = "[\"Inapplicable\"]";
                             <label for="@(island)_SelfPickUp" class="form-label me-2">
                                 <input type="checkbox"
                                 class="form-check-input"

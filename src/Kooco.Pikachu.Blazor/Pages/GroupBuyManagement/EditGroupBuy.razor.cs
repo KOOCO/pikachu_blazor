@@ -2375,10 +2375,23 @@ public partial class EditGroupBuy
     void BlackCatDeliveryTimeCheckedChange(string method, ChangeEventArgs e)
     {
         var value = (bool)(e?.Value ?? false);
+
         if (value)
         {
-            if (!BlackCateDeliveryTimeList.Contains(method))
-                BlackCateDeliveryTimeList.Add(method);
+            if (method == "UnableToSpecifyDuringPeakPeriods")
+            {
+                // Clear all others and only add this one
+                BlackCateDeliveryTimeList.Clear();
+                BlackCateDeliveryTimeList.Add("UnableToSpecifyDuringPeakPeriods");
+            }
+            else
+            {
+                // Remove "UnableToSpecifyDuringPeakPeriods" if it's there
+                BlackCateDeliveryTimeList.Remove("UnableToSpecifyDuringPeakPeriods");
+
+                if (!BlackCateDeliveryTimeList.Contains(method))
+                    BlackCateDeliveryTimeList.Add(method);
+            }
         }
         else
         {
@@ -2386,7 +2399,10 @@ public partial class EditGroupBuy
         }
 
         EditGroupBuyDto.BlackCatDeliveryTime = JsonConvert.SerializeObject(BlackCateDeliveryTimeList.Distinct());
+
+        StateHasChanged(); // to force UI update
     }
+
     void HomeDeliveryTimeCheckedChange(string method, ChangeEventArgs e, bool clearAll = false)
     {
         if (method is PikachuResource.UnableToSpecifyDuringPeakPeriods && !clearAll)
