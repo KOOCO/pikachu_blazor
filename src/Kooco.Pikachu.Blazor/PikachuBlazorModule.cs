@@ -524,12 +524,6 @@ public class PikachuBlazorModule : AbpModule
             job => job.ExecuteAsync(new CloseOrderBackgroundJobArgs()),
             Cron.Daily(1)
         );
-
-        RecurringJob.AddOrUpdate<LogisticStatusRecordJob>(
-            "LogisticStatusRecord",
-            job => job.ExecuteAsync(),
-            "30 10,21 * * *"
-        );
     }
 
     // This method is required for the Image Upload in blazor

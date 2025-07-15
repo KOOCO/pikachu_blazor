@@ -21,6 +21,6 @@ namespace Kooco.Pikachu.LogisticStatusRecords
         /// </summary>
         Task<List<LogisticStatusRecordDto>> CreateManyAsync(CreateLogisticStatusRecordListDto input);
 
-        Task Read();
+        Task UpdateDeliveryStatusAsync(List<LogisticStatusRecordDto> input);
     }
 }

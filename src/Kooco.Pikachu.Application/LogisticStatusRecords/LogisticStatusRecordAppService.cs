@@ -10,11 +10,14 @@ namespace Kooco.Pikachu.LogisticStatusRecords
     public class LogisticStatusRecordAppService : PikachuAppService, ILogisticStatusRecordAppService
     {
         private readonly IRepository<LogisticStatusRecord, int> _logisticStatusRecordRepository;
-        private readonly TCatSFTPService _tcatSftpService;
+        private readonly TCatDeliveryStatusService _tcatDeliveryStatusService;
 
-        public LogisticStatusRecordAppService(IRepository<LogisticStatusRecord, int> logisticStatusRecordRepository, TCatSFTPService tcatSftpService)
+        public LogisticStatusRecordAppService(
+            IRepository<LogisticStatusRecord, int> logisticStatusRecordRepository,
+            TCatDeliveryStatusService tcatDeliveryStatusService
+            )
         {
-            _tcatSftpService = tcatSftpService;
+            _tcatDeliveryStatusService = tcatDeliveryStatusService;
             _logisticStatusRecordRepository = logisticStatusRecordRepository;
         }
 
@@ -91,9 +94,9 @@ namespace Kooco.Pikachu.LogisticStatusRecords
             return records.Select(r => ObjectMapper.Map<LogisticStatusRecord, LogisticStatusRecordDto>(r)).ToList();
         }
 
-        public async Task Read()
+        public async Task UpdateDeliveryStatusAsync(List<LogisticStatusRecordDto> input)
         {
-            await _tcatSftpService.ExecuteAsync();
+            await _tcatDeliveryStatusService.ExecuteAsync(input);
         }
     }
 }
