@@ -245,6 +245,9 @@ public class GroupBuy : FullAuditedAggregateRoot<Guid>, IMultiTenant
     public string? AlertColor { get; set; }
     public string? BlockColor { get; set; }
     public bool AddOnProduct { get; set; }
+    public string? SelfPickupZipCode { get; set; }
+    public string? SelfPickupCity { get; set; }
+    public string? SelfPickupAddress { get; set; }
     public ProductDetailsDisplayMethod? ProductDetailsDisplayMethod { get; set; }
     public ICollection<GroupBuyItemGroup> ItemGroups { get; set; }
 
@@ -313,7 +316,10 @@ public class GroupBuy : FullAuditedAggregateRoot<Guid>, IMultiTenant
         string? alertColor,
         string? blockColor,
         ProductDetailsDisplayMethod? productDetailsDisplayMethod,
-        string? notificationBar
+        string? notificationBar,
+            string? selfPickupZipCode,
+    string? selfPickupCity,
+     string? selfPickupAddress 
         )
     {
         Id = id;
@@ -378,6 +384,10 @@ public class GroupBuy : FullAuditedAggregateRoot<Guid>, IMultiTenant
         BlockColor = blockColor;
         ProductDetailsDisplayMethod = productDetailsDisplayMethod;
         NotificationBar = notificationBar;
+        SelfPickupAddress = selfPickupAddress;
+        SelfPickupCity = selfPickupCity;
+        SelfPickupZipCode = selfPickupZipCode;
+            
     }
 
     public GroupBuyItemGroup AddItemGroup(

@@ -1672,6 +1672,11 @@
     "ConfirmManualBankTransferMessage": "Are you sure you want to confirm this payment?",
     "PaymentConfirmedTitle": "Payment Confirmed",
     "PaymentConfirmed": "Payment was confirmed by {0}.",
-    "MaximumDeduction": "Maximum Deduction"
+    "MaximumDeduction": "Maximum Deduction",
+    "ZipCode": "Zip Code",
+    "InputZipCode": "Input Zip Code",
+    "InputCityName": "Input City Name",
+    "InputAddress": "Input Address",
+    "SelfPickUpInfo": "Self-Pickup Info"
   }
 }

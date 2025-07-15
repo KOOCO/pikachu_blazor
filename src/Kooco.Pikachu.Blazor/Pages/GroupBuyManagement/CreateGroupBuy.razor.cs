@@ -170,6 +170,8 @@ public partial class CreateGroupBuy
     private Cropper PatnerShipCropper; // Reference to the Blazorise Cropper
     private Modal PatnerShipCropperModal;       // Modal to show cropper
     public MultiImageModuleItem PatnershipModule = new MultiImageModuleItem();
+    private bool ShowSelfPickupInfo =>
+   CreateGroupBuyDto.ShippingMethodList.Contains(nameof(DeliveryMethod.SelfPickup));
     #endregion
 
     #region Constructor
@@ -245,6 +247,7 @@ public partial class CreateGroupBuy
         LogisticsProviders = await _LogisticsProvidersAppService.GetAllAsync();
         TenantTripartiteDto = await _electronicInvoiceSettingAppService.FindAsync();
         PaymentGateways = await _paymentGatewayAppService.GetAllAsync();
+
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -2011,6 +2014,7 @@ public partial class CreateGroupBuy
 
         // Serialize the updated list and assign it to ExcludeShippingMethod
         CreateGroupBuyDto.ExcludeShippingMethod = JsonConvert.SerializeObject(CreateGroupBuyDto.ShippingMethodList);
+      
     }
     private static void OnProductGroupValueChange(ChangeEventArgs e, CollapseItem collapseItem)
     {
@@ -2586,6 +2590,29 @@ public partial class CreateGroupBuy
                 await _uiMessageService.Warn(L[PikachuDomainErrorCodes.AtLeastOnePaymentMethodIsRequired]);
                 await Loading.Hide();
                 return;
+            }
+            if (CreateGroupBuyDto.ExcludeShippingMethod.Contains("SelfPickup"))
+            {
+                if (CreateGroupBuyDto.SelfPickupZipCode.IsNullOrWhiteSpace())
+                {
+                    await _uiMessageService.Warn("Zip Code is required for Self Pickup.");
+                    await Loading.Hide();
+                    return;
+                }
+
+                if (CreateGroupBuyDto.SelfPickupCity.IsNullOrWhiteSpace())
+                {
+                    await _uiMessageService.Warn("City is required for Self Pickup.");
+                    await Loading.Hide();
+                    return;
+                }
+
+                if (CreateGroupBuyDto.SelfPickupAddress.IsNullOrWhiteSpace())
+                {
+                    await _uiMessageService.Warn("Address is required for Self Pickup.");
+                    await Loading.Hide();
+                    return;
+                }
             }
 
             if (ItemTags.Any())

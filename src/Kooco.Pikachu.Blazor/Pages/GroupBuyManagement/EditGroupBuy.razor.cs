@@ -157,7 +157,8 @@ public partial class EditGroupBuy
     FilePicker CarouselPicker = new FilePicker();
     ImageType ImageType;
     int CarouselModuleNumber;
-
+    private bool ShowSelfPickupInfo =>
+   EditGroupBuyDto.ShippingMethodList.Contains(nameof(DeliveryMethod.SelfPickup));
     #endregion
 
     private List<string> OrderedDeliveryMethods =
@@ -2873,7 +2874,29 @@ public partial class EditGroupBuy
             //{
             //    EditGroupBuyDto.PaymentMethod = string.Join(",", PaymentMethodTags);
             //}
+            if (EditGroupBuyDto.ExcludeShippingMethod.Contains("SelfPickup"))
+            {
+                if (EditGroupBuyDto.SelfPickupZipCode.IsNullOrWhiteSpace())
+                {
+                    await _uiMessageService.Warn("Zip Code is required for Self Pickup.");
+                    await Loading.Hide();
+                    return;
+                }
 
+                if (EditGroupBuyDto.SelfPickupCity.IsNullOrWhiteSpace())
+                {
+                    await _uiMessageService.Warn("City is required for Self Pickup.");
+                    await Loading.Hide();
+                    return;
+                }
+
+                if (EditGroupBuyDto.SelfPickupAddress.IsNullOrWhiteSpace())
+                {
+                    await _uiMessageService.Warn("Address is required for Self Pickup.");
+                    await Loading.Hide();
+                    return;
+                }
+            }
             List<string> paymentMethods = new List<string>();
 
             if (CreditCard) paymentMethods.Add("Credit Card");

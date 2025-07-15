@@ -88,7 +88,10 @@ public class GroupBuyManager : DomainService
         string? alertColor,
         string? blockColor,
         ProductDetailsDisplayMethod? productDetailsDisplayMethod,
-        string? notificationBar
+        string? notificationBar,
+        string? selfPickupZipCode,
+        string? selfPickupCity,
+        string? selfPickupAddress
     )
     {
         GroupBuy? sameName = await _groupBuyRepository.FirstOrDefaultAsync(x => x.GroupBuyName == groupBuyName);
@@ -101,7 +104,7 @@ public class GroupBuyManager : DomainService
             warningMessage, orderContactInfo, exchangePolicy, notifyMessage, excludeShippingMethod, isDefaultPaymentGateway, paymentMethod, groupbuyCondition, 
             customerInformation,customerInformationDescription,groupBuyConditionDescription,exchangePolicyDescription,shortCode, isEnterprise,freeShippingThreshold,selfPickupDeliveryTime,
             blackCatDeliveryTime,homeDeliveryDeliveryTime,deliveredByStoreDeliveryTime,taxType, productType, colorScheme, primaryColor, secondaryColor, backgroundColor, secondaryBackgroundColor, alertColor, blockColor,
-            productDetailsDisplayMethod, notificationBar);
+            productDetailsDisplayMethod, notificationBar,selfPickupZipCode,selfPickupCity,selfPickupAddress);
     }
 
 

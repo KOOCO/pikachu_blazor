@@ -762,6 +762,43 @@
                 </select>
             </Div>
         </Div>
+
+       @if (ShowSelfPickupInfo)
+{
+    <div class="row mt-3">
+        <div class="col-2">
+            
+        </div>
+        <div class="col-2">
+            <div class="col-md-12"><label class="form-label fw-bold text-danger">@L["SelfPickUpInfo"]</label></div>
+            </div>
+        <div class="col-8">
+            <div class="row">
+            
+                <div class="col-md-6">
+                    <label class="form-label">@L["ZipCode"] <span class="text-danger">*</span></label>
+                    <TextEdit @bind-Text="CreateGroupBuyDto.SelfPickupZipCode"
+                              Placeholder="@L["InputZipCode"]"
+                              Style="background-color: #f7f8fa;" />
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">@L["City"] <span class="text-danger">*</span></label>
+                    <TextEdit @bind-Text="CreateGroupBuyDto.SelfPickupCity"
+                              Placeholder="@L["InputCityName"]"
+                              Style="background-color: #f7f8fa;" />
+                </div>
+                <div class="col-md-12">
+                    <label class="form-label">@L["Address"] <span class="text-danger">*</span></label>
+                    <TextEdit @bind-Text="CreateGroupBuyDto.SelfPickupAddress"
+                              Placeholder="@L["InputAddress"]"
+                              Style="background-color: #f7f8fa;" />
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+
         <Divider></Divider>
         <div class="row">
             <div class="col-2">@L["Gateway"]</div>

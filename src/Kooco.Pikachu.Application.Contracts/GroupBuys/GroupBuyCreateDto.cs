@@ -226,6 +226,9 @@ namespace Kooco.Pikachu.GroupBuys
         public string? BlockColor { get; set; }
         public bool AddOnProduct { get; set; }
         public ProductDetailsDisplayMethod? ProductDetailsDisplayMethod { get; set; }
+        public string? SelfPickupZipCode { get; set; }
+        public string? SelfPickupCity { get; set; }
+        public string? SelfPickupAddress { get; set; }
 
         public GroupBuyCreateDto()
         {
