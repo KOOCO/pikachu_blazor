@@ -2,6 +2,7 @@
 using Blazorise.LoadingIndicator;
 using Blazorise;
 using Kooco.Pikachu.Orders;
+using Kooco.Pikachu.Orders.Interfaces;
 using Microsoft.AspNetCore.Components;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -125,17 +126,17 @@ namespace Kooco.Pikachu.Blazor.Pages.ReturnAndExchangeOrders
                     var confirmed = await _uiMessageService.Confirm(L["Wouldyouliketoproceedwiththerefund"]);
                     if (confirmed)
                     {
-                        await _orderAppService.ChangeReturnStatusAsync(rowData.Id, selectedValue, true);
+                        await ((IOrderLogisticsService)_orderAppService).ChangeReturnStatusAsync(rowData.Id, selectedValue, true);
                     }
                     else
                     {
-                        await _orderAppService.ChangeReturnStatusAsync(rowData.Id, selectedValue, false);
+                        await ((IOrderLogisticsService)_orderAppService).ChangeReturnStatusAsync(rowData.Id, selectedValue, false);
                     }
                 }
                 else
                 {
                    
-                        await _orderAppService.ChangeReturnStatusAsync(rowData.Id, selectedValue, false);
+                        await ((IOrderLogisticsService)_orderAppService).ChangeReturnStatusAsync(rowData.Id, selectedValue, false);
                    
                 }
                 await UpdateItemList();

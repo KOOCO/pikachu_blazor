@@ -13,6 +13,7 @@ using Kooco.Pikachu.GroupBuyProductRankings;
 using Kooco.Pikachu.GroupBuyProductRankings.Interface;
 using Kooco.Pikachu.Groupbuys;
 using Kooco.Pikachu.Groupbuys.Interface;
+using Kooco.Pikachu.GroupBuys.Interfaces;
 using Kooco.Pikachu.GroupPurchaseOverviews;
 using Kooco.Pikachu.GroupPurchaseOverviews.Interface;
 using Kooco.Pikachu.Images;
@@ -73,6 +74,11 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
     private readonly IGroupBuyItemsPriceAppService _groupBuyItemsPriceAppService;
     private readonly IGroupBuyItemsPriceRepository _groupBuyItemsPriceRepository;
     private readonly IRepository<GroupBuyItemGroupImageModule, Guid> _groupBuyItemGroupImageModuleRepository;
+    
+    // Extracted services following Single Responsibility Principle
+    private readonly IGroupBuyPricingService _groupBuyPricingService;
+    private readonly IGroupBuyReportingService _groupBuyReportingService;
+    private readonly IGroupBuyImageService _groupBuyImageService;
     #endregion
 
     #region Constructor
@@ -98,7 +104,10 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
         GroupBuyItemsPriceManager groupBuyItemsPriceManager,
         IGroupBuyItemsPriceAppService groupBuyItemsPriceAppService,
         IGroupBuyItemsPriceRepository groupBuyItemsPriceRepository,
-        IRepository<GroupBuyItemGroupImageModule, Guid> groupBuyItemGroupImageModuleRepository
+        IRepository<GroupBuyItemGroupImageModule, Guid> groupBuyItemGroupImageModuleRepository,
+        IGroupBuyPricingService groupBuyPricingService,
+        IGroupBuyReportingService groupBuyReportingService,
+        IGroupBuyImageService groupBuyImageService
     )
     {
         _groupBuyManager = groupBuyManager;
@@ -123,6 +132,9 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
         _groupBuyItemsPriceRepository = groupBuyItemsPriceRepository;
         _groupBuyItemsPriceAppService = groupBuyItemsPriceAppService;
         _groupBuyItemGroupImageModuleRepository = groupBuyItemGroupImageModuleRepository;
+        _groupBuyPricingService = groupBuyPricingService;
+        _groupBuyReportingService = groupBuyReportingService;
+        _groupBuyImageService = groupBuyImageService;
     }
     #endregion
 
@@ -1415,5 +1427,96 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
             .Select(x => x.Id)
             .FirstOrDefault();
     }
+
+    #region Extracted Service Delegation Methods
+
+    // IGroupBuyPricingService delegation - new methods not in original GroupBuyAppService
+    public async Task<List<DeliveryTemperatureCostDto>> GetDeliveryTemperatureCostsAsync(Guid groupBuyId)
+        => await _groupBuyPricingService.GetDeliveryTemperatureCostsAsync(groupBuyId);
+
+    public async Task UpdateGroupBuyPricingAsync(Guid groupBuyId, GroupBuyPricingDto pricingDto)
+        => await _groupBuyPricingService.UpdateGroupBuyPricingAsync(groupBuyId, pricingDto);
+
+    public async Task<decimal> CalculateItemGroupPriceAsync(Guid groupBuyId, Guid itemGroupId, int quantity)
+        => await _groupBuyPricingService.CalculateItemGroupPriceAsync(groupBuyId, itemGroupId, quantity);
+
+    public async Task<GroupBuyPricingDto> GetGroupBuyPricingAsync(Guid groupBuyId)
+        => await _groupBuyPricingService.GetGroupBuyPricingAsync(groupBuyId);
+
+    public async Task<bool> ValidatePricingConfigurationAsync(Guid groupBuyId)
+        => await _groupBuyPricingService.ValidatePricingConfigurationAsync(groupBuyId);
+
+    public async Task UpdateBulkPricingRulesAsync(Guid groupBuyId, List<BulkPricingRuleDto> pricingRules)
+        => await _groupBuyPricingService.UpdateBulkPricingRulesAsync(groupBuyId, pricingRules);
+
+    // IGroupBuyReportingService delegation - new methods not in original GroupBuyAppService
+    public async Task<IRemoteStreamContent> ExportGroupBuyOverviewExcelAsync(Guid groupBuyId)
+        => await _groupBuyReportingService.ExportGroupBuyOverviewExcelAsync(groupBuyId);
+
+    public async Task<IRemoteStreamContent> ExportGroupBuyProductRankingExcelAsync(Guid groupBuyId)
+        => await _groupBuyReportingService.ExportGroupBuyProductRankingExcelAsync(groupBuyId);
+
+    public async Task<IRemoteStreamContent> ExportGroupBuyOrderExcelAsync(Guid groupBuyId)
+        => await _groupBuyReportingService.ExportGroupBuyOrderExcelAsync(groupBuyId);
+
+    public async Task<IRemoteStreamContent> ExportGroupBuyDeliveryExcelAsync(Guid groupBuyId)
+        => await _groupBuyReportingService.ExportGroupBuyDeliveryExcelAsync(groupBuyId);
+
+    public async Task<GroupBuyReportDto> GenerateGroupBuySalesReportAsync(Guid groupBuyId)
+        => await _groupBuyReportingService.GenerateGroupBuySalesReportAsync(groupBuyId);
+
+    public async Task<GroupBuyInventoryReportDto> GenerateGroupBuyInventoryReportAsync(Guid groupBuyId)
+        => await _groupBuyReportingService.GenerateGroupBuyInventoryReportAsync(groupBuyId);
+
+    public async Task<GroupBuyRevenueReportDto> GenerateGroupBuyRevenueReportAsync(Guid groupBuyId)
+        => await _groupBuyReportingService.GenerateGroupBuyRevenueReportAsync(groupBuyId);
+
+    public async Task<IRemoteStreamContent> ExportGroupBuyMemberExcelAsync(Guid groupBuyId)
+        => await _groupBuyReportingService.ExportGroupBuyMemberExcelAsync(groupBuyId);
+
+    public async Task<IRemoteStreamContent> ExportGroupBuyPaymentExcelAsync(Guid groupBuyId)
+        => await _groupBuyReportingService.ExportGroupBuyPaymentExcelAsync(groupBuyId);
+
+    public async Task<IRemoteStreamContent> ExportGroupBuyRefundExcelAsync(Guid groupBuyId)
+        => await _groupBuyReportingService.ExportGroupBuyRefundExcelAsync(groupBuyId);
+
+    // IGroupBuyImageService delegation - new methods not in original GroupBuyAppService
+    public async Task<List<ImageWithLinkDto>> UploadGroupBuyImagesAsync(Guid groupBuyId, List<IRemoteStreamContent> images)
+        => await _groupBuyImageService.UploadGroupBuyImagesAsync(groupBuyId, images);
+
+    public async Task UpdateGroupBuyImageConfigurationAsync(Guid groupBuyId)
+        => await _groupBuyImageService.UpdateGroupBuyImageConfigurationAsync(groupBuyId);
+
+    public async Task DeleteGroupBuyImagesAsync(Guid groupBuyId, List<Guid> imageIds)
+        => await _groupBuyImageService.DeleteGroupBuyImagesAsync(groupBuyId, imageIds);
+
+    public async Task<List<ImageWithLinkDto>> GetGroupBuyImageGalleryAsync(Guid groupBuyId)
+        => await _groupBuyImageService.GetGroupBuyImageGalleryAsync(groupBuyId);
+
+    public async Task<List<ImageWithLinkDto>> UploadGroupBuyItemGroupImagesAsync(Guid groupBuyId, Guid itemGroupId, List<IRemoteStreamContent> images)
+        => await _groupBuyImageService.UploadGroupBuyItemGroupImagesAsync(groupBuyId, itemGroupId, images);
+
+    public async Task UpdateGroupBuyItemGroupImageConfigurationAsync(Guid groupBuyId, Guid itemGroupId)
+        => await _groupBuyImageService.UpdateGroupBuyItemGroupImageConfigurationAsync(groupBuyId, itemGroupId);
+
+    public async Task DeleteGroupBuyItemGroupImagesAsync(Guid groupBuyId, Guid itemGroupId, List<Guid> imageIds)
+        => await _groupBuyImageService.DeleteGroupBuyItemGroupImagesAsync(groupBuyId, itemGroupId, imageIds);
+
+    public async Task<List<ImageWithLinkDto>> GetGroupBuyItemGroupImageGalleryAsync(Guid groupBuyId, Guid itemGroupId)
+        => await _groupBuyImageService.GetGroupBuyItemGroupImageGalleryAsync(groupBuyId, itemGroupId);
+
+    public async Task SetGroupBuyPrimaryImageAsync(Guid groupBuyId, Guid imageId)
+        => await _groupBuyImageService.SetGroupBuyPrimaryImageAsync(groupBuyId, imageId);
+
+    #endregion
+
+    #region IGroupBuyReportingService delegation methods
+
+    // Delegation method to match interface signature (3-parameter version)
+    public async Task<IRemoteStreamContent> GetListAsExcelFileAsync(Guid id, DateTime? startDate = null, DateTime? endDate = null)
+        => await _groupBuyReportingService.GetListAsExcelFileAsync(id, startDate, endDate);
+
+    #endregion
+
     #endregion
 }

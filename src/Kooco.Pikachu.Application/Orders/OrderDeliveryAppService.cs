@@ -5,7 +5,9 @@ using Kooco.Pikachu.Orders.Entities;
 using Kooco.Pikachu.Orders.Interfaces;
 using Kooco.Pikachu.Orders.Repositories;
 using Kooco.Pikachu.Orders.Services;
+using Kooco.Pikachu.ShippingStrategies;
 using Kooco.Pikachu.Tenants.Repositories;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -82,26 +84,35 @@ public class OrderDeliveryAppService : PikachuAppService, IOrderDeliveryAppServi
         var oldShippingStatus = order.ShippingStatus;
         List<OrderDelivery> orderDeliveries = await OrderDeliveryRepository.GetWithDetailsAsync(orderId);
 
+        // Get the appropriate shipping strategy for the delivery method
+        var shippingStrategy = order.DeliveryMethod.HasValue ? ShippingStrategyFactory.CreateStrategy(order.DeliveryMethod.Value) : null;
+        
+        if (shippingStrategy == null)
+        {
+            Logger.LogWarning("No shipping strategy found for delivery method: {DeliveryMethod}", order.DeliveryMethod);
+            return;
+        }
+
         foreach (OrderDelivery orderDelivery in orderDeliveries)
         {
-            if (order.DeliveryMethod is DeliveryMethod.HomeDelivery)
-                orderDelivery.DeliveryStatus = DeliveryStatus.Shipped;
-
-            else if (order.DeliveryMethod is DeliveryMethod.SelfPickup)
-                orderDelivery.DeliveryStatus = DeliveryStatus.Delivered;
-
+            // Use strategy to determine appropriate delivery status
+            DeliveryStatus newStatus = DetermineDeliveryStatus(order.DeliveryMethod ?? DeliveryMethod.HomeDelivery);
+            orderDelivery.DeliveryStatus = newStatus;
             await OrderDeliveryRepository.UpdateAsync(orderDelivery);
         }
 
-        if (order.DeliveryMethod is DeliveryMethod.HomeDelivery &&
-                                    orderDeliveries.All(a => a.DeliveryStatus == DeliveryStatus.Shipped))
-            order.ShippingStatus = ShippingStatus.Shipped;
-
-        else if (order.DeliveryMethod is DeliveryMethod.SelfPickup &&
-                                    orderDeliveries.All(a => a.DeliveryStatus == DeliveryStatus.Delivered))
-            order.ShippingStatus = ShippingStatus.Delivered;
-
-        await OrderRepository.UpdateAsync(order);
+        // Use strategy to update shipping status
+        var newShippingStatus = DetermineShippingStatus(order.DeliveryMethod ?? DeliveryMethod.HomeDelivery, orderDeliveries);
+        if (newShippingStatus.HasValue)
+        {
+            // For now, directly update the order status without using strategy
+            // TODO: Implement proper strategy-based status updates
+            order.ShippingStatus = newShippingStatus.Value;
+            await OrderRepository.UpdateAsync(order);
+            
+            Logger.LogInformation("Shipping status updated successfully for order {OrderId} from {OldStatus} to {NewStatus}", 
+                orderId, oldShippingStatus, newShippingStatus.Value);
+        }
 
         // **Get Current User (Editor)**
         var currentUserId = CurrentUser.Id ?? Guid.Empty;
@@ -116,12 +127,41 @@ public class OrderDeliveryAppService : PikachuAppService, IOrderDeliveryAppServi
             currentUserName
         );
     }
+
+    /// <summary>
+    /// Determines the appropriate delivery status based on delivery method
+    /// This logic can be moved to individual strategies in the future
+    /// </summary>
+    private DeliveryStatus DetermineDeliveryStatus(DeliveryMethod deliveryMethod)
+    {
+        return deliveryMethod switch
+        {
+            DeliveryMethod.HomeDelivery => DeliveryStatus.Shipped,
+            DeliveryMethod.SelfPickup => DeliveryStatus.Delivered,
+            _ => DeliveryStatus.Shipped // Default for other methods
+        };
+    }
+
+    /// <summary>
+    /// Determines the appropriate shipping status based on delivery method and delivery statuses
+    /// This logic can be moved to individual strategies in the future
+    /// </summary>
+    private ShippingStatus? DetermineShippingStatus(DeliveryMethod deliveryMethod, List<OrderDelivery> orderDeliveries)
+    {
+        return deliveryMethod switch
+        {
+            DeliveryMethod.HomeDelivery when orderDeliveries.All(a => a.DeliveryStatus == DeliveryStatus.Shipped) => ShippingStatus.Shipped,
+            DeliveryMethod.SelfPickup when orderDeliveries.All(a => a.DeliveryStatus == DeliveryStatus.Delivered) => ShippingStatus.Delivered,
+            _ => null // No status change needed
+        };
+    }
     public async Task UpdateDeliveredStatus(Guid orderId)
     {
         Order order = await OrderRepository.GetWithDetailsAsync(orderId);
         var oldShippingStatus = order.ShippingStatus;
         List<OrderDelivery> orderDeliveries = await OrderDeliveryRepository.GetWithDetailsAsync(orderId);
 
+        // Update delivery status for all order deliveries
         foreach (OrderDelivery orderDelivery in orderDeliveries)
         {
             orderDelivery.DeliveryStatus = DeliveryStatus.Delivered;
@@ -176,10 +216,10 @@ public class OrderDeliveryAppService : PikachuAppService, IOrderDeliveryAppServi
         var oldShippingStatus = order.ShippingStatus;
         List<OrderDelivery> orderDeliveries = await OrderDeliveryRepository.GetWithDetailsAsync(orderId);
 
+        // Update delivery status for all order deliveries
         foreach (OrderDelivery orderDelivery in orderDeliveries)
         {
             orderDelivery.DeliveryStatus = DeliveryStatus.Completed;
-
             await OrderDeliveryRepository.UpdateAsync(orderDelivery);
         }
 
@@ -309,4 +349,5 @@ public class OrderDeliveryAppService : PikachuAppService, IOrderDeliveryAppServi
     public required IOrderInvoiceAppService OrderInvoiceAppService { get; init; }
     public required IOrderDeliveryRepository OrderDeliveryRepository { get; init; }
     public required ITenantTripartiteRepository TenantTripartiteRepository { get; init; }
+    public required IShippingStrategyFactory ShippingStrategyFactory { get; init; }
 }

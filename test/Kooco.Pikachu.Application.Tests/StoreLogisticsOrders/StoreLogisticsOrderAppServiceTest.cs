@@ -10,6 +10,7 @@ using Kooco.Pikachu.OrderItems;
 using Kooco.Pikachu.Orders.Interfaces;
 using Kooco.Pikachu.Orders.Repositories;
 using Kooco.Pikachu.Orders.Services;
+using Kooco.Pikachu.ShippingStrategies;
 using Kooco.Pikachu.StoreLogisticOrders;
 using Kooco.Pikachu.Tenants;
 using Kooco.Pikachu.Tenants.Repositories;
@@ -75,6 +76,8 @@ namespace Kooco.Pikachu.StoreLogisticsOrders
             _multiTenantFilter = GetRequiredService<IDataFilter<IMultiTenant>>();
             _orderManager = new Mock<OrderHistoryManager>();
 
+            var shippingStrategyFactoryMock = new Mock<IShippingStrategyFactory>();
+            
             _service = new StoreLogisticsOrderAppService(
                 _orderDeliveryRepositoryMock.Object,
                 _orderRepositoryMock.Object,
@@ -90,7 +93,8 @@ namespace Kooco.Pikachu.StoreLogisticsOrders
                 _emailSenderMock.Object,
                 _tenantSettingsAppServiceMock.Object,
                 _emailAppServiceMock.Object,
-                _orderManager.Object
+                _orderManager.Object,
+                shippingStrategyFactoryMock.Object
             );
         }
         private void SetProtectedProperty<T>(T obj, string propertyName, object value)

@@ -1753,86 +1753,7 @@ public class OrderAppService : PikachuAppService, IOrderAppService
 
     }
     public async Task UpdateOrderItemsAsync(Guid id, List<UpdateOrderItemDto> orderItems)
-    {
-        var order = await OrderRepository.GetWithDetailsAsync(id);
-
-
-        // **Get Current User (Editor)**
-        var currentUserId = CurrentUser.Id ?? Guid.Empty;
-        var currentUserName = CurrentUser.UserName ?? "System";
-        List<string> itemChanges = new();
-        foreach (var item in orderItems)
-        {
-
-            var orderItem = order.OrderItems.First(o => o.Id == item.Id);
-            string itemName = "";
-            if (orderItem.ItemType is ItemType.Item)
-            {
-                itemName = orderItem.Item?.ItemName;
-            }
-            else if (orderItem.ItemType is ItemType.SetItem)
-            {
-                itemName = orderItem.SetItem?.SetItemName;
-
-
-            }
-            if (orderItem.ItemType is ItemType.Freebie)
-            {
-                itemName = orderItem.Freebie?.ItemName;
-
-
-            }
-            // Capture changes for logging
-            if (orderItem.Quantity != item.Quantity)
-            {
-                await OrderHistoryManager.AddOrderHistoryAsync(
-                  order.Id,
-                  "ItemQuantityChanged", // Localization key
-                  new object[] { itemName, orderItem.Quantity, item.Quantity }, // Join localized changes as a single string
-                  currentUserId,
-                  currentUserName
-              );
-            }
-
-
-            if (orderItem.ItemPrice != item.ItemPrice)
-            {
-                await OrderHistoryManager.AddOrderHistoryAsync(
-                  order.Id,
-                  "ItemPriceChanged", // Localization key
-                  new object[] { itemName, orderItem.ItemPrice.ToString("C", new CultureInfo("en-US")), item.ItemPrice.ToString("C", new CultureInfo("en-US")) }, // Join localized changes as a single string
-                  currentUserId,
-                  currentUserName
-              );
-            }
-
-
-            if (orderItem.TotalAmount != item.TotalAmount)
-            {
-                await OrderHistoryManager.AddOrderHistoryAsync(
-                  order.Id,
-                  "ItemTotalAmountChanged", // Localization key
-                  new object[] { itemName, orderItem.TotalAmount.ToString("C", new CultureInfo("en-US")), item.TotalAmount.ToString("C", new CultureInfo("en-US")) }, // Join localized changes as a single string
-                  currentUserId,
-                  currentUserName
-              );
-            }
-
-
-
-            // Apply updates
-            orderItem.Quantity = item.Quantity;
-            orderItem.ItemPrice = item.ItemPrice;
-            orderItem.TotalAmount = item.TotalAmount;
-        }
-
-        order.TotalQuantity = order.OrderItems.Sum(o => o.Quantity);
-        order.TotalAmount = (order.OrderItems.Sum(o => o.TotalAmount) + (decimal)order.DeliveryCost);
-        await OrderRepository.UpdateAsync(order);
-
-
-
-    }
+        => await OrderInventoryService.UpdateOrderItemsAsync(id, orderItems);
     public async Task CancelOrderAsync(Guid id)
     {
         var order = await OrderRepository.GetWithDetailsAsync(id);
@@ -2862,4 +2783,84 @@ public class OrderAppService : PikachuAppService, IOrderAppService
     public required IMemberRepository MemberRepository { get; init; }
     public required ITenantTripartiteRepository TenantTripartiteRepository { get; init; }
     public required ICampaignRepository CampaignRepository { get; init; }
+
+    #region Delegation Methods for Extracted Services
+
+    // IOrderInventoryService delegation - new methods not in original OrderAppService
+    public async Task ReserveInventoryAsync(Guid orderId)
+        => await OrderInventoryService.ReserveInventoryAsync(orderId);
+
+    public async Task ReleaseInventoryAsync(Guid orderId)
+        => await OrderInventoryService.ReleaseInventoryAsync(orderId);
+
+    public async Task<bool> ValidateInventoryAvailabilityAsync(List<UpdateOrderItemDto> orderItems)
+        => await OrderInventoryService.ValidateInventoryAvailabilityAsync(orderItems);
+
+    public async Task RestoreInventoryAsync(Guid orderId)
+        => await OrderInventoryService.RestoreInventoryAsync(orderId);
+
+    public async Task AdjustInventoryForOrderModificationAsync(Guid orderId, List<UpdateOrderItemDto> newOrderItems)
+        => await OrderInventoryService.AdjustInventoryForOrderModificationAsync(orderId, newOrderItems);
+
+    // IOrderLogisticsService delegation - new methods not in original OrderAppService
+    public async Task CreateOrderDeliveriesAsync(Guid orderId)
+        => await OrderLogisticsService.CreateOrderDeliveriesAsync(orderId);
+
+    // IOrderNotificationService delegation - new methods not in original OrderAppService
+    public async Task SendOrderConfirmationEmailAsync(Guid orderId)
+        => await OrderNotificationService.SendOrderConfirmationEmailAsync(orderId);
+
+    public async Task SendPaymentConfirmationEmailAsync(Guid orderId)
+        => await OrderNotificationService.SendPaymentConfirmationEmailAsync(orderId);
+
+    public async Task SendShippingNotificationEmailAsync(Guid orderId)
+        => await OrderNotificationService.SendShippingNotificationEmailAsync(orderId);
+
+    public async Task SendOrderCompletionEmailAsync(Guid orderId)
+        => await OrderNotificationService.SendOrderCompletionEmailAsync(orderId);
+
+    public async Task SendOrderCancellationEmailAsync(Guid orderId)
+        => await OrderNotificationService.SendOrderCancellationEmailAsync(orderId);
+
+    public async Task SendRefundNotificationEmailAsync(Guid orderId)
+        => await OrderNotificationService.SendRefundNotificationEmailAsync(orderId);
+
+    public async Task SendEmailAsync(Guid orderId)
+        => await OrderNotificationService.SendEmailAsync(orderId);
+
+    // IOrderInvoiceService delegation - new methods not in original OrderAppService  
+    public async Task<OrderInvoiceDto> GenerateInvoiceAsync(Guid orderId)
+        => await OrderInvoiceService.GenerateInvoiceAsync(orderId);
+
+    public async Task UpdateInvoiceDetailsAsync(Guid orderId, string invoiceNumber, string invoiceDetails)
+        => await OrderInvoiceService.UpdateInvoiceDetailsAsync(orderId, invoiceNumber, invoiceDetails);
+
+    public async Task SendInvoiceAsync(Guid orderId)
+        => await OrderInvoiceService.SendInvoiceAsync(orderId);
+
+    public async Task<InvoiceStatusDto> GetInvoiceStatusAsync(Guid orderId)
+        => await OrderInvoiceService.GetInvoiceStatusAsync(orderId);
+
+    public async Task ProcessElectronicInvoiceAsync(Guid orderId)
+        => await OrderInvoiceService.ProcessElectronicInvoiceAsync(orderId);
+
+    // Note: OrderStatusService methods are already implemented in this class and should not be duplicated
+
+    // Note: OrderCommentService methods are already implemented in this class and should not be duplicated
+
+    #endregion
+
+    // IOrderPaymentService delegation methods
+    public async Task<string> ProceedToCheckoutAsync(Guid orderId, string clientBackUrl, PaymentMethods paymentMethodsValue, bool isInstallments = false)
+        => await OrderPaymentService.ProceedToCheckoutAsync(orderId, clientBackUrl, paymentMethodsValue, isInstallments);
+
+    // Extracted services following Single Responsibility Principle
+    public required IOrderPaymentService OrderPaymentService { get; init; }
+    public required IOrderInventoryService OrderInventoryService { get; init; }
+    public required IOrderNotificationService OrderNotificationService { get; init; }
+    public required IOrderLogisticsService OrderLogisticsService { get; init; }
+    public required IOrderInvoiceService OrderInvoiceService { get; init; }
+    public required IOrderStatusService OrderStatusService { get; init; }
+    public required IOrderCommentService OrderCommentService { get; init; }
+    public required IOrderReportingService OrderReportingService { get; init; }
 }

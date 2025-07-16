@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find:*)",
+      "Bash(dotnet build:*)",
+      "Bash(dotnet clean:*)",
+      "Bash(dotnet restore:*)",
+      "Bash(rg:*)",
+      "Bash(grep:*)",
+      "mcp__context7__resolve-library-id",
+      "Bash(sed:*)",
+      "Bash(timeout:*)",
+      "Bash(dotnet test:*)",
+      "Bash(dotnet run)",
+      "Bash(dotnet run:*)",
+      "Bash(curl:*)",
+      "Bash(lsof:*)"
+    ],
+    "deny": []
+  }
+}

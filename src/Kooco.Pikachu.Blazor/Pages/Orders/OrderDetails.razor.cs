@@ -5,6 +5,7 @@ using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.OrderDeliveries;
 using Kooco.Pikachu.OrderItems;
 using Kooco.Pikachu.Orders;
+using Kooco.Pikachu.Orders.Interfaces;
 using Kooco.Pikachu.PaymentGateways;
 using Kooco.Pikachu.Response;
 using Kooco.Pikachu.StoreLogisticOrders;
@@ -2039,7 +2040,7 @@ public partial class OrderDetails
     async void ExchangeOrder()
     {
 
-        await _orderAppService.ExchangeOrderAsync(Order.Id);
+        await ((IOrderLogisticsService)_orderAppService).ExchangeOrderAsync(Order.Id);
         NavigationManager.NavigateTo("Orders");
 
     }
@@ -3085,7 +3086,7 @@ public partial class OrderDetails
             }
             else if (selectedValue is ShippingStatus.Shipped)
             {
-                var result = await _orderAppService.OrderShipped(Order.Id);
+                var result = await ((IOrderStatusService)_orderAppService).OrderShipped(Order.Id);
                 if (!result.InvoiceMsg.IsNullOrWhiteSpace())
                 {
                     await _uiMessageService.Error(result.InvoiceMsg);
@@ -3097,7 +3098,7 @@ public partial class OrderDetails
             }
             else if (selectedValue is ShippingStatus.Completed)
             {
-                var result = await _orderAppService.OrderComplete(Order.Id);
+                var result = await ((IOrderStatusService)_orderAppService).OrderComplete(Order.Id);
                 if (!result.InvoiceMsg.IsNullOrWhiteSpace())
                 {
                     await _uiMessageService.Error(result.InvoiceMsg);
@@ -3108,7 +3109,7 @@ public partial class OrderDetails
             }
             else if (selectedValue is ShippingStatus.Closed)
             {
-                await _orderAppService.OrderClosed(Order.Id);
+                await ((IOrderStatusService)_orderAppService).OrderClosed(Order.Id);
                 await GetOrderDetailsAsync();
                 await base.OnInitializedAsync();
                 loading = false;

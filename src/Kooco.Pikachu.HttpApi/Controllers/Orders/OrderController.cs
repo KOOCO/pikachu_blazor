@@ -33,13 +33,12 @@ namespace Kooco.Pikachu.Controllers.Orders;
 [ControllerName("Orders")]
 [Area("app")]
 [Route("api/app/orders")]
-public class OrderController : AbpController, IOrderAppService
+public class OrderController : AbpController
 {
     #region Inject
     private readonly IOrderAppService _ordersAppService;
     private readonly IConfiguration _Configuration;
     private readonly IGroupBuyAppService _GroupBuyAppService;
-
     private readonly IStoreLogisticsOrderAppService _SLOAppservice;
     #endregion
 
@@ -54,7 +53,6 @@ public class OrderController : AbpController, IOrderAppService
         _ordersAppService = ordersAppService;
         _Configuration = Configuration;
         _GroupBuyAppService = GroupBuyAppService;
-
         _SLOAppservice = SLOAppservice;
     }
     #endregion
@@ -111,160 +109,27 @@ public class OrderController : AbpController, IOrderAppService
         return Ok();
     }
 
-    [HttpGet("ecpay-proceed-to-checkout")]
+    [HttpGet("proceed-to-checkout")]
     public async Task<IActionResult> ProceedToCheckout(Guid orderId, string clientBackUrl, PaymentMethods paymentMethodsValue, bool isInstallments = false)
     {
-        OrderDto order = await _ordersAppService.GetWithDetailsAsync(orderId);
-
-        GroupBuyDto groupBuy = await _GroupBuyAppService.GetAsync(order.GroupBuyId);
-
-        PaymentGatewayDto ecPay = await GetPaymentGatewayConfigurationsAsync(order.GroupBuyId);
-
-        order.PaymentMethod = paymentMethodsValue;
-
-        order.MerchantTradeNo = _ordersAppService.GenerateMerchantTradeNo(order.OrderNo);
-
-        bool isDefaultPayment = groupBuy.IsDefaultPaymentGateWay;
-
-        string? paymentMethods = groupBuy.PaymentMethod;
-
-        PaymentMethod paymentMethod = new();
-
-        if (!string.IsNullOrEmpty(paymentMethods))
+        // Delegate to OrderAppService for payment processing
+        // The Payment Strategy pattern is now implemented within the application layer
+        var result = await _ordersAppService.ProceedToCheckoutAsync(orderId, clientBackUrl, paymentMethodsValue, isInstallments);
+        
+        // Convert string result to appropriate HTTP response
+        if (string.IsNullOrEmpty(result))
         {
-            if (order.PaymentMethod is PaymentMethods.BankTransfer)
-            {
-                paymentMethod = PaymentMethod.ATM;
-
-                isDefaultPayment = false;
-            }
-            else if (order.PaymentMethod is PaymentMethods.CreditCard)
-            {
-                paymentMethod = PaymentMethod.Credit;
-
-                isDefaultPayment = false;
-            }
+            return BadRequest("Failed to process payment checkout");
         }
-
-        else isDefaultPayment = true;
-
-        string ecpayUrl = _Configuration["EcPay:PaymentApiUrl"]!;
-        string? hashKey = ecPay.HashKey;
-        string? hashIV = ecPay.HashIV;
-        string? merchantID = ecPay.MerchantId;
-        string? tradeDesc = ecPay.TradeDescription;
-
-        List<string> enErrors = [];
-
-        try
+        
+        // If result contains HTML (payment form), return as content
+        if (result.Contains("<form"))
         {
-            if (order.DeliveryMethod is DeliveryMethod.SelfPickup || groupBuy.IsEnterprise)
-            {
-                if (order.OrderItems.Any(x => x.DeliveryTemperature == 0))
-                    order.TotalAmount = order.TotalAmount - order.OrderItems.Where(x => x.DeliveryTemperature == 0)
-                                                                            .Select(x => x.DeliveryTemperatureCost)
-                                                                            .FirstOrDefault();
-
-                if (order.OrderItems.Any(x => x.DeliveryTemperature == ItemStorageTemperature.Freeze))
-                    order.TotalAmount = order.TotalAmount - order.OrderItems.Where(x => x.DeliveryTemperature == ItemStorageTemperature.Freeze)
-                                                                            .Select(x => x.DeliveryTemperatureCost)
-                                                                            .FirstOrDefault();
-
-                if (order.OrderItems.Any(x => x.DeliveryTemperature == ItemStorageTemperature.Frozen))
-                    order.TotalAmount = order.TotalAmount - order.OrderItems.Where(x => x.DeliveryTemperature == ItemStorageTemperature.Frozen)
-                                                                            .Select(x => x.DeliveryTemperatureCost)
-                                                                            .FirstOrDefault();
-            }
-
-            using AllInOne oPayment = new();
-
-            oPayment.ServiceMethod = HttpMethod.HttpPOST;
-            oPayment.ServiceURL = ecpayUrl;
-            oPayment.HashKey = hashKey;
-            oPayment.HashIV = hashIV;
-            oPayment.MerchantID = merchantID;
-            oPayment.Send.ReturnURL = $"{Request.Scheme}://{Request.Host}/api/app/orders/callback";
-            oPayment.Send.ClientBackURL = clientBackUrl;
-            oPayment.Send.MerchantTradeNo = order.MerchantTradeNo;
-            oPayment.Send.MerchantTradeDate = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss");
-            oPayment.Send.TotalAmount = Convert.ToInt32(order.TotalAmount);
-            oPayment.Send.TradeDesc = tradeDesc;
-            oPayment.Send.ChoosePayment = isDefaultPayment ? PaymentMethod.ALL : paymentMethod;
-            oPayment.Send.Remark = string.Empty;
-            oPayment.Send.ChooseSubPayment = PaymentMethodItem.None;
-            oPayment.Send.NeedExtraPaidInfo = ExtraPaymentInfo.Yes;
-            oPayment.Send.DeviceSource = DeviceType.PC;
-            oPayment.Send.IgnorePayment = string.Empty;
-            oPayment.Send.PlatformID = string.Empty;
-            oPayment.Send.HoldTradeAMT = HoldTradeType.Yes;
-            oPayment.Send.CustomField1 = Guid.NewGuid().ToString();
-            oPayment.Send.CustomField2 = order.GroupBuyId.ToString();
-            oPayment.Send.CustomField3 = string.Empty;
-            oPayment.Send.CustomField4 = string.Empty;
-            oPayment.Send.EncryptType = 1;
-
-            if (isInstallments && paymentMethodsValue == PaymentMethods.CreditCard)
-                oPayment.SendExtend.CreditInstallment = string.Join(",", ecPay.InstallmentPeriods);
-
-            foreach (OrderItemDto item in order.OrderItems)
-            {
-                if (item.Item is null && item.SetItem is null) continue;
-
-                oPayment.Send.Items.Add(new ECPay.Payment.Integration.Item()
-                {
-                    Name = (item.Item?.ItemName ?? item.SetItem?.SetItemName) + " NT$ ",
-                    Price = decimal.TryParse(item.ItemPrice.ToString("G29"), out decimal price) ? price : 0.00M,
-                    Currency = string.Empty,
-                    Quantity = item.Quantity,
-                    URL = string.Empty,
-                });
-            }
-
-            AllInOneResult result = oPayment.CheckOut();
-
-            enErrors = [.. result.ErrorList];
-
-            PaymentResponse? response =
-                new()
-                {
-                    IsSuccessStatusCode = true,
-                    Result = result,
-                    Errors = enErrors,
-                    EcPayUrl = ecpayUrl
-                };
-
-            if (response.IsSuccessStatusCode)
-            {
-                string? checkMacValue = response.Result.htParameters["CustomField1"]?.ToString();
-
-                await _ordersAppService.AddValuesAsync(orderId, checkMacValue ?? string.Empty, order.MerchantTradeNo, paymentMethodsValue);
-            }
-
-            StringBuilder htmlForm = new();
-
-            htmlForm.Append($"<form id='ecpay_form' method='post' action='{response.EcPayUrl}'>");
-
-            foreach (DictionaryEntry parameter in response.Result.htParameters)
-            {
-                htmlForm.Append(
-                    $"<input type='hidden' name='{parameter.Key}' value='{parameter.Value}'>"
-                );
-            }
-
-            htmlForm.Append("</form>");
-
-            htmlForm.Append("<script>document.getElementById('ecpay_form').submit();</script>");
-
-            return Ok(htmlForm.ToString());
+            return Content(result, "text/html");
         }
-        catch (Exception ex)
-        {
-            enErrors.Add(ex.Message);
-
-            return BadRequest(
-                new PaymentResponse { IsSuccessStatusCode = false, Errors = enErrors }
-            );
-        }
+        
+        // Otherwise, return as JSON
+        return Ok(new { redirectUrl = result });
     }
 
     [HttpPost("callback")]
@@ -462,7 +327,7 @@ public class OrderController : AbpController, IOrderAppService
     [HttpPut("update-return-status/{id}/{orderReturnStatus}")]
     public Task ChangeReturnStatusAsync(Guid id, OrderReturnStatus? orderReturnStatus, bool isRefund)
     {
-        return _ordersAppService.ChangeReturnStatusAsync(id, orderReturnStatus, isRefund);
+        return ((IOrderLogisticsService)_ordersAppService).ChangeReturnStatusAsync(id, orderReturnStatus, isRefund);
     }
 
     [HttpGet("get-list-as-excel")]
@@ -486,7 +351,7 @@ public class OrderController : AbpController, IOrderAppService
     [HttpPost("exchange-order")]
     public Task ExchangeOrderAsync(Guid id)
     {
-        return _ordersAppService.ExchangeOrderAsync(id);
+        return ((IOrderLogisticsService)_ordersAppService).ExchangeOrderAsync(id);
     }
 
     [HttpGet("get-tenant-order-list")]
@@ -509,17 +374,17 @@ public class OrderController : AbpController, IOrderAppService
     [HttpPost("order-shipped")]
     public Task<OrderDto> OrderShipped(Guid id)
     {
-        return _ordersAppService.OrderShipped(id);
+        return ((IOrderStatusService)_ordersAppService).OrderShipped(id);
     }
     [HttpPost("order-closed")]
     public Task<OrderDto> OrderClosed(Guid id)
     {
-        return _ordersAppService.OrderClosed(id);
+        return ((IOrderStatusService)_ordersAppService).OrderClosed(id);
     }
     [HttpPost("order-completed")]
     public Task<OrderDto> OrderComplete(Guid id)
     {
-        return _ordersAppService.OrderComplete(id);
+        return ((IOrderStatusService)_ordersAppService).OrderComplete(id);
     }
 
     [HttpPost("void-invoice")]
@@ -536,7 +401,7 @@ public class OrderController : AbpController, IOrderAppService
     [HttpPost("credit-note-invoice")]
     public Task CreditNoteInvoice(Guid id, string reason)
     {
-        return _ordersAppService.CreditNoteInvoice(id, reason);
+        return ((IOrderInvoiceService)_ordersAppService).CreditNoteInvoice(id, reason);
     }
 
     [HttpPost("refund-order-items")]
@@ -649,6 +514,118 @@ public class OrderController : AbpController, IOrderAppService
     public Task<Guid> GetOrderIdAsync(string orderNo)
     {
         return _ordersAppService.GetOrderIdAsync(orderNo);
+    }
+
+    // IOrderNotificationService HTTP endpoints
+    [HttpPost("send-order-confirmation-email/{orderId}")]
+    public Task SendOrderConfirmationEmailAsync(Guid orderId)
+    {
+        return _ordersAppService.SendOrderConfirmationEmailAsync(orderId);
+    }
+
+    [HttpPost("send-payment-confirmation-email/{orderId}")]
+    public Task SendPaymentConfirmationEmailAsync(Guid orderId)
+    {
+        return _ordersAppService.SendPaymentConfirmationEmailAsync(orderId);
+    }
+
+    [HttpPost("send-shipping-notification-email/{orderId}")]
+    public Task SendShippingNotificationEmailAsync(Guid orderId)
+    {
+        return _ordersAppService.SendShippingNotificationEmailAsync(orderId);
+    }
+
+    [HttpPost("send-order-completion-email/{orderId}")]
+    public Task SendOrderCompletionEmailAsync(Guid orderId)
+    {
+        return _ordersAppService.SendOrderCompletionEmailAsync(orderId);
+    }
+
+    [HttpPost("send-order-cancellation-email/{orderId}")]
+    public Task SendOrderCancellationEmailAsync(Guid orderId)
+    {
+        return _ordersAppService.SendOrderCancellationEmailAsync(orderId);
+    }
+
+    [HttpPost("send-refund-notification-email/{orderId}")]
+    public Task SendRefundNotificationEmailAsync(Guid orderId)
+    {
+        return _ordersAppService.SendRefundNotificationEmailAsync(orderId);
+    }
+
+    [HttpPost("send-email/{orderId}")]
+    public Task SendEmailAsync(Guid orderId)
+    {
+        return _ordersAppService.SendEmailAsync(orderId);
+    }
+
+    // IOrderInvoiceService HTTP endpoints
+    [HttpPost("generate-invoice/{orderId}")]
+    public Task<OrderInvoiceDto> GenerateInvoiceAsync(Guid orderId)
+    {
+        return _ordersAppService.GenerateInvoiceAsync(orderId);
+    }
+
+    [HttpPut("update-invoice-details/{orderId}")]
+    public Task UpdateInvoiceDetailsAsync(Guid orderId, string invoiceNumber, string invoiceDetails)
+    {
+        return _ordersAppService.UpdateInvoiceDetailsAsync(orderId, invoiceNumber, invoiceDetails);
+    }
+
+    [HttpPost("send-invoice/{orderId}")]
+    public Task SendInvoiceAsync(Guid orderId)
+    {
+        return _ordersAppService.SendInvoiceAsync(orderId);
+    }
+
+    [HttpGet("get-invoice-status/{orderId}")]
+    public Task<InvoiceStatusDto> GetInvoiceStatusAsync(Guid orderId)
+    {
+        return _ordersAppService.GetInvoiceStatusAsync(orderId);
+    }
+
+    [HttpPost("process-electronic-invoice/{orderId}")]
+    public Task ProcessElectronicInvoiceAsync(Guid orderId)
+    {
+        return _ordersAppService.ProcessElectronicInvoiceAsync(orderId);
+    }
+
+    // IOrderInventoryService HTTP endpoints
+    [HttpPost("reserve-inventory/{orderId}")]
+    public Task ReserveInventoryAsync(Guid orderId)
+    {
+        return _ordersAppService.ReserveInventoryAsync(orderId);
+    }
+
+    [HttpPost("release-inventory/{orderId}")]
+    public Task ReleaseInventoryAsync(Guid orderId)
+    {
+        return _ordersAppService.ReleaseInventoryAsync(orderId);
+    }
+
+    [HttpPost("validate-inventory-availability")]
+    public Task<bool> ValidateInventoryAvailabilityAsync(List<UpdateOrderItemDto> orderItems)
+    {
+        return _ordersAppService.ValidateInventoryAvailabilityAsync(orderItems);
+    }
+
+    [HttpPost("restore-inventory/{orderId}")]
+    public Task RestoreInventoryAsync(Guid orderId)
+    {
+        return _ordersAppService.RestoreInventoryAsync(orderId);
+    }
+
+    [HttpPost("adjust-inventory-for-modification/{orderId}")]
+    public Task AdjustInventoryForOrderModificationAsync(Guid orderId, List<UpdateOrderItemDto> newOrderItems)
+    {
+        return _ordersAppService.AdjustInventoryForOrderModificationAsync(orderId, newOrderItems);
+    }
+
+    // IOrderLogisticsService HTTP endpoints
+    [HttpPost("create-order-deliveries/{orderId}")]
+    public Task CreateOrderDeliveriesAsync(Guid orderId)
+    {
+        return _ordersAppService.CreateOrderDeliveriesAsync(orderId);
     }
 
     #endregion

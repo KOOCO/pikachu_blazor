@@ -21,7 +21,7 @@ namespace Kooco.Pikachu.Controllers.GroupBuys;
 [ControllerName("GroupBuy")]
 [Area("app")]
 [Route("api/app/group-buy")]
-public class GroupBuyController : AbpController, IGroupBuyAppService
+public class GroupBuyController : AbpController
 {
     private readonly IGroupBuyAppService _groupBuyAppService;
     public GroupBuyController(
@@ -273,5 +273,158 @@ public class GroupBuyController : AbpController, IGroupBuyAppService
     public Task UpdateItemProductPrice(Guid groupbuyId, GroupBuyItemGroupDetailCreateUpdateDto itemDetails)
     {
         return _groupBuyAppService.UpdateItemProductPrice(groupbuyId, itemDetails);
+    }
+
+    // IGroupBuyPricingService HTTP endpoints
+    [HttpGet("{groupBuyId}/delivery-temperature-costs")]
+    public Task<List<DeliveryTemperatureCostDto>> GetDeliveryTemperatureCostsAsync(Guid groupBuyId)
+    {
+        return _groupBuyAppService.GetDeliveryTemperatureCostsAsync(groupBuyId);
+    }
+
+    [HttpPut("{groupBuyId}/pricing")]
+    public Task UpdateGroupBuyPricingAsync(Guid groupBuyId, GroupBuyPricingDto pricingDto)
+    {
+        return _groupBuyAppService.UpdateGroupBuyPricingAsync(groupBuyId, pricingDto);
+    }
+
+    [HttpGet("{groupBuyId}/item-groups/{itemGroupId}/price")]
+    public Task<decimal> CalculateItemGroupPriceAsync(Guid groupBuyId, Guid itemGroupId, int quantity)
+    {
+        return _groupBuyAppService.CalculateItemGroupPriceAsync(groupBuyId, itemGroupId, quantity);
+    }
+
+    [HttpGet("{groupBuyId}/pricing")]
+    public Task<GroupBuyPricingDto> GetGroupBuyPricingAsync(Guid groupBuyId)
+    {
+        return _groupBuyAppService.GetGroupBuyPricingAsync(groupBuyId);
+    }
+
+    [HttpGet("{groupBuyId}/validate-pricing")]
+    public Task<bool> ValidatePricingConfigurationAsync(Guid groupBuyId)
+    {
+        return _groupBuyAppService.ValidatePricingConfigurationAsync(groupBuyId);
+    }
+
+    [HttpPut("{groupBuyId}/bulk-pricing-rules")]
+    public Task UpdateBulkPricingRulesAsync(Guid groupBuyId, List<BulkPricingRuleDto> pricingRules)
+    {
+        return _groupBuyAppService.UpdateBulkPricingRulesAsync(groupBuyId, pricingRules);
+    }
+
+    // IGroupBuyReportingService HTTP endpoints
+    [HttpGet("{groupBuyId}/export-overview-excel")]
+    public Task<IRemoteStreamContent> ExportGroupBuyOverviewExcelAsync(Guid groupBuyId)
+    {
+        return _groupBuyAppService.ExportGroupBuyOverviewExcelAsync(groupBuyId);
+    }
+
+    [HttpGet("{groupBuyId}/export-product-ranking-excel")]
+    public Task<IRemoteStreamContent> ExportGroupBuyProductRankingExcelAsync(Guid groupBuyId)
+    {
+        return _groupBuyAppService.ExportGroupBuyProductRankingExcelAsync(groupBuyId);
+    }
+
+    [HttpGet("{groupBuyId}/export-order-excel")]
+    public Task<IRemoteStreamContent> ExportGroupBuyOrderExcelAsync(Guid groupBuyId)
+    {
+        return _groupBuyAppService.ExportGroupBuyOrderExcelAsync(groupBuyId);
+    }
+
+    [HttpGet("{groupBuyId}/export-delivery-excel")]
+    public Task<IRemoteStreamContent> ExportGroupBuyDeliveryExcelAsync(Guid groupBuyId)
+    {
+        return _groupBuyAppService.ExportGroupBuyDeliveryExcelAsync(groupBuyId);
+    }
+
+    [HttpGet("{groupBuyId}/generate-sales-report")]
+    public Task<GroupBuyReportDto> GenerateGroupBuySalesReportAsync(Guid groupBuyId)
+    {
+        return _groupBuyAppService.GenerateGroupBuySalesReportAsync(groupBuyId);
+    }
+
+    [HttpGet("{groupBuyId}/generate-inventory-report")]
+    public Task<GroupBuyInventoryReportDto> GenerateGroupBuyInventoryReportAsync(Guid groupBuyId)
+    {
+        return _groupBuyAppService.GenerateGroupBuyInventoryReportAsync(groupBuyId);
+    }
+
+    [HttpGet("{groupBuyId}/generate-revenue-report")]
+    public Task<GroupBuyRevenueReportDto> GenerateGroupBuyRevenueReportAsync(Guid groupBuyId)
+    {
+        return _groupBuyAppService.GenerateGroupBuyRevenueReportAsync(groupBuyId);
+    }
+
+    [HttpGet("{groupBuyId}/export-member-excel")]
+    public Task<IRemoteStreamContent> ExportGroupBuyMemberExcelAsync(Guid groupBuyId)
+    {
+        return _groupBuyAppService.ExportGroupBuyMemberExcelAsync(groupBuyId);
+    }
+
+    [HttpGet("{groupBuyId}/export-payment-excel")]
+    public Task<IRemoteStreamContent> ExportGroupBuyPaymentExcelAsync(Guid groupBuyId)
+    {
+        return _groupBuyAppService.ExportGroupBuyPaymentExcelAsync(groupBuyId);
+    }
+
+    [HttpGet("{groupBuyId}/export-refund-excel")]
+    public Task<IRemoteStreamContent> ExportGroupBuyRefundExcelAsync(Guid groupBuyId)
+    {
+        return _groupBuyAppService.ExportGroupBuyRefundExcelAsync(groupBuyId);
+    }
+
+    // IGroupBuyImageService HTTP endpoints
+    [HttpPost("{groupBuyId}/upload-images")]
+    public Task<List<ImageWithLinkDto>> UploadGroupBuyImagesAsync(Guid groupBuyId, List<IRemoteStreamContent> images)
+    {
+        return _groupBuyAppService.UploadGroupBuyImagesAsync(groupBuyId, images);
+    }
+
+    [HttpPut("{groupBuyId}/update-image-configuration")]
+    public Task UpdateGroupBuyImageConfigurationAsync(Guid groupBuyId)
+    {
+        return _groupBuyAppService.UpdateGroupBuyImageConfigurationAsync(groupBuyId);
+    }
+
+    [HttpDelete("{groupBuyId}/delete-images")]
+    public Task DeleteGroupBuyImagesAsync(Guid groupBuyId, List<Guid> imageIds)
+    {
+        return _groupBuyAppService.DeleteGroupBuyImagesAsync(groupBuyId, imageIds);
+    }
+
+    [HttpGet("{groupBuyId}/image-gallery")]
+    public Task<List<ImageWithLinkDto>> GetGroupBuyImageGalleryAsync(Guid groupBuyId)
+    {
+        return _groupBuyAppService.GetGroupBuyImageGalleryAsync(groupBuyId);
+    }
+
+    [HttpPost("{groupBuyId}/item-groups/{itemGroupId}/upload-images")]
+    public Task<List<ImageWithLinkDto>> UploadGroupBuyItemGroupImagesAsync(Guid groupBuyId, Guid itemGroupId, List<IRemoteStreamContent> images)
+    {
+        return _groupBuyAppService.UploadGroupBuyItemGroupImagesAsync(groupBuyId, itemGroupId, images);
+    }
+
+    [HttpPut("{groupBuyId}/item-groups/{itemGroupId}/update-image-configuration")]
+    public Task UpdateGroupBuyItemGroupImageConfigurationAsync(Guid groupBuyId, Guid itemGroupId)
+    {
+        return _groupBuyAppService.UpdateGroupBuyItemGroupImageConfigurationAsync(groupBuyId, itemGroupId);
+    }
+
+    [HttpDelete("{groupBuyId}/item-groups/{itemGroupId}/delete-images")]
+    public Task DeleteGroupBuyItemGroupImagesAsync(Guid groupBuyId, Guid itemGroupId, List<Guid> imageIds)
+    {
+        return _groupBuyAppService.DeleteGroupBuyItemGroupImagesAsync(groupBuyId, itemGroupId, imageIds);
+    }
+
+    [HttpGet("{groupBuyId}/item-groups/{itemGroupId}/image-gallery")]
+    public Task<List<ImageWithLinkDto>> GetGroupBuyItemGroupImageGalleryAsync(Guid groupBuyId, Guid itemGroupId)
+    {
+        return _groupBuyAppService.GetGroupBuyItemGroupImageGalleryAsync(groupBuyId, itemGroupId);
+    }
+
+    [HttpPut("{groupBuyId}/set-primary-image/{imageId}")]
+    public Task SetGroupBuyPrimaryImageAsync(Guid groupBuyId, Guid imageId)
+    {
+        return _groupBuyAppService.SetGroupBuyPrimaryImageAsync(groupBuyId, imageId);
     }
 }

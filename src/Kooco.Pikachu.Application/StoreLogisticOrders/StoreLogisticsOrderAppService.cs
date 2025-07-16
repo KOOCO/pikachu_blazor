@@ -11,6 +11,7 @@ using Kooco.Pikachu.Orders.Interfaces;
 using Kooco.Pikachu.Orders.Repositories;
 using Kooco.Pikachu.Orders.Services;
 using Kooco.Pikachu.Response;
+using Kooco.Pikachu.ShippingStrategies;
 using Kooco.Pikachu.Tenants;
 using Kooco.Pikachu.Tenants.Repositories;
 using Microsoft.AspNetCore.Http;
@@ -47,6 +48,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
     private readonly IOrderDeliveryRepository _deliveryRepository;
     private readonly ILogisticsProvidersAppService _logisticsProvidersAppService;
     private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly IShippingStrategyFactory _shippingStrategyFactory;
     GreenWorldLogisticsCreateUpdateDto GreenWorld { get; set; }
     GreenWorldLogisticsCreateUpdateDto GreenWorldC2C { get; set; }
     HomeDeliveryCreateUpdateDto HomeDelivery { get; set; }
@@ -94,7 +96,8 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
         IEmailSender emailSender,
         ITenantSettingsAppService tenantSettingsAppService,
         IEmailAppService emailAppService,
-        OrderHistoryManager orderHistoryManager
+        OrderHistoryManager orderHistoryManager,
+        IShippingStrategyFactory shippingStrategyFactory
     )
     {
         _orderRepository = orderRepository;
@@ -122,6 +125,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
         _tenantSettingsAppService = tenantSettingsAppService;
         _emailAppService = emailAppService;
         _orderHistoryManager = orderHistoryManager;
+        _shippingStrategyFactory = shippingStrategyFactory;
     }
     #endregion
 
@@ -401,65 +405,44 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
 
     public async Task<string> OnPrintShippingLabel(OrderDto order, OrderDeliveryDto orderDelivery)
     {
-        RestClientOptions? options = new RestClientOptions { MaxTimeout = -1 };
-
-        RestClient client = new(options);
-
-        List<LogisticsProviderSettingsDto> providers = await _logisticsProvidersAppService.GetAllAsync();
-
-        if (orderDelivery.DeliveryMethod is EnumValues.DeliveryMethod.PostOffice ||
-            orderDelivery.DeliveryMethod is EnumValues.DeliveryMethod.BlackCat1 ||
-            orderDelivery.DeliveryMethod is EnumValues.DeliveryMethod.BlackCatFrozen ||
-            orderDelivery.DeliveryMethod is EnumValues.DeliveryMethod.BlackCatFreeze ||
-            orderDelivery.DeliveryMethod is EnumValues.DeliveryMethod.SevenToEleven1 ||
-            orderDelivery.DeliveryMethod is EnumValues.DeliveryMethod.SevenToElevenFrozen ||
-            orderDelivery.DeliveryMethod is EnumValues.DeliveryMethod.FamilyMart1)
+        try
         {
-            LogisticsProviderSettingsDto? greenWorld = providers.Where(p => p.LogisticProvider is LogisticProviders.GreenWorldLogistics).FirstOrDefault();
-
-            if (greenWorld != null) GreenWorld = ObjectMapper.Map<LogisticsProviderSettingsDto, GreenWorldLogisticsCreateUpdateDto>(greenWorld);
-
-            RestRequest request = new(_configuration["EcPay:PrintTradeDocument"], Method.Post);
-
-            request.AddParameter("MerchantID", GreenWorld.StoreCode);
-            request.AddParameter("AllPayLogisticsID", orderDelivery.AllPayLogisticsID);
-
-            Dictionary<string, string> parameters = new()
+            // Get the appropriate shipping strategy for the delivery method
+            var shippingStrategy = _shippingStrategyFactory.CreateStrategy(orderDelivery.DeliveryMethod);
+            
+            if (shippingStrategy == null)
             {
-                { "MerchantID", GreenWorld.StoreCode },
-                { "AllPayLogisticsID", orderDelivery.AllPayLogisticsID }
-            };
+                Logger.LogWarning("No shipping strategy found for delivery method: {DeliveryMethod}", orderDelivery.DeliveryMethod);
+                return string.Empty;
+            }
 
-            request.AddParameter("CheckMacValue", GenerateCheckMacValue(greenWorld!.HashKey, greenWorld!.HashIV, parameters));
-
-            RestResponse response = await client.ExecuteAsync(request);
-
-            string result = response.Content.ToString();
-
-            return result;
+            // Convert DTOs to domain entities for strategy processing
+            var orderEntity = ObjectMapper.Map<OrderDto, Order>(order);
+            
+            // Use the strategy to print the shipping label
+            var result = await shippingStrategy.PrintShippingLabelAsync(orderEntity, orderDelivery);
+            
+            if (result.IsSuccess)
+            {
+                Logger.LogInformation("Shipping label printed successfully for order {OrderId} using {DeliveryMethod}", 
+                    order.Id, orderDelivery.DeliveryMethod);
+                
+                // For now, return the file name as the result
+                // In a real implementation, you might want to return the actual label content or a download URL
+                return result.FileName;
+            }
+            else
+            {
+                Logger.LogError("Failed to print shipping label for order {OrderId}: {Errors}", 
+                    order.Id, string.Join(", ", result.ErrorMessages));
+                return string.Empty;
+            }
         }
-
-        else if (orderDelivery.DeliveryMethod is EnumValues.DeliveryMethod.SevenToElevenC2C)
+        catch (Exception ex)
         {
-
+            Logger.LogError(ex, "Error occurred while printing shipping label for order {OrderId}", order.Id);
+            return string.Empty;
         }
-
-        else if (orderDelivery.DeliveryMethod is EnumValues.DeliveryMethod.FamilyMartC2C)
-        {
-
-        }
-
-        else if (orderDelivery.DeliveryMethod is EnumValues.DeliveryMethod.TCatDeliveryNormal ||
-                 orderDelivery.DeliveryMethod is EnumValues.DeliveryMethod.TCatDeliveryFreeze ||
-                 orderDelivery.DeliveryMethod is EnumValues.DeliveryMethod.TCatDeliveryFrozen ||
-                 orderDelivery.DeliveryMethod is EnumValues.DeliveryMethod.TCatDeliverySevenElevenNormal ||
-                 orderDelivery.DeliveryMethod is EnumValues.DeliveryMethod.TCatDeliverySevenElevenFreeze ||
-                 orderDelivery.DeliveryMethod is EnumValues.DeliveryMethod.TCatDeliverySevenElevenFrozen)
-        {
-
-        }
-
-        return string.Empty;
     }
 
     public async Task<string> OnBatchPrintingShippingLabel(List<string> allPayLogisticsId)
