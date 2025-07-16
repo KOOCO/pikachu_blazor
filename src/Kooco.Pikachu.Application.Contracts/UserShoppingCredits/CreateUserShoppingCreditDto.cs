@@ -37,5 +37,6 @@ public class CreateUserShoppingCreditDto : ICreateUpdateUserShoppingCreditDto
     public UserShoppingCreditType? ShoppingCreditType { get; set; }
 
     public bool SendEmail { get; set; }
+    public string? OrderNo { get; set; }
 }
 

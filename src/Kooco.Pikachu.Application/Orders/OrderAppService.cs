@@ -46,6 +46,7 @@ using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Identity;
 using Volo.Abp.MultiTenancy;
 using Volo.Abp.Security.Encryption;
+using static Kooco.Pikachu.Permissions.PikachuPermissions;
 
 namespace Kooco.Pikachu.Orders;
 
@@ -113,8 +114,8 @@ public class OrderAppService : PikachuAppService, IOrderAppService
                 userId: input.UserId,
                 creditDeductionAmount: input.CreditDeductionAmount,
                 creditDeductionRecordId: input.CreditDeductionRecordId,
-                creditRefundAmount: input.cashback_amount,
-                creditRefundRecordId: input.cashback_record_id,
+                creditRefundAmount: 0,
+                creditRefundRecordId: null,
                 //discountAmountId: input.DiscountCodeId,
                 //discountCodeAmount: input.DiscountCodeAmount,
                 recipientNameDbsNormal: input.RecipientNameDbsNormal,
@@ -245,8 +246,6 @@ public class OrderAppService : PikachuAppService, IOrderAppService
                     string errorMessage = string.Join("; ", insufficientItems);
                     throw new UserFriendlyException("409", "以下商品庫存不足,請刷新後再試: " + errorMessage);
                 }
-
-                await ProcessAppliedCampaigns(order, input);
             }
             if (order.TotalAmount == 0)
             {
@@ -256,6 +255,8 @@ public class OrderAppService : PikachuAppService, IOrderAppService
             await OrderRepository.InsertAsync(order);
 
             await UnitOfWorkManager.Current.SaveChangesAsync();
+
+            await ProcessAppliedCampaigns(order, input);
 
             if (order.PaymentMethod != PaymentMethods.ManualBankTransfer || order.TotalAmount == 0)
             {
@@ -301,51 +302,51 @@ public class OrderAppService : PikachuAppService, IOrderAppService
                 await DiscountCodeRepository.UpdateAsync(discountCode);
                 await CurrentUnitOfWork.SaveChangesAsync();
             }
-            if (order.UserId != null && order.UserId != Guid.Empty)
-            {
+            //if (order.UserId != null && order.UserId != Guid.Empty)
+            //{
 
-                if (order.cashback_amount > 0)
-                {
-                    var newcashback = await UserShoppingCreditAppService.RecordShoppingCreditAsync(new RecordUserShoppingCreditDto
-                    {
-                        Amount = (int)order.cashback_amount,
-                        ExpirationDate = null,
-                        IsActive = true,
-                        TransactionDescription = "購物回饋：訂單 #" + order.OrderNo,
-                        UserId = order.UserId.Value,
-                        ShoppingCreditType = UserShoppingCreditType.Grant
-                    });
-                    order.cashback_amount = newcashback.Amount;
-                    order.cashback_record_id = newcashback.Id;
+            //    if (order.cashback_amount > 0)
+            //    {
+            //        var newcashback = await UserShoppingCreditAppService.RecordShoppingCreditAsync(new RecordUserShoppingCreditDto
+            //        {
+            //            Amount = (int)order.cashback_amount,
+            //            ExpirationDate = null,
+            //            IsActive = true,
+            //            TransactionDescription = "購物回饋：訂單 #" + order.OrderNo,
+            //            UserId = order.UserId.Value,
+            //            ShoppingCreditType = UserShoppingCreditType.Grant
+            //        });
+            //        order.cashback_amount = newcashback.Amount;
+            //        order.cashback_record_id = newcashback.Id;
 
-                    var userCumulativeCredits = await UserCumulativeCreditRepository.FirstOrDefaultAsync(x => x.UserId == order.UserId);
-                    if (userCumulativeCredits is null)
-                    {
-                        await UserCumulativeCreditAppService.CreateAsync(new CreateUserCumulativeCreditDto { TotalAmount = (int)order.cashback_amount, TotalDeductions = 0, TotalRefunds = 0, UserId = order.UserId });
-                    }
-                    else
-                    {
-                        userCumulativeCredits.ChangeTotalAmount((int)(userCumulativeCredits.TotalAmount + order.cashback_amount));
-                        await UserCumulativeCreditRepository.UpdateAsync(userCumulativeCredits);
-                    }
+            //        var userCumulativeCredits = await UserCumulativeCreditRepository.FirstOrDefaultAsync(x => x.UserId == order.UserId);
+            //        if (userCumulativeCredits is null)
+            //        {
+            //            await UserCumulativeCreditAppService.CreateAsync(new CreateUserCumulativeCreditDto { TotalAmount = (int)order.cashback_amount, TotalDeductions = 0, TotalRefunds = 0, UserId = order.UserId });
+            //        }
+            //        else
+            //        {
+            //            userCumulativeCredits.ChangeTotalAmount((int)(userCumulativeCredits.TotalAmount + order.cashback_amount));
+            //            await UserCumulativeCreditRepository.UpdateAsync(userCumulativeCredits);
+            //        }
 
-                    await CurrentUnitOfWork!.SaveChangesAsync();
-                }
+            //        await CurrentUnitOfWork!.SaveChangesAsync();
+            //    }
 
-            }
-            if (order.UserId != null && order.UserId != Guid.Empty)
+            //}
+            if (order?.UserId != null && order.UserId != Guid.Empty)
             {
                 if (order.CreditDeductionAmount > 0)
                 {
-
                     var newdeduction = await UserShoppingCreditAppService.RecordShoppingCreditAsync(new RecordUserShoppingCreditDto
                     {
                         Amount = (int)order.CreditDeductionAmount,
                         ExpirationDate = null,
                         IsActive = true,
-                        TransactionDescription = "購物折抵：訂單 #" + order.OrderNo,
+                        TransactionDescription = "ShoppingCreditDescription:CreditDeduction",
                         UserId = order.UserId.Value,
-                        ShoppingCreditType = UserShoppingCreditType.Deduction
+                        ShoppingCreditType = UserShoppingCreditType.Deduction,
+                        OrderNo = order.OrderNo
                     });
                     order.CreditDeductionAmount = newdeduction.Amount;
                     order.CreditDeductionRecordId = newdeduction.Id;
@@ -451,7 +452,29 @@ public class OrderAppService : PikachuAppService, IOrderAppService
                 }
                 if (campaign.PromotionModule == PromotionModule.ShoppingCredit && campaign.ShoppingCredit != null)
                 {
+                    var newdeduction = await UserShoppingCreditAppService.RecordShoppingCreditAsync(new RecordUserShoppingCreditDto
+                    {
+                        Amount = inputCampaign.Amount,
+                        ExpirationDate = campaign.ShoppingCredit.CanExpire ? DateTime.Today.AddDays(campaign.ShoppingCredit.ValidForDays ?? 0) : null,
+                        IsActive = true,
+                        TransactionDescription = "ShoppingCreditDescription:CashbackEarned",
+                        UserId = order.UserId.Value,
+                        ShoppingCreditType = UserShoppingCreditType.Grant,
+                        OrderNo = order.OrderNo
+                    });
+
+                    var userCumulativeCredits = await UserCumulativeCreditRepository.FirstOrDefaultAsync(x => x.UserId == order.UserId);
+                    if (userCumulativeCredits is null)
+                    {
+                        await UserCumulativeCreditAppService.CreateAsync(new CreateUserCumulativeCreditDto { TotalAmount = inputCampaign.Amount, TotalDeductions = 0, TotalRefunds = 0, UserId = order.UserId });
+                    }
+                    else
+                    {
+                        userCumulativeCredits.ChangeTotalAmount(userCumulativeCredits.TotalAmount + inputCampaign.Amount);
+                        await UserCumulativeCreditRepository.UpdateAsync(userCumulativeCredits);
+                    }
                     campaign.ShoppingCredit.DeductBudget(inputCampaign.Amount);
+                    await CurrentUnitOfWork!.SaveChangesAsync();
                     isValid = true;
                 }
                 if (campaign.PromotionModule == PromotionModule.AddOnProduct && campaign.AddOnProduct != null)
@@ -1167,6 +1190,7 @@ public class OrderAppService : PikachuAppService, IOrderAppService
         var oldStatus = order.ShippingStatus;
         order.ShippingStatus = status;
         //order.ClosedBy = CurrentUser.Name;
+
         if (status != ShippingStatus.Completed)
         {
             order.CancellationDate = DateTime.Now;
@@ -1230,6 +1254,8 @@ public class OrderAppService : PikachuAppService, IOrderAppService
 
 
     }
+
+
     public async Task RefundAmountAsync(double amount, Guid OrderId)
     {
         Order ord = await OrderRepository.GetWithDetailsAsync(OrderId);
@@ -1923,6 +1949,8 @@ public class OrderAppService : PikachuAppService, IOrderAppService
         await UnitOfWorkManager.Current.SaveChangesAsync();
         await SendEmailAsync(order.Id, OrderStatus.Closed);
 
+        await CheckAndDeductCreditIfApplied(order);
+
         var currentUserId = CurrentUser.Id ?? Guid.Empty;
         var currentUserName = CurrentUser.UserName ?? "System";
 
@@ -1942,6 +1970,41 @@ public class OrderAppService : PikachuAppService, IOrderAppService
              currentUserName
          );
     }
+
+    private async Task CheckAndDeductCreditIfApplied(Order order)
+    {
+        var appliedCredits = await OrderRepository.CheckForAppliedCreditsAsync(order.Id);
+        if (appliedCredits.Count != 0)
+        {
+            foreach (var (Id, AppliedAmount) in appliedCredits)
+            {
+                var newdeduction = await UserShoppingCreditAppService.RecordShoppingCreditAsync(new RecordUserShoppingCreditDto
+                {
+                    Amount = AppliedAmount,
+                    ExpirationDate = null,
+                    IsActive = true,
+                    TransactionDescription = "ShoppingCreditDescription:OrderCancelled",
+                    UserId = order.UserId.Value,
+                    ShoppingCreditType = UserShoppingCreditType.Deduction,
+                    OrderNo = order.OrderNo
+                });
+
+                var userCumulativeCredits = await UserCumulativeCreditRepository.FirstOrDefaultAsync(x => x.UserId == order.UserId);
+                if (userCumulativeCredits is null)
+                {
+                    await UserCumulativeCreditAppService.CreateAsync(new CreateUserCumulativeCreditDto { TotalAmount = 0, TotalDeductions = AppliedAmount, TotalRefunds = 0, UserId = order.UserId });
+                }
+                else
+                {
+                    userCumulativeCredits.ChangeTotalDeductions(userCumulativeCredits.TotalDeductions + AppliedAmount);
+                    await UserCumulativeCreditRepository.UpdateAsync(userCumulativeCredits);
+                }
+
+                await CurrentUnitOfWork.SaveChangesAsync();
+            }
+        }
+    }
+
     public async Task VoidInvoice(Guid id, string reason)
     {
         var order = await OrderRepository.GetAsync(id);

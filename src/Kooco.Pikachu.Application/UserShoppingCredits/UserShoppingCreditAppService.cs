@@ -31,7 +31,8 @@ public class UserShoppingCreditAppService(UserShoppingCreditManager userShopping
         Check.NotNull(input.ShoppingCreditType, nameof(input.ShoppingCreditType));
 
         var userShoppingCredit = await userShoppingCreditManager.CreateAsync(input.UserId, input.Amount,
-            input.CurrentRemainingCredits, input.TransactionDescription, input.ExpirationDate, input.IsActive, input.ShoppingCreditType.Value);
+            input.CurrentRemainingCredits, input.TransactionDescription, input.ExpirationDate, input.IsActive, 
+            input.ShoppingCreditType.Value, input.OrderNo);
 
         var userCumulativeCredit = await userCumulativeCreditRepository.FirstOrDefaultAsync(x => x.UserId == input.UserId);
 
@@ -108,7 +109,8 @@ public class UserShoppingCreditAppService(UserShoppingCreditManager userShopping
         Check.NotNull(input.ShoppingCreditType, nameof(input.ShoppingCreditType));
 
         var userShoppingCredit = await userShoppingCreditManager.CreateAsync(input.UserId, input.Amount,
-            input.CurrentRemainingCredits, input.TransactionDescription, input.ExpirationDate, input.IsActive, input.ShoppingCreditType.Value);
+            input.CurrentRemainingCredits, input.TransactionDescription, input.ExpirationDate, input.IsActive, 
+            input.ShoppingCreditType.Value, input.OrderNo);
         return ObjectMapper.Map<UserShoppingCredit, UserShoppingCreditDto>(userShoppingCredit);
     }
 
@@ -182,7 +184,7 @@ public class UserShoppingCreditAppService(UserShoppingCreditManager userShopping
                     var usedAmount = orders.Where(o => o.CreditDeductionRecordId == credit.Id).Sum(o => o.CreditDeductionAmount);
                     var remainingAmount = credit.Amount - usedAmount;
                     await userShoppingCreditManager.CreateAsync(credit.UserId, remainingAmount,
-                        remainingAmount, "Credits Expired", null, false, UserShoppingCreditType.Deduction, true);
+                        remainingAmount, "Credits Expired", null, false, UserShoppingCreditType.Deduction, null, isJobRunning: true);
 
                     var userCumulativeCredit = await userCumulativeCreditRepository.FirstOrDefaultAsync(x => x.UserId == credit.UserId);
 

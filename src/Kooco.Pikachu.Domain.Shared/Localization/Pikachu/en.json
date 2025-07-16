@@ -1677,6 +1677,9 @@
     "InputZipCode": "Input Zip Code",
     "InputCityName": "Input City Name",
     "InputAddress": "Input Address",
-    "SelfPickUpInfo": "Self-Pickup Info"
+    "SelfPickUpInfo": "Self-Pickup Info",
+    "ShoppingCreditDescription:CashbackEarned": "Cashback Earned: Order#",
+    "ShoppingCreditDescription:OrderCancelled": "Order Cancelled: Order#",
+    "ShoppingCreditDescription:CreditDeduction": "Credit Deduction: Order#"
   }
 }

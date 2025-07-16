@@ -86,4 +86,6 @@ public interface IOrderRepository : IRepository<Order, Guid>
         DateTime? completionTimeFrom = null,
         DateTime? completionTimeTo = null
         );
+
+    Task<List<(Guid Id, int AppliedAmount)>> CheckForAppliedCreditsAsync(Guid id);
 }

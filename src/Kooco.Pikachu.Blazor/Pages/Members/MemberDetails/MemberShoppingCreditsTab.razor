@@ -121,6 +121,16 @@
                 <DataGridColumn TItem="MemberCreditRecordDto"
                                 Field="@nameof(MemberCreditRecordDto.TransactionDescription)"
                                 Caption="@L["TransactionDescription"]">
+                    <DisplayTemplate>
+                        @if (!string.IsNullOrWhiteSpace(context.OrderNo))
+                        {
+                            <Span>@L[context.TransactionDescription] @context.OrderNo</Span>
+                        }
+                        else
+                        {
+                            <Span>@L[context.TransactionDescription]</Span>
+                        }
+                    </DisplayTemplate>
                 </DataGridColumn>
                 <DataGridColumn TItem="MemberCreditRecordDto"
                                 Field="@nameof(MemberCreditRecordDto.Amount)"

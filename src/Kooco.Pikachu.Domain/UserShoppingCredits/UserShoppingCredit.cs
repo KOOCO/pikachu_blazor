@@ -17,6 +17,7 @@ public class UserShoppingCredit : FullAuditedEntity<Guid>, IMultiTenant
     public UserShoppingCreditType ShoppingCreditType { get; set; }
     public bool IsActive { get; set; }
     public Guid? TenantId { get; set; }
+    public string? OrderNo { get; set; }
 
     [ForeignKey(nameof(UserId))]
     public IdentityUser? User { get; set; }
@@ -29,7 +30,8 @@ public class UserShoppingCredit : FullAuditedEntity<Guid>, IMultiTenant
         string? transactionDescription,
         DateTime? expirationDate,
         bool isActive,
-        UserShoppingCreditType shoppingCreditType
+        UserShoppingCreditType shoppingCreditType,
+        string? orderNo
         ) : base(id)
     {
         UserId = userId;
@@ -39,6 +41,7 @@ public class UserShoppingCredit : FullAuditedEntity<Guid>, IMultiTenant
         SetCurrentRemainingCredits(currentRemainingCredits);
         ExpirationDate = expirationDate;
         ShoppingCreditType = shoppingCreditType;
+        OrderNo = orderNo;
     }
 
     public UserShoppingCredit ChangeAmount(int amount)

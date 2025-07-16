@@ -10,7 +10,7 @@ public class UserShoppingCreditManager(IUserShoppingCreditRepository userShoppin
 {
     public async Task<UserShoppingCredit> CreateAsync(Guid userId, int amount, int currentRemainingCredits,
         string? transactionDescription, DateTime? expirationDate, bool isActive, UserShoppingCreditType shoppingCreditType,
-        bool isJobRunning = false)
+        string? orderNo, bool isJobRunning = false)
     {
         Check.Range(amount, nameof(amount), 0);
         Check.Range(currentRemainingCredits, nameof(currentRemainingCredits), 0);
@@ -41,7 +41,8 @@ public class UserShoppingCreditManager(IUserShoppingCreditRepository userShoppin
         }
 
         var userShoppingCredit = new UserShoppingCredit(GuidGenerator.Create(), userId, amount,
-            currentRemainingCredits, transactionDescription, expirationDate, isActive, shoppingCreditType);
+            currentRemainingCredits, transactionDescription, expirationDate, isActive, 
+            shoppingCreditType, orderNo);
 
         await userShoppingCreditRepository.InsertAsync(userShoppingCredit);
 

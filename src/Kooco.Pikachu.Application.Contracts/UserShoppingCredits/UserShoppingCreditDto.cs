@@ -12,6 +12,7 @@ public class UserShoppingCreditDto : FullAuditedEntityDto<Guid>
     public string? TransactionDescription { get; set; }
     public DateTime? ExpirationDate { get; set; }
     public bool IsActive { get; set; }
+    public string? OrderNo { get; set; }
     public UserShoppingCreditType ShoppingCreditType { get; set; }
     public Guid? TenantId { get; set; }
     public MemberDto? User { get; set; }

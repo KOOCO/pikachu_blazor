@@ -175,7 +175,8 @@ public class RefundAppService : ApplicationService, IRefundAppService
                 if (userShoppingCredit != null && order.UserId != null && (!userShoppingCredit.ExpirationDate.HasValue || userShoppingCredit.ExpirationDate > DateTime.Now))
                 {
                     await _userShoppingCreditManager.CreateAsync(order.UserId.Value, order.CreditDeductionAmount, order.CreditDeductionAmount,
-                        $"訂單取消 #{order.OrderNo}.", userShoppingCredit.ExpirationDate, userShoppingCredit.IsActive, UserShoppingCreditType.Grant);
+                        $"訂單取消 #{order.OrderNo}.", userShoppingCredit.ExpirationDate, userShoppingCredit.IsActive, UserShoppingCreditType.Grant,
+                        order.OrderNo);
 
                     var userCumulativeCredit = await _userCumulativeCreditRepository.FirstOrDefaultAsync(x => x.UserId == order.UserId);
                     if (userCumulativeCredit is null)

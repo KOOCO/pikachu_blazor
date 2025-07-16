@@ -1647,7 +1647,9 @@
     "InputZipCode": "請輸入郵遞區號",
     "InputCityName": "請輸入城市名稱",
     "InputAddress": "請輸入地址",
-
-    "SelfPickUpInfo": "自取地址資訊"
+    "SelfPickUpInfo": "自取地址資訊",
+    "ShoppingCreditDescription:CashbackEarned": "購物回饋: 訂單#",
+    "ShoppingCreditDescription:OrderCancelled": "訂單取消: 訂單#",
+    "ShoppingCreditDescription:CreditDeduction": "購物折抵: 訂單#"
   }
 }

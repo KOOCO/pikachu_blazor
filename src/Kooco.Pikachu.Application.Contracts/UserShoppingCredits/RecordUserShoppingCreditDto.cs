@@ -28,5 +28,7 @@ namespace Kooco.Pikachu.UserShoppingCredits
         public bool IsActive { get; set; } = true;
 
         public UserShoppingCreditType? ShoppingCreditType { get; set; }
+
+        public string? OrderNo { get; set; }
     }
 }

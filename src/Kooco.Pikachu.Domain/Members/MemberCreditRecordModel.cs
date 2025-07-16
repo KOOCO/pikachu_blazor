@@ -11,5 +11,6 @@ public class MemberCreditRecordModel
     public int Amount { get; set; }
     public DateTime? ExpirationDate { get; set; }
     public decimal RemainingCredits { get; set; }
+    public string? OrderNo { get; set; }
     public UserShoppingCreditType ShoppingCreditType { get; set; }
 }

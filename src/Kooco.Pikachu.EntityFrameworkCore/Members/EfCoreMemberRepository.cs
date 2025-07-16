@@ -309,7 +309,8 @@ public class EfCoreMemberRepository(IDbContextProvider<PikachuDbContext> pikachu
                 Amount = x.credits.Amount,// x.orders != null ? x.orders.CreditDeductionAmount : 0,
                 ExpirationDate = x.credits.ExpirationDate,
                 RemainingCredits = x.credits.CurrentRemainingCredits,
-                ShoppingCreditType = x.credits.ShoppingCreditType
+                ShoppingCreditType = x.credits.ShoppingCreditType,
+                OrderNo = x.credits.OrderNo
             });
     }
 
