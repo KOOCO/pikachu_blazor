@@ -104,6 +104,12 @@ public class CampaignShoppingCredit : Entity<Guid>
         Budget = Check.Range(budget, nameof(Budget), 0);
     }
 
+    public void AddBudget(int addition)
+    {
+        var addedBudget = Budget + addition;
+        SetBudget(addedBudget);
+    }
+
     public void DeductBudget(int deduction)
     {
         var deductedBudget = Budget - deduction;

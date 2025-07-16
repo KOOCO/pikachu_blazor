@@ -1976,7 +1976,7 @@ public class OrderAppService : PikachuAppService, IOrderAppService
         var appliedCredits = await OrderRepository.CheckForAppliedCreditsAsync(order.Id);
         if (appliedCredits.Count != 0)
         {
-            foreach (var (Id, AppliedAmount) in appliedCredits)
+            foreach (var (AppliedAmount, Campaign) in appliedCredits)
             {
                 var newdeduction = await UserShoppingCreditAppService.RecordShoppingCreditAsync(new RecordUserShoppingCreditDto
                 {
@@ -1999,6 +1999,8 @@ public class OrderAppService : PikachuAppService, IOrderAppService
                     userCumulativeCredits.ChangeTotalDeductions(userCumulativeCredits.TotalDeductions + AppliedAmount);
                     await UserCumulativeCreditRepository.UpdateAsync(userCumulativeCredits);
                 }
+
+                Campaign.ShoppingCredit.AddBudget(AppliedAmount);
 
                 await CurrentUnitOfWork.SaveChangesAsync();
             }

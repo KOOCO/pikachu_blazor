@@ -680,21 +680,19 @@ public class OrderRepository(IDbContextProvider<PikachuDbContext> dbContextProvi
         return ordersToClose;
     }
 
-    public async Task<List<(Guid Id, int AppliedAmount)>> CheckForAppliedCreditsAsync(Guid id)
+    public async Task<List<(int AppliedAmount, Campaign Campaign)>> CheckForAppliedCreditsAsync(Guid id)
     {
         var dbContext = await GetDbContextAsync();
 
         var appliedCredits = dbContext.Orders
-            .AsNoTracking()
             .Where(order => order.Id == id)
             .SelectMany(order => order.AppliedCampaigns)
-            .Join(dbContext.Campaigns.Where(c => c.PromotionModule == PromotionModule.ShoppingCredit),
+            .Join(dbContext.Campaigns.Where(c => c.PromotionModule == PromotionModule.ShoppingCredit).Include(c => c.ShoppingCredit),
             appliedCampaign => appliedCampaign.CampaignId,
             campaign => campaign.Id,
             (appliedCampaign, campaign) => new { AppliedCampaign = appliedCampaign, Campaign = campaign })
-            .Select(x => x.AppliedCampaign)
             .ToList();
 
-        return appliedCredits.Select(x => (x.Id, x.Amount)).ToList();
+        return appliedCredits.Select(x => (x.AppliedCampaign.Amount, x.Campaign)).ToList();
     }
 }

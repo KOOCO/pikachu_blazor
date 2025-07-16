@@ -1,4 +1,5 @@
-﻿using Kooco.Pikachu.EnumValues;
+﻿using Kooco.Pikachu.Campaigns;
+using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Members;
 using Kooco.Pikachu.Orders.Entities;
 using System;
@@ -87,5 +88,5 @@ public interface IOrderRepository : IRepository<Order, Guid>
         DateTime? completionTimeTo = null
         );
 
-    Task<List<(Guid Id, int AppliedAmount)>> CheckForAppliedCreditsAsync(Guid id);
+    Task<List<(int AppliedAmount, Campaign Campaign)>> CheckForAppliedCreditsAsync(Guid id);
 }
