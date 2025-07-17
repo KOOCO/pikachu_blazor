@@ -327,12 +327,12 @@
                                         {
                                             <tr>
                                                 <td>@L["PaymentMethod"]</td>
-                                                <td>@L[Order.PaymentMethod.ToString()]</td>
+                                                <td>@L[Order.PaymentMethod.ToString()??""]</td>
                                             </tr>
                                         }
                                         <tr>
                                             <td>@L["ShippingMethod"]</td>
-                                            <td>@L[Order.DeliveryMethod.ToString()] @Order.ShippingNumber </td>
+                                            <td>@L[Order.DeliveryMethod.ToString()??""] @Order.ShippingNumber </td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -345,7 +345,7 @@
                                     <tbody>
                                         <tr>
                                             <td>@L["InvoiceType"]</td>
-                                            <td>@L[Order.InvoiceType.ToString()]</td>
+                                            <td>@L[Order.InvoiceType.ToString()??""]</td>
                                         </tr>
                                         <tr>
                                             <td>@L["InvoiceNumber"]</td>
@@ -623,7 +623,7 @@
                                                         <td class="d-flex justify-content-between">
                                                             @if (ModificationTrack.IsCityModified)
                                                             {
-                                                                @L[ModificationTrack.NewCity]
+                                                                @L[ModificationTrack.NewCity??""]
                                                                 @* +", " + ModificationTrack.NewRoad + ", " + ModificationTrack.NewDistrict + ", " + ModificationTrack.NewCity *@
                                                             }
                                                             else
@@ -690,7 +690,7 @@
                                                     <div class="input-group">
                                                         @if (Order.ReceivingTime is not null)
                                                         {
-                                                            <span>@L[Order.ReceivingTime?.ToString()]</span>
+                                                            <span>@L[Order.ReceivingTime?.ToString()??""]</span>
                                                         }
                                                     </div>
                                                 </td>
@@ -740,12 +740,12 @@
                                                     {
                                                         if (temperature == ItemStorageTemperature.Normal.ToString())
                                                         {
-                                                            <option value="@temperature" selected>@L[temperature]</option>
+                                                            <option value="@temperature" selected>@L[temperature??""]</option>
                                                         }
 
                                                         else
                                                         {
-                                                            <option value="@temperature">@L[temperature]</option>
+                                                            <option value="@temperature">@L[temperature??""]</option>
                                                         }
                                                     }
                                                 </select>
@@ -1580,7 +1580,7 @@
                                                         <div class="input-group">
                                                             @if (Order.ReceivingTimeNormal is not null)
                                                             {
-                                                                <span>@L[Order.ReceivingTimeNormal?.ToString()]</span>
+                                                                <span>@L[Order.ReceivingTimeNormal?.ToString()??""]</span>
                                                             }
                                                         </div>
                                                     </td>
@@ -1592,7 +1592,7 @@
                                                         <div class="input-group">
                                                             @if (Order.ReceivingTimeFreeze is not null)
                                                             {
-                                                                <span>@L[Order.ReceivingTimeFreeze?.ToString()]</span>
+                                                                <span>@L[Order.ReceivingTimeFreeze?.ToString()??""]</span>
                                                             }
                                                         </div>
                                                     </td>
@@ -1604,7 +1604,7 @@
                                                         <div class="input-group">
                                                             @if (Order.ReceivingTimeFrozen is not null)
                                                             {
-                                                                <span>@L[Order.ReceivingTimeFrozen?.ToString()]</span>
+                                                                <span>@L[Order.ReceivingTimeFrozen?.ToString()??""]</span>
                                                             }
                                                         </div>
                                                     </td>
@@ -1840,7 +1840,7 @@
                                         {
                                             @if (enumValue.ToString() is not "Exchange")
                                             {
-                                                <SelectItem Value="@enumValue">@L[enumValue.ToString()]</SelectItem>
+                                                <SelectItem Value="@enumValue">@L[enumValue.ToString()??""]</SelectItem>
                                             }
                                         }
                                     }
@@ -2032,7 +2032,7 @@
                                 {
                                     <TableRow>
                                         <TableRowCell>@history.CreationTime.ToString("dd/MM/yyyy hh:mm:ss tt")</TableRowCell>
-                                        <TableRowCell>@L[history.EditorUserName]</TableRowCell>
+                                        <TableRowCell>@L[history.EditorUserName??""]</TableRowCell>
                                         <TableRowCell>@L[history.ActionType + "Title"]</TableRowCell>
                                         <TableRowCell>@FormatLocalizedDetails(history)</TableRowCell>
                                     </TableRow>
@@ -2516,7 +2516,7 @@
                                 <DisplayTemplate>
                                     @if (context.DeliveryMethod is DeliveryMethod.DeliveredByStore && context.ActualDeliveryMethod is not null)
                                     {
-                                        @(L[context.DeliveryMethod.ToString()] + " (" + L[context.ActualDeliveryMethod.ToString()] + ")")
+                                        @(L[context.DeliveryMethod.ToString()??""] + " (" + L[context.ActualDeliveryMethod.ToString()??""] + ")")
                                     }
                                     else
                                     {
@@ -3019,7 +3019,7 @@
                             @foreach (DeliveryMethod option in Enum.GetValues(typeof(DeliveryMethod)))
                             {
                                 <option value="@option">
-                                    @L[option.ToString()]
+                                    @L[option.ToString()??""]
                                 </option>
                             }
                         </InputSelect>

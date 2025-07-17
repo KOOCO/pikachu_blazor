@@ -18,6 +18,7 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
         int Total = 0;
         private string Sorting = nameof(Groupbuys.GroupBuyReport.GroupBuyName);
         private bool Loading { get; set; } = true;
+        private string? ReportBaseUrl { get; set; }
 
         private async Task UpdateGroupBuyReport()
         {
@@ -39,6 +40,7 @@ namespace Kooco.Pikachu.Blazor.Pages.GroupBuyManagement
                Loading=true;
                 PageIndex = e.Page - 1;
                 await UpdateGroupBuyReport();
+                ReportBaseUrl = Configuration["App:GroupBuyReportUrl"]?.EnsureEndsWith('/');
                 StateHasChanged();
             }
             catch (Exception ex)

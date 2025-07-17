@@ -17,6 +17,7 @@
 @inject IStringLocalizer<PikachuResource> L
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JSRuntime;
+@inject IConfiguration Configuration
 @attribute [Authorize]
 
 @if (Loading == true)
@@ -72,7 +73,7 @@
                     </DataGridColumn>
                     <DataGridColumn Caption="@L["ReportUrl"]" Sortable="false" TextAlignment="TextAlignment.Center">
                         <DisplayTemplate>
-                            <a href="/GroupBuyManagement/GroupBuyExternalReportDetails/@context.GroupBuyId" target="_blank"><i class="fa fa-link"></i></a>
+                            <a href="@(ReportBaseUrl + context.GroupBuyId)" target="_blank"><i class="fa fa-link"></i></a>
                         </DisplayTemplate>
                     </DataGridColumn>
                     <DataGridColumn TItem="GroupBuyReportDto"

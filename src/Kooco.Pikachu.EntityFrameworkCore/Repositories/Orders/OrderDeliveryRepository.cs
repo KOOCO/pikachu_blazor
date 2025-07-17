@@ -72,7 +72,7 @@ public class OrderDeliveryRepository(IDbContextProvider<PikachuDbContext> dbCont
         var queryable = await GetQueryableAsync();
 
         var orderIds = queryable
-            .Where(od => allPayLogisticsIds.Contains(od.AllPayLogisticsID))
+            .Where(od => allPayLogisticsIds.Contains(od.AllPayLogisticsID) || allPayLogisticsIds.Contains(od.DeliveryNo))
             .Select(od => od.OrderId)
             .Distinct();
 
