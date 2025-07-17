@@ -35,7 +35,7 @@ public partial class CashFlowDealerSettings
         ChinaTrust = new UpdateChinaTrustDto();
         EcPay = new UpdateEcPayDto();
         OrderValidity = new UpdateOrderValidityDto();
-        ManualBankTransfer = new();
+        ManualBankTransfer = new UpdateManualBankTransferDto();
     }
     #endregion
 
@@ -64,7 +64,7 @@ public partial class CashFlowDealerSettings
 
             var manualBankTransfer = paymentGateways.FirstOrDefault(x => x.PaymentIntegrationType is PaymentIntegrationType.ManualBankTransfer);
             
-            ManualBankTransfer = ObjectMapper.Map<PaymentGatewayDto, UpdateManualBankTransferDto>(manualBankTransfer);
+            ManualBankTransfer = ObjectMapper.Map<PaymentGatewayDto, UpdateManualBankTransferDto>(manualBankTransfer) ?? new();
 
             IsManualBankTransferNotExist = manualBankTransfer == null;
 
