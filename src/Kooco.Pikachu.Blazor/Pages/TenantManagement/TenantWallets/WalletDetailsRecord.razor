@@ -1,1 +1,85 @@
 ﻿
+@using Blazorise;
+@using Blazorise.DataGrid;
+@using Kooco.Pikachu.Tenants.Requests;
+@using Kooco.Pikachu.Tenants;
+@using Microsoft.Extensions.Localization;
+@using System.IO
+
+
+@inject ITenantWalletAppService WalletService
+@inherits FormComponentBase
+@inject ExcelDownloadHelper ExcelDownloadHelper
+
+<Div Class="d-flex align-items-end justify-content-end gap-1">
+    <PikachuButton Class="pk-btn-sm pk-btn-primary"
+    Clicked="() => ExportSelected()"
+    Disabled="SelectedTransactions == null || SelectedTransactions.Count == 0 "
+
+    IconClass="fas fa-file-download">
+        @L["Export"]
+    </PikachuButton>
+    <PikachuButton Class="pk-btn-sm pk-btn-primary"
+    Clicked="() => ExportAll()"
+
+    IconClass="fas fa-file-download">
+        @L["ExportAll"]
+    </PikachuButton>
+</Div>
+
+<DataGrid TItem="TenantWalletTransactionDto" Data="@Transactions" ShowPager="false"  @bind-SelectedRows="@SelectedTransactions" SelectionMode="DataGridSelectionMode.Multiple" >
+    <DataGridMultiSelectColumn TItem="TenantWalletTransactionDto" Width="30px"></DataGridMultiSelectColumn>
+    <DataGridColumn Field="@nameof(TenantWalletTransactionDto.Timestamp)" Caption="@L["Timestamp"]">
+        <DisplayTemplate>@context.Timestamp.ToString("M/d/yyyy h:mm tt")</DisplayTemplate>
+    </DataGridColumn>
+    <DataGridColumn Field="@nameof(TenantWalletTransactionDto.TransactionNo)" Caption="@L["TransactionNo"]" />
+    <DataGridColumn  Field="@nameof(TenantWalletTransactionDto.TransactionType)" Caption="@L["TransactionType"]" />
+    <DataGridColumn Field="@nameof(TenantWalletTransactionDto.TransactionStatus)" Caption="@L["TransactionStatus"]">
+        <DisplayTemplate >
+            @if(context.TransactionStatus == WalletDeductionStatus.Completed)
+            {
+                <Badge Color="Color.Success">@L[context.TransactionStatus.ToString()]</Badge>
+            }
+            else if (context.TransactionStatus == WalletDeductionStatus.Pending)
+            {
+                <Badge Color="Color.Warning">@L[context.TransactionStatus.ToString()]</Badge>
+            }
+            else
+            {
+                <Badge Color="Color.Danger">@L[context.TransactionStatus.ToString()]</Badge>
+            }
+        </DisplayTemplate>
+    </DataGridColumn>
+    <DataGridColumn Field="@nameof(TenantWalletTransactionDto.Amount)" Caption="@L["Amount"]">
+        <DisplayTemplate >
+            @(context.Amount > 0 ? $"+{context.Amount:N0}" : $"{context.Amount:N0}")
+        </DisplayTemplate>
+    </DataGridColumn>
+    <DataGridColumn Field="@nameof(TenantWalletTransactionDto.Balance)" Caption="@L["Balance"]">
+        <DisplayTemplate >@context.Balance.ToString("N0")</DisplayTemplate>
+    </DataGridColumn>
+    <DataGridColumn Field="@nameof(TenantWalletTransactionDto.Note)" Caption="@L["Note"]" />
+</DataGrid>
+@code {
+    [Parameter] public Guid WalletId { get; set; }
+
+    private List<TenantWalletTransactionDto> Transactions;
+    private List<TenantWalletTransactionDto> SelectedTransactions = new();
+    protected override async Task OnInitializedAsync()
+    {
+        Transactions = await WalletService.GetWalletTransactionsAsync(WalletId);
+    }
+    private async Task ExportSelected()
+    {
+        var selectedIds = SelectedTransactions.Select(x => x.Id).ToList();
+        var stream = await WalletService.ExportWalletTransactionsAsync(WalletId, selectedIds);
+        await ExcelDownloadHelper.DownloadExcelAsync(stream);
+        SelectedTransactions = [];
+    }
+
+    private async Task ExportAll()
+    {
+        var stream = await WalletService.ExportWalletTransactionsAsync(WalletId);
+        await ExcelDownloadHelper.DownloadExcelAsync(stream);
+}
+}
