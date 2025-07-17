@@ -117,7 +117,8 @@ public class ItemAppService :
             );
         if (input.IsTest)
         {
-            item.ItemNo = 12345;
+            // For testing, generate a unique ItemNo to avoid conflicts
+            item.ItemNo = DateTimeOffset.Now.ToUnixTimeMilliseconds();
         }
         if (input.ItemDetails != null && input.ItemDetails.Any())
         {

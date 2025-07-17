@@ -13,6 +13,11 @@ namespace Kooco.Pikachu.Items.Dtos;
 public class ItemDto : FullAuditedEntityDto<Guid>
 {
     public string ItemName { get; set; } //商品名稱/ItemName
+    
+    /// <summary>
+    /// 商品編號
+    /// </summary>
+    public long ItemNo { get; set; }
     [MaxLength(4)]
     public string ItemBadge { get; set; } //商品名稱/ItemName
     public string? ItemBadgeColor { get; set; }

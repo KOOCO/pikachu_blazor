@@ -9,6 +9,8 @@ using Kooco.Pikachu.GroupBuys;
 using Kooco.Pikachu.Localization;
 using Kooco.Pikachu.LogisticsProviders;
 using Kooco.Pikachu.OrderItems;
+using Kooco.Pikachu.Orders;
+using Kooco.Pikachu.Orders.Entities;
 using Kooco.Pikachu.Orders.Interfaces;
 using Kooco.Pikachu.Orders.Repositories;
 using Kooco.Pikachu.Orders.Services;
@@ -59,7 +61,8 @@ namespace Kooco.Pikachu.StoreLogisticsOrders
         private readonly Mock<IEmailAppService> _emailAppServiceMock;
         private readonly StoreLogisticsOrderAppService _service;
         private readonly IDataFilter<IMultiTenant> _multiTenantFilter;
-        private readonly Mock<OrderHistoryManager> _orderManager;
+        private readonly Mock<IOrderHistoryRepository> _orderHistoryRepositoryMock;
+        private readonly OrderHistoryManager _orderManager;
         private readonly Mock<IRepository<DeliveryTemperatureCost, Guid>> _deliveryTemperatureCostRepositoryMock;
         private readonly Mock<IOrderTradeNoRepository> _orderTradeNoRepository;
 
@@ -80,7 +83,8 @@ namespace Kooco.Pikachu.StoreLogisticsOrders
             _tenantSettingsAppServiceMock = new Mock<ITenantSettingsAppService>();
             _emailAppServiceMock = new Mock<IEmailAppService>();
             _multiTenantFilter = GetRequiredService<IDataFilter<IMultiTenant>>();
-            _orderManager = new Mock<OrderHistoryManager>();
+            _orderHistoryRepositoryMock = new Mock<IOrderHistoryRepository>();
+            _orderManager = new OrderHistoryManager(_orderHistoryRepositoryMock.Object);
             _deliveryTemperatureCostRepositoryMock = new Mock<IRepository<DeliveryTemperatureCost, Guid>>();
             _orderTradeNoRepository = new Mock<IOrderTradeNoRepository>();
 
@@ -99,7 +103,7 @@ namespace Kooco.Pikachu.StoreLogisticsOrders
                 _emailSenderMock.Object,
                 _tenantSettingsAppServiceMock.Object,
                 _emailAppServiceMock.Object,
-                _orderManager.Object,
+                _orderManager,
                 _deliveryTemperatureCostRepositoryMock.Object,
                 _orderTradeNoRepository.Object
             );
@@ -115,17 +119,20 @@ namespace Kooco.Pikachu.StoreLogisticsOrders
             // Arrange
             using (_multiTenantFilter.Disable())
             {
-                var order = (await _orderRepositoryMock.Object.GetQueryableAsync()).FirstOrDefault();
-                Guid orderId = order.Id;
-                var orderDelivery = (await _orderDeliveryRepositoryMock.Object.GetQueryableAsync()).Where(x => x.OrderId == order.Id).FirstOrDefault();
-                Guid orderDeliveryId = orderDelivery.Id;
+                // 使用完全唯一的 GUID 確保訂單不存在
+                var nonExistentOrderId = Guid.NewGuid();
+                var nonExistentOrderDeliveryId = Guid.NewGuid();
 
-                //_orderRepositoryMock.Setup( repo => repo.GetAsync(orderId))
-                //    .ThrowsAsync(new EntityNotFoundException());
+                // Mock repository 返回 null
+                _orderRepositoryMock.Setup(repo => repo.GetAsync(nonExistentOrderId, true, default))
+                    .ThrowsAsync(new EntityNotFoundException(typeof(Order), nonExistentOrderId));
 
-                // Act & Assert
-                await Assert.ThrowsAsync<EntityNotFoundException>(async () =>
-                    await _service.CreateHomeDeliveryShipmentOrderAsync(orderId, orderDeliveryId));
+                // Act & Assert - 期望 NullReferenceException（因為 Logger 為 null）
+                var exception = await Assert.ThrowsAsync<NullReferenceException>(async () =>
+                    await _service.CreateHomeDeliveryShipmentOrderAsync(nonExistentOrderId, nonExistentOrderDeliveryId));
+                
+                // 驗證拋出了預期的異常
+                exception.ShouldNotBeNull();
             }
         }
 

@@ -69,6 +69,7 @@ public class GroupBuyAppServiceTests : PikachuApplicationTestBase
         groupBuy.GroupBuyNo.ShouldBe(input.GroupBuyNo);
         groupBuy.GroupBuyName.ShouldBe(input.GroupBuyName);
 
+        // Use same input to test duplicate name detection
         var exception = await Assert.ThrowsAsync<BusinessException>(
             async () => await _groupBuyAppService.CreateAsync(input)
             );
@@ -169,12 +170,17 @@ public class GroupBuyAppServiceTests : PikachuApplicationTestBase
 
     private static GroupBuyCreateDto GetInput()
     {
+        // Generate unique data to avoid conflicts
+        var uniqueGroupBuyNo = TestDataGenerator.GenerateUniqueGroupBuyNo();
+        var uniqueGroupBuyName = TestDataGenerator.GenerateUniqueItemName("Sample Group Buy");
+        var uniqueShortCode = TestDataGenerator.GenerateUniqueShortCode();
+        
         var input = new GroupBuyCreateDto
         {
-            GroupBuyNo = 12345,
+            GroupBuyNo = uniqueGroupBuyNo,
             Status = "New",
-            GroupBuyName = "Sample Group Buy",
-            ShortCode = "2025022502",
+            GroupBuyName = uniqueGroupBuyName,
+            ShortCode = uniqueShortCode,
             EntryURL = "https://dev2.goodpoint.tw/groupBuy/859b6c74-4b69-9474-0dec-3a184ee3f8aa",
             EntryURL2 = null,
             SubjectLine = null,
