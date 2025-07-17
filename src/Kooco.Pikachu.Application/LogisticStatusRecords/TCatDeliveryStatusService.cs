@@ -66,7 +66,7 @@ public class TCatDeliveryStatusService : ITransientDependency
 
         foreach (var record in records)
         {
-            var orderDelivery = orderDeliveries.FirstOrDefault(od => od.AllPayLogisticsID == record.OrderId);
+            var orderDelivery = orderDeliveries.FirstOrDefault(od => od.AllPayLogisticsID == record.OrderId || od.DeliveryNo == record.OrderId);
             if (orderDelivery != null)
             {
                 var deliveryStatus = DeliveryStatusMapper.MapStatus(orderDelivery.DeliveryMethod, record.StatusCode);
