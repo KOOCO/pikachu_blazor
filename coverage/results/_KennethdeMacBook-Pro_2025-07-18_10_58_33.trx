@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TestRun id="6e724f92-e562-4eee-9463-31254ee71aab" name="@KennethdeMacBook-Pro 2025-07-18 10:58:33" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <Times creation="2025-07-18T10:58:33.0334270+08:00" queuing="2025-07-18T10:58:33.0334270+08:00" start="2025-07-18T10:58:32.1704460+08:00" finish="2025-07-18T10:58:33.0336440+08:00" />
+  <TestSettings name="default" id="a8a1a795-4288-460a-b61f-18b48d2f2606">
+    <Deployment runDeploymentRoot="_KennethdeMacBook-Pro_2025-07-18_10_58_33" />
+  </TestSettings>
+  <TestLists>
+    <TestList name="不在清單中的結果" id="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestList name="所有載入的結果" id="19431567-8539-422a-85d7-44ee4e166bda" />
+  </TestLists>
+  <ResultSummary outcome="Completed">
+    <Counters total="0" executed="0" passed="0" failed="0" error="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0" />
+    <Output>
+      <StdOut>[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v3.0.1+f8675c32e5 (64-bit .NET 9.0.4)
+[xUnit.net 00:00:00.05]   Discovering: Kooco.Pikachu.TestBase
+[xUnit.net 00:00:00.05]   Discovered:  Kooco.Pikachu.TestBase
+</StdOut>
+    </Output>
+    <RunInfos>
+      <RunInfo computerName="KennethdeMacBook-Pro" outcome="Warning" timestamp="2025-07-18T10:58:32.4880400+08:00">
+        <Text>資料收集: 找不到易記名稱為 'XPlat Code Coverage' 的 datacollector。</Text>
+      </RunInfo>
+      <RunInfo computerName="KennethdeMacBook-Pro" outcome="Warning" timestamp="2025-07-18T10:58:32.4889320+08:00">
+        <Text>資料收集: 找不到資料收集器 'XPlat Code Coverage'</Text>
+      </RunInfo>
+      <RunInfo computerName="KennethdeMacBook-Pro" outcome="Warning" timestamp="2025-07-18T10:58:32.8263690+08:00">
+        <Text>/Users/seco/Documents/GitHub/pikachu_blazor/test/Kooco.Pikachu.TestBase/bin/Debug/net9.0/Kooco.Pikachu.TestBase.dll 中未提供任何測試。請確定已登錄了測試探索程式與執行程式，且平台與 Framework 版本設定皆正確，然後再試一次。</Text>
+      </RunInfo>
+    </RunInfos>
+  </ResultSummary>
+</TestRun>
