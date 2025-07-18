@@ -65,10 +65,12 @@
 
     private List<TenantWalletTransactionDto> Transactions;
     private List<TenantWalletTransactionDto> SelectedTransactions = new();
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnParametersSetAsync()
     {
         Transactions = await WalletService.GetWalletTransactionsAsync(WalletId);
     }
+
+
     private async Task ExportSelected()
     {
         var selectedIds = SelectedTransactions.Select(x => x.Id).ToList();
