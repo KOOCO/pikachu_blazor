@@ -1,3 +1,4 @@
+using Blazorise;
 using Blazorise.Bootstrap5;
 using Blazorise.FluentValidation;
 using Blazorise.Icons.FontAwesome;
@@ -407,6 +408,11 @@ public class PikachuBlazorModule : AbpModule
             .AddBootstrap5Providers()
             .AddFontAwesomeIcons()
             .AddBlazoriseFluentValidation()
+            .AddBlazorise(options =>
+            {
+                options.Debounce = true;
+                options.DebounceInterval = 1000;
+            })
             .AddMudServices();
 
         context.Services.AddValidatorsFromAssembly(typeof(PikachuApplicationModule).Assembly);
