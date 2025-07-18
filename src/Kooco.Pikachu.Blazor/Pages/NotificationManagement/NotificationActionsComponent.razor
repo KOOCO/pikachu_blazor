@@ -1,0 +1,65 @@
+﻿@inherits PikachuComponentBase
+
+<Div Class="actions-container">
+    @if (Loading)
+    {
+        <div class="actions-skeleton">
+            <Skeleton Animation="SkeletonAnimation.Pulse">
+                <SkeletonItem Width="Width.Is100"></SkeletonItem>
+            </Skeleton>
+            <Skeleton Animation="SkeletonAnimation.Pulse">
+                <SkeletonItem Width="Width.Is100"></SkeletonItem>
+            </Skeleton>
+        </div>
+    }
+    else
+    {
+        <div class="notification-actions">
+            <div class="notification-filter-actions">
+                @foreach (var button in Buttons)
+                {
+                    <PikachuButton Class="@ButtonClass(button)"
+                                   Clicked="@(() => OnClick(button))">
+                        @L[button]
+                    </PikachuButton>
+                }
+            </div>
+            <div class="notification-actions-right">
+                <PikachuButton Class="pk-btn-sm" IconClass="fas fa-refresh">
+                    @L["Refresh"]
+                </PikachuButton>
+                <PikachuButton Class="pk-btn-sm pk-btn-primary" IconClass="fas fa-check">
+                    @L["Mark All Read"]
+                </PikachuButton>
+            </div>
+        </div>
+    }
+</Div>
+
+@code {
+    [Parameter] public bool Loading { get; set; }
+    private string SelectedFilter { get; set; } = "All Items";
+    private List<string> Buttons { get; set; } = ["All Items", "Unread", "Urgent", "Today", "Orders", "Transfers", "Refunds", "Returns"];
+
+    protected override void OnInitialized()
+    {
+        Loading = true;
+        base.OnInitialized();
+        // Simulate loading delay
+        Task.Delay(2000).ContinueWith(_ =>
+        {
+            Loading = false;
+            InvokeAsync(StateHasChanged);
+        });
+    }
+
+    string ButtonClass(string button)
+    {
+        return $"pk-btn-sm {(SelectedFilter == button ? "pk-btn-secondary" : "pk-btn-outline-secondary")}";
+    }
+
+    void OnClick(string button)
+    {
+        SelectedFilter = button;
+    }
+}

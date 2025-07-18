@@ -437,6 +437,15 @@ public class PikachuMenuContributor : IMenuContributor
 
         context.Menu.AddItem(emailManagement);
 
+        context.Menu.AddItem(new ApplicationMenuItem(
+            PikachuMenus.Notifications,
+            displayName: l["Menu:Notifications"],
+            icon: "fas fa-bell",
+            order: 10,
+            requiredPermissionName: PikachuPermissions.Notifications.Default,
+            url: "/Notifications"
+            ));
+
         if (MultiTenancyConsts.IsEnabled)
         {
             administration.SetSubItemOrder(TenantManagementMenuNames.GroupName, 1);

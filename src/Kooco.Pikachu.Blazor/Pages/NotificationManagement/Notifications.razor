@@ -1,0 +1,30 @@
+﻿@page "/Notifications"
+<link href="css/notifications.css" rel="stylesheet" />
+
+@attribute [Authorize(PikachuPermissions.Notifications.Default)]
+@inherits PikachuComponentBase
+
+<h3 class="text-dark">@L["Notifications"]</h3>
+<NotificationStatsComponent Loading="Loading"/>
+<NotificationActionsComponent Loading="Loading" />
+
+<Table Responsive>
+    <TableHeader>
+        <TableRow>
+            <TableHeaderCell>@L["Type"]</TableHeaderCell>
+            <TableHeaderCell>@L["Description"]</TableHeaderCell>
+            <TableHeaderCell>@L["Status"]</TableHeaderCell>
+            <TableHeaderCell>@L["Time"]</TableHeaderCell>
+            <TableHeaderCell>@L["Actions"]</TableHeaderCell>
+        </TableRow>
+    </TableHeader>
+    <TableBody>
+        <TableRow>
+            <TableRowCell></TableRowCell>
+            <TableRowCell></TableRowCell>
+            <TableRowCell></TableRowCell>
+            <TableRowCell></TableRowCell>
+            <TableRowCell></TableRowCell>
+        </TableRow>
+    </TableBody>
+</Table>

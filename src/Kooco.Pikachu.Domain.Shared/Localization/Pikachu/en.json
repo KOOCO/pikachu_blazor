@@ -1678,24 +1678,31 @@
     "InputCityName": "Input City Name",
     "InputAddress": "Input Address",
     "SelfPickUpInfo": "Self-Pickup Info",
-    
+
     "ManageWallet": "Manage Wallet",
     "PendingTransactions": "Pending Transactions",
-   
-    
+
+
     "Timestamp": "Timestamp",
     "TransactionNo": "Transaction No.",
-   
-    
-    
+
+
+
     "Balance": "Balance",
     "Note": "Note",
-    
+
     "LogisticsFeeDeducted": "Logistics Fee Deducted",
     "ManualTopUp": "Manual Top-Up",
     "ManualDeduction": "Manual Deduction",
     "ShoppingCreditDescription:CashbackEarned": "Cashback Earned: Order#",
     "ShoppingCreditDescription:OrderCancelled": "Order Cancelled: Order#",
-    "ShoppingCreditDescription:CreditDeduction": "Credit Deduction: Order#"
+    "ShoppingCreditDescription:CreditDeduction": "Credit Deduction: Order#",
+    "Permission:NotificationManagement": "Notifications",
+    "Permission:Notifications": "Notifications",
+    "Menu:Notifications": "Notifications",
+    "OrderMessages": "Order Messages",
+    "BankTransfers": "Bank Transfers",
+    "RefundRequests": "Refund Requests",
+    "ReturnsAndExchanges": "Returns & Exchanges"
   }
 }

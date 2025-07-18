@@ -40,4 +40,5 @@ public class PikachuMenus
     public const string EdmList = Prefix + ".EdmList";
 
     public const string Campaigns = Prefix + ".Campaigns";
+    public const string Notifications = Prefix + ".Notifications";
 }

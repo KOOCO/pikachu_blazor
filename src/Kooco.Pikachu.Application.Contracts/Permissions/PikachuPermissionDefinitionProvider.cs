@@ -147,6 +147,9 @@ public class PikachuPermissionDefinitionProvider : PermissionDefinitionProvider
         edmPermissions.AddChild(PikachuPermissions.EdmManagement.Create, L("Permission:Create"));
         edmPermissions.AddChild(PikachuPermissions.EdmManagement.Edit, L("Permission:Edit"));
         edmPermissions.AddChild(PikachuPermissions.EdmManagement.Delete, L("Permission:Delete"));
+
+        var notificationManagementGroup = context.AddGroup(PikachuPermissions.NotificationManagement, L("Permission:NotificationManagement"));
+        var notificationPermissions = notificationManagementGroup.AddPermission(PikachuPermissions.Notifications.Default, L("Permission:Notifications"));
     }
 
     private static LocalizableString L(string name)

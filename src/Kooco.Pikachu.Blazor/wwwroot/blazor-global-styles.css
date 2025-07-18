@@ -467,6 +467,28 @@
         background-color: transparent;
     }
 
+.pk-btn-outline-secondary {
+    border-color: var(--pk-secondary-light);
+    color: var(--pk-secondary);
+    background: transparent;
+}
+
+    .pk-btn-outline-secondary:hover {
+        background-color: var(--pk-secondary);
+        color: var(--pk-light);
+    }
+
+    .pk-btn-outline-secondary:active {
+        background-color: var(--pk-secondary-dark);
+        color: var(--pk-light);
+    }
+
+    .pk-btn-outline-secondary:disabled {
+        color: var(--pk-secondary-light);
+        background-color: transparent;
+        border-color: var(--pk-secondary-light);
+    }
+
 .pk-btn-light {
     background: var(--pk-light);
     color: var(--pk-dark);
