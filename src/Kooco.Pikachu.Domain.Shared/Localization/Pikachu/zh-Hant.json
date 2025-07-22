@@ -1651,15 +1651,31 @@
     "ShoppingCreditDescription:CashbackEarned": "購物回饋: 訂單#",
     "ShoppingCreditDescription:OrderCancelled": "訂單取消: 訂單#",
     "ShoppingCreditDescription:CreditDeduction": "購物折抵: 訂單#",
-   
+
     "ManageWallet": "管理錢包",
     "PendingTransactions": "待審核款項",
-    
+
     "Balance": "餘額",
     "Note": "備註",
-   
+
     "LogisticsFeeDeducted": "物流費用扣除",
     "ManualTopUp": "手動加值",
-    "ManualDeduction": "手動扣款"
+    "ManualDeduction": "手動扣款",
+    "SummaryReport": "摘要報告",
+    "GroupBuySalesReport": "團購銷售報告",
+    "GeneratedOn": "產生日期",
+    "ReportPeriod": "報告期間",
+    "KeyMetrics": "關鍵指標",
+    "Value": "值",
+    "TotalOrdersCompleted": "已完成訂單總數",
+    "TotalItemsSold": "銷售商品總數",
+    "ActiveGroupBuys": "進行中的團購",
+    "Revenue": "營收",
+    "CompletedOrders": "完成訂單",
+    "PercentageOfTotal": "總營收百分比",
+    "PerformanceHighlights": "績效亮點",
+    "BestPerformingProduct": "最佳表現商品",
+    "TopGroupBuyCampaign": "最成功團購活動",
+    "OrderCompletionRate": "訂單完成率"
   }
 }

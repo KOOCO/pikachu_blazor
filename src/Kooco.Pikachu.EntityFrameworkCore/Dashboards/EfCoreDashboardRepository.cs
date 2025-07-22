@@ -1,5 +1,6 @@
 ﻿using Kooco.Pikachu.EntityFrameworkCore;
 using Kooco.Pikachu.EnumValues;
+using Kooco.Pikachu.Members;
 using Kooco.Pikachu.Orders;
 using Kooco.Pikachu.Reports;
 using Microsoft.EntityFrameworkCore;
@@ -281,5 +282,238 @@ public class EfCoreDashboardRepository(IDbContextProvider<PikachuDbContext> dbCo
         }
 
         return model;
+    }
+
+    public async Task<SummaryReportModel> GetSummaryReportAsync(DateTime startDate, DateTime endDate, IEnumerable<Guid> selectedGroupBuyIds)
+    {
+        var dbContext = await GetDbContextAsync();
+
+        var query = dbContext.Orders
+            .AsNoTracking()
+            .Where(order => order.CreationTime.Date >= startDate.Date && order.CreationTime.Date <= endDate.Date)
+            .WhereIf(selectedGroupBuyIds.Any(), order => selectedGroupBuyIds.Contains(order.GroupBuyId))
+            .Include(order => order.OrderItems)
+            .Select(order => new
+            {
+                order.ShippingStatus,
+                order.TotalQuantity,
+                order.TotalAmount,
+                order.GroupBuyId,
+                order.OrderItems
+            });
+
+        var totalOrders = await query.CountAsync();
+        var orders = query.Where(order => OrderConsts.CompletedShippingStatus.Contains(order.ShippingStatus)).ToList();
+
+        var result = new SummaryReportModel
+        {
+            TotalOrdersCompleted = orders.Count,
+            TotalItemsSold = orders.Sum(order => order.TotalQuantity),
+            TotalSales = orders.Sum(order => order.TotalAmount),
+            ActiveGroupBuys = query.Select(order => order.GroupBuyId).Distinct().Count(),
+            TotalOrders = totalOrders,
+        };
+
+        var memberRole = await dbContext.Roles.FirstOrDefaultAsync(role => role.NormalizedName == MemberConsts.Role);
+        result.NewMembers = memberRole != null
+            ? await dbContext.Users
+            .Where(user => user.Roles.Any(role => role.RoleId == memberRole.Id))
+            .Where(user => user.CreationTime >= startDate.Date && user.CreationTime <= endDate.Date)
+            .CountAsync()
+            : 0;
+
+        var topPerformingProduct = orders
+            .SelectMany(q => q.OrderItems)
+            .GroupBy(q => q.ItemId)
+            .Select(q => new { q.Key, TotalQuantity = q.Sum(oi => oi.Quantity) })
+            .OrderByDescending(q => q.TotalQuantity)
+            .FirstOrDefault();
+
+        var productName = await dbContext.Items
+            .Where(item => topPerformingProduct != null && item.Id == topPerformingProduct.Key)
+            .Select(item => item.ItemName)
+            .FirstOrDefaultAsync();
+
+        result.TopPerformingProduct = productName;
+        result.TopPerformingProductQuantity = topPerformingProduct?.TotalQuantity;
+
+        var groupBuyIds = orders.Select(order => order.GroupBuyId);
+        var groupBuys = await dbContext.GroupBuys
+            .Where(gb => groupBuyIds.Contains(gb.Id))
+            .Select(gb => new
+            {
+                Id = gb.Id,
+                Name = gb.GroupBuyName
+            }).ToListAsync();
+
+        var groupBuySummaries = groupBuys
+            .GroupJoin(orders,
+                gb => gb.Id,
+                o => o.GroupBuyId,
+                (gb, orders) => new SummaryReportGroupBuyModel
+                {
+                    Name = gb.Name,
+                    Revenue = orders.Sum(o => o.TotalAmount),
+                    CompletedOrders = orders.Count()
+                })
+            .ToList();
+
+        var totalRevenue = groupBuySummaries.Sum(x => x.Revenue);
+
+        foreach (var summary in groupBuySummaries)
+        {
+            summary.PercentageOfTotal = totalRevenue == 0 ? 0 : (summary.Revenue / totalRevenue) * 100;
+        }
+
+        result.GroupBuys = groupBuySummaries;
+
+        return result;
+    }
+
+    public async Task<List<ProductSummaryModel>> GetProductSummaryAsync(DateTime startDate, DateTime endDate, IEnumerable<Guid> selectedGroupBuyIds)
+    {
+        var dbContext = await GetDbContextAsync();
+
+        var data = await dbContext.Orders
+            .Where(order => order.CreationTime.Date >= startDate.Date && order.CreationTime <= endDate.Date
+            && OrderConsts.CompletedShippingStatus.Contains(order.ShippingStatus))
+            .WhereIf(selectedGroupBuyIds.Any(), order => selectedGroupBuyIds.Contains(order.GroupBuyId))
+            .Include(order => order.OrderItems)
+            .Select(order => new
+            {
+                items = order.OrderItems
+                    .Select(oi => new
+                    {
+                        OrderId = order.Id,
+                        order.GroupBuyId,
+                        oi.ItemId,
+                        oi.SKU,
+                        oi.SetItemId,
+                        oi.Quantity,
+                        oi.ItemPrice,
+                        oi.TotalAmount
+                    }).Where(oi => oi.ItemId.HasValue || oi.SetItemId.HasValue)
+            }).SelectMany(x => x.items)
+            .ToListAsync();
+
+        var items = data
+            .Where(x => x.ItemId.HasValue)
+            .GroupBy(x => new { ItemId = x.ItemId!.Value, x.SKU, x.GroupBuyId });
+
+        var itemIds = items.Select(i => i.Key.ItemId);
+
+        var itemNames = await dbContext.Items
+            .Where(x => itemIds.Contains(x.Id))
+            .Select(x => new { x.Id, x.ItemName })
+            .ToListAsync();
+
+        var setItems = data
+            .Where(x => x.SetItemId.HasValue)
+            .GroupBy(x => new { SetItemId = x.SetItemId!.Value, x.GroupBuyId });
+
+        var setItemIds = setItems.Select(x => x.Key.SetItemId);
+
+        var setItemNames = await dbContext.SetItems
+            .Where(x => setItemIds.Contains(x.Id))
+            .Select(x => new { x.Id, x.SetItemName })
+            .ToListAsync();
+
+        var groupBuyIds = data.Select(x => x.GroupBuyId);
+
+        var groupBuyNames = await dbContext.GroupBuys
+            .Where(gb => groupBuyIds.Contains(gb.Id))
+            .Select(gb => new { gb.Id, gb.GroupBuyName })
+            .ToListAsync();
+
+        var result = items.Select(x => new ProductSummaryModel
+        {
+            Name = itemNames.Where(i => i.Id == x.Key.ItemId).FirstOrDefault()?.ItemName,
+            SKU = x.Key.SKU,
+            TotalQuantity = x.Sum(y => y.Quantity),
+            UnitPrice = x.FirstOrDefault() != null ? x.First().ItemPrice : 0,
+            TotalRevenue = x.Sum(y => y.TotalAmount),
+            GroupBuy = groupBuyNames.Where(gb => gb.Id == x.Key.GroupBuyId).FirstOrDefault()?.GroupBuyName,
+            Category = ""
+        }).ToList();
+
+        result.AddRange([.. setItems.Select(x => new ProductSummaryModel
+        {
+            Name = setItemNames.Where(i => i.Id == x.Key.SetItemId).FirstOrDefault()?.SetItemName,
+            TotalQuantity = x.Sum(y => y.Quantity),
+            UnitPrice = x.FirstOrDefault() != null ? x.First().ItemPrice : 0,
+            TotalRevenue = x.Sum(y => y.TotalAmount),
+            GroupBuy = groupBuyNames.Where(gb => gb.Id == x.Key.GroupBuyId).FirstOrDefault()?.GroupBuyName
+        })]);
+
+        return result;
+    }
+
+    public async Task<List<OrderItemDetailsModel>> GetOrderItemDetailsAsync(DateTime startDate, DateTime endDate, IEnumerable<Guid> selectedGroupBuyIds)
+    {
+        var dbContext = await GetDbContextAsync();
+
+        var data = await dbContext.Orders
+            .Where(order => order.CreationTime.Date >= startDate.Date && order.CreationTime <= endDate.Date)
+            .WhereIf(selectedGroupBuyIds.Any(), order => selectedGroupBuyIds.Contains(order.GroupBuyId))
+            .Include(order => order.OrderItems)
+            .Select(order => new
+            {
+                Items = order.OrderItems
+                    .Select(oi => new
+                    {
+                        order.OrderNo,
+                        order.CreationTime,
+                        order.GroupBuyId,
+                        oi.ItemId,
+                        oi.SetItemId,
+                        oi.SKU,
+                        oi.Spec,
+                        oi.Quantity,
+                        oi.ItemPrice,
+                        oi.TotalAmount,
+                        order.ShippingStatus
+                    })
+            }).SelectMany(x => x.Items)
+            .ToListAsync();
+
+        var setItemIds = data.Where(x => x.SetItemId.HasValue).Select(x => x.SetItemId).Distinct();
+        var setItems = await dbContext.SetItems
+            .Where(si => setItemIds.Contains(si.Id))
+            .Select(si => new { si.Id, si.SetItemName })
+            .ToListAsync();
+        
+        var itemIds = data.Where(x => x.ItemId.HasValue).Select(x => x.ItemId!.Value).ToList();
+        itemIds = itemIds.Distinct().ToList();
+
+        var items = await dbContext.Items
+            .Where(item => itemIds.Contains(item.Id))
+            .Select(item => new { item.Id, item.ItemName })
+            .ToListAsync();
+
+        var groupBuyIds = data.Select(x => x.GroupBuyId);
+        var groupBuys = await dbContext.GroupBuys
+            .Where(gb => groupBuyIds.Contains(gb.Id))
+            .Select(gb => new { gb.Id, gb.GroupBuyName })
+            .ToListAsync();
+
+        var result = data.Select(x => new OrderItemDetailsModel
+        {
+            OrderNo = x.OrderNo,
+            CreationTime = x.CreationTime,
+            GroupBuy = groupBuys.Where(gb => gb.Id == x.GroupBuyId).FirstOrDefault()?.GroupBuyName,
+            ProductName = x.ItemId.HasValue 
+                ? items.Where(item => item.Id == x.ItemId).FirstOrDefault()?.ItemName
+                : setItems.Where(setItem => setItem.Id == x.SetItemId).FirstOrDefault()?.SetItemName,
+            Attributes = x.Spec,
+            SKU = x.SKU,
+            Quantity = x.Quantity,
+            UnitPrice = x.ItemPrice,
+            Total = x.TotalAmount,
+            ShippingStatus = x.ShippingStatus
+        })
+            .OrderByDescending(x => x.CreationTime)
+            .ToList();
+
+        return result;
     }
 }

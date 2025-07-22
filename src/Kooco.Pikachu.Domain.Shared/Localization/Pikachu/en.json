@@ -1678,24 +1678,45 @@
     "InputCityName": "Input City Name",
     "InputAddress": "Input Address",
     "SelfPickUpInfo": "Self-Pickup Info",
-    
+
     "ManageWallet": "Manage Wallet",
     "PendingTransactions": "Pending Transactions",
-   
-    
+
+
     "Timestamp": "Timestamp",
     "TransactionNo": "Transaction No.",
-   
-    
-    
+
+
+
     "Balance": "Balance",
     "Note": "Note",
-    
+
     "LogisticsFeeDeducted": "Logistics Fee Deducted",
     "ManualTopUp": "Manual Top-Up",
     "ManualDeduction": "Manual Deduction",
     "ShoppingCreditDescription:CashbackEarned": "Cashback Earned: Order#",
     "ShoppingCreditDescription:OrderCancelled": "Order Cancelled: Order#",
-    "ShoppingCreditDescription:CreditDeduction": "Credit Deduction: Order#"
+    "ShoppingCreditDescription:CreditDeduction": "Credit Deduction: Order#",
+    "SummaryReport": "Summary Report",
+    "GroupBuySalesReport": "Group Buy Sales Report",
+    "GeneratedOn": "Generated on",
+    "ReportPeriod": "Report Period",
+    "KeyMetrics": "Key Metrics",
+    "Value": "Value",
+    "TotalOrdersCompleted": "Total Orders Completed",
+    "TotalItemsSold": "Total Items Sold",
+    "ActiveGroupBuys": "Active Group Buys",
+    "Revenue": "Revenue",
+    "CompletedOrders": "Completed Orders",
+    "PercentageOfTotal": "% of Total",
+    "PerformanceHighlights": "Performance Highlights",
+    "BestPerformingProduct": "Best Performing Product",
+    "TopGroupBuyCampaign": "Top Group Buy Campaign",
+    "OrderCompletionRate": "Order Completion Rate",
+    "ProductSummary": "Product Summary",
+    "ProductName": "Product Name",
+    "TotalRevenue": "Total Revenue",
+    "TotalQtySold": "Total Qty Sold",
+    "OrderItemDetails": "Order Item Details"
   }
 }

@@ -16,6 +16,7 @@
 @inject IDashboardAppService DashboardAppService
 @inject IGroupBuyAppService GroupBuyAppService
 @inject NavigationManager NavigationManager
+@inject ExcelDownloadHelper ExcelDownloadHelper
 
 <Card>
     <CardBody>
@@ -57,10 +58,16 @@
                 </AntDesign.Select>
             </Column>
             <Column ColumnSize="ColumnSize.Is12.Is1.OnDesktop">
-                <Div Class="d-flex align-items-end justify-content-center h-100">
-                    <PikachuButton Class="pk-btn-sm pk-btn-outline-primary w-100"
+                <Div Class="d-flex align-items-end justify-content-center h-100 gap-1">
+                    <PikachuButton Class="pk-btn-sm pk-btn-outline-primary icon"
                                    IconClass="fas fa-filter" Clicked="ApplyFilters"
+                                   Disabled="Exporting"
                                    Loading="Loading">
+                    </PikachuButton>
+                    <PikachuButton Class="pk-btn-sm pk-btn-outline-primary icon"
+                                   IconClass="fas fa-file-excel" Clicked="Export"
+                                   Disabled="Loading"
+                                   Loading="Exporting">
                     </PikachuButton>
                 </Div>
             </Column>
