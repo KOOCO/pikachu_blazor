@@ -245,7 +245,13 @@ public class MemberAppService(IObjectMapper objectMapper, IMemberRepository memb
         var orders = await orderRepository.GetMemberOrdersByGroupBuyAsync(CurrentUser.Id.Value, groupBuyId);
         return base.ObjectMapper.Map<List<MemberOrderInfoModel>, List<MemberOrderInfoDto>>(orders);
     }
+    public async Task<List<MemberOrderInfoDto>> GetMemberOrdersByGroupBuyAsync(Guid memberId,Guid groupBuyId)
+    {
+      
 
+        var orders = await orderRepository.GetMemberOrdersByGroupBuyAsync(memberId, groupBuyId);
+        return base.ObjectMapper.Map<List<MemberOrderInfoModel>, List<MemberOrderInfoDto>>(orders);
+    }
     public async Task SetBlacklistedAsync(Guid memberId, bool blacklisted)
     {
         if (blacklisted)

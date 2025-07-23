@@ -548,6 +548,7 @@ public class OrderRepository(IDbContextProvider<PikachuDbContext> dbContextProvi
                 OrderNo = x.OrderNo,
                 CreationTime = x.CreationTime,
                 ShippingStatus = x.ShippingStatus,
+                OrderStatus = x.OrderStatus,
                 TotalAmount = x.TotalAmount,
                 PaymentMethod = x.PaymentMethod
             }).ToListAsync();

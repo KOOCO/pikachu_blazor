@@ -35,4 +35,5 @@ public interface IMemberAppService : IApplicationService
     Task<Guid?> GetCurrentUserIdAsync();
     Task<OrderDto> GetMemberOrderAsync(Guid orderId);
     Task<List<MemberOrderInfoDto>> GetMemberOrdersByGroupBuyAsync(Guid groupBuyId);
+    Task<List<MemberOrderInfoDto>> GetMemberOrdersByGroupBuyAsync(Guid memberId, Guid groupBuyId);
 }
