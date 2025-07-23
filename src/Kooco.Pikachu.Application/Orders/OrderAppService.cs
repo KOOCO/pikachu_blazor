@@ -1,4 +1,5 @@
-﻿using Kooco.Pikachu.Campaigns;
+﻿using ECPay.Payment.Integration;
+using Kooco.Pikachu.Campaigns;
 using Kooco.Pikachu.DiscountCodes;
 using Kooco.Pikachu.Emails;
 using Kooco.Pikachu.EnumValues;
@@ -24,6 +25,7 @@ using Kooco.Pikachu.Tenants.Repositories;
 using Kooco.Pikachu.UserCumulativeCredits;
 using Kooco.Pikachu.UserShoppingCredits;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using MiniExcelLibs;
@@ -1398,7 +1400,69 @@ public class OrderAppService : PikachuAppService, IOrderAppService
 
                 if (groupbuy.ProtectPrivacyData) dtos.HideCredentials();
             }
+            var queryable = await OrderMessageRepository.GetQueryableAsync();
 
+            var orderQuery = await OrderRepository.GetQueryableAsync(); // Inject IOrderRepository
+                                                                        // Step 1: Unread messages grouped by OrderId
+            var unreadMessages = await queryable
+                .Where(m => !m.IsRead && !m.IsMerchant)
+                .GroupBy(m => m.OrderId)
+                .Select(g => new
+                {
+                    OrderId = g.Key,
+                    MessageCount = g.Count()
+                })
+                .ToListAsync();
+
+            // Step 2: Get unique order IDs and related orders
+            var unreadOrderIds = unreadMessages.Select(x => x.OrderId).ToHashSet();
+
+            var allRelevantOrderIds = unreadOrderIds.ToList(); // Optional if joining large set
+
+            var relatedOrders = await orderQuery
+                .Where(o =>
+                    unreadOrderIds.Contains(o.Id) ||
+                    (o.PaymentMethod == PaymentMethods.ManualBankTransfer &&
+                     o.ShippingStatus == ShippingStatus.WaitingForPayment))
+                .Select(o => new
+                {
+                    o.Id,
+                    o.ShippingStatus,
+                    o.PaymentMethod,
+                   
+                })
+                .ToListAsync();
+
+            // Step 3: Merge — include even if MessageCount is 0 but payment is pending
+            var result = relatedOrders
+                .Select(o =>
+                {
+                    var messageCount = unreadMessages.FirstOrDefault(m => m.OrderId == o.Id)?.MessageCount ?? 0;
+
+                    return new
+                    {
+                        OrderId = o.Id,
+                        MessageCount = messageCount,
+                        ShippingStatus = o.ShippingStatus.ToString(),
+                        PaymentMethod = o.PaymentMethod.ToString(),
+                        HasPaymentPending = o.PaymentMethod == PaymentMethods.ManualBankTransfer &&
+                                            o.ShippingStatus == ShippingStatus.WaitingForPayment
+                    };
+                })
+                .Where(x => x.MessageCount > 0 || x.HasPaymentPending)
+                .ToList();
+
+
+            foreach (var item in result)
+            {
+                await HubContext.Clients.All.SendAsync(OrderNotificationNames.NewMessage, new
+                {
+                    item.OrderId,
+                    item.MessageCount,
+                    item.ShippingStatus,
+                    item.PaymentMethod
+                });
+            }
             return new PagedResultDto<OrderDto>
             {
                 TotalCount = totalCount,
@@ -3084,4 +3148,6 @@ public class OrderAppService : PikachuAppService, IOrderAppService
     public required InventoryLogManager InventoryLogManager { get; init; }
     public required IOrderTradeNoRepository OrderTradeNoRepository { get; init; }
     public required IRepository<ManualBankTransferRecord, Guid> ManualBankTransferRecordRepository { get; init; }
+   public required IOrderMessageRepository OrderMessageRepository { get; init; }
+   public required IHubContext<OrderNotificationHub> HubContext { get; init; }
 }

@@ -25,6 +25,15 @@ using Volo.Abp.Application.Dtos;
 using HtmlDocument = HtmlAgilityPack.HtmlDocument;
 using MudBlazor;
 using Blazorise.Extensions;
+using System.Data.Common;
+
+
+using System.Text.Json;
+using Microsoft.AspNetCore.SignalR.Client;
+using System.Text.Json.Serialization;
+using ECPay.Payment.Integration;
+
+
 
 namespace Kooco.Pikachu.Blazor.Pages.Orders;
 
@@ -73,9 +82,118 @@ public partial class Order
     bool parentRowExpand = false;
     private bool IsDeliveryNoExists = false;
     private bool FiltersVisible { get; set; } = false;
+    private Microsoft.AspNetCore.SignalR.Client.HubConnection _hubConnection;
+    private Dictionary<Guid, OrderNotificationState> OrderNotificationCounts = new();
     #endregion
 
     #region Methods
+    protected override async Task OnInitializedAsync()
+    {
+        _hubConnection = new HubConnectionBuilder()
+            .WithUrl(NavigationManager.ToAbsoluteUri("/signalr-order-notifications"))
+            .WithAutomaticReconnect()
+            .Build();
+
+        _hubConnection.On<object>("Order.NewMessage", async data =>
+        {
+            var result = ParsePayload(data);
+            if (result != null)
+            {
+                var state = new OrderNotificationState
+                {
+                    OrderId = result.OrderId,
+                    MessageCount = result.MessageCount,
+                    ShippingStatus = result.ShippingStatus,
+                    PaymentMethod = result.PaymentMethod
+                };
+
+                OrderNotificationCounts[result.OrderId] = state;
+                await InvokeAsync(StateHasChanged);
+            }
+        });
+
+        _hubConnection.On<object>("Order.MessageRead", async data =>
+        {
+            var result = ParsePayload(data);
+            if (result != null)
+                ClearNotification(result.OrderId);
+            await InvokeAsync(StateHasChanged);
+        });
+
+        _hubConnection.On<string, string>("ReceiveMessage", (fromUser, message) =>
+        {
+            Console.WriteLine($"🔔 Message from {fromUser}: {message}");
+            // You can trigger a toast or UI indicator here
+        });
+
+        await _hubConnection.StartAsync();
+    }
+
+
+    private void ClearNotification(Guid orderId)
+    {
+        if (OrderNotificationCounts.ContainsKey(orderId))
+            OrderNotificationCounts.Remove(orderId);
+    }
+
+    private int GetNotificationCountByShippingStatus(string status)
+    {
+        if (status == "All")
+        {
+            return OrderNotificationCounts.Values
+               
+               .Sum(o => o.MessageCount + (o.PaymentMethod== "ManualBankTransfer" && o.ShippingStatus== "WaitingForPayment" ? 1 : 0));
+        }
+        else
+        {
+            return OrderNotificationCounts.Values.Where(o => o.ShippingStatus == status).Sum(o => o.MessageCount + (o.PaymentMethod == "ManualBankTransfer" && o.ShippingStatus == "WaitingForPayment" ? 1 : 0));
+        }
+    }
+    private bool IsManualBankTransferAndWaiting(OrderNotificationState notification)
+    {
+      return notification.PaymentMethod == "ManualBankTransfer" &&
+             notification.ShippingStatus == "WaitingForPayment";
+    }
+    private NotificationPayload? ParsePayload(object raw)
+    {
+        try
+        {
+            var json = System.Text.Json.JsonSerializer.Serialize(raw); // System.Text.Json
+            var result = System.Text.Json.JsonSerializer.Deserialize<NotificationPayload>(
+     json,
+     new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            return result;
+        }
+        catch
+        {
+            return null;
+        }
+    }
+    private string FormatBadgeCount(int count)
+    {
+        return count >= 100 ? "99+" : count.ToString();
+    }
+    public async ValueTask DisposeAsync()
+    {
+        if (_hubConnection is not null)
+        {
+            await _hubConnection.DisposeAsync();
+        }
+    }
+
+    class NotificationPayload
+    {
+        [JsonProperty("orderId")]
+        public Guid OrderId { get; set; }
+        [JsonProperty("messageCount")]
+        public int MessageCount { get; set; } // 0 when marked as read
+        [JsonPropertyName("shippingStatus")]
+        public string ShippingStatus { get; set; } = string.Empty;
+        [JsonPropertyName("paymentMethod")]
+        public string PaymentMethod { get; set; } = string.Empty;
+    }
+
+
     private async Task OnDataGridReadAsync(DataGridReadDataEventArgs<OrderDto> e)
     {
         PageIndex = e.Page - 1;
@@ -1948,4 +2066,11 @@ public partial class Order
         }
     }
     #endregion
+}
+public class OrderNotificationState
+{
+    public Guid OrderId { get; set; }
+    public int MessageCount { get; set; }
+    public string ShippingStatus { get; set; } = string.Empty;
+    public string PaymentMethod { get; set; } = string.Empty;
 }

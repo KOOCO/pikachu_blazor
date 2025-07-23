@@ -43,6 +43,12 @@
 
     <PackageReference Include="HtmlAgilityPack" Version="1.11.72" />
 
+    <PackageReference Include="Microsoft.AspNet.SignalR.Client" Version="2.4.3" />
+
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="9.0.4" />
+
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Client.Core" Version="9.0.7" />
+
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.1">
       <PrivateAssets>all</PrivateAssets>
       <!-- <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets> -->

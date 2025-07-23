@@ -26,6 +26,8 @@
 @inject IDeliveryTemperatureCostAppService _DeliveryTemperatureCostAppService;
 @using Microsoft.JSInterop;
 @inject IJSRuntime JSRuntime;
+
+@implements IAsyncDisposable
 @attribute [Authorize]
 <style>
     .order-container {
@@ -486,10 +488,28 @@
           SelectedTabChanged="SelectedTabChanged"
           Justified="true">
         <Items>
-            <Tab  Name="All" TextSize="TextSize.Small">All</Tab>
+            <Tab  Name="All" TextSize="TextSize.Small"><div class="position-relative">All
+       @if (GetNotificationCountByShippingStatus("All") > 0)
+        {
+            <span class="position-absolute top-0 start-10 translate-middle badge rounded-pill bg-danger"
+                  style="font-size: 0.7rem;">
+                @FormatBadgeCount(GetNotificationCountByShippingStatus("All"))
+            </span>
+        }
+        </div>
+            </Tab>
             @foreach (string value in GetTabsList())
             {
-                <Tab  Name="@value" TextSize="TextSize.Small">@L[value]</Tab>
+                <Tab  Name="@value" TextSize="TextSize.Small"><div class="position-relative">@L[value]
+  @if (GetNotificationCountByShippingStatus(value) > 0)
+        {
+            <span class="position-absolute top-0 start-10 translate-middle badge rounded-pill bg-danger"
+                  style="font-size: 0.7rem;">
+                @FormatBadgeCount(GetNotificationCountByShippingStatus(value))
+            </span>
+        }
+    </div>
+</Tab>
             }
         </Items>
         <Content>
@@ -533,9 +553,14 @@
                             </DataGridColumn> *@
                                 <DataGridColumn  Field="@nameof(OrderDto.OrderNo)" Caption="@L["OrderNo"]">
                                     <DisplayTemplate>
-                                     
+                                      <span class="position-relative" style="display:inline-block">
                                        <Link style="cursor:pointer" @onclick="()=>NavigateToOrderDetails(context)" > @L[context.OrderNo]</Link>
-                                    </DisplayTemplate>
+                                                    @if (OrderNotificationCounts.TryGetValue(context.OrderId, out var orderState) && ((orderState.MessageCount + (IsManualBankTransferAndWaiting(orderState) ? 1 : 0)) + (IsManualBankTransferAndWaiting(orderState) ? 1 : 0)) > 0)
+{
+    <span class="badge bg-danger">@FormatBadgeCount((orderState.MessageCount + (IsManualBankTransferAndWaiting(orderState) ? 1 : 0)))</span>
+}
+        </span>
+                                   </DisplayTemplate>
                                 </DataGridColumn>
                                 <DataGridColumn Field="@nameof(OrderDto.CreationTime)" Caption="@L["OrderDate"]" />
                                 <DataGridColumn Field="@nameof(OrderDto.CustomerName)" Caption="@L["CustomerName"]" />
@@ -767,8 +792,14 @@
                                 <DataGridColumn Field="@nameof(OrderDto.OrderNo)" Caption="@L["OrderNo"]">
                                     <DisplayTemplate>
                                    
-                                     <Link style="cursor:pointer" @onclick="()=>NavigateToOrderDetails(context)">   @L[context.OrderNo]</Link>
-                                    </DisplayTemplate>
+                                                   <span class="position-relative" style="display:inline-block">
+                                       <Link style="cursor:pointer" @onclick="()=>NavigateToOrderDetails(context)" > @L[context.OrderNo]</Link>
+                                    @if (OrderNotificationCounts.TryGetValue(context.OrderId, out var orderState) && (orderState.MessageCount + (IsManualBankTransferAndWaiting(orderState) ? 1 : 0)) > 0)
+{
+    <span class="badge bg-danger">@FormatBadgeCount((orderState.MessageCount + (IsManualBankTransferAndWaiting(orderState) ? 1 : 0)))</span>
+}
+        </span>
+                                 </DisplayTemplate>
                                 </DataGridColumn>
                                 <DataGridColumn Field="@nameof(OrderDto.CreationTime)" Caption="@L["OrderDate"]" />
                                 <DataGridColumn Field="@nameof(OrderDto.CustomerName)" Caption="@L["CustomerName"]" />
@@ -1002,7 +1033,13 @@
                                 <DataGridColumn Field="@nameof(OrderDto.OrderNo)" Caption="@L["OrderNo"]">
                                     <DisplayTemplate>
                                       
-                                        <Link style="cursor:pointer" @onclick="()=>NavigateToOrderDetails(context)">   @L[context.OrderNo]</Link>
+                                                    <span class="position-relative" style="display:inline-block">
+                                       <Link style="cursor:pointer" @onclick="()=>NavigateToOrderDetails(context)" > @L[context.OrderNo]</Link>
+                                    @if (OrderNotificationCounts.TryGetValue(context.OrderId, out var orderState) && (orderState.MessageCount + (IsManualBankTransferAndWaiting(orderState) ? 1 : 0)) > 0)
+                                    {
+    <span class="badge bg-danger">@((orderState.MessageCount +  (IsManualBankTransferAndWaiting(orderState) ? 1 : 0)))</span>
+}
+        </span>
                                     </DisplayTemplate>
                                 </DataGridColumn>
                                 <DataGridColumn Field="@nameof(OrderDto.CreationTime)" Caption="@L["OrderDate"]" />
@@ -1299,7 +1336,13 @@
                                   
                                     <DisplayTemplate>
                                       
-                                         <Link style="cursor:pointer" @onclick="()=>NavigateToOrderDetails(context)">   @L[context.OrderNo]</Link>
+                                                    <span class="position-relative" style="display:inline-block">
+                                       <Link style="cursor:pointer" @onclick="()=>NavigateToOrderDetails(context)" > @L[context.OrderNo]</Link>
+                                    @if (OrderNotificationCounts.TryGetValue(context.OrderId, out var orderState) && (orderState.MessageCount + (IsManualBankTransferAndWaiting(orderState) ? 1 : 0)) > 0)
+{
+    <span class="badge bg-danger">@((orderState.MessageCount +  (IsManualBankTransferAndWaiting(orderState) ? 1 : 0)))</span>
+}
+        </span>
                                     </DisplayTemplate>
                                 </DataGridColumn>
                                 <DataGridColumn Field="@nameof(OrderDto.CreationTime)" Caption="@L["OrderDate"]" />
@@ -1590,7 +1633,13 @@
                                 <DataGridColumn Field="@nameof(OrderDto.OrderNo)" Caption="@L["OrderNo"]">
                                     <DisplayTemplate>
                                     
-                                        <Link style="cursor:pointer" @onclick="()=>NavigateToOrderDetails(context)">   @L[context.OrderNo]</Link>
+                                                    <span class="position-relative" style="display:inline-block">
+                                       <Link style="cursor:pointer" @onclick="()=>NavigateToOrderDetails(context)" > @L[context.OrderNo]</Link>
+                                    @if (OrderNotificationCounts.TryGetValue(context.OrderId, out var orderState) && (orderState.MessageCount + (IsManualBankTransferAndWaiting(orderState) ? 1 : 0)) > 0)
+{
+    <span class="badge bg-danger">@((orderState.MessageCount +  (IsManualBankTransferAndWaiting(orderState) ? 1 : 0)))</span>
+}
+        </span>
                                     </DisplayTemplate>
                                 </DataGridColumn>
                                 <DataGridColumn Field="@nameof(OrderDto.CreationTime)" Caption="@L["OrderDate"]" />
@@ -1881,7 +1930,13 @@
                                 <DataGridColumn Field="@nameof(OrderDto.OrderNo)" Caption="@L["OrderNo"]">
                                     <DisplayTemplate>
                                    
-                                       <Link style="cursor:pointer" @onclick="()=>NavigateToOrderDetails(context)">   @L[context.OrderNo]</Link>
+                                                      <span class="position-relative" style="display:inline-block">
+                                       <Link style="cursor:pointer" @onclick="()=>NavigateToOrderDetails(context)" > @L[context.OrderNo]</Link>
+                                    @if (OrderNotificationCounts.TryGetValue(context.OrderId, out var orderState) && (orderState.MessageCount + (IsManualBankTransferAndWaiting(orderState) ? 1 : 0)) > 0)
+{
+    <span class="badge bg-danger">@((orderState.MessageCount +  (IsManualBankTransferAndWaiting(orderState) ? 1 : 0)))</span>
+}
+        </span>
                                     </DisplayTemplate>
                                 </DataGridColumn>
                                 <DataGridColumn Field="@nameof(OrderDto.CreationTime)" Caption="@L["OrderDate"]" />
@@ -2170,7 +2225,13 @@
                                 <DataGridColumn Field="@nameof(OrderDto.OrderNo)" Caption="@L["OrderNo"]">
                                     <DisplayTemplate>
                                       
-                                         <Link style="cursor:pointer" @onclick="()=>NavigateToOrderDetails(context)">   @L[context.OrderNo]</Link>
+                                                    <span class="position-relative" style="display:inline-block">
+                                       <Link style="cursor:pointer" @onclick="()=>NavigateToOrderDetails(context)" > @L[context.OrderNo]</Link>
+                                    @if (OrderNotificationCounts.TryGetValue(context.OrderId, out var orderState) && (orderState.MessageCount + (IsManualBankTransferAndWaiting(orderState) ? 1 : 0)) > 0)
+{
+    <span class="badge bg-danger">@((orderState.MessageCount +  (IsManualBankTransferAndWaiting(orderState) ? 1 : 0)))</span>
+}
+        </span>
                                     </DisplayTemplate>
                                 </DataGridColumn>
                                 <DataGridColumn Field="@nameof(OrderDto.CreationTime)" Caption="@L["OrderDate"]" />
@@ -2391,7 +2452,13 @@
                                 <DataGridColumn Field="@nameof(OrderDto.OrderNo)" Caption="@L["OrderNo"]">
                                     <DisplayTemplate>
                                       
-                                         <Link style="cursor:pointer" @onclick="()=>NavigateToOrderDetails(context)">   @L[context.OrderNo]</Link>
+                                                    <span class="position-relative" style="display:inline-block">
+                                       <Link style="cursor:pointer" @onclick="()=>NavigateToOrderDetails(context)" > @L[context.OrderNo]</Link>
+                                    @if (OrderNotificationCounts.TryGetValue(context.OrderId, out var orderState) && (orderState.MessageCount + (IsManualBankTransferAndWaiting(orderState) ? 1 : 0)) > 0)
+{
+    <span class="badge bg-danger">@((orderState.MessageCount +  (IsManualBankTransferAndWaiting(orderState) ? 1 : 0)))</span>
+}
+        </span>
                                     </DisplayTemplate>
                                 </DataGridColumn>
                                 <DataGridColumn Field="@nameof(OrderDto.CreationTime)" Caption="@L["OrderDate"]" />
@@ -2624,7 +2691,13 @@
                                 <DataGridColumn Field="@nameof(OrderDto.OrderNo)" Caption="@L["OrderNo"]">
                                     <DisplayTemplate>
                                     
-                                       <Link style="cursor:pointer" @onclick="()=>NavigateToOrderDetails(context)">   @L[context.OrderNo]</Link>
+                                                    <span class="position-relative" style="display:inline-block">
+                                       <Link style="cursor:pointer" @onclick="()=>NavigateToOrderDetails(context)" > @L[context.OrderNo]</Link>
+                                    @if (OrderNotificationCounts.TryGetValue(context.OrderId, out var orderState) && (orderState.MessageCount + (IsManualBankTransferAndWaiting(orderState) ? 1 : 0)) > 0)
+{
+    <span class="badge bg-danger">@((orderState.MessageCount +  (IsManualBankTransferAndWaiting(orderState) ? 1 : 0)))</span>
+}
+        </span>
                                     </DisplayTemplate>
                                 </DataGridColumn>
                                 <DataGridColumn Field="@nameof(OrderDto.CreationTime)" Caption="@L["OrderDate"]" />
@@ -2927,7 +3000,13 @@
                                 <DataGridColumn Field="@nameof(OrderDto.OrderNo)" Caption="@L["OrderNo"]">
                                     <DisplayTemplate>
                                     
-                                       <Link style="cursor:pointer" @onclick="()=>NavigateToOrderDetails(context)">   @L[context.OrderNo]</Link>
+                                                     <span class="position-relative" style="display:inline-block">
+                                       <Link style="cursor:pointer" @onclick="()=>NavigateToOrderDetails(context)" > @L[context.OrderNo]</Link>
+                                    @if (OrderNotificationCounts.TryGetValue(context.OrderId, out var orderState) && (orderState.MessageCount + (IsManualBankTransferAndWaiting(orderState) ? 1 : 0)) > 0)
+{
+    <span class="badge bg-danger">@((orderState.MessageCount +  (IsManualBankTransferAndWaiting(orderState) ? 1 : 0)))</span>
+}
+        </span>
                                     </DisplayTemplate>
                                 </DataGridColumn>
                                 <DataGridColumn Field="@nameof(OrderDto.CreationTime)" Caption="@L["OrderDate"]" />
@@ -3230,7 +3309,13 @@
                                 <DataGridColumn Field="@nameof(OrderDto.OrderNo)" Caption="@L["OrderNo"]">
                                     <DisplayTemplate>
                                     
-                                       <Link style="cursor:pointer" @onclick="()=>NavigateToOrderDetails(context)">   @L[context.OrderNo]</Link>
+                                                    <span class="position-relative" style="display:inline-block">
+                                       <Link style="cursor:pointer" @onclick="()=>NavigateToOrderDetails(context)" > @L[context.OrderNo]</Link>
+                                    @if (OrderNotificationCounts.TryGetValue(context.OrderId, out var orderState) && (orderState.MessageCount + (IsManualBankTransferAndWaiting(orderState) ? 1 : 0)) > 0)
+{
+    <span class="badge bg-danger">@((orderState.MessageCount +  (IsManualBankTransferAndWaiting(orderState) ? 1 : 0)))</span>
+}
+        </span>
                                     </DisplayTemplate>
                                 </DataGridColumn>
                                 <DataGridColumn Field="@nameof(OrderDto.CreationTime)" Caption="@L["OrderDate"]" />
@@ -3533,7 +3618,13 @@
                                 <DataGridColumn Field="@nameof(OrderDto.OrderNo)" Caption="@L["OrderNo"]">
                                     <DisplayTemplate>
                                      
-                                         <Link style="cursor:pointer" @onclick="()=>NavigateToOrderDetails(context)">   @L[context.OrderNo]</Link>
+                                                        <span class="position-relative" style="display:inline-block">
+                                       <Link style="cursor:pointer" @onclick="()=>NavigateToOrderDetails(context)" > @L[context.OrderNo]</Link>
+                                    @if (OrderNotificationCounts.TryGetValue(context.OrderId, out var orderState) && (orderState.MessageCount + (IsManualBankTransferAndWaiting(orderState) ? 1 : 0)) > 0)
+{
+    <span class="badge bg-danger">@((orderState.MessageCount +  (IsManualBankTransferAndWaiting(orderState) ? 1 : 0)))</span>
+}
+        </span>
                                     </DisplayTemplate>
                                 </DataGridColumn>
                                 <DataGridColumn Field="@nameof(OrderDto.CreationTime)" Caption="@L["OrderDate"]" />

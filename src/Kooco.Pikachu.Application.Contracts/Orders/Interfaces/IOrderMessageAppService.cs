@@ -16,5 +16,6 @@ namespace Kooco.Pikachu.Orders.Interfaces
         Task<OrderMessageDto> CreateAsync(CreateUpdateOrderMessageDto input);
         Task<OrderMessageDto> UpdateAsync(Guid id, CreateUpdateOrderMessageDto input);
         Task DeleteAsync(Guid id);
+       Task MarkAsReadAsync(Guid orderId);
     }
 }
