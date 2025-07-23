@@ -99,6 +99,5 @@ public partial class ReturnAndExchangeModal
 
         await Hide();
         NavigationManager.NavigateTo("Orders");
-        //await JSRuntime.InvokeVoidAsync("reloadOrderPage");
     }
 }

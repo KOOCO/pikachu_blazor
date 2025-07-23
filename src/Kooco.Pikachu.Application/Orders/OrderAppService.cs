@@ -1814,7 +1814,7 @@ public class OrderAppService : PikachuAppService, IOrderAppService
         if (orderReturnStatus == OrderReturnStatus.Reject)
         {
             order.OrderStatus = OrderStatus.Open;
-
+            order.ShippingStatus = order.ShippingStatusBeforeReturn ?? order.ShippingStatus;
         }
 
         if (orderReturnStatus == OrderReturnStatus.Approve)
@@ -1857,6 +1857,7 @@ public class OrderAppService : PikachuAppService, IOrderAppService
         {
             order.OrderStatus = OrderStatus.Open;
             order.ReturnStatus = OrderReturnStatus.Cancelled;
+            order.ShippingStatus = order.ShippingStatusBeforeReturn ?? order.ShippingStatus;
         }
         await OrderRepository.UpdateAsync(order);
         // **Get Current User (Editor)**

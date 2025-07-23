@@ -45,8 +45,10 @@ public class ReturnAndExchangeAppService : PikachuAppService, IReturnAndExchange
 
         var oldReturnStatus = order.ReturnStatus;
         var oldOrderStatus = order.OrderStatus;
+        order.ShippingStatusBeforeReturn = order.ShippingStatus;
         order.ReturnStatus = OrderReturnStatus.Pending;
         order.OrderStatus = OrderStatus.Returned;
+        order.ShippingStatus = ShippingStatus.Return;
 
         await OrderRepository.UpdateAsync(order);
 
@@ -65,6 +67,17 @@ public class ReturnAndExchangeAppService : PikachuAppService, IReturnAndExchange
             currentUserId,
             currentUserName
         );
+
+        await OrderHistoryManager.AddOrderHistoryAsync(
+             order.Id,
+             "ShippingStatusChanged",
+             [
+                L[order.ShippingStatusBeforeReturn.ToString()].Value,
+                L[order.ShippingStatus.ToString()].Value
+             ],
+             currentUserId,
+             currentUserName
+        );
     }
 
     public async Task ExchangeOrderAsync(Guid id)
@@ -73,8 +86,10 @@ public class ReturnAndExchangeAppService : PikachuAppService, IReturnAndExchange
         
         var oldReturnStatus = order.ReturnStatus;
         var oldOrderStatus = order.OrderStatus;
+        order.ShippingStatusBeforeReturn = order.ShippingStatus;
         order.ReturnStatus = OrderReturnStatus.Pending;
         order.OrderStatus = OrderStatus.Exchange;
+        order.ShippingStatus = ShippingStatus.Exchange;
 
         await OrderRepository.UpdateAsync(order);
         
@@ -89,6 +104,17 @@ public class ReturnAndExchangeAppService : PikachuAppService, IReturnAndExchange
                 L[order.ReturnStatus.ToString()].Value,
                 L[oldOrderStatus.ToString()].Value,
                 L[order.OrderStatus.ToString()].Value
+             ],
+             currentUserId,
+             currentUserName
+        );
+
+        await OrderHistoryManager.AddOrderHistoryAsync(
+             order.Id,
+             "ShippingStatusChanged",
+             [
+                L[order.ShippingStatusBeforeReturn.ToString()].Value,
+                L[order.ShippingStatus.ToString()].Value
              ],
              currentUserId,
              currentUserName
@@ -112,6 +138,8 @@ public class ReturnAndExchangeAppService : PikachuAppService, IReturnAndExchange
             var clonedOrder = await OrderBuilder.CloneAsync(order);
             clonedOrder.ReturnStatus = OrderReturnStatus.Pending;
             clonedOrder.OrderStatus = isReturn ? OrderStatus.Returned : OrderStatus.Exchange;
+            clonedOrder.ShippingStatus = isReturn ? ShippingStatus.Return : ShippingStatus.Exchange;
+            clonedOrder.ShippingStatusBeforeReturn = order.ShippingStatus;
 
             List<OrderItem> deletedItem = [];
             foreach (var item in order.OrderItems)
@@ -119,11 +147,6 @@ public class ReturnAndExchangeAppService : PikachuAppService, IReturnAndExchange
                 var orderItem = orderItemsInput.FirstOrDefault(x => x.Id == item.Id);
                 if (orderItem != null)
                 {
-                    //deletedItem.Add(item);
-                    //returnedOrderItemIds = returnedOrderItemIds.IsNullOrEmpty() ?
-                    //                        item.Id.ToString() :
-                    //                        string.Join(',', returnedOrderItemIds, item.Id.ToString());
-
                     OrderManager.AddOrderItem(
                         clonedOrder,
                         item.ItemId,
@@ -151,25 +174,6 @@ public class ReturnAndExchangeAppService : PikachuAppService, IReturnAndExchange
             clonedOrder.TotalQuantity = clonedOrder.OrderItems.Sum(x => x.Quantity);
             await OrderRepository.InsertAsync(clonedOrder);
 
-            //var OrderDelivery1 = await OrderDeliveryRepository.FirstOrDefaultAsync(x => x.OrderId == order.Id);
-            //await OrderDeliveryRepository.DeleteAsync(OrderDelivery1.Id);
-            //foreach (var item in order.OrderItems.Where(x => x.ItemPrice >= 0))
-            //{
-            //    if (order.ShippingStatus == ShippingStatus.PrepareShipment)
-            //    {
-            //        await CreateOrderDeliveriesAsync(order);
-            //    }
-            //}
-
-            //order.RefundAmount += newOrder.TotalAmount;
-
-            //order.ReturnedOrderItemIds = returnedOrderItemIds;
-
-            //await OrderRepository.UpdateAsync(order);
-            //order.OrderItems.RemoveAll(deletedItem);
-            //await UnitOfWorkManager.Current.SaveChangesAsync();
-
-            //await RefundAppService.CreateAsync(newOrder.Id);
             // **Get Current User (Editor)**
             var currentUserId = CurrentUser.Id ?? Guid.Empty;
             var currentUserName = CurrentUser.UserName ?? "System";
