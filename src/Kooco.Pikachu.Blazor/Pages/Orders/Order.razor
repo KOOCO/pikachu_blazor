@@ -76,6 +76,38 @@
     background-position: 50%;
     
 }
+.tab-with-badge {
+    position: relative;
+    display: inline-block;
+    padding-right: 12px;
+}
+
+.notification-badge {
+    position: absolute;
+    top: -10px;
+    right: -20px;
+    background-color: #d32f2f; /* Bootstrap danger or custom red */
+    color: white;
+    font-size: 0.65rem;
+    padding: 2px 6px;
+    border-radius: 999px;
+    font-weight: 500;
+    line-height: 1;
+    z-index: 2;
+}
+/* .order-badge {
+    position: absolute;
+    top: -6px;
+    right: -10px;
+    background-color: #d32f2f;
+    color: white;
+    font-size: 0.65rem;
+    padding: 2px 6px;
+    border-radius: 999px;
+    font-weight: 500;
+    line-height: 1;
+    z-index: 2;
+} */
 </style>
 @* <LoadingIndicator @ref="loading" FullScreen FadeIn> *@
     @if(loading)
@@ -488,29 +520,35 @@
           SelectedTabChanged="SelectedTabChanged"
           Justified="true">
         <Items>
-            <Tab  Name="All" TextSize="TextSize.Small"><div class="position-relative">All
-       @if (GetNotificationCountByShippingStatus("All") > 0)
+   <Tab Name="All" TextSize="TextSize.Small">
+    <div class="tab-with-badge">
+        <span>All</span>
+
+        @if (GetNotificationCountByShippingStatus("All") > 0)
         {
-            <span class="position-absolute top-0 start-10 translate-middle badge rounded-pill bg-danger"
-                  style="font-size: 0.7rem;">
+            <span class="notification-badge">
                 @FormatBadgeCount(GetNotificationCountByShippingStatus("All"))
-            </span>
-        }
-        </div>
-            </Tab>
-            @foreach (string value in GetTabsList())
-            {
-                <Tab  Name="@value" TextSize="TextSize.Small"><div class="position-relative">@L[value]
-  @if (GetNotificationCountByShippingStatus(value) > 0)
-        {
-            <span class="position-absolute top-0 start-10 translate-middle badge rounded-pill bg-danger"
-                  style="font-size: 0.7rem;">
-                @FormatBadgeCount(GetNotificationCountByShippingStatus(value))
             </span>
         }
     </div>
 </Tab>
+
+@foreach (string value in GetTabsList())
+{
+    <Tab Name="@value" TextSize="TextSize.Small">
+        <div class="tab-with-badge">
+            <span>@L[value]</span>
+
+            @if (GetNotificationCountByShippingStatus(value) > 0)
+            {
+                <span class="notification-badge">
+                    @FormatBadgeCount(GetNotificationCountByShippingStatus(value))
+                </span>
             }
+        </div>
+    </Tab>
+}
+            
         </Items>
         <Content>
             <TabPanel Name="All">
@@ -551,16 +589,23 @@
                                        <Button Type="@ButtonType.Button"  @onclick="()=>ToggleRow(context, true)"> <i class="@chevronClass"></i></Button>
                             </DisplayTemplate>
                             </DataGridColumn> *@
-                                <DataGridColumn  Field="@nameof(OrderDto.OrderNo)" Caption="@L["OrderNo"]">
-                                    <DisplayTemplate>
-                                      <span class="position-relative" style="display:inline-block">
-                                       <Link style="cursor:pointer" @onclick="()=>NavigateToOrderDetails(context)" > @L[context.OrderNo]</Link>
-                                                    @if (OrderNotificationCounts.TryGetValue(context.OrderId, out var orderState) && ((orderState.MessageCount + (IsManualBankTransferAndWaiting(orderState) ? 1 : 0)) + (IsManualBankTransferAndWaiting(orderState) ? 1 : 0)) > 0)
-{
-    <span class="badge bg-danger">@FormatBadgeCount((orderState.MessageCount + (IsManualBankTransferAndWaiting(orderState) ? 1 : 0)))</span>
-}
-        </span>
-                                   </DisplayTemplate>
+                            <DataGridColumn  Field="@nameof(OrderDto.OrderNo)" Caption="@L["OrderNo"]">
+                            <DisplayTemplate>
+                                <div class="position-relative d-inline-block">
+                                     <Link style="cursor:pointer" @onclick="() => NavigateToOrderDetails(context)">
+                                     @context.OrderNo
+                                     </Link>
+
+                                        @if (OrderNotificationCounts.TryGetValue(context.OrderId, out var orderState)
+                                             && (orderState.MessageCount + (IsManualBankTransferAndWaiting(orderState) ? 1 : 0)) > 0)
+                                            {
+                                                <span class="notification-badge">
+                                                 @FormatBadgeCount(orderState.MessageCount + (IsManualBankTransferAndWaiting(orderState) ? 1 : 0))
+                                                </span>
+                                            }
+                                </div>
+                            </DisplayTemplate>
+
                                 </DataGridColumn>
                                 <DataGridColumn Field="@nameof(OrderDto.CreationTime)" Caption="@L["OrderDate"]" />
                                 <DataGridColumn Field="@nameof(OrderDto.CustomerName)" Caption="@L["CustomerName"]" />
@@ -789,17 +834,22 @@
                                        <Button Type="@ButtonType.Button"  @onclick="()=>ToggleRow(context)"> <i class="@chevronClass"></i></Button>
                             </DisplayTemplate>
                             </DataGridColumn> *@
-                                <DataGridColumn Field="@nameof(OrderDto.OrderNo)" Caption="@L["OrderNo"]">
-                                    <DisplayTemplate>
-                                   
-                                                   <span class="position-relative" style="display:inline-block">
-                                       <Link style="cursor:pointer" @onclick="()=>NavigateToOrderDetails(context)" > @L[context.OrderNo]</Link>
-                                    @if (OrderNotificationCounts.TryGetValue(context.OrderId, out var orderState) && (orderState.MessageCount + (IsManualBankTransferAndWaiting(orderState) ? 1 : 0)) > 0)
-{
-    <span class="badge bg-danger">@FormatBadgeCount((orderState.MessageCount + (IsManualBankTransferAndWaiting(orderState) ? 1 : 0)))</span>
-}
-        </span>
-                                 </DisplayTemplate>
+                             <DataGridColumn  Field="@nameof(OrderDto.OrderNo)" Caption="@L["OrderNo"]">
+                            <DisplayTemplate>
+                                <div class="position-relative d-inline-block">
+                                     <Link style="cursor:pointer" @onclick="() => NavigateToOrderDetails(context)">
+                                     @context.OrderNo
+                                     </Link>
+
+                                        @if (OrderNotificationCounts.TryGetValue(context.OrderId, out var orderState)
+                                             && (orderState.MessageCount + (IsManualBankTransferAndWaiting(orderState) ? 1 : 0)) > 0)
+                                            {
+                                                <span class="notification-badge">
+                                                 @FormatBadgeCount(orderState.MessageCount + (IsManualBankTransferAndWaiting(orderState) ? 1 : 0))
+                                                </span>
+                                            }
+                                </div>
+                            </DisplayTemplate>
                                 </DataGridColumn>
                                 <DataGridColumn Field="@nameof(OrderDto.CreationTime)" Caption="@L["OrderDate"]" />
                                 <DataGridColumn Field="@nameof(OrderDto.CustomerName)" Caption="@L["CustomerName"]" />
@@ -1031,16 +1081,21 @@
                             </DisplayTemplate>
                             </DataGridColumn> *@
                                 <DataGridColumn Field="@nameof(OrderDto.OrderNo)" Caption="@L["OrderNo"]">
-                                    <DisplayTemplate>
-                                      
-                                                    <span class="position-relative" style="display:inline-block">
-                                       <Link style="cursor:pointer" @onclick="()=>NavigateToOrderDetails(context)" > @L[context.OrderNo]</Link>
-                                    @if (OrderNotificationCounts.TryGetValue(context.OrderId, out var orderState) && (orderState.MessageCount + (IsManualBankTransferAndWaiting(orderState) ? 1 : 0)) > 0)
-                                    {
-    <span class="badge bg-danger">@((orderState.MessageCount +  (IsManualBankTransferAndWaiting(orderState) ? 1 : 0)))</span>
-}
-        </span>
-                                    </DisplayTemplate>
+                             <DisplayTemplate>
+                                <div class="position-relative d-inline-block">
+                                     <Link style="cursor:pointer" @onclick="() => NavigateToOrderDetails(context)">
+                                     @context.OrderNo
+                                     </Link>
+
+                                        @if (OrderNotificationCounts.TryGetValue(context.OrderId, out var orderState)
+                                             && (orderState.MessageCount + (IsManualBankTransferAndWaiting(orderState) ? 1 : 0)) > 0)
+                                            {
+                                                <span class="notification-badge">
+                                                 @FormatBadgeCount(orderState.MessageCount + (IsManualBankTransferAndWaiting(orderState) ? 1 : 0))
+                                                </span>
+                                            }
+                                </div>
+                            </DisplayTemplate>
                                 </DataGridColumn>
                                 <DataGridColumn Field="@nameof(OrderDto.CreationTime)" Caption="@L["OrderDate"]" />
                                 <DataGridColumn Field="@nameof(OrderDto.CustomerName)" Caption="@L["CustomerName"]" />
@@ -1334,16 +1389,21 @@
                                   
                                 <DataGridColumn Field="@nameof(OrderDto.OrderNo)" Caption="@L["OrderNo"]">
                                   
-                                    <DisplayTemplate>
-                                      
-                                                    <span class="position-relative" style="display:inline-block">
-                                       <Link style="cursor:pointer" @onclick="()=>NavigateToOrderDetails(context)" > @L[context.OrderNo]</Link>
-                                    @if (OrderNotificationCounts.TryGetValue(context.OrderId, out var orderState) && (orderState.MessageCount + (IsManualBankTransferAndWaiting(orderState) ? 1 : 0)) > 0)
-{
-    <span class="badge bg-danger">@((orderState.MessageCount +  (IsManualBankTransferAndWaiting(orderState) ? 1 : 0)))</span>
-}
-        </span>
-                                    </DisplayTemplate>
+                                  <DisplayTemplate>
+                                <div class="position-relative d-inline-block">
+                                     <Link style="cursor:pointer" @onclick="() => NavigateToOrderDetails(context)">
+                                     @context.OrderNo
+                                     </Link>
+
+                                        @if (OrderNotificationCounts.TryGetValue(context.OrderId, out var orderState)
+                                             && (orderState.MessageCount + (IsManualBankTransferAndWaiting(orderState) ? 1 : 0)) > 0)
+                                            {
+                                                <span class="notification-badge">
+                                                 @FormatBadgeCount(orderState.MessageCount + (IsManualBankTransferAndWaiting(orderState) ? 1 : 0))
+                                                </span>
+                                            }
+                                </div>
+                            </DisplayTemplate>
                                 </DataGridColumn>
                                 <DataGridColumn Field="@nameof(OrderDto.CreationTime)" Caption="@L["OrderDate"]" />
                                 <DataGridColumn Field="@nameof(OrderDto.CustomerName)" Caption="@L["CustomerName"]" />
@@ -1631,16 +1691,21 @@
                                 </DataGridColumn>
                         
                                 <DataGridColumn Field="@nameof(OrderDto.OrderNo)" Caption="@L["OrderNo"]">
-                                    <DisplayTemplate>
-                                    
-                                                    <span class="position-relative" style="display:inline-block">
-                                       <Link style="cursor:pointer" @onclick="()=>NavigateToOrderDetails(context)" > @L[context.OrderNo]</Link>
-                                    @if (OrderNotificationCounts.TryGetValue(context.OrderId, out var orderState) && (orderState.MessageCount + (IsManualBankTransferAndWaiting(orderState) ? 1 : 0)) > 0)
-{
-    <span class="badge bg-danger">@((orderState.MessageCount +  (IsManualBankTransferAndWaiting(orderState) ? 1 : 0)))</span>
-}
-        </span>
-                                    </DisplayTemplate>
+                                <DisplayTemplate>
+                                <div class="position-relative d-inline-block">
+                                     <Link style="cursor:pointer" @onclick="() => NavigateToOrderDetails(context)">
+                                     @context.OrderNo
+                                     </Link>
+
+                                        @if (OrderNotificationCounts.TryGetValue(context.OrderId, out var orderState)
+                                             && (orderState.MessageCount + (IsManualBankTransferAndWaiting(orderState) ? 1 : 0)) > 0)
+                                            {
+                                                <span class="notification-badge">
+                                                 @FormatBadgeCount(orderState.MessageCount + (IsManualBankTransferAndWaiting(orderState) ? 1 : 0))
+                                                </span>
+                                            }
+                                </div>
+                            </DisplayTemplate>
                                 </DataGridColumn>
                                 <DataGridColumn Field="@nameof(OrderDto.CreationTime)" Caption="@L["OrderDate"]" />
                                 <DataGridColumn Field="@nameof(OrderDto.CustomerName)" Caption="@L["CustomerName"]" />
@@ -1928,16 +1993,21 @@
                                 </DataGridColumn>
                                
                                 <DataGridColumn Field="@nameof(OrderDto.OrderNo)" Caption="@L["OrderNo"]">
-                                    <DisplayTemplate>
-                                   
-                                                      <span class="position-relative" style="display:inline-block">
-                                       <Link style="cursor:pointer" @onclick="()=>NavigateToOrderDetails(context)" > @L[context.OrderNo]</Link>
-                                    @if (OrderNotificationCounts.TryGetValue(context.OrderId, out var orderState) && (orderState.MessageCount + (IsManualBankTransferAndWaiting(orderState) ? 1 : 0)) > 0)
-{
-    <span class="badge bg-danger">@((orderState.MessageCount +  (IsManualBankTransferAndWaiting(orderState) ? 1 : 0)))</span>
-}
-        </span>
-                                    </DisplayTemplate>
+                               <DisplayTemplate>
+                                <div class="position-relative d-inline-block">
+                                     <Link style="cursor:pointer" @onclick="() => NavigateToOrderDetails(context)">
+                                     @context.OrderNo
+                                     </Link>
+
+                                        @if (OrderNotificationCounts.TryGetValue(context.OrderId, out var orderState)
+                                             && (orderState.MessageCount + (IsManualBankTransferAndWaiting(orderState) ? 1 : 0)) > 0)
+                                            {
+                                                <span class="notification-badge">
+                                                 @FormatBadgeCount(orderState.MessageCount + (IsManualBankTransferAndWaiting(orderState) ? 1 : 0))
+                                                </span>
+                                            }
+                                </div>
+                            </DisplayTemplate>
                                 </DataGridColumn>
                                 <DataGridColumn Field="@nameof(OrderDto.CreationTime)" Caption="@L["OrderDate"]" />
                                 <DataGridColumn Field="@nameof(OrderDto.CustomerName)" Caption="@L["CustomerName"]" />
@@ -2223,16 +2293,21 @@
                                     </DisplayTemplate>
                                 </DataGridColumn>                                
                                 <DataGridColumn Field="@nameof(OrderDto.OrderNo)" Caption="@L["OrderNo"]">
-                                    <DisplayTemplate>
-                                      
-                                                    <span class="position-relative" style="display:inline-block">
-                                       <Link style="cursor:pointer" @onclick="()=>NavigateToOrderDetails(context)" > @L[context.OrderNo]</Link>
-                                    @if (OrderNotificationCounts.TryGetValue(context.OrderId, out var orderState) && (orderState.MessageCount + (IsManualBankTransferAndWaiting(orderState) ? 1 : 0)) > 0)
-{
-    <span class="badge bg-danger">@((orderState.MessageCount +  (IsManualBankTransferAndWaiting(orderState) ? 1 : 0)))</span>
-}
-        </span>
-                                    </DisplayTemplate>
+                                   <DisplayTemplate>
+                                <div class="position-relative d-inline-block">
+                                     <Link style="cursor:pointer" @onclick="() => NavigateToOrderDetails(context)">
+                                     @context.OrderNo
+                                     </Link>
+
+                                        @if (OrderNotificationCounts.TryGetValue(context.OrderId, out var orderState)
+                                             && (orderState.MessageCount + (IsManualBankTransferAndWaiting(orderState) ? 1 : 0)) > 0)
+                                            {
+                                                <span class="notification-badge">
+                                                 @FormatBadgeCount(orderState.MessageCount + (IsManualBankTransferAndWaiting(orderState) ? 1 : 0))
+                                                </span>
+                                            }
+                                </div>
+                            </DisplayTemplate>
                                 </DataGridColumn>
                                 <DataGridColumn Field="@nameof(OrderDto.CreationTime)" Caption="@L["OrderDate"]" />
                                 <DataGridColumn Field="@nameof(OrderDto.CustomerName)" Caption="@L["CustomerName"]" />
@@ -2450,16 +2525,21 @@
                                     </DisplayTemplate>
                                 </DataGridColumn>                                
                                 <DataGridColumn Field="@nameof(OrderDto.OrderNo)" Caption="@L["OrderNo"]">
-                                    <DisplayTemplate>
-                                      
-                                                    <span class="position-relative" style="display:inline-block">
-                                       <Link style="cursor:pointer" @onclick="()=>NavigateToOrderDetails(context)" > @L[context.OrderNo]</Link>
-                                    @if (OrderNotificationCounts.TryGetValue(context.OrderId, out var orderState) && (orderState.MessageCount + (IsManualBankTransferAndWaiting(orderState) ? 1 : 0)) > 0)
-{
-    <span class="badge bg-danger">@((orderState.MessageCount +  (IsManualBankTransferAndWaiting(orderState) ? 1 : 0)))</span>
-}
-        </span>
-                                    </DisplayTemplate>
+                                      <DisplayTemplate>
+                                <div class="position-relative d-inline-block">
+                                     <Link style="cursor:pointer" @onclick="() => NavigateToOrderDetails(context)">
+                                     @context.OrderNo
+                                     </Link>
+
+                                        @if (OrderNotificationCounts.TryGetValue(context.OrderId, out var orderState)
+                                             && (orderState.MessageCount + (IsManualBankTransferAndWaiting(orderState) ? 1 : 0)) > 0)
+                                            {
+                                                <span class="notification-badge">
+                                                 @FormatBadgeCount(orderState.MessageCount + (IsManualBankTransferAndWaiting(orderState) ? 1 : 0))
+                                                </span>
+                                            }
+                                </div>
+                            </DisplayTemplate>
                                 </DataGridColumn>
                                 <DataGridColumn Field="@nameof(OrderDto.CreationTime)" Caption="@L["OrderDate"]" />
                                 <DataGridColumn Field="@nameof(OrderDto.CustomerName)" Caption="@L["CustomerName"]" />
@@ -2690,15 +2770,20 @@
                             </DataGridColumn> *@
                                 <DataGridColumn Field="@nameof(OrderDto.OrderNo)" Caption="@L["OrderNo"]">
                                     <DisplayTemplate>
-                                    
-                                                    <span class="position-relative" style="display:inline-block">
-                                       <Link style="cursor:pointer" @onclick="()=>NavigateToOrderDetails(context)" > @L[context.OrderNo]</Link>
-                                    @if (OrderNotificationCounts.TryGetValue(context.OrderId, out var orderState) && (orderState.MessageCount + (IsManualBankTransferAndWaiting(orderState) ? 1 : 0)) > 0)
-{
-    <span class="badge bg-danger">@((orderState.MessageCount +  (IsManualBankTransferAndWaiting(orderState) ? 1 : 0)))</span>
-}
-        </span>
-                                    </DisplayTemplate>
+                                <div class="position-relative d-inline-block">
+                                     <Link style="cursor:pointer" @onclick="() => NavigateToOrderDetails(context)">
+                                     @context.OrderNo
+                                     </Link>
+
+                                        @if (OrderNotificationCounts.TryGetValue(context.OrderId, out var orderState)
+                                             && (orderState.MessageCount + (IsManualBankTransferAndWaiting(orderState) ? 1 : 0)) > 0)
+                                            {
+                                                <span class="notification-badge">
+                                                 @FormatBadgeCount(orderState.MessageCount + (IsManualBankTransferAndWaiting(orderState) ? 1 : 0))
+                                                </span>
+                                            }
+                                </div>
+                            </DisplayTemplate>
                                 </DataGridColumn>
                                 <DataGridColumn Field="@nameof(OrderDto.CreationTime)" Caption="@L["OrderDate"]" />
                                 <DataGridColumn Field="@nameof(OrderDto.CustomerName)" Caption="@L["CustomerName"]" />
@@ -2999,15 +3084,20 @@
                             </DataGridColumn> *@
                                 <DataGridColumn Field="@nameof(OrderDto.OrderNo)" Caption="@L["OrderNo"]">
                                     <DisplayTemplate>
-                                    
-                                                     <span class="position-relative" style="display:inline-block">
-                                       <Link style="cursor:pointer" @onclick="()=>NavigateToOrderDetails(context)" > @L[context.OrderNo]</Link>
-                                    @if (OrderNotificationCounts.TryGetValue(context.OrderId, out var orderState) && (orderState.MessageCount + (IsManualBankTransferAndWaiting(orderState) ? 1 : 0)) > 0)
-{
-    <span class="badge bg-danger">@((orderState.MessageCount +  (IsManualBankTransferAndWaiting(orderState) ? 1 : 0)))</span>
-}
-        </span>
-                                    </DisplayTemplate>
+                                <div class="position-relative d-inline-block">
+                                     <Link style="cursor:pointer" @onclick="() => NavigateToOrderDetails(context)">
+                                     @context.OrderNo
+                                     </Link>
+
+                                        @if (OrderNotificationCounts.TryGetValue(context.OrderId, out var orderState)
+                                             && (orderState.MessageCount + (IsManualBankTransferAndWaiting(orderState) ? 1 : 0)) > 0)
+                                            {
+                                                <span class="notification-badge">
+                                                 @FormatBadgeCount(orderState.MessageCount + (IsManualBankTransferAndWaiting(orderState) ? 1 : 0))
+                                                </span>
+                                            }
+                                </div>
+                            </DisplayTemplate>
                                 </DataGridColumn>
                                 <DataGridColumn Field="@nameof(OrderDto.CreationTime)" Caption="@L["OrderDate"]" />
                                 <DataGridColumn Field="@nameof(OrderDto.CustomerName)" Caption="@L["CustomerName"]" />
@@ -3307,16 +3397,21 @@
                             </DisplayTemplate>
                             </DataGridColumn> *@
                                 <DataGridColumn Field="@nameof(OrderDto.OrderNo)" Caption="@L["OrderNo"]">
-                                    <DisplayTemplate>
-                                    
-                                                    <span class="position-relative" style="display:inline-block">
-                                       <Link style="cursor:pointer" @onclick="()=>NavigateToOrderDetails(context)" > @L[context.OrderNo]</Link>
-                                    @if (OrderNotificationCounts.TryGetValue(context.OrderId, out var orderState) && (orderState.MessageCount + (IsManualBankTransferAndWaiting(orderState) ? 1 : 0)) > 0)
-{
-    <span class="badge bg-danger">@((orderState.MessageCount +  (IsManualBankTransferAndWaiting(orderState) ? 1 : 0)))</span>
-}
-        </span>
-                                    </DisplayTemplate>
+                                <DisplayTemplate>
+                                <div class="position-relative d-inline-block">
+                                     <Link style="cursor:pointer" @onclick="() => NavigateToOrderDetails(context)">
+                                     @context.OrderNo
+                                     </Link>
+
+                                        @if (OrderNotificationCounts.TryGetValue(context.OrderId, out var orderState)
+                                             && (orderState.MessageCount + (IsManualBankTransferAndWaiting(orderState) ? 1 : 0)) > 0)
+                                            {
+                                                <span class="notification-badge">
+                                                 @FormatBadgeCount(orderState.MessageCount + (IsManualBankTransferAndWaiting(orderState) ? 1 : 0))
+                                                </span>
+                                            }
+                                </div>
+                            </DisplayTemplate>
                                 </DataGridColumn>
                                 <DataGridColumn Field="@nameof(OrderDto.CreationTime)" Caption="@L["OrderDate"]" />
                                 <DataGridColumn Field="@nameof(OrderDto.CustomerName)" Caption="@L["CustomerName"]" />
@@ -3616,16 +3711,21 @@
                             </DisplayTemplate>
                             </DataGridColumn> *@
                                 <DataGridColumn Field="@nameof(OrderDto.OrderNo)" Caption="@L["OrderNo"]">
-                                    <DisplayTemplate>
-                                     
-                                                        <span class="position-relative" style="display:inline-block">
-                                       <Link style="cursor:pointer" @onclick="()=>NavigateToOrderDetails(context)" > @L[context.OrderNo]</Link>
-                                    @if (OrderNotificationCounts.TryGetValue(context.OrderId, out var orderState) && (orderState.MessageCount + (IsManualBankTransferAndWaiting(orderState) ? 1 : 0)) > 0)
-{
-    <span class="badge bg-danger">@((orderState.MessageCount +  (IsManualBankTransferAndWaiting(orderState) ? 1 : 0)))</span>
-}
-        </span>
-                                    </DisplayTemplate>
+                                  <DisplayTemplate>
+                                <div class="position-relative d-inline-block">
+                                     <Link style="cursor:pointer" @onclick="() => NavigateToOrderDetails(context)">
+                                     @context.OrderNo
+                                     </Link>
+
+                                        @if (OrderNotificationCounts.TryGetValue(context.OrderId, out var orderState)
+                                             && (orderState.MessageCount + (IsManualBankTransferAndWaiting(orderState) ? 1 : 0)) > 0)
+                                            {
+                                                <span class="notification-badge">
+                                                 @FormatBadgeCount(orderState.MessageCount + (IsManualBankTransferAndWaiting(orderState) ? 1 : 0))
+                                                </span>
+                                            }
+                                </div>
+                            </DisplayTemplate>
                                 </DataGridColumn>
                                 <DataGridColumn Field="@nameof(OrderDto.CreationTime)" Caption="@L["OrderDate"]" />
                                 <DataGridColumn Field="@nameof(OrderDto.CustomerName)" Caption="@L["CustomerName"]" />
