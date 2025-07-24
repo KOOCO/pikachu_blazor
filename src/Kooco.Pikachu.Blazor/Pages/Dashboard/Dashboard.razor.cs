@@ -96,8 +96,12 @@ public partial class Dashboard
         {
             Exporting = true;
             var excelData = await DashboardAppService.GetSalesReportExcelAsync(Filters);
-
-            await ExcelDownloadHelper.DownloadExcelAsync(excelData, "Report.xlsx");
+            var fileName = string.Format("{0}_{1}_to_{2}.xlsx",
+                L["DashboardSalesReportFileName"],
+                Filters.StartDate?.ToString("yyyy-MM-dd"),
+                Filters.EndDate?.ToString("yyyy-MM-dd")
+                );
+            await ExcelDownloadHelper.DownloadExcelAsync(excelData, fileName);
             Exporting = false;
         }
         catch (Exception ex)

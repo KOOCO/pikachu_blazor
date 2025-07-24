@@ -1676,6 +1676,12 @@
     "PerformanceHighlights": "績效亮點",
     "BestPerformingProduct": "最佳表現商品",
     "TopGroupBuyCampaign": "最成功團購活動",
-    "OrderCompletionRate": "訂單完成率"
+    "OrderCompletionRate": "訂單完成率",
+    "ProductSummary": "商品摘要",
+    "ProductName": "商品名稱",
+    "TotalRevenue": "總收入",
+    "TotalQtySold": "總銷售數量",
+    "OrderItemDetails": "訂單商品明細",
+    "DashboardSalesReportFileName": "團購銷售報表"
   }
 }

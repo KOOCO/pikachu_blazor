@@ -1717,6 +1717,7 @@
     "ProductName": "Product Name",
     "TotalRevenue": "Total Revenue",
     "TotalQtySold": "Total Qty Sold",
-    "OrderItemDetails": "Order Item Details"
+    "OrderItemDetails": "Order Item Details",
+    "DashboardSalesReportFileName": "GroupBuy_Sales_Report"
   }
 }
