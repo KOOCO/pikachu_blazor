@@ -209,6 +209,15 @@ public class RefundAppService : ApplicationService, IRefundAppService
         Refund refund = await _refundRepository.GetAsync(id);
 
         Order order = await _orderRepository.GetWithDetailsAsync(refund.OrderId);
+        if (order.PaymentMethod == PaymentMethods.ManualBankTransfer)
+        {
+            await UpdateRefundReviewAsync(id, RefundReviewStatus.Success);
+            var orderTransaction = new OrderTransaction(GuidGenerator.Create(), order.Id, order.OrderNo,
+                order.TotalAmount, TransactionType.Refund, TransactionStatus.Successful, PaymentChannel.CashOnDelivery);
+            await _orderTransactionManager.CreateAsync(orderTransaction);
+            return;
+
+        }
 
         PaymentGatewayDto? ecpay = (await _PaymentGatewayAppService.GetAllAsync()).FirstOrDefault(f => f.PaymentIntegrationType is PaymentIntegrationType.EcPay) ??
                                     throw new UserFriendlyException("Please Set Ecpay Setting First"); ;
