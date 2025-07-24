@@ -231,7 +231,8 @@ public class EfCoreDashboardRepository(IDbContextProvider<PikachuDbContext> dbCo
     {
         var dbContext = await GetDbContextAsync();
 
-        var orderItems = await dbContext.Orders
+        var orderItems = dbContext.Orders
+            .AsNoTracking()
             .Where(o => OrderConsts.CompletedShippingStatus.Contains(o.ShippingStatus))
             .WhereIf(selectedGroupBuyIds.Any(), o => selectedGroupBuyIds.Contains(o.GroupBuyId))
             .Include(o => o.OrderItems)
@@ -241,38 +242,70 @@ public class EfCoreDashboardRepository(IDbContextProvider<PikachuDbContext> dbCo
                 oi.ItemType,
                 oi.ItemId,
                 oi.Quantity,
-                oi.TotalAmount
-            })
+                oi.TotalAmount,
+                oi.SetItemId
+            });
+
+        var itemGroup = await orderItems
             .Where(oi => oi.ItemId.HasValue)
             .GroupBy(oi => oi.ItemId!.Value)
             .Select(g => new
             {
-                ItemId = g.Key,
+                Id = g.Key,
                 Quantity = g.Sum(x => x.Quantity),
                 Amount = g.Sum(x => x.TotalAmount),
+                Type = ItemType.Item
             })
             .ToListAsync();
 
-        var itemIds = orderItems.Select(oi => oi.ItemId).ToList();
+        var setItemGroup = await orderItems
+            .Where(oi => oi.SetItemId.HasValue)
+            .GroupBy(oi => oi.SetItemId!.Value)
+            .Select(g => new
+            {
+                Id = g.Key,
+                Quantity = g.Sum(x => x.Quantity),
+                Amount = g.Sum(x => x.TotalAmount),
+                Type = ItemType.SetItem
+            })
+            .ToListAsync();
+
+        var topItems = itemGroup
+            .Concat(setItemGroup)
+            .OrderByDescending(x => x.Quantity)
+            .Take(3)
+            .ToList();
+
+        var itemIds = topItems.Where(oi => oi.Type == ItemType.Item).Select(oi => oi.Id).ToList();
+        var setItemIds = topItems.Where(oi => oi.Type == ItemType.SetItem).Select(oi => oi.Id).ToList();
+
         var items = await dbContext.Items
             .Where(i => itemIds.Contains(i.Id))
             .Include(i => i.Images)
             .Select(i => new { i.Id, i.ItemName, Image = i.Images.Where(image => image.ImageUrl != null).FirstOrDefault() })
             .ToListAsync();
 
-        var totalQuantity = orderItems.Sum(oi => oi.Quantity);
+        var setItems = await dbContext.SetItems
+            .Where(i => setItemIds.Contains(i.Id))
+            .Include(i => i.Images)
+            .Select(i => new { i.Id, i.SetItemName, Image = i.Images.Where(image => image.ImageUrl != null).FirstOrDefault() })
+            .ToListAsync();
 
-        var model = orderItems.Select(oi => new DashboardBestSellerModel
+        var totalQuantity = topItems.Sum(oi => oi.Quantity);
+
+        var model = topItems.Select(oi => new DashboardBestSellerModel
         {
-            ItemId = oi.ItemId,
-            ItemName = items.Where(i => i.Id == oi.ItemId).FirstOrDefault()?.ItemName,
-            ImageUrl = items.Where(i => i.Id == oi.ItemId).FirstOrDefault()?.Image?.ImageUrl,
+            ItemId = oi.Id,
+            ItemName = oi.Type == ItemType.Item
+                ? items.Where(i => i.Id == oi.Id).FirstOrDefault()?.ItemName
+                : setItems.Where(i => i.Id == oi.Id).FirstOrDefault()?.SetItemName,
+            ImageUrl = oi.Type == ItemType.Item
+                ? items.Where(i => i.Id == oi.Id).FirstOrDefault()?.Image?.ImageUrl
+                : setItems.Where(i => i.Id == oi.Id).FirstOrDefault()?.Image?.ImageUrl,
             Quantity = oi.Quantity,
             Amount = oi.Amount
         })
-            .Where(oi => !string.IsNullOrEmpty(oi.ItemName))
             .OrderByDescending(oi => oi.Quantity)
-            .Take(3)
             .ToList();
 
         for (int i = 0; i < model.Count; i++)
@@ -324,15 +357,26 @@ public class EfCoreDashboardRepository(IDbContextProvider<PikachuDbContext> dbCo
 
         var topPerformingProduct = orders
             .SelectMany(q => q.OrderItems)
-            .GroupBy(q => q.ItemId)
-            .Select(q => new { q.Key, TotalQuantity = q.Sum(oi => oi.Quantity) })
+            .Where(q => q.ItemId != null)
+            .GroupBy(q => q.ItemId!.Value)
+            .Select(q => new { q.Key, TotalQuantity = q.Sum(oi => oi.Quantity), Type = ItemType.Item })
+            .Concat(orders
+                .SelectMany(q => q.OrderItems)
+                .Where(q => q.SetItemId != null)
+                .GroupBy(q => q.SetItemId!.Value)
+                .Select(q => new { q.Key, TotalQuantity = q.Sum(oi => oi.Quantity), Type = ItemType.SetItem }))
             .OrderByDescending(q => q.TotalQuantity)
             .FirstOrDefault();
 
-        var productName = await dbContext.Items
-            .Where(item => topPerformingProduct != null && item.Id == topPerformingProduct.Key)
-            .Select(item => item.ItemName)
-            .FirstOrDefaultAsync();
+        var productName = topPerformingProduct?.Type == ItemType.Item
+                ? await dbContext.Items
+                .Where(item => topPerformingProduct != null && item.Id == topPerformingProduct.Key)
+                .Select(item => item.ItemName)
+                .FirstOrDefaultAsync()
+                : await dbContext.SetItems
+                .Where(setItem => topPerformingProduct != null && setItem.Id == topPerformingProduct.Key)
+                .Select(setItem => setItem.SetItemName)
+                .FirstOrDefaultAsync();
 
         result.TopPerformingProduct = productName;
         result.TopPerformingProductQuantity = topPerformingProduct?.TotalQuantity;
@@ -375,7 +419,7 @@ public class EfCoreDashboardRepository(IDbContextProvider<PikachuDbContext> dbCo
         var dbContext = await GetDbContextAsync();
 
         var data = await dbContext.Orders
-            .Where(order => order.CreationTime.Date >= startDate.Date && order.CreationTime <= endDate.Date
+            .Where(order => order.CreationTime.Date >= startDate.Date && order.CreationTime.Date <= endDate.Date
             && OrderConsts.CompletedShippingStatus.Contains(order.ShippingStatus))
             .WhereIf(selectedGroupBuyIds.Any(), order => selectedGroupBuyIds.Contains(order.GroupBuyId))
             .Include(order => order.OrderItems)
@@ -404,8 +448,34 @@ public class EfCoreDashboardRepository(IDbContextProvider<PikachuDbContext> dbCo
 
         var itemNames = await dbContext.Items
             .Where(x => itemIds.Contains(x.Id))
-            .Select(x => new { x.Id, x.ItemName })
+            .Select(x => new { x.Id, x.ItemName, Category = x.CategoryProducts.FirstOrDefault() })
             .ToListAsync();
+
+        var categoryIds = itemNames
+            .Select(x => x.Category?.ProductCategoryId)
+            .Where(id => id.HasValue)
+            .Select(id => id!.Value)
+            .Distinct()
+            .ToList();
+
+        var categories = await dbContext.ProductCategories
+            .Where(pc => categoryIds.Contains(pc.Id))
+            .Select(pc => new { pc.Id, pc.Name, pc.ZHName })
+            .ToListAsync();
+
+        var itemCategories = itemNames
+            .Where(x => x.Category != null)
+            .Join(categories,
+                item => item.Category!.ProductCategoryId,
+                category => category.Id,
+                (item, category) => new
+                {
+                    ItemId = item.Id,
+                    CategoryId = category.Id,
+                    CategoryName = category.Name,
+                    CategoryZHName = category.ZHName
+                })
+            .ToList();
 
         var setItems = data
             .Where(x => x.SetItemId.HasValue)
@@ -433,7 +503,8 @@ public class EfCoreDashboardRepository(IDbContextProvider<PikachuDbContext> dbCo
             UnitPrice = x.FirstOrDefault() != null ? x.First().ItemPrice : 0,
             TotalRevenue = x.Sum(y => y.TotalAmount),
             GroupBuy = groupBuyNames.Where(gb => gb.Id == x.Key.GroupBuyId).FirstOrDefault()?.GroupBuyName,
-            Category = ""
+            Category = itemCategories.Where(c => c.ItemId == x.Key.ItemId).FirstOrDefault()?.CategoryName,
+            CategoryZH = itemCategories.Where(c => c.ItemId == x.Key.ItemId).FirstOrDefault()?.CategoryZHName
         }).ToList();
 
         result.AddRange([.. setItems.Select(x => new ProductSummaryModel
@@ -453,7 +524,7 @@ public class EfCoreDashboardRepository(IDbContextProvider<PikachuDbContext> dbCo
         var dbContext = await GetDbContextAsync();
 
         var data = await dbContext.Orders
-            .Where(order => order.CreationTime.Date >= startDate.Date && order.CreationTime <= endDate.Date)
+            .Where(order => order.CreationTime.Date >= startDate.Date && order.CreationTime.Date <= endDate.Date)
             .WhereIf(selectedGroupBuyIds.Any(), order => selectedGroupBuyIds.Contains(order.GroupBuyId))
             .Include(order => order.OrderItems)
             .Select(order => new
@@ -481,7 +552,7 @@ public class EfCoreDashboardRepository(IDbContextProvider<PikachuDbContext> dbCo
             .Where(si => setItemIds.Contains(si.Id))
             .Select(si => new { si.Id, si.SetItemName })
             .ToListAsync();
-        
+
         var itemIds = data.Where(x => x.ItemId.HasValue).Select(x => x.ItemId!.Value).ToList();
         itemIds = itemIds.Distinct().ToList();
 
@@ -501,7 +572,7 @@ public class EfCoreDashboardRepository(IDbContextProvider<PikachuDbContext> dbCo
             OrderNo = x.OrderNo,
             CreationTime = x.CreationTime,
             GroupBuy = groupBuys.Where(gb => gb.Id == x.GroupBuyId).FirstOrDefault()?.GroupBuyName,
-            ProductName = x.ItemId.HasValue 
+            ProductName = x.ItemId.HasValue
                 ? items.Where(item => item.Id == x.ItemId).FirstOrDefault()?.ItemName
                 : setItems.Where(setItem => setItem.Id == x.SetItemId).FirstOrDefault()?.SetItemName,
             Attributes = x.Spec,

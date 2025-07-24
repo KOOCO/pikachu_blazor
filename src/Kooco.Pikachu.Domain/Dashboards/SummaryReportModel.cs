@@ -36,6 +36,7 @@ public class ProductSummaryModel
     public decimal TotalRevenue { get; set; }
     public string? GroupBuy { get; set; }
     public string? Category { get; set; }
+    public string? CategoryZH { get; set; }
 }
 
 public class OrderItemDetailsModel

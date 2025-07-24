@@ -1,16 +1,14 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using MiniExcelLibs;
 using OfficeOpenXml;
 using OfficeOpenXml.Style;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.IO;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Application.Dtos;
-using Volo.Abp.Content;
 
 namespace Kooco.Pikachu.Dashboards;
 
@@ -84,8 +82,8 @@ public class DashboardAppService(IDashboardRepository dashboardRepository) : Pik
     private async Task GenerateSummaryReportSheet(DashboardFiltersDto input, ExcelPackage package)
     {
         var summary = await _dashboardRepository.GetSummaryReportAsync(
-            input.StartDate.Value, 
-            input.EndDate.Value, 
+            input.StartDate.Value,
+            input.EndDate.Value,
             input.SelectedGroupBuyIds
             );
 
@@ -209,7 +207,7 @@ public class DashboardAppService(IDashboardRepository dashboardRepository) : Pik
             sheet.Cells[row, 4].Value = summary.UnitPrice;
             sheet.Cells[row, 5].Value = summary.TotalRevenue;
             sheet.Cells[row, 6].Value = summary.GroupBuy;
-            sheet.Cells[row, 7].Value = summary.Category;
+            sheet.Cells[row, 7].Value = CultureInfo.CurrentCulture.TwoLetterISOLanguageName == "zh" ? summary.CategoryZH : summary.Category;
 
             row++;
         }
