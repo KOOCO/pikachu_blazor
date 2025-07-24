@@ -896,6 +896,11 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
                         var matchingTimes = selfPickupTimes.Where(t => !string.IsNullOrEmpty(t)).ToList();
                         response.SelfPickupType[method] = matchingTimes.Count > 0 ? matchingTimes : ["No time preference"];
                     }
+                    else if (method.Contains("HomeDelivery"))
+                    {
+                        var matchingTimes = homeDeliveryTimes.Where(t => !string.IsNullOrEmpty(t)).ToList();
+                        response.HomeDeliveryType[method] = matchingTimes.Count > 0 ? matchingTimes : ["No time preference"];
+                    }
                     else if (method.Contains("DeliveredByStore"))
                     {
                         using (_dataFilter.Enable<IMultiTenant>())
