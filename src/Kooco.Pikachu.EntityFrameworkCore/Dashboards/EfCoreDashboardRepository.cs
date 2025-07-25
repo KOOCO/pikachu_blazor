@@ -33,17 +33,17 @@ public class EfCoreDashboardRepository(IDbContextProvider<PikachuDbContext> dbCo
 
         var query = await dbContext.Orders
             .Where(o => OrderConsts.CompletedShippingStatus.Contains(o.ShippingStatus))
-            .Where(o => o.CompletionTime >= previousDate && o.CompletionTime <= endDate)
+            .Where(o => o.CreationTime.Date >= previousDate && o.CreationTime.Date <= endDate)
             .WhereIf(selectedGroupBuyIds.Any(), o => selectedGroupBuyIds.Contains(o.GroupBuyId))
             .Select(o => new
             {
-                o.CompletionTime,
+                o.CreationTime,
                 o.TotalAmount,
                 o.TotalQuantity
             }).ToListAsync();
 
         var newMembers = await dbContext.Users
-            .Where(u => u.CreationTime >= previousDate && u.CreationTime <= endDate)
+            .Where(u => u.CreationTime.Date >= previousDate && u.CreationTime.Date <= endDate)
             .GroupJoin(dbContext.Orders,
                 user => user.Id,
                 orders => orders.UserId,
@@ -52,8 +52,8 @@ public class EfCoreDashboardRepository(IDbContextProvider<PikachuDbContext> dbCo
             .Select(x => x.CreationTime)
             .ToListAsync();
 
-        var timePeriodOrders = query.Where(o => o.CompletionTime >= startDate).ToList();
-        var previousOrders = query.Where(o => o.CompletionTime < startDate).ToList();
+        var timePeriodOrders = query.Where(o => o.CreationTime.Date >= startDate).ToList();
+        var previousOrders = query.Where(o => o.CreationTime.Date < startDate).ToList();
 
         var model = new DashboardStatsModel
         {
@@ -83,11 +83,11 @@ public class EfCoreDashboardRepository(IDbContextProvider<PikachuDbContext> dbCo
 
         var orders = await dbContext.Orders
             .Where(o => OrderConsts.CompletedShippingStatus.Contains(o.ShippingStatus))
-            .Where(o => o.CompletionTime >= startDate && o.CompletionTime <= endDate)
+            .Where(o => o.CreationTime.Date >= startDate && o.CreationTime.Date <= endDate)
             .WhereIf(selectedGroupBuyIds.Any(), o => selectedGroupBuyIds.Contains(o.GroupBuyId))
             .Select(o => new
             {
-                CompletionTime = o.CompletionTime!.Value.Date,
+                CreationTime = o.CreationTime.Date,
                 o.TotalAmount,
                 o.TotalQuantity,
                 o.GroupBuyId
@@ -130,11 +130,11 @@ public class EfCoreDashboardRepository(IDbContextProvider<PikachuDbContext> dbCo
                 var currentDate = startDate.Value.AddDays(i).Date;
                 barChart.Categories.Add(currentDate.ToString("MMM dd, yyyy"));
                 barChart.TotalSales.Add((int)(orders
-                    .Where(o => o.CompletionTime.Date == currentDate)
+                    .Where(o => o.CreationTime.Date == currentDate)
                     .Sum(o => o.TotalAmount)));
 
                 barChart.TotalOrders.Add(orders
-                    .Count(o => o.CompletionTime.Date == currentDate));
+                    .Count(o => o.CreationTime.Date == currentDate));
             }
         }
         else if (periodOption == ReportCalculationUnits.Weekly)
@@ -149,11 +149,11 @@ public class EfCoreDashboardRepository(IDbContextProvider<PikachuDbContext> dbCo
                 barChart.Categories.Add($"{weekStart:MMM dd} - {weekEnd:MMM dd}");
 
                 barChart.TotalSales.Add((int)(orders
-                    .Where(o => o.CompletionTime.Date >= weekStart && o.CompletionTime.Date <= weekEnd)
+                    .Where(o => o.CreationTime.Date >= weekStart && o.CreationTime.Date <= weekEnd)
                     .Sum(o => o.TotalAmount)));
 
                 barChart.TotalOrders.Add(orders
-                    .Count(o => o.CompletionTime.Date >= weekStart && o.CompletionTime.Date <= weekEnd));
+                    .Count(o => o.CreationTime.Date >= weekStart && o.CreationTime.Date <= weekEnd));
             }
         }
         else if (periodOption == ReportCalculationUnits.Monthly)
@@ -167,11 +167,11 @@ public class EfCoreDashboardRepository(IDbContextProvider<PikachuDbContext> dbCo
                 barChart.Categories.Add(monthStart.ToString("MMM yyyy"));
 
                 barChart.TotalSales.Add((int)(orders
-                    .Where(o => o.CompletionTime.Date >= monthStart && o.CompletionTime.Date <= monthEnd)
+                    .Where(o => o.CreationTime.Date >= monthStart && o.CreationTime.Date <= monthEnd)
                     .Sum(o => o.TotalAmount)));
 
                 barChart.TotalOrders.Add(orders
-                    .Count(o => o.CompletionTime.Date >= monthStart && o.CompletionTime.Date <= monthEnd));
+                    .Count(o => o.CreationTime.Date >= monthStart && o.CreationTime.Date <= monthEnd));
             }
         }
 
@@ -351,7 +351,7 @@ public class EfCoreDashboardRepository(IDbContextProvider<PikachuDbContext> dbCo
         result.NewMembers = memberRole != null
             ? await dbContext.Users
             .Where(user => user.Roles.Any(role => role.RoleId == memberRole.Id))
-            .Where(user => user.CreationTime >= startDate.Date && user.CreationTime <= endDate.Date)
+            .Where(user => user.CreationTime.Date >= startDate.Date && user.CreationTime.Date <= endDate.Date)
             .CountAsync()
             : 0;
 
