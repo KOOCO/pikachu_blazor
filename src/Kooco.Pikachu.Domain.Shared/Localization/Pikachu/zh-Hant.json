@@ -1682,6 +1682,7 @@
     "TotalRevenue": "總收入",
     "TotalQtySold": "總銷售數量",
     "OrderItemDetails": "訂單商品明細",
-    "DashboardSalesReportFileName": "團購銷售報表"
+    "DashboardSalesReportFileName": "團購銷售報表",
+    "UnitsSold": "銷售單位數"
   }
 }

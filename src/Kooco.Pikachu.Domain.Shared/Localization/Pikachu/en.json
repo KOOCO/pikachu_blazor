@@ -1718,6 +1718,8 @@
     "TotalRevenue": "Total Revenue",
     "TotalQtySold": "Total Qty Sold",
     "OrderItemDetails": "Order Item Details",
-    "DashboardSalesReportFileName": "GroupBuy_Sales_Report"
+    "DashboardSalesReportFileName": "GroupBuy_Sales_Report",
+    "TimeRangeAndResetConfiguration": "Time Range & Reset Configuration",
+    "UnitsSold": "Units Sold"
   }
 }
