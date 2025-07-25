@@ -528,9 +528,7 @@
                             <input type="checkbox"
                             class="form-check-input"
                             id="@item"
-                            disabled="@((EditGroupBuyDto.ExcludeShippingMethod is not null) &&
-                                               (EditGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore")) &&
-                                               item is not "DeliveredByStore"||(EditGroupBuyDto.IsEnterprise && item == Enum.GetName(DeliveryMethod.DeliveredByStore)))"
+                             disabled="@(EditGroupBuyDto.IsEnterprise)"
                             checked="@(((EditGroupBuyDto.ExcludeShippingMethod is not null) &&
                                               (EditGroupBuyDto.ExcludeShippingMethod.Contains(item)))||( item == Enum.GetName(DeliveryMethod.SelfPickup) && EditGroupBuyDto.IsEnterprise))"
                             @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />

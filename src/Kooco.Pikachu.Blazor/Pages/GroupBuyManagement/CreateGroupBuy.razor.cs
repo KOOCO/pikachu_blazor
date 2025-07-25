@@ -1950,16 +1950,22 @@ public partial class CreateGroupBuy
             {
                 foreach (var item in CreateGroupBuyDto.ShippingMethodList)
                 {
+                    if(item!="SelfPickup" && item!="HomeDelivery")
                     JSRuntime.InvokeVoidAsync("uncheckOtherCheckbox", item);
 
                 }
-                CreateGroupBuyDto.ShippingMethodList = new List<string>();
-            }
-            else
-            {
-                CreateGroupBuyDto.ShippingMethodList.Remove("DeliveredByStore");
+
+                // Preserve SelfPickup and HomeDelivery
+                CreateGroupBuyDto.ShippingMethodList = CreateGroupBuyDto.ShippingMethodList
+                    .Where(x => x == "SelfPickup" || x == "HomeDelivery")
+                    .ToList();
 
             }
+            //else
+            //{
+            //    CreateGroupBuyDto.ShippingMethodList.Remove("DeliveredByStore");
+
+            //}
             CreateGroupBuyDto.ShippingMethodList.Add(method);
         }
         else

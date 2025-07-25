@@ -2538,16 +2538,21 @@ public partial class EditGroupBuy
             {
                 foreach (var item in EditGroupBuyDto.ShippingMethodList)
                 {
-                    JSRuntime.InvokeVoidAsync("uncheckOtherCheckbox", item);
+                    if (item != "SelfPickup" && item != "HomeDelivery")
+                        JSRuntime.InvokeVoidAsync("uncheckOtherCheckbox", item);
 
                 }
-                EditGroupBuyDto.ShippingMethodList = new List<string>();
+                
+                // Preserve SelfPickup and HomeDelivery
+                EditGroupBuyDto.ShippingMethodList = EditGroupBuyDto.ShippingMethodList
+                    .Where(x => x == "SelfPickup" || x == "HomeDelivery")
+                    .ToList();
             }
-            else
-            {
-                EditGroupBuyDto.ShippingMethodList.Remove("DeliveredByStore");
+            //else
+            //{
+            //    EditGroupBuyDto.ShippingMethodList.Remove("DeliveredByStore");
 
-            }
+            //}
 
             EditGroupBuyDto.ShippingMethodList.Add(method);
         }
