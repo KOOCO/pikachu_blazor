@@ -1,6 +1,8 @@
-﻿using Kooco.Pikachu.Members;
+﻿using Hangfire;
+using Kooco.Pikachu.Members;
 using Kooco.Pikachu.Permissions;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -39,11 +41,15 @@ public class VipTierSettingAppService : PikachuAppService, IVipTierSettingAppSer
 
     public async Task<VipTierSettingDto> UpdateAsync(UpdateVipTierSettingDto input)
     {
-        var vipTierSetting = await _vipTierSettingManager.AddOrUpdateAsync(
-            input.BasedOnCount,
-            input.BasedOnAmount,
-            input.TierCondition
-        );
+        var vipTierSetting = await _vipTierSettingManager
+            .AddOrUpdateAsync(
+                input.BasedOnCount,
+                input.BasedOnAmount,
+                input.TierCondition,
+                input.StartDate.Value,
+                input.IsResetEnabled,
+                input.ResetFrequency
+            );
 
         var validTiers = input.Tiers
             .Where(tier => !string.IsNullOrWhiteSpace(tier.TierName))
@@ -62,7 +68,7 @@ public class VipTierSettingAppService : PikachuAppService, IVipTierSettingAppSer
                 tier.TierName, tier.OrdersAmount, tier.OrdersCount);
         }
 
-        await _backgroundJobManager.EnqueueAsync(new UpdateMemberTierArgs { TenantId = CurrentTenant?.Id }, BackgroundJobPriority.High);
+        await _backgroundJobManager.EnqueueAsync(new UpdateMemberTierArgs { TenantId = CurrentTenant?.Id }, BackgroundJobPriority.High, TimeSpan.FromSeconds(10));
 
         return ObjectMapper.Map<VipTierSetting, VipTierSettingDto>(vipTierSetting);
     }
@@ -83,6 +89,30 @@ public class VipTierSettingAppService : PikachuAppService, IVipTierSettingAppSer
     {
         using (CurrentTenant.Change(tenantId))
         {
+            var vipTierSetting = await _vipTierSettingManager.FirstOrDefaultAsync();
+            if (vipTierSetting == null)
+            {
+                Logger.LogWarning("VipTierSetting not found. Cannot update member tier.");
+                return;
+            }
+            if (vipTierSetting.JobId != null)
+            {
+                BackgroundJob.Delete(vipTierSetting.JobId);
+                vipTierSetting.JobId = null;
+            }
+            if (vipTierSetting.IsResetEnabled && vipTierSetting.ResetFrequency.HasValue)
+            {
+                var nextRun = DateTime.UtcNow.AddMonths((int)vipTierSetting.ResetFrequency.Value);
+
+                vipTierSetting.JobId = BackgroundJob.Schedule<UpdateMemberTierJob>(
+                    job => job.ExecuteAsync(new UpdateMemberTierArgs
+                    {
+                        TenantId = tenantId
+                    }),
+                    nextRun - DateTime.UtcNow
+                    );
+            }
+            await CurrentUnitOfWork!.SaveChangesAsync();
             await _memberRepository.UpdateMemberTierAsync();
         }
     }

@@ -1683,6 +1683,15 @@
     "TotalQtySold": "總銷售數量",
     "OrderItemDetails": "訂單商品明細",
     "DashboardSalesReportFileName": "團購銷售報表",
-    "UnitsSold": "銷售單位數"
+    "UnitsSold": "銷售單位數",
+    "VipTierStartDateHelp": "訂單和消費將從此日期開始計算",
+    "EnableAutomaticResetOfVipProgress": "啟用 VIP 進度自動重設",
+    "VipTierResetFrequencyHelp": "VIP 進度將依此頻率自動重設",
+    "ResetEvery": "重設間隔",
+    "Enum:VipTierResetFrequency.3": "每 3 個月",
+    "Enum:VipTierResetFrequency.6": "每 6 個月",
+    "Enum:VipTierResetFrequency.12": "每 12 個月",
+    "SelectFrequency": "選擇頻率",
+    "ResetFrequency": "重設頻率"
   }
 }

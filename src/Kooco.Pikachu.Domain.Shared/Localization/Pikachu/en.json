@@ -1720,6 +1720,15 @@
     "OrderItemDetails": "Order Item Details",
     "DashboardSalesReportFileName": "GroupBuy_Sales_Report",
     "TimeRangeAndResetConfiguration": "Time Range & Reset Configuration",
-    "UnitsSold": "Units Sold"
+    "UnitsSold": "Units Sold",
+    "VipTierStartDateHelp": "Orders and spending will be counted from this date forward",
+    "EnableAutomaticResetOfVipProgress": "Enable automatic reset of VIP progress",
+    "VipTierResetFrequencyHelp": "VIP progress will automatically reset based on this frequency",
+    "ResetEvery": "Reset Every",
+    "Enum:VipTierResetFrequency.3": "Every 3 Months",
+    "Enum:VipTierResetFrequency.6": "Every 6 Months",
+    "Enum:VipTierResetFrequency.12": "Every 12 Months",
+    "SelectFrequency": "Select Frequency",
+    "ResetFrequency": "Reset Frequency"
   }
 }

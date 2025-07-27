@@ -1,3 +1,4 @@
+using Blazorise;
 using Kooco.Pikachu.TierManagement;
 using System;
 using System.Linq;
@@ -24,6 +25,19 @@ public partial class VipTiers
             {
                 Entity.TierCondition = null;
             }
+            if (!Entity.StartDate.HasValue)
+            {
+                return;
+            }
+            if (Entity.IsResetEnabled && !Entity.ResetFrequency.HasValue)
+            {
+                await Message.Error(L["The {0} field is required", L[nameof(Entity.ResetFrequency)]]);
+                return;
+            }
+            if (!Entity.IsResetEnabled)
+            {
+                Entity.ResetFrequency = null;
+            }
             await VipTierSettingAppService.UpdateAsync(Entity);
             await ResetAsync();
             await Message.Success("");
@@ -44,6 +58,10 @@ public partial class VipTiers
         {
             var vipTierSetting = await VipTierSettingAppService.FirstOrDefaultAsync();
             Entity = ObjectMapper.Map<VipTierSettingDto, UpdateVipTierSettingDto>(vipTierSetting);
+            if (Entity.StartDate == null || Entity.StartDate == DateTime.MinValue)
+            {
+                Entity.StartDate = vipTierSetting?.CreationTime;
+            }
 
             Entity.Tiers.AddRange(
                 [.. VipTierConsts.TierOptions
@@ -58,6 +76,15 @@ public partial class VipTiers
         catch (Exception ex)
         {
             await HandleErrorAsync(ex);
+        }
+    }
+
+    void AutoResetEnabledChange(bool e)
+    {
+        Entity.IsResetEnabled = e;
+        if (!e)
+        {
+            Entity.ResetFrequency = null;
         }
     }
 }
