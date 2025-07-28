@@ -1692,6 +1692,10 @@
     "Enum:VipTierResetFrequency.6": "每 6 個月",
     "Enum:VipTierResetFrequency.12": "每 12 個月",
     "SelectFrequency": "選擇頻率",
-    "ResetFrequency": "重設頻率"
+    "ResetFrequency": "重設頻率",
+    "TransactionNo": "交易序號",
+    "WalletTransactionType:Deposit": "手動加值",
+    "WalletTransactionType:Deduction": "手動扣款"
+
   }
 }

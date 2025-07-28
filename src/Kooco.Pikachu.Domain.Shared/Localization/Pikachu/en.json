@@ -1729,6 +1729,8 @@
     "Enum:VipTierResetFrequency.6": "Every 6 Months",
     "Enum:VipTierResetFrequency.12": "Every 12 Months",
     "SelectFrequency": "Select Frequency",
-    "ResetFrequency": "Reset Frequency"
+    "ResetFrequency": "Reset Frequency",
+    "WalletTransactionType:Deposit": "Manual Top-Up",
+    "WalletTransactionType:Deduction": "Manual Deduction"
   }
 }
