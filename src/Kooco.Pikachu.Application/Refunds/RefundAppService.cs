@@ -109,6 +109,7 @@ public class RefundAppService : ApplicationService, IRefundAppService
         var order = await _orderRepository.GetAsync(orderId);
         order.IsRefunded = true;
         order.OrderRefundType = OrderRefundType.FullRefund;
+        order.OrderStatus = OrderStatus.Refund;
         // **Get Current User (Editor)**
         var currentUserId = CurrentUser.Id ?? Guid.Empty;
         var currentUserName = CurrentUser.UserName ?? "System";
@@ -148,12 +149,14 @@ public class RefundAppService : ApplicationService, IRefundAppService
     public async Task<RefundDto> UpdateRefundReviewAsync(Guid id, RefundReviewStatus input, string? rejectReason = null)
     {
         Refund refund = await _refundRepository.GetAsync(id);
-
+        var order = await _orderRepository.GetAsync(refund.OrderId);
         refund.RefundReview = input;
 
         if (input is RefundReviewStatus.ReturnedApplication && !string.IsNullOrWhiteSpace(rejectReason))
         {
             refund.RejectReason = rejectReason;
+            order.OrderStatus = OrderStatus.Open;
+
         }
 
         if (input is RefundReviewStatus.Proccessing ||
@@ -168,7 +171,8 @@ public class RefundAppService : ApplicationService, IRefundAppService
 
         if (input == RefundReviewStatus.Success)
         {
-            var order = await _orderRepository.GetAsync(refund.OrderId);
+            order.ShippingStatus = ShippingStatus.Closed;
+            order.OrderStatus = OrderStatus.Closed;
             if (order.OrderRefundType == OrderRefundType.FullRefund && order.CreditDeductionRecordId.HasValue)
             {
                 var userShoppingCredit = await _userShoppingCreditRepository.FirstOrDefaultAsync(x => x.Id == order.CreditDeductionRecordId);
@@ -200,6 +204,7 @@ public class RefundAppService : ApplicationService, IRefundAppService
         {
             await _emailAppService.SendRefundEmailAsync(refund.OrderId, (double)refund.Order.TotalAmount);
         }
+        await _orderRepository.UpdateAsync(order);
 
         return ObjectMapper.Map<Refund, RefundDto>(refund);
     }
