@@ -1720,6 +1720,8 @@
     "OrderItemDetails": "Order Item Details",
     "DashboardSalesReportFileName": "GroupBuy_Sales_Report",
     "TimeRangeAndResetConfiguration": "Time Range & Reset Configuration",
-    "UnitsSold": "Units Sold"
+    "UnitsSold": "Units Sold",
+    "WalletTransactionType:Deposit": "Manual Top-Up",
+    "WalletTransactionType:Deduction": "Manual Deduction"
   }
 }
