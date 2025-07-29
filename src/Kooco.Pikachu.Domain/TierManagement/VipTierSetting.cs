@@ -11,11 +11,13 @@ public class VipTierSetting : FullAuditedAggregateRoot<Guid>, IMultiTenant
     public bool BasedOnAmount { get; set; }
     public bool BasedOnCount { get; set; }
     public VipTierCondition? TierCondition { get; set; }
+    public bool IsResetConfigured { get; set; }
     public DateTime StartDate { get; set; }
     public bool IsResetEnabled { get; set; }
     public VipTierResetFrequency? ResetFrequency { get; set; }
     public string? JobId { get; set; }
-    public DateTime? LastResetDateUtc { get; set; }
+    public DateTime? NextResetDate { get; set; }
+    public DateTime? LastResetDate { get; set; }
     public Guid? TenantId { get; set; }
 
     public virtual ICollection<VipTier> Tiers { get; set; }
@@ -40,6 +42,7 @@ public class VipTierSetting : FullAuditedAggregateRoot<Guid>, IMultiTenant
         TierCondition = tierCondition;
         StartDate = startDate;
         SetIsResetEnabled(isResetEnabled, resetFrequency);
+        IsResetConfigured = startDate.Date != DateTime.Today || isResetEnabled;
         Tiers = new List<VipTier>();
     }
 

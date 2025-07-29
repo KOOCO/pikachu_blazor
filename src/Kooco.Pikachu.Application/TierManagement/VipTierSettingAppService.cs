@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.BackgroundJobs;
@@ -41,6 +42,9 @@ public class VipTierSettingAppService : PikachuAppService, IVipTierSettingAppSer
 
     public async Task<VipTierSettingDto> UpdateAsync(UpdateVipTierSettingDto input)
     {
+        var existing = await _vipTierSettingManager.FirstOrDefaultAsync();
+        bool shouldConfigureRecurringJob = existing?.IsResetConfigured != true || string.IsNullOrWhiteSpace(existing?.JobId);
+
         var vipTierSetting = await _vipTierSettingManager
             .AddOrUpdateAsync(
                 input.BasedOnCount,
@@ -68,7 +72,15 @@ public class VipTierSettingAppService : PikachuAppService, IVipTierSettingAppSer
                 tier.TierName, tier.OrdersAmount, tier.OrdersCount);
         }
 
-        await _backgroundJobManager.EnqueueAsync(new UpdateMemberTierArgs { TenantId = CurrentTenant?.Id }, BackgroundJobPriority.High, TimeSpan.FromSeconds(10));
+        await _backgroundJobManager.EnqueueAsync(
+            new UpdateMemberTierArgs
+            {
+                TenantId = CurrentTenant?.Id,
+                ShouldConfigureRecurringJob = shouldConfigureRecurringJob
+            },
+            BackgroundJobPriority.High,
+            TimeSpan.FromSeconds(10)
+            );
 
         return ObjectMapper.Map<VipTierSetting, VipTierSettingDto>(vipTierSetting);
     }
@@ -85,7 +97,7 @@ public class VipTierSettingAppService : PikachuAppService, IVipTierSettingAppSer
     }
 
     [AllowAnonymous]
-    public async Task UpdateMemberTierAsync(Guid? tenantId)
+    public async Task UpdateMemberTierAsync(Guid? tenantId, bool shouldConfigureRecurringJob = false, CancellationToken? cancellationToken = default)
     {
         using (CurrentTenant.Change(tenantId))
         {
@@ -95,25 +107,34 @@ public class VipTierSettingAppService : PikachuAppService, IVipTierSettingAppSer
                 Logger.LogWarning("VipTierSetting not found. Cannot update member tier.");
                 return;
             }
-            if (vipTierSetting.JobId != null)
-            {
-                BackgroundJob.Delete(vipTierSetting.JobId);
-                vipTierSetting.JobId = null;
-            }
-            if (vipTierSetting.IsResetEnabled && vipTierSetting.ResetFrequency.HasValue)
-            {
-                var nextRun = DateTime.UtcNow.AddMonths((int)vipTierSetting.ResetFrequency.Value);
 
-                vipTierSetting.JobId = BackgroundJob.Schedule<UpdateMemberTierJob>(
-                    job => job.ExecuteAsync(new UpdateMemberTierArgs
-                    {
-                        TenantId = tenantId
-                    }),
-                    nextRun - DateTime.UtcNow
-                    );
+            if (shouldConfigureRecurringJob)
+            {
+                if (vipTierSetting.JobId != null)
+                {
+                    BackgroundJob.Delete(vipTierSetting.JobId);
+                    vipTierSetting.JobId = null;
+                }
+                if (vipTierSetting.IsResetEnabled && vipTierSetting.ResetFrequency.HasValue)
+                {
+                    vipTierSetting.LastResetDate = TaipeiTime.Now();
+                    vipTierSetting.NextResetDate = TaipeiTime.VipTierNextRun(vipTierSetting.ResetFrequency.Value);
+
+                    var nextRunUtc = TaipeiTime.Utc(vipTierSetting.NextResetDate.Value);
+
+                    vipTierSetting.JobId = BackgroundJob.Schedule<UpdateMemberTierJob>(
+                        job => job.ExecuteAsync(new UpdateMemberTierArgs
+                        {
+                            TenantId = tenantId,
+                            ShouldConfigureRecurringJob = true
+                        }),
+                        nextRunUtc - DateTime.UtcNow
+                        );
+                }
             }
+
             await CurrentUnitOfWork!.SaveChangesAsync();
-            await _memberRepository.UpdateMemberTierAsync();
+            await _memberRepository.UpdateMemberTierAsync(cancellationToken);
         }
     }
 }

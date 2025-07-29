@@ -1704,7 +1704,7 @@
     "WalletEmail.Support": "如有任何疑問，請聯繫我們的客服團隊。",
     "WalletEmail.Regards": "此致<br/>ibosshops.com 團隊",
     "WalletDeductionNotification": "錢包扣款通知",
-    "WalletRechargeNotification": "錢包加值確認"
-
+    "WalletRechargeNotification": "錢包加值確認",
+    "VipTierTimeAndResetConfigWarning": "警告：起始日期和重置頻率儲存後將無法修改。\n您確定要繼續嗎？"
   }
 }

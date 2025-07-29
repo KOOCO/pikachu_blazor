@@ -1,4 +1,3 @@
-using Blazorise;
 using Kooco.Pikachu.TierManagement;
 using System;
 using System.Linq;
@@ -9,6 +8,7 @@ namespace Kooco.Pikachu.Blazor.Pages.TierManagement;
 public partial class VipTiers
 {
     private UpdateVipTierSettingDto Entity { get; set; }
+    private DateTime InitialStartDate { get; set; }
     private bool Loading { get; set; }
 
     protected override async Task OnInitializedAsync()
@@ -38,6 +38,15 @@ public partial class VipTiers
             {
                 Entity.ResetFrequency = null;
             }
+            bool confirmation = true;
+            if ((InitialStartDate != Entity.StartDate || Entity.IsResetEnabled) && !Entity.IsResetConfigured)
+            {
+                confirmation = await Message.Confirm(L["VipTierTimeAndResetConfigWarning"], L["VipTierTimeAndResetConfigWarningTitle"]);
+            }
+            if (!confirmation)
+            {
+                return;
+            }
             await VipTierSettingAppService.UpdateAsync(Entity);
             await ResetAsync();
             await Message.Success("");
@@ -60,8 +69,10 @@ public partial class VipTiers
             Entity = ObjectMapper.Map<VipTierSettingDto, UpdateVipTierSettingDto>(vipTierSetting);
             if (Entity.StartDate == null || Entity.StartDate == DateTime.MinValue)
             {
-                Entity.StartDate = vipTierSetting?.CreationTime;
+                Entity.StartDate = vipTierSetting?.CreationTime ?? DateTime.Today;
             }
+            
+            InitialStartDate = Entity.StartDate.Value;
 
             Entity.Tiers.AddRange(
                 [.. VipTierConsts.TierOptions

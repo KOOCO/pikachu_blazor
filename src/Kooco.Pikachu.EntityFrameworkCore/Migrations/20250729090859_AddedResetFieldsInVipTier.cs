@@ -6,11 +6,18 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Kooco.Pikachu.Migrations
 {
     /// <inheritdoc />
-    public partial class AddedResetFieldsInVipTierSetting : Migration
+    public partial class AddedResetFieldsInVipTier : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.AddColumn<bool>(
+                name: "IsResetConfigured",
+                table: "AppVipTierSettings",
+                type: "bit",
+                nullable: false,
+                defaultValue: false);
+
             migrationBuilder.AddColumn<bool>(
                 name: "IsResetEnabled",
                 table: "AppVipTierSettings",
@@ -25,7 +32,13 @@ namespace Kooco.Pikachu.Migrations
                 nullable: true);
 
             migrationBuilder.AddColumn<DateTime>(
-                name: "LastResetDateUtc",
+                name: "LastResetDate",
+                table: "AppVipTierSettings",
+                type: "datetime2",
+                nullable: true);
+
+            migrationBuilder.AddColumn<DateTime>(
+                name: "NextResetDate",
                 table: "AppVipTierSettings",
                 type: "datetime2",
                 nullable: true);
@@ -48,6 +61,10 @@ namespace Kooco.Pikachu.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
+                name: "IsResetConfigured",
+                table: "AppVipTierSettings");
+
+            migrationBuilder.DropColumn(
                 name: "IsResetEnabled",
                 table: "AppVipTierSettings");
 
@@ -56,7 +73,11 @@ namespace Kooco.Pikachu.Migrations
                 table: "AppVipTierSettings");
 
             migrationBuilder.DropColumn(
-                name: "LastResetDateUtc",
+                name: "LastResetDate",
+                table: "AppVipTierSettings");
+
+            migrationBuilder.DropColumn(
+                name: "NextResetDate",
                 table: "AppVipTierSettings");
 
             migrationBuilder.DropColumn(

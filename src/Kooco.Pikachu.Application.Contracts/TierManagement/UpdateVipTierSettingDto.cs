@@ -10,7 +10,7 @@ public class UpdateVipTierSettingDto
     public bool BasedOnAmount { get; set; }
     public bool BasedOnCount { get; set; }
     public VipTierCondition? TierCondition { get; set; }
-
+    public bool IsResetConfigured { get; set; }
     [Required]
     public DateTime? StartDate { get; set; }
     public bool IsResetEnabled { get; set; }

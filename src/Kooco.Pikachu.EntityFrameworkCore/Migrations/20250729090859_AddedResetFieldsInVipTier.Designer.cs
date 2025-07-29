@@ -13,8 +13,8 @@ using Volo.Abp.EntityFrameworkCore;
 namespace Kooco.Pikachu.Migrations
 {
     [DbContext(typeof(PikachuDbContext))]
-    [Migration("20250726113358_AddedResetFieldsInVipTierSetting")]
-    partial class AddedResetFieldsInVipTierSetting
+    [Migration("20250729090859_AddedResetFieldsInVipTier")]
+    partial class AddedResetFieldsInVipTier
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -5023,6 +5023,9 @@ namespace Kooco.Pikachu.Migrations
                         .HasDefaultValue(false)
                         .HasColumnName("IsDeleted");
 
+                    b.Property<bool>("IsResetConfigured")
+                        .HasColumnType("bit");
+
                     b.Property<bool>("IsResetEnabled")
                         .HasColumnType("bit");
 
@@ -5037,7 +5040,10 @@ namespace Kooco.Pikachu.Migrations
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("LastModifierId");
 
-                    b.Property<DateTime?>("LastResetDateUtc")
+                    b.Property<DateTime?>("LastResetDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("NextResetDate")
                         .HasColumnType("datetime2");
 
                     b.Property<int?>("ResetFrequency")

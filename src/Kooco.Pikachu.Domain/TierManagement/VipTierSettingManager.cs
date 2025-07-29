@@ -55,9 +55,13 @@ public class VipTierSettingManager(IRepository<VipTierSetting, Guid> repository)
             vipTierSetting.BasedOnCount = basedOnCount;
             vipTierSetting.BasedOnAmount = basedOnAmount;
             vipTierSetting.TierCondition = tierCondition;
-            vipTierSetting.StartDate = startDate;
-            vipTierSetting.IsResetEnabled = isResetEnabled;
-            vipTierSetting.ResetFrequency = resetFrequency;
+            if (!vipTierSetting.IsResetConfigured && (startDate != vipTierSetting.StartDate || isResetEnabled))
+            {
+                vipTierSetting.StartDate = startDate;
+                vipTierSetting.IsResetEnabled = isResetEnabled;
+                vipTierSetting.ResetFrequency = resetFrequency;
+                vipTierSetting.IsResetConfigured = true;
+            }
             await _repository.UpdateAsync(vipTierSetting);
         }
 

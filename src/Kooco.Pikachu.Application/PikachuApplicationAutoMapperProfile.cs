@@ -426,5 +426,9 @@ public class PikachuApplicationAutoMapperProfile : Profile
         CreateMap<InventoryLog, InventoryLogDto>();
 
         CreateMap<ManualBankTransferRecord, ManualBankTransferRecordDto>();
+
+        CreateMap<VipTierProgressModel, VipTierProgressDto>();
+        CreateMap<VipTierResetConfig, VipTierResetConfigDto>();
+        CreateMap<VipTierProgressToNextTier, VipTierProgressToNextTierDto>();
     }
 }

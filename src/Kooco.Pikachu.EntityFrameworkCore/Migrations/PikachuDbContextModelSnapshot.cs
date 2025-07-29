@@ -5020,6 +5020,9 @@ namespace Kooco.Pikachu.Migrations
                         .HasDefaultValue(false)
                         .HasColumnName("IsDeleted");
 
+                    b.Property<bool>("IsResetConfigured")
+                        .HasColumnType("bit");
+
                     b.Property<bool>("IsResetEnabled")
                         .HasColumnType("bit");
 
@@ -5034,7 +5037,10 @@ namespace Kooco.Pikachu.Migrations
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("LastModifierId");
 
-                    b.Property<DateTime?>("LastResetDateUtc")
+                    b.Property<DateTime?>("LastResetDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("NextResetDate")
                         .HasColumnType("datetime2");
 
                     b.Property<int?>("ResetFrequency")

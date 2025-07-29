@@ -342,4 +342,11 @@ public class MemberAppService(IObjectMapper objectMapper, IMemberRepository memb
         }
         return ObjectMapper.Map<IdentityUserDto, MemberDto>(identityUser);
     }
+
+
+    public async Task<VipTierProgressDto> GetMemberTierProgressAsync(Guid memberId)
+    {
+        var progress = await memberRepository.GetMemberTierProgressAsync(memberId);
+        return ObjectMapper.Map<VipTierProgressModel, VipTierProgressDto>(progress);
+    }
 }

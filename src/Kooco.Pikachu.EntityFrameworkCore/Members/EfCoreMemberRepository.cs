@@ -8,8 +8,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic.Core;
+using System.Threading;
 using System.Threading.Tasks;
-using Volo.Abp.BackgroundJobs;
 using Volo.Abp.Data;
 using Volo.Abp.Domain.Entities;
 using Volo.Abp.EntityFrameworkCore;
@@ -207,7 +207,7 @@ public class EfCoreMemberRepository(IDbContextProvider<PikachuDbContext> pikachu
         };
     }
 
-    public async Task UpdateMemberTierAsync()
+    public async Task UpdateMemberTierAsync(CancellationToken? cancellationToken = default)
     {
         Logger.LogInformation("Member Tier Job: Starting Job");
         var dbContext = await GetPikachuDbContextAsync();
@@ -217,10 +217,13 @@ public class EfCoreMemberRepository(IDbContextProvider<PikachuDbContext> pikachu
             Logger.LogWarning("Member Tier Job: Vip Tier Settings are not set");
             return;
         }
-        
-        vipTierSettings.LastResetDateUtc = DateTime.UtcNow;
-        Logger.LogInformation("Member Tier Job: Last Reset Date set to {LastResetDateUtc}", vipTierSettings.LastResetDateUtc);
-        
+
+        var dateFrom = vipTierSettings.IsResetEnabled && vipTierSettings.LastResetDate != null 
+            ? vipTierSettings.LastResetDate.Value.Date 
+            : vipTierSettings.StartDate.Date;
+
+        Logger.LogInformation("Calculating member orders from {dateFrom}", dateFrom);
+
         var tiers = vipTierSettings.Tiers.OrderByDescending(tier => tier.Tier);
 
         var memberRole = await dbContext.Roles.FirstOrDefaultAsync(x => x.Name == MemberConsts.Role);
@@ -241,8 +244,12 @@ public class EfCoreMemberRepository(IDbContextProvider<PikachuDbContext> pikachu
                 User = g.user,
                 MemberTags = dbContext.MemberTags.Where(mt => mt.UserId == g.user.Id).ToList(),
                 TotalOrders = g.orders.Count(),
-                OrdersAfterStartDate = g.orders.Where(o => o.CreationTime.Date >= vipTierSettings.StartDate.Date).Count(),
-                TotalSpent = g.orders.Sum(order => order.TotalAmount)
+                OrdersAfterStartDate = g.orders
+                    .Where(o => o.CreationTime.Date >= dateFrom)
+                    .Count(),
+                TotalSpent = g.orders
+                    .Where(o => o.CreationTime.Date >= dateFrom)
+                    .Sum(order => order.TotalAmount)
             })
             .ToListAsync();
 
@@ -384,5 +391,68 @@ public class EfCoreMemberRepository(IDbContextProvider<PikachuDbContext> pikachu
             .ToListAsync();
 
         return users.Select(user => (user.Id, user.UserName, user.NormalizedEmail)).ToList();
+    }
+
+    public async Task<VipTierProgressModel> GetMemberTierProgressAsync(Guid memberId)
+    {
+        var dbContext = await GetPikachuDbContextAsync();
+
+        var vipTierSettings = await dbContext.VipTierSettings
+            .Include(v => v.Tiers)
+            .FirstOrDefaultAsync()
+            ?? throw new EntityNotFoundException(typeof(VipTierSetting));
+
+        var tiers = vipTierSettings.Tiers
+            .OrderBy(t => t.Tier)
+            .ToList();
+
+        var user = await dbContext.Users
+            .Where(u => u.Id == memberId)
+            .FirstOrDefaultAsync()
+            ?? throw new EntityNotFoundException(typeof(IdentityUser));
+
+        var dateFrom = vipTierSettings.IsResetEnabled && vipTierSettings.LastResetDate != null
+            ? vipTierSettings.LastResetDate.Value.Date
+            : vipTierSettings.StartDate.Date;
+
+        // Get only completed orders for this user
+        var completedOrders = await dbContext.Orders
+            .Where(o => o.UserId == memberId && OrderConsts.CompletedShippingStatus.Contains(o.ShippingStatus) && o.CreationTime.Date >= dateFrom)
+            .ToListAsync();
+
+        var totalOrders = completedOrders.Count;
+        var totalSpent = completedOrders.Sum(o => o.TotalAmount);
+
+        // Get the member's current VIP tag name
+        var tagName = await dbContext.MemberTags
+            .Where(t => t.UserId == memberId && t.VipTierId.HasValue)
+            .Select(t => t.Name)
+            .FirstOrDefaultAsync();
+
+        var currentTier = tiers.FirstOrDefault(t => t.TierName == tagName);
+        var nextTier = currentTier is null
+            ? tiers.FirstOrDefault()
+            : tiers.SkipWhile(t => t.Tier != currentTier.Tier).Skip(1).FirstOrDefault();
+
+        return new VipTierProgressModel
+        {
+            CurrentLevel = currentTier?.TierName,
+            CalculationStartDate = vipTierSettings.StartDate,
+            ResetConfig = new VipTierResetConfig
+            {
+                IsResetEnabled = vipTierSettings.IsResetEnabled,
+                FrequencyMonths = (int?)vipTierSettings.ResetFrequency,
+                NextResetDate = vipTierSettings.NextResetDate,
+                LastResetDate = vipTierSettings.LastResetDate
+            },
+            ProgressToNextLevel = new VipTierProgressToNextTier
+            {
+                RequiredOrders = nextTier?.OrdersCount,
+                CurrentOrders = totalOrders,
+                RequiredAmount = nextTier?.OrdersAmount,
+                CurrentAmount = totalSpent,
+                CountingSince = dateFrom
+            }
+        };
     }
 }

@@ -406,11 +406,6 @@ public class OrderAppService : PikachuAppService, IOrderAppService
                 using (CurrentTenant.Change(user.TenantId))
                 {
                     await MemberTagManager.AddExistingAsync(user.Id);
-                    var vipTier = await MemberRepository.CheckForVipTierAsync(user.Id);
-                    if (vipTier != null)
-                    {
-                        await MemberTagManager.AddVipTierAsync(user.Id, vipTier.TierName, vipTier.Id);
-                    }
                 }
             }
 
@@ -2357,6 +2352,16 @@ public class OrderAppService : PikachuAppService, IOrderAppService
 
         await OrderRepository.UpdateAsync(order);
         await UnitOfWorkManager.Current.SaveChangesAsync();
+
+        if (order.UserId.HasValue)
+        {
+            var vipTier = await MemberRepository.CheckForVipTierAsync(order.UserId.Value);
+            if (vipTier != null)
+            {
+                await MemberTagManager.AddVipTierAsync(order.UserId.Value, vipTier.TierName, vipTier.Id);
+            }
+        }
+
         await SendEmailAsync(order.Id);
         var returnResult = ObjectMapper.Map<Order, OrderDto>(order);
         if (order.InvoiceNumber.IsNullOrEmpty())

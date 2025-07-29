@@ -196,4 +196,10 @@ public class MemberController(IMemberAppService memberAppService, IPikachuAccoun
     {
         return memberAppService.GetCurrentUserIdAsync();
     }
+
+    [HttpGet("{memberId}/vip-status")]
+    public Task<VipTierProgressDto> GetMemberTierProgressAsync(Guid memberId)
+    {
+        return memberAppService.GetMemberTierProgressAsync(memberId);
+    }
 }

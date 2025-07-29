@@ -132,7 +132,7 @@
                                     <Field>
                                         <FieldLabel>@L["StartDate"]</FieldLabel>
                                         <FieldBody>
-                                            <DateEdit TValue="DateTime?" @bind-Date="Entity.StartDate">
+                                            <DateEdit TValue="DateTime?" @bind-Date="Entity.StartDate" Disabled="Entity.IsResetConfigured">
                                                 <Feedback>
                                                     <ValidationError />
                                                 </Feedback>
@@ -146,13 +146,13 @@
                             </Validations>
                             <Field>
                                 <FieldBody>
-                                    <Check TValue="bool" Checked="Entity.IsResetEnabled" CheckedChanged="(e) => AutoResetEnabledChange(e)">@L["EnableAutomaticResetOfVipProgress"]</Check>
+                                    <Check TValue="bool" Checked="Entity.IsResetEnabled" CheckedChanged="(e) => AutoResetEnabledChange(e)" Disabled="Entity.IsResetConfigured">@L["EnableAutomaticResetOfVipProgress"]</Check>
                                 </FieldBody>
                             </Field>
                             <Field>
                                 <FieldLabel>@L["ResetEvery"]</FieldLabel>
                                 <FieldBody>
-                                    <Select TValue="VipTierResetFrequency?" @bind-SelectedValue="Entity.ResetFrequency" Disabled="@(!Entity.IsResetEnabled)">
+                                    <Select TValue="VipTierResetFrequency?" @bind-SelectedValue="Entity.ResetFrequency" Disabled="@(Entity.IsResetConfigured || !Entity.IsResetEnabled)">
                                         <SelectItem Value="(VipTierResetFrequency?)null">@L["SelectFrequency"]</SelectItem>
                                         @foreach (VipTierResetFrequency frequency in Enum.GetValues<VipTierResetFrequency>())
                                         {

@@ -9,6 +9,7 @@ public class VipTierSettingDto : EntityDto<Guid>
     public bool BasedOnAmount { get; set; }
     public bool BasedOnCount { get; set; }
     public VipTierCondition? TierCondition { get; set; }
+    public bool IsResetConfigured { get; set; }
     public DateTime StartDate { get; set; }
     public bool IsResetEnabled { get; set; }
     public VipTierResetFrequency? ResetFrequency { get; set; }
