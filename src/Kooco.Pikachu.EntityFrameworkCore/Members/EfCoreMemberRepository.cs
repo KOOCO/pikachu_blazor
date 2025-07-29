@@ -31,6 +31,7 @@ public class EfCoreMemberRepository(IDbContextProvider<PikachuDbContext> pikachu
         var memberRole = await dbContext.Roles.FirstOrDefaultAsync(x => x.Name == MemberConsts.Role);
         var user = await dbContext.Users.Include(x=>x.Roles).Where(user => memberRole != null && user.Roles.Any(role => role.RoleId == memberRole.Id)).FirstOrDefaultAsync(m => m.Id == memberId)
             ?? throw new EntityNotFoundException(typeof(IdentityUser), memberId);
+        var entry = dbContext.Entry(user);
 
         return new MemberModel
         {
@@ -42,9 +43,9 @@ public class EfCoreMemberRepository(IDbContextProvider<PikachuDbContext> pikachu
             Birthday = (DateTime?)user.GetProperty(Constant.Birthday, null),
             TotalOrders = dbContext.Orders.Where(x => x.UserId == user.Id).Count(),
             TotalSpent = (int)dbContext.Orders.Where(x => x.UserId == user.Id && (x.OrderStatus != EnumValues.OrderStatus.Exchange && x.OrderStatus != EnumValues.OrderStatus.Refund)).Sum(x => x.TotalAmount),
-            LineId = EF.Property<string>(user, Constant.LineId),
-            GoogleId = EF.Property<string>(user, Constant.GoogleId),
-            FacebookId = EF.Property<string>(user, Constant.FacebookId),
+            LineId = entry.Property<string>(Constant.LineId).CurrentValue,
+            GoogleId = entry.Property<string>(Constant.GoogleId).CurrentValue,
+            FacebookId = entry.Property<string>(Constant.FacebookId).CurrentValue,
             MemberTags = [.. dbContext.MemberTags.AsNoTracking()
                 .Where(x => x.UserId == user.Id)
                 .OrderBy(tag => !MemberConsts.MemberTags.Names.Contains(tag.Name))
@@ -59,7 +60,7 @@ public class EfCoreMemberRepository(IDbContextProvider<PikachuDbContext> pikachu
         var memberRole = await dbContext.Roles.FirstOrDefaultAsync(x => x.Name == MemberConsts.Role);
         var user = await dbContext.Users.Include(x => x.Roles).Where(user => memberRole != null && user.Roles.Any(role => role.RoleId == memberRole.Id)).FirstOrDefaultAsync(m => m.NormalizedEmail == Email.ToUpper()||m.NormalizedUserName==Email.ToUpper())
             ?? throw new EntityNotFoundException("Member Not Found");
-
+        var entry = dbContext.Entry(user);
         return new MemberModel
         {
             Id = user.Id,
@@ -70,9 +71,9 @@ public class EfCoreMemberRepository(IDbContextProvider<PikachuDbContext> pikachu
             Birthday = (DateTime?)user.GetProperty(Constant.Birthday, null),
             TotalOrders = dbContext.Orders.Where(x => x.UserId == user.Id).Count(),
             TotalSpent = (int)dbContext.Orders.Where(x => x.UserId == user.Id && (x.OrderStatus != EnumValues.OrderStatus.Exchange && x.OrderStatus != EnumValues.OrderStatus.Refund)).Sum(x => x.TotalAmount),
-            LineId = EF.Property<string>(user, Constant.LineId),
-            GoogleId = EF.Property<string>(user, Constant.GoogleId),
-            FacebookId = EF.Property<string>(user, Constant.FacebookId),
+            LineId = entry.Property<string>(Constant.LineId).CurrentValue,
+            GoogleId = entry.Property<string>(Constant.GoogleId).CurrentValue,
+            FacebookId = entry.Property<string>(Constant.FacebookId).CurrentValue,
             MemberTags = [.. dbContext.MemberTags.AsNoTracking()
                 .Where(x => x.UserId == user.Id)
                 .OrderBy(tag => !MemberConsts.MemberTags.Names.Contains(tag.Name))
