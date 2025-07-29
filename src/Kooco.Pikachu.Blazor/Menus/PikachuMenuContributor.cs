@@ -14,6 +14,7 @@ using Volo.Abp.TenantManagement.Blazor.Navigation;
 using Volo.Abp.UI.Navigation;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Configuration;
 
 namespace Kooco.Pikachu.Blazor.Menus;
 
@@ -34,7 +35,8 @@ public class PikachuMenuContributor : IMenuContributor
 
     private async Task ConfigureMainMenuAsync(MenuConfigurationContext context)
     {
-        var env = context.ServiceProvider.GetRequiredService<IWebHostEnvironment>();
+        var configuration = context.ServiceProvider.GetRequiredService<IConfiguration>();
+        var env = configuration["App:Environment"];
         var administration = context.Menu.GetAdministration();
         var l = context.GetLocalizer<PikachuResource>();
 
@@ -321,7 +323,7 @@ public class PikachuMenuContributor : IMenuContributor
             url: "/CashFlowManagement/ElectronicInvoiceSetting",
             requiredPermissionName: PikachuPermissions.InvoiceSetting)
             );
-        if (env.IsDevelopment())
+        if (env=="Development")
         {
             paymentManagement.AddItem(new ApplicationMenuItem(
             name: "CashFlowReconciliationStatement",
@@ -383,7 +385,7 @@ public class PikachuMenuContributor : IMenuContributor
             order: 6,
             requiredPermissionName: PikachuPermissions.WebsiteManagement.Default
             );
-        if (env.IsDevelopment())
+        if (env == "Development")
         {
             websiteManagement.AddItem(new ApplicationMenuItem(
             name: PikachuMenus.WebsiteBasicSettings,
@@ -408,7 +410,7 @@ public class PikachuMenuContributor : IMenuContributor
             icon: "fas fa-window-maximize",
             requiredPermissionName: PikachuPermissions.WebsiteManagement.TopbarSettings
             ));
-        if (env.IsDevelopment())
+        if (env == "Development")
         {
             websiteManagement.AddItem(new ApplicationMenuItem(
             name: PikachuMenus.WebsiteSettings,
