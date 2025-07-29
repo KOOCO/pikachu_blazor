@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Kooco.Pikachu.Emails;
 using Kooco.Pikachu.Tenants.Entities;
 using Kooco.Pikachu.Tenants.Repositories;
 using Kooco.Pikachu.Tenants.Requests;
@@ -13,7 +14,9 @@ using System.Text;
 using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Content;
+using Volo.Abp.Data;
 using Volo.Abp.Domain.Repositories;
+using Volo.Abp.TenantManagement;
 
 namespace Kooco.Pikachu.Tenants;
 
@@ -21,12 +24,15 @@ namespace Kooco.Pikachu.Tenants;
 public class TenantWalletAppService : PikachuAppService, ITenantWalletAppService
 {
     private readonly IRepository<TenantWalletTransaction, Guid> _transactionRepository;
+    private readonly IEmailAppService _emailAppService;
+    private readonly ITenantRepository _tenantRepository;
 
-
-    public TenantWalletAppService(IRepository<TenantWalletTransaction, Guid> transactionRepository)
+    public TenantWalletAppService(IRepository<TenantWalletTransaction, Guid> transactionRepository, IEmailAppService emailAppService, ITenantRepository tenantRepository)
     {
         _transactionRepository = transactionRepository;
-      
+        _emailAppService = emailAppService;
+        _tenantRepository = tenantRepository;
+
 
     }
     [RemoteService(false)]
@@ -39,6 +45,17 @@ public class TenantWalletAppService : PikachuAppService, ITenantWalletAppService
         wallet.WalletBalance += amount;
 
         await TenantWalletRepository.UpdateAsync(wallet);
+
+        if (import.IsEmailNotificationEnabled)
+        {
+            var tenant = await _tenantRepository.GetAsync(wallet.TenantId.Value);
+            await _emailAppService.SendWalletRechargeEmailAsync(
+                tenant.GetProperty<string>("TenantContactEmail"),
+                tenant.Name,
+                transaction.TransactionAmount,
+                 transaction.TransactionType.ToString(),
+                wallet.WalletBalance);
+        }
     }
 
     [RemoteService(false)]
@@ -51,6 +68,16 @@ public class TenantWalletAppService : PikachuAppService, ITenantWalletAppService
         wallet.WalletBalance -= amount;
 
         await TenantWalletRepository.UpdateAsync(wallet);
+        if (import.IsEmailNotificationEnabled)
+        {
+            var tenant = await _tenantRepository.GetAsync(wallet.TenantId.Value);
+            await _emailAppService.SendWalletRechargeEmailAsync(
+                tenant.GetProperty<string>("TenantContactEmail"),
+                tenant.Name,
+                transaction.TransactionAmount,
+                 transaction.TransactionType.ToString(),
+                wallet.WalletBalance);
+        }
     }
     [RemoteService(false)]
     public async Task<List<TenantWalletTransactionDto>> GetWalletTransactionsAsync(Guid walletId)

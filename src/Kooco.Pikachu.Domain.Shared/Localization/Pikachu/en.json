@@ -1722,6 +1722,15 @@
     "TimeRangeAndResetConfiguration": "Time Range & Reset Configuration",
     "UnitsSold": "Units Sold",
     "WalletTransactionType:Deposit": "Manual Top-Up",
-    "WalletTransactionType:Deduction": "Manual Deduction"
+    "WalletTransactionType:Deduction": "Manual Deduction",
+    "WalletEmail.Greeting": "Dear {0},",
+    "WalletEmail.Body": "Your wallet has been debited.",
+    "WalletEmail.Amount": "Amount Deducted:",
+    "WalletEmail.Type": "Transaction Type:",
+    "WalletEmail.Balance": "Current Balance:",
+    "WalletEmail.Support": "If you have any questions, please contact our support team.",
+    "WalletEmail.Regards": "Best regards,<br/>The ibosshops.com Team",
+    "WalletDeductionNotification": "Wallet Deduction Notification",
+    "WalletRechargeNotification": "Wallet Recharge Notification"
   }
 }

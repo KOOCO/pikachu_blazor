@@ -462,6 +462,59 @@ public class EmailAppService(IOrderRepository orderRepository, IGroupBuyReposito
         }
     }
 
+    public async Task SendWalletDeductedEmailAsync(string email, string tenantName, decimal amount, string transactionType, decimal currentBalance)
+    {
+        {
+
+
+            var subject = L["WalletDeductionNotification"]; // optional: localize subject too
+
+            var body = $@"
+    <html>
+    <body style='font-family:Segoe UI, Microsoft JhengHei, Arial,sans-serif; font-size:15px; color:#333;'>
+        <p>{L["WalletEmail.Greeting", tenantName]}</p>
+        <p>{L["WalletEmail.Body"]}</p>
+
+        <p><strong>{L["WalletEmail.AmountDeducted"]}</strong> ${amount}<br/>
+        <strong>{L["WalletEmail.Type"]}</strong> {L["WalletTransactionType:" + transactionType.ToString()]}<br/>
+        <strong>{L["WalletEmail.Balance"]}</strong> ${currentBalance}</p>
+
+        <p>{L["WalletEmail.Support"]}</p>
+        <br/>
+        <p>{L["WalletEmail.Regards"]}</p>
+    </body>
+    </html>";
+
+            await emailSender.SendAsync(email, subject, body, isBodyHtml: true);
+        }
+    }
+
+    public async Task SendWalletRechargeEmailAsync(string email, string tenantName, decimal amount, string transactionType, decimal currentBalance)
+    {
+        {
+
+
+            var subject = L["WalletRechargeNotification"]; // optional: localize subject too
+
+            var body = $@"
+    <html>
+    <body style='font-family:Segoe UI, Microsoft JhengHei, Arial,sans-serif; font-size:15px; color:#333;'>
+        <p>{L["WalletEmail.Greeting", tenantName]}</p>
+        <p>{L["WalletEmail.Body"]}</p>
+
+        <p><strong>{L["WalletEmail.Amount"]}</strong> ${amount}<br/>
+        <strong>{L["WalletEmail.Type"]}</strong> {L["WalletTransactionType:" + transactionType.ToString()]}<br/>
+        <strong>{L["WalletEmail.Balance"]}</strong> ${currentBalance}</p>
+
+        <p>{L["WalletEmail.Support"]}</p>
+        <br/>
+        <p>{L["WalletEmail.Regards"]}</p>
+    </body>
+    </html>";
+
+            await emailSender.SendAsync(email, subject, body, isBodyHtml: true);
+        }
+    }
     private async Task SendAsync(string email, string subject, string body)
     {
         try
@@ -489,6 +542,7 @@ public class EmailAppService(IOrderRepository orderRepository, IGroupBuyReposito
             await restClient.ExecuteAsync(restRequest);
         }
     }
+
 
     private static string? GetAddress(Order order)
     {

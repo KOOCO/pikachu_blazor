@@ -10,4 +10,5 @@ public class CreateWalletTransactionDto
     public required WalletTransactionType TransactionType { get; set; }
     public required decimal TransactionAmount { get; set; }
     public string? TransactionNotes { get; set; }
+    public bool IsEmailNotificationEnabled { get; set; }
 }

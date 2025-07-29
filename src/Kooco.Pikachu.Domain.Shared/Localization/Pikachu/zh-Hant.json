@@ -1686,7 +1686,16 @@
     "UnitsSold": "銷售單位數",
     "TransactionNo": "交易序號",
     "WalletTransactionType:Deposit": "手動加值",
-    "WalletTransactionType:Deduction": "手動扣款"
+    "WalletTransactionType:Deduction": "手動扣款",
+    "WalletEmail.Greeting": "親愛的 {0}，",
+    "WalletEmail.Body": "您的錢包已扣除一筆金額。",
+    "WalletEmail.Amount": "扣除金額：",
+    "WalletEmail.Type": "交易類型：",
+    "WalletEmail.Balance": "目前餘額：",
+    "WalletEmail.Support": "如有任何疑問，請聯繫我們的客服團隊。",
+    "WalletEmail.Regards": "此致<br/>ibosshops.com 團隊",
+    "WalletDeductionNotification": "錢包扣款通知",
+    "WalletRechargeNotification": "錢包加值確認"
 
   }
 }

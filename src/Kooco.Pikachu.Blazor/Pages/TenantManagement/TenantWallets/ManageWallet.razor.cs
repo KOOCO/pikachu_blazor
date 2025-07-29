@@ -25,6 +25,7 @@ public partial class ManageWallet
                 TransactionType = WalletTransactionType.Deposit,
                 TransactionAmount = RechargeFormModel.Amount,
                 TransactionNotes = RechargeFormModel.Remark,
+                IsEmailNotificationEnabled = RechargeFormModel.EnableEmailNotifications,
             });
 
             RechargeFormModel = new();
@@ -61,6 +62,7 @@ public partial class ManageWallet
                 TransactionType = WalletTransactionType.Deduction,
                 TransactionAmount = DeductionFormModel.Amount,
                 TransactionNotes = DeductionFormModel.Remark,
+                IsEmailNotificationEnabled = DeductionFormModel.EnableEmailNotifications,
             });
 
             DeductionFormModel = new();
