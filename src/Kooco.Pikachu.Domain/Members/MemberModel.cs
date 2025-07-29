@@ -13,6 +13,8 @@ public class MemberModel
     public string Email { get; set; }
     public string PhoneNumber { get; set; }
     public DateTime? Birthday { get; set; }
+    public string? MobileNumber { get; set; }
+    public string? Gender { get; set; }
     public int TotalOrders { get; set; }
     public int TotalSpent { get; set; }
     public DateTime CreationTime { get; set; }
