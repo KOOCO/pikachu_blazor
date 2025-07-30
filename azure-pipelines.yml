@@ -17,6 +17,8 @@ variables:
     value: 'src\Kooco.Pikachu.Blazor'
   - name: AZURE_WEBAPP_NAME_PRODUCTION
     value: 'pikachu-production'
+  - name: CI  # 讓 PublicApiAnalyzers 知道這是 CI/CD 環境
+    value: 'true'
 
 
 jobs:
@@ -40,18 +42,43 @@ jobs:
   - script: dotnet build "${{ variables.WORKING_DIRECTORY }}" --configuration ${{ variables.CONFIGURATION }} --no-restore 
     displayName: 'Build'
 
-  # API Breaking Change Detection
-  - script: dotnet build "src/Kooco.Pikachu.Application.Contracts" --configuration ${{ variables.CONFIGURATION }} --no-restore --verbosity normal
-    displayName: 'Validate Application.Contracts Public API'
-    continueOnError: false
+  # Public API Management
+  - task: PowerShell@2
+    displayName: 'Auto-update PublicAPI files'
+    inputs:
+      filePath: 'scripts/api-protection/auto-update-public-api.ps1'
+      pwsh: true
+    continueOnError: true  # 允許繼續，即使有變更
 
-  - script: dotnet build "src/Kooco.Pikachu.HttpApi" --configuration ${{ variables.CONFIGURATION }} --no-restore --verbosity normal
-    displayName: 'Validate HttpApi Public API'
-    continueOnError: false
+  - task: PowerShell@2
+    displayName: 'Check for uncommitted PublicAPI changes'
+    inputs:
+      targetType: 'inline'
+      script: |
+        # 檢查是否有 PublicAPI 檔案變更
+        $gitStatus = git status --porcelain | Where-Object { $_ -match "PublicAPI\.(Shipped|Unshipped)\.txt" }
+        if ($gitStatus) {
+          Write-Host "❌ 偵測到 PublicAPI 檔案變更:" -ForegroundColor Red
+          $gitStatus | ForEach-Object { Write-Host "  $_" -ForegroundColor Red }
+          Write-Host ""
+          Write-Host "請執行以下步驟修復:" -ForegroundColor Yellow
+          Write-Host "1. 在本地執行: pwsh scripts/api-protection/auto-update-public-api.ps1" -ForegroundColor Yellow
+          Write-Host "2. 檢查並提交 PublicAPI 檔案變更" -ForegroundColor Yellow
+          Write-Host "3. 重新推送到分支" -ForegroundColor Yellow
+          exit 1
+        } else {
+          Write-Host "✅ 沒有 PublicAPI 檔案變更" -ForegroundColor Green
+        }
+      pwsh: true
 
-  - script: dotnet build "src/Kooco.Pikachu.Domain.Shared" --configuration ${{ variables.CONFIGURATION }} --no-restore --verbosity normal
-    displayName: 'Validate Domain.Shared Public API'
-    continueOnError: false
+  # Final API Validation - 必須通過
+  - task: PowerShell@2
+    displayName: 'Final PublicAPI Validation'
+    inputs:
+      filePath: 'scripts/api-protection/auto-update-public-api.ps1'
+      arguments: '-CheckOnly'
+      pwsh: true
+    continueOnError: false  # 如果仍有 RS0016/RS0017 則失敗
 
 
   - script: dotnet test "${{ variables.WORKING_DIRECTORY }}" --no-build

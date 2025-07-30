@@ -20,10 +20,12 @@
   <PropertyGroup Condition="'$(EnableApiAnalyzers)' == 'true'">
     <!-- Enable strict API analysis -->
     <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
-    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <!-- In CI/CD: treat API warnings as errors, Local: keep as warnings -->
+    <TreatWarningsAsErrors Condition="'$(CI)' == 'true'">true</TreatWarningsAsErrors>
+    <TreatWarningsAsErrors Condition="'$(CI)' != 'true'">false</TreatWarningsAsErrors>
     <!-- Configure API analyzer rules -->
-    <WarningsAsErrors />
-    <WarningsNotAsErrors>RS0016;RS0017;RS0022;RS0024;RS0025;RS0026;RS0027</WarningsNotAsErrors>
+    <WarningsAsErrors Condition="'$(CI)' == 'true'">RS0016;RS0017</WarningsAsErrors>
+    <WarningsNotAsErrors Condition="'$(CI)' != 'true'">RS0016;RS0017;RS0022;RS0024;RS0025;RS0026;RS0027</WarningsNotAsErrors>
   </PropertyGroup>
 
   <ItemGroup Condition="'$(EnableApiAnalyzers)' == 'true'">
