@@ -1,4 +1,13 @@
 #nullable enable
+Kooco.Pikachu.EnumValues.ColorScheme
+Kooco.Pikachu.EnumValues.EnumType
+Kooco.Pikachu.EnumValues.ShippingMethod
+Kooco.Pikachu.Freebies.FreebieConsts
+Kooco.Pikachu.Images.ImageType
+Kooco.Pikachu.Images.ImageType.Item
+Kooco.Pikachu.Localization.PageLayoutResource
+Kooco.Pikachu.Localization.PikachuResource
+Kooco.Pikachu.UploadState
 A4DualModeHomeDelivery
 A4DualModePickingList
 A4TripleModeB2S
