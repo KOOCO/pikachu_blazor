@@ -96,6 +96,24 @@ namespace Kooco.Pikachu.LogisticStatusRecords
 
         public async Task UpdateDeliveryStatusAsync(List<LogisticStatusRecordDto> input)
         {
+            // Persist incoming status records first so that raw data is stored for auditing
+            var records = input.Select(r => new LogisticStatusRecord
+            {
+                OrderId = r.OrderId,
+                Reference = r.Reference,
+                Location = r.Location,
+                Datetime = r.Datetime,
+                DatetimeParsed = !string.IsNullOrEmpty(r.Datetime) ? TryParseCustomDateTime(r.Datetime) : null,
+                Code = r.Code,
+                StatusCode = r.StatusCode,
+                StatusMessage = r.StatusMessage,
+                RawLine = r.RawLine,
+                CreateTime = DateTime.UtcNow
+            }).ToList();
+
+            await _logisticStatusRecordRepository.InsertManyAsync(records);
+
+            // Continue with business logic to update delivery/shipping status
             await _tcatDeliveryStatusService.ExecuteAsync(input);
         }
     }
