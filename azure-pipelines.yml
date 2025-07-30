@@ -40,6 +40,19 @@ jobs:
   - script: dotnet build "${{ variables.WORKING_DIRECTORY }}" --configuration ${{ variables.CONFIGURATION }} --no-restore 
     displayName: 'Build'
 
+  # API Breaking Change Detection
+  - script: dotnet build "src/Kooco.Pikachu.Application.Contracts" --configuration ${{ variables.CONFIGURATION }} --no-restore --verbosity normal
+    displayName: 'Validate Application.Contracts Public API'
+    continueOnError: false
+
+  - script: dotnet build "src/Kooco.Pikachu.HttpApi" --configuration ${{ variables.CONFIGURATION }} --no-restore --verbosity normal
+    displayName: 'Validate HttpApi Public API'
+    continueOnError: false
+
+  - script: dotnet build "src/Kooco.Pikachu.Domain.Shared" --configuration ${{ variables.CONFIGURATION }} --no-restore --verbosity normal
+    displayName: 'Validate Domain.Shared Public API'
+    continueOnError: false
+
 
   - script: dotnet test "${{ variables.WORKING_DIRECTORY }}" --no-build
     displayName: 'Test'
