@@ -37,7 +37,11 @@ public interface ITenantWalletRepository
     /// </summary>
     /// <param name="walletId">錢包 ID</param>
     Task<decimal> GetBalanceAsync(Guid walletId);
-
+    /// <summary>
+    /// 獲取錢包餘額
+    /// </summary>
+    /// <param name="tenantId">錢包 ID</param>
+    Task<decimal> GetBalanceByTenantIdAsync(Guid tenantId);
     /// <summary>
     /// 分頁獲取所有租戶及其錢包資訊
     /// </summary>
@@ -71,4 +75,17 @@ public interface ITenantWalletRepository
     /// <param name="walletId">錢包 ID</param>
     /// <param name="ct">取消操作的標記</param>
     Task<decimal> SumDeductionTransactionAmountAsync(Guid walletId, CancellationToken ct = default);
+    /// <summary>
+    /// 計算指定錢包的存款交易總金額
+    /// </summary>
+    /// <param name="tenantId">錢包 ID</param>
+    /// <param name="ct">取消操作的標記</param>
+    Task<decimal> SumDepositTransactionAmountByTenantIdAsync(Guid tenantId, CancellationToken ct = default);
+
+    /// <summary>
+    /// 計算指定錢包的扣款交易總金額
+    /// </summary>
+    /// <param name="walletId">錢包 ID</param>
+    /// <param name="ct">取消操作的標記</param>
+    Task<decimal> SumDeductionTransactionAmountByTenantIdAsync(Guid tenantId, CancellationToken ct = default);
 }

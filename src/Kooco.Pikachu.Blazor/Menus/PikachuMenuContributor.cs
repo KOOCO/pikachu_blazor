@@ -484,6 +484,14 @@ public class PikachuMenuContributor : IMenuContributor
                     requiredPermissionName: PikachuPermissions.TenantWallet.Default
                 )
             );
+            administration?.AddItem(
+             new ApplicationMenuItem(
+                 name: PikachuMenus.TenantWalletManagement,
+                 displayName: l["Menu:TenantWalletManagement"],
+                 url: "/wallet",
+                 requiredPermissionName: PikachuPermissions.TenantWalletTransactions.Default
+             )
+         );
         }
         else
         {

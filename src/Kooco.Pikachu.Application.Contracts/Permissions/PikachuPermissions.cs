@@ -167,6 +167,13 @@ public static class PikachuPermissions
     {
         public const string Default = TenantManagementPermissions.GroupName + ".TenantWalletList";
         public const string Edit = Default + ".Edit";
+
+    }
+    public static class TenantWalletTransactions
+    {
+        public const string Default =".TenantWalletTransactions";
+       
+
     }
 
     public static class WebsiteManagement

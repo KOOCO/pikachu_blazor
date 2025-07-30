@@ -46,6 +46,19 @@ public class TenantWalletRepository(IDbContextProvider<PikachuDbContext> dbConte
             return wallet?.WalletBalance ?? default;
         }
     }
+    public async Task<decimal> GetBalanceByTenantIdAsync(Guid tenantId)
+    {
+        using (MultiTenant.Disable())
+        {
+           
+            var dbContext = await GetDbContextAsync();
+         
+            var wallet = dbContext.TenantWallets
+                .AsNoTracking()
+                .FirstOrDefault(w => w.TenantId == tenantId);
+            return wallet?.WalletBalance ?? default;
+        }
+    }
     public async Task<(int totalCount, List<(Tenant tenant, TenantWallet wallet)> values)> GetPagedAllAsync(
         int skipCount = default,
         int maxResultCount = default,
@@ -168,7 +181,36 @@ public class TenantWalletRepository(IDbContextProvider<PikachuDbContext> dbConte
                 .SumAsync(x => x.TransactionAmount, cancellationToken: ct);
         }
     }
-
+    public async Task<decimal> SumDepositTransactionAmountByTenantIdAsync(Guid tenantId, CancellationToken ct = default)
+    {
+        using (MultiTenant.Disable())
+        {
+            var dbContext = await GetDbContextAsync();
+            var walletId = await dbContext.TenantWallets.Where(x => x.TenantId == tenantId).Select(x=>x.Id).FirstOrDefaultAsync();
+            return await dbContext.TenantWalletTransactions
+                .AsNoTracking()
+                .Where(w =>
+                    w.TenantWalletId == walletId &&
+                    w.TransactionType == WalletTransactionType.Deposit &&
+                    w.DeductionStatus == WalletDeductionStatus.Completed)
+                .SumAsync(x => x.TransactionAmount, cancellationToken: ct);
+        }
+    }
+    public async Task<decimal> SumDeductionTransactionAmountByTenantIdAsync(Guid tenantId, CancellationToken ct = default)
+    {
+        using (MultiTenant.Disable())
+        {
+            var dbContext = await GetDbContextAsync();
+            var walletId = await dbContext.TenantWallets.Where(x => x.TenantId == tenantId).Select(x => x.Id).FirstOrDefaultAsync();
+            return await dbContext.TenantWalletTransactions
+                .AsNoTracking()
+                .Where(w =>
+                    w.TenantWalletId == walletId &&
+                    w.TransactionType == WalletTransactionType.Deduction &&
+                    w.DeductionStatus == WalletDeductionStatus.Completed)
+                .SumAsync(x => x.TransactionAmount, cancellationToken: ct);
+        }
+    }
     public required IDataFilter<IMultiTenant> MultiTenant { get; init; }
     public required ITenantRepository TenantRepository { get; init; }
     public required IRepository<TenantWalletTransaction, Guid> TenantWalletTransaction { get; init; }

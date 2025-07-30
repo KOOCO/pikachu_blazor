@@ -1708,6 +1708,8 @@
     "WalletRechargeNotification": "錢包加值確認",
     "WalletEmail.DeductioAmount": "扣除金額:",
     "WalletEmail.RechargeAmount": "加值金額:",
-    "VipTierTimeAndResetConfigWarning": "警告：起始日期和重置頻率儲存後將無法修改。\n您確定要繼續嗎？"
+    "VipTierTimeAndResetConfigWarning": "警告：起始日期和重置頻率儲存後將無法修改。\n您確定要繼續嗎？",
+    "Permission:TenantWalletManagement": "錢包管理",
+    "Menu:TenantWalletManagement": "錢包管理"
   }
 }
