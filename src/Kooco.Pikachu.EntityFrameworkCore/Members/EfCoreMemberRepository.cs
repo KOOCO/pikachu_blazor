@@ -182,7 +182,11 @@ public class EfCoreMemberRepository(IDbContextProvider<PikachuDbContext> pikachu
 
         if (vipTierSettings == null) return default;
 
-        var orders = dbContext.Orders.Where(o => o.UserId == userId && OrderConsts.CompletedShippingStatus.Contains(o.ShippingStatus));
+        var dateFrom = vipTierSettings.IsResetEnabled && vipTierSettings.LastResetDate != null
+            ? vipTierSettings.LastResetDate.Value.Date
+            : vipTierSettings.StartDate.Date;
+
+        var orders = dbContext.Orders.Where(o => o.UserId == userId && OrderConsts.CompletedShippingStatus.Contains(o.ShippingStatus) && o.CreationTime.Date >= dateFrom);
 
         var count = await orders.LongCountAsync();
         var amount = await orders.SumAsync(x => x.TotalAmount);
@@ -218,8 +222,8 @@ public class EfCoreMemberRepository(IDbContextProvider<PikachuDbContext> pikachu
             return;
         }
 
-        var dateFrom = vipTierSettings.IsResetEnabled && vipTierSettings.LastResetDate != null 
-            ? vipTierSettings.LastResetDate.Value.Date 
+        var dateFrom = vipTierSettings.IsResetEnabled && vipTierSettings.LastResetDate != null
+            ? vipTierSettings.LastResetDate.Value.Date
             : vipTierSettings.StartDate.Date;
 
         Logger.LogInformation("Calculating member orders from {dateFrom}", dateFrom);
@@ -437,6 +441,7 @@ public class EfCoreMemberRepository(IDbContextProvider<PikachuDbContext> pikachu
         return new VipTierProgressModel
         {
             CurrentLevel = currentTier?.TierName,
+            NextLevel = nextTier?.TierName,
             CalculationStartDate = vipTierSettings.StartDate,
             ResetConfig = new VipTierResetConfig
             {
@@ -445,7 +450,8 @@ public class EfCoreMemberRepository(IDbContextProvider<PikachuDbContext> pikachu
                 NextResetDate = vipTierSettings.NextResetDate,
                 LastResetDate = vipTierSettings.LastResetDate
             },
-            ProgressToNextLevel = new VipTierProgressToNextTier
+            ProgressToNextLevel = nextTier != null
+            ? new VipTierProgressToNextTier
             {
                 RequiredOrders = nextTier?.OrdersCount,
                 CurrentOrders = totalOrders,
@@ -453,6 +459,7 @@ public class EfCoreMemberRepository(IDbContextProvider<PikachuDbContext> pikachu
                 CurrentAmount = totalSpent,
                 CountingSince = dateFrom
             }
+            : null
         };
     }
 }

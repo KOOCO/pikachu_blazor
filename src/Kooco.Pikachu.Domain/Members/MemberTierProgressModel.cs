@@ -5,9 +5,10 @@ namespace Kooco.Pikachu.Members;
 public class VipTierProgressModel
 {
     public string? CurrentLevel { get; set; }
+    public string? NextLevel { get; set; }
     public DateTime CalculationStartDate { get; set; }
-    public VipTierResetConfig ResetConfig { get; set; } = default!;
-    public VipTierProgressToNextTier ProgressToNextLevel { get; set; } = default!;
+    public VipTierResetConfig? ResetConfig { get; set; } = default!;
+    public VipTierProgressToNextTier? ProgressToNextLevel { get; set; } = default!;
 }
 
 public class VipTierResetConfig
