@@ -32,7 +32,7 @@ public class EfCoreDashboardRepository(IDbContextProvider<PikachuDbContext> dbCo
         var dbContext = await GetDbContextAsync();
 
         var query = await dbContext.Orders
-            .Where(o => OrderConsts.CompletedShippingStatus.Contains(o.ShippingStatus))
+            .Where(o => o.ShippingStatus == ShippingStatus.Completed)
             .Where(o => o.CreationTime.Date >= previousDate && o.CreationTime.Date <= endDate)
             .WhereIf(selectedGroupBuyIds.Any(), o => selectedGroupBuyIds.Contains(o.GroupBuyId))
             .Select(o => new
@@ -82,7 +82,7 @@ public class EfCoreDashboardRepository(IDbContextProvider<PikachuDbContext> dbCo
         var dbContext = await GetDbContextAsync();
 
         var orders = await dbContext.Orders
-            .Where(o => OrderConsts.CompletedShippingStatus.Contains(o.ShippingStatus))
+            .Where(o => o.ShippingStatus == ShippingStatus.Completed)
             .Where(o => o.CreationTime.Date >= startDate && o.CreationTime.Date <= endDate)
             .WhereIf(selectedGroupBuyIds.Any(), o => selectedGroupBuyIds.Contains(o.GroupBuyId))
             .Select(o => new
@@ -233,7 +233,7 @@ public class EfCoreDashboardRepository(IDbContextProvider<PikachuDbContext> dbCo
 
         var orderItems = dbContext.Orders
             .AsNoTracking()
-            .Where(o => OrderConsts.CompletedShippingStatus.Contains(o.ShippingStatus))
+            .Where(o => o.ShippingStatus == ShippingStatus.Completed)
             .WhereIf(selectedGroupBuyIds.Any(), o => selectedGroupBuyIds.Contains(o.GroupBuyId))
             .Include(o => o.OrderItems)
             .SelectMany(o => o.OrderItems)
@@ -336,7 +336,7 @@ public class EfCoreDashboardRepository(IDbContextProvider<PikachuDbContext> dbCo
             });
 
         var totalOrders = await query.CountAsync();
-        var orders = query.Where(order => OrderConsts.CompletedShippingStatus.Contains(order.ShippingStatus)).ToList();
+        var orders = query.Where(order => order.ShippingStatus == ShippingStatus.Completed).ToList();
 
         var result = new SummaryReportModel
         {
@@ -420,7 +420,7 @@ public class EfCoreDashboardRepository(IDbContextProvider<PikachuDbContext> dbCo
 
         var data = await dbContext.Orders
             .Where(order => order.CreationTime.Date >= startDate.Date && order.CreationTime.Date <= endDate.Date
-            && OrderConsts.CompletedShippingStatus.Contains(order.ShippingStatus))
+            && order.ShippingStatus == ShippingStatus.Completed)
             .WhereIf(selectedGroupBuyIds.Any(), order => selectedGroupBuyIds.Contains(order.GroupBuyId))
             .Include(order => order.OrderItems)
             .Select(order => new

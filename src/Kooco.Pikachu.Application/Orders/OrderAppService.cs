@@ -2951,7 +2951,7 @@ public class OrderAppService : PikachuAppService, IOrderAppService
         // Sum of Paid orders
         var paidAmount = (await OrderRepository.GetQueryableAsync())
             .Where(order => order.UserId == userId
-                    && OrderConsts.CompletedShippingStatus.Contains(order.ShippingStatus))
+                    && order.ShippingStatus == ShippingStatus.Completed)
             .Sum(order => order.TotalAmount);
 
         // Sum of Unpaid/Due orders
@@ -2980,7 +2980,7 @@ public class OrderAppService : PikachuAppService, IOrderAppService
         // Sum of Paid orders
         var paidAmount = (await OrderRepository.GetQueryableAsync())
             .Where(order =>
-                    OrderConsts.CompletedShippingStatus.Contains(order.ShippingStatus)
+                    order.ShippingStatus == ShippingStatus.Completed
                     && order.UserId == userId
                     )
 

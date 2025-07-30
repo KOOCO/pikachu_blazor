@@ -5,7 +5,7 @@ namespace Kooco.Pikachu.Orders;
 
 public class OrderConsts
 {
-    public static readonly List<ShippingStatus> CompletedShippingStatus = [ShippingStatus.Completed, ShippingStatus.Closed];
+    public static readonly List<ShippingStatus> CompletedShippingStatus = [ShippingStatus.Completed];
 }
 public static class OrderNotificationNames
 {

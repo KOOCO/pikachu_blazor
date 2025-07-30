@@ -1,5 +1,6 @@
 ﻿@using System
 @using Kooco.Pikachu.Blazor.Helpers
+@using Kooco.Pikachu.Blazor.Pages.Components.Icons
 @using Kooco.Pikachu.Blazor.Pages.Dashboard.DashboardBestSellers
 @using Kooco.Pikachu.Blazor.Pages.Dashboard.DashboardCharts
 @using Kooco.Pikachu.Blazor.Pages.Dashboard.DashboardOrdersTable
@@ -60,12 +61,14 @@
             <Column ColumnSize="ColumnSize.Is12.Is1.OnDesktop">
                 <Div Class="d-flex align-items-end justify-content-center h-100 gap-1">
                     <PikachuButton Class="pk-btn-sm pk-btn-outline-primary icon"
-                                   IconClass="fas fa-filter" Clicked="ApplyFilters"
+                                   IconClass="fas fa-filter"
+                                   Clicked="ApplyFilters"
                                    Disabled="Exporting"
                                    Loading="Loading">
                     </PikachuButton>
                     <PikachuButton Class="pk-btn-sm pk-btn-outline-primary icon"
-                                   IconClass="fas fa-file-excel" Clicked="Export"
+                                   IconClass="fas fa-file-upload"
+                                   Clicked="Export"
                                    Disabled="Loading"
                                    Loading="Exporting">
                     </PikachuButton>
