@@ -31,11 +31,10 @@ namespace Kooco.Pikachu.LogisticsProviders
         private async Task<LogisticsProviderSettings> CreateTestProviderAsync(
             LogisticProviders provider,
             bool isEnabled = true,
-            decimal freight = 100)
+            int freight = 100)
         {
             var settings = new LogisticsProviderSettings
             {
-                Id = Guid.NewGuid(),
                 LogisticProvider = provider,
                 IsEnabled = isEnabled,
                 Freight = freight,
@@ -61,7 +60,7 @@ namespace Kooco.Pikachu.LogisticsProviders
                 PlatFormId = "Platform123",
                 SenderAddress = "Test Address 123",
                 SenderPostalCode = "10001",
-                City = "Taipei"
+                City = MainlandCity.TaipeiCity
             };
         }
 
@@ -72,8 +71,8 @@ namespace Kooco.Pikachu.LogisticsProviders
                 IsEnabled = true,
                 CustomTitle = "Home Delivery Service",
                 Freight = 150,
-                MainIslands = 100,
-                OuterIslands = 200,
+                MainIslands = "100",
+                OuterIslands = "200",
                 IsOuterIslands = true
             };
         }
@@ -84,7 +83,7 @@ namespace Kooco.Pikachu.LogisticsProviders
             {
                 IsEnabled = true,
                 Freight = 60,
-                Payment = 10
+                Payment = true
             };
         }
 
@@ -220,7 +219,7 @@ namespace Kooco.Pikachu.LogisticsProviders
 
             provider.ShouldNotBeNull();
             provider.Freight.ShouldBe(60);
-            provider.Payment.ShouldBe(10);
+            provider.Payment.ShouldBe(true);
         }
 
         [Fact]
@@ -307,9 +306,9 @@ namespace Kooco.Pikachu.LogisticsProviders
                 IsEnabled = true,
                 Freight = 120,
                 OuterIslandFreight = 250,
-                Size = "60",
+                Size = SizeEnum.Cm0001,
                 Payment = 20,
-                TCatPaymentMethod = TCatPaymentMethod.Receiver,
+                TCatPaymentMethod = TCatPaymentMethod.CardAndMobilePaymentsAccepted,
                 HualienAndTaitungShippingFee = 30,
                 HolidaySurcharge = 50,
                 HolidaySurchargeStartTime = new DateTime(2024, 12, 20),
@@ -332,7 +331,7 @@ namespace Kooco.Pikachu.LogisticsProviders
             provider.ShouldNotBeNull();
             provider.Freight.ShouldBe(120);
             provider.OuterIslandFreight.ShouldBe(250);
-            provider.TCatPaymentMethod.ShouldBe(TCatPaymentMethod.Receiver);
+            provider.TCatPaymentMethod.ShouldBe(TCatPaymentMethod.CardAndMobilePaymentsAccepted);
             provider.HolidaySurcharge.ShouldBe(50);
         }
 
@@ -349,7 +348,7 @@ namespace Kooco.Pikachu.LogisticsProviders
                 IsEnabled = true,
                 Freight = 100,
                 OuterIslandFreight = 200,
-                Size = "Large",
+                Size = SizeEnum.Cm0004,
                 HualienAndTaitungShippingFee = 25,
                 HolidaySurcharge = 40,
                 HolidaySurchargeStartTime = new DateTime(2024, 2, 1),

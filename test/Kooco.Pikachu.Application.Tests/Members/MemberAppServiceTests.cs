@@ -188,7 +188,6 @@ namespace Kooco.Pikachu.Members
             // ✅ Mock ShoppingCreditEarnSettingAppService
             var shoppingCredit = new ShoppingCreditEarnSettingDto
             {
-                Id = Guid.NewGuid(),
                 RegistrationBonusEnabled = true,
                 RegistrationEarnedPoints = 100,
                 RegistrationUsagePeriodType = "Fixed",

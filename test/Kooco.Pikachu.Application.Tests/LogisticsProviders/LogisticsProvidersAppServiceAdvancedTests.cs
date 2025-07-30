@@ -34,7 +34,6 @@ namespace Kooco.Pikachu.LogisticsProviders
                 // GreenWorld variants
                 new LogisticsProviderSettings
                 {
-                    Id = Guid.NewGuid(),
                     LogisticProvider = LogisticProviders.GreenWorldLogistics,
                     IsEnabled = true,
                     StoreCode = "GW_B2C",
@@ -45,7 +44,6 @@ namespace Kooco.Pikachu.LogisticsProviders
                 },
                 new LogisticsProviderSettings
                 {
-                    Id = Guid.NewGuid(),
                     LogisticProvider = LogisticProviders.GreenWorldLogisticsC2C,
                     IsEnabled = true,
                     StoreCode = "GW_C2C",
@@ -55,18 +53,16 @@ namespace Kooco.Pikachu.LogisticsProviders
                 // Home Delivery
                 new LogisticsProviderSettings
                 {
-                    Id = Guid.NewGuid(),
                     LogisticProvider = LogisticProviders.HomeDelivery,
                     IsEnabled = true,
                     Freight = 150,
-                    MainIslands = 100,
-                    OuterIslands = 250,
+                    MainIslands = "100",
+                    OuterIslands = "250",
                     IsOuterIslands = true
                 },
                 // Convenience stores
                 new LogisticsProviderSettings
                 {
-                    Id = Guid.NewGuid(),
                     LogisticProvider = LogisticProviders.SevenToEleven,
                     IsEnabled = true,
                     Freight = 60,
@@ -74,7 +70,6 @@ namespace Kooco.Pikachu.LogisticsProviders
                 },
                 new LogisticsProviderSettings
                 {
-                    Id = Guid.NewGuid(),
                     LogisticProvider = LogisticProviders.FamilyMart,
                     IsEnabled = true,
                     Freight = 60,
@@ -83,7 +78,6 @@ namespace Kooco.Pikachu.LogisticsProviders
                 // TCat variants
                 new LogisticsProviderSettings
                 {
-                    Id = Guid.NewGuid(),
                     LogisticProvider = LogisticProviders.TCat,
                     IsEnabled = true,
                     CustomerId = "TCAT_MAIN",
@@ -92,14 +86,13 @@ namespace Kooco.Pikachu.LogisticsProviders
                 },
                 new LogisticsProviderSettings
                 {
-                    Id = Guid.NewGuid(),
                     LogisticProvider = LogisticProviders.TCatNormal,
                     IsEnabled = true,
                     Freight = 120,
                     OuterIslandFreight = 300,
-                    Size = "60",
+                    Size = SizeEnum.Cm0001,
                     Payment = 20,
-                    TCatPaymentMethod = TCatPaymentMethod.Sender,
+                    TCatPaymentMethod = TCatPaymentMethod.CashOnly,
                     HualienAndTaitungShippingFee = 30,
                     HolidaySurcharge = 50,
                     HolidaySurchargeStartTime = new DateTime(2024, 12, 20),
@@ -108,12 +101,11 @@ namespace Kooco.Pikachu.LogisticsProviders
                 // B-type variants
                 new LogisticsProviderSettings
                 {
-                    Id = Guid.NewGuid(),
                     LogisticProvider = LogisticProviders.BNormal,
                     IsEnabled = true,
                     Freight = 100,
                     OuterIslandFreight = 200,
-                    Size = "Large",
+                    Size = SizeEnum.Cm0004,
                     HualienAndTaitungShippingFee = 25
                 }
             };
@@ -201,7 +193,7 @@ namespace Kooco.Pikachu.LogisticsProviders
                     PlatFormId = "Platform",
                     SenderAddress = "Address",
                     SenderPostalCode = "10001",
-                    City = "Taipei"
+                    City = MainlandCity.TaipeiCity
                 };
                 await _logisticsProvidersAppService.UpdateGreenWorldAsync(gwDto);
                 await _logisticsProvidersAppService.UpdateGreenWorldC2CAsync(gwDto);
@@ -225,7 +217,7 @@ namespace Kooco.Pikachu.LogisticsProviders
                     IsEnabled = true,
                     Freight = 110,
                     OuterIslandFreight = 220,
-                    Size = "XL"
+                    Size = SizeEnum.Cm0004
                 };
                 await _logisticsProvidersAppService.UpdateBNormalAsync(bDto);
                 await _logisticsProvidersAppService.UpdateBFreezeAsync(bDto);
@@ -237,9 +229,9 @@ namespace Kooco.Pikachu.LogisticsProviders
                     IsEnabled = true,
                     Freight = 130,
                     OuterIslandFreight = 260,
-                    Size = "80",
+                    Size = SizeEnum.Cm0002,
                     Payment = 25,
-                    TCatPaymentMethod = TCatPaymentMethod.Receiver
+                    TCatPaymentMethod = TCatPaymentMethod.CardAndMobilePaymentsAccepted
                 };
                 await _logisticsProvidersAppService.UpdateTCatNormalAsync(tcatDto);
 
@@ -248,9 +240,9 @@ namespace Kooco.Pikachu.LogisticsProviders
                     IsEnabled = true,
                     Freight = 140,
                     OuterIslandFreight = 280,
-                    Size = "60",
+                    Size = SizeEnum.Cm0001,
                     Payment = 30,
-                    TCatPaymentMethod = TCatPaymentMethod.Sender
+                    TCatPaymentMethod = TCatPaymentMethod.CashOnly
                 };
                 await _logisticsProvidersAppService.UpdateTCatFreezeAsync(tcatFreezeDto);
 
@@ -259,9 +251,9 @@ namespace Kooco.Pikachu.LogisticsProviders
                     IsEnabled = true,
                     Freight = 150,
                     OuterIslandFreight = 300,
-                    Size = "40",
+                    Size = SizeEnum.Cm0001,
                     Payment = 35,
-                    TCatPaymentMethod = TCatPaymentMethod.Receiver
+                    TCatPaymentMethod = TCatPaymentMethod.CardAndMobilePaymentsAccepted
                 };
                 await _logisticsProvidersAppService.UpdateTCatFrozenAsync(tcatFrozenDto);
             });
@@ -410,7 +402,7 @@ namespace Kooco.Pikachu.LogisticsProviders
                 PlatFormId = "ECPayPlatform",
                 SenderAddress = "ECPay Address",
                 SenderPostalCode = "10002",
-                City = "New Taipei"
+                City = MainlandCity.NewTaipeiCity
             };
 
             // Act
@@ -443,7 +435,6 @@ namespace Kooco.Pikachu.LogisticsProviders
             {
                 await _logisticsProviderRepository.InsertAsync(new LogisticsProviderSettings
                 {
-                    Id = Guid.NewGuid(),
                     LogisticProvider = LogisticProviders.HomeDelivery,
                     IsEnabled = i % 2 == 0,
                     Freight = 100 + i * 10,
@@ -540,7 +531,6 @@ namespace Kooco.Pikachu.LogisticsProviders
         {
             var settings = new LogisticsProviderSettings
             {
-                Id = Guid.NewGuid(),
                 LogisticProvider = provider,
                 IsEnabled = isEnabled,
                 Freight = freight,

@@ -82,7 +82,6 @@ namespace Kooco.Pikachu.Application.Tests.Members
         {
             var order = new Order
             {
-                Id = Guid.NewGuid(),
                 OrderNo = $"ORD{DateTime.Now:yyyyMMddHHmmss}{Guid.NewGuid().ToString("N").Substring(0, 4)}",
                 UserId = userId,
                 GroupBuyId = groupBuyId ?? Guid.NewGuid(),
@@ -119,7 +118,6 @@ namespace Kooco.Pikachu.Application.Tests.Members
         {
             var groupBuy = new GroupBuy
             {
-                Id = Guid.NewGuid(),
                 GroupBuyName = name ?? $"Test Group Buy {Guid.NewGuid().ToString("N").Substring(0, 8)}",
                 ShortCode = $"GB{Guid.NewGuid().ToString("N").Substring(0, 6)}",
                 GroupBuyNo = 123456,
@@ -155,7 +153,7 @@ namespace Kooco.Pikachu.Application.Tests.Members
 
         private async Task AddMemberTagAsync(Guid userId, string tagName)
         {
-            var memberTag = new MemberTag(Guid.NewGuid(), userId, tagName);
+            var memberTag = new MemberTag(Guid.NewGuid(), userId, tagName, true, false);
             await _memberTagRepository.InsertAsync(memberTag);
         }
 
@@ -188,14 +186,14 @@ namespace Kooco.Pikachu.Application.Tests.Members
             await AddMemberTagAsync(newUser.Id, MemberConsts.MemberTags.New);
 
             var vipUser = await CreateTestUserAsync(userName: "vipmember");
-            await AddMemberTagAsync(vipUser.Id, MemberConsts.MemberTags.Vip);
+            await AddMemberTagAsync(vipUser.Id, MemberConsts.MemberTags.Existing);
 
             var regularUser = await CreateTestUserAsync(userName: "regularmember");
-            await AddMemberTagAsync(regularUser.Id, MemberConsts.MemberTags.Regular);
+            await AddMemberTagAsync(regularUser.Id, MemberConsts.MemberTags.New);
 
             var input = new GetMemberListDto
             {
-                MemberType = MemberConsts.MemberTags.Vip,
+                MemberType = MemberConsts.MemberTags.Existing,
                 MaxResultCount = 10
             };
 
@@ -313,26 +311,28 @@ namespace Kooco.Pikachu.Application.Tests.Members
                 Guid.NewGuid(),
                 user.Id,
                 100,
-                DateTime.Now.AddDays(-10),
-                true,
-                DateTime.Now.AddMonths(1),
+                100, // currentRemainingCredits
                 "Welcome bonus",
-                UserShoppingCreditType.Grant
+                DateTime.Now.AddMonths(1),
+                true,
+                UserShoppingCreditType.Grant,
+                null
             );
-            credit1.SetCurrentRemainingCredits(80);
+            credit1.ChangeCurrentRemainingCredits(80);
             await _userShoppingCreditRepository.InsertAsync(credit1);
 
             var credit2 = new UserShoppingCredit(
                 Guid.NewGuid(),
                 user.Id,
                 50,
-                DateTime.Now.AddDays(-5),
-                true,
-                DateTime.Now.AddMonths(2),
+                50, // currentRemainingCredits
                 "Purchase reward",
-                UserShoppingCreditType.Grant
+                DateTime.Now.AddMonths(2),
+                true,
+                UserShoppingCreditType.Grant,
+                null
             );
-            credit2.SetCurrentRemainingCredits(50);
+            credit2.ChangeCurrentRemainingCredits(50);
             await _userShoppingCreditRepository.InsertAsync(credit2);
 
             var input = new GetMemberCreditRecordListDto
@@ -361,11 +361,12 @@ namespace Kooco.Pikachu.Application.Tests.Members
                 Guid.NewGuid(),
                 user.Id,
                 100,
-                DateTime.Now.AddMonths(-3),
-                true,
-                DateTime.Now.AddMonths(-1),
+                100, // currentRemainingCredits
                 "Expired credit",
-                UserShoppingCreditType.Grant
+                DateTime.Now.AddMonths(-1),
+                true,
+                UserShoppingCreditType.Grant,
+                null
             );
             await _userShoppingCreditRepository.InsertAsync(oldCredit);
 
@@ -373,11 +374,12 @@ namespace Kooco.Pikachu.Application.Tests.Members
                 Guid.NewGuid(),
                 user.Id,
                 50,
-                DateTime.Now.AddDays(-5),
-                true,
-                DateTime.Now.AddMonths(1),
+                50, // currentRemainingCredits
                 "Recent credit",
-                UserShoppingCreditType.Grant
+                DateTime.Now.AddMonths(1),
+                true,
+                UserShoppingCreditType.Grant,
+                null
             );
             await _userShoppingCreditRepository.InsertAsync(recentCredit);
 
@@ -412,7 +414,7 @@ namespace Kooco.Pikachu.Application.Tests.Members
             var groupBuy = await CreateTestGroupBuyAsync();
 
             await CreateTestOrderAsync(user.Id, groupBuy.Id, 
-                shippingStatus: ShippingStatus.WaitingForShipment);
+                shippingStatus: ShippingStatus.ToBeShipped);
             await CreateTestOrderAsync(user.Id, groupBuy.Id, 
                 shippingStatus: ShippingStatus.Shipped);
             await CreateTestOrderAsync(user.Id, groupBuy.Id, 
@@ -551,10 +553,8 @@ namespace Kooco.Pikachu.Application.Tests.Members
                 Guid.NewGuid(),
                 user.Id,
                 totalOrders: 25,
-                totalCancelOrders: 3,
-                totalReturnOrders: 2,
-                totalExchangeOrders: 1,
-                totalQuantity: 100
+                totalExchanges: 1,
+                totalReturns: 2
             );
             await _userCumulativeOrderRepository.InsertAsync(order);
 
@@ -562,10 +562,9 @@ namespace Kooco.Pikachu.Application.Tests.Members
                 Guid.NewGuid(),
                 user.Id,
                 totalSpent: 150000,
-                totalRefunded: 10000,
-                totalRecharge: 20000,
-                totalCashback: 3000,
-                totalDiscounts: 5000
+                totalPaid: 140000,
+                totalUnpaid: 10000,
+                totalRefunded: 10000
             );
             await _userCumulativeFinancialRepository.InsertAsync(financial);
 
@@ -592,11 +591,11 @@ namespace Kooco.Pikachu.Application.Tests.Members
 
             orderResult.ShouldNotBeNull();
             orderResult.TotalOrders.ShouldBe(25);
-            orderResult.TotalQuantity.ShouldBe(100);
+            orderResult.TotalExchanges.ShouldBe(1);
 
             financialResult.ShouldNotBeNull();
             financialResult.TotalSpent.ShouldBe(150000);
-            financialResult.TotalCashback.ShouldBe(3000);
+            financialResult.TotalRefunded.ShouldBe(10000);
         }
 
         #endregion
@@ -622,8 +621,8 @@ namespace Kooco.Pikachu.Application.Tests.Members
             member1.IsBlacklisted.ShouldBe(false);
 
             // Act 2: Add multiple tags
-            await AddMemberTagAsync(user.Id, MemberConsts.MemberTags.Vip);
-            await AddMemberTagAsync(user.Id, MemberConsts.MemberTags.Regular);
+            await AddMemberTagAsync(user.Id, MemberConsts.MemberTags.Existing);
+            await AddMemberTagAsync(user.Id, MemberConsts.MemberTags.New);
 
             var member2 = await WithUnitOfWorkAsync(async () =>
             {
@@ -681,7 +680,7 @@ namespace Kooco.Pikachu.Application.Tests.Members
                     groupBuy.Id,
                     totalAmount: (i + 1) * 1000,
                     orderStatus: i % 2 == 0 ? OrderStatus.Open : OrderStatus.Closed,
-                    shippingStatus: i % 3 == 0 ? ShippingStatus.Shipped : ShippingStatus.WaitingForShipment,
+                    shippingStatus: i % 3 == 0 ? ShippingStatus.Shipped : ShippingStatus.ToBeShipped,
                     deliveryMethod: i % 2 == 0 ? DeliveryMethod.HomeDelivery : DeliveryMethod.SelfPickup
                 );
 
@@ -697,7 +696,7 @@ namespace Kooco.Pikachu.Application.Tests.Members
                 GroupBuyId = groupBuy.Id,
                 StartDate = DateTime.Now.AddDays(-7),
                 EndDate = DateTime.Now,
-                ShippingStatus = ShippingStatus.WaitingForShipment,
+                ShippingStatus = ShippingStatus.ToBeShipped,
                 DeliveryMethod = DeliveryMethod.SelfPickup,
                 Sorting = "TotalAmount DESC",
                 MaxResultCount = 10
@@ -712,7 +711,7 @@ namespace Kooco.Pikachu.Application.Tests.Members
             // Assert
             result.ShouldNotBeNull();
             result.Items.ShouldAllBe(x => 
-                x.ShippingStatus == ShippingStatus.WaitingForShipment &&
+                x.ShippingStatus == ShippingStatus.ToBeShipped &&
                 x.DeliveryMethod == DeliveryMethod.SelfPickup &&
                 x.CreationTime >= input.StartDate.Value);
         }
@@ -723,18 +722,18 @@ namespace Kooco.Pikachu.Application.Tests.Members
             // Arrange
             var user1 = await CreateTestUserAsync(userName: "user1");
             await AddMemberTagAsync(user1.Id, MemberConsts.MemberTags.New);
-            await AddMemberTagAsync(user1.Id, MemberConsts.MemberTags.Vip);
+            await AddMemberTagAsync(user1.Id, MemberConsts.MemberTags.Existing);
 
             var user2 = await CreateTestUserAsync(userName: "user2");
-            await AddMemberTagAsync(user2.Id, MemberConsts.MemberTags.Vip);
-            await AddMemberTagAsync(user2.Id, MemberConsts.MemberTags.Regular);
+            await AddMemberTagAsync(user2.Id, MemberConsts.MemberTags.Existing);
+            await AddMemberTagAsync(user2.Id, MemberConsts.MemberTags.New);
 
             var user3 = await CreateTestUserAsync(userName: "user3");
             await AddMemberTagAsync(user3.Id, MemberConsts.MemberTags.New);
 
             var input = new GetMemberListDto
             {
-                SelectedMemberTags = new List<string> { MemberConsts.MemberTags.New, MemberConsts.MemberTags.Vip },
+                SelectedMemberTags = new List<string> { MemberConsts.MemberTags.New, MemberConsts.MemberTags.Existing },
                 MaxResultCount = 10
             };
 

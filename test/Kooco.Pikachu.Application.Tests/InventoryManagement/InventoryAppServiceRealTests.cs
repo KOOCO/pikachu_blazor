@@ -38,7 +38,6 @@ namespace Kooco.Pikachu.Application.Tests.InventoryManagement
         {
             var item = new Item
             {
-                Id = Guid.NewGuid(),
                 ItemName = itemName ?? $"Test Item {Guid.NewGuid().ToString().Substring(0, 8)}"
             };
             await _itemRepository.InsertAsync(item);
@@ -81,8 +80,8 @@ namespace Kooco.Pikachu.Application.Tests.InventoryManagement
             result.ItemDetailId.ShouldBe(detail.Id);
             result.ItemName.ShouldContain(item.ItemName);
             result.Sku.ShouldBe(detail.SKU);
-            result.CurrentStock.ShouldBe(detail.StockOnHand);
-            result.AvailableStock.ShouldBe(detail.SaleableQuantity);
+            result.CurrentStock.ShouldBe(detail.StockOnHand ?? 0);
+            result.AvailableStock.ShouldBe((int)detail.SaleableQuantity);
         }
 
         [Fact]
@@ -250,8 +249,6 @@ namespace Kooco.Pikachu.Application.Tests.InventoryManagement
             {
                 new InventoryDto
                 {
-                    ItemId = Guid.NewGuid(),
-                    ItemDetailId = Guid.NewGuid(),
                     ItemName = "Excel Test Item 1",
                     Sku = "EXCEL-001",
                     Warehouse = "Test Warehouse",
@@ -262,8 +259,6 @@ namespace Kooco.Pikachu.Application.Tests.InventoryManagement
                 },
                 new InventoryDto
                 {
-                    ItemId = Guid.NewGuid(),
-                    ItemDetailId = Guid.NewGuid(),
                     ItemName = "Excel Test Item 2",
                     Sku = "EXCEL-002",
                     Warehouse = "Test Warehouse",

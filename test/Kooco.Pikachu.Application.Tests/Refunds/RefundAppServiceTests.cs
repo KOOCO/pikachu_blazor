@@ -61,15 +61,12 @@ namespace Kooco.Pikachu.Refunds
         {
             var order = new Order
             {
-                Id = Guid.NewGuid(),
                 OrderNo = orderNo ?? $"ORD{DateTime.Now:yyyyMMddHHmmss}",
                 TotalAmount = totalAmount,
                 PaymentMethod = paymentMethod,
                 OrderStatus = orderStatus,
                 ShippingStatus = shippingStatus,
                 IsRefunded = isRefunded,
-                UserId = Guid.NewGuid(),
-                GroupBuyId = Guid.NewGuid(),
                 CustomerEmail = "test@example.com",
                 MerchantTradeNo = $"MT{DateTime.Now:yyyyMMddHHmmss}",
                 TradeNo = $"T{DateTime.Now:yyyyMMddHHmmss}",
@@ -100,7 +97,6 @@ namespace Kooco.Pikachu.Refunds
         {
             var gateway = new PaymentGateway
             {
-                Id = Guid.NewGuid(),
                 PaymentIntegrationType = type,
                 MerchantId = "TEST123",
                 HashKey = "testHashKey",
@@ -319,11 +315,12 @@ namespace Kooco.Pikachu.Refunds
                 order.CreditDeductionRecordId.Value,
                 order.UserId.Value,
                 500,
-                DateTime.Now.AddDays(-10),
-                true,
-                DateTime.Now.AddMonths(1),
+                500, // currentRemainingCredits
                 "Initial credit",
-                UserShoppingCreditType.Grant
+                DateTime.Now.AddMonths(1),
+                true,
+                UserShoppingCreditType.Grant,
+                order.OrderNo
             );
             await _userShoppingCreditRepository.InsertAsync(shoppingCredit);
 
@@ -458,11 +455,12 @@ namespace Kooco.Pikachu.Refunds
                 order.CreditDeductionRecordId.Value,
                 order.UserId.Value,
                 500,
-                DateTime.Now.AddMonths(-2),
-                true,
-                DateTime.Now.AddDays(-1), // Already expired
+                500, // currentRemainingCredits
                 "Expired credit",
-                UserShoppingCreditType.Grant
+                DateTime.Now.AddDays(-1), // Already expired
+                true,
+                UserShoppingCreditType.Grant,
+                order.OrderNo
             );
             await _userShoppingCreditRepository.InsertAsync(expiredCredit);
 

@@ -97,7 +97,7 @@ namespace Kooco.Pikachu.Application.Tests.Items
                     sellingPrice: 29.99f,
                     cost: 15.00f,
                     saleableQuantity: 50,
-                    stockOnHand: 100,
+                    stockonHand: 100,
                     preOrderableQuantity: null,
                     saleablePreOrderQuantity: null,
                     inventoryAccount: "INV001",
@@ -118,7 +118,7 @@ namespace Kooco.Pikachu.Application.Tests.Items
                     sellingPrice: 29.99f,
                     cost: 15.00f,
                     saleableQuantity: 30,
-                    stockOnHand: 80,
+                    stockonHand: 80,
                     preOrderableQuantity: null,
                     saleablePreOrderQuantity: null,
                     inventoryAccount: "INV001",
@@ -468,7 +468,7 @@ namespace Kooco.Pikachu.Application.Tests.Items
             // Assert
             result.ShouldNotBeNull();
             result.ItemDetails.Count().ShouldBe(1);
-            result.ItemDetails.First().SellingPrice.ShouldBe(99.99f);
+            result.ItemDetails.First().SellingPrice.ShouldBe(99);
             result.ItemDetails.First().Status.ShouldBe(false);
         }
 

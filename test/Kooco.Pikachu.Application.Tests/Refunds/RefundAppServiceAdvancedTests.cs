@@ -50,15 +50,12 @@ namespace Kooco.Pikachu.Refunds
         {
             var order = new Order
             {
-                Id = Guid.NewGuid(),
                 OrderNo = orderNo ?? $"ORD{DateTime.Now:yyyyMMddHHmmss}",
                 TotalAmount = totalAmount,
                 PaymentMethod = paymentMethod,
                 OrderStatus = OrderStatus.Open,
                 ShippingStatus = shippingStatus,
                 IsRefunded = false,
-                UserId = Guid.NewGuid(),
-                GroupBuyId = Guid.NewGuid(),
                 CustomerEmail = "customer@example.com",
                 MerchantTradeNo = $"MT{DateTime.Now:yyyyMMddHHmmss}",
                 TradeNo = $"T{DateTime.Now:yyyyMMddHHmmss}",
@@ -72,9 +69,7 @@ namespace Kooco.Pikachu.Refunds
             {
                 var orderItem = new OrderItem
                 {
-                    Id = Guid.NewGuid(),
                     OrderId = order.Id,
-                    ItemId = Guid.NewGuid(),
                     ItemName = $"Item {i}",
                     Quantity = 2,
                     ItemPrice = totalAmount / itemCount / 2,
@@ -94,7 +89,6 @@ namespace Kooco.Pikachu.Refunds
         {
             var splitOrder = new Order
             {
-                Id = Guid.NewGuid(),
                 OrderNo = $"{originalOrder.OrderNo}-SPLIT",
                 TotalAmount = splitAmount,
                 PaymentMethod = originalOrder.PaymentMethod,
@@ -239,11 +233,12 @@ namespace Kooco.Pikachu.Refunds
                 order.CreditDeductionRecordId.Value,
                 userId,
                 500,
-                DateTime.Now.AddDays(-5),
-                true,
-                DateTime.Now.AddMonths(1),
+                500, // currentRemainingCredits
                 "Initial credit",
-                UserShoppingCreditType.Grant
+                DateTime.Now.AddMonths(1),
+                true,
+                UserShoppingCreditType.Grant,
+                order.OrderNo
             );
             await _userShoppingCreditRepository.InsertAsync(shoppingCredit);
 
