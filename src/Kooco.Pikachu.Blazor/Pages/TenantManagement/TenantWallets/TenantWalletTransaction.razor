@@ -76,14 +76,9 @@
   <Card Style="border-radius:1rem!important">
             <CardHeader  Class="d-flex justify-content-between align-items-center">
                 <div class="text-muted">
-                    @if (SelectedTransactions?.Count > 0)
-                    {
-                        <span>@SelectedTransactions.Count of @Transactions.Count selected</span>
-                    }
-                    else
-                    { 
+                  
                         <span>@L["Showingtransactionsfromthepast6months"]</span>
-                    }
+                    
                 </div>
                 <div class="d-flex gap-2">
                     <Button Color="Color.Secondary" Outline  Clicked="() => ExportSelected()">
