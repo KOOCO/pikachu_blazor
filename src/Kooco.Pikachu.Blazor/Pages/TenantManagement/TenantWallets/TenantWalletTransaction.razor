@@ -82,17 +82,17 @@
                     }
                     else
                     { 
-                        <span>Showing transactions from the past 6 months</span>
+                        <span>@L["Showingtransactionsfromthepast6months"]</span>
                     }
                 </div>
                 <div class="d-flex gap-2">
                     <Button Color="Color.Secondary" Outline  Clicked="() => ExportSelected()">
                         <Icon Name="IconName.Download" Class="me-2" />
-                        Export Selected (@SelectedTransactions.Count)
+                        @L["Export"] (@SelectedTransactions.Count)
                     </Button>
                     <Button Color="Color.Primary" Clicked="() => ExportAll()" >
                         <Icon Name="IconName.FileDownload" Class="me-2" />
-                        Export All
+                       @L["ExportAll"]
                     </Button>
                 </div>
             </CardHeader>

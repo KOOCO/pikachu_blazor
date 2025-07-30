@@ -1745,6 +1745,7 @@
     "WalletRechargeNotification": "Wallet Recharge Notification",
     "VipTierTimeAndResetConfigWarning": "Warning: Start date and reset frequency can not be modified after saving.\nAre you sure you want to proceed?",
     "Permission:TenantWalletManagement": "Wallet Management",
-    "Menu:TenantWalletManagement": "Wallet Management"
+    "Menu:TenantWalletManagement": "Wallet Management",
+    "Showingtransactionrecordsfromthepast6months": "Showing transaction records from the past 6 months"
   }
 }
