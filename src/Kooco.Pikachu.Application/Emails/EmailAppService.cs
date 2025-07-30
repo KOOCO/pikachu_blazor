@@ -473,9 +473,9 @@ public class EmailAppService(IOrderRepository orderRepository, IGroupBuyReposito
     <html>
     <body style='font-family:Segoe UI, Microsoft JhengHei, Arial,sans-serif; font-size:15px; color:#333;'>
         <p>{L["WalletEmail.Greeting", tenantName]}</p>
-        <p>{L["WalletEmail.Body"]}</p>
+        <p>{L["WalletEmail.DeductionBody"]}</p>
 
-        <p><strong>{L["WalletEmail.AmountDeducted"]}</strong> ${amount}<br/>
+        <p><strong>{L["WalletEmail.DeductionAmount"]}</strong> ${amount}<br/>
         <strong>{L["WalletEmail.Type"]}</strong> {L["WalletTransactionType:" + transactionType.ToString()]}<br/>
         <strong>{L["WalletEmail.Balance"]}</strong> ${currentBalance}</p>
 
@@ -500,9 +500,9 @@ public class EmailAppService(IOrderRepository orderRepository, IGroupBuyReposito
     <html>
     <body style='font-family:Segoe UI, Microsoft JhengHei, Arial,sans-serif; font-size:15px; color:#333;'>
         <p>{L["WalletEmail.Greeting", tenantName]}</p>
-        <p>{L["WalletEmail.Body"]}</p>
+        <p>{L["WalletEmail.RechargeBody"]}</p>
 
-        <p><strong>{L["WalletEmail.Amount"]}</strong> ${amount}<br/>
+        <p><strong>{L["WalletEmail.RechargeAmount"]}</strong> ${amount}<br/>
         <strong>{L["WalletEmail.Type"]}</strong> {L["WalletTransactionType:" + transactionType.ToString()]}<br/>
         <strong>{L["WalletEmail.Balance"]}</strong> ${currentBalance}</p>
 
