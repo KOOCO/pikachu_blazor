@@ -1,4 +1,20 @@
 #nullable enable
+BannerImages
+CarouselImages
+CountdownTimer
+Fail
+GroupBuyModuleType
+GroupPurchaseOverview
+MinimumAmount
+MinimumPiece
+ProductDescriptionModule
+ProductGroupModule
+ProductImageModule
+ProductRankingCarouselModule
+Success
+TaxType
+Uploading
+UploadState
 Kooco.Pikachu.EnumValues.ColorScheme
 Kooco.Pikachu.EnumValues.EnumType
 Kooco.Pikachu.EnumValues.ShippingMethod

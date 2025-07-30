@@ -1,4 +1,24 @@
 #nullable enable
+AddOnProductDto
+AddOnProductDto.AddOnProductDto() -> void
+AddOnProductSpecificGroupbuyDto
+AddOnProductSpecificGroupbuyDto.AddOnProductSpecificGroupbuyDto() -> void
+CreateUpdateAddOnProductDto
+CreateUpdateAddOnProductDto.CreateUpdateAddOnProductDto() -> void
+DeliveryTemperatureCostDto
+DeliveryTemperatureCostDto.DeliveryTemperatureCostDto() -> void
+GetAddOnProductListDto
+GetAddOnProductListDto.GetAddOnProductListDto() -> void
+IAddOnProductAppService
+IDeliveryTemperatureCostAppService
+UpdateDeliveryTemperatureCostDto
+UpdateDeliveryTemperatureCostDto.UpdateDeliveryTemperatureCostDto() -> void
+CreateUpdateEnumValueDto
+CreateUpdateEnumValueDto.CreateUpdateEnumValueDto() -> void
+EnumValueDto
+EnumValueDto.EnumValueDto() -> void
+DiscountCheckInputDto
+DiscountCheckInputDto.DiscountCheckInputDto() -> void
 
 AccessToken.get
 AccessToken.set

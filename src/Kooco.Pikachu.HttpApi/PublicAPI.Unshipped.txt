@@ -65,8 +65,8 @@ EcPayUrl.get
 EcPayUrl.set
 EdmController
 ElectronicInvoiceSettingsController
-Errors.get
-Errors.set
+PaymentResponse.Errors.get -> System.Collections.Generic.List<string>!
+PaymentResponse.Errors.set -> void
 ExchangeOrderAsync
 ExpireCreditsAsync
 ExpireOrderAsync
