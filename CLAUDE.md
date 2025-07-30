@@ -262,5 +262,41 @@ Payment flow:
 2. Next: Implement PaymentGatewayAppService tests
 3. Target: Reach 40% Application layer coverage
 
----
-Last Updated: 2025-01-18
+## Database Documentation Commands
+
+- Use `db2dbml` to generate DBML files for database reference:
+  * Command: `db2dbml mssql 'Server=tcp:dev-kdbs.database.windows.net,1433;Initial Catalog=noodle-db-dev;Persist Security Info=False;User ID=kooco_admin;Password=Koo2915co;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;' -o docs/database.dbml`
+  * Purpose: Generate database schema documentation in DBML format
+  * Save location: `docs/` folder for easy reference
+```
+
+Before Starting Any Task using noodle-memory for following:
+Always search first: Use the search_nodes tool to look for relevant preferences and procedures before beginning work.
+Search for facts too: Use the search_facts tool to discover relationships and factual information that may be relevant to your task.
+Filter by entity type: Specify Preference, Procedure, or Requirement in your node search to get targeted results.
+Review all matches: Carefully examine any preferences, procedures, or facts that match your current task.
+Always Save New or Updated Information
+Capture requirements and preferences immediately: When a user expresses a requirement or preference, use add_memory to store it right away.
+Best practice: Split very long requirements into shorter, logical chunks.
+Be explicit if something is an update to existing knowledge. Only add what's changed or new to the graph.
+Document procedures clearly: When you discover how a user wants things done, record it as a procedure.
+Record factual relationships: When you learn about connections between entities, store these as facts.
+Be specific with categories: Label preferences and procedures with clear categories for better retrieval later.
+During Your Work
+Respect discovered preferences: Align your work with any preferences you've found.
+Follow procedures exactly: If you find a procedure for your current task, follow it step by step.
+Apply relevant facts: Use factual information to inform your decisions and recommendations.
+Stay consistent: Maintain consistency with previously identified preferences, procedures, and facts.
+Best Practices
+Search before suggesting: Always check if there's established knowledge before making recommendations.
+Combine node and fact searches: For complex tasks, search both nodes and facts to build a complete picture.
+Use center_node_uuid: When exploring related information, center your search around a specific node.
+Prioritize specific matches: More specific information takes precedence over general information.
+Be proactive: If you notice patterns in user behavior, consider storing them as preferences or procedures.
+Remember: The knowledge graph is your memory. Use it consistently to provide personalized assistance that respects the user's established preferences, procedures, and factual context.
+
+Always use traditional chinese for doc and memory
+
+## Jira Task Point Guidance
+
+- 以後在 Jira 建立 task 的時候，如果需要輸入 story point 時請依照這個任務的需要花費一位資深工程師的時間來設置
