@@ -1716,6 +1716,7 @@
     "Showingtransactionsfromthepast6months": "僅顯示最近6個月的交易紀錄",
     "WalletManagement": "錢包管理",
     "Wallet:Completed": "交易成功",
-    "WalletTransactions_record": "錢包交易紀錄"
+    "WalletTransactions_record": "錢包交易紀錄",
+    "ChooseProduct": "選擇套用商品"
   }
 }

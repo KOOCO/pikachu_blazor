@@ -34,6 +34,7 @@ namespace Kooco.Pikachu.Freebies
             [NotNull] string itemName,
             string? itemDescription,
             bool applyToAllGroupBuy,
+            bool applyToAllProduct,
             bool unCondition,
             DateTime? activityStartDate,
             DateTime? activityEndtDate,
@@ -62,6 +63,7 @@ namespace Kooco.Pikachu.Freebies
                 itemName,
                 itemDescription,
                 applyToAllGroupBuy,
+                applyToAllProduct,
                 unCondition,
                 freebieOrderReach,
                 activityStartDate,
@@ -86,6 +88,26 @@ namespace Kooco.Pikachu.Freebies
                     if (!freebieGroupBuysIds.Contains(freebieGroupBuy.GroupBuyId))
                     {
                         freebie.FreebieGroupBuys.Remove(freebieGroupBuy);
+                    }
+                }
+            }
+            else
+            {
+                freebie.FreebieGroupBuys.Clear();
+            }
+        }
+        public void RemoveFreebieProducts(
+        [NotNull] Freebie freebie,
+        List<Guid> freebieProductIds
+        )
+        {
+            if (freebieProductIds != null && freebieProductIds.Any())
+            {
+                foreach (var freebieProducts in freebie.FreebieProducts)
+                {
+                    if (!freebieProductIds.Contains(freebieProducts.ProductId))
+                    {
+                        freebie.FreebieProducts.Remove(freebieProducts);
                     }
                 }
             }

@@ -14,8 +14,10 @@ namespace Kooco.Pikachu.Freebies.Dtos
         public string? ItemName { get; set; }
         public string? ItemDescription { get; set; }
         public bool ApplyToAllGroupBuy { get; set; }
+        public bool ApplyToAllProduct { get; set; }
         public ICollection<ImageDto> Images { get; set; }
         public ICollection<FreebieGroupBuysDto> FreebieGroupBuys { get; set; }
+        public ICollection<FreebieProductsDto> FreebieProducts { get; set; }
         public bool UnCondition { get; set; }
         public DateTime? ActivityStartDate { get; set; }
         public DateTime? ActivityEndDate { get; set; }

@@ -29,7 +29,8 @@ public class MapperProfile : Profile
         CreateMap<SetItemDto, CreateUpdateSetItemDto>();
         CreateMap<SetItemDetailsDto, CreateUpdateSetItemDetailsDto>();
         CreateMap<FreebieDto, UpdateFreebieDto>()
-            .ForMember(dest => dest.FreebieGroupBuys, opt => opt.MapFrom<FreebieGroupBuysResolver>());
+            .ForMember(dest => dest.FreebieGroupBuys, opt => opt.MapFrom<FreebieGroupBuysResolver>())
+            .ForMember(dest => dest.FreebieProducts, opt => opt.MapFrom<FreebieProductsResolver>());
 
         CreateMap<FreebieGroupBuysDto, CreateFreebieGroupBuysDto>();
         CreateMap<Order, OrderDto>();
@@ -46,5 +47,12 @@ public class FreebieGroupBuysResolver : IValueResolver<FreebieDto, UpdateFreebie
     public List<Guid> Resolve(FreebieDto source, UpdateFreebieDto destination, List<Guid> destMember, ResolutionContext context)
     {
         return source.FreebieGroupBuys.Select(x => x.GroupBuyId).ToList();
+    }
+}
+public class FreebieProductsResolver : IValueResolver<FreebieDto, UpdateFreebieDto, List<Guid>>
+{
+    public List<Guid> Resolve(FreebieDto source, UpdateFreebieDto destination, List<Guid> destMember, ResolutionContext context)
+    {
+        return source.FreebieProducts.Select(x => x.ProductId).ToList();
     }
 }

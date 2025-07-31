@@ -1751,6 +1751,7 @@
     "Showingtransactionsfromthepast6months": "Showing transaction records from the past 6 months",
     "WalletManagement": "Wallet Management",
     "Wallet:Completed": "Completed",
-    "WalletTransactions_record": "wallet_transaction_record"
+    "WalletTransactions_record": "wallet_transaction_record",
+    "ChooseProduct": "Choose Products"
   }
 }

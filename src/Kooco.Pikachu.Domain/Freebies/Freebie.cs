@@ -15,8 +15,10 @@ namespace Kooco.Pikachu.Freebies
         public string? ItemName { get; set; }
         public string? ItemDescription { get; set; }
         public bool ApplyToAllGroupBuy { get; set; }
+        public bool ApplyToAllProducts { get; set; }
         public ICollection<Image> Images { get; set; }
         public ICollection<FreebieGroupBuys> FreebieGroupBuys { get; set; }
+        public ICollection<FreebieProducts> FreebieProducts { get; set; }
         public bool UnCondition { get; set; }
         public DateTime? ActivityStartDate { get; set; }
         public DateTime? ActivityEndDate { get; set; }
@@ -37,6 +39,7 @@ namespace Kooco.Pikachu.Freebies
             string itemName,
             string? itemDescription,
             bool applyToAllGroupBuy,
+            bool applyToAllProduct,
             bool unCondition,
             FreebieOrderReach? freebieOrderReach,
             DateTime? activityStartDate,
@@ -50,6 +53,7 @@ namespace Kooco.Pikachu.Freebies
             SetItemName(itemName);
             ItemDescription = itemDescription;
             ApplyToAllGroupBuy = applyToAllGroupBuy;
+            ApplyToAllProducts = applyToAllProduct;
             UnCondition = unCondition;
             ActivityStartDate = activityStartDate;
             ActivityEndDate = activityEndDate;
@@ -60,6 +64,7 @@ namespace Kooco.Pikachu.Freebies
             FreebieOrderReach = freebieOrderReach;
             Images = new List<Image>();
             FreebieGroupBuys = new List<FreebieGroupBuys>();
+            FreebieProducts = new List<FreebieProducts>();
         }
         private void SetItemName(
           [NotNull] string itemName
@@ -85,6 +90,20 @@ namespace Kooco.Pikachu.Freebies
                     );
             }
         }
+        public void AddFreebieProducts(
+             Guid freeBieId,
+             Guid productId
+     )
+        {
+            if (!FreebieProducts.Any(x => x.ProductId == productId))
+            {
+                FreebieProducts.Add(
+                    new FreebieProducts(
+                      freeBieId, productId
+                        )
+                    );
+            }
+        }
         public void AddImage(
             Guid id,
             string name,
@@ -99,6 +118,9 @@ namespace Kooco.Pikachu.Freebies
         {
             FreebieGroupBuys.RemoveAll(x => !ids.Contains(x.GroupBuyId));
         }
-
+        public void RemoveFreebieProducts(List<Guid?> ids)
+        {
+            FreebieProducts.RemoveAll(x => !ids.Contains(x.ProductId));
+        }
     }
 }

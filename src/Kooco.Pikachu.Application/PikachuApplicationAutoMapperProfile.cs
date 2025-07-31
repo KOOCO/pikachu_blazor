@@ -129,6 +129,7 @@ public class PikachuApplicationAutoMapperProfile : Profile
 
         CreateMap<Freebie, FreebieDto>();
         CreateMap<FreebieGroupBuys, FreebieGroupBuysDto>();
+        CreateMap<FreebieProducts, FreebieProductsDto>();
 
         CreateMap<Order, OrderDto>();
         CreateMap<OrderItem, OrderItemDto>();
