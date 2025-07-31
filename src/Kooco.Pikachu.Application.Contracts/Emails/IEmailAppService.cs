@@ -15,6 +15,7 @@ public interface IEmailAppService : IApplicationService
     Task SendMergeOrderEmailAsync(List<Guid> ordersToMergeIds, Guid mergedOrderId);
     Task SendSplitOrderEmailAsync(Guid orderToSplitId, Guid splitOrderId);
     Task SendShoppingCreditGrantEmailAsync(Guid userId, decimal amount);
+    Task SendVipTierUpgradeEmailAsync(List<VipTierUpgradeEmailDto> inputs);
     Task SendWalletRechargeEmailAsync(string email, string tenantName, decimal amount, string transactionType, decimal currentBalance);
     Task SendWalletDeductedEmailAsync(string email, string tenantName, decimal amount, string transactionType, decimal currentBalance);
 }

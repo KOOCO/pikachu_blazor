@@ -36,7 +36,7 @@ public class VipTierSettingController(IVipTierSettingAppService vipTierSettingAp
 
     [HttpPost("member-tier/{tenantId}")]
     [RemoteService(IsEnabled = false)]
-    public Task UpdateMemberTierAsync(Guid? tenantId, bool shouldConfigureRecurringJob = false, CancellationToken? cancellationToken = default)
+    public Task UpdateMemberTierAsync(Guid? tenantId, bool shouldConfigureRecurringJob = false, CancellationToken cancellationToken = default)
     {
         return _vipTierSettingAppService.UpdateMemberTierAsync(tenantId, shouldConfigureRecurringJob, cancellationToken);
     }

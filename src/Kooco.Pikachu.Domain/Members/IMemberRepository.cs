@@ -28,9 +28,9 @@ public interface IMemberRepository : IIdentityUserRepository, IRepository<Identi
 
     Task<long> CountOrdersAsync(Guid memberId);
 
-    Task<VipTier?> CheckForVipTierAsync(Guid userId);
+    Task<VipTierUpgradeEmailModel> CheckForVipTierAsync(Guid userId);
 
-    Task UpdateMemberTierAsync(CancellationToken? cancellationToken = default);
+    Task<List<VipTierUpgradeEmailModel>> UpdateMemberTierAsync(CancellationToken cancellationToken = default);
 
     Task<long> GetMemberCreditRecordCountAsync(string? filter, DateTime? usageTimeFrom, DateTime? usageTimeTo,
         DateTime? expiryTimeFrom, DateTime? expiryTimeTo, int? minRemainingCredits, int? maxRemainingCredits,

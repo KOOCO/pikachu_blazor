@@ -2353,17 +2353,22 @@ public class OrderAppService : PikachuAppService, IOrderAppService
         await OrderRepository.UpdateAsync(order);
         await UnitOfWorkManager.Current.SaveChangesAsync();
 
+        await SendEmailAsync(order.Id);
+        var returnResult = ObjectMapper.Map<Order, OrderDto>(order);
+
         if (order.UserId.HasValue)
         {
-            var vipTier = await MemberRepository.CheckForVipTierAsync(order.UserId.Value);
-            if (vipTier != null)
+            var tierModel = await MemberRepository.CheckForVipTierAsync(order.UserId.Value);
+            if (tierModel?.NewTier != null)
             {
-                await MemberTagManager.AddVipTierAsync(order.UserId.Value, vipTier.TierName, vipTier.Id);
+                await MemberTagManager.AddVipTierAsync(order.UserId.Value, tierModel.NewTier.TierName, tierModel.NewTier.Id);
+                if (tierModel.CurrentTier == null || tierModel.NewTier.Tier > tierModel.CurrentTier.Tier)
+                {
+                    await EmailAppService.SendVipTierUpgradeEmailAsync(ObjectMapper.Map<List<VipTierUpgradeEmailModel>, List<VipTierUpgradeEmailDto>>([tierModel]));
+                }
             }
         }
 
-        await SendEmailAsync(order.Id);
-        var returnResult = ObjectMapper.Map<Order, OrderDto>(order);
         if (order.InvoiceNumber.IsNullOrEmpty())
         {
             var invoiceSetting = await TenantTripartiteRepository.FindByTenantAsync(CurrentTenant.Id.Value);

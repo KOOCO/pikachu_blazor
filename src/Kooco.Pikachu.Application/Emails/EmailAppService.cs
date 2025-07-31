@@ -20,6 +20,7 @@ using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Emailing;
 using Volo.Abp.Identity;
 using Volo.Abp.Localization;
+using static Volo.Abp.Identity.Settings.IdentitySettingNames;
 
 namespace Kooco.Pikachu.Emails;
 
@@ -462,6 +463,44 @@ public class EmailAppService(IOrderRepository orderRepository, IGroupBuyReposito
         }
     }
 
+    public async Task SendVipTierUpgradeEmailAsync(List<VipTierUpgradeEmailDto> inputs)
+    {
+        using (CultureHelper.Use(CultureInfo.GetCultureInfo("zh-Hant")))
+        {
+            string body = File.ReadAllText("wwwroot/EmailTemplates/vip_tier_upgrade.html");
+
+            var tenantSettings = await tenantSettingsAppService.FirstOrDefaultAsync();
+
+            string? tenantUrl = tenantSettings?.Tenant.GetProperty<string?>(Constant.TenantUrl);
+
+            body = body.Replace("{{LogoUrl}}", tenantSettings?.LogoUrl);
+            body = body.Replace("{{FacebookUrl}}", tenantSettings?.FacebookLink);
+            body = body.Replace("{{InstagramUrl}}", tenantSettings?.InstagramLink);
+            body = body.Replace("{{LineUrl}}", tenantSettings?.LineLink);
+
+            body = body.Replace("{{CurrentYear}}", DateTime.Today.ToString("yyyy"));
+            body = body.Replace("{{CompanyName}}", tenantSettings?.CompanyName);
+            body = body.Replace("{{TenantUrl}}", tenantUrl);
+
+            foreach (var input in inputs)
+            {
+                if (input.NewTier == null) continue;
+
+                var subject = $"🎉 恭喜！您已升級至 {input.NewTier?.TierName}";
+
+                string personalizedBody = body
+                    .Replace("{{CustomerName}}", input.UserName)
+                    .Replace("{{PreviousTierName}}", input.PreviousTier?.TierName)
+                    .Replace("{{NewTierName}}", input.NewTier?.TierName)
+                    .Replace("{{NextTierName}}", input.NextTier?.TierName)
+                    .Replace("{{RequiredOrders}}", input.NextTier?.OrdersCount.ToString())
+                    .Replace("{{RequiredAmount}}", input.NextTier?.OrdersAmount.ToString("N2"));
+
+                await SendAsync(input.Email, subject, personalizedBody);
+            }
+        }
+    }
+
     public async Task SendWalletDeductedEmailAsync(string email, string tenantName, decimal amount, string transactionType, decimal currentBalance)
     {
         {
@@ -515,6 +554,7 @@ public class EmailAppService(IOrderRepository orderRepository, IGroupBuyReposito
             await emailSender.SendAsync(email, subject, body, isBodyHtml: true);
         }
     }
+    
     private async Task SendAsync(string email, string subject, string body)
     {
         try
@@ -542,7 +582,6 @@ public class EmailAppService(IOrderRepository orderRepository, IGroupBuyReposito
             await restClient.ExecuteAsync(restRequest);
         }
     }
-
 
     private static string? GetAddress(Order order)
     {

@@ -1,4 +1,5 @@
 ﻿using Hangfire;
+using Kooco.Pikachu.Emails;
 using Kooco.Pikachu.Members;
 using Kooco.Pikachu.Permissions;
 using Microsoft.AspNetCore.Authorization;
@@ -20,16 +21,19 @@ public class VipTierSettingAppService : PikachuAppService, IVipTierSettingAppSer
     private readonly VipTierSettingManager _vipTierSettingManager;
     private readonly IMemberRepository _memberRepository;
     private readonly IBackgroundJobManager _backgroundJobManager;
+    private readonly IEmailAppService _emailAppService;
 
     public VipTierSettingAppService(
         VipTierSettingManager vipTierSettingManager,
         IMemberRepository memberRepository,
-        IBackgroundJobManager backgroundJobManager
+        IBackgroundJobManager backgroundJobManager,
+        IEmailAppService emailAppService
         )
     {
         _vipTierSettingManager = vipTierSettingManager;
         _memberRepository = memberRepository;
         _backgroundJobManager = backgroundJobManager;
+        _emailAppService = emailAppService;
     }
 
     public async Task<VipTierSettingDto> FirstOrDefaultAsync()
@@ -97,7 +101,7 @@ public class VipTierSettingAppService : PikachuAppService, IVipTierSettingAppSer
     }
 
     [AllowAnonymous]
-    public async Task UpdateMemberTierAsync(Guid? tenantId, bool shouldConfigureRecurringJob = false, CancellationToken? cancellationToken = default)
+    public async Task UpdateMemberTierAsync(Guid? tenantId, bool shouldConfigureRecurringJob = false, CancellationToken cancellationToken = default)
     {
         using (CurrentTenant.Change(tenantId))
         {
@@ -133,8 +137,13 @@ public class VipTierSettingAppService : PikachuAppService, IVipTierSettingAppSer
                 }
             }
 
-            await CurrentUnitOfWork!.SaveChangesAsync();
-            await _memberRepository.UpdateMemberTierAsync(cancellationToken);
+            await CurrentUnitOfWork!.SaveChangesAsync(cancellationToken);
+            var result = await _memberRepository.UpdateMemberTierAsync(cancellationToken);
+
+            if (result.Count > 0)
+            {
+                await _emailAppService.SendVipTierUpgradeEmailAsync(ObjectMapper.Map<List<VipTierUpgradeEmailModel>, List<VipTierUpgradeEmailDto>>(result));
+            }
         }
     }
 }

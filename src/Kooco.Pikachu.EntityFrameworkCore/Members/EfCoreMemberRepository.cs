@@ -176,9 +176,13 @@ public class EfCoreMemberRepository(IDbContextProvider<PikachuDbContext> pikachu
             .LongCountAsync();
     }
 
-    public async Task<VipTier?> CheckForVipTierAsync(Guid userId)
+    public async Task<VipTierUpgradeEmailModel> CheckForVipTierAsync(Guid userId)
     {
         var dbContext = await GetPikachuDbContextAsync();
+        
+        var user = await dbContext.Users.FirstOrDefaultAsync(x => x.Id == userId)
+            ?? throw new EntityNotFoundException(typeof(IdentityUser), userId);
+
         var vipTierSettings = await dbContext.VipTierSettings.Include(v => v.Tiers).FirstOrDefaultAsync();
 
         if (vipTierSettings == null) return default;
@@ -194,7 +198,7 @@ public class EfCoreMemberRepository(IDbContextProvider<PikachuDbContext> pikachu
 
         var tiers = vipTierSettings.Tiers.OrderByDescending(tier => tier.Tier);
 
-        return vipTierSettings switch
+        var newTier = vipTierSettings switch
         {
             { BasedOnAmount: true, BasedOnCount: true, TierCondition: VipTierCondition.OnlyWhenReachedBoth }
                 => tiers.FirstOrDefault(tier => tier.OrdersAmount <= amount && tier.OrdersCount <= count),
@@ -210,17 +214,48 @@ public class EfCoreMemberRepository(IDbContextProvider<PikachuDbContext> pikachu
 
             _ => null
         };
+
+        var previousTier = newTier != null
+            ? tiers.Where(t => t.Tier < newTier.Tier)
+                   .OrderByDescending(t => t.Tier)
+                   .FirstOrDefault()
+            : null;
+
+        var nextTier = newTier != null
+            ? tiers.Where(t => t.Tier > newTier.Tier)
+                   .OrderBy(t => t.Tier)
+                   .FirstOrDefault()
+            : null;
+
+        var currentTierId = await dbContext.MemberTags
+            .Where(mt => mt.UserId == userId && mt.VipTierId.HasValue)
+            .Select(mt => mt.VipTierId)
+            .FirstOrDefaultAsync();
+
+        var currentTier = tiers.Where(t => t.Id == currentTierId).FirstOrDefault();
+
+        var upgradeModel = new VipTierUpgradeEmailModel
+        {
+            Email = user.Email,
+            UserName = user.UserName,
+            CurrentTier = currentTier,
+            PreviousTier = previousTier,
+            NewTier = newTier,
+            NextTier = nextTier
+        };
+
+        return upgradeModel;
     }
 
-    public async Task UpdateMemberTierAsync(CancellationToken? cancellationToken = default)
+    public async Task<List<VipTierUpgradeEmailModel>> UpdateMemberTierAsync(CancellationToken cancellationToken = default)
     {
         Logger.LogInformation("Member Tier Job: Starting Job");
         var dbContext = await GetPikachuDbContextAsync();
-        var vipTierSettings = await dbContext.VipTierSettings.Include(v => v.Tiers).FirstOrDefaultAsync();
+        var vipTierSettings = await dbContext.VipTierSettings.Include(v => v.Tiers).FirstOrDefaultAsync(cancellationToken);
         if (vipTierSettings == null)
         {
             Logger.LogWarning("Member Tier Job: Vip Tier Settings are not set");
-            return;
+            return [];
         }
 
         var dateFrom = vipTierSettings.IsResetEnabled && vipTierSettings.LastResetDate != null
@@ -231,7 +266,7 @@ public class EfCoreMemberRepository(IDbContextProvider<PikachuDbContext> pikachu
 
         var tiers = vipTierSettings.Tiers.OrderByDescending(tier => tier.Tier);
 
-        var memberRole = await dbContext.Roles.FirstOrDefaultAsync(x => x.Name == MemberConsts.Role);
+        var memberRole = await dbContext.Roles.FirstOrDefaultAsync(x => x.Name == MemberConsts.Role, cancellationToken);
 
         var members = await dbContext.Users
             .Include(user => user.Roles)
@@ -256,16 +291,21 @@ public class EfCoreMemberRepository(IDbContextProvider<PikachuDbContext> pikachu
                     .Where(o => o.CreationTime.Date >= dateFrom)
                     .Sum(order => order.TotalAmount)
             })
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
+
+        List<VipTierUpgradeEmailModel> tierEmails = [];
 
         foreach (var member in members)
         {
+            var currentTierId = member.MemberTags.Where(mt => mt.VipTierId.HasValue).Select(mt => mt.VipTierId).FirstOrDefault();
+            var currentTier = tiers.FirstOrDefault(t => t.Id == currentTierId);
+
             var tagsToDelete = member.MemberTags.Where(mt => mt.IsSystemAssigned && mt.Name != MemberConsts.MemberTags.Blacklisted);
             dbContext.MemberTags.RemoveRange(tagsToDelete);
 
             if (tiers.Any())
             {
-                var tier = vipTierSettings switch
+                var newTier = vipTierSettings switch
                 {
                     { BasedOnAmount: true, BasedOnCount: true, TierCondition: VipTierCondition.OnlyWhenReachedBoth }
                         => tiers.FirstOrDefault(tier => tier.OrdersAmount <= member.TotalSpent && tier.OrdersCount <= member.OrdersAfterStartDate),
@@ -282,9 +322,34 @@ public class EfCoreMemberRepository(IDbContextProvider<PikachuDbContext> pikachu
                     _ => null
                 };
 
-                if (tier != null)
+                if (newTier != null)
                 {
-                    dbContext.MemberTags.Add(new MemberTag(GuidGenerator.Create(), member.User.Id, tier.TierName, true, true, tier.Id));
+                    dbContext.MemberTags.Add(new MemberTag(GuidGenerator.Create(), member.User.Id, newTier.TierName, true, true, newTier.Id));
+                    
+                    if (currentTier == null || newTier.Tier > currentTier.Tier)
+                    {
+                        var previousTier = newTier != null
+                            ? tiers.Where(t => t.Tier < newTier.Tier)
+                                   .OrderByDescending(t => t.Tier)
+                                   .FirstOrDefault()
+                            : null;
+
+                        var nextTier = newTier != null
+                            ? tiers.Where(t => t.Tier > newTier.Tier)
+                                   .OrderBy(t => t.Tier)
+                                   .FirstOrDefault()
+                            : null;
+
+                        tierEmails.Add(new VipTierUpgradeEmailModel
+                        {
+                            Email = member.User.Email,
+                            UserName = member.User.UserName,
+                            CurrentTier = currentTier,
+                            PreviousTier = previousTier,
+                            NewTier = newTier,
+                            NextTier = nextTier
+                        });
+                    }
                 }
             }
 
@@ -297,6 +362,8 @@ public class EfCoreMemberRepository(IDbContextProvider<PikachuDbContext> pikachu
                 dbContext.MemberTags.Add(new MemberTag(GuidGenerator.Create(), member.User.Id, MemberConsts.MemberTags.Existing, true, true));
             }
         }
+
+        return tierEmails;
     }
 
     public async Task<long> GetMemberCreditRecordCountAsync(string? filter, DateTime? usageTimeFrom, DateTime? usageTimeTo,
