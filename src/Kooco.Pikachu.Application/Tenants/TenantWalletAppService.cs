@@ -73,7 +73,7 @@ public class TenantWalletAppService : PikachuAppService, ITenantWalletAppService
         if (import.IsEmailNotificationEnabled)
         {
             var tenant = await _tenantRepository.GetAsync(wallet.TenantId.Value);
-            await _emailAppService.SendWalletRechargeEmailAsync(
+            await _emailAppService.SendWalletDeductedEmailAsync(
                 tenant.GetProperty<string>("TenantContactEmail"),
                 tenant.Name,
                 transaction.TransactionAmount,

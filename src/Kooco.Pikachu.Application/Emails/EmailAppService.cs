@@ -479,7 +479,7 @@ public class EmailAppService(IOrderRepository orderRepository, IGroupBuyReposito
         <strong>{L["WalletEmail.Type"]}</strong> {L["WalletTransactionType:" + transactionType.ToString()]}<br/>
         <strong>{L["WalletEmail.Balance"]}</strong> ${currentBalance}</p>
 
-        <p>{L["WalletEmail.Support"]}</p>
+        <p>{L["WalletEmail.SupportDeduction"]}</p>
         <br/>
         <p>{L["WalletEmail.Regards"]}</p>
     </body>
@@ -506,9 +506,9 @@ public class EmailAppService(IOrderRepository orderRepository, IGroupBuyReposito
         <strong>{L["WalletEmail.Type"]}</strong> {L["WalletTransactionType:" + transactionType.ToString()]}<br/>
         <strong>{L["WalletEmail.Balance"]}</strong> ${currentBalance}</p>
 
-        <p>{L["WalletEmail.Support"]}</p>
+        <p>{L["WalletEmail.SupportRecharge"]}</p>
         <br/>
-        <p>{L["WalletEmail.Regards"]}</p>
+        <p>{L["WalletEmail.RegardsRecharge"]}</p>
     </body>
     </html>";
 
