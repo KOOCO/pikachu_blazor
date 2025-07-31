@@ -6,6 +6,7 @@ using Kooco.Pikachu.Tenants.Requests;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
+using MiniExcelLibs;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -156,23 +157,37 @@ public class TenantWalletAppService : PikachuAppService, ITenantWalletAppService
             });
         }
 
-        var csvBuilder = new StringBuilder();
+        // ✅ Localized headers
+        var headers = new Dictionary<string, string>
+    {
+        { "Timestamp", L["Timestamp"] },
+        { "TransactionNo", L["TransactionNo"] },
+        { "TransactionType", L["TransactionType"] },
+        { "TransactionStatus", L["TransactionStatus"] },
+        { "Amount", L["Amount"] },
+        { "Balance", L["Balance"] },
+        { "Note", L["Note"] }
+    };
 
-        // Localized headers
-        csvBuilder.AppendLine($"{L["Timestamp"]},{L["TransactionNo"]},{L["TransactionType"]},{L["TransactionStatus"]},{L["Amount"]},{L["Balance"]},{L["Note"]}");
+        // ✅ Prepare Excel content
+        var excelContent = records.Select(x => new Dictionary<string, object>
+    {
+        { headers["Timestamp"], x.Timestamp.ToString("MM/dd/yyyy HH:mm:ss") },
+        { headers["TransactionNo"], x.TransactionNo },
+        { headers["TransactionType"], L["WalletTransactionType:" + x.TransactionType.ToString()] },
+        { headers["TransactionStatus"], L[x.TransactionStatus.ToString()] },
+        { headers["Amount"], x.Amount },
+        { headers["Balance"], x.Balance },
+        { headers["Note"], x.Note }
+    });
 
-        foreach (var item in records)
-        {
-            // Escape any commas or newlines inside notes
-            var note = item.Note?.Replace("\"", "\"\""); // CSV escaping
-            csvBuilder.AppendLine($"\"{item.Timestamp:u}\",\"{item.TransactionNo}\",\"{L[item.TransactionType.ToString()]}\",\"{L[item.TransactionStatus.ToString()]}\",\"{item.Amount}\",\"{item.Balance}\",\"{note}\"");
-        }
+        // ✅ Export to Excel format
+        var memoryStream = new MemoryStream();
+        await memoryStream.SaveAsAsync(excelContent);
+        memoryStream.Seek(0, SeekOrigin.Begin);
 
-        var fileName = $"WalletTransactions_{DateTime.UtcNow:yyyyMMddHHmmss}.csv";
-        var fileBytes = Encoding.UTF8.GetBytes(csvBuilder.ToString());
-        var fileStream = new MemoryStream(fileBytes);
-
-        return new RemoteStreamContent(fileStream, fileName, "text/csv");
+        var fileName = $"{L["WalletTransactions_record"]}_{Clock.Now:yyyy-MM-dd}.xlsx";
+        return new RemoteStreamContent(memoryStream, fileName, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
     }
     [RemoteService(false)]
     public async Task<List<TenantWalletTransactionDto>> GetWalletTransactionsByTenantIdAsync(Guid tenantId)
@@ -217,7 +232,11 @@ public class TenantWalletAppService : PikachuAppService, ITenantWalletAppService
     public async Task<IRemoteStreamContent> ExportWalletTransactionsByTenantIdAsync(Guid tenantId, List<Guid>? selectedIds = null)
     {
         var sixMonthsAgo = Clock.Now.AddMonths(-6);
-        var walletId = await (await _tenantWalletRepository.GetQueryableAsync()).Where(x => x.TenantId == tenantId).Select(x => x.Id).FirstOrDefaultAsync();
+        var walletId = await (await _tenantWalletRepository.GetQueryableAsync())
+            .Where(x => x.TenantId == tenantId)
+            .Select(x => x.Id)
+            .FirstOrDefaultAsync();
+
         var query = await _transactionRepository.GetQueryableAsync();
         var transactions = await query
             .Where(x => x.TenantWalletId == walletId && x.CreationTime >= sixMonthsAgo)
@@ -250,24 +269,39 @@ public class TenantWalletAppService : PikachuAppService, ITenantWalletAppService
             });
         }
 
-        var csvBuilder = new StringBuilder();
+        // ✅ Localized headers
+        var headers = new Dictionary<string, string>
+    {
+        { "Timestamp", L["Timestamp"] },
+        { "TransactionNo", L["TransactionNo"] },
+        { "TransactionType", L["TransactionType"] },
+        { "TransactionStatus", L["TransactionStatus"] },
+        { "Amount", L["Amount"] },
+        { "Balance", L["Balance"] },
+        { "Note", L["Note"] }
+    };
 
-        // Localized headers
-        csvBuilder.AppendLine($"{L["Timestamp"]},{L["TransactionNo"]},{L["TransactionType"]},{L["TransactionStatus"]},{L["Amount"]},{L["Balance"]},{L["Note"]}");
+        // ✅ Prepare Excel content
+        var excelContent = records.Select(x => new Dictionary<string, object>
+    {
+        { headers["Timestamp"], x.Timestamp.ToString("MM/dd/yyyy HH:mm:ss") },
+        { headers["TransactionNo"], x.TransactionNo },
+        { headers["TransactionType"], L["WalletTransactionType:" + x.TransactionType.ToString()] },
+        { headers["TransactionStatus"], L[x.TransactionStatus.ToString()] },
+        { headers["Amount"], x.Amount },
+        { headers["Balance"], x.Balance },
+        { headers["Note"], x.Note }
+    });
 
-        foreach (var item in records)
-        {
-            // Escape any commas or newlines inside notes
-            var note = item.Note?.Replace("\"", "\"\""); // CSV escaping
-            csvBuilder.AppendLine($"\"{item.Timestamp:u}\",\"{item.TransactionNo}\",\"{L[item.TransactionType.ToString()]}\",\"{L[item.TransactionStatus.ToString()]}\",\"{item.Amount}\",\"{item.Balance}\",\"{note}\"");
-        }
+        // ✅ Export to Excel format
+        var memoryStream = new MemoryStream();
+        await memoryStream.SaveAsAsync(excelContent);
+        memoryStream.Seek(0, SeekOrigin.Begin);
 
-        var fileName = $"WalletTransactions_{DateTime.UtcNow:yyyyMMddHHmmss}.csv";
-        var fileBytes = Encoding.UTF8.GetBytes(csvBuilder.ToString());
-        var fileStream = new MemoryStream(fileBytes);
-
-        return new RemoteStreamContent(fileStream, fileName, "text/csv");
+        var fileName = $"{L["WalletTransactions_record"]}_{Clock.Now:yyyy-MM-dd}.xlsx";
+        return new RemoteStreamContent(memoryStream, fileName, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
     }
+
     public class AppProfile : Profile
     {
         public AppProfile()

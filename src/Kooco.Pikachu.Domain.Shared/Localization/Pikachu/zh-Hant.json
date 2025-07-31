@@ -1711,6 +1711,9 @@
     "VipTierTimeAndResetConfigWarning": "警告：起始日期和重置頻率儲存後將無法修改。\n您確定要繼續嗎？",
     "Permission:TenantWalletManagement": "錢包管理",
     "Menu:TenantWalletManagement": "錢包管理",
-    "Showingtransactionrecordsfromthepast6months": "僅顯示最近6個月的交易紀錄"
+    "Showingtransactionsfromthepast6months": "僅顯示最近6個月的交易紀錄",
+    "WalletManagement": "錢包管理",
+    "Wallet:Completed": "交易成功",
+    "WalletTransactions_record": "錢包交易紀錄"
   }
 }

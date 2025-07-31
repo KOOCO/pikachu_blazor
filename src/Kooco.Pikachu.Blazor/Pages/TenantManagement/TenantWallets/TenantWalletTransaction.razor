@@ -10,7 +10,7 @@
 
 
         <div class="mb-4">
-            <h3 class="text-dark fw-bold">Wallet Management</h3>
+            <h3 class="text-dark fw-bold">@L["WalletManagement"]</h3>
         </div>
 
       
@@ -29,7 +29,7 @@
                     </Text>
                     <Text Class="compact-card-text"
                           Style="font-weight: bold; color: #217762FF;">
-                       @balance
+                       $@balance.ToString("N0")
                     </Text>
                 </Div>
             </CardBody>
@@ -43,11 +43,11 @@
                 <Div Class="compact-card-content">
                     <Text Class="compact-card-text"
                           Style="color: #FD9150FF;">
-                        @PL["TenantWallet:RechargeAmountOfStored"]
+                        $@PL["TenantWallet:RechargeAmountOfStored"]
                     </Text>
                     <Text Class="compact-card-text"
                           Style="font-weight: bold; color: #FD9150FF;">
-                        @rechargeAmountOfStored
+                        $@rechargeAmountOfStored.ToString("N0")
                     </Text>
                 </Div>
             </CardBody>
@@ -65,7 +65,7 @@
                     </Text>
                     <Text Class="compact-card-text"
                           Style="font-weight: bold; color: #B93448FF; ">
-                        @deductionAmountOfStored
+                        $@deductionAmountOfStored.ToString("N0")
                     </Text>
                 </Div>
             </CardBody>
@@ -111,7 +111,7 @@
         <DisplayTemplate >
             @if(context.TransactionStatus == WalletDeductionStatus.Completed)
             {
-                <Badge Color="Color.Success">@L[context.TransactionStatus.ToString()]</Badge>
+                        <Badge Color="Color.Success">@L["Wallet:"+context.TransactionStatus.ToString()]</Badge>
             }
             else if (context.TransactionStatus == WalletDeductionStatus.Pending)
             {
