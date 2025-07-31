@@ -487,14 +487,18 @@ public class EmailAppService(IOrderRepository orderRepository, IGroupBuyReposito
                 if (input.NewTier == null) continue;
 
                 var subject = $"🎉 恭喜！您已升級至 {input.NewTier?.TierName}";
+                var enSubject = $"🎉 Congratulations! You've been upgraded to {input.NewTier?.TierName}";
+
+                var requiredOrders = input.NextTier == null ? 0 : input.NextTier.OrdersCount - input.NewTier?.OrdersCount ?? 0;
+                var requiredAmount = input.NextTier == null ? 0 : input.NextTier.OrdersAmount - input.NewTier?.OrdersAmount ?? 0;
 
                 string personalizedBody = body
                     .Replace("{{CustomerName}}", input.UserName)
                     .Replace("{{PreviousTierName}}", input.PreviousTier?.TierName)
                     .Replace("{{NewTierName}}", input.NewTier?.TierName)
                     .Replace("{{NextTierName}}", input.NextTier?.TierName)
-                    .Replace("{{RequiredOrders}}", input.NextTier?.OrdersCount.ToString())
-                    .Replace("{{RequiredAmount}}", input.NextTier?.OrdersAmount.ToString("N2"));
+                    .Replace("{{RequiredOrders}}", requiredOrders.ToString())
+                    .Replace("{{RequiredAmount}}", requiredAmount.ToString("N2"));
 
                 await SendAsync(input.Email, subject, personalizedBody);
             }
