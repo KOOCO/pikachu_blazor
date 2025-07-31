@@ -163,8 +163,8 @@ public class DashboardAppService(IDashboardRepository dashboardRepository) : Pik
         var topPerformingGroupBuy = summary.GroupBuys.OrderByDescending(gb => gb.PercentageOfTotal).FirstOrDefault();
         var highlights = new (string Label, string Value)[]
         {
-            ($"{L["BestPerformingProduct"]}:", $"{summary.TopPerformingProduct} ({summary.TopPerformingProductQuantity} {L["UnitsSold"].Value.ToLower()})"),
-            ($"{L["TopGroupBuyCampaign"]}:", $"{topPerformingGroupBuy?.Name} ({topPerformingGroupBuy?.PercentageOfTotal:N0}% {L["Revenue"].Value.ToLower()})"),
+            ($"{L["BestSellingProduct"]}:", $"{summary.TopPerformingProduct} ({summary.TopPerformingProductQuantity} {L["UnitsSold"].Value.ToLower()})"),
+            ($"{L["HighestRevenueGroupBuy"]}:", $"{topPerformingGroupBuy?.Name} ({topPerformingGroupBuy?.PercentageOfTotal:N0}% {L["Revenue"].Value.ToLower()})"),
             ($"{L["OrderCompletionRate"]}:", $"{summary.OrderCompletionRate:N0}% ({summary.TotalOrdersCompleted} of {summary.TotalOrders} {L["OrdersCompleted"].Value.ToLower()})")
         };
 
@@ -190,7 +190,7 @@ public class DashboardAppService(IDashboardRepository dashboardRepository) : Pik
         int row = 1;
 
         sheet.Cells[row, 1].Value = L["ProductName"];
-        sheet.Cells[row, 2].Value = L["SKU"];
+        sheet.Cells[row, 2].Value = L["Attributes"];
         sheet.Cells[row, 3].Value = L["TotalQtySold"];
         sheet.Cells[row, 4].Value = L["UnitPrice"];
         sheet.Cells[row, 5].Value = L["TotalRevenue"];
