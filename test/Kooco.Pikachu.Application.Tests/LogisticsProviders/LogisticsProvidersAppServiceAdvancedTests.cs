@@ -66,14 +66,14 @@ namespace Kooco.Pikachu.LogisticsProviders
                     LogisticProvider = LogisticProviders.SevenToEleven,
                     IsEnabled = true,
                     Freight = 60,
-                    Payment = 10
+                    Payment = true
                 },
                 new LogisticsProviderSettings
                 {
                     LogisticProvider = LogisticProviders.FamilyMart,
                     IsEnabled = true,
                     Freight = 60,
-                    Payment = 10
+                    Payment = true
                 },
                 // TCat variants
                 new LogisticsProviderSettings
@@ -91,7 +91,7 @@ namespace Kooco.Pikachu.LogisticsProviders
                     Freight = 120,
                     OuterIslandFreight = 300,
                     Size = SizeEnum.Cm0001,
-                    Payment = 20,
+                    Payment = true,
                     TCatPaymentMethod = TCatPaymentMethod.CashOnly,
                     HualienAndTaitungShippingFee = 30,
                     HolidaySurcharge = 50,
@@ -143,9 +143,9 @@ namespace Kooco.Pikachu.LogisticsProviders
             // Assert
             tcatNormalResult.ShouldNotBeNull();
             tcatNormalResult["Provider"].GetValue<string>().ShouldBe("TCatNormal");
-            tcatNormalResult["Freight"].GetValue<decimal>().ShouldBe(120);
-            tcatNormalResult["OuterIslandFreight"].GetValue<decimal>().ShouldBe(300);
-            tcatNormalResult["HualienandTaitungShippingFee "].GetValue<decimal>().ShouldBe(30);
+            tcatNormalResult["Freight"].GetValue<int>().ShouldBe(120);
+            tcatNormalResult["OuterIslandFreight"].GetValue<int>().ShouldBe(300);
+            tcatNormalResult["HualienandTaitungShippingFee "].GetValue<int>().ShouldBe(30);
             tcatNormalResult.ContainsKey("HolidaySurchargeTimeRange").ShouldBe(true);
         }
 
@@ -203,7 +203,7 @@ namespace Kooco.Pikachu.LogisticsProviders
                 {
                     IsEnabled = true,
                     Freight = 65,
-                    Payment = 15
+                    Payment = true
                 };
                 await _logisticsProvidersAppService.UpdateSevenToElevenAsync(convDto);
                 await _logisticsProvidersAppService.UpdateSevenToElevenC2CAsync(convDto);
@@ -230,7 +230,7 @@ namespace Kooco.Pikachu.LogisticsProviders
                     Freight = 130,
                     OuterIslandFreight = 260,
                     Size = SizeEnum.Cm0002,
-                    Payment = 25,
+                    Payment = true,
                     TCatPaymentMethod = TCatPaymentMethod.CardAndMobilePaymentsAccepted
                 };
                 await _logisticsProvidersAppService.UpdateTCatNormalAsync(tcatDto);
@@ -241,7 +241,7 @@ namespace Kooco.Pikachu.LogisticsProviders
                     Freight = 140,
                     OuterIslandFreight = 280,
                     Size = SizeEnum.Cm0001,
-                    Payment = 30,
+                    Payment = true,
                     TCatPaymentMethod = TCatPaymentMethod.CashOnly
                 };
                 await _logisticsProvidersAppService.UpdateTCatFreezeAsync(tcatFreezeDto);
@@ -252,7 +252,7 @@ namespace Kooco.Pikachu.LogisticsProviders
                     Freight = 150,
                     OuterIslandFreight = 300,
                     Size = SizeEnum.Cm0001,
-                    Payment = 35,
+                    Payment = true,
                     TCatPaymentMethod = TCatPaymentMethod.CardAndMobilePaymentsAccepted
                 };
                 await _logisticsProvidersAppService.UpdateTCatFrozenAsync(tcatFrozenDto);
@@ -342,13 +342,13 @@ namespace Kooco.Pikachu.LogisticsProviders
             {
                 return await _logisticsProvidersAppService.GetAsync("SEVENTOELEVEN1");
             });
-            sevenElevenResult?["COST"]?.GetValue<decimal>().ShouldBe(60);
+            sevenElevenResult?["COST"]?.GetValue<int>().ShouldBe(60);
 
             var tcatNormalResult = await WithUnitOfWorkAsync(async () =>
             {
                 return await _logisticsProvidersAppService.GetAsync("TCATDELIVERYNORMAL");
             });
-            tcatNormalResult?["Freight"]?.GetValue<decimal>().ShouldBe(120);
+            tcatNormalResult?["Freight"]?.GetValue<int>().ShouldBe(120);
         }
 
         #endregion
@@ -382,8 +382,8 @@ namespace Kooco.Pikachu.LogisticsProviders
 
             // Assert
             result.ShouldNotBeNull();
-            result["Weight"].GetValue<decimal>().ShouldBe(5);
-            result["Freight"].GetValue<decimal>().ShouldBe(80);
+            result["Weight"].GetValue<int>().ShouldBe(5);
+            result["Freight"].GetValue<int>().ShouldBe(80);
             result.ContainsKey("MerchantID").ShouldBe(true);
         }
 
@@ -420,7 +420,7 @@ namespace Kooco.Pikachu.LogisticsProviders
 
             provider.ShouldNotBeNull();
             provider.StoreCode.ShouldBe("ECPAY123");
-            provider.City.ShouldBe("New Taipei");
+            provider.City.ShouldBe(MainlandCity.NewTaipeiCity);
         }
 
         #endregion
@@ -468,8 +468,8 @@ namespace Kooco.Pikachu.LogisticsProviders
                 IsEnabled = true,
                 CustomTitle = null, // Null title
                 Freight = 100,
-                MainIslands = 0,
-                OuterIslands = 0,
+                MainIslands = "0",
+                OuterIslands = "0",
                 IsOuterIslands = false
             };
 
@@ -533,7 +533,7 @@ namespace Kooco.Pikachu.LogisticsProviders
             {
                 LogisticProvider = provider,
                 IsEnabled = isEnabled,
-                Freight = freight,
+                Freight = (int)freight,
                 StoreCode = "TEST123",
                 HashKey = "testHashKey",
                 HashIV = "testHashIV"

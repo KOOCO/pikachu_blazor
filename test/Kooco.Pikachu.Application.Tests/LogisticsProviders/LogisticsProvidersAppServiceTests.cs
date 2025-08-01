@@ -189,8 +189,8 @@ namespace Kooco.Pikachu.LogisticsProviders
             provider.ShouldNotBeNull();
             provider.CustomTitle.ShouldBe("Home Delivery Service");
             provider.Freight.ShouldBe(150);
-            provider.MainIslands.ShouldBe(100);
-            provider.OuterIslands.ShouldBe(200);
+            provider.MainIslands.ShouldBe("100");
+            provider.OuterIslands.ShouldBe("200");
             provider.IsOuterIslands.ShouldBe(true);
         }
 
@@ -284,11 +284,11 @@ namespace Kooco.Pikachu.LogisticsProviders
                 SenderName = "TCat Sender",
                 SenderPhoneNumber = "0923456789",
                 SenderAddress = "TCat Address 456",
-                TCatShippingLabelForm = "Label1",
-                TCatPickingListForm = "Picking1",
-                TCatShippingLabelForm711 = "Label711",
-                ReverseLogisticShippingFee = 50,
-                DeclaredValue = 1000
+                TCatShippingLabelForm = TCatShippingLabelForm.A4DualModeHomeDelivery,
+                TCatPickingListForm = TCatPickingListForm.A4TripleModePickingList,
+                TCatShippingLabelForm711 = TCatShippingLabelForm711.A4TripleModeB2S,
+                ReverseLogisticShippingFee = ReverseLogisticShippingFee.BorneByStore,
+                DeclaredValue = true
             };
 
             // Note: GenerateSenderZIPCodeAsync would need external API mocking
@@ -307,7 +307,7 @@ namespace Kooco.Pikachu.LogisticsProviders
                 Freight = 120,
                 OuterIslandFreight = 250,
                 Size = SizeEnum.Cm0001,
-                Payment = 20,
+                Payment = true,
                 TCatPaymentMethod = TCatPaymentMethod.CardAndMobilePaymentsAccepted,
                 HualienAndTaitungShippingFee = 30,
                 HolidaySurcharge = 50,
@@ -369,7 +369,7 @@ namespace Kooco.Pikachu.LogisticsProviders
             });
 
             provider.ShouldNotBeNull();
-            provider.Size.ShouldBe("Large");
+            provider.Size.ShouldBe(SizeEnum.Cm0004);
             provider.HualienAndTaitungShippingFee.ShouldBe(25);
         }
 
@@ -382,7 +382,7 @@ namespace Kooco.Pikachu.LogisticsProviders
                 IsEnabled = true,
                 Freight = 100,
                 OuterIslandFreight = 200,
-                Size = "Medium"
+                Size = SizeEnum.Cm0002
             };
 
             // Act
@@ -472,9 +472,9 @@ namespace Kooco.Pikachu.LogisticsProviders
             // Assert
             result.ShouldNotBeNull();
             result["Provider"].GetValue<string>().ShouldBe("HomeDelivery");
-            result["Cost"].GetValue<decimal>().ShouldBe(150);
-            result["MainIslands"].GetValue<decimal>().ShouldBe(100);
-            result["OuterIslands"].GetValue<decimal>().ShouldBe(200);
+            result["Cost"].GetValue<int>().ShouldBe(150);
+            result["MainIslands"].GetValue<string>().ShouldBe("100");
+            result["OuterIslands"].GetValue<string>().ShouldBe("200");
             result["IsOuterIslands"].GetValue<bool>().ShouldBe(true);
         }
 
@@ -494,7 +494,7 @@ namespace Kooco.Pikachu.LogisticsProviders
             // Assert
             result.ShouldNotBeNull();
             result["Provider"].GetValue<string>().ShouldBe("SevenToEleven");
-            result["COST"].GetValue<decimal>().ShouldBe(60);
+            result["COST"].GetValue<int>().ShouldBe(60);
             result.ContainsKey("MerchantID").ShouldBe(true);
         }
 
