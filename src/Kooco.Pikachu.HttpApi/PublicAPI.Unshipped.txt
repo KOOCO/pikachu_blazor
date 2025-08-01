@@ -1,337 +1,521 @@
 #nullable enable
-AddCartItemAsync
-AddCheckMacValueAsync
-AddOnProductController
-AddStoreCommentAsync
-AddValuesAsync
-ApnNotificationAsync
-AutomaticEmailController
-BirthDate.get
-BirthDate.set
-CampaignController
-CancelOrderAsync
-ChangeFreebieAvailability
-ChangeGroupBuyAvailability
-ChangeItemAvailability
-ChangeOrderStatus
-ChangePasswordAsync
-ChangeReturnStatusAsync
-ChangeShippingStatus
-CheckDiscountCodeAsync
-CheckShortCodeForCreate
-CheckShortCodeForCreateAsync
-CheckShortCodeForEdit
-CheckShortCodeForUpdate
-CheckStatusAndRequestRefundAsync
-CleanDomainName
-CleanUrl
-ClearCartItemsAsync
-CloseOrdersAsync
-ConfigureServices
-ConfirmManualBankTransferAsync
-ConfirmPayment
-CopyAsync
-CopyAysnc
-CreateAsyc
-CreateAsync
-CreateEcPayHomeDeliveryShipmentOrderAsync
-CreateHomeDeliveryShipmentOrderAsync
-CreateManyAsync
-CreateMemberAddressAsync
-CreateMemberRegisterAsync
-CreateOrderDeliveriesAndInvoiceAsync
-CreateStoreLogisticsOrderAsync
-CreditNoteInvoice
-DeductFreebieAmountAsync
-DeleteAsync
-DeleteByUserIdAndGroupBuyIdAsync
-DeleteByUserIdAsync
-DeleteCartItemAsync
-DeleteGroupBuyItemAsync
-DeleteImageAsync
-DeleteInstructionsModuleAsync
-DeleteItemBadgeAsync
-DeleteManyGroupBuyItemsAsync
-DeleteManyItemsAsync
-DeleteModuleAsync
-DeleteOverviewModuleAsync
-DeleteProductRankingModuleAsync
-DeleteSingleImageAsync
-DeliveryTemperatureCostController
-DiscountCodeController
-EcpayLogisticsStatusCallbackAsync
-EcPayServerReplyQS
-EcPayUrl.get
-EcPayUrl.set
-EdmController
-ElectronicInvoiceSettingsController
-PaymentResponse.Errors.get -> System.Collections.Generic.List<string>!
-PaymentResponse.Errors.set -> void
-ExchangeOrderAsync
-ExpireCreditsAsync
-ExpireOrderAsync
-ExportItemListToExcelAsync
-FailureCallbackAsync
-FindByNameAsync
-FindByTokenAsync
-FindByUserIdAndGroupBuyIdAsync
-FindByUserIdAsync
-FindStatusAsync
-FindTenantDomainAsync
-FindTenantUrlAsync
-FirstOrDefaultAsync
-FooterSettingController
-FreebieController
-GenCheckMac
-GenerateDeliveryNumberForSelfPickupAndHomeDeliveryAsync
-GenerateDeliveryNumberForTCat711DeliveryAsync
-GenerateDeliveryNumberForTCatDeliveryAsync
-GenerateMerchantTradeNo
-GetActiveCampaignsCountAsync
-GetAllAsync
-GetAllGroupBuyLookupAsync
-GetAllItemsLookupAsync
-GetAsync
-GetAttachmentAsync
-GetBannerImagesAsync
-GetBannerImagesModuleWiseAsync
-GetCampaignLookupWithModuleAsync
-GetCarouselImagesAsync
-GetCarouselImagesModuleWiseAsync
-GetCreditCheckCodeAsync
-GetCurrentUserIdAsync
-GetDefaultAddressAsync
-GetDefaultImageUrlAsync
-GetDeliveryOrderAsync
-GetEcPayStoreData
-GetEmailSettingsAsync
-GetFirstAsync
-GetFirstByGroupBuyIdAsync
-GetFirstImageUrlAsync
-GetForStoreAsync
-GetFreebieForStoreAsync
-GetGroupBuyByShortCode
-GetGroupBuyIdAsync
-GetGroupBuyItemGroupAsync
-GetGroupBuyItemGroupsAsync
-GetGroupBuyLookupAsync
-GetGroupBuyModulesAsync
-GetGroupBuyNamesAsync
-GetGroupBuyofTenant
-GetGroupBuyReportDetailsAsync
-GetGroupBuyReportListAsync
-GetGroupBuysAsync
-GetGroupBuyShippingMethodAsync
-GetGroupBuyTenantReportDetailsAsync
-GetGroupBuyTenantReportListAsync
-GetGroupPurchaseOverviewsAsync
-GetInventroyReport
-GetItemBadgesAsync
-GetItemCategoriesAsync
-GetItemDetailByItemId
-GetItemDetailLookupAsync
-GetItemsListAsync
-GetItemsLookupAsync
-GetItemsWithAttributesAsync
-GetLinePayAsync
-GetListAsExcelFileAsync
-GetListAsync
-GetListByOrderAsync
-GetListForStoreAsync
-GetLookupAsync
-GetMainProductCategoryLookupAsync
-GetManualBankTransferAsync
-GetManualBankTransferRecordAsync
-GetManyAsync
-GetMemberAddressListAsync
-GetMemberCreditRecordAsync
-GetMemberCumulativeCreditsAsync
-GetMemberCumulativeFinancialsAsync
-GetMemberCumulativeOrdersAsync
-GetMemberCurrentShoppingCreditAsync
-GetMemberOrderAsync
-GetMemberOrderRecordsAsync
-GetMemberOrdersByGroupBuyAsync
-GetMemberTierProgressAsync
-GetModuleAsync
-GetModulesAsync
-GetOrderAsync
-GetOrderIdAsync
-GetOrderLogsAsync
-GetOrderStatusAmountsAsync
-GetOrderStatusCountsAsync
-GetPagedItemGroupAsync
-GetPaymentGatewayConfigurationsAsync
-GetProductCategoryLookupAsync
-GetProductsAsync
-GetReconciliationListAsExcelFileAsync
-GetReconciliationListAsync
-GetRefundPendingCount
-GetReportListAsync
-GetReturnListAsync
-GetReturnOrderNotificationCount
-GetSettingAsync
-GetShoppingCreditSettingsAsync
-GetShoppingCreditStatsAsync
-GetSKUAndItemAsync
-GetStoreAsync
-GetSubCategoryListAsync
-GetTCatStoreData
-GetTemperatureCostAsync
-GetTenantAsync
-GetTenantCustomerServiceAsync
-GetTenantFrontendInformationAsync
-GetTenantGoogleTagManagerAsync
-GetTenantInformationAsync
-GetTenantOrderListAsync
-GetTenantPrivacyPolicyAsync
-GetTenantsListAsExcelFileAsync
-GetTenantSocialMediaAsync
-GetTenantTermsAndConditionsAsync
-GetTotalDeliveryTemperatureCountsAsync
-GetVipTierNamesAsync
-GetVoidListAsync
-GetWithDetailsAsync
-GetWithDetailsByIdAsync
-GetWithItemGroupsAsync
-GroupBuyController
-GroupBuyItemModuleNoReindexingAsync
-HandleCallbackAsync
-HandlePaymentAsync
-ImportItemsFromExcelAsync
-IsSuccessStatusCode.get
-IsSuccessStatusCode.set
-IssueInvoiceAync
-ItemController
-ItemDetailsController
-LinePayController
-LoginAsync
-LoginConfigurationController
-LogisticsProvidersController
-LogisticStatusRecordController
-LookupAsync
-MemberController
-MergeOrdersAsync
-MyDomainTenantResolveContributor
-MyTenantController
-Name.get
-Name.set
-OnBatchPrintingShippingLabel
-OnPrintShippingLabel
-OnSevenElevenC2CShippingLabelAsync
-OrderClosed
-OrderComplete
-OrderController
-OrderDeliveryController
-OrderShipped
-OrderToBeShipped
-PaymentGatewayController
-PaymentRequest
-PaymentResponse
-PayUniController
-PikachuController
-PikachuHttpApiModule
-ProceedToCheckout
-ProcessRefund
-ProductCategoryController
-RecordShoppingCreditAsync
-RefundAmountAsync
-RefundController
-RefundOrderItems
-RegisterAsync
-ResetPasswordAsync
-ResolveAsync
-Result.get
-Result.set
-ReturnOrderAsync
-SendEmailAsync
-SendEmailVerificationCodeAsync
-SendPasswordResetCodeAsync
-SendRefundRequestAsync
-SetBlacklistedAsync
-SetIsActiveAsync
-SetIsDefaultAsync
-SetIsEnabledAsync
-SetItemController
-SetItemDetailsController
-ShopCartController
-ShoppingCreditEarnSettingController
-ShoppingCreditUsageSettingController
-SplitOrderAsync
-StoreLogisticOrderController
-SuccessCallbackAsync
-TCatServerReply
-TenantEmailSettingsController
-TenantSettingsController
-TenantTripartiteAppService.get
-TenantTripartiteAppService.init
-TestModel
-UpdateAsyc
-UpdateAsync
-UpdateBFreezeAsync
-UpdateBFrozenAsync
-UpdateBNormalAsync
-UpdateCartItemAsync
-UpdateChinaTrustAsync
-UpdateCostAsync
-UpdateDeliveredStatus
-UpdateEcPayAsync
-UpdateEcPayHomeDeliveryAsync
-UpdateEmailSettingsAsync
-UpdateFamilyMartAsync
-UpdateFamilyMartC2CAsync
-UpdateGreenWorldAsync
-UpdateGreenWorldC2CAsync
-UpdateHomeDeliveryAsync
-UpdateItemProductPrice
-UpdateJobStatusAsync
-UpdateLinePayAsync
-UpdateLogisticStatusAsync
-UpdateManualBankTransferAsync
-UpdateMemberAddressAsync
-UpdateMemberTierAsync
-UpdateMerchantTradeNoAsync
-UpdateOrderDeliveryStatus
-UpdateOrderItemsAsync
-UpdateOrderPaymentMethodAsync
-UpdateOrdersIfIsEnterpricePurchaseAsync
-UpdateOrderValidityAsync
-UpdatePickedUpStatus
-UpdatePostOfficeAsync
-UpdateRefundReviewAsync
-UpdateSevenToElevenAsync
-UpdateSevenToElevenC2CAsync
-UpdateSevenToElevenFrozenAsync
-UpdateShippingDetails
-UpdateSortOrderAsync
-UpdateStatusAsync
-UpdateStoreCommentAsync
-UpdateTCat711FreezeAsync
-UpdateTCat711FrozenAsync
-UpdateTCat711NormalAsync
-UpdateTCatAsync
-UpdateTCatFreezeAsync
-UpdateTCatFrozenAsync
-UpdateTCatNormalAsync
-UpdateTenantCustomerServiceAsync
-UpdateTenantFrontendInformationAsync
-UpdateTenantGoogleTagManagerAsync
-UpdateTenantInformationAsync
-UpdateTenantPrivacyPolicyAsync
-UpdateTenantSocialMediaAsync
-UpdateTenantTermsAndConditionsAsync
-UploadImageAsync
-UploadImagesAsync
-UserAddressController
-UserCumulativeCreditController
-UserCumulativeFinancialController
-UserCumulativeOrderController
-UserShoppingCreditController
-Utility
-VerifyCartItemsAsync
-VerifyEmailCodeAsync
-VerifyPasswordResetCodeAsync
-VipTierSettingController
-VoidInvoice
-WebsiteBasicSettingController
-WebsiteSettingsController
+Kooco.Pikachu.Controllers.AddOnProducts.AddOnProductController
+Kooco.Pikachu.Controllers.AddOnProducts.AddOnProductController.AddOnProductController(Kooco.Pikachu.AddOnProducts.IAddOnProductAppService! addOnProductAppService) -> void
+Kooco.Pikachu.Controllers.AddOnProducts.AddOnProductController.CreateAsync(Kooco.Pikachu.AddOnProducts.CreateUpdateAddOnProductDto! input) -> System.Threading.Tasks.Task<Kooco.Pikachu.AddOnProducts.AddOnProductDto!>!
+Kooco.Pikachu.Controllers.AddOnProducts.AddOnProductController.DeleteAsync(System.Guid Id) -> System.Threading.Tasks.Task!
+Kooco.Pikachu.Controllers.AddOnProducts.AddOnProductController.GetAsync(System.Guid Id) -> System.Threading.Tasks.Task<Kooco.Pikachu.AddOnProducts.AddOnProductDto!>!
+Kooco.Pikachu.Controllers.AddOnProducts.AddOnProductController.GetListAsync(Kooco.Pikachu.AddOnProducts.GetAddOnProductListDto! input) -> System.Threading.Tasks.Task<Volo.Abp.Application.Dtos.PagedResultDto<Kooco.Pikachu.AddOnProducts.AddOnProductDto!>!>!
+Kooco.Pikachu.Controllers.AddOnProducts.AddOnProductController.UpdateAsync(System.Guid Id, Kooco.Pikachu.AddOnProducts.CreateUpdateAddOnProductDto! input) -> System.Threading.Tasks.Task<Kooco.Pikachu.AddOnProducts.AddOnProductDto!>!
+Kooco.Pikachu.Controllers.AddOnProducts.AddOnProductController.UpdateStatusAsync(System.Guid id) -> System.Threading.Tasks.Task!
+Kooco.Pikachu.Controllers.AutomaticEmails.AutomaticEmailController
+Kooco.Pikachu.Controllers.AutomaticEmails.AutomaticEmailController.AutomaticEmailController(Kooco.Pikachu.AutomaticEmails.IAutomaticEmailAppService! _automaticEmailAppService) -> void
+Kooco.Pikachu.Controllers.AutomaticEmails.AutomaticEmailController.CreateAsync(Kooco.Pikachu.AutomaticEmails.AutomaticEmailCreateUpdateDto! input) -> System.Threading.Tasks.Task!
+Kooco.Pikachu.Controllers.AutomaticEmails.AutomaticEmailController.GetAsync(System.Guid id) -> System.Threading.Tasks.Task<Kooco.Pikachu.AutomaticEmails.AutomaticEmailDto!>!
+Kooco.Pikachu.Controllers.AutomaticEmails.AutomaticEmailController.GetGroupBuyNamesAsync(System.Collections.Generic.List<System.Guid>? groupBuyIds) -> System.Threading.Tasks.Task<System.Collections.Generic.List<string!>!>!
+Kooco.Pikachu.Controllers.AutomaticEmails.AutomaticEmailController.GetListAsync(Kooco.Pikachu.AutomaticEmails.GetAutomaticEmailListDto! input) -> System.Threading.Tasks.Task<Volo.Abp.Application.Dtos.PagedResultDto<Kooco.Pikachu.AutomaticEmails.AutomaticEmailDto!>!>!
+Kooco.Pikachu.Controllers.AutomaticEmails.AutomaticEmailController.GetWithDetailsByIdAsync(System.Guid id) -> System.Threading.Tasks.Task<Kooco.Pikachu.AutomaticEmails.AutomaticEmailDto!>!
+Kooco.Pikachu.Controllers.AutomaticEmails.AutomaticEmailController.UpdateAsync(System.Guid id, Kooco.Pikachu.AutomaticEmails.AutomaticEmailCreateUpdateDto! input) -> System.Threading.Tasks.Task!
+Kooco.Pikachu.Controllers.AutomaticEmails.AutomaticEmailController.UpdateJobStatusAsync(System.Guid id, Kooco.Pikachu.EnumValues.JobStatus status, System.Guid? tenantId) -> System.Threading.Tasks.Task!
+Kooco.Pikachu.Controllers.Campaigns.CampaignController
+Kooco.Pikachu.Controllers.Campaigns.CampaignController.CampaignController(Kooco.Pikachu.Campaigns.ICampaignAppService! campaignAppService) -> void
+Kooco.Pikachu.Controllers.Campaigns.CampaignController.CreateAsync(Kooco.Pikachu.Campaigns.CreateCampaignDto! input) -> System.Threading.Tasks.Task<Kooco.Pikachu.Campaigns.CampaignDto!>!
+Kooco.Pikachu.Controllers.Campaigns.CampaignController.DeleteAsync(System.Guid id) -> System.Threading.Tasks.Task!
+Kooco.Pikachu.Controllers.Campaigns.CampaignController.GetActiveCampaignsCountAsync() -> System.Threading.Tasks.Task<long>!
+Kooco.Pikachu.Controllers.Campaigns.CampaignController.GetAsync(System.Guid id, bool withDetails = false) -> System.Threading.Tasks.Task<Kooco.Pikachu.Campaigns.CampaignDto!>!
+Kooco.Pikachu.Controllers.Campaigns.CampaignController.GetCampaignLookupWithModuleAsync() -> System.Threading.Tasks.Task<System.Collections.Generic.List<Kooco.Pikachu.Campaigns.CampaignLookupWithModuleDto!>!>!
+Kooco.Pikachu.Controllers.Campaigns.CampaignController.GetListAsync(Kooco.Pikachu.Campaigns.GetCampaignListDto! input) -> System.Threading.Tasks.Task<Volo.Abp.Application.Dtos.PagedResultDto<Kooco.Pikachu.Campaigns.CampaignDto!>!>!
+Kooco.Pikachu.Controllers.Campaigns.CampaignController.GetLookupAsync() -> System.Threading.Tasks.Task<System.Collections.Generic.List<Kooco.Pikachu.Items.Dtos.KeyValueDto!>!>!
+Kooco.Pikachu.Controllers.Campaigns.CampaignController.SetIsEnabledAsync(System.Guid id, bool isEnabled) -> System.Threading.Tasks.Task!
+Kooco.Pikachu.Controllers.Campaigns.CampaignController.UpdateAsync(System.Guid id, Kooco.Pikachu.Campaigns.CreateCampaignDto! input) -> System.Threading.Tasks.Task<Kooco.Pikachu.Campaigns.CampaignDto!>!
+Kooco.Pikachu.Controllers.Common.PaymentResponse
+Kooco.Pikachu.Controllers.Common.PaymentResponse.EcPayUrl.get -> string!
+Kooco.Pikachu.Controllers.Common.PaymentResponse.EcPayUrl.set -> void
+Kooco.Pikachu.Controllers.Common.PaymentResponse.Errors.get -> System.Collections.Generic.List<string!>!
+Kooco.Pikachu.Controllers.Common.PaymentResponse.Errors.set -> void
+Kooco.Pikachu.Controllers.Common.PaymentResponse.IsSuccessStatusCode.get -> bool
+Kooco.Pikachu.Controllers.Common.PaymentResponse.IsSuccessStatusCode.set -> void
+Kooco.Pikachu.Controllers.Common.PaymentResponse.PaymentResponse() -> void
+Kooco.Pikachu.Controllers.Common.PaymentResponse.Result.get -> ECPay.Payment.Integration.AllInOneResult!
+Kooco.Pikachu.Controllers.Common.PaymentResponse.Result.set -> void
+Kooco.Pikachu.Controllers.Common.Utility
+Kooco.Pikachu.Controllers.Common.Utility.Utility() -> void
+Kooco.Pikachu.Controllers.DeliveryTemperatureCosts.DeliveryTemperatureCostController
+Kooco.Pikachu.Controllers.DeliveryTemperatureCosts.DeliveryTemperatureCostController.DeliveryTemperatureCostController(Kooco.Pikachu.DeliveryTemperatureCosts.IDeliveryTemperatureCostAppService! _deliveryTemperatureCostAppService) -> void
+Kooco.Pikachu.Controllers.DeliveryTemperatureCosts.DeliveryTemperatureCostController.GetListAsync() -> System.Threading.Tasks.Task<System.Collections.Generic.List<Kooco.Pikachu.DeliveryTemperatureCosts.DeliveryTemperatureCostDto!>!>!
+Kooco.Pikachu.Controllers.DeliveryTemperatureCosts.DeliveryTemperatureCostController.UpdateCostAsync(System.Collections.Generic.List<Kooco.Pikachu.DeliveryTemperatureCosts.UpdateDeliveryTemperatureCostDto!>! Costs) -> System.Threading.Tasks.Task!
+Kooco.Pikachu.Controllers.DiscountCodes.DiscountCodeController
+Kooco.Pikachu.Controllers.DiscountCodes.DiscountCodeController.CheckDiscountCodeAsync(Kooco.Pikachu.DiscountCodes.DiscountCheckInputDto! input) -> System.Threading.Tasks.Task<Kooco.Pikachu.DiscountCodes.DiscountCheckOutputDto!>!
+Kooco.Pikachu.Controllers.DiscountCodes.DiscountCodeController.CreateAsync(Kooco.Pikachu.DiscountCodes.CreateUpdateDiscountCodeDto! input) -> System.Threading.Tasks.Task<Kooco.Pikachu.DiscountCodes.DiscountCodeDto!>!
+Kooco.Pikachu.Controllers.DiscountCodes.DiscountCodeController.DeleteAsync(System.Guid id) -> System.Threading.Tasks.Task!
+Kooco.Pikachu.Controllers.DiscountCodes.DiscountCodeController.DiscountCodeController(Kooco.Pikachu.DiscountCodes.IDiscountCodeAppService! discountCodeAppService) -> void
+Kooco.Pikachu.Controllers.DiscountCodes.DiscountCodeController.GetAsync(System.Guid id) -> System.Threading.Tasks.Task<Kooco.Pikachu.DiscountCodes.DiscountCodeDto!>!
+Kooco.Pikachu.Controllers.DiscountCodes.DiscountCodeController.GetGroupBuysAsync(System.Guid id) -> System.Threading.Tasks.Task<System.Collections.Generic.List<Kooco.Pikachu.GroupBuys.GroupBuyDto!>!>!
+Kooco.Pikachu.Controllers.DiscountCodes.DiscountCodeController.GetListAsync(Kooco.Pikachu.DiscountCodes.GetDiscountCodeListDto! input) -> System.Threading.Tasks.Task<Volo.Abp.Application.Dtos.PagedResultDto<Kooco.Pikachu.DiscountCodes.DiscountCodeDto!>!>!
+Kooco.Pikachu.Controllers.DiscountCodes.DiscountCodeController.GetProductsAsync(System.Guid id) -> System.Threading.Tasks.Task<System.Collections.Generic.List<Kooco.Pikachu.Items.Dtos.ItemDto!>!>!
+Kooco.Pikachu.Controllers.DiscountCodes.DiscountCodeController.UpdateAsync(System.Guid id, Kooco.Pikachu.DiscountCodes.CreateUpdateDiscountCodeDto! input) -> System.Threading.Tasks.Task<Kooco.Pikachu.DiscountCodes.DiscountCodeDto!>!
+Kooco.Pikachu.Controllers.DiscountCodes.DiscountCodeController.UpdateStatusAsync(System.Guid id) -> System.Threading.Tasks.Task!
+Kooco.Pikachu.Controllers.EdmManagement.EdmController
+Kooco.Pikachu.Controllers.EdmManagement.EdmController.CreateAsync(Kooco.Pikachu.EdmManagement.CreateEdmDto! input) -> System.Threading.Tasks.Task<Kooco.Pikachu.EdmManagement.EdmDto!>!
+Kooco.Pikachu.Controllers.EdmManagement.EdmController.DeleteAsync(System.Guid id) -> System.Threading.Tasks.Task!
+Kooco.Pikachu.Controllers.EdmManagement.EdmController.EdmController(Kooco.Pikachu.EdmManagement.IEdmAppService! edmAppService) -> void
+Kooco.Pikachu.Controllers.EdmManagement.EdmController.GetAsync(System.Guid id) -> System.Threading.Tasks.Task<Kooco.Pikachu.EdmManagement.EdmDto!>!
+Kooco.Pikachu.Controllers.EdmManagement.EdmController.GetListAsync(Kooco.Pikachu.EdmManagement.GetEdmListDto! input) -> System.Threading.Tasks.Task<Volo.Abp.Application.Dtos.PagedResultDto<Kooco.Pikachu.EdmManagement.EdmDto!>!>!
+Kooco.Pikachu.Controllers.EdmManagement.EdmController.SendEmailAsync(System.Guid id) -> System.Threading.Tasks.Task!
+Kooco.Pikachu.Controllers.EdmManagement.EdmController.UpdateAsync(System.Guid id, Kooco.Pikachu.EdmManagement.CreateEdmDto! input) -> System.Threading.Tasks.Task<Kooco.Pikachu.EdmManagement.EdmDto!>!
+Kooco.Pikachu.Controllers.ElectronicInvoiceSettings.ElectronicInvoiceSettingsController
+Kooco.Pikachu.Controllers.ElectronicInvoiceSettings.ElectronicInvoiceSettingsController.CreateAsyc(Kooco.Pikachu.Tenants.Requests.CreateTenantTripartiteDto! input) -> System.Threading.Tasks.Task<Kooco.Pikachu.Tenants.Responses.TenantTripartiteDto!>!
+Kooco.Pikachu.Controllers.ElectronicInvoiceSettings.ElectronicInvoiceSettingsController.ElectronicInvoiceSettingsController() -> void
+Kooco.Pikachu.Controllers.ElectronicInvoiceSettings.ElectronicInvoiceSettingsController.GetSettingAsync() -> System.Threading.Tasks.Task<Kooco.Pikachu.Tenants.Responses.TenantTripartiteDto!>!
+Kooco.Pikachu.Controllers.ElectronicInvoiceSettings.ElectronicInvoiceSettingsController.TenantTripartiteAppService.get -> Kooco.Pikachu.Tenants.ITenantTripartiteAppService!
+Kooco.Pikachu.Controllers.ElectronicInvoiceSettings.ElectronicInvoiceSettingsController.TenantTripartiteAppService.init -> void
+Kooco.Pikachu.Controllers.ElectronicInvoiceSettings.ElectronicInvoiceSettingsController.UpdateAsyc(Kooco.Pikachu.Tenants.Requests.UpdateTenantTripartiteDto! input) -> System.Threading.Tasks.Task<Kooco.Pikachu.Tenants.Responses.TenantTripartiteDto!>!
+Kooco.Pikachu.Controllers.Freebies.FreebieController
+Kooco.Pikachu.Controllers.Freebies.FreebieController.ChangeFreebieAvailability(System.Guid freebieId) -> System.Threading.Tasks.Task!
+Kooco.Pikachu.Controllers.Freebies.FreebieController.CreateAsync(Kooco.Pikachu.Freebies.Dtos.FreebieCreateDto! input) -> System.Threading.Tasks.Task<Kooco.Pikachu.Freebies.Dtos.FreebieDto!>!
+Kooco.Pikachu.Controllers.Freebies.FreebieController.DeductFreebieAmountAsync(System.Guid freebieId, int quantity) -> System.Threading.Tasks.Task!
+Kooco.Pikachu.Controllers.Freebies.FreebieController.DeleteAsync(System.Guid id) -> System.Threading.Tasks.Task!
+Kooco.Pikachu.Controllers.Freebies.FreebieController.DeleteManyItemsAsync(System.Collections.Generic.List<System.Guid>! setItemIds) -> System.Threading.Tasks.Task!
+Kooco.Pikachu.Controllers.Freebies.FreebieController.DeleteSingleImageAsync(System.Guid itemId, string! blobImageName) -> System.Threading.Tasks.Task!
+Kooco.Pikachu.Controllers.Freebies.FreebieController.FreebieController(Kooco.Pikachu.Freebies.IFreebieAppService! _freebieAppService) -> void
+Kooco.Pikachu.Controllers.Freebies.FreebieController.GetAsync(System.Guid id, bool includeDetails = false) -> System.Threading.Tasks.Task<Kooco.Pikachu.Freebies.Dtos.FreebieDto!>!
+Kooco.Pikachu.Controllers.Freebies.FreebieController.GetAsync(System.Guid id) -> System.Threading.Tasks.Task<Kooco.Pikachu.Freebies.Dtos.FreebieDto!>!
+Kooco.Pikachu.Controllers.Freebies.FreebieController.GetListAsync() -> System.Threading.Tasks.Task<System.Collections.Generic.List<Kooco.Pikachu.Freebies.Dtos.FreebieDto!>!>!
+Kooco.Pikachu.Controllers.Freebies.FreebieController.GetListAsync(Volo.Abp.Application.Dtos.PagedAndSortedResultRequestDto! input) -> System.Threading.Tasks.Task<Volo.Abp.Application.Dtos.PagedResultDto<Kooco.Pikachu.Freebies.Dtos.FreebieDto!>!>!
+Kooco.Pikachu.Controllers.Freebies.FreebieController.UpdateAsync(System.Guid id, Kooco.Pikachu.FreeBies.Dtos.UpdateFreebieDto! input) -> System.Threading.Tasks.Task<Kooco.Pikachu.Freebies.Dtos.FreebieDto!>!
+Kooco.Pikachu.Controllers.GroupBuys.GroupBuyController
+Kooco.Pikachu.Controllers.GroupBuys.GroupBuyController.ChangeGroupBuyAvailability(System.Guid id) -> System.Threading.Tasks.Task!
+Kooco.Pikachu.Controllers.GroupBuys.GroupBuyController.CheckShortCodeForCreate(string! shortCode) -> System.Threading.Tasks.Task<bool>!
+Kooco.Pikachu.Controllers.GroupBuys.GroupBuyController.CheckShortCodeForEdit(string! shortCode, System.Guid Id) -> System.Threading.Tasks.Task<bool>!
+Kooco.Pikachu.Controllers.GroupBuys.GroupBuyController.CopyAsync(System.Guid Id) -> System.Threading.Tasks.Task<Kooco.Pikachu.GroupBuys.GroupBuyDto!>!
+Kooco.Pikachu.Controllers.GroupBuys.GroupBuyController.CreateAsync(Kooco.Pikachu.GroupBuys.GroupBuyCreateDto! input) -> System.Threading.Tasks.Task<Kooco.Pikachu.GroupBuys.GroupBuyDto!>!
+Kooco.Pikachu.Controllers.GroupBuys.GroupBuyController.DeleteAsync(System.Guid id) -> System.Threading.Tasks.Task!
+Kooco.Pikachu.Controllers.GroupBuys.GroupBuyController.DeleteGroupBuyItemAsync(System.Guid id, System.Guid GroupBuyID) -> System.Threading.Tasks.Task!
+Kooco.Pikachu.Controllers.GroupBuys.GroupBuyController.DeleteManyGroupBuyItemsAsync(System.Collections.Generic.List<System.Guid>! groupBuyIds) -> System.Threading.Tasks.Task!
+Kooco.Pikachu.Controllers.GroupBuys.GroupBuyController.GetAllGroupBuyLookupAsync() -> System.Threading.Tasks.Task<System.Collections.Generic.List<Kooco.Pikachu.Items.Dtos.KeyValueDto!>!>!
+Kooco.Pikachu.Controllers.GroupBuys.GroupBuyController.GetAsync(System.Guid id, bool includeDetails = false) -> System.Threading.Tasks.Task<Kooco.Pikachu.GroupBuys.GroupBuyDto!>!
+Kooco.Pikachu.Controllers.GroupBuys.GroupBuyController.GetAttachmentAsync(System.Guid id, System.Guid? tenantId, System.DateTime sendTime, Kooco.Pikachu.EnumValues.RecurrenceType recurrenceType) -> System.Threading.Tasks.Task<Volo.Abp.Content.IRemoteStreamContent!>!
+Kooco.Pikachu.Controllers.GroupBuys.GroupBuyController.GetBannerImagesAsync(System.Guid id) -> System.Threading.Tasks.Task<System.Collections.Generic.List<Kooco.Pikachu.Images.ImageDto!>!>!
+Kooco.Pikachu.Controllers.GroupBuys.GroupBuyController.GetBannerImagesModuleWiseAsync(System.Guid id, int moduleNumber) -> System.Threading.Tasks.Task<System.Collections.Generic.List<string!>!>!
+Kooco.Pikachu.Controllers.GroupBuys.GroupBuyController.GetCarouselImagesAsync(System.Guid id) -> System.Threading.Tasks.Task<System.Collections.Generic.List<Kooco.Pikachu.GroupBuys.ImageWithLinkDto!>!>!
+Kooco.Pikachu.Controllers.GroupBuys.GroupBuyController.GetCarouselImagesModuleWiseAsync(System.Guid id, int moduleNumber) -> System.Threading.Tasks.Task<System.Tuple<System.Collections.Generic.List<string!>!, string?>!>!
+Kooco.Pikachu.Controllers.GroupBuys.GroupBuyController.GetForStoreAsync(System.Guid id) -> System.Threading.Tasks.Task<Kooco.Pikachu.GroupBuys.GroupBuyDto!>!
+Kooco.Pikachu.Controllers.GroupBuys.GroupBuyController.GetFreebieForStoreAsync(System.Guid groupBuyId) -> System.Threading.Tasks.Task<System.Collections.Generic.List<Kooco.Pikachu.Freebies.Dtos.FreebieDto!>!>!
+Kooco.Pikachu.Controllers.GroupBuys.GroupBuyController.GetGroupBuyByShortCode(string! ShortCode) -> System.Threading.Tasks.Task<System.Collections.Generic.List<Kooco.Pikachu.GroupBuys.GroupBuyDto!>!>!
+Kooco.Pikachu.Controllers.GroupBuys.GroupBuyController.GetGroupBuyIdAsync(string! shortCode) -> System.Threading.Tasks.Task<System.Guid?>!
+Kooco.Pikachu.Controllers.GroupBuys.GroupBuyController.GetGroupBuyItemGroupAsync(System.Guid id) -> System.Threading.Tasks.Task<Kooco.Pikachu.GroupBuys.GroupBuyItemGroupDto!>!
+Kooco.Pikachu.Controllers.GroupBuys.GroupBuyController.GetGroupBuyItemGroupsAsync(System.Guid groupBuyId) -> System.Threading.Tasks.Task<System.Collections.Generic.List<Kooco.Pikachu.GroupBuys.GroupBuyItemGroupDto!>!>!
+Kooco.Pikachu.Controllers.GroupBuys.GroupBuyController.GetGroupBuyLookupAsync() -> System.Threading.Tasks.Task<System.Collections.Generic.List<Kooco.Pikachu.Items.Dtos.KeyValueDto!>!>!
+Kooco.Pikachu.Controllers.GroupBuys.GroupBuyController.GetGroupBuyModulesAsync(System.Guid groupBuyId) -> System.Threading.Tasks.Task<System.Collections.Generic.List<Kooco.Pikachu.GroupBuys.GroupBuyItemGroupModuleDetailsDto!>!>!
+Kooco.Pikachu.Controllers.GroupBuys.GroupBuyController.GetGroupBuyofTenant(string! ShortCode, System.Guid TenantId) -> System.Threading.Tasks.Task<Kooco.Pikachu.GroupBuys.GroupBuyDto!>!
+Kooco.Pikachu.Controllers.GroupBuys.GroupBuyController.GetGroupBuyReportDetailsAsync(System.Guid id, System.DateTime? startDate = null, System.DateTime? endDate = null, Kooco.Pikachu.EnumValues.OrderStatus? orderStatus = null, System.DateTime? completionTimeFrom = null, System.DateTime? completionTimeTo = null, Kooco.Pikachu.EnumValues.ShippingStatus? shippingStatus = null) -> System.Threading.Tasks.Task<Kooco.Pikachu.GroupBuys.GroupBuyReportDetailsDto!>!
+Kooco.Pikachu.Controllers.GroupBuys.GroupBuyController.GetGroupBuyReportListAsync(Kooco.Pikachu.GroupBuys.GetGroupBuyReportListDto! input) -> System.Threading.Tasks.Task<Volo.Abp.Application.Dtos.PagedResultDto<Kooco.Pikachu.GroupBuys.GroupBuyReportDto!>!>!
+Kooco.Pikachu.Controllers.GroupBuys.GroupBuyController.GetGroupBuyShippingMethodAsync(System.Guid id) -> System.Threading.Tasks.Task<Kooco.Pikachu.GroupBuys.ShippingMethodResponse!>!
+Kooco.Pikachu.Controllers.GroupBuys.GroupBuyController.GetGroupBuyTenantReportDetailsAsync(System.Guid id) -> System.Threading.Tasks.Task<Kooco.Pikachu.GroupBuys.GroupBuyReportDetailsDto!>!
+Kooco.Pikachu.Controllers.GroupBuys.GroupBuyController.GetGroupBuyTenantReportListAsync(Kooco.Pikachu.GroupBuys.GetGroupBuyReportListDto! input) -> System.Threading.Tasks.Task<Volo.Abp.Application.Dtos.PagedResultDto<Kooco.Pikachu.GroupBuys.GroupBuyReportDto!>!>!
+Kooco.Pikachu.Controllers.GroupBuys.GroupBuyController.GetGroupPurchaseOverviewsAsync(System.Guid groupBuyId) -> System.Threading.Tasks.Task<System.Collections.Generic.List<Kooco.Pikachu.GroupPurchaseOverviews.GroupPurchaseOverviewDto!>!>!
+Kooco.Pikachu.Controllers.GroupBuys.GroupBuyController.GetListAsExcelFileAsync(System.Guid id, System.DateTime? startDate = null, System.DateTime? endDate = null, Kooco.Pikachu.EnumValues.OrderStatus? orderStatus = null, System.DateTime? completionTimeFrom = null, System.DateTime? completionTimeTo = null, Kooco.Pikachu.EnumValues.ShippingStatus? shippingStatus = null, bool isChinese = false, bool includeShippingFee = true) -> System.Threading.Tasks.Task<Volo.Abp.Content.IRemoteStreamContent!>!
+Kooco.Pikachu.Controllers.GroupBuys.GroupBuyController.GetListAsync(Kooco.Pikachu.GroupBuys.GetGroupBuyInput! input) -> System.Threading.Tasks.Task<Volo.Abp.Application.Dtos.PagedResultDto<Kooco.Pikachu.GroupBuys.GroupBuyDto!>!>!
+Kooco.Pikachu.Controllers.GroupBuys.GroupBuyController.GetPagedItemGroupAsync(System.Guid id, int skipCount) -> System.Threading.Tasks.Task<Kooco.Pikachu.GroupBuys.GroupBuyItemGroupWithCountDto!>!
+Kooco.Pikachu.Controllers.GroupBuys.GroupBuyController.GetTemperatureCostAsync(Kooco.Pikachu.EnumValues.ItemStorageTemperature temp) -> System.Threading.Tasks.Task<Kooco.Pikachu.DeliveryTemperatureCosts.DeliveryTemperatureCostDto!>!
+Kooco.Pikachu.Controllers.GroupBuys.GroupBuyController.GetTenantsListAsExcelFileAsync(System.Guid id) -> System.Threading.Tasks.Task<Volo.Abp.Content.IRemoteStreamContent!>!
+Kooco.Pikachu.Controllers.GroupBuys.GroupBuyController.GetWithDetailsAsync(System.Guid id) -> System.Threading.Tasks.Task<Kooco.Pikachu.GroupBuys.GroupBuyDto!>!
+Kooco.Pikachu.Controllers.GroupBuys.GroupBuyController.GetWithItemGroupsAsync(System.Guid id) -> System.Threading.Tasks.Task<Kooco.Pikachu.GroupBuys.GroupBuyDto!>!
+Kooco.Pikachu.Controllers.GroupBuys.GroupBuyController.GroupBuyController(Kooco.Pikachu.GroupBuys.IGroupBuyAppService! groupBuyAppService) -> void
+Kooco.Pikachu.Controllers.GroupBuys.GroupBuyController.GroupBuyItemModuleNoReindexingAsync(System.Guid groupBuyId, Kooco.Pikachu.EnumValues.GroupBuyModuleType groupBuyModuleType) -> System.Threading.Tasks.Task!
+Kooco.Pikachu.Controllers.GroupBuys.GroupBuyController.UpdateAsync(System.Guid id, Kooco.Pikachu.GroupBuys.GroupBuyUpdateDto! input) -> System.Threading.Tasks.Task<Kooco.Pikachu.GroupBuys.GroupBuyDto!>!
+Kooco.Pikachu.Controllers.GroupBuys.GroupBuyController.UpdateItemProductPrice(System.Guid groupbuyId, Kooco.Pikachu.GroupBuys.GroupBuyItemGroupDetailCreateUpdateDto! itemDetails) -> System.Threading.Tasks.Task!
+Kooco.Pikachu.Controllers.GroupBuys.GroupBuyController.UpdateSortOrderAsync(System.Guid id, System.Collections.Generic.List<Kooco.Pikachu.GroupBuys.GroupBuyItemGroupCreateUpdateDto!>! itemGroups) -> System.Threading.Tasks.Task!
+Kooco.Pikachu.Controllers.Items.ItemController
+Kooco.Pikachu.Controllers.Items.ItemController.ChangeItemAvailability(System.Guid itemId) -> System.Threading.Tasks.Task!
+Kooco.Pikachu.Controllers.Items.ItemController.CopyAysnc(System.Guid Id) -> System.Threading.Tasks.Task<Kooco.Pikachu.Items.Dtos.ItemDto!>!
+Kooco.Pikachu.Controllers.Items.ItemController.CreateAsync(Kooco.Pikachu.Items.Dtos.CreateItemDto! input) -> System.Threading.Tasks.Task<Kooco.Pikachu.Items.Dtos.ItemDto!>!
+Kooco.Pikachu.Controllers.Items.ItemController.DeleteAsync(System.Guid id) -> System.Threading.Tasks.Task!
+Kooco.Pikachu.Controllers.Items.ItemController.DeleteItemBadgeAsync(Kooco.Pikachu.Items.Dtos.ItemBadgeDto! input) -> System.Threading.Tasks.Task!
+Kooco.Pikachu.Controllers.Items.ItemController.DeleteManyItemsAsync(System.Collections.Generic.List<System.Guid>! itemIds) -> System.Threading.Tasks.Task!
+Kooco.Pikachu.Controllers.Items.ItemController.DeleteSingleImageAsync(System.Guid itemId, string! blobImageName) -> System.Threading.Tasks.Task!
+Kooco.Pikachu.Controllers.Items.ItemController.ExportItemListToExcelAsync(System.Collections.Generic.List<System.Guid>! itemIds) -> System.Threading.Tasks.Task<Volo.Abp.Content.IRemoteStreamContent!>!
+Kooco.Pikachu.Controllers.Items.ItemController.GetAllItemsLookupAsync() -> System.Threading.Tasks.Task<System.Collections.Generic.List<Kooco.Pikachu.Items.Dtos.KeyValueDto!>!>!
+Kooco.Pikachu.Controllers.Items.ItemController.GetAsync(System.Guid id, bool includeDetails = false) -> System.Threading.Tasks.Task<Kooco.Pikachu.Items.Dtos.ItemDto!>!
+Kooco.Pikachu.Controllers.Items.ItemController.GetAsync(System.Guid id) -> System.Threading.Tasks.Task<Kooco.Pikachu.Items.Dtos.ItemDto!>!
+Kooco.Pikachu.Controllers.Items.ItemController.GetFirstImageUrlAsync(System.Guid id) -> System.Threading.Tasks.Task<string?>!
+Kooco.Pikachu.Controllers.Items.ItemController.GetItemBadgesAsync() -> System.Threading.Tasks.Task<System.Collections.Generic.List<Kooco.Pikachu.Items.Dtos.ItemBadgeDto!>!>!
+Kooco.Pikachu.Controllers.Items.ItemController.GetItemCategoriesAsync(System.Guid id) -> System.Threading.Tasks.Task<System.Collections.Generic.List<Kooco.Pikachu.ProductCategories.CategoryProductDto!>!>!
+Kooco.Pikachu.Controllers.Items.ItemController.GetItemDetailLookupAsync(System.Guid itemId) -> System.Threading.Tasks.Task<System.Collections.Generic.List<Kooco.Pikachu.Items.Dtos.KeyValueDto!>!>!
+Kooco.Pikachu.Controllers.Items.ItemController.GetItemsListAsync(Kooco.Pikachu.Items.GetItemListDto! input) -> System.Threading.Tasks.Task<Volo.Abp.Application.Dtos.PagedResultDto<Kooco.Pikachu.Items.ItemListDto!>!>!
+Kooco.Pikachu.Controllers.Items.ItemController.GetItemsLookupAsync() -> System.Threading.Tasks.Task<System.Collections.Generic.List<Kooco.Pikachu.Items.Dtos.ItemWithItemTypeDto!>!>!
+Kooco.Pikachu.Controllers.Items.ItemController.GetItemsWithAttributesAsync(System.Collections.Generic.List<System.Guid>! ids) -> System.Threading.Tasks.Task<System.Collections.Generic.List<Kooco.Pikachu.Items.Dtos.ItemDto!>!>!
+Kooco.Pikachu.Controllers.Items.ItemController.GetListAsync(Volo.Abp.Application.Dtos.PagedAndSortedResultRequestDto! input) -> System.Threading.Tasks.Task<Volo.Abp.Application.Dtos.PagedResultDto<Kooco.Pikachu.Items.Dtos.ItemDto!>!>!
+Kooco.Pikachu.Controllers.Items.ItemController.GetListForStoreAsync() -> System.Threading.Tasks.Task<System.Collections.Generic.List<Kooco.Pikachu.Items.Dtos.ItemDto!>!>!
+Kooco.Pikachu.Controllers.Items.ItemController.GetManyAsync(System.Collections.Generic.List<System.Guid>! itemIds) -> System.Threading.Tasks.Task<System.Collections.Generic.List<Kooco.Pikachu.Items.Dtos.ItemDto!>!>!
+Kooco.Pikachu.Controllers.Items.ItemController.GetSKUAndItemAsync(System.Guid itemId, System.Guid itemDetailId) -> System.Threading.Tasks.Task<Kooco.Pikachu.Items.Dtos.ItemDto!>!
+Kooco.Pikachu.Controllers.Items.ItemController.ImportItemsFromExcelAsync(Volo.Abp.Content.IRemoteStreamContent! file) -> System.Threading.Tasks.Task!
+Kooco.Pikachu.Controllers.Items.ItemController.ItemController(Kooco.Pikachu.Items.IItemAppService! _itemAppService) -> void
+Kooco.Pikachu.Controllers.Items.ItemController.LookupAsync() -> System.Threading.Tasks.Task<System.Collections.Generic.List<Kooco.Pikachu.Items.Dtos.KeyValueDto!>!>!
+Kooco.Pikachu.Controllers.Items.ItemController.UpdateAsync(System.Guid id, Kooco.Pikachu.Items.Dtos.UpdateItemDto! input) -> System.Threading.Tasks.Task<Kooco.Pikachu.Items.Dtos.ItemDto!>!
+Kooco.Pikachu.Controllers.Items.ItemDetailsController
+Kooco.Pikachu.Controllers.Items.ItemDetailsController.CreateAsync(Kooco.Pikachu.Items.Dtos.CreateItemDetailsDto! input) -> System.Threading.Tasks.Task<Kooco.Pikachu.Items.Dtos.ItemDetailsDto!>!
+Kooco.Pikachu.Controllers.Items.ItemDetailsController.DeleteAsync(System.Guid id) -> System.Threading.Tasks.Task!
+Kooco.Pikachu.Controllers.Items.ItemDetailsController.GetAsync(System.Guid id) -> System.Threading.Tasks.Task<Kooco.Pikachu.Items.Dtos.ItemDetailsDto!>!
+Kooco.Pikachu.Controllers.Items.ItemDetailsController.GetInventroyReport(Kooco.Pikachu.Items.Dtos.GetInventroyInputDto! input) -> System.Threading.Tasks.Task<Volo.Abp.Application.Dtos.PagedResultDto<Kooco.Pikachu.Items.Dtos.ItemDetailsDto!>!>!
+Kooco.Pikachu.Controllers.Items.ItemDetailsController.GetItemDetailByItemId(System.Guid itemId) -> System.Threading.Tasks.Task<System.Collections.Generic.List<Kooco.Pikachu.Items.Dtos.ItemDetailsDto!>!>!
+Kooco.Pikachu.Controllers.Items.ItemDetailsController.GetListAsExcelFileAsync(Kooco.Pikachu.Items.Dtos.InventroyExcelDownloadDto! input) -> System.Threading.Tasks.Task<Volo.Abp.Content.IRemoteStreamContent!>!
+Kooco.Pikachu.Controllers.Items.ItemDetailsController.GetListAsync(Volo.Abp.Application.Dtos.PagedAndSortedResultRequestDto! input) -> System.Threading.Tasks.Task<Volo.Abp.Application.Dtos.PagedResultDto<Kooco.Pikachu.Items.Dtos.ItemDetailsDto!>!>!
+Kooco.Pikachu.Controllers.Items.ItemDetailsController.ItemDetailsController(Kooco.Pikachu.Items.IItemDetailsAppService! _itemDetailsAppService) -> void
+Kooco.Pikachu.Controllers.Items.ItemDetailsController.UpdateAsync(System.Guid id, Kooco.Pikachu.Items.Dtos.CreateItemDetailsDto! input) -> System.Threading.Tasks.Task<Kooco.Pikachu.Items.Dtos.ItemDetailsDto!>!
+Kooco.Pikachu.Controllers.Items.SetItemController
+Kooco.Pikachu.Controllers.Items.SetItemController.CreateAsync(Kooco.Pikachu.Items.Dtos.CreateUpdateSetItemDto! input) -> System.Threading.Tasks.Task<Kooco.Pikachu.Items.Dtos.SetItemDto!>!
+Kooco.Pikachu.Controllers.Items.SetItemController.DeleteAsync(System.Guid id) -> System.Threading.Tasks.Task!
+Kooco.Pikachu.Controllers.Items.SetItemController.DeleteManyItemsAsync(System.Collections.Generic.List<System.Guid>! setItemIds) -> System.Threading.Tasks.Task!
+Kooco.Pikachu.Controllers.Items.SetItemController.DeleteSingleImageAsync(System.Guid id, string! blobImageName) -> System.Threading.Tasks.Task!
+Kooco.Pikachu.Controllers.Items.SetItemController.GetAsync(System.Guid id, bool includeDetails = false) -> System.Threading.Tasks.Task<Kooco.Pikachu.Items.Dtos.SetItemDto!>!
+Kooco.Pikachu.Controllers.Items.SetItemController.GetAsync(System.Guid id) -> System.Threading.Tasks.Task<Kooco.Pikachu.Items.Dtos.SetItemDto!>!
+Kooco.Pikachu.Controllers.Items.SetItemController.GetItemsLookupAsync() -> System.Threading.Tasks.Task<System.Collections.Generic.List<Kooco.Pikachu.Items.Dtos.ItemWithItemTypeDto!>!>!
+Kooco.Pikachu.Controllers.Items.SetItemController.GetListAsync(Volo.Abp.Application.Dtos.PagedAndSortedResultRequestDto! input) -> System.Threading.Tasks.Task<Volo.Abp.Application.Dtos.PagedResultDto<Kooco.Pikachu.Items.Dtos.SetItemDto!>!>!
+Kooco.Pikachu.Controllers.Items.SetItemController.SetItemController(Kooco.Pikachu.Items.ISetItemAppService! _setItemAppService) -> void
+Kooco.Pikachu.Controllers.Items.SetItemController.UpdateAsync(System.Guid id, Kooco.Pikachu.Items.Dtos.CreateUpdateSetItemDto! input) -> System.Threading.Tasks.Task<Kooco.Pikachu.Items.Dtos.SetItemDto!>!
+Kooco.Pikachu.Controllers.Items.SetItemDetailsController
+Kooco.Pikachu.Controllers.Items.SetItemDetailsController.CreateAsync(Kooco.Pikachu.Items.Dtos.CreateUpdateSetItemDetailsDto! input) -> System.Threading.Tasks.Task<Kooco.Pikachu.Items.Dtos.SetItemDetailsDto!>!
+Kooco.Pikachu.Controllers.Items.SetItemDetailsController.DeleteAsync(System.Guid id) -> System.Threading.Tasks.Task!
+Kooco.Pikachu.Controllers.Items.SetItemDetailsController.GetAsync(System.Guid id) -> System.Threading.Tasks.Task<Kooco.Pikachu.Items.Dtos.SetItemDetailsDto!>!
+Kooco.Pikachu.Controllers.Items.SetItemDetailsController.GetListAsync(Volo.Abp.Application.Dtos.PagedAndSortedResultRequestDto! input) -> System.Threading.Tasks.Task<Volo.Abp.Application.Dtos.PagedResultDto<Kooco.Pikachu.Items.Dtos.SetItemDetailsDto!>!>!
+Kooco.Pikachu.Controllers.Items.SetItemDetailsController.SetItemDetailsController(Kooco.Pikachu.Items.ISetItemDetailsAppService! _setItemDetailsAppService) -> void
+Kooco.Pikachu.Controllers.Items.SetItemDetailsController.UpdateAsync(System.Guid id, Kooco.Pikachu.Items.Dtos.CreateUpdateSetItemDetailsDto! input) -> System.Threading.Tasks.Task<Kooco.Pikachu.Items.Dtos.SetItemDetailsDto!>!
+Kooco.Pikachu.Controllers.LoginConfigurations.LoginConfigurationController
+Kooco.Pikachu.Controllers.LoginConfigurations.LoginConfigurationController.DeleteAsync() -> System.Threading.Tasks.Task!
+Kooco.Pikachu.Controllers.LoginConfigurations.LoginConfigurationController.FirstOrDefaultAsync(System.Guid? tenantId) -> System.Threading.Tasks.Task<Kooco.Pikachu.LoginConfigurations.LoginConfigurationDto?>!
+Kooco.Pikachu.Controllers.LoginConfigurations.LoginConfigurationController.LoginConfigurationController(Kooco.Pikachu.LoginConfigurations.ILoginConfigurationAppService! loginConfigurationAppService) -> void
+Kooco.Pikachu.Controllers.LoginConfigurations.LoginConfigurationController.UpdateAsync(Kooco.Pikachu.LoginConfigurations.UpdateLoginConfigurationDto! input) -> System.Threading.Tasks.Task!
+Kooco.Pikachu.Controllers.LogisticsProviders.LogisticsProvidersController
+Kooco.Pikachu.Controllers.LogisticsProviders.LogisticsProvidersController.GetAllAsync() -> System.Threading.Tasks.Task<System.Collections.Generic.List<Kooco.Pikachu.LogisticsProviders.LogisticsProviderSettingsDto!>!>!
+Kooco.Pikachu.Controllers.LogisticsProviders.LogisticsProvidersController.GetAsync(string! shippingMethod) -> System.Threading.Tasks.Task<System.Text.Json.Nodes.JsonObject!>!
+Kooco.Pikachu.Controllers.LogisticsProviders.LogisticsProvidersController.LogisticsProvidersController(Kooco.Pikachu.LogisticsProviders.ILogisticsProvidersAppService! _logisticsProvidersAppService) -> void
+Kooco.Pikachu.Controllers.LogisticsProviders.LogisticsProvidersController.UpdateBFreezeAsync(Kooco.Pikachu.LogisticsProviders.BNormalCreateUpdateDto! input) -> System.Threading.Tasks.Task!
+Kooco.Pikachu.Controllers.LogisticsProviders.LogisticsProvidersController.UpdateBFrozenAsync(Kooco.Pikachu.LogisticsProviders.BNormalCreateUpdateDto! input) -> System.Threading.Tasks.Task!
+Kooco.Pikachu.Controllers.LogisticsProviders.LogisticsProvidersController.UpdateBNormalAsync(Kooco.Pikachu.LogisticsProviders.BNormalCreateUpdateDto! input) -> System.Threading.Tasks.Task!
+Kooco.Pikachu.Controllers.LogisticsProviders.LogisticsProvidersController.UpdateEcPayHomeDeliveryAsync(Kooco.Pikachu.LogisticsProviders.EcPayHomeDeliveryCreateUpdateDto! input) -> System.Threading.Tasks.Task!
+Kooco.Pikachu.Controllers.LogisticsProviders.LogisticsProvidersController.UpdateFamilyMartAsync(Kooco.Pikachu.LogisticsProviders.SevenToElevenCreateUpdateDto! input) -> System.Threading.Tasks.Task!
+Kooco.Pikachu.Controllers.LogisticsProviders.LogisticsProvidersController.UpdateFamilyMartC2CAsync(Kooco.Pikachu.LogisticsProviders.SevenToElevenCreateUpdateDto! input) -> System.Threading.Tasks.Task!
+Kooco.Pikachu.Controllers.LogisticsProviders.LogisticsProvidersController.UpdateGreenWorldAsync(Kooco.Pikachu.LogisticsProviders.GreenWorldLogisticsCreateUpdateDto! input) -> System.Threading.Tasks.Task!
+Kooco.Pikachu.Controllers.LogisticsProviders.LogisticsProvidersController.UpdateGreenWorldC2CAsync(Kooco.Pikachu.LogisticsProviders.GreenWorldLogisticsCreateUpdateDto! input) -> System.Threading.Tasks.Task!
+Kooco.Pikachu.Controllers.LogisticsProviders.LogisticsProvidersController.UpdateHomeDeliveryAsync(Kooco.Pikachu.LogisticsProviders.HomeDeliveryCreateUpdateDto! input) -> System.Threading.Tasks.Task!
+Kooco.Pikachu.Controllers.LogisticsProviders.LogisticsProvidersController.UpdatePostOfficeAsync(Kooco.Pikachu.LogisticsProviders.PostOfficeCreateUpdateDto! input) -> System.Threading.Tasks.Task!
+Kooco.Pikachu.Controllers.LogisticsProviders.LogisticsProvidersController.UpdateSevenToElevenAsync(Kooco.Pikachu.LogisticsProviders.SevenToElevenCreateUpdateDto! input) -> System.Threading.Tasks.Task!
+Kooco.Pikachu.Controllers.LogisticsProviders.LogisticsProvidersController.UpdateSevenToElevenC2CAsync(Kooco.Pikachu.LogisticsProviders.SevenToElevenCreateUpdateDto! input) -> System.Threading.Tasks.Task!
+Kooco.Pikachu.Controllers.LogisticsProviders.LogisticsProvidersController.UpdateSevenToElevenFrozenAsync(Kooco.Pikachu.LogisticsProviders.SevenToElevenCreateUpdateDto! input) -> System.Threading.Tasks.Task!
+Kooco.Pikachu.Controllers.LogisticsProviders.LogisticsProvidersController.UpdateTCat711FreezeAsync(Kooco.Pikachu.LogisticsProviders.TCat711FreezeCreateUpdateDto! input) -> System.Threading.Tasks.Task!
+Kooco.Pikachu.Controllers.LogisticsProviders.LogisticsProvidersController.UpdateTCat711FrozenAsync(Kooco.Pikachu.LogisticsProviders.TCat711FrozenCreateUpdateDto! input) -> System.Threading.Tasks.Task!
+Kooco.Pikachu.Controllers.LogisticsProviders.LogisticsProvidersController.UpdateTCat711NormalAsync(Kooco.Pikachu.LogisticsProviders.TCat711NormalCreateUpdate! input) -> System.Threading.Tasks.Task!
+Kooco.Pikachu.Controllers.LogisticsProviders.LogisticsProvidersController.UpdateTCatAsync(Kooco.Pikachu.LogisticsProviders.TCatLogisticsCreateUpdateDto! entity) -> System.Threading.Tasks.Task!
+Kooco.Pikachu.Controllers.LogisticsProviders.LogisticsProvidersController.UpdateTCatFreezeAsync(Kooco.Pikachu.LogisticsProviders.TCatFreezeCreateUpdateDto! input) -> System.Threading.Tasks.Task!
+Kooco.Pikachu.Controllers.LogisticsProviders.LogisticsProvidersController.UpdateTCatFrozenAsync(Kooco.Pikachu.LogisticsProviders.TCatFrozenCreateUpdateDto! input) -> System.Threading.Tasks.Task!
+Kooco.Pikachu.Controllers.LogisticsProviders.LogisticsProvidersController.UpdateTCatNormalAsync(Kooco.Pikachu.LogisticsProviders.TCatNormalCreateUpdateDto! input) -> System.Threading.Tasks.Task!
+Kooco.Pikachu.Controllers.LogisticStatusRecords.LogisticStatusRecordController
+Kooco.Pikachu.Controllers.LogisticStatusRecords.LogisticStatusRecordController.CreateAsync(Kooco.Pikachu.LogisticStatusRecords.CreateLogisticStatusRecordDto! input) -> System.Threading.Tasks.Task<Kooco.Pikachu.LogisticStatusRecords.LogisticStatusRecordDto!>!
+Kooco.Pikachu.Controllers.LogisticStatusRecords.LogisticStatusRecordController.CreateManyAsync(Kooco.Pikachu.LogisticStatusRecords.CreateLogisticStatusRecordListDto! input) -> System.Threading.Tasks.Task<System.Collections.Generic.List<Kooco.Pikachu.LogisticStatusRecords.LogisticStatusRecordDto!>!>!
+Kooco.Pikachu.Controllers.LogisticStatusRecords.LogisticStatusRecordController.LogisticStatusRecordController(Kooco.Pikachu.LogisticStatusRecords.ILogisticStatusRecordAppService! logisticStatusRecordAppService) -> void
+Kooco.Pikachu.Controllers.Members.MemberController
+Kooco.Pikachu.Controllers.Members.MemberController.ChangePasswordAsync(System.Guid id, Volo.Abp.Account.ChangePasswordInput! input) -> System.Threading.Tasks.Task<Kooco.Pikachu.PikachuAccounts.GenericResponseDto!>!
+Kooco.Pikachu.Controllers.Members.MemberController.CreateMemberAddressAsync(System.Guid id, Kooco.Pikachu.Members.CreateUpdateMemberAddressDto! input) -> System.Threading.Tasks.Task<Kooco.Pikachu.UserAddresses.UserAddressDto!>!
+Kooco.Pikachu.Controllers.Members.MemberController.DeleteAsync(System.Guid id) -> System.Threading.Tasks.Task!
+Kooco.Pikachu.Controllers.Members.MemberController.FindByTokenAsync(Kooco.Pikachu.EnumValues.LoginMethod method, string! thirdPartyToken) -> System.Threading.Tasks.Task<Kooco.Pikachu.PikachuAccounts.GenericResponseDto!>!
+Kooco.Pikachu.Controllers.Members.MemberController.GetAllAsync() -> System.Threading.Tasks.Task<System.Collections.Generic.List<Kooco.Pikachu.Members.MemberDto!>!>!
+Kooco.Pikachu.Controllers.Members.MemberController.GetAsync(System.Guid id) -> System.Threading.Tasks.Task<Kooco.Pikachu.Members.MemberDto!>!
+Kooco.Pikachu.Controllers.Members.MemberController.GetCurrentUserIdAsync() -> System.Threading.Tasks.Task<System.Guid?>!
+Kooco.Pikachu.Controllers.Members.MemberController.GetDefaultAddressAsync(System.Guid id) -> System.Threading.Tasks.Task<Kooco.Pikachu.UserAddresses.UserAddressDto?>!
+Kooco.Pikachu.Controllers.Members.MemberController.GetGroupBuyLookupAsync() -> System.Threading.Tasks.Task<System.Collections.Generic.List<Kooco.Pikachu.Items.Dtos.KeyValueDto!>!>!
+Kooco.Pikachu.Controllers.Members.MemberController.GetListAsync(Kooco.Pikachu.Members.GetMemberListDto! input) -> System.Threading.Tasks.Task<Volo.Abp.Application.Dtos.PagedResultDto<Kooco.Pikachu.Members.MemberDto!>!>!
+Kooco.Pikachu.Controllers.Members.MemberController.GetMemberAddressListAsync(System.Guid id) -> System.Threading.Tasks.Task<System.Collections.Generic.List<Kooco.Pikachu.UserAddresses.UserAddressDto!>!>!
+Kooco.Pikachu.Controllers.Members.MemberController.GetMemberCreditRecordAsync(System.Guid id, Kooco.Pikachu.Members.GetMemberCreditRecordListDto! input) -> System.Threading.Tasks.Task<Volo.Abp.Application.Dtos.PagedResultDto<Kooco.Pikachu.Members.MemberCreditRecordDto!>!>!
+Kooco.Pikachu.Controllers.Members.MemberController.GetMemberCumulativeCreditsAsync(System.Guid id) -> System.Threading.Tasks.Task<Kooco.Pikachu.UserCumulativeCredits.UserCumulativeCreditDto!>!
+Kooco.Pikachu.Controllers.Members.MemberController.GetMemberCumulativeFinancialsAsync(System.Guid id) -> System.Threading.Tasks.Task<Kooco.Pikachu.UserCumulativeFinancials.UserCumulativeFinancialDto!>!
+Kooco.Pikachu.Controllers.Members.MemberController.GetMemberCumulativeOrdersAsync(System.Guid id) -> System.Threading.Tasks.Task<Kooco.Pikachu.UserCumulativeOrders.UserCumulativeOrderDto!>!
+Kooco.Pikachu.Controllers.Members.MemberController.GetMemberOrderAsync(System.Guid orderId) -> System.Threading.Tasks.Task<Kooco.Pikachu.Orders.OrderDto!>!
+Kooco.Pikachu.Controllers.Members.MemberController.GetMemberOrderRecordsAsync(System.Guid id, Kooco.Pikachu.Members.GetMemberOrderRecordsDto! input) -> System.Threading.Tasks.Task<Volo.Abp.Application.Dtos.PagedResultDto<Kooco.Pikachu.Orders.OrderDto!>!>!
+Kooco.Pikachu.Controllers.Members.MemberController.GetMemberOrdersByGroupBuyAsync(System.Guid groupBuyId) -> System.Threading.Tasks.Task<System.Collections.Generic.List<Kooco.Pikachu.Members.MemberOrderInfoDto!>!>!
+Kooco.Pikachu.Controllers.Members.MemberController.GetMemberOrdersByGroupBuyAsync(System.Guid memberId, System.Guid groupBuyId) -> System.Threading.Tasks.Task<System.Collections.Generic.List<Kooco.Pikachu.Members.MemberOrderInfoDto!>!>!
+Kooco.Pikachu.Controllers.Members.MemberController.GetMemberTierProgressAsync(System.Guid memberId) -> System.Threading.Tasks.Task<Kooco.Pikachu.Members.VipTierProgressDto!>!
+Kooco.Pikachu.Controllers.Members.MemberController.LoginAsync(Kooco.Pikachu.Members.MemberLoginInputDto! input) -> System.Threading.Tasks.Task<Kooco.Pikachu.Members.MemberLoginResponseDto!>!
+Kooco.Pikachu.Controllers.Members.MemberController.MemberController(Kooco.Pikachu.Members.IMemberAppService! memberAppService, Kooco.Pikachu.PikachuAccounts.IPikachuAccountAppService! pikachuAccountAppService) -> void
+Kooco.Pikachu.Controllers.Members.MemberController.RegisterAsync(Kooco.Pikachu.Members.CreateMemberDto! input) -> System.Threading.Tasks.Task<Kooco.Pikachu.Members.MemberDto!>!
+Kooco.Pikachu.Controllers.Members.MemberController.ResetPasswordAsync(Kooco.Pikachu.PikachuAccounts.PikachuResetPasswordDto! input) -> System.Threading.Tasks.Task<Kooco.Pikachu.PikachuAccounts.GenericResponseDto!>!
+Kooco.Pikachu.Controllers.Members.MemberController.SendEmailVerificationCodeAsync(string! email) -> System.Threading.Tasks.Task<Kooco.Pikachu.PikachuAccounts.GenericResponseDto!>!
+Kooco.Pikachu.Controllers.Members.MemberController.SendPasswordResetCodeAsync(string! email) -> System.Threading.Tasks.Task<Kooco.Pikachu.PikachuAccounts.GenericResponseDto!>!
+Kooco.Pikachu.Controllers.Members.MemberController.SetBlacklistedAsync(System.Guid memberId, bool blacklisted) -> System.Threading.Tasks.Task!
+Kooco.Pikachu.Controllers.Members.MemberController.UpdateAsync(System.Guid id, Kooco.Pikachu.Members.UpdateMemberDto! input) -> System.Threading.Tasks.Task<Kooco.Pikachu.Members.MemberDto!>!
+Kooco.Pikachu.Controllers.Members.MemberController.UpdateMemberAddressAsync(System.Guid id, System.Guid addressId, Kooco.Pikachu.Members.CreateUpdateMemberAddressDto! input) -> System.Threading.Tasks.Task<Kooco.Pikachu.UserAddresses.UserAddressDto!>!
+Kooco.Pikachu.Controllers.Members.MemberController.VerifyEmailCodeAsync(string! email, string! code) -> System.Threading.Tasks.Task<Kooco.Pikachu.PikachuAccounts.VerifyCodeResponseDto!>!
+Kooco.Pikachu.Controllers.Members.MemberController.VerifyPasswordResetCodeAsync(string! email, string! code) -> System.Threading.Tasks.Task<Kooco.Pikachu.PikachuAccounts.VerifyCodeResponseDto!>!
+Kooco.Pikachu.Controllers.OrderDeliveries.OrderDeliveryController
+Kooco.Pikachu.Controllers.OrderDeliveries.OrderDeliveryController.ChangeShippingStatus(System.Guid orderId) -> System.Threading.Tasks.Task!
+Kooco.Pikachu.Controllers.OrderDeliveries.OrderDeliveryController.GetDeliveryOrderAsync(System.Guid Id) -> System.Threading.Tasks.Task<Kooco.Pikachu.OrderDeliveries.OrderDeliveryDto!>!
+Kooco.Pikachu.Controllers.OrderDeliveries.OrderDeliveryController.GetListByOrderAsync(System.Guid Id) -> System.Threading.Tasks.Task<System.Collections.Generic.List<Kooco.Pikachu.OrderDeliveries.OrderDeliveryDto!>!>!
+Kooco.Pikachu.Controllers.OrderDeliveries.OrderDeliveryController.OrderDeliveryController(Kooco.Pikachu.OrderDeliveries.IOrderDeliveryAppService! _orderDeliveryAppService) -> void
+Kooco.Pikachu.Controllers.OrderDeliveries.OrderDeliveryController.UpdateDeliveredStatus(System.Guid orderId) -> System.Threading.Tasks.Task!
+Kooco.Pikachu.Controllers.OrderDeliveries.OrderDeliveryController.UpdateOrderDeliveryStatus(System.Guid Id) -> System.Threading.Tasks.Task!
+Kooco.Pikachu.Controllers.OrderDeliveries.OrderDeliveryController.UpdatePickedUpStatus(System.Guid orderId) -> System.Threading.Tasks.Task!
+Kooco.Pikachu.Controllers.OrderDeliveries.OrderDeliveryController.UpdateShippingDetails(System.Guid id, Kooco.Pikachu.Orders.CreateOrderDto! input) -> System.Threading.Tasks.Task<Kooco.Pikachu.OrderDeliveries.OrderDeliveryDto!>!
+Kooco.Pikachu.Controllers.Orders.OrderController
+Kooco.Pikachu.Controllers.Orders.OrderController.AddCheckMacValueAsync(System.Guid id, string! checkMacValue) -> System.Threading.Tasks.Task!
+Kooco.Pikachu.Controllers.Orders.OrderController.AddStoreCommentAsync(System.Guid id, string! comment) -> System.Threading.Tasks.Task!
+Kooco.Pikachu.Controllers.Orders.OrderController.AddValuesAsync(System.Guid id, string! checkMacValue, string! merchantTradeNo, Kooco.Pikachu.EnumValues.PaymentMethods? paymentMethod = null) -> System.Threading.Tasks.Task!
+Kooco.Pikachu.Controllers.Orders.OrderController.AddValuesAsync(System.Guid id, string! checkMacValue, string! merchantTradeNo) -> System.Threading.Tasks.Task!
+Kooco.Pikachu.Controllers.Orders.OrderController.CancelOrderAsync(System.Guid id) -> System.Threading.Tasks.Task!
+Kooco.Pikachu.Controllers.Orders.OrderController.ChangeOrderStatus(System.Guid id, Kooco.Pikachu.EnumValues.ShippingStatus status) -> System.Threading.Tasks.Task<Kooco.Pikachu.Orders.OrderDto!>!
+Kooco.Pikachu.Controllers.Orders.OrderController.ChangeReturnStatusAsync(System.Guid id, Kooco.Pikachu.EnumValues.OrderReturnStatus? orderReturnStatus, bool isRefund) -> System.Threading.Tasks.Task!
+Kooco.Pikachu.Controllers.Orders.OrderController.CloseOrdersAsync() -> System.Threading.Tasks.Task!
+Kooco.Pikachu.Controllers.Orders.OrderController.ConfirmManualBankTransferAsync(System.Guid orderId) -> System.Threading.Tasks.Task!
+Kooco.Pikachu.Controllers.Orders.OrderController.CreateAsync(Kooco.Pikachu.Orders.CreateUpdateOrderDto! input) -> System.Threading.Tasks.Task<Kooco.Pikachu.Orders.OrderDto!>!
+Kooco.Pikachu.Controllers.Orders.OrderController.CreateOrderDeliveriesAndInvoiceAsync(System.Guid orderId) -> System.Threading.Tasks.Task!
+Kooco.Pikachu.Controllers.Orders.OrderController.CreditNoteInvoice(System.Guid id, string! reason) -> System.Threading.Tasks.Task!
+Kooco.Pikachu.Controllers.Orders.OrderController.EcpayLogisticsStatusCallbackAsync() -> System.Threading.Tasks.Task<Microsoft.AspNetCore.Mvc.IActionResult!>!
+Kooco.Pikachu.Controllers.Orders.OrderController.ExchangeOrderAsync(System.Guid id) -> System.Threading.Tasks.Task!
+Kooco.Pikachu.Controllers.Orders.OrderController.ExpireOrderAsync(System.Guid OrderId) -> System.Threading.Tasks.Task!
+Kooco.Pikachu.Controllers.Orders.OrderController.FindStatusAsync() -> System.Threading.Tasks.Task<Microsoft.AspNetCore.Mvc.IActionResult!>!
+Kooco.Pikachu.Controllers.Orders.OrderController.GenCheckMac() -> Microsoft.AspNetCore.Mvc.IActionResult!
+Kooco.Pikachu.Controllers.Orders.OrderController.GenerateMerchantTradeNo(string! orderNo) -> string!
+Kooco.Pikachu.Controllers.Orders.OrderController.GetAsync(System.Guid id) -> System.Threading.Tasks.Task<Kooco.Pikachu.Orders.OrderDto!>!
+Kooco.Pikachu.Controllers.Orders.OrderController.GetListAsExcelFileAsync(Kooco.Pikachu.Orders.GetOrderListDto! input) -> System.Threading.Tasks.Task<Volo.Abp.Content.IRemoteStreamContent!>!
+Kooco.Pikachu.Controllers.Orders.OrderController.GetListAsync(Kooco.Pikachu.Orders.GetOrderListDto! input, bool hideCredentials = false) -> System.Threading.Tasks.Task<Volo.Abp.Application.Dtos.PagedResultDto<Kooco.Pikachu.Orders.OrderDto!>!>!
+Kooco.Pikachu.Controllers.Orders.OrderController.GetManualBankTransferRecordAsync(System.Guid orderId) -> System.Threading.Tasks.Task<Kooco.Pikachu.Orders.ManualBankTransferRecordDto!>!
+Kooco.Pikachu.Controllers.Orders.OrderController.GetOrderAsync(System.Guid groupBuyId, string! orderNo, string! extraInfo) -> System.Threading.Tasks.Task<Kooco.Pikachu.Orders.OrderDto!>!
+Kooco.Pikachu.Controllers.Orders.OrderController.GetOrderIdAsync(string! orderNo) -> System.Threading.Tasks.Task<System.Guid>!
+Kooco.Pikachu.Controllers.Orders.OrderController.GetOrderLogsAsync(System.Guid orderId) -> System.Threading.Tasks.Task<System.Collections.Generic.List<Kooco.Pikachu.Orders.OrderHistoryDto!>!>!
+Kooco.Pikachu.Controllers.Orders.OrderController.GetOrderStatusAmountsAsync(System.Guid UserId) -> System.Threading.Tasks.Task<(decimal PaidAmount, decimal UnpaidAmount, decimal RefundedAmount)>!
+Kooco.Pikachu.Controllers.Orders.OrderController.GetOrderStatusCountsAsync(System.Guid userId) -> System.Threading.Tasks.Task<(int Open, int Exchange, int Return)>!
+Kooco.Pikachu.Controllers.Orders.OrderController.GetPaymentGatewayConfigurationsAsync(System.Guid id) -> System.Threading.Tasks.Task<Kooco.Pikachu.PaymentGateways.PaymentGatewayDto!>!
+Kooco.Pikachu.Controllers.Orders.OrderController.GetReconciliationListAsExcelFileAsync(Kooco.Pikachu.Orders.GetOrderListDto! input) -> System.Threading.Tasks.Task<Volo.Abp.Content.IRemoteStreamContent!>!
+Kooco.Pikachu.Controllers.Orders.OrderController.GetReconciliationListAsync(Kooco.Pikachu.Orders.GetOrderListDto! input) -> System.Threading.Tasks.Task<Volo.Abp.Application.Dtos.PagedResultDto<Kooco.Pikachu.Orders.OrderDto!>!>!
+Kooco.Pikachu.Controllers.Orders.OrderController.GetReportListAsync(Kooco.Pikachu.Orders.GetOrderListDto! input, bool hideCredentials = false) -> System.Threading.Tasks.Task<Volo.Abp.Application.Dtos.PagedResultDto<Kooco.Pikachu.Orders.GroupBuyReportOrderDto!>!>!
+Kooco.Pikachu.Controllers.Orders.OrderController.GetReturnListAsync(Kooco.Pikachu.Orders.GetOrderListDto! input) -> System.Threading.Tasks.Task<Volo.Abp.Application.Dtos.PagedResultDto<Kooco.Pikachu.Orders.OrderDto!>!>!
+Kooco.Pikachu.Controllers.Orders.OrderController.GetReturnOrderNotificationCount() -> System.Threading.Tasks.Task<long>!
+Kooco.Pikachu.Controllers.Orders.OrderController.GetTenantOrderListAsync(Kooco.Pikachu.Orders.GetOrderListDto! input) -> System.Threading.Tasks.Task<Volo.Abp.Application.Dtos.PagedResultDto<Kooco.Pikachu.Orders.OrderDto!>!>!
+Kooco.Pikachu.Controllers.Orders.OrderController.GetTotalDeliveryTemperatureCountsAsync() -> System.Threading.Tasks.Task<(int normalCount, int freezeCount, int frozenCount)>!
+Kooco.Pikachu.Controllers.Orders.OrderController.GetVoidListAsync(Kooco.Pikachu.Orders.GetOrderListDto! input) -> System.Threading.Tasks.Task<Volo.Abp.Application.Dtos.PagedResultDto<Kooco.Pikachu.Orders.OrderDto!>!>!
+Kooco.Pikachu.Controllers.Orders.OrderController.GetWithDetailsAsync(System.Guid id) -> System.Threading.Tasks.Task<Kooco.Pikachu.Orders.OrderDto!>!
+Kooco.Pikachu.Controllers.Orders.OrderController.HandleCallbackAsync() -> System.Threading.Tasks.Task<Microsoft.AspNetCore.Mvc.IActionResult!>!
+Kooco.Pikachu.Controllers.Orders.OrderController.HandlePaymentAsync(Kooco.Pikachu.Orders.PaymentResult! paymentResult) -> System.Threading.Tasks.Task<string!>!
+Kooco.Pikachu.Controllers.Orders.OrderController.MergeOrdersAsync(System.Collections.Generic.List<System.Guid>! Ids) -> System.Threading.Tasks.Task<Kooco.Pikachu.Orders.OrderDto!>!
+Kooco.Pikachu.Controllers.Orders.OrderController.OrderClosed(System.Guid id) -> System.Threading.Tasks.Task<Kooco.Pikachu.Orders.OrderDto!>!
+Kooco.Pikachu.Controllers.Orders.OrderController.OrderComplete(System.Guid id) -> System.Threading.Tasks.Task<Kooco.Pikachu.Orders.OrderDto!>!
+Kooco.Pikachu.Controllers.Orders.OrderController.OrderController(Kooco.Pikachu.Orders.Interfaces.IOrderAppService! ordersAppService, Microsoft.Extensions.Configuration.IConfiguration! Configuration, Kooco.Pikachu.GroupBuys.IGroupBuyAppService! GroupBuyAppService, Kooco.Pikachu.StoreLogisticOrders.IStoreLogisticsOrderAppService! SLOAppservice, Kooco.Pikachu.ReturnAndExchange.IReturnAndExchangeAppService! returnAndExchangeAppService) -> void
+Kooco.Pikachu.Controllers.Orders.OrderController.OrderShipped(System.Guid id) -> System.Threading.Tasks.Task<Kooco.Pikachu.Orders.OrderDto!>!
+Kooco.Pikachu.Controllers.Orders.OrderController.OrderToBeShipped(System.Guid id) -> System.Threading.Tasks.Task<Kooco.Pikachu.Orders.OrderDto!>!
+Kooco.Pikachu.Controllers.Orders.OrderController.ProceedToCheckout(System.Guid orderId, string! clientBackUrl, Kooco.Pikachu.EnumValues.PaymentMethods paymentMethodsValue, string? installmentOption = null) -> System.Threading.Tasks.Task<Microsoft.AspNetCore.Mvc.IActionResult!>!
+Kooco.Pikachu.Controllers.Orders.OrderController.RefundAmountAsync(double amount, System.Guid OrderId) -> System.Threading.Tasks.Task!
+Kooco.Pikachu.Controllers.Orders.OrderController.RefundOrderItems(System.Collections.Generic.List<System.Guid>! OrderItemIds, System.Guid OrderId) -> System.Threading.Tasks.Task<Kooco.Pikachu.Orders.OrderDto!>!
+Kooco.Pikachu.Controllers.Orders.OrderController.ReturnOrderAsync(System.Guid id) -> System.Threading.Tasks.Task!
+Kooco.Pikachu.Controllers.Orders.OrderController.SplitOrderAsync(System.Collections.Generic.List<System.Guid>! OrderItemIds, System.Guid OrderId) -> System.Threading.Tasks.Task<Kooco.Pikachu.Orders.OrderDto!>!
+Kooco.Pikachu.Controllers.Orders.OrderController.UpdateAsync(System.Guid id, Kooco.Pikachu.Orders.CreateOrderDto! input) -> System.Threading.Tasks.Task<Kooco.Pikachu.Orders.OrderDto!>!
+Kooco.Pikachu.Controllers.Orders.OrderController.UpdateLogisticStatusAsync(string! merchantTradeNo, string! rtnMsg, string? allPayLogisticsID = null, int rtnCode = 0) -> System.Threading.Tasks.Task!
+Kooco.Pikachu.Controllers.Orders.OrderController.UpdateMerchantTradeNoAsync(Kooco.Pikachu.Response.OrderPaymentMethodRequest! request) -> System.Threading.Tasks.Task<Kooco.Pikachu.Orders.OrderDto!>!
+Kooco.Pikachu.Controllers.Orders.OrderController.UpdateOrderItemsAsync(System.Guid id, System.Collections.Generic.List<Kooco.Pikachu.OrderItems.UpdateOrderItemDto!>! orderItems) -> System.Threading.Tasks.Task!
+Kooco.Pikachu.Controllers.Orders.OrderController.UpdateOrderPaymentMethodAsync(Kooco.Pikachu.Response.OrderPaymentMethodRequest! request) -> System.Threading.Tasks.Task<Kooco.Pikachu.Orders.OrderDto!>!
+Kooco.Pikachu.Controllers.Orders.OrderController.UpdateOrdersIfIsEnterpricePurchaseAsync(System.Guid groupBuyId) -> System.Threading.Tasks.Task!
+Kooco.Pikachu.Controllers.Orders.OrderController.UpdateShippingDetails(System.Guid id, Kooco.Pikachu.Orders.CreateOrderDto! input) -> System.Threading.Tasks.Task<Kooco.Pikachu.Orders.OrderDto!>!
+Kooco.Pikachu.Controllers.Orders.OrderController.UpdateStoreCommentAsync(System.Guid id, System.Guid commentId, string! comment) -> System.Threading.Tasks.Task!
+Kooco.Pikachu.Controllers.Orders.OrderController.VoidInvoice(System.Guid id, string! reason) -> System.Threading.Tasks.Task!
+Kooco.Pikachu.Controllers.PaymentGateways.LinePay.LinePayController
+Kooco.Pikachu.Controllers.PaymentGateways.LinePay.LinePayController.ConfirmPayment(string! transactionId, string? orderNo) -> System.Threading.Tasks.Task<Kooco.Pikachu.PaymentGateways.LinePay.LinePayResponseDto<Kooco.Pikachu.PaymentGateways.LinePay.LinePayConfirmResponseInfoDto!>!>!
+Kooco.Pikachu.Controllers.PaymentGateways.LinePay.LinePayController.LinePayController(Kooco.Pikachu.PaymentGateways.LinePay.ILinePayAppService! linePayAppService) -> void
+Kooco.Pikachu.Controllers.PaymentGateways.LinePay.LinePayController.PaymentRequest(System.Guid orderId, Kooco.Pikachu.PaymentGateways.LinePay.LinePayPaymentRequestRedirectUrlDto! input) -> System.Threading.Tasks.Task<Kooco.Pikachu.PaymentGateways.LinePay.LinePayResponseDto<Kooco.Pikachu.PaymentGateways.LinePay.LinePayPaymentResponseInfoDto!>!>!
+Kooco.Pikachu.Controllers.PaymentGateways.LinePay.LinePayController.ProcessRefund(System.Guid refundId) -> System.Threading.Tasks.Task<Kooco.Pikachu.PaymentGateways.LinePay.LinePayResponseDto<Kooco.Pikachu.PaymentGateways.LinePay.LinePayRefundResponseInfoDto!>!>!
+Kooco.Pikachu.Controllers.PaymentGateways.PaymentGatewayController
+Kooco.Pikachu.Controllers.PaymentGateways.PaymentGatewayController.EcPayServerReplyQS(System.Guid UniqueId, System.Guid GroupBuyId) -> Microsoft.AspNetCore.Mvc.IActionResult!
+Kooco.Pikachu.Controllers.PaymentGateways.PaymentGatewayController.GetAllAsync() -> System.Threading.Tasks.Task<System.Collections.Generic.List<Kooco.Pikachu.PaymentGateways.PaymentGatewayDto!>!>!
+Kooco.Pikachu.Controllers.PaymentGateways.PaymentGatewayController.GetCreditCheckCodeAsync() -> System.Threading.Tasks.Task<string?>!
+Kooco.Pikachu.Controllers.PaymentGateways.PaymentGatewayController.GetEcPayStoreData(System.Guid UniqueId) -> Microsoft.AspNetCore.Mvc.IActionResult!
+Kooco.Pikachu.Controllers.PaymentGateways.PaymentGatewayController.GetLinePayAsync(bool decrypt = false) -> System.Threading.Tasks.Task<Kooco.Pikachu.PaymentGateways.PaymentGatewayDto?>!
+Kooco.Pikachu.Controllers.PaymentGateways.PaymentGatewayController.GetManualBankTransferAsync() -> System.Threading.Tasks.Task<Kooco.Pikachu.PaymentGateways.ManualBankTransferDto?>!
+Kooco.Pikachu.Controllers.PaymentGateways.PaymentGatewayController.GetTCatStoreData(System.Guid UniqueId) -> Microsoft.AspNetCore.Mvc.IActionResult!
+Kooco.Pikachu.Controllers.PaymentGateways.PaymentGatewayController.PaymentGatewayController(Kooco.Pikachu.PaymentGateways.IPaymentGatewayAppService! _paymentGatewayAppService) -> void
+Kooco.Pikachu.Controllers.PaymentGateways.PaymentGatewayController.TCatServerReply(System.Guid UniqueId, System.Guid GroupBuyId) -> Microsoft.AspNetCore.Mvc.IActionResult!
+Kooco.Pikachu.Controllers.PaymentGateways.PaymentGatewayController.UpdateChinaTrustAsync(Kooco.Pikachu.PaymentGateways.UpdateChinaTrustDto! input) -> System.Threading.Tasks.Task!
+Kooco.Pikachu.Controllers.PaymentGateways.PaymentGatewayController.UpdateEcPayAsync(Kooco.Pikachu.PaymentGateways.UpdateEcPayDto! input) -> System.Threading.Tasks.Task!
+Kooco.Pikachu.Controllers.PaymentGateways.PaymentGatewayController.UpdateLinePayAsync(Kooco.Pikachu.PaymentGateways.UpdateLinePayDto! input) -> System.Threading.Tasks.Task!
+Kooco.Pikachu.Controllers.PaymentGateways.PaymentGatewayController.UpdateManualBankTransferAsync(Kooco.Pikachu.PaymentGateways.UpdateManualBankTransferDto! input) -> System.Threading.Tasks.Task!
+Kooco.Pikachu.Controllers.PaymentGateways.PaymentGatewayController.UpdateOrderValidityAsync(Kooco.Pikachu.PaymentGateways.UpdateOrderValidityDto! input) -> System.Threading.Tasks.Task!
+Kooco.Pikachu.Controllers.PayUni.PayUniController
+Kooco.Pikachu.Controllers.PayUni.PayUniController.ApnNotificationAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task!
+Kooco.Pikachu.Controllers.PayUni.PayUniController.FailureCallbackAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task!
+Kooco.Pikachu.Controllers.PayUni.PayUniController.PayUniController(Kooco.Pikachu.PayUni.IPayUniAppService! payUniAppService) -> void
+Kooco.Pikachu.Controllers.PayUni.PayUniController.SuccessCallbackAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) -> System.Threading.Tasks.Task!
+Kooco.Pikachu.Controllers.PikachuController
+Kooco.Pikachu.Controllers.PikachuController.PikachuController() -> void
+Kooco.Pikachu.Controllers.ProductCategories.ProductCategoryController
+Kooco.Pikachu.Controllers.ProductCategories.ProductCategoryController.CreateAsync(Kooco.Pikachu.ProductCategories.CreateProductCategoryDto! input) -> System.Threading.Tasks.Task<Kooco.Pikachu.ProductCategories.ProductCategoryDto!>!
+Kooco.Pikachu.Controllers.ProductCategories.ProductCategoryController.DeleteAsync(System.Guid id) -> System.Threading.Tasks.Task!
+Kooco.Pikachu.Controllers.ProductCategories.ProductCategoryController.GetAsync(System.Guid id, bool includeDetails = false) -> System.Threading.Tasks.Task<Kooco.Pikachu.ProductCategories.ProductCategoryDto!>!
+Kooco.Pikachu.Controllers.ProductCategories.ProductCategoryController.GetDefaultImageUrlAsync(System.Guid id) -> System.Threading.Tasks.Task<string?>!
+Kooco.Pikachu.Controllers.ProductCategories.ProductCategoryController.GetListAsync(Kooco.Pikachu.ProductCategories.GetProductCategoryListDto! input) -> System.Threading.Tasks.Task<Volo.Abp.Application.Dtos.PagedResultDto<Kooco.Pikachu.ProductCategories.ProductCategoryDto!>!>!
+Kooco.Pikachu.Controllers.ProductCategories.ProductCategoryController.GetMainProductCategoryLookupAsync() -> System.Threading.Tasks.Task<System.Collections.Generic.List<Kooco.Pikachu.Items.Dtos.KeyValueDto!>!>!
+Kooco.Pikachu.Controllers.ProductCategories.ProductCategoryController.GetProductCategoryLookupAsync() -> System.Threading.Tasks.Task<System.Collections.Generic.List<Kooco.Pikachu.Items.Dtos.KeyValueDto!>!>!
+Kooco.Pikachu.Controllers.ProductCategories.ProductCategoryController.GetSubCategoryListAsync(System.Guid mainCategoryId) -> System.Threading.Tasks.Task<System.Collections.Generic.List<Kooco.Pikachu.ProductCategories.ProductCategoryDto!>!>!
+Kooco.Pikachu.Controllers.ProductCategories.ProductCategoryController.ProductCategoryController(Kooco.Pikachu.ProductCategories.IProductCategoryAppService! productCategoryAppService) -> void
+Kooco.Pikachu.Controllers.ProductCategories.ProductCategoryController.UpdateAsync(System.Guid id, Kooco.Pikachu.ProductCategories.UpdateProductCategoryDto! input) -> System.Threading.Tasks.Task<Kooco.Pikachu.ProductCategories.ProductCategoryDto!>!
+Kooco.Pikachu.Controllers.ProductCategories.ProductCategoryController.UploadImagesAsync(System.Collections.Generic.List<Kooco.Pikachu.ProductCategories.CreateUpdateProductCategoryImageDto!>! input, bool deleteExisting = false) -> System.Threading.Tasks.Task<System.Collections.Generic.List<Kooco.Pikachu.ProductCategories.CreateUpdateProductCategoryImageDto!>!>!
+Kooco.Pikachu.Controllers.Refunds.RefundController
+Kooco.Pikachu.Controllers.Refunds.RefundController.CheckStatusAndRequestRefundAsync(System.Guid id) -> System.Threading.Tasks.Task!
+Kooco.Pikachu.Controllers.Refunds.RefundController.CreateAsync(System.Guid orderId) -> System.Threading.Tasks.Task!
+Kooco.Pikachu.Controllers.Refunds.RefundController.GetListAsync(Kooco.Pikachu.Refunds.GetRefundListDto! input) -> System.Threading.Tasks.Task<Volo.Abp.Application.Dtos.PagedResultDto<Kooco.Pikachu.Refunds.RefundDto!>!>!
+Kooco.Pikachu.Controllers.Refunds.RefundController.GetRefundPendingCount() -> System.Threading.Tasks.Task<long>!
+Kooco.Pikachu.Controllers.Refunds.RefundController.RefundController(Kooco.Pikachu.Refunds.IRefundAppService! _refundAppService) -> void
+Kooco.Pikachu.Controllers.Refunds.RefundController.SendRefundRequestAsync(System.Guid id) -> System.Threading.Tasks.Task!
+Kooco.Pikachu.Controllers.Refunds.RefundController.UpdateRefundReviewAsync(System.Guid id, Kooco.Pikachu.EnumValues.RefundReviewStatus input, string? rejectReason = null) -> System.Threading.Tasks.Task<Kooco.Pikachu.Refunds.RefundDto!>!
+Kooco.Pikachu.Controllers.ShopCarts.ShopCartController
+Kooco.Pikachu.Controllers.ShopCarts.ShopCartController.AddCartItemAsync(System.Guid userId, System.Guid groupBuyId, Kooco.Pikachu.ShopCarts.CreateCartItemDto! input) -> System.Threading.Tasks.Task<Kooco.Pikachu.ShopCarts.ShopCartDto!>!
+Kooco.Pikachu.Controllers.ShopCarts.ShopCartController.ClearCartItemsAsync(System.Guid userId, System.Guid groupBuyId) -> System.Threading.Tasks.Task!
+Kooco.Pikachu.Controllers.ShopCarts.ShopCartController.CreateAsync(Kooco.Pikachu.ShopCarts.CreateShopCartDto! input) -> System.Threading.Tasks.Task<Kooco.Pikachu.ShopCarts.ShopCartDto!>!
+Kooco.Pikachu.Controllers.ShopCarts.ShopCartController.DeleteByUserIdAndGroupBuyIdAsync(System.Guid userId, System.Guid groupBuyId) -> System.Threading.Tasks.Task!
+Kooco.Pikachu.Controllers.ShopCarts.ShopCartController.DeleteByUserIdAsync(System.Guid userId) -> System.Threading.Tasks.Task!
+Kooco.Pikachu.Controllers.ShopCarts.ShopCartController.DeleteCartItemAsync(System.Guid cartItemId) -> System.Threading.Tasks.Task<Kooco.Pikachu.ShopCarts.ShopCartDto!>!
+Kooco.Pikachu.Controllers.ShopCarts.ShopCartController.FindByUserIdAndGroupBuyIdAsync(System.Guid userId, System.Guid groupBuyId) -> System.Threading.Tasks.Task<Kooco.Pikachu.ShopCarts.ShopCartDto?>!
+Kooco.Pikachu.Controllers.ShopCarts.ShopCartController.FindByUserIdAsync(System.Guid userId) -> System.Threading.Tasks.Task<Kooco.Pikachu.ShopCarts.ShopCartDto?>!
+Kooco.Pikachu.Controllers.ShopCarts.ShopCartController.GetListAsync(Kooco.Pikachu.ShopCarts.GetShopCartListDto! input) -> System.Threading.Tasks.Task<Volo.Abp.Application.Dtos.PagedResultDto<Kooco.Pikachu.ShopCarts.ShopCartDto!>!>!
+Kooco.Pikachu.Controllers.ShopCarts.ShopCartController.ShopCartController(Kooco.Pikachu.ShopCarts.IShopCartAppService! shopCartAppService) -> void
+Kooco.Pikachu.Controllers.ShopCarts.ShopCartController.UpdateCartItemAsync(System.Guid cartItemId, Kooco.Pikachu.ShopCarts.CreateCartItemDto! input) -> System.Threading.Tasks.Task<Kooco.Pikachu.ShopCarts.ShopCartDto!>!
+Kooco.Pikachu.Controllers.ShopCarts.ShopCartController.VerifyCartItemsAsync(System.Guid userId, System.Guid groupBuyId) -> System.Threading.Tasks.Task<System.Collections.Generic.List<Kooco.Pikachu.ShopCarts.VerifyCartItemDto!>!>!
+Kooco.Pikachu.Controllers.ShoppingCredits.ShoppingCreditEarnSettingController
+Kooco.Pikachu.Controllers.ShoppingCredits.ShoppingCreditEarnSettingController.CreateAsync(Kooco.Pikachu.ShoppingCredits.CreateUpdateShoppingCreditEarnSettingDto! input) -> System.Threading.Tasks.Task<Kooco.Pikachu.ShoppingCredits.ShoppingCreditEarnSettingDto!>!
+Kooco.Pikachu.Controllers.ShoppingCredits.ShoppingCreditEarnSettingController.GetAsync(System.Guid id) -> System.Threading.Tasks.Task<Kooco.Pikachu.ShoppingCredits.ShoppingCreditEarnSettingDto!>!
+Kooco.Pikachu.Controllers.ShoppingCredits.ShoppingCreditEarnSettingController.GetFirstAsync() -> System.Threading.Tasks.Task<Kooco.Pikachu.ShoppingCredits.ShoppingCreditEarnSettingDto!>!
+Kooco.Pikachu.Controllers.ShoppingCredits.ShoppingCreditEarnSettingController.GetShoppingCreditSettingsAsync(System.Guid groupBuyId) -> System.Threading.Tasks.Task<System.Collections.Generic.Dictionary<string!, object!>!>!
+Kooco.Pikachu.Controllers.ShoppingCredits.ShoppingCreditEarnSettingController.ShoppingCreditEarnSettingController(Kooco.Pikachu.ShoppingCredits.IShoppingCreditEarnSettingAppService! shoppingCreditEarnSettingAppService) -> void
+Kooco.Pikachu.Controllers.ShoppingCredits.ShoppingCreditEarnSettingController.UpdateAsync(System.Guid id, Kooco.Pikachu.ShoppingCredits.CreateUpdateShoppingCreditEarnSettingDto! input) -> System.Threading.Tasks.Task<Kooco.Pikachu.ShoppingCredits.ShoppingCreditEarnSettingDto!>!
+Kooco.Pikachu.Controllers.ShoppingCredits.ShoppingCreditUsageSettingController
+Kooco.Pikachu.Controllers.ShoppingCredits.ShoppingCreditUsageSettingController.CreateAsync(Kooco.Pikachu.ShoppingCredits.CreateUpdateShoppingCreditUsageSettingDto! input) -> System.Threading.Tasks.Task<Kooco.Pikachu.ShoppingCredits.ShoppingCreditUsageSettingDto!>!
+Kooco.Pikachu.Controllers.ShoppingCredits.ShoppingCreditUsageSettingController.GetAsync(System.Guid id) -> System.Threading.Tasks.Task<Kooco.Pikachu.ShoppingCredits.ShoppingCreditUsageSettingDto!>!
+Kooco.Pikachu.Controllers.ShoppingCredits.ShoppingCreditUsageSettingController.GetFirstAsync() -> System.Threading.Tasks.Task<Kooco.Pikachu.ShoppingCredits.ShoppingCreditUsageSettingDto!>!
+Kooco.Pikachu.Controllers.ShoppingCredits.ShoppingCreditUsageSettingController.GetFirstByGroupBuyIdAsync(System.Guid groupBuyId) -> System.Threading.Tasks.Task<Kooco.Pikachu.ShoppingCredits.ShoppingCreditUsageSettingByGroupBuyDto!>!
+Kooco.Pikachu.Controllers.ShoppingCredits.ShoppingCreditUsageSettingController.ShoppingCreditUsageSettingController(Kooco.Pikachu.ShoppingCredits.IShoppingCreditUsageSettingAppService! shoppingCreditUsageSettingAppService) -> void
+Kooco.Pikachu.Controllers.ShoppingCredits.ShoppingCreditUsageSettingController.UpdateAsync(System.Guid id, Kooco.Pikachu.ShoppingCredits.CreateUpdateShoppingCreditUsageSettingDto! input) -> System.Threading.Tasks.Task<Kooco.Pikachu.ShoppingCredits.ShoppingCreditUsageSettingDto!>!
+Kooco.Pikachu.Controllers.StoreLogisticOrders.StoreLogisticOrderController
+Kooco.Pikachu.Controllers.StoreLogisticOrders.StoreLogisticOrderController.CreateEcPayHomeDeliveryShipmentOrderAsync(System.Guid orderId, System.Guid orderDeliveryId, Kooco.Pikachu.EnumValues.DeliveryMethod? deliveryMethod = null) -> System.Threading.Tasks.Task<Kooco.Pikachu.StoreLogisticOrders.ResponseResultDto!>!
+Kooco.Pikachu.Controllers.StoreLogisticOrders.StoreLogisticOrderController.CreateHomeDeliveryShipmentOrderAsync(System.Guid orderId, System.Guid orderDeliveryId, Kooco.Pikachu.EnumValues.DeliveryMethod? deliveryMethod = null) -> System.Threading.Tasks.Task<Kooco.Pikachu.StoreLogisticOrders.ResponseResultDto!>!
+Kooco.Pikachu.Controllers.StoreLogisticOrders.StoreLogisticOrderController.CreateStoreLogisticsOrderAsync(System.Guid orderId, System.Guid orderDeliveryId, Kooco.Pikachu.EnumValues.DeliveryMethod? deliveryMethod = null) -> System.Threading.Tasks.Task<Kooco.Pikachu.StoreLogisticOrders.ResponseResultDto!>!
+Kooco.Pikachu.Controllers.StoreLogisticOrders.StoreLogisticOrderController.FindStatusAsync() -> System.Threading.Tasks.Task<string!>!
+Kooco.Pikachu.Controllers.StoreLogisticOrders.StoreLogisticOrderController.GenerateDeliveryNumberForSelfPickupAndHomeDeliveryAsync(System.Guid orderId, System.Guid orderDeliveryId) -> System.Threading.Tasks.Task!
+Kooco.Pikachu.Controllers.StoreLogisticOrders.StoreLogisticOrderController.GenerateDeliveryNumberForTCat711DeliveryAsync(System.Guid orderId, System.Guid orderDeliveryId, Kooco.Pikachu.EnumValues.DeliveryMethod? deliveryMethod = null) -> System.Threading.Tasks.Task<Kooco.Pikachu.Response.PrintOBTB2SResponse?>!
+Kooco.Pikachu.Controllers.StoreLogisticOrders.StoreLogisticOrderController.GenerateDeliveryNumberForTCatDeliveryAsync(System.Guid orderId, System.Guid orderDeliveryId, Kooco.Pikachu.EnumValues.DeliveryMethod? deliveryMethod = null) -> System.Threading.Tasks.Task<Kooco.Pikachu.Response.PrintObtResponse?>!
+Kooco.Pikachu.Controllers.StoreLogisticOrders.StoreLogisticOrderController.GetStoreAsync(string! deliveryMethod) -> System.Threading.Tasks.Task<Kooco.Pikachu.StoreLogisticOrders.EmapApiResponse!>!
+Kooco.Pikachu.Controllers.StoreLogisticOrders.StoreLogisticOrderController.IssueInvoiceAync(System.Guid orderId) -> System.Threading.Tasks.Task!
+Kooco.Pikachu.Controllers.StoreLogisticOrders.StoreLogisticOrderController.OnBatchPrintingShippingLabel(System.Collections.Generic.Dictionary<string!, string!>! allPayLogisticsIds, System.Collections.Generic.Dictionary<string!, string!>? DeliveryNumbers, System.Collections.Generic.Dictionary<string!, string!>? allPayLogisticsForTCat711) -> System.Threading.Tasks.Task<System.Tuple<System.Collections.Generic.List<string!>!, System.Collections.Generic.List<string!>!, System.Collections.Generic.List<string!>!>!>!
+Kooco.Pikachu.Controllers.StoreLogisticOrders.StoreLogisticOrderController.OnBatchPrintingShippingLabel(System.Collections.Generic.List<string!>! allPayLogisticsId) -> System.Threading.Tasks.Task<string!>!
+Kooco.Pikachu.Controllers.StoreLogisticOrders.StoreLogisticOrderController.OnPrintShippingLabel(Kooco.Pikachu.Orders.OrderDto! order, Kooco.Pikachu.OrderDeliveries.OrderDeliveryDto! orderDelivery) -> System.Threading.Tasks.Task<string!>!
+Kooco.Pikachu.Controllers.StoreLogisticOrders.StoreLogisticOrderController.OnSevenElevenC2CShippingLabelAsync(System.Collections.Generic.Dictionary<string!, string!>! allPayLogisticsIds, System.Collections.Generic.Dictionary<string!, string!>? DeliveryNumbers) -> System.Threading.Tasks.Task<System.Collections.Generic.Dictionary<string!, string!>!>!
+Kooco.Pikachu.Controllers.StoreLogisticOrders.StoreLogisticOrderController.StoreLogisticOrderController(Kooco.Pikachu.StoreLogisticOrders.IStoreLogisticsOrderAppService! _storeLogisticsOrderAppService) -> void
+Kooco.Pikachu.Controllers.TenantEmailing.TenantEmailSettingsController
+Kooco.Pikachu.Controllers.TenantEmailing.TenantEmailSettingsController.GetEmailSettingsAsync() -> System.Threading.Tasks.Task<Kooco.Pikachu.Tenants.TenantEmailSettingsDto!>!
+Kooco.Pikachu.Controllers.TenantEmailing.TenantEmailSettingsController.TenantEmailSettingsController(Kooco.Pikachu.Tenants.ITenantEmailSettingsAppService! _tenantEmailSettingsAppService) -> void
+Kooco.Pikachu.Controllers.TenantEmailing.TenantEmailSettingsController.UpdateEmailSettingsAsync(Kooco.Pikachu.Tenants.CreateUpdateTenantEmailSettingsDto! input) -> System.Threading.Tasks.Task!
+Kooco.Pikachu.Controllers.TenantManagement.TenantSettingsController
+Kooco.Pikachu.Controllers.TenantManagement.TenantSettingsController.DeleteImageAsync(string! blobName) -> System.Threading.Tasks.Task!
+Kooco.Pikachu.Controllers.TenantManagement.TenantSettingsController.FirstOrDefaultAsync() -> System.Threading.Tasks.Task<Kooco.Pikachu.Tenants.TenantSettingsDto!>!
+Kooco.Pikachu.Controllers.TenantManagement.TenantSettingsController.GetTenantCustomerServiceAsync() -> System.Threading.Tasks.Task<Kooco.Pikachu.Tenants.TenantCustomerServiceDto!>!
+Kooco.Pikachu.Controllers.TenantManagement.TenantSettingsController.GetTenantFrontendInformationAsync() -> System.Threading.Tasks.Task<Kooco.Pikachu.Tenants.TenantFrontendInformationDto!>!
+Kooco.Pikachu.Controllers.TenantManagement.TenantSettingsController.GetTenantGoogleTagManagerAsync() -> System.Threading.Tasks.Task<Kooco.Pikachu.Tenants.TenantGoogleTagManagerDto!>!
+Kooco.Pikachu.Controllers.TenantManagement.TenantSettingsController.GetTenantInformationAsync() -> System.Threading.Tasks.Task<Kooco.Pikachu.Tenants.TenantInformationDto!>!
+Kooco.Pikachu.Controllers.TenantManagement.TenantSettingsController.GetTenantPrivacyPolicyAsync() -> System.Threading.Tasks.Task<string?>!
+Kooco.Pikachu.Controllers.TenantManagement.TenantSettingsController.GetTenantSocialMediaAsync() -> System.Threading.Tasks.Task<Kooco.Pikachu.Tenants.TenantSocialMediaDto!>!
+Kooco.Pikachu.Controllers.TenantManagement.TenantSettingsController.GetTenantTermsAndConditionsAsync() -> System.Threading.Tasks.Task<string?>!
+Kooco.Pikachu.Controllers.TenantManagement.TenantSettingsController.TenantSettingsController(Kooco.Pikachu.Tenants.ITenantSettingsAppService! tenantSettingsAppService) -> void
+Kooco.Pikachu.Controllers.TenantManagement.TenantSettingsController.UpdateTenantCustomerServiceAsync(Kooco.Pikachu.Tenants.UpdateTenantCustomerServiceDto! input) -> System.Threading.Tasks.Task<Kooco.Pikachu.Tenants.TenantCustomerServiceDto!>!
+Kooco.Pikachu.Controllers.TenantManagement.TenantSettingsController.UpdateTenantFrontendInformationAsync(Kooco.Pikachu.Tenants.UpdateTenantFrontendInformationDto! input) -> System.Threading.Tasks.Task<Kooco.Pikachu.Tenants.TenantFrontendInformationDto!>!
+Kooco.Pikachu.Controllers.TenantManagement.TenantSettingsController.UpdateTenantGoogleTagManagerAsync(Kooco.Pikachu.Tenants.UpdateTenantGoogleTagManagerDto! input) -> System.Threading.Tasks.Task<Kooco.Pikachu.Tenants.TenantGoogleTagManagerDto!>!
+Kooco.Pikachu.Controllers.TenantManagement.TenantSettingsController.UpdateTenantInformationAsync(Kooco.Pikachu.Tenants.UpdateTenantInformationDto! input) -> System.Threading.Tasks.Task<Kooco.Pikachu.Tenants.TenantInformationDto!>!
+Kooco.Pikachu.Controllers.TenantManagement.TenantSettingsController.UpdateTenantPrivacyPolicyAsync(string! privacyPolicy) -> System.Threading.Tasks.Task<string?>!
+Kooco.Pikachu.Controllers.TenantManagement.TenantSettingsController.UpdateTenantSocialMediaAsync(Kooco.Pikachu.Tenants.UpdateTenantSocialMediaDto! input) -> System.Threading.Tasks.Task<Kooco.Pikachu.Tenants.TenantSocialMediaDto!>!
+Kooco.Pikachu.Controllers.TenantManagement.TenantSettingsController.UpdateTenantTermsAndConditionsAsync(string! termsAndConditions) -> System.Threading.Tasks.Task<string?>!
+Kooco.Pikachu.Controllers.TenantManagement.TenantSettingsController.UploadImageAsync(Kooco.Pikachu.Tenants.UploadImageDto! input) -> System.Threading.Tasks.Task<string!>!
+Kooco.Pikachu.Controllers.Tenants.MyTenantController
+Kooco.Pikachu.Controllers.Tenants.MyTenantController.CheckShortCodeForCreateAsync(string! shortCode) -> System.Threading.Tasks.Task<bool>!
+Kooco.Pikachu.Controllers.Tenants.MyTenantController.CheckShortCodeForUpdate(string! shortCode, System.Guid Id) -> System.Threading.Tasks.Task<bool>!
+Kooco.Pikachu.Controllers.Tenants.MyTenantController.FindByNameAsync(string! name) -> System.Threading.Tasks.Task<Volo.Abp.TenantManagement.TenantDto?>!
+Kooco.Pikachu.Controllers.Tenants.MyTenantController.FindTenantDomainAsync(System.Guid? id) -> System.Threading.Tasks.Task<string?>!
+Kooco.Pikachu.Controllers.Tenants.MyTenantController.FindTenantUrlAsync(System.Guid? id) -> System.Threading.Tasks.Task<string?>!
+Kooco.Pikachu.Controllers.Tenants.MyTenantController.GetTenantAsync(string! shortcode) -> System.Threading.Tasks.Task<Volo.Abp.TenantManagement.TenantDto!>!
+Kooco.Pikachu.Controllers.Tenants.MyTenantController.MyTenantController(Kooco.Pikachu.Tenants.IMyTenantAppService! _myTenantAppService) -> void
+Kooco.Pikachu.Controllers.TierManagement.VipTierSettingController
+Kooco.Pikachu.Controllers.TierManagement.VipTierSettingController.FirstOrDefaultAsync() -> System.Threading.Tasks.Task<Kooco.Pikachu.TierManagement.VipTierSettingDto!>!
+Kooco.Pikachu.Controllers.TierManagement.VipTierSettingController.GetVipTierNamesAsync() -> System.Threading.Tasks.Task<System.Collections.Generic.List<string!>!>!
+Kooco.Pikachu.Controllers.TierManagement.VipTierSettingController.UpdateAsync(Kooco.Pikachu.TierManagement.UpdateVipTierSettingDto! input) -> System.Threading.Tasks.Task<Kooco.Pikachu.TierManagement.VipTierSettingDto!>!
+Kooco.Pikachu.Controllers.TierManagement.VipTierSettingController.UpdateMemberTierAsync(System.Guid? tenantId, bool shouldConfigureRecurringJob = false, System.Threading.CancellationToken? cancellationToken = null) -> System.Threading.Tasks.Task!
+Kooco.Pikachu.Controllers.TierManagement.VipTierSettingController.VipTierSettingController(Kooco.Pikachu.TierManagement.IVipTierSettingAppService! vipTierSettingAppService) -> void
+Kooco.Pikachu.Controllers.UserAddresses.UserAddressController
+Kooco.Pikachu.Controllers.UserAddresses.UserAddressController.CreateAsync(Kooco.Pikachu.UserAddresses.CreateUserAddressDto! input) -> System.Threading.Tasks.Task<Kooco.Pikachu.UserAddresses.UserAddressDto!>!
+Kooco.Pikachu.Controllers.UserAddresses.UserAddressController.DeleteAsync(System.Guid id) -> System.Threading.Tasks.Task!
+Kooco.Pikachu.Controllers.UserAddresses.UserAddressController.GetAsync(System.Guid id) -> System.Threading.Tasks.Task<Kooco.Pikachu.UserAddresses.UserAddressDto!>!
+Kooco.Pikachu.Controllers.UserAddresses.UserAddressController.GetListAsync(Kooco.Pikachu.UserAddresses.GetUserAddressListDto! input) -> System.Threading.Tasks.Task<Volo.Abp.Application.Dtos.PagedResultDto<Kooco.Pikachu.UserAddresses.UserAddressDto!>!>!
+Kooco.Pikachu.Controllers.UserAddresses.UserAddressController.SetIsDefaultAsync(System.Guid id, bool isDefault) -> System.Threading.Tasks.Task<Kooco.Pikachu.UserAddresses.UserAddressDto!>!
+Kooco.Pikachu.Controllers.UserAddresses.UserAddressController.UpdateAsync(System.Guid id, Kooco.Pikachu.UserAddresses.UpdateUserAddressDto! input) -> System.Threading.Tasks.Task<Kooco.Pikachu.UserAddresses.UserAddressDto!>!
+Kooco.Pikachu.Controllers.UserAddresses.UserAddressController.UserAddressController(Kooco.Pikachu.UserAddresses.IUserAddressAppService! userAddressAppService) -> void
+Kooco.Pikachu.Controllers.UserCumulativeCredits.UserCumulativeCreditController
+Kooco.Pikachu.Controllers.UserCumulativeCredits.UserCumulativeCreditController.CreateAsync(Kooco.Pikachu.UserCumulativeCredits.CreateUserCumulativeCreditDto! input) -> System.Threading.Tasks.Task<Kooco.Pikachu.UserCumulativeCredits.UserCumulativeCreditDto!>!
+Kooco.Pikachu.Controllers.UserCumulativeCredits.UserCumulativeCreditController.CreateMemberRegisterAsync(Kooco.Pikachu.UserCumulativeCredits.CreateUserCumulativeCreditDto! input) -> System.Threading.Tasks.Task<Kooco.Pikachu.UserCumulativeCredits.UserCumulativeCreditDto!>!
+Kooco.Pikachu.Controllers.UserCumulativeCredits.UserCumulativeCreditController.DeleteAsync(System.Guid id) -> System.Threading.Tasks.Task!
+Kooco.Pikachu.Controllers.UserCumulativeCredits.UserCumulativeCreditController.GetAsync(System.Guid id) -> System.Threading.Tasks.Task<Kooco.Pikachu.UserCumulativeCredits.UserCumulativeCreditDto!>!
+Kooco.Pikachu.Controllers.UserCumulativeCredits.UserCumulativeCreditController.GetListAsync(Kooco.Pikachu.UserCumulativeCredits.GetUserCumulativeCreditListDto! input) -> System.Threading.Tasks.Task<Volo.Abp.Application.Dtos.PagedResultDto<Kooco.Pikachu.UserCumulativeCredits.UserCumulativeCreditDto!>!>!
+Kooco.Pikachu.Controllers.UserCumulativeCredits.UserCumulativeCreditController.UpdateAsync(System.Guid id, Kooco.Pikachu.UserCumulativeCredits.UpdateUserCumulativeCreditDto! input) -> System.Threading.Tasks.Task<Kooco.Pikachu.UserCumulativeCredits.UserCumulativeCreditDto!>!
+Kooco.Pikachu.Controllers.UserCumulativeCredits.UserCumulativeCreditController.UserCumulativeCreditController(Kooco.Pikachu.UserCumulativeCredits.IUserCumulativeCreditAppService! userCumulativeCreditAppService) -> void
+Kooco.Pikachu.Controllers.UserCumulativeFinancials.UserCumulativeFinancialController
+Kooco.Pikachu.Controllers.UserCumulativeFinancials.UserCumulativeFinancialController.CreateAsync(Kooco.Pikachu.UserCumulativeFinancials.CreateUserCumulativeFinancialDto! input) -> System.Threading.Tasks.Task<Kooco.Pikachu.UserCumulativeFinancials.UserCumulativeFinancialDto!>!
+Kooco.Pikachu.Controllers.UserCumulativeFinancials.UserCumulativeFinancialController.DeleteAsync(System.Guid id) -> System.Threading.Tasks.Task!
+Kooco.Pikachu.Controllers.UserCumulativeFinancials.UserCumulativeFinancialController.GetAsync(System.Guid id) -> System.Threading.Tasks.Task<Kooco.Pikachu.UserCumulativeFinancials.UserCumulativeFinancialDto!>!
+Kooco.Pikachu.Controllers.UserCumulativeFinancials.UserCumulativeFinancialController.GetListAsync(Kooco.Pikachu.UserCumulativeFinancials.GetUserCumulativeFinancialListDto! input) -> System.Threading.Tasks.Task<Volo.Abp.Application.Dtos.PagedResultDto<Kooco.Pikachu.UserCumulativeFinancials.UserCumulativeFinancialDto!>!>!
+Kooco.Pikachu.Controllers.UserCumulativeFinancials.UserCumulativeFinancialController.UpdateAsync(System.Guid id, Kooco.Pikachu.UserCumulativeFinancials.UpdateUserCumulativeFinancialDto! input) -> System.Threading.Tasks.Task<Kooco.Pikachu.UserCumulativeFinancials.UserCumulativeFinancialDto!>!
+Kooco.Pikachu.Controllers.UserCumulativeFinancials.UserCumulativeFinancialController.UserCumulativeFinancialController(Kooco.Pikachu.UserCumulativeFinancials.IUserCumulativeFinancialAppService! userCumulativeFinancialAppService) -> void
+Kooco.Pikachu.Controllers.UserCumulativeOrders.UserCumulativeOrderController
+Kooco.Pikachu.Controllers.UserCumulativeOrders.UserCumulativeOrderController.CreateAsync(Kooco.Pikachu.UserCumulativeOrders.CreateUserCumulativeOrderDto! input) -> System.Threading.Tasks.Task<Kooco.Pikachu.UserCumulativeOrders.UserCumulativeOrderDto!>!
+Kooco.Pikachu.Controllers.UserCumulativeOrders.UserCumulativeOrderController.DeleteAsync(System.Guid id) -> System.Threading.Tasks.Task!
+Kooco.Pikachu.Controllers.UserCumulativeOrders.UserCumulativeOrderController.GetAsync(System.Guid id) -> System.Threading.Tasks.Task<Kooco.Pikachu.UserCumulativeOrders.UserCumulativeOrderDto!>!
+Kooco.Pikachu.Controllers.UserCumulativeOrders.UserCumulativeOrderController.GetListAsync(Kooco.Pikachu.UserCumulativeOrders.GetUserCumulativeOrderListDto! input) -> System.Threading.Tasks.Task<Volo.Abp.Application.Dtos.PagedResultDto<Kooco.Pikachu.UserCumulativeOrders.UserCumulativeOrderDto!>!>!
+Kooco.Pikachu.Controllers.UserCumulativeOrders.UserCumulativeOrderController.UpdateAsync(System.Guid id, Kooco.Pikachu.UserCumulativeOrders.UpdateUserCumulativeOrderDto! input) -> System.Threading.Tasks.Task<Kooco.Pikachu.UserCumulativeOrders.UserCumulativeOrderDto!>!
+Kooco.Pikachu.Controllers.UserCumulativeOrders.UserCumulativeOrderController.UserCumulativeOrderController(Kooco.Pikachu.UserCumulativeOrders.IUserCumulativeOrderAppService! userCumulativeOrderAppService) -> void
+Kooco.Pikachu.Controllers.UserShoppingCredits.UserShoppingCreditController
+Kooco.Pikachu.Controllers.UserShoppingCredits.UserShoppingCreditController.CreateAsync(Kooco.Pikachu.UserShoppingCredits.CreateUserShoppingCreditDto! input) -> System.Threading.Tasks.Task<Kooco.Pikachu.UserShoppingCredits.UserShoppingCreditDto!>!
+Kooco.Pikachu.Controllers.UserShoppingCredits.UserShoppingCreditController.DeleteAsync(System.Guid id) -> System.Threading.Tasks.Task!
+Kooco.Pikachu.Controllers.UserShoppingCredits.UserShoppingCreditController.ExpireCreditsAsync() -> System.Threading.Tasks.Task<int>!
+Kooco.Pikachu.Controllers.UserShoppingCredits.UserShoppingCreditController.GetAsync(System.Guid id) -> System.Threading.Tasks.Task<Kooco.Pikachu.UserShoppingCredits.UserShoppingCreditDto!>!
+Kooco.Pikachu.Controllers.UserShoppingCredits.UserShoppingCreditController.GetListAsync(Kooco.Pikachu.UserShoppingCredits.GetUserShoppingCreditListDto! input) -> System.Threading.Tasks.Task<Volo.Abp.Application.Dtos.PagedResultDto<Kooco.Pikachu.UserShoppingCredits.UserShoppingCreditDto!>!>!
+Kooco.Pikachu.Controllers.UserShoppingCredits.UserShoppingCreditController.GetMemberCurrentShoppingCreditAsync(System.Guid memberId) -> System.Threading.Tasks.Task<int>!
+Kooco.Pikachu.Controllers.UserShoppingCredits.UserShoppingCreditController.GetShoppingCreditStatsAsync() -> System.Threading.Tasks.Task<Kooco.Pikachu.ShoppingCredits.ShoppingCreditStatDto!>!
+Kooco.Pikachu.Controllers.UserShoppingCredits.UserShoppingCreditController.RecordShoppingCreditAsync(Kooco.Pikachu.UserShoppingCredits.RecordUserShoppingCreditDto! input) -> System.Threading.Tasks.Task<Kooco.Pikachu.UserShoppingCredits.UserShoppingCreditDto!>!
+Kooco.Pikachu.Controllers.UserShoppingCredits.UserShoppingCreditController.SetIsActiveAsync(System.Guid id, bool isActive) -> System.Threading.Tasks.Task<Kooco.Pikachu.UserShoppingCredits.UserShoppingCreditDto!>!
+Kooco.Pikachu.Controllers.UserShoppingCredits.UserShoppingCreditController.UpdateAsync(System.Guid id, Kooco.Pikachu.UserShoppingCredits.UpdateUserShoppingCreditDto! input) -> System.Threading.Tasks.Task<Kooco.Pikachu.UserShoppingCredits.UserShoppingCreditDto!>!
+Kooco.Pikachu.Controllers.UserShoppingCredits.UserShoppingCreditController.UserShoppingCreditController(Kooco.Pikachu.UserShoppingCredits.IUserShoppingCreditAppService! userShoppingCreditAppService) -> void
+Kooco.Pikachu.Controllers.WebsiteBasicSettings.WebsiteBasicSettingController
+Kooco.Pikachu.Controllers.WebsiteBasicSettings.WebsiteBasicSettingController.FirstOrDefaultAsync() -> System.Threading.Tasks.Task<Kooco.Pikachu.WebsiteManagement.WebsiteBasicSettings.WebsiteBasicSettingDto!>!
+Kooco.Pikachu.Controllers.WebsiteBasicSettings.WebsiteBasicSettingController.SetIsEnabledAsync(bool isEnabled) -> System.Threading.Tasks.Task<Kooco.Pikachu.WebsiteManagement.WebsiteBasicSettings.WebsiteBasicSettingDto!>!
+Kooco.Pikachu.Controllers.WebsiteBasicSettings.WebsiteBasicSettingController.UpdateAsync(Kooco.Pikachu.WebsiteManagement.WebsiteBasicSettings.UpdateWebsiteBasicSettingDto! input) -> System.Threading.Tasks.Task<Kooco.Pikachu.WebsiteManagement.WebsiteBasicSettings.WebsiteBasicSettingDto!>!
+Kooco.Pikachu.Controllers.WebsiteBasicSettings.WebsiteBasicSettingController.WebsiteBasicSettingController(Kooco.Pikachu.WebsiteManagement.WebsiteBasicSettings.IWebsiteBasicSettingAppService! websiteBasicSettingAppService) -> void
+Kooco.Pikachu.Controllers.WebsiteManagement.FooterSettings.FooterSettingController
+Kooco.Pikachu.Controllers.WebsiteManagement.FooterSettings.FooterSettingController.FirstOrDefaultAsync() -> System.Threading.Tasks.Task<Kooco.Pikachu.WebsiteManagement.FooterSettings.FooterSettingDto?>!
+Kooco.Pikachu.Controllers.WebsiteManagement.FooterSettings.FooterSettingController.FooterSettingController(Kooco.Pikachu.WebsiteManagement.FooterSettings.IFooterSettingAppService! footerSettingAppService) -> void
+Kooco.Pikachu.Controllers.WebsiteManagement.FooterSettings.FooterSettingController.UpdateAsync(Kooco.Pikachu.WebsiteManagement.FooterSettings.UpdateFooterSettingDto! input) -> System.Threading.Tasks.Task<Kooco.Pikachu.WebsiteManagement.FooterSettings.FooterSettingDto!>!
+Kooco.Pikachu.Controllers.WebsiteManagement.WebsiteSettingsController
+Kooco.Pikachu.Controllers.WebsiteManagement.WebsiteSettingsController.CreateAsync(Kooco.Pikachu.WebsiteManagement.CreateWebsiteSettingsDto! input) -> System.Threading.Tasks.Task<Kooco.Pikachu.WebsiteManagement.WebsiteSettingsDto!>!
+Kooco.Pikachu.Controllers.WebsiteManagement.WebsiteSettingsController.DeleteAsync(System.Guid id) -> System.Threading.Tasks.Task!
+Kooco.Pikachu.Controllers.WebsiteManagement.WebsiteSettingsController.DeleteInstructionsModuleAsync(System.Guid id) -> System.Threading.Tasks.Task!
+Kooco.Pikachu.Controllers.WebsiteManagement.WebsiteSettingsController.DeleteModuleAsync(System.Guid id, System.Guid moduleId) -> System.Threading.Tasks.Task!
+Kooco.Pikachu.Controllers.WebsiteManagement.WebsiteSettingsController.DeleteOverviewModuleAsync(System.Guid id) -> System.Threading.Tasks.Task!
+Kooco.Pikachu.Controllers.WebsiteManagement.WebsiteSettingsController.DeleteProductRankingModuleAsync(System.Guid id) -> System.Threading.Tasks.Task!
+Kooco.Pikachu.Controllers.WebsiteManagement.WebsiteSettingsController.GetAsync(System.Guid id, bool includeDetails = false) -> System.Threading.Tasks.Task<Kooco.Pikachu.WebsiteManagement.WebsiteSettingsDto!>!
+Kooco.Pikachu.Controllers.WebsiteManagement.WebsiteSettingsController.GetListAsync(Kooco.Pikachu.WebsiteManagement.GetWebsiteSettingsListDto! input) -> System.Threading.Tasks.Task<Volo.Abp.Application.Dtos.PagedResultDto<Kooco.Pikachu.WebsiteManagement.WebsiteSettingsDto!>!>!
+Kooco.Pikachu.Controllers.WebsiteManagement.WebsiteSettingsController.GetModuleAsync(System.Guid moduleId) -> System.Threading.Tasks.Task<Kooco.Pikachu.WebsiteManagement.WebsiteSettingsModules.WebsiteSettingsModuleDto!>!
+Kooco.Pikachu.Controllers.WebsiteManagement.WebsiteSettingsController.GetModulesAsync(System.Guid id) -> System.Threading.Tasks.Task<System.Collections.Generic.List<Kooco.Pikachu.WebsiteManagement.WebsiteSettingsModules.WebsiteSettingsModuleDto!>!>!
+Kooco.Pikachu.Controllers.WebsiteManagement.WebsiteSettingsController.UpdateAsync(System.Guid id, Kooco.Pikachu.WebsiteManagement.UpdateWebsiteSettingsDto! input) -> System.Threading.Tasks.Task<Kooco.Pikachu.WebsiteManagement.WebsiteSettingsDto!>!
+Kooco.Pikachu.Controllers.WebsiteManagement.WebsiteSettingsController.WebsiteSettingsController(Kooco.Pikachu.WebsiteManagement.IWebsiteSettingsAppService! websiteSettingsAppService) -> void
+Kooco.Pikachu.Models.Test.TestModel
+Kooco.Pikachu.Models.Test.TestModel.BirthDate.get -> System.DateTime
+Kooco.Pikachu.Models.Test.TestModel.BirthDate.set -> void
+Kooco.Pikachu.Models.Test.TestModel.Name.get -> string!
+Kooco.Pikachu.Models.Test.TestModel.Name.set -> void
+Kooco.Pikachu.Models.Test.TestModel.TestModel() -> void
+Kooco.Pikachu.MultiTenancy.MyDomainTenantResolveContributor
+Kooco.Pikachu.MultiTenancy.MyDomainTenantResolveContributor.MyDomainTenantResolveContributor() -> void
+Kooco.Pikachu.PikachuHttpApiModule
+Kooco.Pikachu.PikachuHttpApiModule.PikachuHttpApiModule() -> void
+override Kooco.Pikachu.MultiTenancy.MyDomainTenantResolveContributor.Name.get -> string!
+override Kooco.Pikachu.MultiTenancy.MyDomainTenantResolveContributor.ResolveAsync(Volo.Abp.MultiTenancy.ITenantResolveContext! context) -> System.Threading.Tasks.Task!
+override Kooco.Pikachu.PikachuHttpApiModule.ConfigureServices(Volo.Abp.Modularity.ServiceConfigurationContext! context) -> void
+static Kooco.Pikachu.MultiTenancy.MyDomainTenantResolveContributor.CleanDomainName(string! domain) -> string!
+static Kooco.Pikachu.MultiTenancy.MyDomainTenantResolveContributor.CleanUrl(string! host) -> string!
