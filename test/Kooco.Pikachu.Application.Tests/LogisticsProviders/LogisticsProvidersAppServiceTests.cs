@@ -31,11 +31,10 @@ namespace Kooco.Pikachu.LogisticsProviders
         private async Task<LogisticsProviderSettings> CreateTestProviderAsync(
             LogisticProviders provider,
             bool isEnabled = true,
-            decimal freight = 100)
+            int freight = 100)
         {
             var settings = new LogisticsProviderSettings
             {
-                Id = Guid.NewGuid(),
                 LogisticProvider = provider,
                 IsEnabled = isEnabled,
                 Freight = freight,
@@ -61,7 +60,7 @@ namespace Kooco.Pikachu.LogisticsProviders
                 PlatFormId = "Platform123",
                 SenderAddress = "Test Address 123",
                 SenderPostalCode = "10001",
-                City = "Taipei"
+                City = MainlandCity.TaipeiCity
             };
         }
 
@@ -72,8 +71,8 @@ namespace Kooco.Pikachu.LogisticsProviders
                 IsEnabled = true,
                 CustomTitle = "Home Delivery Service",
                 Freight = 150,
-                MainIslands = 100,
-                OuterIslands = 200,
+                MainIslands = "100",
+                OuterIslands = "200",
                 IsOuterIslands = true
             };
         }
@@ -84,7 +83,7 @@ namespace Kooco.Pikachu.LogisticsProviders
             {
                 IsEnabled = true,
                 Freight = 60,
-                Payment = 10
+                Payment = true
             };
         }
 
@@ -190,8 +189,8 @@ namespace Kooco.Pikachu.LogisticsProviders
             provider.ShouldNotBeNull();
             provider.CustomTitle.ShouldBe("Home Delivery Service");
             provider.Freight.ShouldBe(150);
-            provider.MainIslands.ShouldBe(100);
-            provider.OuterIslands.ShouldBe(200);
+            provider.MainIslands.ShouldBe("100");
+            provider.OuterIslands.ShouldBe("200");
             provider.IsOuterIslands.ShouldBe(true);
         }
 
@@ -220,7 +219,7 @@ namespace Kooco.Pikachu.LogisticsProviders
 
             provider.ShouldNotBeNull();
             provider.Freight.ShouldBe(60);
-            provider.Payment.ShouldBe(10);
+            provider.Payment.ShouldBe(true);
         }
 
         [Fact]
@@ -285,11 +284,11 @@ namespace Kooco.Pikachu.LogisticsProviders
                 SenderName = "TCat Sender",
                 SenderPhoneNumber = "0923456789",
                 SenderAddress = "TCat Address 456",
-                TCatShippingLabelForm = "Label1",
-                TCatPickingListForm = "Picking1",
-                TCatShippingLabelForm711 = "Label711",
-                ReverseLogisticShippingFee = 50,
-                DeclaredValue = 1000
+                TCatShippingLabelForm = TCatShippingLabelForm.A4DualModeHomeDelivery,
+                TCatPickingListForm = TCatPickingListForm.A4TripleModePickingList,
+                TCatShippingLabelForm711 = TCatShippingLabelForm711.A4TripleModeB2S,
+                ReverseLogisticShippingFee = ReverseLogisticShippingFee.BorneByStore,
+                DeclaredValue = true
             };
 
             // Note: GenerateSenderZIPCodeAsync would need external API mocking
@@ -307,9 +306,9 @@ namespace Kooco.Pikachu.LogisticsProviders
                 IsEnabled = true,
                 Freight = 120,
                 OuterIslandFreight = 250,
-                Size = "60",
-                Payment = 20,
-                TCatPaymentMethod = TCatPaymentMethod.Receiver,
+                Size = SizeEnum.Cm0001,
+                Payment = true,
+                TCatPaymentMethod = TCatPaymentMethod.CardAndMobilePaymentsAccepted,
                 HualienAndTaitungShippingFee = 30,
                 HolidaySurcharge = 50,
                 HolidaySurchargeStartTime = new DateTime(2024, 12, 20),
@@ -332,7 +331,7 @@ namespace Kooco.Pikachu.LogisticsProviders
             provider.ShouldNotBeNull();
             provider.Freight.ShouldBe(120);
             provider.OuterIslandFreight.ShouldBe(250);
-            provider.TCatPaymentMethod.ShouldBe(TCatPaymentMethod.Receiver);
+            provider.TCatPaymentMethod.ShouldBe(TCatPaymentMethod.CardAndMobilePaymentsAccepted);
             provider.HolidaySurcharge.ShouldBe(50);
         }
 
@@ -349,7 +348,7 @@ namespace Kooco.Pikachu.LogisticsProviders
                 IsEnabled = true,
                 Freight = 100,
                 OuterIslandFreight = 200,
-                Size = "Large",
+                Size = SizeEnum.Cm0004,
                 HualienAndTaitungShippingFee = 25,
                 HolidaySurcharge = 40,
                 HolidaySurchargeStartTime = new DateTime(2024, 2, 1),
@@ -370,7 +369,7 @@ namespace Kooco.Pikachu.LogisticsProviders
             });
 
             provider.ShouldNotBeNull();
-            provider.Size.ShouldBe("Large");
+            provider.Size.ShouldBe(SizeEnum.Cm0004);
             provider.HualienAndTaitungShippingFee.ShouldBe(25);
         }
 
@@ -383,7 +382,7 @@ namespace Kooco.Pikachu.LogisticsProviders
                 IsEnabled = true,
                 Freight = 100,
                 OuterIslandFreight = 200,
-                Size = "Medium"
+                Size = SizeEnum.Cm0002
             };
 
             // Act
@@ -473,9 +472,9 @@ namespace Kooco.Pikachu.LogisticsProviders
             // Assert
             result.ShouldNotBeNull();
             result["Provider"].GetValue<string>().ShouldBe("HomeDelivery");
-            result["Cost"].GetValue<decimal>().ShouldBe(150);
-            result["MainIslands"].GetValue<decimal>().ShouldBe(100);
-            result["OuterIslands"].GetValue<decimal>().ShouldBe(200);
+            result["Cost"].GetValue<int>().ShouldBe(150);
+            result["MainIslands"].GetValue<string>().ShouldBe("100");
+            result["OuterIslands"].GetValue<string>().ShouldBe("200");
             result["IsOuterIslands"].GetValue<bool>().ShouldBe(true);
         }
 
@@ -495,7 +494,7 @@ namespace Kooco.Pikachu.LogisticsProviders
             // Assert
             result.ShouldNotBeNull();
             result["Provider"].GetValue<string>().ShouldBe("SevenToEleven");
-            result["COST"].GetValue<decimal>().ShouldBe(60);
+            result["COST"].GetValue<int>().ShouldBe(60);
             result.ContainsKey("MerchantID").ShouldBe(true);
         }
 

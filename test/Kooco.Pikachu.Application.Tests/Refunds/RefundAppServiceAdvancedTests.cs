@@ -50,15 +50,12 @@ namespace Kooco.Pikachu.Refunds
         {
             var order = new Order
             {
-                Id = Guid.NewGuid(),
                 OrderNo = orderNo ?? $"ORD{DateTime.Now:yyyyMMddHHmmss}",
                 TotalAmount = totalAmount,
                 PaymentMethod = paymentMethod,
                 OrderStatus = OrderStatus.Open,
                 ShippingStatus = shippingStatus,
                 IsRefunded = false,
-                UserId = Guid.NewGuid(),
-                GroupBuyId = Guid.NewGuid(),
                 CustomerEmail = "customer@example.com",
                 MerchantTradeNo = $"MT{DateTime.Now:yyyyMMddHHmmss}",
                 TradeNo = $"T{DateTime.Now:yyyyMMddHHmmss}",
@@ -72,13 +69,13 @@ namespace Kooco.Pikachu.Refunds
             {
                 var orderItem = new OrderItem
                 {
-                    Id = Guid.NewGuid(),
                     OrderId = order.Id,
-                    ItemId = Guid.NewGuid(),
-                    ItemName = $"Item {i}",
+                    ItemType = ItemType.Item,
                     Quantity = 2,
                     ItemPrice = totalAmount / itemCount / 2,
-                    TotalAmount = totalAmount / itemCount
+                    TotalAmount = totalAmount / itemCount,
+                    SKU = $"SKU-{i}",
+                    DeliveryTemperature = ItemStorageTemperature.Normal
                 };
                 order.OrderItems.Add(orderItem);
             }
@@ -94,7 +91,6 @@ namespace Kooco.Pikachu.Refunds
         {
             var splitOrder = new Order
             {
-                Id = Guid.NewGuid(),
                 OrderNo = $"{originalOrder.OrderNo}-SPLIT",
                 TotalAmount = splitAmount,
                 PaymentMethod = originalOrder.PaymentMethod,
@@ -239,11 +235,12 @@ namespace Kooco.Pikachu.Refunds
                 order.CreditDeductionRecordId.Value,
                 userId,
                 500,
-                DateTime.Now.AddDays(-5),
-                true,
-                DateTime.Now.AddMonths(1),
+                500, // currentRemainingCredits
                 "Initial credit",
-                UserShoppingCreditType.Grant
+                DateTime.Now.AddMonths(1),
+                true,
+                UserShoppingCreditType.Grant,
+                order.OrderNo
             );
             await _userShoppingCreditRepository.InsertAsync(shoppingCredit);
 
@@ -303,15 +300,18 @@ namespace Kooco.Pikachu.Refunds
             }
 
             // Act - Process all refunds
+            int index = 0;
             foreach (var refund in refunds)
             {
+                var currentIndex = index;
                 await WithUnitOfWorkAsync(async () =>
                 {
                     await _refundAppService.UpdateRefundReviewAsync(
                         refund.Id,
-                        i % 2 == 0 ? RefundReviewStatus.Success : RefundReviewStatus.Fail
+                        currentIndex % 2 == 0 ? RefundReviewStatus.Success : RefundReviewStatus.Fail
                     );
                 });
+                index++;
             }
 
             // Assert

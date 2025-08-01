@@ -53,7 +53,6 @@ namespace Kooco.Pikachu.Application.Tests.ShopCarts
         {
             var groupBuy = new GroupBuy
             {
-                Id = Guid.NewGuid(),
                 GroupBuyName = name ?? "Test Group Buy " + Guid.NewGuid().ToString("N").Substring(0, 8),
                 ShortCode = "TGB" + Guid.NewGuid().ToString("N").Substring(0, 5),
                 GroupBuyNo = 123456,
@@ -68,7 +67,6 @@ namespace Kooco.Pikachu.Application.Tests.ShopCarts
         {
             var item = new Item
             {
-                Id = Guid.NewGuid(),
                 ItemName = "Multi-Detail Item"
             };
             await _itemRepository.InsertAsync(item);
@@ -120,7 +118,7 @@ namespace Kooco.Pikachu.Application.Tests.ShopCarts
                     ItemDetailId = detail.Id,
                     Quantity = 2,
                     GroupBuyPrice = (int)detail.SellingPrice,
-                    SellingPrice = detail.SellingPrice
+                    SellingPrice = (int)detail.SellingPrice
                 };
                 await _shopCartAppService.AddCartItemAsync(user.Id, groupBuy.Id, input);
             });
@@ -134,7 +132,7 @@ namespace Kooco.Pikachu.Application.Tests.ShopCarts
                     ItemDetailId = detail.Id,
                     Quantity = 3,
                     GroupBuyPrice = (int)detail.SellingPrice,
-                    SellingPrice = detail.SellingPrice
+                    SellingPrice = (int)detail.SellingPrice
                 };
                 return await _shopCartAppService.AddCartItemAsync(user.Id, groupBuy.Id, input);
             });
@@ -285,7 +283,6 @@ namespace Kooco.Pikachu.Application.Tests.ShopCarts
         {
             var setItem = new SetItem
             {
-                Id = Guid.NewGuid(),
                 SetItemName = "Test Set Item " + Guid.NewGuid().ToString("N").Substring(0, 8),
                 SetItemNo = "TSI" + Guid.NewGuid().ToString("N").Substring(0, 5),
                 SetItemPrice = 2000,

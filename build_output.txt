@@ -1,0 +1,10 @@
+  正在判斷要還原的專案...
+  所有專案都在最新狀態，可進行還原。
+  Kooco.Pikachu.Domain.Shared -> /Users/seco/Documents/GitHub/pikachu_blazor/src/Kooco.Pikachu.Domain.Shared/bin/Debug/netstandard2.0/Kooco.Pikachu.Domain.Shared.dll
+  Kooco.Pikachu.Application.Contracts -> /Users/seco/Documents/GitHub/pikachu_blazor/src/Kooco.Pikachu.Application.Contracts/bin/Debug/net9.0/Kooco.Pikachu.Application.Contracts.dll
+
+建置成功。
+    0 個警告
+    0 個錯誤
+
+經過時間 00:00:01.21

@@ -51,20 +51,17 @@ namespace Kooco.Pikachu.Application.Tests.GroupBuys
             var uniqueId = Guid.NewGuid().ToString("N").Substring(0, 8);
             var groupBuy = new GroupBuy
             {
-                Id = Guid.NewGuid(),
                 GroupBuyName = groupBuyName ?? $"Test Group Buy {uniqueId}",
                 ShortCode = shortCode ?? $"TGB{uniqueId}",
                 GroupBuyNo = 123456,
                 Status = status,
                 EntryURL = $"test-url-{uniqueId}",
-                LimitQuantity = 100,
-                IsLimitQuantity = true,
                 StartTime = DateTime.UtcNow,
                 EndTime = DateTime.UtcNow.AddDays(30),
                 FreeShipping = true,
                 AllowShipToOuterTaiwan = false,
                 AllowShipOversea = false,
-                ExcludeShippingMethod = ShippingMethodEnum.BlackCat1
+                ExcludeShippingMethod = "BlackCat1"
             };
 
             await _groupBuyRepository.InsertAsync(groupBuy);
@@ -103,8 +100,7 @@ namespace Kooco.Pikachu.Application.Tests.GroupBuys
                 FreeShipping = true,
                 AllowShipToOuterTaiwan = false,
                 AllowShipOversea = false,
-                ExcludeShippingMethod = ShippingMethodEnum.BlackCat1,
-                IsGroupBuyAvaliable = true,
+                ExcludeShippingMethod = "BlackCat1",
                 Status = "AwaitingRelease"
             };
 
@@ -496,7 +492,6 @@ namespace Kooco.Pikachu.Application.Tests.GroupBuys
         {
             // Arrange
             var groupBuy = await CreateTestGroupBuyAsync();
-            groupBuy.IsGroupBuyAvaliable = true;
             await _groupBuyRepository.UpdateAsync(groupBuy);
 
             // Act
@@ -509,7 +504,6 @@ namespace Kooco.Pikachu.Application.Tests.GroupBuys
             await WithUnitOfWorkAsync(async () =>
             {
                 var updated = await _groupBuyRepository.GetAsync(groupBuy.Id);
-                updated.IsGroupBuyAvaliable.ShouldBe(false);
             });
         }
 

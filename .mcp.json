@@ -1,6 +1,6 @@
 {
   "mcpServers": {
-    "noodle-memory": {
+    "pikachu-memory": {
       "type": "sse",
       "url": "https://pikachu-memory.kooco.co/sse"
     },

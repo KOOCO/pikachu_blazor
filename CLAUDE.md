@@ -226,6 +226,54 @@ Payment flow:
 - Multi-tenancy enabled but currently single-tenant deployment
 - Localization files in `Localization/Pikachu/` support zh-Hant, zh-Hans, en
 
+## API Design and Breaking Change Prevention
+
+The project uses **Microsoft.CodeAnalysis.PublicApiAnalyzers** to prevent accidental breaking changes to public APIs.
+
+### Enabled Projects
+- `Kooco.Pikachu.Application.Contracts` - Service interfaces and DTOs
+- `Kooco.Pikachu.HttpApi` - Web API controllers
+- `Kooco.Pikachu.Domain.Shared` - Shared types and constants
+
+### PublicAPI Files Management
+
+Each enabled project contains:
+- `PublicAPI.Shipped.txt` - Already released/stable public APIs
+- `PublicAPI.Unshipped.txt` - New APIs pending release
+
+### Workflow for API Changes
+
+1. **Adding New Public APIs:**
+   ```bash
+   # Build will fail with RS0016 warnings for undeclared APIs
+   dotnet build src/Kooco.Pikachu.Application.Contracts
+   
+   # Add new API signatures to PublicAPI.Unshipped.txt
+   # Example: Kooco.Pikachu.INewService.NewMethod() -> void
+   ```
+
+2. **Releasing APIs (Move to Shipped):**
+   - Move entries from `PublicAPI.Unshipped.txt` to `PublicAPI.Shipped.txt`
+   - Clear `PublicAPI.Unshipped.txt` after release
+
+3. **Removing APIs (Breaking Change):**
+   - Remove from appropriate PublicAPI file
+   - Ensure it's a conscious decision documented in release notes
+
+### CI/CD Integration
+- Azure DevOps pipeline validates API consistency
+- Build fails if public APIs aren't properly declared
+- Separate validation steps for each enabled project
+
+### Common Commands
+```bash
+# Validate specific project API
+dotnet build src/Kooco.Pikachu.Application.Contracts --verbosity normal
+
+# Build without API validation (temporary bypass)
+dotnet build -p:EnableApiAnalyzers=false
+```
+
 ## Testing Coverage Status
 
 ### Current Coverage (Baseline: 2025-01-18)
@@ -270,7 +318,7 @@ Payment flow:
   * Save location: `docs/` folder for easy reference
 ```
 
-Before Starting Any Task using noodle-memory for following:
+Before Starting Any Task using pikachu-memory for following:
 Always search first: Use the search_nodes tool to look for relevant preferences and procedures before beginning work.
 Search for facts too: Use the search_facts tool to discover relationships and factual information that may be relevant to your task.
 Filter by entity type: Specify Preference, Procedure, or Requirement in your node search to get targeted results.

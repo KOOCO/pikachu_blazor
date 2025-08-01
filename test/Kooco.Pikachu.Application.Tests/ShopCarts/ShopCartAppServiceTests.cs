@@ -57,7 +57,6 @@ namespace Kooco.Pikachu.Application.Tests.ShopCarts
         {
             var groupBuy = new GroupBuy
             {
-                Id = Guid.NewGuid(),
                 GroupBuyName = "Test Group Buy",
                 ShortCode = "TGB001",
                 GroupBuyNo = 123456,
@@ -72,7 +71,6 @@ namespace Kooco.Pikachu.Application.Tests.ShopCarts
         {
             var item = new Item
             {
-                Id = Guid.NewGuid(),
                 ItemName = "Test Item"
             };
             await _itemRepository.InsertAsync(item);
@@ -94,7 +92,6 @@ namespace Kooco.Pikachu.Application.Tests.ShopCarts
         {
             var setItem = new SetItem
             {
-                Id = Guid.NewGuid(),
                 SetItemName = "Test Set Item",
                 SetItemNo = "TSI001",
                 SetItemPrice = 2000,
