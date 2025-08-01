@@ -241,38 +241,48 @@ Each enabled project contains:
 - `PublicAPI.Shipped.txt` - Already released/stable public APIs
 - `PublicAPI.Unshipped.txt` - New APIs pending release
 
+### Quick Commands for API Management
+
+```bash
+# Auto-fix all API issues (recommended)
+pwsh scripts/api-protection/auto-update-public-api.ps1
+
+# Extract missing APIs from specific project
+pwsh extract_missing_apis.ps1 -ProjectPath "src/Kooco.Pikachu.HttpApi"
+
+# Quick update for all projects
+sh scripts/update-api.sh
+
+# Build without API validation (temporary)
+dotnet build -p:EnableApiAnalyzers=false
+```
+
 ### Workflow for API Changes
 
-1. **Adding New Public APIs:**
+1. **When you see RS0016 (missing API declaration):**
    ```bash
-   # Build will fail with RS0016 warnings for undeclared APIs
-   dotnet build src/Kooco.Pikachu.Application.Contracts
-   
-   # Add new API signatures to PublicAPI.Unshipped.txt
-   # Example: Kooco.Pikachu.INewService.NewMethod() -> void
+   # Run auto-update script
+   pwsh scripts/api-protection/auto-update-public-api.ps1
+   # Review and commit changes
    ```
 
-2. **Releasing APIs (Move to Shipped):**
+2. **When you see RS0017 (removed API):**
+   - The auto-update script will remove it automatically
+   - Or manually remove from PublicAPI files
+
+3. **Releasing APIs (Move to Shipped):**
    - Move entries from `PublicAPI.Unshipped.txt` to `PublicAPI.Shipped.txt`
    - Clear `PublicAPI.Unshipped.txt` after release
-
-3. **Removing APIs (Breaking Change):**
-   - Remove from appropriate PublicAPI file
-   - Ensure it's a conscious decision documented in release notes
 
 ### CI/CD Integration
 - Azure DevOps pipeline validates API consistency
 - Build fails if public APIs aren't properly declared
-- Separate validation steps for each enabled project
+- Uses `scripts/api-protection/validate-public-api.ps1` for validation
 
-### Common Commands
-```bash
-# Validate specific project API
-dotnet build src/Kooco.Pikachu.Application.Contracts --verbosity normal
-
-# Build without API validation (temporary bypass)
-dotnet build -p:EnableApiAnalyzers=false
-```
+### Troubleshooting
+- **Duplicate entries**: Run `sort PublicAPI.Unshipped.txt | uniq > temp && mv temp PublicAPI.Unshipped.txt`
+- **CI/CD failures**: Run auto-update script locally and commit changes
+- **Full guide**: See `docs/public-api-analyzers-guide.md`
 
 ## Testing Coverage Status
 
