@@ -190,7 +190,7 @@
                 </div>
                 <div class="col-9">
                     <RadioGroup TValue="bool"
-                                CheckedValue="@UpdateFreebieDto.ApplyToAllProduct"
+                                CheckedValue="@UpdateFreebieDto.ApplyToAllProducts"
                                 CheckedValueChanged="@OnProductCheckedValueChanged"
                                 Name="ApplyToAllProduct"
                                 Class="horizontal-radiogroup">
@@ -204,7 +204,7 @@
                 </div>
             </div>
 
-            @if (UpdateFreebieDto.ApplyToAllProduct == false)
+            @if (UpdateFreebieDto.ApplyToAllProducts == false)
             {
                 <div class="row mt-2">
                     <div class="col-2">

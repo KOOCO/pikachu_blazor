@@ -109,7 +109,7 @@ namespace Kooco.Pikachu.Freebies
             freebie.ItemName = input.ItemName;
             freebie.ItemDescription = input.ItemDescription;
             freebie.ApplyToAllGroupBuy = input.ApplyToAllGroupBuy;
-            freebie.ApplyToAllProducts = input.ApplyToAllProduct;
+            freebie.ApplyToAllProducts = input.ApplyToAllProducts;
             freebie.ActivityStartDate = input.ActivityStartDate;
             freebie.ActivityEndDate = input.ActivityEndDate;
             freebie.UnCondition = input.UnCondition;

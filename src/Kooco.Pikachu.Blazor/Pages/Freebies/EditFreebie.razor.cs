@@ -273,7 +273,7 @@ public partial class EditFreebie
         {
             throw new BusinessException(L[PikachuDomainErrorCodes.SelectAtLeastOneGroupBuy]);
         }
-        if (UpdateFreebieDto.ApplyToAllProduct == false && !UpdateFreebieDto.FreebieProducts.Any())
+        if (UpdateFreebieDto.ApplyToAllProducts == false && !UpdateFreebieDto.FreebieProducts.Any())
         {
             throw new BusinessException(L[PikachuDomainErrorCodes.SelectAtLeastOneProduct]);
         }
@@ -312,14 +312,26 @@ public partial class EditFreebie
     }
     Task OnProductCheckedValueChanged(bool value)
     {
-        UpdateFreebieDto.ApplyToAllProduct = value;
+        UpdateFreebieDto.ApplyToAllProducts = value;
 
         return Task.CompletedTask;
     }
     Task OnUnconditionCheckedValueChanged(bool value)
     {
         UpdateFreebieDto.UnCondition = value;
+        if (UpdateFreebieDto.UnCondition)
+        {
+            UpdateFreebieDto.MinimumAmount = null;
+            UpdateFreebieDto.MinimumPiece = null;
+            UpdateFreebieDto.FreebieOrderReach = null;
 
+        }
+        else
+        {
+            UpdateFreebieDto.FreebieQuantity = 0;
+
+
+        }
         return Task.CompletedTask;
     }
     #endregion

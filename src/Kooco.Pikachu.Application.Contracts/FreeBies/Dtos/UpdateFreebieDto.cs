@@ -12,7 +12,7 @@ namespace Kooco.Pikachu.FreeBies.Dtos
         public string? ItemName { get; set; }
         public string? ItemDescription { get; set; }
         public bool ApplyToAllGroupBuy { get; set; }
-        public bool ApplyToAllProduct { get; set; }
+        public bool ApplyToAllProducts { get; set; }
         public ICollection<CreateImageDto> Images { get; set; }
         public List<Guid> FreebieGroupBuys { get; set; }
         public List<Guid> FreebieProducts { get; set; }

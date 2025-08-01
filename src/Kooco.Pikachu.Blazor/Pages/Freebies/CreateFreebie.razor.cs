@@ -4,6 +4,7 @@ using Kooco.Pikachu.Blazor.Helpers;
 using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Freebies;
 using Kooco.Pikachu.Freebies.Dtos;
+using Kooco.Pikachu.FreeBies.Dtos;
 using Kooco.Pikachu.GroupBuys;
 using Kooco.Pikachu.Images;
 using Kooco.Pikachu.Items;
@@ -253,7 +254,19 @@ namespace Kooco.Pikachu.Blazor.Pages.Freebies
         Task OnUnconditionCheckedValueChanged(bool value)
         {
             FreebieCreateDto.UnCondition = value;
+            if (FreebieCreateDto.UnCondition)
+            {
+                FreebieCreateDto.MinimumAmount = null;
+                FreebieCreateDto.MinimumPiece = null;
+                FreebieCreateDto.FreebieOrderReach = null;
 
+            }
+            else
+            {
+                FreebieCreateDto.FreebieQuantity = 0;
+
+
+            }
             return Task.CompletedTask;
         }
     }
