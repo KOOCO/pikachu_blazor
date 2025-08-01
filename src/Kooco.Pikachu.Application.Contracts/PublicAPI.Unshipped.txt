@@ -1,25 +1,5 @@
-#nullable enable
-AddOnProductDto
-AddOnProductDto.AddOnProductDto() -> void
-AddOnProductSpecificGroupbuyDto
-AddOnProductSpecificGroupbuyDto.AddOnProductSpecificGroupbuyDto() -> void
-CreateUpdateAddOnProductDto
-CreateUpdateAddOnProductDto.CreateUpdateAddOnProductDto() -> void
-DeliveryTemperatureCostDto
-DeliveryTemperatureCostDto.DeliveryTemperatureCostDto() -> void
-GetAddOnProductListDto
-GetAddOnProductListDto.GetAddOnProductListDto() -> void
-IAddOnProductAppService
-IDeliveryTemperatureCostAppService
-UpdateDeliveryTemperatureCostDto
-UpdateDeliveryTemperatureCostDto.UpdateDeliveryTemperatureCostDto() -> void
-CreateUpdateEnumValueDto
-CreateUpdateEnumValueDto.CreateUpdateEnumValueDto() -> void
-EnumValueDto
-EnumValueDto.EnumValueDto() -> void
-DiscountCheckInputDto
-DiscountCheckInputDto.DiscountCheckInputDto() -> void
 
+#nullable enable
 AccessToken.get
 AccessToken.set
 AccountName.get
@@ -51,10 +31,12 @@ AddOnProduct.get
 AddonProduct.set
 AddOnProduct.set
 AddOnProductDto
+AddOnProductDto.AddOnProductDto() -> void
 AddOnProductId.get
 AddOnProductId.set
 AddOnProducts
 AddOnProductSpecificGroupbuyDto
+AddOnProductSpecificGroupbuyDto.AddOnProductSpecificGroupbuyDto() -> void
 AddOnProductSpecificGroupbuys.get
 AddOnProductSpecificGroupbuys.set
 AddOnProductUsagePolicy.get
@@ -456,9 +438,11 @@ CreateTenantTripartiteDto
 CreateTime.get
 CreateTime.set
 CreateUpdateAddOnProductDto
+CreateUpdateAddOnProductDto.CreateUpdateAddOnProductDto() -> void
 CreateUpdateCategoryProductDto
 CreateUpdateDiscountCodeDto
 CreateUpdateEnumValueDto
+CreateUpdateEnumValueDto.CreateUpdateEnumValueDto() -> void
 CreateUpdateGroupBuyItemsPriceDto
 CreateUpdateGroupBuyOrderInstructionDto
 CreateUpdateGroupBuyProductRankingDto
@@ -712,6 +696,7 @@ DeliveryTemperatureCost
 DeliveryTemperatureCost.get
 DeliveryTemperatureCost.set
 DeliveryTemperatureCostDto
+DeliveryTemperatureCostDto.DeliveryTemperatureCostDto() -> void
 DeliveryTime.get
 DeliveryTime.set
 DeliveryType.get
@@ -727,6 +712,7 @@ Discount.set
 DiscountAmount.get
 DiscountAmount.set
 DiscountCheckInputDto
+DiscountCheckInputDto.DiscountCheckInputDto() -> void
 DiscountCheckOutputDto
 DiscountCode.get
 DiscountCode.set
@@ -804,6 +790,7 @@ EntryURL2.set
 EnumType.get
 EnumType.set
 EnumValueDto
+EnumValueDto.EnumValueDto() -> void
 Equals
 ErrorDescription.get
 ErrorDescription.set
@@ -940,6 +927,7 @@ GenerateMerchantTradeNo
 GenericResponseDto
 GetActiveCampaignsCountAsync
 GetAddOnProductListDto
+GetAddOnProductListDto.GetAddOnProductListDto() -> void
 GetAllAsync
 GetAllGroupBuyLookupAsync
 GetAllItemsLookupAsync
@@ -2716,6 +2704,7 @@ UpdateCostAsync
 UpdateDeliveredStatus
 UpdateDeliveryStatusAsync
 UpdateDeliveryTemperatureCostDto
+UpdateDeliveryTemperatureCostDto.UpdateDeliveryTemperatureCostDto() -> void
 UpdateEcPayAsync
 UpdateEcPayDto
 UpdateEcPayHomeDeliveryAsync
