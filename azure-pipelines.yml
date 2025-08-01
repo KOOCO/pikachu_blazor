@@ -75,8 +75,7 @@ jobs:
   - task: PowerShell@2
     displayName: 'Final PublicAPI Validation'
     inputs:
-      filePath: 'scripts/api-protection/auto-update-public-api.ps1'
-      arguments: '-CheckOnly'
+      filePath: 'scripts/api-protection/validate-public-api.ps1'
       pwsh: false  # Use Windows PowerShell instead of PowerShell Core
     continueOnError: false  # 如果仍有 RS0016/RS0017 則失敗
 
