@@ -1754,6 +1754,9 @@
     "WalletManagement": "Wallet Management",
     "Wallet:Completed": "Completed",
     "WalletTransactions_record": "wallet_transaction_record",
-    "ChooseProduct": "Choose Products"
+    "ChooseProduct": "Choose Products",
+    "DashboardReport:UnitsSold": "{0} units sold",
+    "DashboardReport:Revenue": "{0}% revenue",
+    "DashboardReport:OrdersComplete": "{0} of {1} orders completed"
   }
 }

@@ -1719,6 +1719,9 @@
     "WalletManagement": "錢包管理",
     "Wallet:Completed": "交易成功",
     "WalletTransactions_record": "錢包交易紀錄",
-    "ChooseProduct": "選擇套用商品"
+    "ChooseProduct": "選擇套用商品",
+    "DashboardReport:UnitsSold": "售出{0}個商品",
+    "DashboardReport:Revenue": "銷售額佔整體{0}%",
+    "DashboardReport:OrdersComplete": "{1}筆訂單中已完成{0}筆"
   }
 }

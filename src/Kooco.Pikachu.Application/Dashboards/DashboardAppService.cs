@@ -163,9 +163,9 @@ public class DashboardAppService(IDashboardRepository dashboardRepository) : Pik
         var topPerformingGroupBuy = summary.GroupBuys.OrderByDescending(gb => gb.PercentageOfTotal).FirstOrDefault();
         var highlights = new (string Label, string Value)[]
         {
-            ($"{L["BestSellingProduct"]}:", $"{summary.TopPerformingProduct} ({summary.TopPerformingProductQuantity} {L["UnitsSold"].Value.ToLower()})"),
-            ($"{L["HighestRevenueGroupBuy"]}:", $"{topPerformingGroupBuy?.Name} ({topPerformingGroupBuy?.PercentageOfTotal:N0}% {L["Revenue"].Value.ToLower()})"),
-            ($"{L["OrderCompletionRate"]}:", $"{summary.OrderCompletionRate:N0}% ({summary.TotalOrdersCompleted} of {summary.TotalOrders} {L["OrdersCompleted"].Value.ToLower()})")
+            ($"{L["BestSellingProduct"]}:", $"{summary.TopPerformingProduct} ({L["DashboardReport:UnitsSold", summary.TopPerformingProductQuantity]})"),
+            ($"{L["HighestRevenueGroupBuy"]}:", $"{topPerformingGroupBuy?.Name} ({L["DashboardReport:Revenue", topPerformingGroupBuy?.PercentageOfTotal]})"),
+            ($"{L["OrderCompletionRate"]}:", $"{summary.OrderCompletionRate:N0}% ({L["DashboardReport:OrdersComplete", summary.TotalOrdersCompleted, summary.TotalOrders]})")
         };
 
         foreach (var (label, value) in highlights)
