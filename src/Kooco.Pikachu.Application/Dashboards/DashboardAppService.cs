@@ -164,7 +164,7 @@ public class DashboardAppService(IDashboardRepository dashboardRepository) : Pik
         var highlights = new (string Label, string Value)[]
         {
             ($"{L["BestSellingProduct"]}:", $"{summary.TopPerformingProduct} ({L["DashboardReport:UnitsSold", summary.TopPerformingProductQuantity]})"),
-            ($"{L["HighestRevenueGroupBuy"]}:", $"{topPerformingGroupBuy?.Name} ({L["DashboardReport:Revenue", topPerformingGroupBuy?.PercentageOfTotal]})"),
+            ($"{L["HighestRevenueGroupBuy"]}:", $"{topPerformingGroupBuy?.Name} ({L["DashboardReport:Revenue", topPerformingGroupBuy?.PercentageOfTotal.ToString("N2")]})"),
             ($"{L["OrderCompletionRate"]}:", $"{summary.OrderCompletionRate:N0}% ({L["DashboardReport:OrdersComplete", summary.TotalOrdersCompleted, summary.TotalOrders]})")
         };
 
