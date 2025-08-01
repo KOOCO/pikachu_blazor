@@ -1,9 +1,11 @@
 ﻿using Kooco.Pikachu.EntityFrameworkCore;
 using Kooco.Pikachu.EnumValues;
+using Kooco.Pikachu.Localization;
 using Kooco.Pikachu.Members.MemberTags;
 using Kooco.Pikachu.Orders;
 using Kooco.Pikachu.TierManagement;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -20,7 +22,7 @@ using Volo.Abp.Identity.EntityFrameworkCore;
 namespace Kooco.Pikachu.Members;
 
 public class EfCoreMemberRepository(IDbContextProvider<PikachuDbContext> pikachuDbContextProvider,
-    IDbContextProvider<IIdentityDbContext> dbContextProvider) : EfCoreIdentityUserRepository(dbContextProvider), IMemberRepository
+    IDbContextProvider<IIdentityDbContext> dbContextProvider, IStringLocalizer<PikachuResource> l) : EfCoreIdentityUserRepository(dbContextProvider), IMemberRepository
 {
 
     protected virtual Task<PikachuDbContext> GetPikachuDbContextAsync()
@@ -179,7 +181,7 @@ public class EfCoreMemberRepository(IDbContextProvider<PikachuDbContext> pikachu
     public async Task<VipTierUpgradeEmailModel> CheckForVipTierAsync(Guid userId)
     {
         var dbContext = await GetPikachuDbContextAsync();
-        
+
         var user = await dbContext.Users.FirstOrDefaultAsync(x => x.Id == userId)
             ?? throw new EntityNotFoundException(typeof(IdentityUser), userId);
 
@@ -325,7 +327,7 @@ public class EfCoreMemberRepository(IDbContextProvider<PikachuDbContext> pikachu
                 if (newTier != null)
                 {
                     dbContext.MemberTags.Add(new MemberTag(GuidGenerator.Create(), member.User.Id, newTier.TierName, true, true, newTier.Id));
-                    
+
                     if (currentTier == null || newTier.Tier > currentTier.Tier)
                     {
                         var previousTier = newTier != null
@@ -414,7 +416,7 @@ public class EfCoreMemberRepository(IDbContextProvider<PikachuDbContext> pikachu
             {
                 Id = x.credits.Id,
                 UsageTime = x.credits.CreationTime,
-                TransactionDescription = x.credits.TransactionDescription,
+                TransactionDescription = x.credits.TransactionDescription!=null? l[x.credits.TransactionDescription]:"",
                 Amount = x.credits.Amount,// x.orders != null ? x.orders.CreditDeductionAmount : 0,
                 ExpirationDate = x.credits.ExpirationDate,
                 RemainingCredits = x.credits.CurrentRemainingCredits,
