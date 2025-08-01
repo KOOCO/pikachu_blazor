@@ -56,16 +56,34 @@ function Update-PublicApiForProject {
     $buildOutput = & dotnet build $ProjectPath --verbosity normal 2>&1
     $buildExitCode = $LASTEXITCODE
     
-    # 提取 RS0016 新 API
-    $newApis = $buildOutput | Where-Object { $_ -match "RS0016.*符號 '([^']+)'" } | ForEach-Object {
-        if ($_ -match "符號 '([^']+)'") {
+    # 檢查建置是否成功 (只有 RS0016/RS0017 錯誤是允許的)
+    if ($buildExitCode -ne 0) {
+        # 檢查是否只有 API 相關的錯誤
+        $hasOnlyApiErrors = $true
+        $buildOutput | ForEach-Object {
+            if ($_ -match "error\s+(?!RS0016|RS0017)") {
+                $hasOnlyApiErrors = $false
+            }
+        }
+        
+        if (-not $hasOnlyApiErrors) {
+            Write-Error "❌ 建置失敗，存在非 API 相關的錯誤。請先修復建置錯誤。"
+            Write-Host "建置輸出:"
+            $buildOutput | Where-Object { $_ -match "error" } | ForEach-Object { Write-Host $_ }
+            exit 1
+        }
+    }
+    
+    # 提取 RS0016 新 API (language-agnostic pattern)
+    $newApis = $buildOutput | Where-Object { $_ -match "RS0016.*'([^']+)'" } | ForEach-Object {
+        if ($_ -match "RS0016.*'([^']+)'") {
             $matches[1]
         }
     } | Sort-Object -Unique
     
-    # 提取 RS0017 無效 API (從 PublicAPI 檔案中)
-    $invalidApis = $buildOutput | Where-Object { $_ -match "RS0017.*符號 '([^']+)'" } | ForEach-Object {
-        if ($_ -match "符號 '([^']+)'") {
+    # 提取 RS0017 無效 API (language-agnostic pattern)
+    $invalidApis = $buildOutput | Where-Object { $_ -match "RS0017.*'([^']+)'" } | ForEach-Object {
+        if ($_ -match "RS0017.*'([^']+)'") {
             $matches[1]
         }
     } | Sort-Object -Unique

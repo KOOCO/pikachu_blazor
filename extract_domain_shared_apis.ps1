@@ -43,7 +43,11 @@ if ($BuildOutput) {
 # Extract unique API signatures
 $apiSignatures = @()
 $output -split "`n" | ForEach-Object {
-    if ($_ -match "符號\s+'([^']+)'.*並非宣告的公用 API") {
+    # Language-agnostic pattern: Match RS0016 error code and extract symbol between quotes
+    # Works for both English and Chinese (and other languages)
+    # English: warning RS0016: Symbol 'SomeName' is not part of the declared public API
+    # Chinese: warning RS0016: 符號 'SomeName' 並非宣告的公用 API 的一部分
+    if ($_ -match "RS0016.*'([^']+)'") {
         $apiSignatures += $matches[1]
     }
 }

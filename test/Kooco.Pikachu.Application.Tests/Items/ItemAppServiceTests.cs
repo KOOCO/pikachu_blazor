@@ -446,7 +446,7 @@ namespace Kooco.Pikachu.Application.Tests.Items
                         Id = existingDetail.Id,
                         ItemName = "Updated Detail",
                         Sku = existingDetail.SKU,
-                        SellingPrice = 99.99f,
+                        SellingPrice = 99,
                         Cost = 50.00f,
                         SaleableQuantity = 100,
                         StockOnHand = 200,

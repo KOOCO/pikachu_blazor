@@ -1,4 +1,5 @@
 #!/bin/bash
+set -euo pipefail
 # Local script to update PublicAPI files
 
 echo "🔄 更新 PublicAPI 檔案..."
