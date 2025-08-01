@@ -70,10 +70,12 @@ namespace Kooco.Pikachu.Refunds
                 var orderItem = new OrderItem
                 {
                     OrderId = order.Id,
-                    ItemName = $"Item {i}",
+                    ItemType = ItemType.Item,
                     Quantity = 2,
                     ItemPrice = totalAmount / itemCount / 2,
-                    TotalAmount = totalAmount / itemCount
+                    TotalAmount = totalAmount / itemCount,
+                    SKU = $"SKU-{i}",
+                    DeliveryTemperature = ItemStorageTemperature.Normal
                 };
                 order.OrderItems.Add(orderItem);
             }
@@ -298,15 +300,18 @@ namespace Kooco.Pikachu.Refunds
             }
 
             // Act - Process all refunds
+            int index = 0;
             foreach (var refund in refunds)
             {
+                var currentIndex = index;
                 await WithUnitOfWorkAsync(async () =>
                 {
                     await _refundAppService.UpdateRefundReviewAsync(
                         refund.Id,
-                        i % 2 == 0 ? RefundReviewStatus.Success : RefundReviewStatus.Fail
+                        currentIndex % 2 == 0 ? RefundReviewStatus.Success : RefundReviewStatus.Fail
                     );
                 });
+                index++;
             }
 
             // Assert
