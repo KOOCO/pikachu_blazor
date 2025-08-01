@@ -61,7 +61,7 @@ function Update-PublicApiForProject {
         # 檢查是否只有 API 相關的錯誤
         $hasOnlyApiErrors = $true
         $buildOutput | ForEach-Object {
-            if ($_ -match "error\s+(?!RS0016|RS0017)") {
+            if ($_ -match "error" -and $_ -notmatch "RS0016" -and $_ -notmatch "RS0017") {
                 $hasOnlyApiErrors = $false
             }
         }
@@ -75,15 +75,15 @@ function Update-PublicApiForProject {
     }
     
     # 提取 RS0016 新 API (language-agnostic pattern)
-    $newApis = $buildOutput | Where-Object { $_ -match "RS0016.*'([^']+)'" } | ForEach-Object {
-        if ($_ -match "RS0016.*'([^']+)'") {
+    $newApis = $buildOutput | Where-Object { $_ -match "RS0016.*'(.+?)'" } | ForEach-Object {
+        if ($_ -match "RS0016.*'(.+?)'") {
             $matches[1]
         }
     } | Sort-Object -Unique
     
     # 提取 RS0017 無效 API (language-agnostic pattern)
-    $invalidApis = $buildOutput | Where-Object { $_ -match "RS0017.*'([^']+)'" } | ForEach-Object {
-        if ($_ -match "RS0017.*'([^']+)'") {
+    $invalidApis = $buildOutput | Where-Object { $_ -match "RS0017.*'(.+?)'" } | ForEach-Object {
+        if ($_ -match "RS0017.*'(.+?)'") {
             $matches[1]
         }
     } | Sort-Object -Unique
