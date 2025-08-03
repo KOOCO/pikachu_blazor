@@ -73,7 +73,7 @@ public class VipTierSettingAppService : PikachuAppService, IVipTierSettingAppSer
         foreach (var tier in validTiers)
         {
             _vipTierSettingManager.AddOrUpdateVipTier(vipTierSetting, tier.Id, tier.Tier,
-                tier.TierName, tier.OrdersAmount, tier.OrdersCount);
+                tier.TierName?.Trim(), tier.OrdersAmount, tier.OrdersCount);
         }
 
         await _backgroundJobManager.EnqueueAsync(

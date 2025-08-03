@@ -2362,7 +2362,7 @@ public class OrderAppService : PikachuAppService, IOrderAppService
             if (tierModel?.NewTier != null)
             {
                 await MemberTagManager.AddVipTierAsync(order.UserId.Value, tierModel.NewTier.TierName, tierModel.NewTier.Id);
-                if (tierModel.CurrentTier == null || tierModel.NewTier.Tier > tierModel.CurrentTier.Tier)
+                if (tierModel.PreviousTier == null || tierModel.NewTier.Tier > tierModel.PreviousTier.Tier)
                 {
                     await EmailAppService.SendVipTierUpgradeEmailAsync(ObjectMapper.Map<List<VipTierUpgradeEmailModel>, List<VipTierUpgradeEmailDto>>([tierModel]));
                 }

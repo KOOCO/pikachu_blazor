@@ -1,4 +1,5 @@
-﻿using Kooco.Pikachu.EntityFrameworkCore;
+﻿using AutoMapper.Execution;
+using Kooco.Pikachu.EntityFrameworkCore;
 using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Localization;
 using Kooco.Pikachu.Members.MemberTags;
@@ -217,12 +218,6 @@ public class EfCoreMemberRepository(IDbContextProvider<PikachuDbContext> pikachu
             _ => null
         };
 
-        var previousTier = newTier != null
-            ? tiers.Where(t => t.Tier < newTier.Tier)
-                   .OrderByDescending(t => t.Tier)
-                   .FirstOrDefault()
-            : null;
-
         var nextTier = newTier != null
             ? tiers.Where(t => t.Tier > newTier.Tier)
                    .OrderBy(t => t.Tier)
@@ -234,16 +229,17 @@ public class EfCoreMemberRepository(IDbContextProvider<PikachuDbContext> pikachu
             .Select(mt => mt.VipTierId)
             .FirstOrDefaultAsync();
 
-        var currentTier = tiers.Where(t => t.Id == currentTierId).FirstOrDefault();
+        var previousTier = tiers.Where(t => t.Id == currentTierId).FirstOrDefault();
 
         var upgradeModel = new VipTierUpgradeEmailModel
         {
             Email = user.Email,
             UserName = user.UserName,
-            CurrentTier = currentTier,
             PreviousTier = previousTier,
             NewTier = newTier,
-            NextTier = nextTier
+            NextTier = nextTier,
+            RequiredOrders = nextTier != null ? nextTier.OrdersCount - count : 0,
+            RequiredAmount = nextTier != null ? nextTier.OrdersAmount - amount : 0
         };
 
         return upgradeModel;
@@ -330,12 +326,6 @@ public class EfCoreMemberRepository(IDbContextProvider<PikachuDbContext> pikachu
 
                     if (currentTier == null || newTier.Tier > currentTier.Tier)
                     {
-                        var previousTier = newTier != null
-                            ? tiers.Where(t => t.Tier < newTier.Tier)
-                                   .OrderByDescending(t => t.Tier)
-                                   .FirstOrDefault()
-                            : null;
-
                         var nextTier = newTier != null
                             ? tiers.Where(t => t.Tier > newTier.Tier)
                                    .OrderBy(t => t.Tier)
@@ -346,10 +336,11 @@ public class EfCoreMemberRepository(IDbContextProvider<PikachuDbContext> pikachu
                         {
                             Email = member.User.Email,
                             UserName = member.User.UserName,
-                            CurrentTier = currentTier,
-                            PreviousTier = previousTier,
+                            PreviousTier = currentTier,
                             NewTier = newTier,
-                            NextTier = nextTier
+                            NextTier = nextTier,
+                            RequiredOrders = nextTier != null ? nextTier.OrdersCount - member.OrdersAfterStartDate : 0,
+                            RequiredAmount = nextTier != null ? nextTier.OrdersAmount - member.TotalSpent : 0
                         });
                     }
                 }
