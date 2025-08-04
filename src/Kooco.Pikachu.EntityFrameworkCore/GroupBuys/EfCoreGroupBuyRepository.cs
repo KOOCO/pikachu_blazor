@@ -499,8 +499,8 @@ public class EfCoreGroupBuyRepository : EfCoreRepository<PikachuDbContext, Group
 
         var query = await (from order in dbContext.Orders
                             .Include(x => x.OrderItems).ThenInclude(x => x.Item)
-                            .WhereIf(startDate.HasValue, x => x.CreationTime >= startDate)
-                            .WhereIf(endDate.HasValue, x => x.CreationTime < endDate)
+                            .WhereIf(startDate.HasValue, x => x.CreationTime.Date >= startDate!.Value.Date)
+                            .WhereIf(endDate.HasValue, x => x.CreationTime.Date <= endDate!.Value.Date)
                             .WhereIf(orderStatus.HasValue, x => x.OrderStatus == orderStatus)
                             .WhereIf(completionTimeFrom.HasValue, x => x.CompletionTime.HasValue && x.CompletionTime.Value.Date >= completionTimeFrom!.Value.Date)
                             .WhereIf(completionTimeTo.HasValue, x => x.CompletionTime.HasValue && x.CompletionTime.Value.Date <= completionTimeTo!.Value.Date)

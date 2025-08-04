@@ -1309,16 +1309,19 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
         ShippingStatus? shippingStatus = null
         )
     {
-        var data = await _groupBuyRepository.GetNewGroupBuyReportDetailsAsync(
-            id, 
-            startDate, 
-            endDate, 
-            orderStatus,
-            completionTimeFrom,
-            completionTimeTo,
-            shippingStatus
-            );
-        return ObjectMapper.Map<GroupBuyReportDetails, GroupBuyReportDetailsDto>(data);
+        using (DataFilter.Disable<IMultiTenant>())
+        {
+            var data = await _groupBuyRepository.GetNewGroupBuyReportDetailsAsync(
+                id,
+                startDate,
+                endDate,
+                orderStatus,
+                completionTimeFrom,
+                completionTimeTo,
+                shippingStatus
+                );
+            return ObjectMapper.Map<GroupBuyReportDetails, GroupBuyReportDetailsDto>(data); 
+        }
     }
 
     public async Task<GroupBuyReportDetailsDto> GetGroupBuyTenantReportDetailsAsync(Guid id)

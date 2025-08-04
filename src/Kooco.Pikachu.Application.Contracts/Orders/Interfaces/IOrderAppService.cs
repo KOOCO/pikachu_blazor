@@ -49,6 +49,7 @@ namespace Kooco.Pikachu.Orders.Interfaces
         Task<PagedResultDto<OrderDto>> GetVoidListAsync(GetOrderListDto input);
         Task CreditNoteInvoice(Guid id, string reason);
         Task RefundAmountAsync(double amount, Guid OrderId);
+        Task<PagedResultDto<GroupBuyReportOrderDto>> GetExternalReportAsync(GetOrderListDto input);
         Task<PagedResultDto<GroupBuyReportOrderDto>> GetReportListAsync(GetOrderListDto input, bool hideCredentials = false);
         Task<OrderDto> ChangeOrderStatus(Guid id, ShippingStatus status);
 

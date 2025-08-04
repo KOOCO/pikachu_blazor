@@ -1471,6 +1471,26 @@ public class OrderAppService : PikachuAppService, IOrderAppService
             throw;
         }
     }
+
+    public async Task<PagedResultDto<GroupBuyReportOrderDto>> GetExternalReportAsync(GetOrderListDto input)
+    {
+        GroupBuy? groupBuy;
+        using (DataFilter.Disable<IMultiTenant>())
+        {
+            groupBuy = await GroupBuyRepository.FirstOrDefaultAsync(x => x.Id == input.GroupBuyId);
+        }
+
+        if (groupBuy == null)
+        {
+            return new();
+        }
+
+        using (CurrentTenant.Change(groupBuy.TenantId))
+        {
+            return await GetReportListAsync(input, true);
+        }
+    }
+
     public async Task<PagedResultDto<GroupBuyReportOrderDto>> GetReportListAsync(GetOrderListDto input, bool hideCredentials = false)
     {
         if (input.Sorting.IsNullOrEmpty())
