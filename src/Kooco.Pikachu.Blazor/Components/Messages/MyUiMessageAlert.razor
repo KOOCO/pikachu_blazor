@@ -81,18 +81,16 @@
 }
 
 </style>
-@if(IsConfirmation)
-{
+
     <Modal @ref="@ModalRef" Closing="@OnModalClosing">
     <ModalContent Class="custom-modal-content" Centered="@CenterMessage" >
 
-        @if (IsConfirmation)
-        {
+        
             <!-- Red warning header with icon -->
             <ModalHeader Class="rectangle d-flex justify-content-center align-items-center">
                     <Icon Name="IconName.ExclamationTriangle" Class="custom-popup-icon" />
             </ModalHeader>
-        }
+        
 
         <ModalBody Class="text-center px-4 pt-3">
             <Paragraph TextAlignment="TextAlignment.Center" Margin="Margin.Is0.FromBottom"
@@ -118,13 +116,23 @@
                     @ConfirmButtonText
                 </button>
             }
+            else{
+                    <button class="yes-button"  @onclick="OnOkClicked">
+                        @if (Options?.OkButtonIcon != null)
+                        {
+                            <Icon Name="@Options.OkButtonIcon" Margin="Margin.Is2.FromEnd" />
+                        }
+                        @OkButtonText
+                    </button>
+            
+            }
         </ModalFooter>
 
     </ModalContent>
 </Modal>
 
-}
-@if (!IsConfirmation)
+
+@* @if (!IsConfirmation)
 { 
     ﻿<Modal @ref="@ModalRef" Closing="@OnModalClosing">
     <ModalContent Centered="@CenterMessage" >
@@ -185,7 +193,7 @@
         </ModalFooter>
     </ModalContent>
 </Modal>
-}
+} *@
 
 @code{
 

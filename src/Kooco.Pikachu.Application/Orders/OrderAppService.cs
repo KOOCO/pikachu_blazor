@@ -831,6 +831,7 @@ public class OrderAppService : PikachuAppService, IOrderAppService
                 ord1.OrderType = OrderType.MargeToNew;
 
                 ord1.ShippingStatus = ShippingStatus.Closed;
+                ord1.OrderStatus = OrderStatus.Closed;
 
                 ord1.TotalAmount = 0;
 

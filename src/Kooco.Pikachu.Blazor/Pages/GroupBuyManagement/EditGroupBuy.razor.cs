@@ -3020,7 +3020,7 @@ public partial class EditGroupBuy
                 {
                     if (groupPurchaseOverview.Title.IsNullOrEmpty())
                     {
-                        await _uiMessageService.Error("Title Cannot be empty in Group Purchase Overview Module");
+                        await _uiMessageService.Error("TitleCannotbeemptyinGroupPurchaseOverviewModule");
 
                         await Loading.Hide();
 
@@ -3029,7 +3029,7 @@ public partial class EditGroupBuy
 
                     if (groupPurchaseOverview.Image.IsNullOrEmpty())
                     {
-                        await _uiMessageService.Error("Please Add Image in Group Purchase Overview Module");
+                        await _uiMessageService.Error("PleaseAddImageinGroupPurchaseOverviewModule");
 
                         await Loading.Hide();
 
@@ -3040,7 +3040,7 @@ public partial class EditGroupBuy
                     {
                         if (groupPurchaseOverview.ButtonText.IsNullOrEmpty())
                         {
-                            await _uiMessageService.Error("If you have enabled Button, then Button Text is required.");
+                            await _uiMessageService.Error("IfyouhaveenabledButton,thenButtonTextisrequired.");
 
                             await Loading.Hide();
 
@@ -3049,7 +3049,7 @@ public partial class EditGroupBuy
 
                         if (groupPurchaseOverview.ButtonLink.IsNullOrEmpty())
                         {
-                            await _uiMessageService.Error("If you have enabled Button, then Button Link is required.");
+                            await _uiMessageService.Error("IfyouhaveenabledButton,thenButtonLinkisrequired.");
 
                             await Loading.Hide();
 
@@ -3065,7 +3065,7 @@ public partial class EditGroupBuy
                 {
                     if (groupBuyOrderInstruction.Title.IsNullOrEmpty())
                     {
-                        await _uiMessageService.Error("Title Cannot be empty in GroupBuy Order Instruction Module");
+                        await _uiMessageService.Error("TitleCannotbeemptyinGroupBuyOrderInstructionModule");
 
                         await Loading.Hide();
 
@@ -3074,7 +3074,7 @@ public partial class EditGroupBuy
 
                     if (groupBuyOrderInstruction.Image.IsNullOrEmpty())
                     {
-                        await _uiMessageService.Error("Please Add Image in GroupBuy Order Instruction Module");
+                        await _uiMessageService.Error("PleaseAddImageinGroupBuyOrderInstructionModule");
 
                         await Loading.Hide();
 
@@ -3089,7 +3089,7 @@ public partial class EditGroupBuy
                 {
                     if (productRankingCarouselModule.Title.IsNullOrEmpty())
                     {
-                        await _uiMessageService.Error("Title Cannot be empty in Product Ranking Carousel Module");
+                        await _uiMessageService.Error("TitleCannotbeemptyinProductRankingCarouselModule");
 
                         await Loading.Hide();
 
@@ -3098,7 +3098,7 @@ public partial class EditGroupBuy
 
                     if (productRankingCarouselModule.SubTitle.IsNullOrEmpty())
                     {
-                        await _uiMessageService.Error("SubTitle Cannot be empty in Product Ranking Carousel Module");
+                        await _uiMessageService.Error("SubTitleCannotbeemptyinProductRankingCarouselModule");
 
                         await Loading.Hide();
 
@@ -3201,7 +3201,7 @@ public partial class EditGroupBuy
                                     {
                                         if (itemDetail.SelectedItemDetailIds == null || !itemDetail.SelectedItemDetailIds.Any())
                                         {
-                                            await _uiMessageService.Error($"Item '{itemDetail.Name}' must have at least one variant selected.");
+                                            await _uiMessageService.Error(L["ItemMustHaveVariant", itemDetail.Name]);
                                             await Loading.Hide();
                                             return;
                                         }
@@ -3210,7 +3210,7 @@ public partial class EditGroupBuy
                                         {
                                             if (!itemDetail.ItemDetailsWithPrices.TryGetValue(detailId, out var labelAndPrice))
                                             {
-                                                await _uiMessageService.Error($"Price missing for one or more item variants in '{itemDetail.Name}'.");
+                                                await _uiMessageService.Error(L["VariantsMustHavePrice", itemDetail.Name]);
                                                 await Loading.Hide();
                                                 return;
                                             }
@@ -3231,7 +3231,7 @@ public partial class EditGroupBuy
 
                                         if (itemDetail.Price is null)
                                         {
-                                            await _uiMessageService.Error($"Price missing for one or more item variants in '{itemDetail.Name}'.");
+                                            await _uiMessageService.Error(L["VariantsMustHavePrice", itemDetail.Name]);
                                             await Loading.Hide();
                                             return;
                                         }

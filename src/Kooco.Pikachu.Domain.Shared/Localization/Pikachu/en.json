@@ -1757,6 +1757,18 @@
     "ChooseProduct": "Choose Products",
     "DashboardReport:UnitsSold": "{0} units sold",
     "DashboardReport:Revenue": "{0}% revenue",
-    "DashboardReport:OrdersComplete": "{0} of {1} orders completed"
+    "DashboardReport:OrdersComplete": "{0} of {1} orders completed",
+    "TitleCannotbeemptyinGroupPurchaseOverviewModule": "Title Cannot be empty in Group Purchase Overview Module",
+    "TitleCannotbeemptyinGroupBuyOrderInstructionModule": "Title Cannot be empty in GroupBuy Order Instruction Module",
+    "TitleCannotbeemptyinProductRankingCarouselModule": "Title Cannot be empty in Product Ranking Carousel Module",
+    "ItemMustHaveVariant": "Item '{0}' must have at least one variant selected.",
+    "PleaseAddImageinGroupPurchaseOverviewModule": "Please Add Image in Group Purchase Overview Module",
+    "IfyouhaveenabledButton,thenButtonTextisrequired.": "If you have enabled Button, then Button Text is required.",
+    "PleaseAddImageinGroupBuyOrderInstructionModule": "Please Add Image in GroupBuy Order Instruction Module.",
+    "IfyouhaveenabledButton,thenButtonLinkisrequired.": "If you have enabled Button, then Button Link is required.",
+    "SubTitleCannotbeemptyinProductRankingCarouselModules": "SubTitle Cannot be empty in Product Ranking Carousel Modules.",
+    "VariantsMustHavePrice": "Price missing for one or more item variants in '{0}'."
+
+
   }
 }
