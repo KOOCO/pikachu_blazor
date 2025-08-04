@@ -561,6 +561,12 @@ public class OrderController : AbpController, IOrderAppService
         return _ordersAppService.RefundAmountAsync(amount, OrderId);
     }
 
+    [HttpGet("get-report-external")]
+    public Task<PagedResultDto<GroupBuyReportOrderDto>> GetExternalReportAsync(GetOrderListDto input)
+    {
+        return _ordersAppService.GetExternalReportAsync(input);
+    }
+
     [HttpGet("get-report-list")]
     public Task<PagedResultDto<GroupBuyReportOrderDto>> GetReportListAsync(GetOrderListDto input, bool hideCredentials = false)
     {

@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using OfficeOpenXml;
 using Volo.Abp.Account;
+using Volo.Abp.AspNetCore.SignalR;
 using Volo.Abp.AutoMapper;
 using Volo.Abp.BackgroundJobs;
 using Volo.Abp.FeatureManagement;
@@ -23,7 +24,8 @@ namespace Kooco.Pikachu;
     typeof(AbpFeatureManagementApplicationModule),
     typeof(AbpSettingManagementApplicationModule),
     typeof(AbpFluentValidationModule),
-    typeof(ECPayModule)
+    typeof(ECPayModule),
+    typeof(AbpAspNetCoreSignalRModule)
 )]
 public class PikachuApplicationModule : AbpModule
 {

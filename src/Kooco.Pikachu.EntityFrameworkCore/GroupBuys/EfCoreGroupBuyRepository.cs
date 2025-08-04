@@ -223,12 +223,12 @@ public class EfCoreGroupBuyRepository : EfCoreRepository<PikachuDbContext, Group
                         GroupBuyId = groupedOrders.Key,
                         GroupBuyName = groupedOrders.First().GroupBuy.GroupBuyName,
                         TotalOrder = groupedOrders.Count(),
-                        CompleteOrders = groupedOrders.Where(order => OrderConsts.CompletedShippingStatus.Contains(order.ShippingStatus)).Count(),
+                        CompleteOrders = groupedOrders.Where(order => order.ShippingStatus == ShippingStatus.Completed).Count(),
                         SalesAmount = groupedOrders.Sum(order => order.TotalAmount),
-                        AmountReceived = groupedOrders.Where(order => OrderConsts.CompletedShippingStatus.Contains(order.ShippingStatus)).Sum(order => order.TotalAmount),
+                        AmountReceived = groupedOrders.Where(order => order.ShippingStatus == ShippingStatus.Completed).Sum(order => order.TotalAmount),
                         ProfitShare = groupedOrders.First().GroupBuy.ProfitShare,
                         SalesAmountDevlieryCost = groupedOrders.Sum(order => order.DeliveryCost),
-                        AmountReceivedDeliveryCost = groupedOrders.Where(order => OrderConsts.CompletedShippingStatus.Contains(order.ShippingStatus)).Sum(order => order.DeliveryCost)
+                        AmountReceivedDeliveryCost = groupedOrders.Where(order => order.ShippingStatus == ShippingStatus.Completed).Sum(order => order.DeliveryCost)
                     };
 
         var data = await query
@@ -499,8 +499,8 @@ public class EfCoreGroupBuyRepository : EfCoreRepository<PikachuDbContext, Group
 
         var query = await (from order in dbContext.Orders
                             .Include(x => x.OrderItems).ThenInclude(x => x.Item)
-                            .WhereIf(startDate.HasValue, x => x.CreationTime >= startDate)
-                            .WhereIf(endDate.HasValue, x => x.CreationTime < endDate)
+                            .WhereIf(startDate.HasValue, x => x.CreationTime.Date >= startDate!.Value.Date)
+                            .WhereIf(endDate.HasValue, x => x.CreationTime.Date <= endDate!.Value.Date)
                             .WhereIf(orderStatus.HasValue, x => x.OrderStatus == orderStatus)
                             .WhereIf(completionTimeFrom.HasValue, x => x.CompletionTime.HasValue && x.CompletionTime.Value.Date >= completionTimeFrom!.Value.Date)
                             .WhereIf(completionTimeTo.HasValue, x => x.CompletionTime.HasValue && x.CompletionTime.Value.Date <= completionTimeTo!.Value.Date)
@@ -513,14 +513,14 @@ public class EfCoreGroupBuyRepository : EfCoreRepository<PikachuDbContext, Group
                                 StartDate = startDate ?? groupedOrders.First().GroupBuy.CreationTime,
                                 EndDate = endDate ?? DateTime.Now,
                                 TotalOrderQuantity = groupedOrders.Count(),
-                                OrderQuantityPaid = groupedOrders.Where(order => OrderConsts.CompletedShippingStatus.Contains(order.ShippingStatus)).Count(),
+                                OrderQuantityPaid = groupedOrders.Where(order => order.ShippingStatus == ShippingStatus.Completed).Count(),
                                 SalesAmountExclShipping = groupedOrders.Sum(order => order.TotalAmount),
                                 SalesAmount = groupedOrders.Sum(order => order.TotalAmount),
-                                AmountReceivedExclShipping = groupedOrders.Where(order => OrderConsts.CompletedShippingStatus.Contains(order.ShippingStatus)).Sum(order => order.TotalAmount),
-                                AmountReceived = groupedOrders.Where(order => OrderConsts.CompletedShippingStatus.Contains(order.ShippingStatus)).Sum(order => order.TotalAmount),
+                                AmountReceivedExclShipping = groupedOrders.Where(order => order.ShippingStatus == ShippingStatus.Completed).Sum(order => order.TotalAmount),
+                                AmountReceived = groupedOrders.Where(order => order.ShippingStatus == ShippingStatus.Completed).Sum(order => order.TotalAmount),
                                 ProfitShare = groupedOrders.First().GroupBuy.ProfitShare,
                                 SalesAmountDiscount = groupedOrders.Sum(order => order.DeliveryCost),
-                                AmountReceivedDiscount = groupedOrders.Where(order => OrderConsts.CompletedShippingStatus.Contains(order.ShippingStatus)).Sum(order => order.DeliveryCost)
+                                AmountReceivedDiscount = groupedOrders.Where(order => order.ShippingStatus == ShippingStatus.Completed).Sum(order => order.DeliveryCost)
                             }).FirstOrDefaultAsync();
 
         if (query != null)

@@ -179,6 +179,11 @@ public class MemberController(IMemberAppService memberAppService, IPikachuAccoun
     {
         return memberAppService.GetMemberOrdersByGroupBuyAsync(groupBuyId);
     }
+    [HttpGet("order/list/{memberId}/{groupBuyId}")]
+    public Task<List<MemberOrderInfoDto>> GetMemberOrdersByGroupBuyAsync(Guid memberId,Guid groupBuyId)
+    {
+        return memberAppService.GetMemberOrdersByGroupBuyAsync(memberId, groupBuyId);
+    }
 
     [HttpPost("set-blacklisted/{memberId}/{blacklisted}")]
     public Task SetBlacklistedAsync(Guid memberId, bool blacklisted)
@@ -190,5 +195,11 @@ public class MemberController(IMemberAppService memberAppService, IPikachuAccoun
     public Task<Guid?> GetCurrentUserIdAsync()
     {
         return memberAppService.GetCurrentUserIdAsync();
+    }
+
+    [HttpGet("{memberId}/vip-status")]
+    public Task<VipTierProgressDto> GetMemberTierProgressAsync(Guid memberId)
+    {
+        return memberAppService.GetMemberTierProgressAsync(memberId);
     }
 }

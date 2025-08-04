@@ -40,6 +40,8 @@ public class OrderMessage : AuditedEntity<Guid>
     [NotMapped]
     public string SenderName { get; set; }
 
+    public bool IsRead { get; set; } // Indicates if the message has been read
+
     /// <summary>
     /// 預設建構函式
     /// </summary>

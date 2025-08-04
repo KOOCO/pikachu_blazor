@@ -65,7 +65,7 @@ public partial class OrderDetails
     string? CheckoutForm { get; set; } = null;
     private readonly ITestLableAppService _testLableAppService;
     private readonly IObjectMapper _ObjectMapper;
-
+   
     private bool isDeliveryCostDisplayed = false;
     private bool isNormal = false;
     private bool isFreeze = false;
@@ -226,7 +226,7 @@ public partial class OrderDetails
                 loading = true;
                 OrderId = Guid.Parse(id);
                 await GetOrderDetailsAsync();
-
+                await _OrderMessageAppService.MarkAsReadAsync(OrderId);
                 await base.OnInitializedAsync();
                 loading = false;
                 StateHasChanged();

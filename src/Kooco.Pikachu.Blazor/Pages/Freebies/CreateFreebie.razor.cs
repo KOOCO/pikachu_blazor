@@ -4,8 +4,10 @@ using Kooco.Pikachu.Blazor.Helpers;
 using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Freebies;
 using Kooco.Pikachu.Freebies.Dtos;
+using Kooco.Pikachu.FreeBies.Dtos;
 using Kooco.Pikachu.GroupBuys;
 using Kooco.Pikachu.Images;
+using Kooco.Pikachu.Items;
 using Kooco.Pikachu.Items.Dtos;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
@@ -27,6 +29,7 @@ namespace Kooco.Pikachu.Blazor.Pages.Freebies
         private const int MaxAllowedFileSize = 1024 * 1024 * 10;
         private Blazored.TextEditor.BlazoredTextEditor ItemDescription;
         private List<KeyValueDto> GroupBuyList { get; set; } = new();
+        private List<KeyValueDto> ProductList { get; set; } = new();
         public List<CreateImageDto> ImageList { get; set; }
         private FilePicker FilePicker { get; set; }
         private List<string> SelectedTexts { get; set; } = new();
@@ -35,19 +38,22 @@ namespace Kooco.Pikachu.Blazor.Pages.Freebies
         private readonly ImageContainerManager _imageContainerManager;
         private readonly IFreebieAppService _freebieAppService;
         private readonly IGroupBuyAppService _groupBuyAppService;
+        private readonly IItemAppService _itemAppService;
 
         private FreebieCreateDto FreebieCreateDto { get; set; } = new();
         public CreateFreebie(
             IUiMessageService uiMessageService,
             ImageContainerManager imageContainerManager,
             IFreebieAppService freebieAppService,
-            IGroupBuyAppService groupBuyAppService
+            IGroupBuyAppService groupBuyAppService,
+            IItemAppService itemAppService
             )
         {
             _uiMessageService = uiMessageService;
             _imageContainerManager = imageContainerManager;
             _freebieAppService = freebieAppService;
             _groupBuyAppService = groupBuyAppService;
+            _itemAppService = itemAppService;
             ImageList = new List<CreateImageDto>();
         }
         private void NavigateToList()
@@ -59,6 +65,7 @@ namespace Kooco.Pikachu.Blazor.Pages.Freebies
             try
             {
                 GroupBuyList = await _groupBuyAppService.GetGroupBuyLookupAsync();
+                ProductList = await _itemAppService.LookupAsync();
                 FreebieCreateDto.FreebieOrderReach = FreebieOrderReach.MinimumAmount;
             }
             catch (Exception ex)
@@ -207,6 +214,10 @@ namespace Kooco.Pikachu.Blazor.Pages.Freebies
             {
                 throw new BusinessException(L[PikachuDomainErrorCodes.SelectAtLeastOneGroupBuy]);
             }
+            if (FreebieCreateDto.ApplyToAllProducts == false && !FreebieCreateDto.FreebieProducts.Any())
+            {
+                throw new BusinessException(L[PikachuDomainErrorCodes.SelectAtLeastOneProduct]);
+            }
             if (!FreebieCreateDto.UnCondition && FreebieCreateDto.FreebieOrderReach is FreebieOrderReach.MinimumAmount && FreebieCreateDto.MinimumAmount is null)
             {
                 throw new BusinessException(L[PikachuDomainErrorCodes.MinimumAmountReachCannotBeEmpty]);
@@ -216,6 +227,10 @@ namespace Kooco.Pikachu.Blazor.Pages.Freebies
                 throw new BusinessException(L[PikachuDomainErrorCodes.MinimumPieceCannotBeEmpty]);
             }
             if (!FreebieCreateDto.UnCondition && FreebieCreateDto.FreebieQuantity <= 0)
+            {
+                throw new BusinessException(L[PikachuDomainErrorCodes.GetCannotBeEmptyOrZero]);
+            }
+            if (FreebieCreateDto.UnCondition && FreebieCreateDto.FreebieQuantity <= 0)
             {
                 throw new BusinessException(L[PikachuDomainErrorCodes.GetCannotBeEmptyOrZero]);
             }
@@ -231,11 +246,27 @@ namespace Kooco.Pikachu.Blazor.Pages.Freebies
             FreebieCreateDto.ApplyToAllGroupBuy = value;
             return Task.CompletedTask;
         }
-
+        Task OnProductCheckedValueChanged(bool value)
+        {
+            FreebieCreateDto.ApplyToAllProducts = value;
+            return Task.CompletedTask;
+        }
         Task OnUnconditionCheckedValueChanged(bool value)
         {
             FreebieCreateDto.UnCondition = value;
+            if (FreebieCreateDto.UnCondition)
+            {
+                FreebieCreateDto.MinimumAmount = null;
+                FreebieCreateDto.MinimumPiece = null;
+                FreebieCreateDto.FreebieOrderReach = null;
 
+            }
+            else
+            {
+                FreebieCreateDto.FreebieQuantity = 0;
+
+
+            }
             return Task.CompletedTask;
         }
     }

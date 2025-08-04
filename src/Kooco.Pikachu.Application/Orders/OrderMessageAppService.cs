@@ -2,8 +2,11 @@
 using Kooco.Pikachu.Orders.Interfaces;
 using Kooco.Pikachu.Orders.Repositories;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.SignalR;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
@@ -11,7 +14,7 @@ using Volo.Abp.Application.Services;
 namespace Kooco.Pikachu.Orders;
 
 [AllowAnonymous]
-public class OrderMessageAppService(IOrderMessageRepository orderMessageRepository) : ApplicationService, IOrderMessageAppService
+public class OrderMessageAppService(IOrderMessageRepository orderMessageRepository, IHubContext<OrderNotificationHub> hubContext,IOrderRepository orderRepository) : ApplicationService, IOrderMessageAppService
 {
     // Retrieve an OrderMessage by ID
     public async Task<OrderMessageDto> GetAsync(Guid id)
@@ -68,9 +71,33 @@ public class OrderMessageAppService(IOrderMessageRepository orderMessageReposito
             input.Message,
             input.IsMerchant);
 
-        await orderMessageRepository.InsertAsync(orderMessage);
+        await orderMessageRepository.InsertAsync(orderMessage,autoSave:true);
+        var unreadCount =await (await orderMessageRepository.GetQueryableAsync()).CountAsync(m => m.OrderId == input.OrderId && !m.IsRead && !m.IsMerchant);
 
+        var order = await orderRepository.GetAsync(input.OrderId);
+        await hubContext.Clients.All.SendAsync(OrderNotificationNames.NewMessage, new
+        {
+            OrderId = order.Id,
+            MessageCount = unreadCount,
+            ShippingStatus = order.ShippingStatus.ToString(),
+            PaymentMethod=order.PaymentMethod.ToString()
+        });
         return ObjectMapper.Map<OrderMessage, OrderMessageDto>(orderMessage);
+    }
+
+    public async Task MarkAsReadAsync(Guid orderId)
+    {
+        var messages = await orderMessageRepository.GetListAsync(m => m.OrderId == orderId && !m.IsRead);
+        foreach (var message in messages)
+        {
+            message.IsRead = true;
+        }
+
+        await hubContext.Clients.All.SendAsync(OrderNotificationNames.MessageRead, new
+        {
+            OrderId = orderId,
+            MessageCount = 0
+        });
     }
 
     // Update an existing OrderMessage

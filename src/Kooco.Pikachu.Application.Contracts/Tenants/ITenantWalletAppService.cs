@@ -11,4 +11,6 @@ public interface ITenantWalletAppService
     Task AddDeductionTransactionAsync(Guid walletId, decimal amount, CreateWalletTransactionDto import);
     Task<List<TenantWalletTransactionDto>> GetWalletTransactionsAsync(Guid walletId);
     Task<IRemoteStreamContent> ExportWalletTransactionsAsync(Guid walletId, List<Guid>? selectedIds = null);
+    Task<List<TenantWalletTransactionDto>> GetWalletTransactionsByTenantIdAsync(Guid walletId);
+    Task<IRemoteStreamContent> ExportWalletTransactionsByTenantIdAsync(Guid walletId, List<Guid>? selectedIds = null);
 }

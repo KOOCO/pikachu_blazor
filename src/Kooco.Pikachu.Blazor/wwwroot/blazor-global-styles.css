@@ -347,6 +347,10 @@
         color: #F15A34;
     }
 
+.pk-btn.icon i {
+    margin-right: 0px;
+}
+
 .rounded-cards .card {
     border-radius: 20px;
 }

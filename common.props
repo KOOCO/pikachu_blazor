@@ -16,4 +16,29 @@
     <Content Remove="$(UserProfile)\.nuget\packages\*\*\contentFiles\any\*\*.abppkg*.json" />
   </ItemGroup>
 
+  <!-- PublicApiAnalyzers configuration -->
+  <PropertyGroup Condition="'$(EnableApiAnalyzers)' == 'true'">
+    <!-- Enable strict API analysis -->
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    <!-- In CI/CD: treat API warnings as errors, Local: keep as warnings -->
+    <TreatWarningsAsErrors Condition="'$(CI)' == 'true'">true</TreatWarningsAsErrors>
+    <TreatWarningsAsErrors Condition="'$(CI)' != 'true'">false</TreatWarningsAsErrors>
+    <!-- Configure API analyzer rules -->
+    <WarningsAsErrors Condition="'$(CI)' == 'true'">RS0016;RS0017</WarningsAsErrors>
+    <WarningsNotAsErrors Condition="'$(CI)' != 'true'">RS0016;RS0017;RS0022;RS0024;RS0025;RS0026;RS0027</WarningsNotAsErrors>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(EnableApiAnalyzers)' == 'true'">
+    <PackageReference Include="Microsoft.CodeAnalysis.PublicApiAnalyzers" Version="4.14.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <!-- API analyzer files -->
+  <ItemGroup Condition="'$(EnableApiAnalyzers)' == 'true'">
+    <AdditionalFiles Include="PublicAPI.Shipped.txt" />
+    <AdditionalFiles Include="PublicAPI.Unshipped.txt" />
+  </ItemGroup>
+
 </Project>

@@ -134,7 +134,9 @@ public class PikachuPermissionDefinitionProvider : PermissionDefinitionProvider
         websiteSettingsPermissions.AddChild(PikachuPermissions.WebsiteManagement.WebsiteSettings.Create, L("Permission:Create"));
         websiteSettingsPermissions.AddChild(PikachuPermissions.WebsiteManagement.WebsiteSettings.Edit, L("Permission:Edit"));
         websiteSettingsPermissions.AddChild(PikachuPermissions.WebsiteManagement.WebsiteSettings.Delete, L("Permission:Delete"));
-
+        //Wallet Managment 
+        var walletManagmentGroup = context.AddGroup(PikachuPermissions.TenantWalletTransactions.Default, L("Permission:TenantWalletManagement"));
+        walletManagmentGroup.AddPermission(PikachuPermissions.TenantWalletTransactions.Default, L("Permission:TenantWalletManagement"), MultiTenancySides.Tenant);
         // Invoice permissions
         var invoiceGroup = context.AddGroup(PikachuPermissions.Invoices.Default, L("Permission:Invoices"));
         invoiceGroup.AddPermission(PikachuPermissions.Invoices.Create, L("Permission:Invoices.Create"));

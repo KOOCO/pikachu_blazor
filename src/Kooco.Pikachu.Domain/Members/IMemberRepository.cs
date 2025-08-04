@@ -3,6 +3,7 @@ using Kooco.Pikachu.TierManagement;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Identity;
@@ -27,9 +28,9 @@ public interface IMemberRepository : IIdentityUserRepository, IRepository<Identi
 
     Task<long> CountOrdersAsync(Guid memberId);
 
-    Task<VipTier?> CheckForVipTierAsync(Guid userId);
+    Task<VipTierUpgradeEmailModel> CheckForVipTierAsync(Guid userId);
 
-    Task UpdateMemberTierAsync();
+    Task<List<VipTierUpgradeEmailModel>> UpdateMemberTierAsync(CancellationToken cancellationToken = default);
 
     Task<long> GetMemberCreditRecordCountAsync(string? filter, DateTime? usageTimeFrom, DateTime? usageTimeTo,
         DateTime? expiryTimeFrom, DateTime? expiryTimeTo, int? minRemainingCredits, int? maxRemainingCredits,
@@ -44,4 +45,5 @@ public interface IMemberRepository : IIdentityUserRepository, IRepository<Identi
     Task<List<IdentityUser>> GetBirthdayMember();
 
     Task<List<(Guid id, string name, string email)>> GetEdmMemberNameAndEmailAsync(bool applyToAllMembers, IEnumerable<string> memberTags);
+    Task<VipTierProgressModel> GetMemberTierProgressAsync(Guid memberId);
 }

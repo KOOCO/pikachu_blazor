@@ -32,8 +32,15 @@
     <DataGridColumn Field="@nameof(TenantWalletTransactionDto.Timestamp)" Caption="@L["Timestamp"]">
         <DisplayTemplate>@context.Timestamp.ToString("M/d/yyyy h:mm tt")</DisplayTemplate>
     </DataGridColumn>
-    <DataGridColumn Field="@nameof(TenantWalletTransactionDto.TransactionNo)" Caption="@L["TransactionNo"]" />
-    <DataGridColumn  Field="@nameof(TenantWalletTransactionDto.TransactionType)" Caption="@L["TransactionType"]" />
+    <DataGridColumn Field="@nameof(TenantWalletTransactionDto.TransactionNo)" Caption="@L["TransactionNo"]"/>
+      
+   
+    <DataGridColumn  Field="@nameof(TenantWalletTransactionDto.TransactionType)" Caption="@L["TransactionType"]" >
+    <DisplayTemplate>
+            @L["WalletTransactionType:"+context.TransactionType.ToString()]
+    </DisplayTemplate> 
+    
+    </DataGridColumn>
     <DataGridColumn Field="@nameof(TenantWalletTransactionDto.TransactionStatus)" Caption="@L["TransactionStatus"]">
         <DisplayTemplate >
             @if(context.TransactionStatus == WalletDeductionStatus.Completed)
@@ -65,10 +72,12 @@
 
     private List<TenantWalletTransactionDto> Transactions;
     private List<TenantWalletTransactionDto> SelectedTransactions = new();
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnParametersSetAsync()
     {
         Transactions = await WalletService.GetWalletTransactionsAsync(WalletId);
     }
+
+
     private async Task ExportSelected()
     {
         var selectedIds = SelectedTransactions.Select(x => x.Id).ToList();

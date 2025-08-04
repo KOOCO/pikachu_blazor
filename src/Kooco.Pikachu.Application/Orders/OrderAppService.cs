@@ -1,4 +1,5 @@
-﻿using Kooco.Pikachu.Campaigns;
+﻿using ECPay.Payment.Integration;
+using Kooco.Pikachu.Campaigns;
 using Kooco.Pikachu.DiscountCodes;
 using Kooco.Pikachu.Emails;
 using Kooco.Pikachu.EnumValues;
@@ -24,6 +25,7 @@ using Kooco.Pikachu.Tenants.Repositories;
 using Kooco.Pikachu.UserCumulativeCredits;
 using Kooco.Pikachu.UserShoppingCredits;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using MiniExcelLibs;
@@ -404,11 +406,6 @@ public class OrderAppService : PikachuAppService, IOrderAppService
                 using (CurrentTenant.Change(user.TenantId))
                 {
                     await MemberTagManager.AddExistingAsync(user.Id);
-                    var vipTier = await MemberRepository.CheckForVipTierAsync(user.Id);
-                    if (vipTier != null)
-                    {
-                        await MemberTagManager.AddVipTierAsync(user.Id, vipTier.TierName, vipTier.Id);
-                    }
                 }
             }
 
@@ -536,12 +533,12 @@ public class OrderAppService : PikachuAppService, IOrderAppService
     {
         var currentUserId = CurrentUser.Id ?? throw new UserFriendlyException("User not found");
         var paymentRecord = await ManualBankTransferRecordRepository.GetAsync(x => x.OrderId == orderId);
-        
+
         var order = await OrderRepository.GetAsync(orderId);
-        
+
         var oldShippingStatus = order.ShippingStatus;
         order.ShippingStatus = ShippingStatus.PrepareShipment;
-        
+
         paymentRecord.Confirm(currentUserId);
 
         await CreateOrderDeliveriesAndInvoiceAsync(orderId);
@@ -567,11 +564,11 @@ public class OrderAppService : PikachuAppService, IOrderAppService
 
     public async Task<ManualBankTransferRecordDto> GetManualBankTransferRecordAsync(Guid orderId)
     {
-        var paymentRecord = await ManualBankTransferRecordRepository.GetAsync(x => x.OrderId == orderId);
+        var paymentRecord = await (await ManualBankTransferRecordRepository.GetQueryableAsync()).FirstOrDefaultAsync(x => x.OrderId == orderId);
 
         var dto = ObjectMapper.Map<ManualBankTransferRecord, ManualBankTransferRecordDto>(paymentRecord);
 
-        if (paymentRecord.ConfirmById.HasValue)
+        if (paymentRecord != null && paymentRecord.ConfirmById.HasValue)
         {
             var user = await UserRepository.FindAsync(paymentRecord.ConfirmById.Value);
             dto.ConfirmByName = user?.UserName;
@@ -834,6 +831,7 @@ public class OrderAppService : PikachuAppService, IOrderAppService
                 ord1.OrderType = OrderType.MargeToNew;
 
                 ord1.ShippingStatus = ShippingStatus.Closed;
+                ord1.OrderStatus = OrderStatus.Closed;
 
                 ord1.TotalAmount = 0;
 
@@ -1398,7 +1396,69 @@ public class OrderAppService : PikachuAppService, IOrderAppService
 
                 if (groupbuy.ProtectPrivacyData) dtos.HideCredentials();
             }
+            var queryable = await OrderMessageRepository.GetQueryableAsync();
 
+            var orderQuery = await OrderRepository.GetQueryableAsync(); // Inject IOrderRepository
+                                                                        // Step 1: Unread messages grouped by OrderId
+            var unreadMessages = await queryable
+                .Where(m => !m.IsRead && !m.IsMerchant)
+                .GroupBy(m => m.OrderId)
+                .Select(g => new
+                {
+                    OrderId = g.Key,
+                    MessageCount = g.Count()
+                })
+                .ToListAsync();
+
+            // Step 2: Get unique order IDs and related orders
+            var unreadOrderIds = unreadMessages.Select(x => x.OrderId).ToHashSet();
+
+            var allRelevantOrderIds = unreadOrderIds.ToList(); // Optional if joining large set
+
+            var relatedOrders = await orderQuery
+                .Where(o =>
+                    unreadOrderIds.Contains(o.Id) ||
+                    (o.PaymentMethod == PaymentMethods.ManualBankTransfer &&
+                     o.ShippingStatus == ShippingStatus.WaitingForPayment))
+                .Select(o => new
+                {
+                    o.Id,
+                    o.ShippingStatus,
+                    o.PaymentMethod,
+
+                })
+                .ToListAsync();
+
+            // Step 3: Merge — include even if MessageCount is 0 but payment is pending
+            var result = relatedOrders
+                .Select(o =>
+                {
+                    var messageCount = unreadMessages.FirstOrDefault(m => m.OrderId == o.Id)?.MessageCount ?? 0;
+
+                    return new
+                    {
+                        OrderId = o.Id,
+                        MessageCount = messageCount,
+                        ShippingStatus = o.ShippingStatus.ToString(),
+                        PaymentMethod = o.PaymentMethod.ToString(),
+                        HasPaymentPending = o.PaymentMethod == PaymentMethods.ManualBankTransfer &&
+                                            o.ShippingStatus == ShippingStatus.WaitingForPayment
+                    };
+                })
+                .Where(x => x.MessageCount > 0 || x.HasPaymentPending)
+                .ToList();
+
+
+            foreach (var item in result)
+            {
+                await HubContext.Clients.All.SendAsync(OrderNotificationNames.NewMessage, new
+                {
+                    item.OrderId,
+                    item.MessageCount,
+                    item.ShippingStatus,
+                    item.PaymentMethod
+                });
+            }
             return new PagedResultDto<OrderDto>
             {
                 TotalCount = totalCount,
@@ -1411,6 +1471,26 @@ public class OrderAppService : PikachuAppService, IOrderAppService
             throw;
         }
     }
+
+    public async Task<PagedResultDto<GroupBuyReportOrderDto>> GetExternalReportAsync(GetOrderListDto input)
+    {
+        GroupBuy? groupBuy;
+        using (DataFilter.Disable<IMultiTenant>())
+        {
+            groupBuy = await GroupBuyRepository.FirstOrDefaultAsync(x => x.Id == input.GroupBuyId);
+        }
+
+        if (groupBuy == null)
+        {
+            return new();
+        }
+
+        using (CurrentTenant.Change(groupBuy.TenantId))
+        {
+            return await GetReportListAsync(input, true);
+        }
+    }
+
     public async Task<PagedResultDto<GroupBuyReportOrderDto>> GetReportListAsync(GetOrderListDto input, bool hideCredentials = false)
     {
         if (input.Sorting.IsNullOrEmpty())
@@ -1750,7 +1830,7 @@ public class OrderAppService : PikachuAppService, IOrderAppService
         if (orderReturnStatus == OrderReturnStatus.Reject)
         {
             order.OrderStatus = OrderStatus.Open;
-
+            order.ShippingStatus = order.ShippingStatusBeforeReturn ?? order.ShippingStatus;
         }
 
         if (orderReturnStatus == OrderReturnStatus.Approve)
@@ -1793,6 +1873,7 @@ public class OrderAppService : PikachuAppService, IOrderAppService
         {
             order.OrderStatus = OrderStatus.Open;
             order.ReturnStatus = OrderReturnStatus.Cancelled;
+            order.ShippingStatus = order.ShippingStatusBeforeReturn ?? order.ShippingStatus;
         }
         await OrderRepository.UpdateAsync(order);
         // **Get Current User (Editor)**
@@ -1939,7 +2020,7 @@ public class OrderAppService : PikachuAppService, IOrderAppService
     public async Task CancelOrderAsync(Guid id)
     {
         var order = await OrderRepository.GetWithDetailsAsync(id);
-        
+
         var oldOrderStatus = order.OrderStatus;
         var oldShippingStatus = order.ShippingStatus;
         order.ShippingStatus = ShippingStatus.Closed;
@@ -2292,8 +2373,23 @@ public class OrderAppService : PikachuAppService, IOrderAppService
 
         await OrderRepository.UpdateAsync(order);
         await UnitOfWorkManager.Current.SaveChangesAsync();
+
         await SendEmailAsync(order.Id);
         var returnResult = ObjectMapper.Map<Order, OrderDto>(order);
+
+        if (order.UserId.HasValue)
+        {
+            var tierModel = await MemberRepository.CheckForVipTierAsync(order.UserId.Value);
+            if (tierModel?.NewTier != null)
+            {
+                await MemberTagManager.AddVipTierAsync(order.UserId.Value, tierModel.NewTier.TierName, tierModel.NewTier.Id);
+                if (tierModel.PreviousTier == null || tierModel.NewTier.Tier > tierModel.PreviousTier.Tier)
+                {
+                    await EmailAppService.SendVipTierUpgradeEmailAsync(ObjectMapper.Map<List<VipTierUpgradeEmailModel>, List<VipTierUpgradeEmailDto>>([tierModel]));
+                }
+            }
+        }
+
         if (order.InvoiceNumber.IsNullOrEmpty())
         {
             var invoiceSetting = await TenantTripartiteRepository.FindByTenantAsync(CurrentTenant.Id.Value);
@@ -2881,7 +2977,7 @@ public class OrderAppService : PikachuAppService, IOrderAppService
         // Sum of Paid orders
         var paidAmount = (await OrderRepository.GetQueryableAsync())
             .Where(order => order.UserId == userId
-                    && OrderConsts.CompletedShippingStatus.Contains(order.ShippingStatus))
+                    && order.ShippingStatus == ShippingStatus.Completed)
             .Sum(order => order.TotalAmount);
 
         // Sum of Unpaid/Due orders
@@ -2910,7 +3006,7 @@ public class OrderAppService : PikachuAppService, IOrderAppService
         // Sum of Paid orders
         var paidAmount = (await OrderRepository.GetQueryableAsync())
             .Where(order =>
-                    OrderConsts.CompletedShippingStatus.Contains(order.ShippingStatus)
+                    order.ShippingStatus == ShippingStatus.Completed
                     && order.UserId == userId
                     )
 
@@ -3084,4 +3180,6 @@ public class OrderAppService : PikachuAppService, IOrderAppService
     public required InventoryLogManager InventoryLogManager { get; init; }
     public required IOrderTradeNoRepository OrderTradeNoRepository { get; init; }
     public required IRepository<ManualBankTransferRecord, Guid> ManualBankTransferRecordRepository { get; init; }
+    public required IOrderMessageRepository OrderMessageRepository { get; init; }
+    public required IHubContext<OrderNotificationHub> HubContext { get; init; }
 }

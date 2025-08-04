@@ -3,7 +3,9 @@ using Kooco.Pikachu.TierManagement;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
+using Volo.Abp;
 
 namespace Kooco.Pikachu.Controllers.TierManagement;
 
@@ -33,8 +35,9 @@ public class VipTierSettingController(IVipTierSettingAppService vipTierSettingAp
     }
 
     [HttpPost("member-tier/{tenantId}")]
-    public Task UpdateMemberTierAsync(Guid? tenantId)
+    [RemoteService(IsEnabled = false)]
+    public Task UpdateMemberTierAsync(Guid? tenantId, bool shouldConfigureRecurringJob = false, CancellationToken cancellationToken = default)
     {
-        return _vipTierSettingAppService.UpdateMemberTierAsync(tenantId);
+        return _vipTierSettingAppService.UpdateMemberTierAsync(tenantId, shouldConfigureRecurringJob, cancellationToken);
     }
 }

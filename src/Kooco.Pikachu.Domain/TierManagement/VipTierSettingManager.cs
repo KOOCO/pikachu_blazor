@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Volo.Abp;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Domain.Services;
 
@@ -10,7 +11,14 @@ public class VipTierSettingManager(IRepository<VipTierSetting, Guid> repository)
 {
     private readonly IRepository<VipTierSetting, Guid> _repository = repository;
 
-    public async Task<VipTierSetting> AddOrUpdateAsync(bool basedOnCount, bool basedOnAmount, VipTierCondition? tierCondition)
+    public async Task<VipTierSetting> AddOrUpdateAsync(
+        bool basedOnCount,
+        bool basedOnAmount,
+        VipTierCondition? tierCondition,
+        DateTime startDate,
+        bool isResetEnabled,
+        VipTierResetFrequency? resetFrequency
+        )
     {
         if (!basedOnCount && !basedOnAmount)
         {
@@ -22,6 +30,11 @@ public class VipTierSettingManager(IRepository<VipTierSetting, Guid> repository)
             throw new VipTierConditionException();
         }
 
+        if (isResetEnabled && !resetFrequency.HasValue)
+        {
+            throw new UserFriendlyException("The Reset Frequency field is required");
+        }
+
         var vipTierSetting = await _repository.FirstOrDefaultAsync();
         if (vipTierSetting == null)
         {
@@ -29,7 +42,10 @@ public class VipTierSettingManager(IRepository<VipTierSetting, Guid> repository)
                 GuidGenerator.Create(),
                 basedOnAmount,
                 basedOnCount,
-                tierCondition
+                tierCondition,
+                startDate,
+                isResetEnabled,
+                resetFrequency
                 );
             await _repository.InsertAsync(vipTierSetting);
         }
@@ -39,6 +55,13 @@ public class VipTierSettingManager(IRepository<VipTierSetting, Guid> repository)
             vipTierSetting.BasedOnCount = basedOnCount;
             vipTierSetting.BasedOnAmount = basedOnAmount;
             vipTierSetting.TierCondition = tierCondition;
+            if (!vipTierSetting.IsResetConfigured && (startDate != vipTierSetting.StartDate || isResetEnabled))
+            {
+                vipTierSetting.StartDate = startDate;
+                vipTierSetting.IsResetEnabled = isResetEnabled;
+                vipTierSetting.ResetFrequency = resetFrequency;
+                vipTierSetting.IsResetConfigured = true;
+            }
             await _repository.UpdateAsync(vipTierSetting);
         }
 
@@ -71,12 +94,12 @@ public class VipTierSettingManager(IRepository<VipTierSetting, Guid> repository)
     public async Task<VipTierSetting?> FirstOrDefaultAsync()
     {
         var vipTierSetting = await _repository.FirstOrDefaultAsync();
-        
+
         if (vipTierSetting != null)
         {
             await _repository.EnsureCollectionLoadedAsync(vipTierSetting, tier => tier.Tiers);
         }
-        
+
         return vipTierSetting;
     }
 }

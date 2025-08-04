@@ -109,6 +109,7 @@ public class RefundAppService : ApplicationService, IRefundAppService
         var order = await _orderRepository.GetAsync(orderId);
         order.IsRefunded = true;
         order.OrderRefundType = OrderRefundType.FullRefund;
+        order.OrderStatus = OrderStatus.Refund;
         // **Get Current User (Editor)**
         var currentUserId = CurrentUser.Id ?? Guid.Empty;
         var currentUserName = CurrentUser.UserName ?? "System";
@@ -148,12 +149,14 @@ public class RefundAppService : ApplicationService, IRefundAppService
     public async Task<RefundDto> UpdateRefundReviewAsync(Guid id, RefundReviewStatus input, string? rejectReason = null)
     {
         Refund refund = await _refundRepository.GetAsync(id);
-
+        var order = await _orderRepository.GetAsync(refund.OrderId);
         refund.RefundReview = input;
 
         if (input is RefundReviewStatus.ReturnedApplication && !string.IsNullOrWhiteSpace(rejectReason))
         {
             refund.RejectReason = rejectReason;
+            order.OrderStatus = OrderStatus.Open;
+
         }
 
         if (input is RefundReviewStatus.Proccessing ||
@@ -168,7 +171,8 @@ public class RefundAppService : ApplicationService, IRefundAppService
 
         if (input == RefundReviewStatus.Success)
         {
-            var order = await _orderRepository.GetAsync(refund.OrderId);
+            order.ShippingStatus = ShippingStatus.Closed;
+            order.OrderStatus = OrderStatus.Closed;
             if (order.OrderRefundType == OrderRefundType.FullRefund && order.CreditDeductionRecordId.HasValue)
             {
                 var userShoppingCredit = await _userShoppingCreditRepository.FirstOrDefaultAsync(x => x.Id == order.CreditDeductionRecordId);
@@ -200,6 +204,7 @@ public class RefundAppService : ApplicationService, IRefundAppService
         {
             await _emailAppService.SendRefundEmailAsync(refund.OrderId, (double)refund.Order.TotalAmount);
         }
+        await _orderRepository.UpdateAsync(order);
 
         return ObjectMapper.Map<Refund, RefundDto>(refund);
     }
@@ -209,6 +214,15 @@ public class RefundAppService : ApplicationService, IRefundAppService
         Refund refund = await _refundRepository.GetAsync(id);
 
         Order order = await _orderRepository.GetWithDetailsAsync(refund.OrderId);
+        if (order.PaymentMethod == PaymentMethods.ManualBankTransfer)
+        {
+            await UpdateRefundReviewAsync(id, RefundReviewStatus.Success);
+            var orderTransaction = new OrderTransaction(GuidGenerator.Create(), order.Id, order.OrderNo,
+                order.TotalAmount, TransactionType.Refund, TransactionStatus.Successful, PaymentChannel.CashOnDelivery);
+            await _orderTransactionManager.CreateAsync(orderTransaction);
+            return;
+
+        }
 
         PaymentGatewayDto? ecpay = (await _PaymentGatewayAppService.GetAllAsync()).FirstOrDefault(f => f.PaymentIntegrationType is PaymentIntegrationType.EcPay) ??
                                     throw new UserFriendlyException("Please Set Ecpay Setting First"); ;

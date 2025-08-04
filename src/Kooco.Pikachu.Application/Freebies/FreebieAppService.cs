@@ -36,6 +36,7 @@ namespace Kooco.Pikachu.Freebies
                 input.ItemName,
                 input.ItemDescription,
                 input.ApplyToAllGroupBuy,
+                input.ApplyToAllProducts,
                 input.UnCondition,
                 input.ActivityStartDate,
                 input.ActivityEndDate,
@@ -55,7 +56,15 @@ namespace Kooco.Pikachu.Freebies
                         );
                 }
             }
-
+            if (input.FreebieProducts != null && input.FreebieProducts.Any())
+            {
+                foreach (var freebieProducts in input.FreebieProducts)
+                {
+                    result.AddFreebieProducts(
+                        result.Id, freebieProducts.Value
+                        );
+                }
+            }
             if (input.Images != null && input.Images.Any())
             {
                 foreach (var image in input.Images)
@@ -84,6 +93,7 @@ namespace Kooco.Pikachu.Freebies
             if (includeDetails)
             {
                 await _freebieRepository.EnsureCollectionLoadedAsync(freebie, i => i.FreebieGroupBuys);
+                await _freebieRepository.EnsureCollectionLoadedAsync(freebie, i => i.FreebieProducts);
                 await _freebieRepository.EnsureCollectionLoadedAsync(freebie, i => i.Images);
             }
             return ObjectMapper.Map<Freebie, FreebieDto>(freebie);
@@ -91,7 +101,7 @@ namespace Kooco.Pikachu.Freebies
         public override async Task<FreebieDto> UpdateAsync(Guid id, UpdateFreebieDto input)
         {
             Freebie? sameName = await _freebieRepository.FirstOrDefaultAsync(item => item.ItemName == input.ItemName);
-            
+
             if (sameName is not null && sameName.Id != id) throw new BusinessException(PikachuDomainErrorCodes.ItemWithSameNameAlreadyExists);
 
             Freebie freebie = await _freebieRepository.GetAsync(id);
@@ -99,6 +109,7 @@ namespace Kooco.Pikachu.Freebies
             freebie.ItemName = input.ItemName;
             freebie.ItemDescription = input.ItemDescription;
             freebie.ApplyToAllGroupBuy = input.ApplyToAllGroupBuy;
+            freebie.ApplyToAllProducts = input.ApplyToAllProducts;
             freebie.ActivityStartDate = input.ActivityStartDate;
             freebie.ActivityEndDate = input.ActivityEndDate;
             freebie.UnCondition = input.UnCondition;
@@ -109,12 +120,18 @@ namespace Kooco.Pikachu.Freebies
             freebie.FreebieQuantity = input.FreebieQuantity;
 
             await _freebieRepository.EnsureCollectionLoadedAsync(freebie, x => x.FreebieGroupBuys);
+            await _freebieRepository.EnsureCollectionLoadedAsync(freebie, x => x.FreebieProducts);
 
             _freebieManager.RemoveFreebieGroupBuys(freebie, input.FreebieGroupBuys);
+            _freebieManager.RemoveFreebieProducts(freebie, input.FreebieProducts);
 
             foreach (var groupBuyId in input.FreebieGroupBuys)
             {
                 freebie.AddFreebieGroupBuys(freebie.Id, groupBuyId);
+            }
+            foreach (var productId in input.FreebieProducts)
+            {
+                freebie.AddFreebieProducts(freebie.Id, productId);
             }
             if (input.Images != null && input.Images.Any())
             {
@@ -166,11 +183,11 @@ namespace Kooco.Pikachu.Freebies
             freebie.IsFreebieAvaliable = !freebie.IsFreebieAvaliable;
             await _freebieRepository.UpdateAsync(freebie);
         }
-        public async Task DeductFreebieAmountAsync(Guid freebieId,int quantity)
+        public async Task DeductFreebieAmountAsync(Guid freebieId, int quantity)
         {
             var freebie = await _freebieRepository.FindAsync(x => x.Id == freebieId);
-            freebie.FreebieAmount-=quantity;
-            await _freebieRepository.UpdateAsync( freebie);
+            freebie.FreebieAmount -= quantity;
+            await _freebieRepository.UpdateAsync(freebie);
         }
 
     }

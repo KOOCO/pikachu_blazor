@@ -1,3 +1,4 @@
+using Blazorise;
 using Blazorise.Bootstrap5;
 using Blazorise.FluentValidation;
 using Blazorise.Icons.FontAwesome;
@@ -53,6 +54,7 @@ using Volo.Abp.AspNetCore.Mvc.UI.Bundling;
 using Volo.Abp.AspNetCore.Mvc.UI.Theme.LeptonXLite;
 using Volo.Abp.AspNetCore.Mvc.UI.Theme.LeptonXLite.Bundling;
 using Volo.Abp.AspNetCore.Serilog;
+using Volo.Abp.AspNetCore.SignalR;
 using Volo.Abp.Autofac;
 using Volo.Abp.AutoMapper;
 using Volo.Abp.BackgroundJobs;
@@ -86,7 +88,8 @@ namespace Kooco.Pikachu.Blazor;
     typeof(AbpTenantManagementBlazorServerModule),
     typeof(AbpSettingManagementBlazorServerModule),
     typeof(AbpBackgroundJobsHangfireModule),
-    typeof(AbpBackgroundWorkersModule)
+    typeof(AbpBackgroundWorkersModule),
+    typeof(AbpAspNetCoreSignalRModule)
 )]
 public class PikachuBlazorModule : AbpModule
 {
@@ -230,6 +233,7 @@ public class PikachuBlazorModule : AbpModule
         ConfigureHangfire(context, configuration);
         ConfigureLoggerService(context, configuration);
         ConfigureOptions(context);
+
         if (!hostingEnvironment.IsDevelopment())
         {
             Configure<AbpTenantResolveOptions>(options =>
@@ -407,6 +411,11 @@ public class PikachuBlazorModule : AbpModule
             .AddBootstrap5Providers()
             .AddFontAwesomeIcons()
             .AddBlazoriseFluentValidation()
+            .AddBlazorise(options =>
+            {
+                options.Debounce = true;
+                options.DebounceInterval = 1000;
+            })
             .AddMudServices();
 
         context.Services.AddValidatorsFromAssembly(typeof(PikachuApplicationModule).Assembly);
@@ -481,7 +490,7 @@ public class PikachuBlazorModule : AbpModule
         {
             app.UseMultiTenancy();
         }
-
+      
         app.UseUnitOfWork();
         app.UseAuthorization();
         app.UseSwagger();
@@ -496,7 +505,10 @@ public class PikachuBlazorModule : AbpModule
         });
 
         app.UseConfiguredEndpoints();
-
+        app.UseEndpoints(endpoints =>
+        {
+            endpoints.MapHub<OrderNotificationHub>("/signalr-order-notifications");
+        });
         context.ServiceProvider
             .GetRequiredService<IBackgroundWorkerManager>()
             .AddAsync(

@@ -44,7 +44,10 @@
                     <AwaitingAudit />
                 </TabPanel>
                 <TabPanel Name="WalletDetailsRecord" >
-                    <WalletDetailsRecord WalletId="@Wallet.Id" />
+                      @if (SelectedTab == "WalletDetailsRecord")
+        {
+            <WalletDetailsRecord WalletId="@Wallet.Id"  />
+        }
                 </TabPanel>
             </Content>
         </Tabs>

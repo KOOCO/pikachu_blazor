@@ -1,12 +1,18 @@
-﻿using Kooco.Pikachu.EntityFrameworkCore;
+﻿using AutoMapper.Execution;
+using Kooco.Pikachu.EntityFrameworkCore;
+using Kooco.Pikachu.EnumValues;
+using Kooco.Pikachu.Localization;
 using Kooco.Pikachu.Members.MemberTags;
 using Kooco.Pikachu.Orders;
 using Kooco.Pikachu.TierManagement;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic.Core;
+using System.Threading;
 using System.Threading.Tasks;
 using Volo.Abp.Data;
 using Volo.Abp.Domain.Entities;
@@ -17,7 +23,7 @@ using Volo.Abp.Identity.EntityFrameworkCore;
 namespace Kooco.Pikachu.Members;
 
 public class EfCoreMemberRepository(IDbContextProvider<PikachuDbContext> pikachuDbContextProvider,
-    IDbContextProvider<IIdentityDbContext> dbContextProvider) : EfCoreIdentityUserRepository(dbContextProvider), IMemberRepository
+    IDbContextProvider<IIdentityDbContext> dbContextProvider, IStringLocalizer<PikachuResource> l) : EfCoreIdentityUserRepository(dbContextProvider), IMemberRepository
 {
 
     protected virtual Task<PikachuDbContext> GetPikachuDbContextAsync()
@@ -29,8 +35,9 @@ public class EfCoreMemberRepository(IDbContextProvider<PikachuDbContext> pikachu
     {
         var dbContext = await GetPikachuDbContextAsync();
         var memberRole = await dbContext.Roles.FirstOrDefaultAsync(x => x.Name == MemberConsts.Role);
-        var user = await dbContext.Users.Include(x=>x.Roles).Where(user => memberRole != null && user.Roles.Any(role => role.RoleId == memberRole.Id)).FirstOrDefaultAsync(m => m.Id == memberId)
+        var user = await dbContext.Users.Include(x => x.Roles).Where(user => memberRole != null && user.Roles.Any(role => role.RoleId == memberRole.Id)).FirstOrDefaultAsync(m => m.Id == memberId)
             ?? throw new EntityNotFoundException(typeof(IdentityUser), memberId);
+        var entry = dbContext.Entry(user);
 
         return new MemberModel
         {
@@ -40,8 +47,13 @@ public class EfCoreMemberRepository(IDbContextProvider<PikachuDbContext> pikachu
             PhoneNumber = user.PhoneNumber,
             Email = user.Email,
             Birthday = (DateTime?)user.GetProperty(Constant.Birthday, null),
+            Gender = user.GetProperty<string?>(Constant.Gender),
+            MobileNumber = user.GetProperty<string?>(Constant.MobileNumber),
             TotalOrders = dbContext.Orders.Where(x => x.UserId == user.Id).Count(),
             TotalSpent = (int)dbContext.Orders.Where(x => x.UserId == user.Id && (x.OrderStatus != EnumValues.OrderStatus.Exchange && x.OrderStatus != EnumValues.OrderStatus.Refund)).Sum(x => x.TotalAmount),
+            LineId = entry.Property<string>(Constant.LineId).CurrentValue,
+            GoogleId = entry.Property<string>(Constant.GoogleId).CurrentValue,
+            FacebookId = entry.Property<string>(Constant.FacebookId).CurrentValue,
             MemberTags = [.. dbContext.MemberTags.AsNoTracking()
                 .Where(x => x.UserId == user.Id)
                 .OrderBy(tag => !MemberConsts.MemberTags.Names.Contains(tag.Name))
@@ -54,9 +66,9 @@ public class EfCoreMemberRepository(IDbContextProvider<PikachuDbContext> pikachu
     {
         var dbContext = await GetPikachuDbContextAsync();
         var memberRole = await dbContext.Roles.FirstOrDefaultAsync(x => x.Name == MemberConsts.Role);
-        var user = await dbContext.Users.Include(x => x.Roles).Where(user => memberRole != null && user.Roles.Any(role => role.RoleId == memberRole.Id)).FirstOrDefaultAsync(m => m.NormalizedEmail == Email.ToUpper()||m.NormalizedUserName==Email.ToUpper())
+        var user = await dbContext.Users.Include(x => x.Roles).Where(user => memberRole != null && user.Roles.Any(role => role.RoleId == memberRole.Id)).FirstOrDefaultAsync(m => m.NormalizedEmail == Email.ToUpper() || m.NormalizedUserName == Email.ToUpper())
             ?? throw new EntityNotFoundException("Member Not Found");
-
+        var entry = dbContext.Entry(user);
         return new MemberModel
         {
             Id = user.Id,
@@ -65,8 +77,13 @@ public class EfCoreMemberRepository(IDbContextProvider<PikachuDbContext> pikachu
             PhoneNumber = user.PhoneNumber,
             Email = user.Email,
             Birthday = (DateTime?)user.GetProperty(Constant.Birthday, null),
+            Gender = user.GetProperty<string?>(Constant.Gender),
+            MobileNumber = user.GetProperty<string?>(Constant.MobileNumber),
             TotalOrders = dbContext.Orders.Where(x => x.UserId == user.Id).Count(),
             TotalSpent = (int)dbContext.Orders.Where(x => x.UserId == user.Id && (x.OrderStatus != EnumValues.OrderStatus.Exchange && x.OrderStatus != EnumValues.OrderStatus.Refund)).Sum(x => x.TotalAmount),
+            LineId = entry.Property<string>(Constant.LineId).CurrentValue,
+            GoogleId = entry.Property<string>(Constant.GoogleId).CurrentValue,
+            FacebookId = entry.Property<string>(Constant.FacebookId).CurrentValue,
             MemberTags = [.. dbContext.MemberTags.AsNoTracking()
                 .Where(x => x.UserId == user.Id)
                 .OrderBy(tag => !MemberConsts.MemberTags.Names.Contains(tag.Name))
@@ -124,9 +141,11 @@ public class EfCoreMemberRepository(IDbContextProvider<PikachuDbContext> pikachu
                         PhoneNumber = user.PhoneNumber,
                         Email = user.Email,
                         CreationTime = user.CreationTime,
-                        Birthday = (DateTime?)user.GetProperty(Constant.Birthday, null),
-                        TotalOrders = dbContext.Orders.Where(x => x.UserId == user.Id && OrderConsts.CompletedShippingStatus.Contains(x.ShippingStatus)).Count(),
-                        TotalSpent = (int)dbContext.Orders.Where(x => x.UserId == user.Id && OrderConsts.CompletedShippingStatus.Contains(x.ShippingStatus)).Sum(x => x.TotalAmount),
+                        Birthday = EF.Property<DateTime?>(user, Constant.Birthday),
+                        Gender = EF.Property<string?>(user, Constant.Gender),
+                        MobileNumber = EF.Property<string?>(user, Constant.MobileNumber),
+                        TotalOrders = dbContext.Orders.Where(x => x.UserId == user.Id && x.ShippingStatus == ShippingStatus.Completed).Count(),
+                        TotalSpent = (int)dbContext.Orders.Where(x => x.UserId == user.Id && x.ShippingStatus == ShippingStatus.Completed).Sum(x => x.TotalAmount),
                         LineId = EF.Property<string>(user, Constant.LineId),
                         GoogleId = EF.Property<string>(user, Constant.GoogleId),
                         FacebookId = EF.Property<string>(user, Constant.FacebookId),
@@ -156,25 +175,33 @@ public class EfCoreMemberRepository(IDbContextProvider<PikachuDbContext> pikachu
     {
         var dbContext = await GetPikachuDbContextAsync();
         return await dbContext.Orders
-            .Where(x => x.UserId == memberId && OrderConsts.CompletedShippingStatus.Contains(x.ShippingStatus))
+            .Where(x => x.UserId == memberId && x.ShippingStatus == ShippingStatus.Completed)
             .LongCountAsync();
     }
 
-    public async Task<VipTier?> CheckForVipTierAsync(Guid userId)
+    public async Task<VipTierUpgradeEmailModel> CheckForVipTierAsync(Guid userId)
     {
         var dbContext = await GetPikachuDbContextAsync();
+
+        var user = await dbContext.Users.FirstOrDefaultAsync(x => x.Id == userId)
+            ?? throw new EntityNotFoundException(typeof(IdentityUser), userId);
+
         var vipTierSettings = await dbContext.VipTierSettings.Include(v => v.Tiers).FirstOrDefaultAsync();
 
         if (vipTierSettings == null) return default;
 
-        var orders = dbContext.Orders.Where(o => o.UserId == userId && OrderConsts.CompletedShippingStatus.Contains(o.ShippingStatus));
+        var dateFrom = vipTierSettings.IsResetEnabled && vipTierSettings.LastResetDate != null
+            ? vipTierSettings.LastResetDate.Value.Date
+            : vipTierSettings.StartDate.Date;
+
+        var orders = dbContext.Orders.Where(o => o.UserId == userId && o.ShippingStatus == ShippingStatus.Completed && o.CreationTime.Date >= dateFrom);
 
         var count = await orders.LongCountAsync();
         var amount = await orders.SumAsync(x => x.TotalAmount);
 
         var tiers = vipTierSettings.Tiers.OrderByDescending(tier => tier.Tier);
 
-        return vipTierSettings switch
+        var newTier = vipTierSettings switch
         {
             { BasedOnAmount: true, BasedOnCount: true, TierCondition: VipTierCondition.OnlyWhenReachedBoth }
                 => tiers.FirstOrDefault(tier => tier.OrdersAmount <= amount && tier.OrdersCount <= count),
@@ -190,15 +217,54 @@ public class EfCoreMemberRepository(IDbContextProvider<PikachuDbContext> pikachu
 
             _ => null
         };
+
+        var nextTier = newTier != null
+            ? tiers.Where(t => t.Tier > newTier.Tier)
+                   .OrderBy(t => t.Tier)
+                   .FirstOrDefault()
+            : null;
+
+        var currentTierId = await dbContext.MemberTags
+            .Where(mt => mt.UserId == userId && mt.VipTierId.HasValue)
+            .Select(mt => mt.VipTierId)
+            .FirstOrDefaultAsync();
+
+        var previousTier = tiers.Where(t => t.Id == currentTierId).FirstOrDefault();
+
+        var upgradeModel = new VipTierUpgradeEmailModel
+        {
+            Email = user.Email,
+            UserName = user.UserName,
+            PreviousTier = previousTier,
+            NewTier = newTier,
+            NextTier = nextTier,
+            RequiredOrders = nextTier != null ? nextTier.OrdersCount - count : 0,
+            RequiredAmount = nextTier != null ? nextTier.OrdersAmount - amount : 0
+        };
+
+        return upgradeModel;
     }
 
-    public async Task UpdateMemberTierAsync()
+    public async Task<List<VipTierUpgradeEmailModel>> UpdateMemberTierAsync(CancellationToken cancellationToken = default)
     {
+        Logger.LogInformation("Member Tier Job: Starting Job");
         var dbContext = await GetPikachuDbContextAsync();
-        var vipTierSettings = await dbContext.VipTierSettings.Include(v => v.Tiers).FirstOrDefaultAsync();
-        var tiers = vipTierSettings?.Tiers.OrderByDescending(tier => tier.Tier);
+        var vipTierSettings = await dbContext.VipTierSettings.Include(v => v.Tiers).FirstOrDefaultAsync(cancellationToken);
+        if (vipTierSettings == null)
+        {
+            Logger.LogWarning("Member Tier Job: Vip Tier Settings are not set");
+            return [];
+        }
 
-        var memberRole = await dbContext.Roles.FirstOrDefaultAsync(x => x.Name == MemberConsts.Role);
+        var dateFrom = vipTierSettings.IsResetEnabled && vipTierSettings.LastResetDate != null
+            ? vipTierSettings.LastResetDate.Value.Date
+            : vipTierSettings.StartDate.Date;
+
+        Logger.LogInformation("Calculating member orders from {dateFrom}", dateFrom);
+
+        var tiers = vipTierSettings.Tiers.OrderByDescending(tier => tier.Tier);
+
+        var memberRole = await dbContext.Roles.FirstOrDefaultAsync(x => x.Name == MemberConsts.Role, cancellationToken);
 
         var members = await dbContext.Users
             .Include(user => user.Roles)
@@ -206,43 +272,77 @@ public class EfCoreMemberRepository(IDbContextProvider<PikachuDbContext> pikachu
             .GroupJoin(dbContext.Orders,
             user => user.Id,
             order => order.UserId,
-            (user, orders) => new { user, orders = orders.Where(o => OrderConsts.CompletedShippingStatus.Contains(o.ShippingStatus)) })
+            (user, orders) => new
+            {
+                user,
+                orders = orders.Where(o => o.ShippingStatus == ShippingStatus.Completed)
+            })
             .Select(g => new
             {
                 User = g.user,
                 MemberTags = dbContext.MemberTags.Where(mt => mt.UserId == g.user.Id).ToList(),
                 TotalOrders = g.orders.Count(),
-                TotalSpent = g.orders.Sum(order => order.TotalAmount)
+                OrdersAfterStartDate = g.orders
+                    .Where(o => o.CreationTime.Date >= dateFrom)
+                    .Count(),
+                TotalSpent = g.orders
+                    .Where(o => o.CreationTime.Date >= dateFrom)
+                    .Sum(order => order.TotalAmount)
             })
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
+
+        List<VipTierUpgradeEmailModel> tierEmails = [];
 
         foreach (var member in members)
         {
+            var currentTierId = member.MemberTags.Where(mt => mt.VipTierId.HasValue).Select(mt => mt.VipTierId).FirstOrDefault();
+            var currentTier = tiers.FirstOrDefault(t => t.Id == currentTierId);
+
             var tagsToDelete = member.MemberTags.Where(mt => mt.IsSystemAssigned && mt.Name != MemberConsts.MemberTags.Blacklisted);
             dbContext.MemberTags.RemoveRange(tagsToDelete);
 
             if (tiers.Any())
             {
-                var tier = vipTierSettings switch
+                var newTier = vipTierSettings switch
                 {
                     { BasedOnAmount: true, BasedOnCount: true, TierCondition: VipTierCondition.OnlyWhenReachedBoth }
-                        => tiers.FirstOrDefault(tier => tier.OrdersAmount <= member.TotalSpent && tier.OrdersCount <= member.TotalOrders),
+                        => tiers.FirstOrDefault(tier => tier.OrdersAmount <= member.TotalSpent && tier.OrdersCount <= member.OrdersAfterStartDate),
 
                     { BasedOnAmount: true, BasedOnCount: true }
-                        => tiers.FirstOrDefault(tier => tier.OrdersAmount <= member.TotalSpent || tier.OrdersCount <= member.TotalOrders),
+                        => tiers.FirstOrDefault(tier => tier.OrdersAmount <= member.TotalSpent || tier.OrdersCount <= member.OrdersAfterStartDate),
 
                     { BasedOnAmount: true }
                         => tiers.FirstOrDefault(tier => tier.OrdersAmount <= member.TotalSpent),
 
                     { BasedOnCount: true }
-                        => tiers.FirstOrDefault(tier => tier.OrdersCount <= member.TotalOrders),
+                        => tiers.FirstOrDefault(tier => tier.OrdersCount <= member.OrdersAfterStartDate),
 
                     _ => null
                 };
 
-                if (tier != null)
+                if (newTier != null)
                 {
-                    dbContext.MemberTags.Add(new MemberTag(GuidGenerator.Create(), member.User.Id, tier.TierName, true, true, tier.Id));
+                    dbContext.MemberTags.Add(new MemberTag(GuidGenerator.Create(), member.User.Id, newTier.TierName, true, true, newTier.Id));
+
+                    if (currentTier == null || newTier.Tier > currentTier.Tier)
+                    {
+                        var nextTier = newTier != null
+                            ? tiers.Where(t => t.Tier > newTier.Tier)
+                                   .OrderBy(t => t.Tier)
+                                   .FirstOrDefault()
+                            : null;
+
+                        tierEmails.Add(new VipTierUpgradeEmailModel
+                        {
+                            Email = member.User.Email,
+                            UserName = member.User.UserName,
+                            PreviousTier = currentTier,
+                            NewTier = newTier,
+                            NextTier = nextTier,
+                            RequiredOrders = nextTier != null ? nextTier.OrdersCount - member.OrdersAfterStartDate : 0,
+                            RequiredAmount = nextTier != null ? nextTier.OrdersAmount - member.TotalSpent : 0
+                        });
+                    }
                 }
             }
 
@@ -255,6 +355,8 @@ public class EfCoreMemberRepository(IDbContextProvider<PikachuDbContext> pikachu
                 dbContext.MemberTags.Add(new MemberTag(GuidGenerator.Create(), member.User.Id, MemberConsts.MemberTags.Existing, true, true));
             }
         }
+
+        return tierEmails;
     }
 
     public async Task<long> GetMemberCreditRecordCountAsync(string? filter, DateTime? usageTimeFrom, DateTime? usageTimeTo,
@@ -305,7 +407,7 @@ public class EfCoreMemberRepository(IDbContextProvider<PikachuDbContext> pikachu
             {
                 Id = x.credits.Id,
                 UsageTime = x.credits.CreationTime,
-                TransactionDescription = x.credits.TransactionDescription,
+                TransactionDescription = x.credits.TransactionDescription!=null? l[x.credits.TransactionDescription]:"",
                 Amount = x.credits.Amount,// x.orders != null ? x.orders.CreditDeductionAmount : 0,
                 ExpirationDate = x.credits.ExpirationDate,
                 RemainingCredits = x.credits.CurrentRemainingCredits,
@@ -354,5 +456,71 @@ public class EfCoreMemberRepository(IDbContextProvider<PikachuDbContext> pikachu
             .ToListAsync();
 
         return users.Select(user => (user.Id, user.UserName, user.NormalizedEmail)).ToList();
+    }
+
+    public async Task<VipTierProgressModel> GetMemberTierProgressAsync(Guid memberId)
+    {
+        var dbContext = await GetPikachuDbContextAsync();
+
+        var vipTierSettings = await dbContext.VipTierSettings
+            .Include(v => v.Tiers)
+            .FirstOrDefaultAsync()
+            ?? throw new EntityNotFoundException(typeof(VipTierSetting));
+
+        var tiers = vipTierSettings.Tiers
+            .OrderBy(t => t.Tier)
+            .ToList();
+
+        var user = await dbContext.Users
+            .Where(u => u.Id == memberId)
+            .FirstOrDefaultAsync()
+            ?? throw new EntityNotFoundException(typeof(IdentityUser));
+
+        var dateFrom = vipTierSettings.IsResetEnabled && vipTierSettings.LastResetDate != null
+            ? vipTierSettings.LastResetDate.Value.Date
+            : vipTierSettings.StartDate.Date;
+
+        // Get only completed orders for this user
+        var completedOrders = await dbContext.Orders
+            .Where(o => o.UserId == memberId && o.ShippingStatus == ShippingStatus.Completed && o.CreationTime.Date >= dateFrom)
+            .ToListAsync();
+
+        var totalOrders = completedOrders.Count;
+        var totalSpent = completedOrders.Sum(o => o.TotalAmount);
+
+        // Get the member's current VIP tag name
+        var tagName = await dbContext.MemberTags
+            .Where(t => t.UserId == memberId && t.VipTierId.HasValue)
+            .Select(t => t.Name)
+            .FirstOrDefaultAsync();
+
+        var currentTier = tiers.FirstOrDefault(t => t.TierName == tagName);
+        var nextTier = currentTier is null
+            ? tiers.FirstOrDefault()
+            : tiers.SkipWhile(t => t.Tier != currentTier.Tier).Skip(1).FirstOrDefault();
+
+        return new VipTierProgressModel
+        {
+            CurrentLevel = currentTier?.TierName,
+            NextLevel = nextTier?.TierName,
+            CalculationStartDate = vipTierSettings.StartDate,
+            ResetConfig = new VipTierResetConfig
+            {
+                IsResetEnabled = vipTierSettings.IsResetEnabled,
+                FrequencyMonths = (int?)vipTierSettings.ResetFrequency,
+                NextResetDate = vipTierSettings.NextResetDate,
+                LastResetDate = vipTierSettings.LastResetDate
+            },
+            ProgressToNextLevel = nextTier != null
+            ? new VipTierProgressToNextTier
+            {
+                RequiredOrders = nextTier?.OrdersCount,
+                CurrentOrders = totalOrders,
+                RequiredAmount = nextTier?.OrdersAmount,
+                CurrentAmount = totalSpent,
+                CountingSince = dateFrom
+            }
+            : null
+        };
     }
 }

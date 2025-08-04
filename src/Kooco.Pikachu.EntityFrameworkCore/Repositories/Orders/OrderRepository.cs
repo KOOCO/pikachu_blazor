@@ -548,6 +548,7 @@ public class OrderRepository(IDbContextProvider<PikachuDbContext> dbContextProvi
                 OrderNo = x.OrderNo,
                 CreationTime = x.CreationTime,
                 ShippingStatus = x.ShippingStatus,
+                OrderStatus = x.OrderStatus,
                 TotalAmount = x.TotalAmount,
                 PaymentMethod = x.PaymentMethod
             }).ToListAsync();
@@ -589,7 +590,7 @@ public class OrderRepository(IDbContextProvider<PikachuDbContext> dbContextProvi
     }
     public async Task<long> ReturnOrderNotificationCountAsync()
     {
-        return await ApplyReturnFilters((await GetQueryableAsync()).Include(o => o.GroupBuy), null, null, null).Where(x => (x.OrderStatus == OrderStatus.Returned || x.OrderStatus == OrderStatus.Exchange) && x.ReturnStatus == OrderReturnStatus.Pending).CountAsync();
+        return await ApplyReturnFilters((await GetQueryableAsync()).Include(o => o.GroupBuy), null, null, null).Where(x => (x.OrderStatus == OrderStatus.Returned || x.OrderStatus == OrderStatus.Exchange) && (x.ReturnStatus == OrderReturnStatus.Pending||x.ReturnStatus==OrderReturnStatus.Processing)).CountAsync();
     }
 
     public async Task<List<Order>> GetReturnListAsync(int skipCount, int maxResultCount, string? sorting, string? filter, Guid? groupBuyId)

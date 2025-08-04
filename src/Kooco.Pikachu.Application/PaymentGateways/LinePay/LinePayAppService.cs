@@ -218,7 +218,7 @@ public class LinePayAppService : PikachuAppService, ILinePayAppService
                 _ => 0
             };
 
-            int refundAmount = (int)(order.TotalAmount - deliveryCost);
+            int refundAmount = (int)(order.TotalAmount);
 
             var body = JsonSerializer.Serialize(new
             {

@@ -508,7 +508,7 @@
                             <input type="checkbox"
                             class="form-check-input"
                             id="@item"
-                            disabled="@((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore")))||CreateGroupBuyDto.IsEnterprise"
+                            
                             checked="@((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains(item)))"
                             @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
                             @L[EnumHelper.GetDescription(Enum.Parse<DeliveryMethod>(item))]
@@ -523,7 +523,7 @@
                             <input type="checkbox"
                             class="form-check-input"
                             id="@item"
-                            disabled="@((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains("DeliveredByStore")) && item != "DeliveredByStore"||(CreateGroupBuyDto.IsEnterprise && item == Enum.GetName(DeliveryMethod.DeliveredByStore)) )"
+                           
                             checked="@(((CreateGroupBuyDto.ExcludeShippingMethod != null) && (CreateGroupBuyDto.ExcludeShippingMethod.Contains(item))||( item == Enum.GetName(DeliveryMethod.SelfPickup) &&CreateGroupBuyDto.IsEnterprise)))"
                             @onchange="(value) => OnShippingMethodCheckedChange(item, value)" />
                             @L[EnumHelper.GetDescription(Enum.Parse<DeliveryMethod>(item))]

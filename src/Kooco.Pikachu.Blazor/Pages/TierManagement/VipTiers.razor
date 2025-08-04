@@ -1,9 +1,46 @@
 ﻿@page "/Members/Tier-Management"
-@attribute [Authorize(PikachuPermissions.VipTierSettings.Default)]
+@using Kooco.Pikachu.Localization
 @using Kooco.Pikachu.TierManagement
+@using Volo.Abp.AspNetCore.Components.Web
+@attribute [Authorize(PikachuPermissions.VipTierSettings.Default)]
 @inherits PikachuComponentBase
 @inject IVipTierSettingAppService VipTierSettingAppService
+@inject AbpBlazorMessageLocalizerHelper<PikachuResource> LH
 
+<style>
+    .time-config-section {
+        background: #f8f9fc;
+        border: 1px solid #e1e5e9;
+        border-radius: 0.5rem;
+        margin: 2rem 0;
+        padding: 1rem;
+    }
+
+    .time-config-title::before {
+        content: "⏱️";
+        margin-right: 8px;
+    }
+
+    .time-config-title {
+        font-size: 16px;
+        font-weight: 600;
+        color: #2c3e50;
+        margin-bottom: 16px;
+        display: flex;
+        align-items: center;
+    }
+
+    .time-config-section .form-control,
+    .time-config-section .form-select {
+        width: max(30%, 200px);
+    }
+
+        .time-config-section .form-control,
+        .time-config-section .form-check-input:not(:checked),
+        .time-config-section .form-select:not(:disabled) {
+            background-color: #fff;
+        }
+</style>
 <h3>@L["TierManagement"]</h3>
 <Div Class="rounded-cards">
     <Card>
@@ -82,6 +119,52 @@
                         </Column>
                     </Row>
                 }
+
+                <Row>
+                    <Column ColumnSize="ColumnSize.Is1"></Column>
+                    <Column ColumnSize="ColumnSize.Is11">
+                        <Div Class="time-config-section">
+                            <Div Class="time-config-title">
+                                @L["TimeRangeAndResetConfiguration"]
+                            </Div>
+                            <Validations Model="@Entity" Mode="ValidationMode.Auto">
+                                <Validation MessageLocalizer="@LH.Localize">
+                                    <Field>
+                                        <FieldLabel>@L["StartDate"]</FieldLabel>
+                                        <FieldBody>
+                                            <DateEdit TValue="DateTime?" @bind-Date="Entity.StartDate" Disabled="Entity.IsResetConfigured">
+                                                <Feedback>
+                                                    <ValidationError />
+                                                </Feedback>
+                                                <ChildContent>
+                                                    <FieldHelp>@L["VipTierStartDateHelp"]</FieldHelp>
+                                                </ChildContent>
+                                            </DateEdit>
+                                        </FieldBody>
+                                    </Field>
+                                </Validation>
+                            </Validations>
+                            <Field>
+                                <FieldBody>
+                                    <Check TValue="bool" Checked="Entity.IsResetEnabled" CheckedChanged="(e) => AutoResetEnabledChange(e)" Disabled="Entity.IsResetConfigured">@L["EnableAutomaticResetOfVipProgress"]</Check>
+                                </FieldBody>
+                            </Field>
+                            <Field>
+                                <FieldLabel>@L["ResetEvery"]</FieldLabel>
+                                <FieldBody>
+                                    <Select TValue="VipTierResetFrequency?" @bind-SelectedValue="Entity.ResetFrequency" Disabled="@(Entity.IsResetConfigured || !Entity.IsResetEnabled)">
+                                        <SelectItem Value="(VipTierResetFrequency?)null">@L["SelectFrequency"]</SelectItem>
+                                        @foreach (VipTierResetFrequency frequency in Enum.GetValues<VipTierResetFrequency>())
+                                        {
+                                            <SelectItem Value="frequency">@L["Enum:VipTierResetFrequency." + (int)frequency]</SelectItem>
+                                        }
+                                    </Select>
+                                    <FieldHelp>@L["VipTierResetFrequencyHelp"]</FieldHelp>
+                                </FieldBody>
+                            </Field>
+                        </Div>
+                    </Column>
+                </Row>
                 <Div Class="text-end">
                     <PikachuButton Class="pk-btn-primary" Loading="Loading" Clicked="UpdateAsync">
                         @L["Update"]

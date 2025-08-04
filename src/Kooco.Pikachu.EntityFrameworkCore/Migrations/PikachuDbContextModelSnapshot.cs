@@ -1069,6 +1069,9 @@ namespace Kooco.Pikachu.Migrations
                     b.Property<bool>("ApplyToAllGroupBuy")
                         .HasColumnType("bit");
 
+                    b.Property<bool>("ApplyToAllProducts")
+                        .HasColumnType("bit");
+
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .IsRequired()
@@ -1161,6 +1164,22 @@ namespace Kooco.Pikachu.Migrations
                     b.HasKey("FreebieId", "GroupBuyId");
 
                     b.ToTable("AppFreebieGroupBuys", null, t =>
+                        {
+                            t.HasComment("");
+                        });
+                });
+
+            modelBuilder.Entity("Kooco.Pikachu.Freebies.FreebieProducts", b =>
+                {
+                    b.Property<Guid>("FreebieId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("ProductId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("FreebieId", "ProductId");
+
+                    b.ToTable("AppFreebieProducts", null, t =>
                         {
                             t.HasComment("");
                         });
@@ -3212,6 +3231,9 @@ namespace Kooco.Pikachu.Migrations
                     b.Property<int>("ShippingStatus")
                         .HasColumnType("int");
 
+                    b.Property<int?>("ShippingStatusBeforeReturn")
+                        .HasColumnType("int");
+
                     b.Property<Guid?>("SplitFromId")
                         .HasColumnType("uniqueidentifier");
 
@@ -3672,6 +3694,9 @@ namespace Kooco.Pikachu.Migrations
                         .HasColumnName("CreatorId");
 
                     b.Property<bool>("IsMerchant")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsRead")
                         .HasColumnType("bit");
 
                     b.Property<DateTime?>("LastModificationTime")
@@ -5014,6 +5039,15 @@ namespace Kooco.Pikachu.Migrations
                         .HasDefaultValue(false)
                         .HasColumnName("IsDeleted");
 
+                    b.Property<bool>("IsResetConfigured")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsResetEnabled")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("JobId")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime?>("LastModificationTime")
                         .HasColumnType("datetime2")
                         .HasColumnName("LastModificationTime");
@@ -5021,6 +5055,18 @@ namespace Kooco.Pikachu.Migrations
                     b.Property<Guid?>("LastModifierId")
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("LastModifierId");
+
+                    b.Property<DateTime?>("LastResetDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("NextResetDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("ResetFrequency")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<Guid?>("TenantId")
                         .HasColumnType("uniqueidentifier")
@@ -7992,6 +8038,15 @@ namespace Kooco.Pikachu.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("Kooco.Pikachu.Freebies.FreebieProducts", b =>
+                {
+                    b.HasOne("Kooco.Pikachu.Freebies.Freebie", null)
+                        .WithMany("FreebieProducts")
+                        .HasForeignKey("FreebieId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Kooco.Pikachu.GroupBuys.GroupBuyItemGroup", b =>
                 {
                     b.HasOne("Kooco.Pikachu.GroupBuys.GroupBuy", null)
@@ -8863,6 +8918,8 @@ namespace Kooco.Pikachu.Migrations
             modelBuilder.Entity("Kooco.Pikachu.Freebies.Freebie", b =>
                 {
                     b.Navigation("FreebieGroupBuys");
+
+                    b.Navigation("FreebieProducts");
 
                     b.Navigation("Images");
                 });

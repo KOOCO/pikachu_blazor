@@ -1,0 +1,16 @@
+{
+  "mcpServers": {
+    "pikachu-memory": {
+      "type": "sse",
+      "url": "https://pikachu-memory.kooco.co/sse"
+    },
+    "context7": {
+      "type": "sse",
+      "url": "https://mcp.context7.com/sse"
+    },
+    "atlassian": {
+      "type": "sse",
+      "url": "https://mcp.atlassian.com/v1/sse"
+    }
+  }
+}

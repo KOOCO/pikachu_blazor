@@ -896,6 +896,11 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
                         var matchingTimes = selfPickupTimes.Where(t => !string.IsNullOrEmpty(t)).ToList();
                         response.SelfPickupType[method] = matchingTimes.Count > 0 ? matchingTimes : ["No time preference"];
                     }
+                    else if (method.Contains("HomeDelivery"))
+                    {
+                        var matchingTimes = homeDeliveryTimes.Where(t => !string.IsNullOrEmpty(t)).ToList();
+                        response.HomeDeliveryType[method] = matchingTimes.Count > 0 ? matchingTimes : ["No time preference"];
+                    }
                     else if (method.Contains("DeliveredByStore"))
                     {
                         using (_dataFilter.Enable<IMultiTenant>())
@@ -1304,16 +1309,19 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
         ShippingStatus? shippingStatus = null
         )
     {
-        var data = await _groupBuyRepository.GetNewGroupBuyReportDetailsAsync(
-            id, 
-            startDate, 
-            endDate, 
-            orderStatus,
-            completionTimeFrom,
-            completionTimeTo,
-            shippingStatus
-            );
-        return ObjectMapper.Map<GroupBuyReportDetails, GroupBuyReportDetailsDto>(data);
+        using (DataFilter.Disable<IMultiTenant>())
+        {
+            var data = await _groupBuyRepository.GetNewGroupBuyReportDetailsAsync(
+                id,
+                startDate,
+                endDate,
+                orderStatus,
+                completionTimeFrom,
+                completionTimeTo,
+                shippingStatus
+                );
+            return ObjectMapper.Map<GroupBuyReportDetails, GroupBuyReportDetailsDto>(data); 
+        }
     }
 
     public async Task<GroupBuyReportDetailsDto> GetGroupBuyTenantReportDetailsAsync(Guid id)

@@ -9,6 +9,7 @@ using Kooco.Pikachu.Freebies.Dtos;
 using Kooco.Pikachu.FreeBies.Dtos;
 using Kooco.Pikachu.GroupBuys;
 using Kooco.Pikachu.Images;
+using Kooco.Pikachu.Items;
 using Kooco.Pikachu.Items.Dtos;
 using Kooco.Pikachu.Localization;
 using Microsoft.AspNetCore.Components;
@@ -34,12 +35,15 @@ public partial class EditFreebie
     private const int MaxAllowedFileSize = 1024 * 1024 * 10;
     private BlazoredTextEditor ItemDescription;
     private List<KeyValueDto> GroupBuyList { get; set; } = new();
+    private List<KeyValueDto> ProductList { get; set; } = new();
     private FilePicker FilePicker { get; set; }
     private List<string> SelectedTexts { get; set; } = new();
+    private List<string> SelectedProductTexts { get; set; } = new();
     private readonly IUiMessageService _uiMessageService;
     private readonly ImageContainerManager _imageContainerManager;
     private readonly IFreebieAppService _freebieAppService;
     private readonly IGroupBuyAppService _groupBuyAppService;
+    private readonly IItemAppService _itemAppService;
 
     private UpdateFreebieDto UpdateFreebieDto = new();
     public Guid EditingId { get; private set; }
@@ -52,13 +56,15 @@ public partial class EditFreebie
         IUiMessageService uiMessageService,
         ImageContainerManager imageContainerManager,
         IFreebieAppService freebieAppService,
-        IGroupBuyAppService groupBuyAppService
+        IGroupBuyAppService groupBuyAppService,
+        IItemAppService itemAppService
     )
     {
         _uiMessageService = uiMessageService;
         _imageContainerManager = imageContainerManager;
         _freebieAppService = freebieAppService;
         _groupBuyAppService = groupBuyAppService;
+        _itemAppService = itemAppService;
     }
     #endregion
 
@@ -90,6 +96,7 @@ public partial class EditFreebie
                 UpdateFreebieDto.Images = UpdateFreebieDto.Images.OrderBy(x => x.SortNo).ToList();
 
                 GroupBuyList = await _groupBuyAppService.GetGroupBuyLookupAsync();
+                ProductList = await _itemAppService.LookupAsync();
                 await LoadHtmlContent();
                 StateHasChanged();
             }
@@ -266,6 +273,10 @@ public partial class EditFreebie
         {
             throw new BusinessException(L[PikachuDomainErrorCodes.SelectAtLeastOneGroupBuy]);
         }
+        if (UpdateFreebieDto.ApplyToAllProducts == false && !UpdateFreebieDto.FreebieProducts.Any())
+        {
+            throw new BusinessException(L[PikachuDomainErrorCodes.SelectAtLeastOneProduct]);
+        }
         if (!UpdateFreebieDto.UnCondition && UpdateFreebieDto.FreebieOrderReach is FreebieOrderReach.MinimumAmount && UpdateFreebieDto.MinimumAmount is null)
         {
             throw new BusinessException(L[PikachuDomainErrorCodes.MinimumAmountReachCannotBeEmpty]);
@@ -275,6 +286,10 @@ public partial class EditFreebie
             throw new BusinessException(L[PikachuDomainErrorCodes.MinimumPieceCannotBeEmpty]);
         }
         if (!UpdateFreebieDto.UnCondition && UpdateFreebieDto.FreebieQuantity <= 0)
+        {
+            throw new BusinessException(L[PikachuDomainErrorCodes.GetCannotBeEmptyOrZero]);
+        }
+        if (UpdateFreebieDto.UnCondition && UpdateFreebieDto.FreebieQuantity < 0)
         {
             throw new BusinessException(L[PikachuDomainErrorCodes.GetCannotBeEmptyOrZero]);
         }
@@ -295,11 +310,28 @@ public partial class EditFreebie
 
         return Task.CompletedTask;
     }
+    Task OnProductCheckedValueChanged(bool value)
+    {
+        UpdateFreebieDto.ApplyToAllProducts = value;
 
+        return Task.CompletedTask;
+    }
     Task OnUnconditionCheckedValueChanged(bool value)
     {
         UpdateFreebieDto.UnCondition = value;
+        if (UpdateFreebieDto.UnCondition)
+        {
+            UpdateFreebieDto.MinimumAmount = null;
+            UpdateFreebieDto.MinimumPiece = null;
+            UpdateFreebieDto.FreebieOrderReach = null;
 
+        }
+        else
+        {
+            UpdateFreebieDto.FreebieQuantity = 0;
+
+
+        }
         return Task.CompletedTask;
     }
     #endregion

@@ -1,10 +1,12 @@
 ﻿using Blazorise.DataGrid;
+using Kooco.Pikachu.Blazor.Helpers;
 using Kooco.Pikachu.Dashboards;
 using Kooco.Pikachu.Items.Dtos;
 using Kooco.Pikachu.Reports;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Threading.Tasks;
 
 namespace Kooco.Pikachu.Blazor.Pages.Dashboard;
@@ -25,7 +27,7 @@ public partial class Dashboard
     private DashboardCharts.DashboardCharts _dashboardCharts;
 
     private bool Loading { get; set; } = true;
-
+    private bool Exporting { get; set; }
     public Dashboard()
     {
         var units = Enum.GetValues<ReportCalculationUnits>();
@@ -85,6 +87,27 @@ public partial class Dashboard
         {
             Loading = false;
             StateHasChanged();
+        }
+    }
+
+    async Task Export()
+    {
+        try
+        {
+            Exporting = true;
+            var excelData = await DashboardAppService.GetSalesReportExcelAsync(Filters);
+            var fileName = string.Format("{0}_{1}_to_{2}.xlsx",
+                L["DashboardSalesReportFileName"],
+                Filters.StartDate?.ToString("yyyy-MM-dd"),
+                Filters.EndDate?.ToString("yyyy-MM-dd")
+                );
+            await ExcelDownloadHelper.DownloadExcelAsync(excelData, fileName);
+            Exporting = false;
+        }
+        catch (Exception ex)
+        {
+            Exporting = false;
+            await HandleErrorAsync(ex);
         }
     }
 }

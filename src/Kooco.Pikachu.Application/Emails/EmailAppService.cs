@@ -3,6 +3,7 @@ using Kooco.Pikachu.Groupbuys;
 using Kooco.Pikachu.Orders.Entities;
 using Kooco.Pikachu.Orders.Repositories;
 using Kooco.Pikachu.Tenants;
+using Kooco.Pikachu.TierManagement;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -459,6 +460,119 @@ public class EmailAppService(IOrderRepository orderRepository, IGroupBuyReposito
             body = body.Replace("{{TenantUrl}}", tenantUrl);
 
             await SendAsync(user.Email, subject, body);
+        }
+    }
+
+    public async Task SendVipTierUpgradeEmailAsync(List<VipTierUpgradeEmailDto> inputs)
+    {
+        using (CultureHelper.Use(CultureInfo.GetCultureInfo("zh-Hant")))
+        {
+            string lang = CultureInfo.CurrentCulture.TwoLetterISOLanguageName;
+
+            var tenantSettings = await tenantSettingsAppService.FirstOrDefaultAsync();
+
+            string firstTierTemplate = ReplaceDefaults(VipTierTemplateNames.Get(VipTierTemplateNames.FirstTier, lang), tenantSettings);
+            string tierUpgradeTemplate = ReplaceDefaults(VipTierTemplateNames.Get(VipTierTemplateNames.TierUpgrade, lang), tenantSettings);
+            string nextTierTemplete = VipTierTemplateNames.Get(VipTierTemplateNames.NextTier, lang);
+            string requiredOrdersTemplate = VipTierTemplateNames.Get(VipTierTemplateNames.RequiredOrders, lang);
+            string requiredAmountTemplate = VipTierTemplateNames.Get(VipTierTemplateNames.RequiredAmount, lang);
+
+            foreach (var input in inputs)
+            {
+                if (input.NewTier == null) continue;
+
+                var subject = (lang == "en" 
+                    ? "🎉 Congratulations! You've been upgraded to" 
+                    : "🎉 恭喜！您已升級至")
+                    + " " + input.NewTier?.TierName;
+
+                string body = input.PreviousTier == null
+                    ? firstTierTemplate
+                    : tierUpgradeTemplate;
+
+                string personalizedBody = body
+                    .Replace("{{CustomerName}}", input.UserName)
+                    .Replace("{{PreviousTierName}}", input.PreviousTier?.TierName)
+                    .Replace("{{vip_next_tier}}", input.NextTier != null ? nextTierTemplete : "")
+                    .Replace("{{NewTierName}}", input.NewTier?.TierName)
+                    .Replace("{{NextTierName}}", input.NextTier?.TierName);
+
+                personalizedBody = personalizedBody
+                    .Replace("{{RequiredOrders}}", input.RequiredOrders > 0 ? requiredOrdersTemplate.Replace("{{RequiredOrders}}", input.RequiredOrders.ToString()) : "")
+                    .Replace("{{RequiredAmount}}", input.RequiredAmount > 0 ? requiredAmountTemplate.Replace("{{RequiredAmount}}", input.RequiredAmount.ToString("N2")) : "");
+
+                await SendAsync(input.Email, subject, personalizedBody);
+            }
+        }
+    }
+
+    static string ReplaceDefaults(string template, TenantSettingsDto? tenantSettings)
+    {
+        string? tenantUrl = tenantSettings?.Tenant.GetProperty<string?>(Constant.TenantUrl);
+
+        template = template.Replace("{{LogoUrl}}", tenantSettings?.LogoUrl);
+        template = template.Replace("{{FacebookUrl}}", tenantSettings?.FacebookLink);
+        template = template.Replace("{{InstagramUrl}}", tenantSettings?.InstagramLink);
+        template = template.Replace("{{LineUrl}}", tenantSettings?.LineLink);
+
+        template = template.Replace("{{CurrentYear}}", DateTime.Today.ToString("yyyy"));
+        template = template.Replace("{{CompanyName}}", tenantSettings?.CompanyName);
+        template = template.Replace("{{TenantUrl}}", tenantUrl);
+
+        return template;
+    }
+
+    public async Task SendWalletDeductedEmailAsync(string email, string tenantName, decimal amount, string transactionType, decimal currentBalance)
+    {
+        {
+
+
+            var subject = L["WalletDeductionNotification"]; // optional: localize subject too
+
+            var body = $@"
+    <html>
+    <body style='font-family:Segoe UI, Microsoft JhengHei, Arial,sans-serif; font-size:15px; color:#333;'>
+        <p>{L["WalletEmail.Greeting", tenantName]}</p>
+        <p>{L["WalletEmail.DeductionBody"]}</p>
+
+        <p><strong>{L["WalletEmail.DeductioAmount"]}</strong> ${amount.ToString("N0")}<br/>
+        <strong>{L["WalletEmail.Type"]}</strong> {L["WalletTransactionType:" + transactionType.ToString()]}<br/>
+        <strong>{L["WalletEmail.Balance"]}</strong> ${currentBalance.ToString("N0")}</p>
+
+        <p>{L["WalletEmail.SupportDeduction"]}</p>
+        <br/>
+        <p>{L["WalletEmail.Regards"]}</p>
+    </body>
+    </html>";
+
+            await emailSender.SendAsync(email, subject, body, isBodyHtml: true);
+        }
+    }
+
+    public async Task SendWalletRechargeEmailAsync(string email, string tenantName, decimal amount, string transactionType, decimal currentBalance)
+    {
+        {
+
+
+            var subject = L["WalletRechargeNotification"]; // optional: localize subject too
+
+            var body = $@"
+    <html>
+    <body style='font-family:Segoe UI, Microsoft JhengHei, Arial,sans-serif; font-size:15px; color:#333;'>
+        <p>{L["WalletEmail.Greeting", tenantName]}</p>
+        <p>{L["WalletEmail.RechargeBody"]}</p>
+
+        <p><strong>{L["WalletEmail.RechargeAmount"]}</strong> ${amount.ToString("N0")}<br/>
+        <strong>{L["WalletEmail.Type"]}</strong> {L["WalletTransactionType:" + transactionType.ToString()]}<br/>
+        <strong>{L["WalletEmail.Balance"]}</strong> ${currentBalance.ToString("N0")}</p>
+
+        <p>{L["WalletEmail.SupportRecharge"]}</p>
+        <br/>
+        <p>{L["WalletEmail.RegardsRecharge"]}</p>
+    </body>
+    </html>";
+
+            await emailSender.SendAsync(email, subject, body, isBodyHtml: true);
         }
     }
 

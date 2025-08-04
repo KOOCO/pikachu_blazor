@@ -31,6 +31,7 @@ public static class PikachuDomainErrorCodes
     public const string EntityWithGivenIdDoesnotExist = "Pikachu:EntityWithGivenIdDoesnotExist";
     public const string FreebieAmountCannotBeZero = "Pikachu:FreebieAmountCannotBeZero";
     public const string SelectAtLeastOneGroupBuy = "Pikachu:SelectAtLeastOneGroupBuy";
+    public const string SelectAtLeastOneProduct = "Pikachu:SelectAtLeastOneProduct";
     public const string SelectAtLeastOneImage = "Pikachu:SelectAtLeastOneImage";
     public const string InvalidItemName = "Pikachu:InvalidItemName";
     public const string GroupBuyModuleCannotBeEmpty = "Pikachu:GroupBuyModuleCannotBeEmpty";

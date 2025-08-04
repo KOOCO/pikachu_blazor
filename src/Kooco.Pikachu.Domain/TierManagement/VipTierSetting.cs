@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Volo.Abp;
 using Volo.Abp.Domain.Entities.Auditing;
 using Volo.Abp.MultiTenancy;
 
@@ -10,6 +11,13 @@ public class VipTierSetting : FullAuditedAggregateRoot<Guid>, IMultiTenant
     public bool BasedOnAmount { get; set; }
     public bool BasedOnCount { get; set; }
     public VipTierCondition? TierCondition { get; set; }
+    public bool IsResetConfigured { get; set; }
+    public DateTime StartDate { get; set; }
+    public bool IsResetEnabled { get; set; }
+    public VipTierResetFrequency? ResetFrequency { get; set; }
+    public string? JobId { get; set; }
+    public DateTime? NextResetDate { get; set; }
+    public DateTime? LastResetDate { get; set; }
     public Guid? TenantId { get; set; }
 
     public virtual ICollection<VipTier> Tiers { get; set; }
@@ -23,13 +31,32 @@ public class VipTierSetting : FullAuditedAggregateRoot<Guid>, IMultiTenant
         Guid id,
         bool basedOnOrder,
         bool basedOnCount,
-        VipTierCondition? tierCondition
+        VipTierCondition? tierCondition,
+        DateTime startDate,
+        bool isResetEnabled,
+        VipTierResetFrequency? resetFrequency
         ) : base(id)
     {
         BasedOnAmount = basedOnOrder;
         BasedOnCount = basedOnCount;
         TierCondition = tierCondition;
+        StartDate = startDate;
+        SetIsResetEnabled(isResetEnabled, resetFrequency);
+        IsResetConfigured = startDate.Date != DateTime.Today || isResetEnabled;
         Tiers = new List<VipTier>();
+    }
+
+    public void SetIsResetEnabled(bool isResetEnabled, VipTierResetFrequency? resetFrequency)
+    {
+        IsResetEnabled = isResetEnabled;
+        if (IsResetEnabled)
+        {
+            ResetFrequency = Check.NotNull(resetFrequency, nameof(ResetFrequency));
+        }
+        else
+        {
+            ResetFrequency = null;
+        }
     }
 
     public VipTier AddTier(Guid id, Tier tier, string? tierName, int ordersAmount, int ordersCount)

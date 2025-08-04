@@ -245,7 +245,13 @@ public class MemberAppService(IObjectMapper objectMapper, IMemberRepository memb
         var orders = await orderRepository.GetMemberOrdersByGroupBuyAsync(CurrentUser.Id.Value, groupBuyId);
         return base.ObjectMapper.Map<List<MemberOrderInfoModel>, List<MemberOrderInfoDto>>(orders);
     }
+    public async Task<List<MemberOrderInfoDto>> GetMemberOrdersByGroupBuyAsync(Guid memberId,Guid groupBuyId)
+    {
+      
 
+        var orders = await orderRepository.GetMemberOrdersByGroupBuyAsync(memberId, groupBuyId);
+        return base.ObjectMapper.Map<List<MemberOrderInfoModel>, List<MemberOrderInfoDto>>(orders);
+    }
     public async Task SetBlacklistedAsync(Guid memberId, bool blacklisted)
     {
         if (blacklisted)
@@ -335,5 +341,12 @@ public class MemberAppService(IObjectMapper objectMapper, IMemberRepository memb
             return objectMapper.Map<IdentityUserDto, MemberDto>(identityUser);
         }
         return ObjectMapper.Map<IdentityUserDto, MemberDto>(identityUser);
+    }
+
+
+    public async Task<VipTierProgressDto> GetMemberTierProgressAsync(Guid memberId)
+    {
+        var progress = await memberRepository.GetMemberTierProgressAsync(memberId);
+        return ObjectMapper.Map<VipTierProgressModel, VipTierProgressDto>(progress);
     }
 }

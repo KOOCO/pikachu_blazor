@@ -61,6 +61,7 @@ using Volo.Abp.Application.Dtos;
 using Volo.Abp.AutoMapper;
 using Volo.Abp.Identity;
 using Kooco.Pikachu.InventoryManagement;
+using Kooco.Pikachu.Emails;
 
 namespace Kooco.Pikachu;
 
@@ -129,6 +130,7 @@ public class PikachuApplicationAutoMapperProfile : Profile
 
         CreateMap<Freebie, FreebieDto>();
         CreateMap<FreebieGroupBuys, FreebieGroupBuysDto>();
+        CreateMap<FreebieProducts, FreebieProductsDto>();
 
         CreateMap<Order, OrderDto>();
         CreateMap<OrderItem, OrderItemDto>();
@@ -426,5 +428,10 @@ public class PikachuApplicationAutoMapperProfile : Profile
         CreateMap<InventoryLog, InventoryLogDto>();
 
         CreateMap<ManualBankTransferRecord, ManualBankTransferRecordDto>();
+
+        CreateMap<VipTierProgressModel, VipTierProgressDto>();
+        CreateMap<VipTierResetConfig, VipTierResetConfigDto>();
+        CreateMap<VipTierProgressToNextTier, VipTierProgressToNextTierDto>();
+        CreateMap<VipTierUpgradeEmailModel, VipTierUpgradeEmailDto>();
     }
 }

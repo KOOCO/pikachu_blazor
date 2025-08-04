@@ -1,4 +1,5 @@
-﻿using Hangfire;
+﻿using AutoMapper.Internal.Mappers;
+using Hangfire;
 using Kooco.Pikachu.Members;
 using Kooco.Pikachu.ShopCarts;
 using Microsoft.Extensions.Configuration;

@@ -180,6 +180,53 @@
                 </div>
             }
 
+              <div class="row mt-5">
+                <div class="row mb-2"></div>
+                <div class="col-2">
+                    <label>@L["ChooseProduct"]</label>
+                </div>
+                <div class="col-10">
+                    <RadioGroup TValue="bool"
+                                CheckedValue="@FreebieCreateDto.ApplyToAllProducts"
+                                CheckedValueChanged="@OnProductCheckedValueChanged"
+                                Name="ApplyToAllProduct"
+                                Class="horizontal-radiogroup">
+                        <Radio Value="@(true)">
+                            @L["ApplyToAllProducts"]
+                        </Radio>
+                        <Radio Value="@(false)">
+                            @L["SelectProducts"]
+                        </Radio>
+                    </RadioGroup>
+
+                </div>
+            </div>
+
+            @if (FreebieCreateDto.ApplyToAllProducts == false)
+            {
+                <div class="row mt-2">
+                    <div class="col-2">
+                    </div>
+                    <div class="col-10">
+                        <Autocomplete TItem="KeyValueDto"
+                                      TValue="Guid?"
+                                      Data="@ProductList"
+                                      TextField="@(( item ) => item.Name)"
+                                      ValueField="@(( item ) => item.Id)"
+                                      @bind-SelectedValues="FreebieCreateDto.FreebieProducts"
+                                      @bind-SelectedTexts="SelectedTexts"
+                                      Placeholder="Search..."
+                                      Filter="AutocompleteFilter.StartsWith"
+                                      SelectionMode="AutocompleteSelectionMode.Multiple"
+                                      CustomFilter="@((item, searchValue) =>item.Name != null && item.Name.IndexOf(searchValue, 0, StringComparison.CurrentCultureIgnoreCase) >= 0)"
+                                      HighlightSearch
+                                      Immediate="true"
+                                      Size="Size.Small">
+                            <NotFoundContent> @L["NotFound"] </NotFoundContent>
+                        </Autocomplete>
+                    </div>
+                </div>
+            }
             <div class="row mt-3">
                 <div class="col-2">
                     @L["ApplyCondition"]
@@ -251,7 +298,23 @@
                     </div>
                 </div>
             }
+            else{
+               <div class="row mt-1">
+                    <div class="col-2">
+                    </div>
+               
 
+                    <div class="col-2">
+                        <Label l>@L["Get"]</Label>
+                        <div class="input-group">
+                            <NumericEdit Size="Size.Small" TValue="int" @bind-Value="FreebieCreateDto.FreebieQuantity" />
+                            <Span Class="bg-primary text-light px-2 py-1">@L["Piece"]</Span>
+                        </div>
+                    </div>
+                </div>
+            
+            
+            }
             <div class="row mt-3">
                 <div class="col-2">@L["ActivityDate"]</div>
                 <div class="col-5">

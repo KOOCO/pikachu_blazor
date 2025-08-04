@@ -109,6 +109,7 @@ public class PikachuDbContext(DbContextOptions<PikachuDbContext> options) :
 
     public DbSet<Freebie> Freebies { get; set; }
     public DbSet<FreebieGroupBuys> FreebieGroupBuys { get; set; }
+    public DbSet<FreebieProducts> FreebieProducts { get; set; }
     public DbSet<Order> Orders { get; set; }
     public DbSet<ManualBankTransferRecord> ManualBankTransferRecords { get; set; }
     public DbSet<AppliedCampaign> AppliedCampaigns { get; set; }
@@ -305,6 +306,7 @@ public class PikachuDbContext(DbContextOptions<PikachuDbContext> options) :
             b.Property(x => x.FreebieAmount).HasColumnType("money");
             b.Property(x => x.MinimumAmount).HasColumnType("money");
             b.HasMany(x => x.FreebieGroupBuys).WithOne();
+            b.HasMany(x => x.FreebieProducts).WithOne();
         });
 
         builder.Entity<FreebieGroupBuys>(b =>
@@ -312,6 +314,12 @@ public class PikachuDbContext(DbContextOptions<PikachuDbContext> options) :
             b.ToTable(PikachuConsts.DbTablePrefix + "FreebieGroupBuys", PikachuConsts.DbSchema, table => table.HasComment(""));
             b.ConfigureByConvention();
             b.HasKey(x => new { x.FreebieId, x.GroupBuyId });
+        });
+        builder.Entity<FreebieProducts>(b =>
+        {
+            b.ToTable(PikachuConsts.DbTablePrefix + "FreebieProducts", PikachuConsts.DbSchema, table => table.HasComment(""));
+            b.ConfigureByConvention();
+            b.HasKey(x => new { x.FreebieId, x.ProductId });
         });
 
         builder.Entity<Order>(b =>

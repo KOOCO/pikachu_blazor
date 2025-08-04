@@ -260,3 +260,20 @@ src/Kooco.Pikachu.HttpApi.HostWithIds/Logs/*
 src/Kooco.Pikachu.DbMigrator/Logs/*
 src/Kooco.Pikachu.Blazor/Logs/*
 src/Kooco.Pikachu.Blazor.Tiered/Logs/*
+# Test Coverage
+TestResults/
+*.opencover.xml
+*.cobertura.xml
+
+# Coverage reports (generated files)
+coverage/reports/*.html
+coverage/reports/*.htm
+coverage/reports/*.js
+coverage/reports/*.css
+coverage/*.xml
+
+# DO NOT IGNORE - Share with team
+# !coverage/reports/badge_*.svg
+# !coverage/reports/Cobertura.xml
+# !coverage/history/
+/logs

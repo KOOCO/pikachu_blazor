@@ -12,6 +12,9 @@ using Volo.Abp.SettingManagement.Blazor.Menus;
 using Volo.Abp.TenantManagement;
 using Volo.Abp.TenantManagement.Blazor.Navigation;
 using Volo.Abp.UI.Navigation;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Configuration;
 
 namespace Kooco.Pikachu.Blazor.Menus;
 
@@ -20,6 +23,7 @@ public class PikachuMenuContributor : IMenuContributor
 
     public async Task ConfigureMenuAsync(MenuConfigurationContext context)
     {
+
         if (context.Menu.Name == StandardMenus.Main)
         {
             await ConfigureMainMenuAsync(context);
@@ -31,6 +35,8 @@ public class PikachuMenuContributor : IMenuContributor
 
     private async Task ConfigureMainMenuAsync(MenuConfigurationContext context)
     {
+        var configuration = context.ServiceProvider.GetRequiredService<IConfiguration>();
+        var env = configuration["App:Environment"];
         var administration = context.Menu.GetAdministration();
         var l = context.GetLocalizer<PikachuResource>();
 
@@ -317,7 +323,9 @@ public class PikachuMenuContributor : IMenuContributor
             url: "/CashFlowManagement/ElectronicInvoiceSetting",
             requiredPermissionName: PikachuPermissions.InvoiceSetting)
             );
-        paymentManagement.AddItem(new ApplicationMenuItem(
+        if (env=="Development")
+        {
+            paymentManagement.AddItem(new ApplicationMenuItem(
             name: "CashFlowReconciliationStatement",
             icon: "fas fa-file-invoice",
             displayName: l["Menu:CashFlowReconciliationStatement"],
@@ -325,6 +333,7 @@ public class PikachuMenuContributor : IMenuContributor
             url: "/CashFlowManagement/CashFlowReconciliationStatement",
             requiredPermissionName: PikachuPermissions.CashFlowReconciliationStatement)
             );
+        }
         paymentManagement.AddItem(new ApplicationMenuItem(
            name: "VoidInvoice",
            icon: "fas fa-file-invoice",
@@ -376,8 +385,9 @@ public class PikachuMenuContributor : IMenuContributor
             order: 6,
             requiredPermissionName: PikachuPermissions.WebsiteManagement.Default
             );
-
-        websiteManagement.AddItem(new ApplicationMenuItem(
+        if (env == "Development")
+        {
+            websiteManagement.AddItem(new ApplicationMenuItem(
             name: PikachuMenus.WebsiteBasicSettings,
             displayName: l["Menu:WebsiteBasicSettings"],
             url: "/Website-Basic-Settings",
@@ -385,14 +395,14 @@ public class PikachuMenuContributor : IMenuContributor
             requiredPermissionName: PikachuPermissions.WebsiteManagement.WebsiteBasicSettings
             ));
 
-        websiteManagement.AddItem(new ApplicationMenuItem(
-            name: PikachuMenus.TopbarSettings,
-            displayName: l["Menu:TopbarSettings"],
-            url: "/Topbar-Settings",
-            icon: "fas fa-window-maximize",
-            requiredPermissionName: PikachuPermissions.WebsiteManagement.TopbarSettings
-            ));
-
+            websiteManagement.AddItem(new ApplicationMenuItem(
+                name: PikachuMenus.TopbarSettings,
+                displayName: l["Menu:TopbarSettings"],
+                url: "/Topbar-Settings",
+                icon: "fas fa-window-maximize",
+                requiredPermissionName: PikachuPermissions.WebsiteManagement.TopbarSettings
+                ));
+        }
         websiteManagement.AddItem(new ApplicationMenuItem(
             name: PikachuMenus.FooterSettings,
             displayName: l["Menu:FooterSettings"],
@@ -400,15 +410,16 @@ public class PikachuMenuContributor : IMenuContributor
             icon: "fas fa-window-maximize",
             requiredPermissionName: PikachuPermissions.WebsiteManagement.TopbarSettings
             ));
-
-        websiteManagement.AddItem(new ApplicationMenuItem(
+        if (env == "Development")
+        {
+            websiteManagement.AddItem(new ApplicationMenuItem(
             name: PikachuMenus.WebsiteSettings,
             displayName: l["Menu:WebsiteSettings"],
             url: "/Website-Settings",
             icon: "fas fa-laptop-code",
             requiredPermissionName: PikachuPermissions.WebsiteManagement.WebsiteSettings.Default
             ));
-
+        }
         context.Menu.AddItem(websiteManagement);
 
         var emailManagement = new ApplicationMenuItem(
@@ -482,6 +493,14 @@ public class PikachuMenuContributor : IMenuContributor
                     requiredPermissionName: PikachuPermissions.TenantWallet.Default
                 )
             );
+            administration?.AddItem(
+             new ApplicationMenuItem(
+                 name: PikachuMenus.TenantWalletManagement,
+                 displayName: l["Menu:TenantWalletManagement"],
+                 url: "/wallet",
+                 requiredPermissionName: PikachuPermissions.TenantWalletTransactions.Default
+             )
+         );
         }
         else
         {
@@ -490,13 +509,13 @@ public class PikachuMenuContributor : IMenuContributor
 
         administration.SetSubItemOrder(IdentityMenuNames.GroupName, 2);
         administration.SetSubItemOrder(SettingManagementMenus.GroupName, 3);
-        
+
         //remove administration item from menu
         //context.Menu.Items.Remove( administration );
 
         //if (!await context.IsGrantedAsync(SettingManagementPermissions.Emailing))
         //{
-            administration.TryRemoveMenuItem(SettingManagementMenus.GroupName);
+        administration.TryRemoveMenuItem(SettingManagementMenus.GroupName);
         //}
     }
 }

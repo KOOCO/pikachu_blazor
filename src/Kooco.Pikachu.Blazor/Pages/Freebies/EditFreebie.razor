@@ -183,7 +183,52 @@
                     </div>
                 </div>
             }
+             <div class="row mt-5">
+                <div class="row mb-2"></div>
+                <div class="col-2">
+                    <label>@L["ChooseProduct"]</label>
+                </div>
+                <div class="col-9">
+                    <RadioGroup TValue="bool"
+                                CheckedValue="@UpdateFreebieDto.ApplyToAllProducts"
+                                CheckedValueChanged="@OnProductCheckedValueChanged"
+                                Name="ApplyToAllProduct"
+                                Class="horizontal-radiogroup">
+                        <Radio Value="@(true)">
+                            @L["ApplyToAllProducts"]
+                        </Radio>
+                        <Radio Value="@(false)">
+                            @L["SelectProducts"]
+                        </Radio>
+                    </RadioGroup>
+                </div>
+            </div>
 
+            @if (UpdateFreebieDto.ApplyToAllProducts == false)
+            {
+                <div class="row mt-2">
+                    <div class="col-2">
+                    </div>
+                    <div class="col-10">
+                        <Autocomplete TItem="KeyValueDto"
+                                      TValue="Guid"
+                                      Data="@ProductList"
+                                      TextField="@(( item ) => item.Name)"
+                                      ValueField="@(( item ) => item.Id)"
+                                      @bind-SelectedValues="UpdateFreebieDto.FreebieProducts"
+                                      @bind-SelectedTexts="SelectedProductTexts"
+                                      Placeholder="Search..."
+                                      Filter="AutocompleteFilter.StartsWith"
+                                      SelectionMode="AutocompleteSelectionMode.Multiple"
+                                      CustomFilter="@((item, searchValue) =>item.Name != null && item.Name.IndexOf(searchValue, 0, StringComparison.CurrentCultureIgnoreCase) >= 0)"
+                                      HighlightSearch
+                                      Immediate="true"
+                                      Size="Blazorise.Size.Small">
+                            <NotFoundContent> @L["NotFound"] </NotFoundContent>
+                        </Autocomplete>
+                    </div>
+                </div>
+            }
             <div class="row mt-3">
                 <div class="col-2">
                     @L["ApplyCondition"]
@@ -255,6 +300,26 @@
                         </div>
                     </div>
                 </div>
+            }
+            else{
+             <div class="row mt-1">
+                    <div class="col-2">
+                    </div>
+                   
+                    
+                    
+
+                    <div class="col-3">
+                        <Label l>@L["Get"]</Label>
+                        <div class="input-group">
+                            <MudNumericField @bind-Value="UpdateFreebieDto.FreebieQuantity"
+                                             Min="0"
+                                             Max="@Convert.ToInt32(UpdateFreebieDto.FreebieAmount)" />
+                            <Span Class="bg-primary text-light px-2 py-2">@L["Piece"]</Span>
+                        </div>
+                    </div>
+                </div>
+            
             }
 
             <div class="row mt-3">
