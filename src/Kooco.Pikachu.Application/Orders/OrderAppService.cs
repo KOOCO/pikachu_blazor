@@ -533,12 +533,12 @@ public class OrderAppService : PikachuAppService, IOrderAppService
     {
         var currentUserId = CurrentUser.Id ?? throw new UserFriendlyException("User not found");
         var paymentRecord = await ManualBankTransferRecordRepository.GetAsync(x => x.OrderId == orderId);
-        
+
         var order = await OrderRepository.GetAsync(orderId);
-        
+
         var oldShippingStatus = order.ShippingStatus;
         order.ShippingStatus = ShippingStatus.PrepareShipment;
-        
+
         paymentRecord.Confirm(currentUserId);
 
         await CreateOrderDeliveriesAndInvoiceAsync(orderId);
@@ -564,11 +564,11 @@ public class OrderAppService : PikachuAppService, IOrderAppService
 
     public async Task<ManualBankTransferRecordDto> GetManualBankTransferRecordAsync(Guid orderId)
     {
-        var paymentRecord = await ManualBankTransferRecordRepository.GetAsync(x => x.OrderId == orderId);
+        var paymentRecord = await (await ManualBankTransferRecordRepository.GetQueryableAsync()).FirstOrDefaultAsync(x => x.OrderId == orderId);
 
         var dto = ObjectMapper.Map<ManualBankTransferRecord, ManualBankTransferRecordDto>(paymentRecord);
 
-        if (paymentRecord.ConfirmById.HasValue)
+        if (paymentRecord != null && paymentRecord.ConfirmById.HasValue)
         {
             var user = await UserRepository.FindAsync(paymentRecord.ConfirmById.Value);
             dto.ConfirmByName = user?.UserName;
@@ -1425,7 +1425,7 @@ public class OrderAppService : PikachuAppService, IOrderAppService
                     o.Id,
                     o.ShippingStatus,
                     o.PaymentMethod,
-                   
+
                 })
                 .ToListAsync();
 
@@ -2000,7 +2000,7 @@ public class OrderAppService : PikachuAppService, IOrderAppService
     public async Task CancelOrderAsync(Guid id)
     {
         var order = await OrderRepository.GetWithDetailsAsync(id);
-        
+
         var oldOrderStatus = order.OrderStatus;
         var oldShippingStatus = order.ShippingStatus;
         order.ShippingStatus = ShippingStatus.Closed;
@@ -3160,6 +3160,6 @@ public class OrderAppService : PikachuAppService, IOrderAppService
     public required InventoryLogManager InventoryLogManager { get; init; }
     public required IOrderTradeNoRepository OrderTradeNoRepository { get; init; }
     public required IRepository<ManualBankTransferRecord, Guid> ManualBankTransferRecordRepository { get; init; }
-   public required IOrderMessageRepository OrderMessageRepository { get; init; }
-   public required IHubContext<OrderNotificationHub> HubContext { get; init; }
+    public required IOrderMessageRepository OrderMessageRepository { get; init; }
+    public required IHubContext<OrderNotificationHub> HubContext { get; init; }
 }
