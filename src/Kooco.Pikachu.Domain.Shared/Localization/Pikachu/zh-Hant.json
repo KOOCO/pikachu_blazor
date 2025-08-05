@@ -1649,9 +1649,9 @@
     "InputCityName": "請輸入城市名稱",
     "InputAddress": "請輸入地址",
     "SelfPickUpInfo": "自取地址資訊",
-    "ShoppingCreditDescription:CashbackEarned": "購物回饋: 訂單#",
-    "ShoppingCreditDescription:OrderCancelled": "訂單取消: 訂單#",
-    "ShoppingCreditDescription:CreditDeduction": "購物折抵: 訂單#",
+    "ShoppingCreditDescription:CashbackEarned": "購物回饋: 訂單# {0}",
+    "ShoppingCreditDescription:OrderCancelled": "訂單取消: 訂單# {0}",
+    "ShoppingCreditDescription:CreditDeduction": "購物折抵: 訂單# {0}",
 
     "ManageWallet": "管理錢包",
     "PendingTransactions": "待審核款項",

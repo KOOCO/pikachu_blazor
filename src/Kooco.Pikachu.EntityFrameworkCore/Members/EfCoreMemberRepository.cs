@@ -23,7 +23,7 @@ using Volo.Abp.Identity.EntityFrameworkCore;
 namespace Kooco.Pikachu.Members;
 
 public class EfCoreMemberRepository(IDbContextProvider<PikachuDbContext> pikachuDbContextProvider,
-    IDbContextProvider<IIdentityDbContext> dbContextProvider, IStringLocalizer<PikachuResource> l) : EfCoreIdentityUserRepository(dbContextProvider), IMemberRepository
+    IDbContextProvider<IIdentityDbContext> dbContextProvider) : EfCoreIdentityUserRepository(dbContextProvider), IMemberRepository
 {
 
     protected virtual Task<PikachuDbContext> GetPikachuDbContextAsync()
@@ -407,7 +407,7 @@ public class EfCoreMemberRepository(IDbContextProvider<PikachuDbContext> pikachu
             {
                 Id = x.credits.Id,
                 UsageTime = x.credits.CreationTime,
-                TransactionDescription = x.credits.TransactionDescription!=null? l[x.credits.TransactionDescription]:"",
+                TransactionDescription = x.credits.TransactionDescription,
                 Amount = x.credits.Amount,// x.orders != null ? x.orders.CreditDeductionAmount : 0,
                 ExpirationDate = x.credits.ExpirationDate,
                 RemainingCredits = x.credits.CurrentRemainingCredits,

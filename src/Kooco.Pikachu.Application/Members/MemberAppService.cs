@@ -25,6 +25,7 @@ using Volo.Abp.Application.Dtos;
 using Volo.Abp.Domain.Entities;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Identity;
+using Volo.Abp.Localization;
 using Volo.Abp.ObjectMapping;
 using IdentityUser = Volo.Abp.Identity.IdentityUser;
 
@@ -158,11 +159,23 @@ public class MemberAppService(IObjectMapper objectMapper, IMemberRepository memb
             input.UsageTimeFrom, input.UsageTimeTo, input.ExpiryDateFrom, input.ExpiryDateTo, input.MinRemainingCredits, input.MaxRemainingCredits,
             input.MinAmount, input.MaxAmount, id);
 
-        return new PagedResultDto<MemberCreditRecordDto>
+        var dto = new PagedResultDto<MemberCreditRecordDto>
         {
             TotalCount = totalCount,
             Items = base.ObjectMapper.Map<List<MemberCreditRecordModel>, List<MemberCreditRecordDto>>(items)
         };
+
+        using (CultureHelper.Use("zh-Hant"))
+        {
+            foreach (var item in dto.Items)
+            {
+                item.TransactionDescriptionZh = !string.IsNullOrWhiteSpace(item.TransactionDescription)
+                    ? !string.IsNullOrWhiteSpace(item.OrderNo) ? L[item.TransactionDescription, item.OrderNo] : L[item.TransactionDescription]
+                    : string.Empty;
+            }
+        }
+
+        return dto;
     }
 
     public async Task<UserCumulativeCreditDto> GetMemberCumulativeCreditsAsync(Guid id)
@@ -245,9 +258,9 @@ public class MemberAppService(IObjectMapper objectMapper, IMemberRepository memb
         var orders = await orderRepository.GetMemberOrdersByGroupBuyAsync(CurrentUser.Id.Value, groupBuyId);
         return base.ObjectMapper.Map<List<MemberOrderInfoModel>, List<MemberOrderInfoDto>>(orders);
     }
-    public async Task<List<MemberOrderInfoDto>> GetMemberOrdersByGroupBuyAsync(Guid memberId,Guid groupBuyId)
+    public async Task<List<MemberOrderInfoDto>> GetMemberOrdersByGroupBuyAsync(Guid memberId, Guid groupBuyId)
     {
-      
+
 
         var orders = await orderRepository.GetMemberOrdersByGroupBuyAsync(memberId, groupBuyId);
         return base.ObjectMapper.Map<List<MemberOrderInfoModel>, List<MemberOrderInfoDto>>(orders);
