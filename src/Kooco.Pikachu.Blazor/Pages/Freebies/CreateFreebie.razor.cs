@@ -176,7 +176,13 @@ namespace Kooco.Pikachu.Blazor.Pages.Freebies
                     return;
                 }
                 ValidateForm();
+                if (FreebieCreateDto.UnCondition)
+                {
+                    FreebieCreateDto.MinimumAmount = null;
+                    FreebieCreateDto.MinimumPiece = null;
+                    FreebieCreateDto.FreebieOrderReach = null;
 
+                }
                 FreebieCreateDto.Images = ImageList;
 
                 await _freebieAppService.CreateAsync(FreebieCreateDto);
@@ -254,19 +260,8 @@ namespace Kooco.Pikachu.Blazor.Pages.Freebies
         Task OnUnconditionCheckedValueChanged(bool value)
         {
             FreebieCreateDto.UnCondition = value;
-            if (FreebieCreateDto.UnCondition)
-            {
-                FreebieCreateDto.MinimumAmount = null;
-                FreebieCreateDto.MinimumPiece = null;
-                FreebieCreateDto.FreebieOrderReach = null;
+          
 
-            }
-            else
-            {
-                FreebieCreateDto.FreebieQuantity = 0;
-
-
-            }
             return Task.CompletedTask;
         }
     }

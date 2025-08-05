@@ -234,7 +234,13 @@ public partial class EditFreebie
             }
 
             ValidateForm();
+            if (UpdateFreebieDto.UnCondition)
+            {
+                UpdateFreebieDto.MinimumAmount = null;
+                UpdateFreebieDto.MinimumPiece = null;
+                UpdateFreebieDto.FreebieOrderReach = null;
 
+            }
             await _freebieAppService.UpdateAsync(EditingId, UpdateFreebieDto);
 
             CancelToFreebieList();
@@ -319,19 +325,8 @@ public partial class EditFreebie
     Task OnUnconditionCheckedValueChanged(bool value)
     {
         UpdateFreebieDto.UnCondition = value;
-        if (UpdateFreebieDto.UnCondition)
-        {
-            UpdateFreebieDto.MinimumAmount = null;
-            UpdateFreebieDto.MinimumPiece = null;
-            UpdateFreebieDto.FreebieOrderReach = null;
+      
 
-        }
-        else
-        {
-            UpdateFreebieDto.FreebieQuantity = 0;
-
-
-        }
         return Task.CompletedTask;
     }
     #endregion
