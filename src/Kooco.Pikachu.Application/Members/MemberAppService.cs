@@ -131,7 +131,9 @@ public class MemberAppService(IObjectMapper objectMapper, IMemberRepository memb
                 .WhereIf(input.EndDate.HasValue, x => x.CreationTime.Date <= input.EndDate.Value)
                 .WhereIf(input.GroupBuyId.HasValue, x => x.GroupBuyId == input.GroupBuyId)
                 .WhereIf(input.ShippingStatus.HasValue, x => x.ShippingStatus == input.ShippingStatus)
-                .WhereIf(input.DeliveryMethod.HasValue, x => x.DeliveryMethod == input.DeliveryMethod);
+                .WhereIf(input.DeliveryMethod.HasValue, x => x.DeliveryMethod == input.DeliveryMethod)
+                .WhereIf(input.OrderStatus.HasValue, x => x.OrderStatus == input.OrderStatus)
+                .WhereIf(input.OrderIds?.Count > 0, x => input.OrderIds!.Contains(x.Id));
 
         var totalCount = await AsyncExecuter.LongCountAsync(queryable);
         var items = await AsyncExecuter.ToListAsync(queryable.OrderBy(input.Sorting).PageBy(input.SkipCount, input.MaxResultCount));
