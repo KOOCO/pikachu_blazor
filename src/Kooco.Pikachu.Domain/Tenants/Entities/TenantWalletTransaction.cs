@@ -1,5 +1,7 @@
-﻿using Kooco.Pikachu.TenantManagement;
+﻿using Kooco.Pikachu.LogisticsFeeManagements;
+using Kooco.Pikachu.TenantManagement;
 using System;
+using System.Collections.Generic;
 using Volo.Abp.Domain.Entities.Auditing;
 
 namespace Kooco.Pikachu.Tenants.Entities;
@@ -13,4 +15,5 @@ public sealed class TenantWalletTransaction : FullAuditedEntity<Guid>
 
     public Guid TenantWalletId { get; set; }
     public TenantWallet? TenantWallet { get; set; }
+    public ICollection<TenantLogisticsFeeRecord>? TenantLogisticsFeeRecords { get; set; }
 }

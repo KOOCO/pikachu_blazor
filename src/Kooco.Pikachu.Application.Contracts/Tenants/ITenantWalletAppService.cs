@@ -8,7 +8,7 @@ namespace Kooco.Pikachu.Tenants;
 public interface ITenantWalletAppService
 {
     Task AddRechargeTransactionAsync(Guid walletId, decimal amount, CreateWalletTransactionDto import);
-    Task AddDeductionTransactionAsync(Guid walletId, decimal amount, CreateWalletTransactionDto import);
+    Task<TenantWalletTransactionDto> AddDeductionTransactionAsync(Guid walletId, decimal amount, CreateWalletTransactionDto import);
     Task<List<TenantWalletTransactionDto>> GetWalletTransactionsAsync(Guid walletId);
     Task<IRemoteStreamContent> ExportWalletTransactionsAsync(Guid walletId, List<Guid>? selectedIds = null);
     Task<List<TenantWalletTransactionDto>> GetWalletTransactionsByTenantIdAsync(Guid walletId);

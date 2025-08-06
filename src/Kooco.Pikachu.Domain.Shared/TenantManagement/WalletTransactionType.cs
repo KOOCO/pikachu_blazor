@@ -3,4 +3,5 @@ public enum WalletTransactionType
 {
     Deposit,
     Deduction,
+    LogisticsFeeDeduction
 }
