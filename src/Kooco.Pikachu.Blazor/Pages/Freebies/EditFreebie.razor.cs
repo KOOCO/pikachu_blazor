@@ -303,6 +303,14 @@ public partial class EditFreebie
         {
             throw new BusinessException(L[PikachuDomainErrorCodes.GetCannotBeGreaterThanGiftableQuantity]);
         }
+        if (!UpdateFreebieDto.UnCondition && UpdateFreebieDto.FreebieOrderReach is FreebieOrderReach.MinimumAmount && UpdateFreebieDto.MinimumAmount is not null)
+        {
+            UpdateFreebieDto.MinimumPiece = null;
+        }
+        if (!UpdateFreebieDto.UnCondition && UpdateFreebieDto.FreebieOrderReach is FreebieOrderReach.MinimumPiece && UpdateFreebieDto.MinimumPiece is not null)
+        {
+            UpdateFreebieDto.MinimumAmount = null;
+        }
     }
 
     private void CancelToFreebieList()
@@ -325,7 +333,7 @@ public partial class EditFreebie
     Task OnUnconditionCheckedValueChanged(bool value)
     {
         UpdateFreebieDto.UnCondition = value;
-      
+
 
         return Task.CompletedTask;
     }

@@ -240,6 +240,14 @@ namespace Kooco.Pikachu.Blazor.Pages.Freebies
             {
                 throw new BusinessException(L[PikachuDomainErrorCodes.GetCannotBeEmptyOrZero]);
             }
+            if (!FreebieCreateDto.UnCondition && FreebieCreateDto.FreebieOrderReach is FreebieOrderReach.MinimumAmount && FreebieCreateDto.MinimumAmount is not null)
+            {
+                FreebieCreateDto.MinimumPiece = null;
+            }
+            if (!FreebieCreateDto.UnCondition && FreebieCreateDto.FreebieOrderReach is FreebieOrderReach.MinimumPiece && FreebieCreateDto.MinimumPiece is not null)
+            {
+                FreebieCreateDto.MinimumAmount = null;
+            }
         }
 
         private void CancelToFreebieList()
@@ -260,7 +268,7 @@ namespace Kooco.Pikachu.Blazor.Pages.Freebies
         Task OnUnconditionCheckedValueChanged(bool value)
         {
             FreebieCreateDto.UnCondition = value;
-          
+
 
             return Task.CompletedTask;
         }
