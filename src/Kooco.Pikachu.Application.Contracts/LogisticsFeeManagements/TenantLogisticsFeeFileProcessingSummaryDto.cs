@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,5 +18,9 @@ namespace Kooco.Pikachu.LogisticsFeeManagements
         public int TenantFailedDeductions { get; set; }
         public decimal TenantTotalAmount { get; set; }
         public DateTime ProcessedAt { get; set; }
+        public Guid WalletId { get; set; }
+       
+        
+        public decimal WalletBalance { get; set; }
     }
 }

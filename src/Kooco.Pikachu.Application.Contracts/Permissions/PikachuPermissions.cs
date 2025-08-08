@@ -175,7 +175,11 @@ public static class PikachuPermissions
        
 
     }
+    public static class LogisticsFeeManagement
+    {
+        public const string Default = ".LogisticsFeeManagement";
 
+    }
     public static class WebsiteManagement
     {
         public const string Default = WebsiteManagementGroup;

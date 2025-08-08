@@ -1,4 +1,5 @@
 ﻿using Kooco.Pikachu.Orders.Entities;
+using Kooco.Pikachu.OrderTradeNos;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -14,13 +15,15 @@ namespace Kooco.Pikachu.LogisticsFeeManagements.Services
     {
         private readonly IRepository<Order, Guid> _orderRepository;
         private readonly ILogger<OrderMatchingService> _logger;
-
+        private readonly IRepository<OrderTradeNo, Guid> _orderTradeNoRepository;
         public OrderMatchingService(
             IRepository<Order, Guid> orderRepository,
-            ILogger<OrderMatchingService> logger)
+            ILogger<OrderMatchingService> logger, IRepository<OrderTradeNo, Guid> orderTradeNoRepository)
         {
             _orderRepository = orderRepository;
             _logger = logger;
+            _orderTradeNoRepository = orderTradeNoRepository;
+                
         }
 
         public async Task<OrderMatchingResult> FindOrderAsync(string merchantTradeNo)
@@ -32,11 +35,17 @@ namespace Kooco.Pikachu.LogisticsFeeManagements.Services
                     return new OrderMatchingResult { IsFound = false };
                 }
 
-                var queryable = await _orderRepository.GetQueryableAsync();
-                var order = queryable
-                    .Where(o => o.MerchantTradeNo == merchantTradeNo || o.OrderNo == merchantTradeNo)
-                    .Select(o => new { o.Id, o.TenantId, o.OrderNo })
-                    .FirstOrDefault();
+                var orderQueryable = await _orderRepository.GetQueryableAsync();
+                var tradeNoQueryable = await _orderTradeNoRepository.GetQueryableAsync();
+
+                var order = (from orders in orderQueryable
+                              join trade in tradeNoQueryable
+                                  on orders.Id equals trade.OrderId into gj
+                              from subTrade in gj.DefaultIfEmpty()
+                              where orders.OrderNo == merchantTradeNo || subTrade.MarchentTradeNo == merchantTradeNo
+                              select  orders
+                                 
+                              ).FirstOrDefault();
 
                 if (order == null)
                 {
@@ -48,7 +57,7 @@ namespace Kooco.Pikachu.LogisticsFeeManagements.Services
                     IsFound = true,
                     TenantId = order.TenantId,
                     OrderId = order.Id,
-                    OrderNumber = order.OrderNo
+                    OrderNumber =order.OrderNo
                 };
             }
             catch (Exception ex)

@@ -10,6 +10,6 @@ namespace Kooco.Pikachu.AzureStorage.LogisticsFiles
     [BlobContainerName(LogisticsFileContainerName)]
     public class LogisticsFileContainer
     {
-        public const string LogisticsFileContainerName = "LogisticsFiles";
+        public const string LogisticsFileContainerName = "logisticsfiles";
     }
 }

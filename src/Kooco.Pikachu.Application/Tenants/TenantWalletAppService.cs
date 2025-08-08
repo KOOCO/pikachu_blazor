@@ -61,10 +61,11 @@ public class TenantWalletAppService : PikachuAppService, ITenantWalletAppService
     }
 
     [RemoteService(false)]
+    [AllowAnonymous]
     public async Task<TenantWalletTransactionDto> AddDeductionTransactionAsync(Guid walletId, decimal amount, CreateWalletTransactionDto import)
     {
         var transaction = ObjectMapper.Map<CreateWalletTransactionDto, TenantWalletTransaction>(import);
-
+        await TenantWalletRepository.InsertAsync(transaction);
 
         var wallet = await TenantWalletRepository.GetAsync(walletId);
         wallet.WalletBalance -= amount;
@@ -80,7 +81,20 @@ public class TenantWalletAppService : PikachuAppService, ITenantWalletAppService
                  transaction.TransactionType.ToString(),
                 wallet.WalletBalance);
         }
-        return ObjectMapper.Map<TenantWalletTransaction, TenantWalletTransactionDto>(transaction);
+        return new TenantWalletTransactionDto
+        {
+            Amount=transaction.TransactionAmount,
+            TransactionStatus=transaction.DeductionStatus,
+            TransactionType=transaction.TransactionType,
+           Balance=wallet.WalletBalance,
+           Id=transaction.Id,
+           Note=transaction.TransactionNotes,
+           Timestamp=transaction.CreationTime
+
+
+
+
+        };
     }
     [RemoteService(false)]
     public async Task<List<TenantWalletTransactionDto>> GetWalletTransactionsAsync(Guid walletId)

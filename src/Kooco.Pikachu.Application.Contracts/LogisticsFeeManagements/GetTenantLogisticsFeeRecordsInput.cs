@@ -11,7 +11,7 @@ namespace Kooco.Pikachu.LogisticsFeeManagements
 {
     public class GetTenantLogisticsFeeRecordsInput : PagedAndSortedResultRequestDto
     {
-        public string Filter { get; set; }
+        public string? Filter { get; set; }
         public Guid? TenantId { get; set; }
         public Guid? FileImportId { get; set; }
         public LogisticsFileType? FileType { get; set; }

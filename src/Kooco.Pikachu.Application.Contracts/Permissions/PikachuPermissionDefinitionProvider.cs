@@ -137,6 +137,13 @@ public class PikachuPermissionDefinitionProvider : PermissionDefinitionProvider
         //Wallet Managment 
         var walletManagmentGroup = context.AddGroup(PikachuPermissions.TenantWalletTransactions.Default, L("Permission:TenantWalletManagement"));
         walletManagmentGroup.AddPermission(PikachuPermissions.TenantWalletTransactions.Default, L("Permission:TenantWalletManagement"), MultiTenancySides.Tenant);
+
+        //Tenant logistics Managment 
+        var logisticsFeeManagement = context.AddGroup(PikachuPermissions.LogisticsFeeManagement.Default, L("LogisticsFeeManagement"));
+        logisticsFeeManagement.AddPermission(PikachuPermissions.LogisticsFeeManagement.Default, L("LogisticsFeeManagement"), MultiTenancySides.Host);
+
+
+
         // Invoice permissions
         var invoiceGroup = context.AddGroup(PikachuPermissions.Invoices.Default, L("Permission:Invoices"));
         invoiceGroup.AddPermission(PikachuPermissions.Invoices.Create, L("Permission:Invoices.Create"));

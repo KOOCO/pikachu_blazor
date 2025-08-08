@@ -16,7 +16,7 @@ namespace Kooco.Pikachu.LogisticsFeeManagements
         );
 
         Task<List<TenantLogisticsFeeFileProcessingSummary>> GetByTenantIdAsync(
-            Guid tenantId,
+            Guid? tenantId,
             int skipCount,
             int maxResultCount,
             CancellationToken cancellationToken = default

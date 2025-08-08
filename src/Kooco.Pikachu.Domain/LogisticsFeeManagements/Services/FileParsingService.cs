@@ -7,6 +7,7 @@ using System.ComponentModel;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Volo.Abp.DependencyInjection;
@@ -106,7 +107,14 @@ namespace Kooco.Pikachu.LogisticsFeeManagements.Services
             {
                 ExcelPackage.License.SetNonCommercialOrganization("Pikachu");
 
-                using var package = new ExcelPackage(new FileInfo(filePath));
+                using var httpClient = new HttpClient();
+                using var response = await httpClient.GetAsync(filePath);
+
+                response.EnsureSuccessStatusCode();
+
+                await using var stream = await response.Content.ReadAsStreamAsync();
+                using var package = new ExcelPackage(stream);
+                // Access the first worksheet
                 var worksheet = package.Workbook.Worksheets[0];
                 var rowCount = worksheet.Dimension.Rows;
 

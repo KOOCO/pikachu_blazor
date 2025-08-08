@@ -210,7 +210,7 @@ namespace Kooco.Pikachu.LogisticsFeeManagements
                 TransactionAmount = parsedRecord.FeeAmount,
                 TransactionType = WalletTransactionType.LogisticsFeeDeduction,
                 TransactionNotes = $"Logistics fee deduction for order {orderMatch.OrderNumber ?? parsedRecord.MerchantTradeNo}",
-                DeductionStatus = WalletDeductionStatus.Pending,
+                DeductionStatus = WalletDeductionStatus.Completed,
                 TradingMethods = WalletTradingMethods.LogisticsFee
 
 

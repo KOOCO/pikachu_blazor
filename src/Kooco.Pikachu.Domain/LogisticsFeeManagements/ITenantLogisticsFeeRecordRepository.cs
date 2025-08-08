@@ -16,7 +16,7 @@ namespace Kooco.Pikachu.LogisticsFeeManagements
             int skipCount,
             int maxResultCount,
             string sorting = null,
-            string filter = null,
+            string? filter = null,
             Guid? tenantId = null,
             Guid? fileImportId = null,
             LogisticsFileType? fileType = null,
@@ -25,7 +25,7 @@ namespace Kooco.Pikachu.LogisticsFeeManagements
         );
 
         Task<long> GetCountAsync(
-            string filter = null,
+            string? filter = null,
             Guid? tenantId = null,
             Guid? fileImportId = null,
             LogisticsFileType? fileType = null,

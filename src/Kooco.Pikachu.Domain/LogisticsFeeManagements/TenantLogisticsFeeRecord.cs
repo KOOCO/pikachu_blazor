@@ -11,7 +11,7 @@ using Volo.Abp.MultiTenancy;
 
 namespace Kooco.Pikachu.LogisticsFeeManagements
 {
-    public class TenantLogisticsFeeRecord : FullAuditedEntity<Guid>, IMultiTenant
+    public class TenantLogisticsFeeRecord : FullAuditedEntity<Guid>
     {
         public Guid? TenantId { get; set; }
         public string OrderNumber { get; set; }

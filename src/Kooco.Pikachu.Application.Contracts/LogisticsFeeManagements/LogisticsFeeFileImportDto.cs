@@ -12,16 +12,17 @@ namespace Kooco.Pikachu.LogisticsFeeManagements
     {
         public string FileName { get; set; }
         public string OriginalFileName { get; set; }
-        public LogisticsFileType FileType { get; set; }
-        public FileProcessingStatus BatchStatus { get; set; }
-        public decimal TotalAmount { get; set; }
-        public int TotalRecords { get; set; }
-        public int ProcessedRecords { get; set; }
-        public int SuccessfulDeductions { get; set; }
-        public int FailedDeductions { get; set; }
+        public string FilePath { get; set; }
         public DateTime UploadDate { get; set; }
-        public Guid UploadedByUserId { get; set; }
-        public string ProcessingNotes { get; set; }
+        public LogisticsFileType FileType { get; set; } // ECPay or TCAT
+        public int TotalRecords { get; set; }
+        public decimal TotalAmount { get; set; }
+        public FileProcessingStatus BatchStatus { get; set; }
+        public int SuccessfulRecords { get; set; }
+        public int FailedRecords { get; set; }
+        public decimal SuccessRate => TotalRecords > 0 ? (decimal)SuccessfulRecords / TotalRecords * 100 : 0;
+        public string? ProcessingNotes { get; set; }
+        public Guid UploadedByUserId { get; set; } // Who uploaded the file
         public DateTime? ProcessingStartedAt { get; set; }
         public DateTime? ProcessingCompletedAt { get; set; }
         public List<TenantLogisticsFeeFileProcessingSummaryDto> TenantSummaries { get; set; }

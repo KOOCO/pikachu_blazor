@@ -7,13 +7,14 @@ using System.Text;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
+using Volo.Abp.Content;
 
 namespace Kooco.Pikachu.LogisticsFeeManagements
 {
     public interface ILogisticsFeeAppService : IApplicationService
     {
         // File Import Management
-        Task<FileUploadResult> UploadFileAsync(IFormFile file, LogisticsFileType fileType);
+        Task<FileUploadResult> UploadFileAsync(IRemoteStreamContent file, LogisticsFileType fileType);
         Task<PagedResultDto<LogisticsFeeFileImportDto>> GetFileImportsAsync(GetLogisticsFeeFileImportsInput input);
         Task<LogisticsFeeFileImportDto> GetFileImportAsync(Guid id);
         Task DeleteFileImportAsync(Guid id);

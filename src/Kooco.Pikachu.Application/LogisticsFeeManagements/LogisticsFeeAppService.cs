@@ -26,9 +26,13 @@ using Kooco.Pikachu.Tenants.Entities;
 using Kooco.Pikachu.AzureStorage.LogisticsFiles;
 using Hangfire;
 using Kooco.Pikachu.TierManagement;
+using Volo.Abp.Data;
+using Volo.Abp.Content;
+using Kooco.Pikachu.Permissions;
 
 namespace Kooco.Pikachu.LogisticsFeeManagements
 {
+    [Authorize(PikachuPermissions.LogisticsFeeManagement.Default)]
     public class LogisticsFeeAppService : ApplicationService, ILogisticsFeeAppService
     {
         private readonly ILogisticsFeeFileImportRepository _fileImportRepository;
@@ -40,7 +44,8 @@ namespace Kooco.Pikachu.LogisticsFeeManagements
         private readonly ILogger<LogisticsFeeAppService> _logger;
         private readonly IRepository<TenantWallet, Guid> _tenantWalletRepository;
         private readonly LogisticsFileContainerManager _logisticsFileContainerManager;
-
+        private readonly LogisticsFeeProcessingJob _logisticsFeeProcessingJob;
+        private readonly IDataFilter _dataFilter;
         public LogisticsFeeAppService(
             ILogisticsFeeFileImportRepository fileImportRepository,
             ITenantLogisticsFeeRecordRepository recordRepository,
@@ -50,7 +55,9 @@ namespace Kooco.Pikachu.LogisticsFeeManagements
             IBackgroundJobManager backgroundJobManager,
             ILogger<LogisticsFeeAppService> logger,
             IRepository<TenantWallet, Guid> tenantWalletRepository,
-             LogisticsFileContainerManager logisticsFileContainerManager)
+             LogisticsFileContainerManager logisticsFileContainerManager,
+             LogisticsFeeProcessingJob logisticsFeeProcessingJob,
+             IDataFilter dataFilter)
         {
             _fileImportRepository = fileImportRepository;
             _recordRepository = recordRepository;
@@ -61,13 +68,15 @@ namespace Kooco.Pikachu.LogisticsFeeManagements
             _logger = logger;
             _tenantWalletRepository = tenantWalletRepository;
             _logisticsFileContainerManager = logisticsFileContainerManager;
+            _logisticsFeeProcessingJob = logisticsFeeProcessingJob;
+            _dataFilter = dataFilter;
 
         }
 
 
-        public async Task<FileUploadResult> UploadFileAsync(IFormFile file, LogisticsFileType fileType)
+        public async Task<FileUploadResult> UploadFileAsync(IRemoteStreamContent file, LogisticsFileType fileType)
         {
-            if (file == null || file.Length == 0)
+            if (file == null || file.ContentLength == 0)
             {
                 throw new UserFriendlyException("File is required");
             }
@@ -80,16 +89,12 @@ namespace Kooco.Pikachu.LogisticsFeeManagements
                 throw new UserFriendlyException("Only CSV and XLSX files are supported");
             }
 
-            // Generate unique file name and path
-            var fileName = $"{Guid.NewGuid()}{fileExtension}";
-            byte[] fileBytes;
-            using (var memoryStream = new MemoryStream())
-            {
-                await file.CopyToAsync(memoryStream);
-                fileBytes = memoryStream.ToArray();
-            }
-            var filePath = await _logisticsFileContainerManager.SaveAsync(fileName, fileBytes);
+            await using var input = file.GetStream();   // forward-only stream
+            using var ms = new MemoryStream();
+            await input.CopyToAsync(ms);
 
+            var fileName = $"{Guid.NewGuid()}{fileExtension}";
+            var filePath = await _logisticsFileContainerManager.SaveAsync(fileName, ms.ToArray());
 
 
             // Create file import record
@@ -102,7 +107,7 @@ namespace Kooco.Pikachu.LogisticsFeeManagements
                 CurrentUser.GetId()
             );
 
-            await _fileImportRepository.InsertAsync(fileImport);
+            await _fileImportRepository.InsertAsync(fileImport, autoSave: true);
 
             // Queue background job for processing
             //await _backgroundJobManager.EnqueueAsync<Guid>(fileImport.Id);
@@ -110,6 +115,8 @@ namespace Kooco.Pikachu.LogisticsFeeManagements
                        job => job.ExecuteAsync(fileImport.Id),
                         DateTimeOffset.Now
                        );
+
+
             _logger.LogInformation("File uploaded and queued for processing: {FileId}", fileImport.Id);
 
             return new FileUploadResult
@@ -206,59 +213,62 @@ namespace Kooco.Pikachu.LogisticsFeeManagements
 
         public async Task<RetryRecordResult> RetryRecordAsync(Guid recordId)
         {
-            var record = await _recordRepository.GetAsync(recordId);
-
-            if (record.DeductionStatus == WalletDeductionStatus.Completed)
+            using (_dataFilter.Disable<IMultiTenant>())
             {
-                return new RetryRecordResult
+                var record = await _recordRepository.GetAsync(recordId);
+
+                if (record.DeductionStatus == WalletDeductionStatus.Completed)
                 {
-                    RecordId = recordId,
-                    Success = false,
-                    Reason = "Record already successfully processed"
-                };
-            }
-            var tenantWallet = (await _tenantWalletRepository.GetQueryableAsync()).Where(x => x.TenantId == record.TenantId).FirstOrDefault();
-            var transaction = new CreateWalletTransactionDto
-            {
-                TenantWalletId = tenantWallet.Id,
-                TransactionAmount = record.LogisticFee,
-                TransactionType = WalletTransactionType.LogisticsFeeDeduction,
-                TransactionNotes = $"Logistics fee deduction for order {record.OrderNumber}",
-                DeductionStatus = WalletDeductionStatus.Pending,
-                TradingMethods = WalletTradingMethods.LogisticsFee
-
-
-            };
-            var deductionResult = await _walletDeductionService.AddDeductionTransactionAsync(
-                tenantWallet.Id,
-                record.LogisticFee,
-              transaction
-            );
-
-            if (deductionResult.TransactionStatus == WalletDeductionStatus.Completed && deductionResult.Id != Guid.Empty)
-            {
-                record.MarkAsDeducted(deductionResult.Id);
-                await _recordRepository.UpdateAsync(record);
-
-                _logger.LogInformation("Successfully retried record: {RecordId}", recordId);
-
-                return new RetryRecordResult
+                    return new RetryRecordResult
+                    {
+                        RecordId = recordId,
+                        Success = false,
+                        Reason = "Record already successfully processed"
+                    };
+                }
+                var tenantWallet = (await _tenantWalletRepository.GetQueryableAsync()).Where(x => x.TenantId == record.TenantId).FirstOrDefault();
+                var transaction = new CreateWalletTransactionDto
                 {
-                    RecordId = recordId,
-                    Success = true
-                };
-            }
-            else
-            {
-                record.MarkAsFailed("Retry failed");
-                await _recordRepository.UpdateAsync(record);
+                    TenantWalletId = tenantWallet.Id,
+                    TransactionAmount = record.LogisticFee,
+                    TransactionType = WalletTransactionType.LogisticsFeeDeduction,
+                    TransactionNotes = $"Logistics fee deduction for order {record.OrderNumber}",
+                    DeductionStatus = WalletDeductionStatus.Completed,
+                    TradingMethods = WalletTradingMethods.LogisticsFee
 
-                return new RetryRecordResult
-                {
-                    RecordId = recordId,
-                    Success = false,
-                    Reason = ""
+
                 };
+                var deductionResult = await _walletDeductionService.AddDeductionTransactionAsync(
+                    tenantWallet.Id,
+                    record.LogisticFee,
+                  transaction
+                );
+
+                if (deductionResult.TransactionStatus == WalletDeductionStatus.Completed && deductionResult.Id != Guid.Empty)
+                {
+                    record.MarkAsDeducted(deductionResult.Id);
+                    await _recordRepository.UpdateAsync(record);
+
+                    _logger.LogInformation("Successfully retried record: {RecordId}", recordId);
+
+                    return new RetryRecordResult
+                    {
+                        RecordId = recordId,
+                        Success = true
+                    };
+                }
+                else
+                {
+                    record.MarkAsFailed("Retry failed");
+                    await _recordRepository.UpdateAsync(record);
+
+                    return new RetryRecordResult
+                    {
+                        RecordId = recordId,
+                        Success = false,
+                        Reason = ""
+                    };
+                }
             }
         }
 
@@ -367,19 +377,14 @@ namespace Kooco.Pikachu.LogisticsFeeManagements
             int skipCount = 0,
             int maxResultCount = 10)
         {
-            if (tenantId.HasValue)
+            using (_dataFilter.Disable<IMultiTenant>())
             {
-                var tenantSummaries = await _summaryRepository.GetByTenantIdAsync(tenantId.Value, skipCount, maxResultCount);
+                var tenantSummaries = await _summaryRepository.GetByTenantIdAsync(tenantId, skipCount, maxResultCount);
                 var tenantDtos = ObjectMapper.Map<List<TenantLogisticsFeeFileProcessingSummary>, List<TenantLogisticsFeeFileProcessingSummaryDto>>(tenantSummaries);
                 return new PagedResultDto<TenantLogisticsFeeFileProcessingSummaryDto>(tenantSummaries.Count, tenantDtos);
             }
 
-            // If no tenant specified, return all summaries (implement pagination as needed)
-            var allSummaries = await _summaryRepository.GetPagedListAsync(skipCount, maxResultCount, "TenantName asc");
-            var allDtos = ObjectMapper.Map<List<TenantLogisticsFeeFileProcessingSummary>, List<TenantLogisticsFeeFileProcessingSummaryDto>>(allSummaries);
-            var totalCount = await _summaryRepository.GetCountAsync();
 
-            return new PagedResultDto<TenantLogisticsFeeFileProcessingSummaryDto>(totalCount, allDtos);
         }
 
         public async Task<List<TenantLogisticsFeeRecordDto>> GetFailedRecordsAsync(Guid? fileImportId = null)

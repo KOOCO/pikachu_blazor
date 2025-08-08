@@ -1,5 +1,5 @@
 ﻿namespace Kooco.Pikachu.TenantManagement;
 public static class TenantWalletConsts
 {
-    public const int MaxTransactionRemarkLength = 20;
+    public const int MaxTransactionRemarkLength = 100;
 }
