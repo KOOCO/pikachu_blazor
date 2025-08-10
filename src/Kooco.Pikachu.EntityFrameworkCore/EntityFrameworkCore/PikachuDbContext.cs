@@ -58,6 +58,7 @@ using Kooco.Pikachu.InventoryManagement;
 using Kooco.Pikachu.OrderTradeNos;
 using Kooco.Pikachu.LogisticsFeeManagements;
 using System.Reflection.Emit;
+using Kooco.Pikachu.Reconciliations;
 
 namespace Kooco.Pikachu.EntityFrameworkCore;
 
@@ -193,6 +194,8 @@ public class PikachuDbContext(DbContextOptions<PikachuDbContext> options) :
     public DbSet<LogisticsFeeFileImport> LogisticsFeeFileImports { get; set; }
     public DbSet<TenantLogisticsFeeFileProcessingSummary> TenantLogisticsFeeFileProcessingSummaries { get; set; }
     public DbSet<TenantLogisticsFeeRecord> TenantLogisticsFeeRecord { get; set; }
+
+    public DbSet<EcPayReconciliationRecord> EcPayReconciliationRecords { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -978,5 +981,10 @@ public class PikachuDbContext(DbContextOptions<PikachuDbContext> options) :
             entity.HasIndex(e => new { e.TenantId, e.FileType, e.DeductionStatus });
         });
 
+        builder.Entity<EcPayReconciliationRecord>(b =>
+        {
+            b.ToTable(PikachuConsts.DbTablePrefix + "EcPayReconciliationRecord", PikachuConsts.DbSchema);
+            b.ConfigureByConvention();
+        });
     }
 }

@@ -1846,8 +1846,8 @@
     "Result": "Result",
     "Reason": "Reason",
 
-    "Unknown": "Unknown"
-
-
+    "Unknown": "Unknown",
+    "Permission:EcPayReconciliation": "Payout Details",
+    "Menu:EcPayReconciliation": "Payout Details"
   }
 }

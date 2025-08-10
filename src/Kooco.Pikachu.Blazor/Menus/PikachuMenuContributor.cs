@@ -500,7 +500,15 @@ public class PikachuMenuContributor : IMenuContributor
                  requiredPermissionName: PikachuPermissions.TenantWalletTransactions.Default
              )
          );
-      
+
+            tenantManagementMenu?.AddItem(
+                new ApplicationMenuItem(
+                    name: "EcPayReconciliation",
+                    displayName: l["Menu:EcPayReconciliation"],
+                    url: "/ecpay/reconciliation",
+                    requiredPermissionName: PikachuPermissions.EcPayReconciliations.Default
+                )
+            );
         }
         else
         {

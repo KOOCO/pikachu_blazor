@@ -21,6 +21,7 @@ using Kooco.Pikachu.LogisticStatusRecords;
 using Kooco.Pikachu.MultiTenancy;
 using Kooco.Pikachu.Orders;
 using Kooco.Pikachu.PaymentGateways.LinePay;
+using Kooco.Pikachu.Reconciliations;
 using Kooco.Pikachu.Services;
 using Kooco.Pikachu.UserShoppingCredits;
 using Microsoft.AspNetCore.Builder;
@@ -49,6 +50,7 @@ using Volo.Abp.AspNetCore.Components.Server.LeptonXLiteTheme;
 using Volo.Abp.AspNetCore.Components.Server.LeptonXLiteTheme.Bundling;
 using Volo.Abp.AspNetCore.Components.Web.Theming.Routing;
 using Volo.Abp.AspNetCore.Mvc;
+using Volo.Abp.AspNetCore.Mvc.ApplicationConfigurations;
 using Volo.Abp.AspNetCore.Mvc.Localization;
 using Volo.Abp.AspNetCore.Mvc.UI.Bundling;
 using Volo.Abp.AspNetCore.Mvc.UI.Theme.LeptonXLite;
@@ -457,7 +459,7 @@ public class PikachuBlazorModule : AbpModule
     {
         var env = context.GetEnvironment();
         var app = context.GetApplicationBuilder();
-
+        
         app.UseAbpRequestLocalization(options =>
         {
             options.DefaultRequestCulture = new RequestCulture("zh-Hant");
@@ -518,6 +520,7 @@ public class PikachuBlazorModule : AbpModule
             );
 
         var backgroundJobManager = context.ServiceProvider.GetRequiredService<IBackgroundJobManager>();
+        var config = context.GetConfiguration();
 
         RecurringJob.AddOrUpdate<OrderDeliveryBackgroundJob>(
             "DailyOrderStatusUpdate",         // Job identifier
@@ -536,6 +539,19 @@ public class PikachuBlazorModule : AbpModule
             job => job.ExecuteAsync(new CloseOrderBackgroundJobArgs()),
             Cron.Daily(1)
         );
+
+        if (config["App:Environment"] != "Development")
+        {
+            RecurringJob.AddOrUpdate<EcPayReconciliationJob>(
+                "EcPayReconciliationDailyJob",
+                job => job.ExecuteAsync(0),
+                "0 9 * * *",
+                new RecurringJobOptions
+                {
+                    TimeZone = TaipeiTime.TaipeiTimeZone
+                }
+            );
+        }
     }
 
     // This method is required for the Image Upload in blazor

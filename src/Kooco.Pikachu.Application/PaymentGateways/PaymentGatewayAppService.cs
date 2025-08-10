@@ -5,9 +5,11 @@ using System.Linq;
 using System.Reflection;
 using System.Text.Json;
 using System.Threading.Tasks;
+using System.Threading.Tasks.Sources;
 using Volo.Abp;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
+using Volo.Abp.MultiTenancy;
 using Volo.Abp.Security.Encryption;
 
 namespace Kooco.Pikachu.PaymentGateways
@@ -205,6 +207,36 @@ namespace Kooco.Pikachu.PaymentGateways
             }
 
             return paymentGatewayDtos;
+        }
+
+        public async Task<PaymentGatewayDto?> GetEcPayAsync(bool decrypt = false)
+        {
+            var ecPay = await _paymentGatewayRepository.FirstOrDefaultAsync(x => x.PaymentIntegrationType == PaymentIntegrationType.EcPay);
+            if (ecPay == null) return default;
+
+            var ecPayDto = ObjectMapper.Map<PaymentGateway, PaymentGatewayDto>(ecPay);
+            if (decrypt)
+            {
+                ecPayDto = Decrypt(ecPayDto);
+            }
+
+            return ecPayDto;
+        }
+
+        public async Task<List<PaymentGatewayDto>> GetAllEcPayAsync(bool decrypt = false)
+        {
+            using (DataFilter.Disable<IMultiTenant>())
+            {
+                var ecPayList = await _paymentGatewayRepository.GetListAsync(x => x.PaymentIntegrationType == PaymentIntegrationType.EcPay);
+                var dtos = ObjectMapper.Map<List<PaymentGateway>, List<PaymentGatewayDto>>(ecPayList);
+
+                if (decrypt)
+                {
+                    dtos.ForEach(dto => Decrypt(dto));
+                }
+
+                return dtos;
+            }
         }
 
         private PaymentGatewayDto Decrypt(PaymentGatewayDto paymentGatewayDto)

@@ -1813,6 +1813,8 @@
     "Result": "結果",
     "Reason": "原因",
 
-    "Unknown": "未知"
+    "Unknown": "未知",
+    "Permission:EcPayReconciliation": "撥款金額明細",
+    "Menu:EcPayReconciliation": "撥款金額明細"
   }
 }

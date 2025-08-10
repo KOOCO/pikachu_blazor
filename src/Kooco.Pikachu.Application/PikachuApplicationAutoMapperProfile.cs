@@ -8,8 +8,8 @@ using Kooco.Pikachu.DeliveryTemperatureCosts;
 using Kooco.Pikachu.DeliveryTempratureCosts;
 using Kooco.Pikachu.DiscountCodes;
 using Kooco.Pikachu.Domain.LogisticStatusRecords;
-using Kooco.Pikachu.LogisticStatusRecords;
 using Kooco.Pikachu.EdmManagement;
+using Kooco.Pikachu.Emails;
 using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Freebies;
 using Kooco.Pikachu.Freebies.Dtos;
@@ -20,11 +20,13 @@ using Kooco.Pikachu.Groupbuys;
 using Kooco.Pikachu.GroupBuys;
 using Kooco.Pikachu.GroupPurchaseOverviews;
 using Kooco.Pikachu.Images;
+using Kooco.Pikachu.InventoryManagement;
 using Kooco.Pikachu.Items;
 using Kooco.Pikachu.Items.Dtos;
 using Kooco.Pikachu.LoginConfigurations;
 using Kooco.Pikachu.LogisticsProviders;
 using Kooco.Pikachu.LogisticsSettings;
+using Kooco.Pikachu.LogisticStatusRecords;
 using Kooco.Pikachu.Members;
 using Kooco.Pikachu.Members.MemberTags;
 using Kooco.Pikachu.OrderDeliveries;
@@ -35,6 +37,7 @@ using Kooco.Pikachu.OrderTransactions;
 using Kooco.Pikachu.PaymentGateways;
 using Kooco.Pikachu.PikachuAccounts;
 using Kooco.Pikachu.ProductCategories;
+using Kooco.Pikachu.Reconciliations;
 using Kooco.Pikachu.Refunds;
 using Kooco.Pikachu.SalesReports;
 using Kooco.Pikachu.ShopCarts;
@@ -54,6 +57,7 @@ using Kooco.Pikachu.WebsiteManagement.FooterSettings;
 using Kooco.Pikachu.WebsiteManagement.TopbarSettings;
 using Kooco.Pikachu.WebsiteManagement.WebsiteBasicSettings;
 using Kooco.Pikachu.WebsiteManagement.WebsiteSettingsModules;
+using Kooco.Reconciliations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -441,5 +445,8 @@ public class PikachuApplicationAutoMapperProfile : Profile
         CreateMap<LogisticsFeeFileImport, LogisticsFeeFileImportDto>();
         CreateMap<TenantLogisticsFeeFileProcessingSummary, TenantLogisticsFeeFileProcessingSummaryDto>();
         CreateMap<TenantLogisticsFeeRecord, TenantLogisticsFeeRecordDto>();
+
+        CreateMap<EcPayReconciliationResponse, EcPayReconciliationRecord>();
+        CreateMap<EcPayReconciliationRecord, EcPayReconciliationRecordDto>().ReverseMap();
     }
 }

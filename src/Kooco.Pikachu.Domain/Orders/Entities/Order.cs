@@ -352,6 +352,7 @@ public class Order : FullAuditedAggregateRoot<Guid>, IMultiTenant
     /// </summary>
     public string? MerchantTradeNo { get; set; }
 
+    public decimal? EcPayNetAmount { get; set; }
     /// <summary>
     /// 常溫配送費用
     /// </summary>
