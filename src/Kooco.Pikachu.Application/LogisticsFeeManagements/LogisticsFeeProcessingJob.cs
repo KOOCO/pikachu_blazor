@@ -120,7 +120,20 @@ namespace Kooco.Pikachu.LogisticsFeeManagements
 
                     // Update file import with final statistics
                     UpdateFileImportStatistics(fileImport, tenantSummaries);
-                    fileImport.SuccessProcessing("Processing completed successfully");
+                    if (!recordsToInsert.Any(x => x.DeductionStatus == WalletDeductionStatus.Failed))
+                    {
+                        fileImport.SuccessProcessing("Processing completed successfully");
+                    }
+                    else if (!recordsToInsert.Any(x => x.DeductionStatus == WalletDeductionStatus.Completed))
+                    {
+                        fileImport.FailProcessing("Processing failed");
+
+
+                    }
+                    else {
+                        fileImport.PartialSuccessProcessing("Processing partial Completed");
+                    
+                    }
                     await _fileImportRepository.UpdateAsync(fileImport);
 
                     await uow.CompleteAsync();

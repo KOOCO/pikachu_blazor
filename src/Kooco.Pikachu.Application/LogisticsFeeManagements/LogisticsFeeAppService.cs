@@ -159,6 +159,7 @@ namespace Kooco.Pikachu.LogisticsFeeManagements
 
             // Load tenant summaries
             var summaries = await _summaryRepository.GetByFileImportIdAsync(id);
+            dto.TenantSummaries = new List<TenantLogisticsFeeFileProcessingSummaryDto>();
             dto.TenantSummaries = ObjectMapper.Map<List<TenantLogisticsFeeFileProcessingSummary>, List<TenantLogisticsFeeFileProcessingSummaryDto>>(summaries);
 
             return dto;
@@ -203,7 +204,19 @@ namespace Kooco.Pikachu.LogisticsFeeManagements
 
             return new PagedResultDto<TenantLogisticsFeeRecordDto>(totalCount, dtos);
         }
-
+        public async Task<(int, int)> GetStatusRecordCount(GetTenantLogisticsFeeRecordsInput input) {
+            var items = await _recordRepository.GetListAsync(
+                 input.SkipCount,
+                 input.MaxResultCount,
+                 input.Sorting,
+                 input.Filter,
+                 input.TenantId,
+                 input.FileImportId,
+                 input.FileType,
+                 input.Status
+             );
+            return (items.Count(x => x.DeductionStatus == WalletDeductionStatus.Completed), items.Count(x => x.DeductionStatus == WalletDeductionStatus.Failed));
+        }
         public async Task<TenantLogisticsFeeRecordDto> GetRecordAsync(Guid id)
         {
             var record = await _recordRepository.GetAsync(id);

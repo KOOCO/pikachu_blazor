@@ -53,7 +53,10 @@ namespace Kooco.Pikachu.Blazor.Pages.TenantManagement.TenantLogisticsFeeMangemen
             {
                 var fileImport = await LogisticsFeeAppService.GetFileImportAsync(FileId);
                 FileName = fileImport.OriginalFileName;
-                TenantName = fileImport.TenantSummaries?.FirstOrDefault()?.TenantName ?? "Unknown";
+
+
+                var tenant = await TenantAppService.GetAsync(TenantId);
+                TenantName = tenant.Name;
             }
             catch (Exception ex)
             {
@@ -88,8 +91,10 @@ namespace Kooco.Pikachu.Blazor.Pages.TenantManagement.TenantLogisticsFeeMangemen
 
                 // Update summary stats
                 TotalRecords = (int)result.TotalCount;
-                SuccessfulDeductions = Records.Count(r => r.DeductionStatus == WalletDeductionStatus.Completed);
-                FailedDeductions = Records.Count(r => r.DeductionStatus == WalletDeductionStatus.Failed);
+                input.MaxResultCount = 1000;
+                var recordsCount = await LogisticsFeeAppService.GetStatusRecordCount(input);
+                SuccessfulDeductions = recordsCount.Item1;
+                FailedDeductions = recordsCount.Item2;
             }
             catch (Exception ex)
             {
@@ -209,6 +214,13 @@ namespace Kooco.Pikachu.Blazor.Pages.TenantManagement.TenantLogisticsFeeMangemen
                 WalletDeductionStatus.Pending => "Processing",
                 _ => "Unknown"
             };
+        }
+
+        private void NavigateToFileImportHistory()
+        {
+            NavigationManager.NavigateTo($"/logistics-management/tenant/{TenantId}");
+
+
         }
     }
 }

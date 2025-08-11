@@ -21,6 +21,7 @@ namespace Kooco.Pikachu.LogisticsFeeManagements
 
         // Records Management
         Task<PagedResultDto<TenantLogisticsFeeRecordDto>> GetRecordsAsync(GetTenantLogisticsFeeRecordsInput input);
+        Task<(int, int)> GetStatusRecordCount(GetTenantLogisticsFeeRecordsInput input);
         Task<TenantLogisticsFeeRecordDto> GetRecordAsync(Guid id);
         Task<RetryRecordResult> RetryRecordAsync(Guid recordId);
         Task<RetryBatchResult> RetryBatchAsync(RetryBatchInput input);
@@ -35,6 +36,7 @@ namespace Kooco.Pikachu.LogisticsFeeManagements
         // Dashboard/Statistics
         Task<List<TenantLogisticsFeeRecordDto>> GetFailedRecordsAsync(Guid? fileImportId = null);
         Task<Dictionary<string, object>> GetDashboardStatsAsync();
+
     }
 
 }

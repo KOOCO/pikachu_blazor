@@ -6,12 +6,15 @@
 @using Kooco.Pikachu.Localization;
 @using Kooco.Pikachu.LogisticsFeeManagements;
 @using Kooco.Pikachu.EnumValues;
+@using Volo.Abp.TenantManagement;
 @inherits PikachuComponentBase
 @using Microsoft.Extensions.Localization;
 @inject ILogisticsFeeAppService LogisticsFeeAppService
+@inject ITenantAppService TenantAppService
 @inject NavigationManager NavigationManager
 @inject IMessageService MessageService
 @attribute [Authorize(PikachuPermissions.LogisticsFeeManagement.Default)]
+
 <style>
     /* Logistics Fee Management Custom Styles */
 
@@ -324,7 +327,10 @@
 
     
 </style>
-
+<PikachuButton Clicked="NavigateToFileImportHistory">
+        <Icon Name="IconName.ArrowLeft" Class="me-1"></Icon>
+        @L["FileImportHistory"]
+    </PikachuButton>
 <div class="content-header">
     <div class="breadcrumb-container">
         <nav class="breadcrumb-nav">

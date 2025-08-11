@@ -324,7 +324,10 @@
 
     
 </style>
-
+<PikachuButton Clicked="NavigateToLogisticsFeeManagement">
+        <Icon Name="IconName.ArrowLeft" Class="me-1"></Icon>
+        @L["LogisticsFeeManagement"]
+    </PikachuButton>
 <div class="content-header">
     <div class="breadcrumb-container">
         <nav class="breadcrumb-nav">
@@ -448,8 +451,8 @@
                                Field="@nameof(LogisticsFeeFileImportDto.BatchStatus)" 
                                Caption="@L["BatchStatus"]">
                     <DisplayTemplate>
-                        <Badge Color="@GetStatusColor(context.BatchStatus)">
-                            @L[GetStatusText(context.BatchStatus)]
+                        <Badge Color="@GetStatusColor(context)">
+                            @L[GetStatusText(context)]
                         </Badge>
                     </DisplayTemplate>
                 </DataGridColumn>
