@@ -176,7 +176,13 @@ namespace Kooco.Pikachu.Blazor.Pages.Freebies
                     return;
                 }
                 ValidateForm();
+                if (FreebieCreateDto.UnCondition)
+                {
+                    FreebieCreateDto.MinimumAmount = null;
+                    FreebieCreateDto.MinimumPiece = null;
+                    FreebieCreateDto.FreebieOrderReach = null;
 
+                }
                 FreebieCreateDto.Images = ImageList;
 
                 await _freebieAppService.CreateAsync(FreebieCreateDto);
@@ -234,6 +240,14 @@ namespace Kooco.Pikachu.Blazor.Pages.Freebies
             {
                 throw new BusinessException(L[PikachuDomainErrorCodes.GetCannotBeEmptyOrZero]);
             }
+            if (!FreebieCreateDto.UnCondition && FreebieCreateDto.FreebieOrderReach is FreebieOrderReach.MinimumAmount && FreebieCreateDto.MinimumAmount is not null)
+            {
+                FreebieCreateDto.MinimumPiece = null;
+            }
+            if (!FreebieCreateDto.UnCondition && FreebieCreateDto.FreebieOrderReach is FreebieOrderReach.MinimumPiece && FreebieCreateDto.MinimumPiece is not null)
+            {
+                FreebieCreateDto.MinimumAmount = null;
+            }
         }
 
         private void CancelToFreebieList()
@@ -254,19 +268,8 @@ namespace Kooco.Pikachu.Blazor.Pages.Freebies
         Task OnUnconditionCheckedValueChanged(bool value)
         {
             FreebieCreateDto.UnCondition = value;
-            if (FreebieCreateDto.UnCondition)
-            {
-                FreebieCreateDto.MinimumAmount = null;
-                FreebieCreateDto.MinimumPiece = null;
-                FreebieCreateDto.FreebieOrderReach = null;
-
-            }
-            else
-            {
-                FreebieCreateDto.FreebieQuantity = 0;
 
 
-            }
             return Task.CompletedTask;
         }
     }

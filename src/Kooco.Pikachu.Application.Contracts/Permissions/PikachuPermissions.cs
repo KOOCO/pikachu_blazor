@@ -178,7 +178,11 @@ public static class PikachuPermissions
        
 
     }
+    public static class LogisticsFeeManagement
+    {
+        public const string Default = ".LogisticsFeeManagement";
 
+    }
     public static class WebsiteManagement
     {
         public const string Default = WebsiteManagementGroup;
@@ -214,6 +218,11 @@ public static class PikachuPermissions
         public const string Create = Default + ".Create";
         public const string Edit = Default + ".Edit";
         public const string Delete = Default + ".Delete";
+    }
+
+    public static class EcPayReconciliations
+    {
+        public const string Default = OrderManagement + ".EcPayReconciliations";
     }
 
     public static class Notifications

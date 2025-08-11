@@ -8,8 +8,8 @@ using Kooco.Pikachu.DeliveryTemperatureCosts;
 using Kooco.Pikachu.DeliveryTempratureCosts;
 using Kooco.Pikachu.DiscountCodes;
 using Kooco.Pikachu.Domain.LogisticStatusRecords;
-using Kooco.Pikachu.LogisticStatusRecords;
 using Kooco.Pikachu.EdmManagement;
+using Kooco.Pikachu.Emails;
 using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Freebies;
 using Kooco.Pikachu.Freebies.Dtos;
@@ -20,11 +20,13 @@ using Kooco.Pikachu.Groupbuys;
 using Kooco.Pikachu.GroupBuys;
 using Kooco.Pikachu.GroupPurchaseOverviews;
 using Kooco.Pikachu.Images;
+using Kooco.Pikachu.InventoryManagement;
 using Kooco.Pikachu.Items;
 using Kooco.Pikachu.Items.Dtos;
 using Kooco.Pikachu.LoginConfigurations;
 using Kooco.Pikachu.LogisticsProviders;
 using Kooco.Pikachu.LogisticsSettings;
+using Kooco.Pikachu.LogisticStatusRecords;
 using Kooco.Pikachu.Members;
 using Kooco.Pikachu.Members.MemberTags;
 using Kooco.Pikachu.OrderDeliveries;
@@ -35,6 +37,7 @@ using Kooco.Pikachu.OrderTransactions;
 using Kooco.Pikachu.PaymentGateways;
 using Kooco.Pikachu.PikachuAccounts;
 using Kooco.Pikachu.ProductCategories;
+using Kooco.Pikachu.Reconciliations;
 using Kooco.Pikachu.Refunds;
 using Kooco.Pikachu.SalesReports;
 using Kooco.Pikachu.ShopCarts;
@@ -54,6 +57,7 @@ using Kooco.Pikachu.WebsiteManagement.FooterSettings;
 using Kooco.Pikachu.WebsiteManagement.TopbarSettings;
 using Kooco.Pikachu.WebsiteManagement.WebsiteBasicSettings;
 using Kooco.Pikachu.WebsiteManagement.WebsiteSettingsModules;
+using Kooco.Reconciliations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -62,6 +66,8 @@ using Volo.Abp.AutoMapper;
 using Volo.Abp.Identity;
 using Kooco.Pikachu.InventoryManagement;
 using Kooco.Pikachu.Emails;
+using Kooco.Pikachu.Tenants.Requests;
+using Kooco.Pikachu.LogisticsFeeManagements;
 
 namespace Kooco.Pikachu;
 
@@ -72,10 +78,10 @@ public class PikachuApplicationAutoMapperProfile : Profile
         /* You can configure your AutoMapper mapping configuration here.
          * Alternatively, you can split your mapping configurations
          * into multiple profile classes for a better organization. */
-        
+
         // 物流狀態記錄映射
         CreateMap<LogisticStatusRecord, LogisticStatusRecordDto>();
-         
+
 
         //Item Dto EntityMapping
         CreateMap<Item, ItemDto>();
@@ -413,7 +419,7 @@ public class PikachuApplicationAutoMapperProfile : Profile
             .ForMember(dest => dest.AllowedDiscountIds, opt => opt.MapFrom(src => src.AllowedDiscounts != null ? src.AllowedDiscounts.Select(d => d.AllowedCampaignId) : new List<Guid>()))
             .ForMember(dest => dest.AllowedShoppingCreditIds, opt => opt.MapFrom(src => src.AllowedShoppingCredits != null ? src.AllowedShoppingCredits.Select(d => d.AllowedCampaignId) : new List<Guid>()))
             .ForMember(dest => dest.AllowedAddOnProductIds, opt => opt.MapFrom(src => src.AllowedAddOnProducts != null ? src.AllowedAddOnProducts.Select(d => d.AllowedCampaignId) : new List<Guid>()));
-        
+
         CreateMap<CampaignDiscountDto, CreateCampaignDiscountDto>();
         CreateMap<CampaignShoppingCreditDto, CreateCampaignShoppingCreditDto>();
         CreateMap<CampaignAddOnProductDto, CreateCampaignAddOnProductDto>();
@@ -433,5 +439,14 @@ public class PikachuApplicationAutoMapperProfile : Profile
         CreateMap<VipTierResetConfig, VipTierResetConfigDto>();
         CreateMap<VipTierProgressToNextTier, VipTierProgressToNextTierDto>();
         CreateMap<VipTierUpgradeEmailModel, VipTierUpgradeEmailDto>();
+
+
+        CreateMap<TenantWalletTransaction, TenantWalletTransactionDto>();
+        CreateMap<LogisticsFeeFileImport, LogisticsFeeFileImportDto>();
+        CreateMap<TenantLogisticsFeeFileProcessingSummary, TenantLogisticsFeeFileProcessingSummaryDto>();
+        CreateMap<TenantLogisticsFeeRecord, TenantLogisticsFeeRecordDto>();
+
+        CreateMap<EcPayReconciliationResponse, EcPayReconciliationRecord>();
+        CreateMap<EcPayReconciliationRecord, EcPayReconciliationRecordDto>().ReverseMap();
     }
 }

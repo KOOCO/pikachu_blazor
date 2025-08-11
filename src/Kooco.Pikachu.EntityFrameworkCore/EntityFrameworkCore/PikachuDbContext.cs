@@ -56,6 +56,9 @@ using Kooco.Pikachu.EdmManagement;
 using Kooco.Pikachu.Domain.LogisticStatusRecords;
 using Kooco.Pikachu.InventoryManagement;
 using Kooco.Pikachu.OrderTradeNos;
+using Kooco.Pikachu.LogisticsFeeManagements;
+using System.Reflection.Emit;
+using Kooco.Pikachu.Reconciliations;
 
 namespace Kooco.Pikachu.EntityFrameworkCore;
 
@@ -187,6 +190,12 @@ public class PikachuDbContext(DbContextOptions<PikachuDbContext> options) :
 
     public DbSet<Edm> Edms { get; set; }
     public DbSet<InventoryLog> InventoryLogs { get; set; }
+
+    public DbSet<LogisticsFeeFileImport> LogisticsFeeFileImports { get; set; }
+    public DbSet<TenantLogisticsFeeFileProcessingSummary> TenantLogisticsFeeFileProcessingSummaries { get; set; }
+    public DbSet<TenantLogisticsFeeRecord> TenantLogisticsFeeRecord { get; set; }
+
+    public DbSet<EcPayReconciliationRecord> EcPayReconciliationRecords { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -907,6 +916,75 @@ public class PikachuDbContext(DbContextOptions<PikachuDbContext> options) :
             b.HasOne(x => x.Item).WithMany().HasForeignKey(x => x.ItemId).OnDelete(DeleteBehavior.Restrict);
             b.HasOne(x => x.ItemDetail).WithMany().HasForeignKey(x => x.ItemDetailId).OnDelete(DeleteBehavior.Restrict);
             b.HasOne(x => x.Order).WithMany().HasForeignKey(x => x.OrderId).OnDelete(DeleteBehavior.Restrict);
+        });
+        // FileImport configuration (NOT tenant-specific)
+        builder.Entity<LogisticsFeeFileImport>(entity =>
+        {
+            entity.ToTable(PikachuConsts.DbTablePrefix + "LogisticsFeeFileImports", PikachuConsts.DbSchema);
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.FileName).HasMaxLength(255).IsRequired();
+            entity.Property(e => e.OriginalFileName).HasMaxLength(255).IsRequired();
+            entity.Property(e => e.FilePath).HasMaxLength(500).IsRequired();
+            entity.Property(e => e.TotalAmount).HasColumnType("decimal(18,2)");
+            entity.Property(e => e.ProcessingNotes).HasMaxLength(1000);
+
+            entity.HasIndex(e => e.UploadDate);
+            entity.HasIndex(e => e.BatchStatus);
+            entity.HasIndex(e => e.FileType);
+            entity.HasIndex(e => e.UploadedByUserId);
+            entity.HasIndex(e => new { e.FileType, e.UploadDate });
+        });
+
+        // TenantFileProcessingSummary configuration
+        builder.Entity<TenantLogisticsFeeFileProcessingSummary>(entity =>
+        {
+            entity.ToTable(PikachuConsts.DbTablePrefix + "TenantLogisticsFeeFileProcessingSummaries", PikachuConsts.DbSchema);
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.TenantTotalAmount).HasColumnType("decimal(18,2)");
+
+            entity.HasOne(e => e.LogisticsFeeFileImport)
+                  .WithMany(f => f.LogisticsFeeTenantSummaries)
+                  .HasForeignKey(e => e.FileImportId)
+                  .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasIndex(e => e.TenantId);
+            entity.HasIndex(e => e.FileImportId);
+            entity.HasIndex(e => new { e.TenantId, e.FileImportId }).IsUnique();
+        });
+
+        // TenantFeeRecord configuration
+        builder.Entity<TenantLogisticsFeeRecord>(entity =>
+        {
+            entity.ToTable(PikachuConsts.DbTablePrefix + "TenantLogisticsFeeRecords", PikachuConsts.DbSchema);
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.OrderNumber).HasMaxLength(50).IsRequired();
+            entity.Property(e => e.LogisticFee).HasColumnType("decimal(18,2)");
+            entity.Property(e => e.FailureReason).HasMaxLength(500);
+
+            entity.HasOne(e => e.LogisticsFeeFileImport)
+                  .WithMany(f => f.TenantLogisticsFeeRecords)
+                  .HasForeignKey(e => e.FileImportId)
+                  .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(e => e.TenantWalletTransaction)
+                  .WithMany(t => t.TenantLogisticsFeeRecords)
+                  .HasForeignKey(e => e.TenantWalletTransactionId)
+                  .OnDelete(DeleteBehavior.SetNull);
+
+            entity.HasIndex(e => e.TenantId);
+            entity.HasIndex(e => e.OrderNumber);
+            entity.HasIndex(e => e.DeductionStatus);
+            entity.HasIndex(e => e.FileImportId);
+            entity.HasIndex(e => e.FileType);
+            entity.HasIndex(e => new { e.TenantId, e.FileImportId });
+            entity.HasIndex(e => new { e.TenantId, e.FileType });
+            entity.HasIndex(e => new { e.TenantId, e.FileType, e.DeductionStatus });
+        });
+
+        builder.Entity<EcPayReconciliationRecord>(b =>
+        {
+            b.ToTable(PikachuConsts.DbTablePrefix + "EcPayReconciliationRecord", PikachuConsts.DbSchema);
+            b.ConfigureByConvention();
         });
     }
 }

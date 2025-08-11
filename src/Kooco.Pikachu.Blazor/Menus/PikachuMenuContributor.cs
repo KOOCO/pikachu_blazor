@@ -323,7 +323,7 @@ public class PikachuMenuContributor : IMenuContributor
             url: "/CashFlowManagement/ElectronicInvoiceSetting",
             requiredPermissionName: PikachuPermissions.InvoiceSetting)
             );
-        if (env=="Development")
+        if (env == "Development")
         {
             paymentManagement.AddItem(new ApplicationMenuItem(
             name: "CashFlowReconciliationStatement",
@@ -493,6 +493,14 @@ public class PikachuMenuContributor : IMenuContributor
                     requiredPermissionName: PikachuPermissions.TenantWallet.Default
                 )
             );
+            tenantManagementMenu?.AddItem(
+    new ApplicationMenuItem(
+        name: PikachuMenus.LogisticsFeeManagement,
+        displayName: l["LogisticsFeeManagement"],
+        url: "/logistics-management",
+        requiredPermissionName: PikachuPermissions.LogisticsFeeManagement.Default
+    )
+);
             administration?.AddItem(
              new ApplicationMenuItem(
                  name: PikachuMenus.TenantWalletManagement,
@@ -501,6 +509,15 @@ public class PikachuMenuContributor : IMenuContributor
                  requiredPermissionName: PikachuPermissions.TenantWalletTransactions.Default
              )
          );
+
+            tenantManagementMenu?.AddItem(
+                new ApplicationMenuItem(
+                    name: "EcPayReconciliation",
+                    displayName: l["Menu:EcPayReconciliation"],
+                    url: "/ecpay/reconciliation",
+                    requiredPermissionName: PikachuPermissions.EcPayReconciliations.Default
+                )
+            );
         }
         else
         {

@@ -29,6 +29,7 @@ namespace Kooco.Pikachu.Freebies
                 .Where(w => DateTime.Now.Date >= w.ActivityStartDate && DateTime.Now.Date <= w.ActivityEndDate)
                 .Where(x => x.IsFreebieAvaliable)
                 .Include(x => x.FreebieGroupBuys)
+                .Include(x=>x.FreebieProducts)
                 .Include(i => i.Images)
                 .Where(x => x.ApplyToAllGroupBuy || x.FreebieGroupBuys.Select(x => x.GroupBuyId).Contains(groupBuyId))
             ];

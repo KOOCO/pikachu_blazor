@@ -176,6 +176,20 @@ public class PaymentGatewayController(
     {
         return _paymentGatewayAppService.UpdateManualBankTransferAsync(input);
     }
+
+
+    [HttpGet("ecpay")]
+    public Task<PaymentGatewayDto?> GetEcPayAsync(bool decrypt = false)
+    {
+        return _paymentGatewayAppService.GetEcPayAsync(decrypt);
+    }
+
+    [HttpGet("ecpay-list")]
+    public Task<List<PaymentGatewayDto>> GetAllEcPayAsync(bool decrypt = false)
+    {
+        return _paymentGatewayAppService.GetAllEcPayAsync(decrypt);
+    }
+
     #region Private Functions
     private string CloseWindowsScript()
     {
@@ -199,6 +213,5 @@ public class PaymentGatewayController(
             </script>
         ";
     }
-
     #endregion
 }

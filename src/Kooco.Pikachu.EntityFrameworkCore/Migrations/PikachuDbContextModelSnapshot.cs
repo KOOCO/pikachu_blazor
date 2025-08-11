@@ -2589,6 +2589,286 @@ namespace Kooco.Pikachu.Migrations
                         });
                 });
 
+            modelBuilder.Entity("Kooco.Pikachu.LogisticsFeeManagements.LogisticsFeeFileImport", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("BatchStatus")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("nvarchar(40)")
+                        .HasColumnName("ConcurrencyStamp");
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("CreationTime");
+
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("CreatorId");
+
+                    b.Property<Guid?>("DeleterId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("DeleterId");
+
+                    b.Property<DateTime?>("DeletionTime")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("DeletionTime");
+
+                    b.Property<string>("ExtraProperties")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("ExtraProperties");
+
+                    b.Property<int>("FailedRecords")
+                        .HasColumnType("int");
+
+                    b.Property<string>("FileName")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("FilePath")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<int>("FileType")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false)
+                        .HasColumnName("IsDeleted");
+
+                    b.Property<DateTime?>("LastModificationTime")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("LastModificationTime");
+
+                    b.Property<Guid?>("LastModifierId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("LastModifierId");
+
+                    b.Property<string>("OriginalFileName")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<DateTime?>("ProcessingCompletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ProcessingNotes")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<DateTime?>("ProcessingStartedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("SuccessfulRecords")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("TotalAmount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("TotalRecords")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("UploadDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("UploadedByUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BatchStatus");
+
+                    b.HasIndex("FileType");
+
+                    b.HasIndex("UploadDate");
+
+                    b.HasIndex("UploadedByUserId");
+
+                    b.HasIndex("FileType", "UploadDate");
+
+                    b.ToTable("AppLogisticsFeeFileImports", (string)null);
+                });
+
+            modelBuilder.Entity("Kooco.Pikachu.LogisticsFeeManagements.TenantLogisticsFeeFileProcessingSummary", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("CreationTime");
+
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("CreatorId");
+
+                    b.Property<Guid?>("DeleterId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("DeleterId");
+
+                    b.Property<DateTime?>("DeletionTime")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("DeletionTime");
+
+                    b.Property<Guid>("FileImportId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false)
+                        .HasColumnName("IsDeleted");
+
+                    b.Property<DateTime?>("LastModificationTime")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("LastModificationTime");
+
+                    b.Property<Guid?>("LastModifierId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("LastModifierId");
+
+                    b.Property<DateTime>("ProcessedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("TenantBatchStatus")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TenantFailedRecords")
+                        .HasColumnType("int");
+
+                    b.Property<Guid?>("TenantId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("TenantSuccessfulRecords")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("TenantTotalAmount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("TenantTotalRecords")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FileImportId");
+
+                    b.HasIndex("TenantId");
+
+                    b.HasIndex("TenantId", "FileImportId")
+                        .IsUnique()
+                        .HasFilter("[TenantId] IS NOT NULL");
+
+                    b.ToTable("AppTenantLogisticsFeeFileProcessingSummaries", (string)null);
+                });
+
+            modelBuilder.Entity("Kooco.Pikachu.LogisticsFeeManagements.TenantLogisticsFeeRecord", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("CreationTime");
+
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("CreatorId");
+
+                    b.Property<DateTime?>("DeductionDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("DeductionStatus")
+                        .HasColumnType("int");
+
+                    b.Property<Guid?>("DeleterId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("DeleterId");
+
+                    b.Property<DateTime?>("DeletionTime")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("DeletionTime");
+
+                    b.Property<string>("FailureReason")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<Guid>("FileImportId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("FileType")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false)
+                        .HasColumnName("IsDeleted");
+
+                    b.Property<DateTime?>("LastModificationTime")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("LastModificationTime");
+
+                    b.Property<Guid?>("LastModifierId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("LastModifierId");
+
+                    b.Property<DateTime?>("LastRetryDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal>("LogisticFee")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("OrderNumber")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTime>("ProcessedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("RetryCount")
+                        .HasColumnType("int");
+
+                    b.Property<Guid?>("TenantId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("TenantWalletTransactionId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DeductionStatus");
+
+                    b.HasIndex("FileImportId");
+
+                    b.HasIndex("FileType");
+
+                    b.HasIndex("OrderNumber");
+
+                    b.HasIndex("TenantId");
+
+                    b.HasIndex("TenantWalletTransactionId");
+
+                    b.HasIndex("TenantId", "FileImportId");
+
+                    b.HasIndex("TenantId", "FileType");
+
+                    b.HasIndex("TenantId", "FileType", "DeductionStatus");
+
+                    b.ToTable("AppTenantLogisticsFeeRecords", (string)null);
+                });
+
             modelBuilder.Entity("Kooco.Pikachu.LogisticsSettings.LogisticsProviderSettings", b =>
                 {
                     b.Property<Guid>("Id")
@@ -3046,6 +3326,9 @@ namespace Kooco.Pikachu.Migrations
 
                     b.Property<string>("District")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal?>("EcPayNetAmount")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("EcpayLogisticRtnCode")
                         .HasColumnType("int");
@@ -4054,6 +4337,134 @@ namespace Kooco.Pikachu.Migrations
                         });
                 });
 
+            modelBuilder.Entity("Kooco.Pikachu.Reconciliations.EcPayReconciliationRecord", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ConvenienceStoreInfo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("CreationTime");
+
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("CreatorId");
+
+                    b.Property<string>("CreditCardAuthCode")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CreditCardLast4")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("EcPayTradeNo")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FeeRate")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("HandlingFee")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("ItemName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("MID")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("MerchantRemarks")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("MerchantTradeNo")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("NetAmount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime>("OrderDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("OrderId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("PayerEmail")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PayerName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PayerPhone")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PaymentStatus")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PaymentType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PayoutStatus")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("PlatformFee")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("PlatformName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("ProcessingFee")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("ReceiverAddress")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ReceiverEmail")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ReceiverName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ReceiverPhone")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal?>("RefundAmount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("RefundDate")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Remarks")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("StoreCode")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid?>("TenantId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("TenantId");
+
+                    b.Property<decimal>("TransactionAmount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("UnifiedBusinessNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("AppEcPayReconciliationRecord", (string)null);
+                });
+
             modelBuilder.Entity("Kooco.Pikachu.Refunds.Refund", b =>
                 {
                     b.Property<Guid>("Id")
@@ -4950,8 +5361,8 @@ namespace Kooco.Pikachu.Migrations
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("TransactionNotes")
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<int>("TransactionType")
                         .HasColumnType("int");
@@ -8189,6 +8600,35 @@ namespace Kooco.Pikachu.Migrations
                     b.Navigation("SetItem");
                 });
 
+            modelBuilder.Entity("Kooco.Pikachu.LogisticsFeeManagements.TenantLogisticsFeeFileProcessingSummary", b =>
+                {
+                    b.HasOne("Kooco.Pikachu.LogisticsFeeManagements.LogisticsFeeFileImport", "LogisticsFeeFileImport")
+                        .WithMany("LogisticsFeeTenantSummaries")
+                        .HasForeignKey("FileImportId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("LogisticsFeeFileImport");
+                });
+
+            modelBuilder.Entity("Kooco.Pikachu.LogisticsFeeManagements.TenantLogisticsFeeRecord", b =>
+                {
+                    b.HasOne("Kooco.Pikachu.LogisticsFeeManagements.LogisticsFeeFileImport", "LogisticsFeeFileImport")
+                        .WithMany("TenantLogisticsFeeRecords")
+                        .HasForeignKey("FileImportId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Kooco.Pikachu.Tenants.Entities.TenantWalletTransaction", "TenantWalletTransaction")
+                        .WithMany("TenantLogisticsFeeRecords")
+                        .HasForeignKey("TenantWalletTransactionId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("LogisticsFeeFileImport");
+
+                    b.Navigation("TenantWalletTransaction");
+                });
+
             modelBuilder.Entity("Kooco.Pikachu.Members.MemberTags.MemberTag", b =>
                 {
                     b.HasOne("Volo.Abp.Identity.IdentityUser", "User")
@@ -8957,6 +9397,13 @@ namespace Kooco.Pikachu.Migrations
                     b.Navigation("SetItemDetails");
                 });
 
+            modelBuilder.Entity("Kooco.Pikachu.LogisticsFeeManagements.LogisticsFeeFileImport", b =>
+                {
+                    b.Navigation("LogisticsFeeTenantSummaries");
+
+                    b.Navigation("TenantLogisticsFeeRecords");
+                });
+
             modelBuilder.Entity("Kooco.Pikachu.Orders.Entities.Order", b =>
                 {
                     b.Navigation("AppliedCampaigns");
@@ -9011,6 +9458,11 @@ namespace Kooco.Pikachu.Migrations
             modelBuilder.Entity("Kooco.Pikachu.Tenants.Entities.TenantWallet", b =>
                 {
                     b.Navigation("TenantWalletTransactions");
+                });
+
+            modelBuilder.Entity("Kooco.Pikachu.Tenants.Entities.TenantWalletTransaction", b =>
+                {
+                    b.Navigation("TenantLogisticsFeeRecords");
                 });
 
             modelBuilder.Entity("Kooco.Pikachu.TierManagement.VipTierSetting", b =>

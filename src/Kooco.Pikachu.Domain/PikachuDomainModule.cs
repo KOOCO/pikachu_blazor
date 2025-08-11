@@ -1,5 +1,6 @@
 ﻿using Kooco.Pikachu.AzureStorage;
 using Kooco.Pikachu.AzureStorage.Image;
+using Kooco.Pikachu.AzureStorage.LogisticsFiles;
 using Kooco.Pikachu.MultiTenancy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -99,6 +100,17 @@ public class PikachuDomainModule : AbpModule
                     azure.CreateContainerIfNotExists = true;
                 });
             });
-        });
+            // Add LogisticsFileContainer configuration
+            options.Containers.Configure<LogisticsFileContainer>(container => {
+                container.UseAzure(azure => {
+                    azure.ConnectionString = azureStorageConnectionString;
+              
+                    azure.CreateContainerIfNotExists = true;
+                });
+            });
+        
+    });
+
+
     }
 }

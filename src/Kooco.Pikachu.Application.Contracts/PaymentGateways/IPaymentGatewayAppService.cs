@@ -15,5 +15,7 @@ namespace Kooco.Pikachu.PaymentGateways
         Task<string?> GetCreditCheckCodeAsync();
         Task UpdateManualBankTransferAsync(UpdateManualBankTransferDto input);
         Task<ManualBankTransferDto?> GetManualBankTransferAsync();
+        Task<PaymentGatewayDto?> GetEcPayAsync(bool decrypt = false);
+        Task<List<PaymentGatewayDto>> GetAllEcPayAsync(bool decrypt = false);
     }
 }

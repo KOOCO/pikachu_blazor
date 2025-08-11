@@ -124,7 +124,7 @@
                     <DisplayTemplate>
                         @if (!string.IsNullOrWhiteSpace(context.OrderNo))
                         {
-                            <Span>@L[context.TransactionDescription] @context.OrderNo</Span>
+                            <Span>@L[context.TransactionDescription, context.OrderNo]</Span>
                         }
                         else
                         {

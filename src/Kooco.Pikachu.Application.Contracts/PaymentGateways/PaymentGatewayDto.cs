@@ -1,10 +1,12 @@
 ﻿using Kooco.Pikachu.EnumValues;
+using System;
 using System.Collections.Generic;
 
 namespace Kooco.Pikachu.PaymentGateways
 {
     public class PaymentGatewayDto
     {
+        public Guid? TenantId { get; set; }
         public PaymentIntegrationType PaymentIntegrationType { get; set; }
         public bool IsEnabled { get; set; }
         //OrderVAlidatePeriod

@@ -1623,7 +1623,7 @@ public partial class CreateGroupBuy
             }
             GroupBuyOrderInstructionModules.Add(new GroupBuyOrderInstructionDto
             {
-                Title = L["OrderInstruction"],
+                Title = L["OrderInstructionTitle"],
                 Image = img,
                 ModuleNumber = collapseItem.ModuleNumber
             });
@@ -1950,8 +1950,8 @@ public partial class CreateGroupBuy
             {
                 foreach (var item in CreateGroupBuyDto.ShippingMethodList)
                 {
-                    if(item!="SelfPickup" && item!="HomeDelivery")
-                    JSRuntime.InvokeVoidAsync("uncheckOtherCheckbox", item);
+                    if (item != "SelfPickup" && item != "HomeDelivery")
+                        JSRuntime.InvokeVoidAsync("uncheckOtherCheckbox", item);
 
                 }
 
@@ -2020,7 +2020,7 @@ public partial class CreateGroupBuy
 
         // Serialize the updated list and assign it to ExcludeShippingMethod
         CreateGroupBuyDto.ExcludeShippingMethod = JsonConvert.SerializeObject(CreateGroupBuyDto.ShippingMethodList);
-      
+
     }
     private static void OnProductGroupValueChange(ChangeEventArgs e, CollapseItem collapseItem)
     {
@@ -2749,7 +2749,7 @@ public partial class CreateGroupBuy
                 {
                     if (groupPurchaseOverview.Title.IsNullOrEmpty())
                     {
-                        await _uiMessageService.Error("TitleCannotbeemptyinGroupPurchaseOverviewModule");
+                        await _uiMessageService.Error(L["TitleCannotbeemptyinGroupPurchaseOverviewModule"]);
 
                         await Loading.Hide();
 
@@ -2758,7 +2758,7 @@ public partial class CreateGroupBuy
 
                     if (groupPurchaseOverview.Image.IsNullOrEmpty())
                     {
-                        await _uiMessageService.Error("PleaseAddImageinGroupPurchaseOverviewModule");
+                        await _uiMessageService.Error(L["PleaseAddImageinGroupPurchaseOverviewModule"]);
 
                         await Loading.Hide();
 
@@ -2769,7 +2769,7 @@ public partial class CreateGroupBuy
                     {
                         if (groupPurchaseOverview.ButtonText.IsNullOrEmpty())
                         {
-                            await _uiMessageService.Error("IfyouhaveenabledButton,thenButtonTextisrequired.");
+                            await _uiMessageService.Error(L["IfyouhaveenabledButton,thenButtonTextisrequired."]);
 
                             await Loading.Hide();
 
@@ -2778,7 +2778,7 @@ public partial class CreateGroupBuy
 
                         if (groupPurchaseOverview.ButtonLink.IsNullOrEmpty())
                         {
-                            await _uiMessageService.Error("IfyouhaveenabledButton,thenButtonLinkisrequired.");
+                            await _uiMessageService.Error(L["IfyouhaveenabledButton,thenButtonLinkisrequired."]);
 
                             await Loading.Hide();
 
@@ -2794,7 +2794,7 @@ public partial class CreateGroupBuy
                 {
                     if (groupBuyOrderInstruction.Title.IsNullOrEmpty())
                     {
-                        await _uiMessageService.Error("TitleCannotbeemptyinGroupBuyOrderInstructionModule");
+                        await _uiMessageService.Error(L["TitleCannotbeemptyinGroupBuyOrderInstructionModule"]);
 
                         await Loading.Hide();
 
@@ -2803,7 +2803,7 @@ public partial class CreateGroupBuy
 
                     if (groupBuyOrderInstruction.Image.IsNullOrEmpty())
                     {
-                        await _uiMessageService.Error("PleaseAddImageinGroupBuyOrderInstructionModule");
+                        await _uiMessageService.Error(L["PleaseAddImageinGroupBuyOrderInstructionModule"]);
 
                         await Loading.Hide();
 
@@ -2818,7 +2818,7 @@ public partial class CreateGroupBuy
                 {
                     if (productRankingCarouselModule.Title.IsNullOrEmpty())
                     {
-                        await _uiMessageService.Error("TitleCannotbeemptyinProductRankingCarouselModule");
+                        await _uiMessageService.Error(L["TitleCannotbeemptyinProductRankingCarouselModule"]);
 
                         await Loading.Hide();
 
@@ -2827,7 +2827,7 @@ public partial class CreateGroupBuy
 
                     if (productRankingCarouselModule.SubTitle.IsNullOrEmpty())
                     {
-                        await _uiMessageService.Error("SubTitleCannotbeemptyinProductRankingCarouselModules");
+                        await _uiMessageService.Error(L["SubTitleCannotbeemptyinProductRankingCarouselModules"]);
 
                         await Loading.Hide();
 
@@ -2914,7 +2914,7 @@ public partial class CreateGroupBuy
                                     {
                                         if (!itemDetail.ItemDetailsWithPrices.TryGetValue(detailId, out var labelAndPrice))
                                         {
-                                            await _uiMessageService.Error(L["VariantsMustHavePrice",itemDetail.Name]);
+                                            await _uiMessageService.Error(L["VariantsMustHavePrice", itemDetail.Name]);
                                             await Loading.Hide();
                                             return;
                                         }

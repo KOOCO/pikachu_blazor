@@ -4,4 +4,5 @@ public enum WalletTradingMethods
     SystemInput,
     CreditCard,
     BankTransfer,
+    LogisticsFee
 }

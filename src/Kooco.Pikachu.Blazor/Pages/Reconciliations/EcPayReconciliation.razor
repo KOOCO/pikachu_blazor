@@ -1,0 +1,81 @@
+﻿@page "/ecpay/reconciliation"
+@using Kooco.Pikachu.Reconciliations
+@attribute [Authorize(PikachuPermissions.EcPayReconciliations.Default)]
+@inherits PikachuComponentBase
+@inject IEcPayReconciliationAppService EcPayReconciliationAppService
+@inject NavigationManager NavigationManager
+
+<Div Class="d-flex justify-content-between align-items-center mb-2">
+    <h3 class="mb-0 text-dark">@L["Menu:EcPayReconciliation"]</h3>
+</Div>
+
+<Card>
+    <CardBody>
+        <DataGrid TItem="EcPayReconciliationRecordDto"
+                  Data="Records"
+                  ReadData="OnDataGridReadAsync"
+                  TotalItems="TotalCount"
+                  ShowPager="true"
+                  PageSize="PageSize"
+                  CurrentPage="CurrentPage"
+                  Hoverable
+                  Narrow
+                  Responsive>
+            <DataGridColumns>
+                <DataGridColumn TItem="EcPayReconciliationRecordDto"
+                                Field="@nameof(EcPayReconciliationRecordDto.OrderDate)"
+                                Caption="@L["OrderDate"]">
+                    <DisplayTemplate>
+                        <Span Class="text-nowrap">
+                            @context.OrderDate.ToString("yyyy-MM-dd HH:mm:ss")
+                        </Span>
+                    </DisplayTemplate>
+                </DataGridColumn>
+                <DataGridColumn TItem="EcPayReconciliationRecordDto"
+                                Field="@nameof(EcPayReconciliationRecordDto.MerchantTradeNo)"
+                                Caption="@L["MerchantTradeNo"]">
+                </DataGridColumn>
+                <DataGridColumn TItem="EcPayReconciliationRecordDto"
+                                Field="@nameof(EcPayReconciliationRecordDto.PaymentType)"
+                                Caption="@L["PaymentType"]">
+                </DataGridColumn>
+                <DataGridColumn TItem="EcPayReconciliationRecordDto"
+                                Field="@nameof(EcPayReconciliationRecordDto.FeeRate)"
+                                Caption="@L["FeeRate"]">
+                </DataGridColumn>
+                <DataGridColumn TItem="EcPayReconciliationRecordDto"
+                                Field="@nameof(EcPayReconciliationRecordDto.PaymentStatus)"
+                                Caption="@L["PaymentStatus"]">
+                </DataGridColumn>
+                <DataGridColumn TItem="EcPayReconciliationRecordDto"
+                                Field="@nameof(EcPayReconciliationRecordDto.TransactionAmount)"
+                                Caption="@L["TransactionAmount"]">
+                </DataGridColumn>
+                <DataGridColumn TItem="EcPayReconciliationRecordDto"
+                                Field="@nameof(EcPayReconciliationRecordDto.RefundDate)"
+                                Caption="@L["RefundDate"]">
+                </DataGridColumn>
+                <DataGridColumn TItem="EcPayReconciliationRecordDto"
+                                Field="@nameof(EcPayReconciliationRecordDto.RefundAmount)"
+                                Caption="@L["RefundAmount"]">
+                </DataGridColumn>
+                <DataGridColumn TItem="EcPayReconciliationRecordDto"
+                                Field="@nameof(EcPayReconciliationRecordDto.PlatformFee)"
+                                Caption="@L["PlatformFee"]">
+                </DataGridColumn>
+                <DataGridColumn TItem="EcPayReconciliationRecordDto"
+                                Field="@nameof(EcPayReconciliationRecordDto.NetAmount)"
+                                Caption="@L["NetAmount"]">
+                </DataGridColumn>
+                <DataGridColumn TItem="EcPayReconciliationRecordDto"
+                                Field="@nameof(EcPayReconciliationRecordDto.PayoutStatus)"
+                                Caption="@L["PayoutStatus"]">
+                </DataGridColumn>
+                <DataGridColumn TItem="EcPayReconciliationRecordDto"
+                                Field="@nameof(EcPayReconciliationRecordDto.ProcessingFee)"
+                                Caption="@L["ProcessingFee"]">
+                </DataGridColumn>
+            </DataGridColumns>
+        </DataGrid>
+    </CardBody>
+</Card>

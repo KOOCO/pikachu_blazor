@@ -1,0 +1,580 @@
+﻿@page "/logistics-management/tenant/{TenantId:guid}/file/{FileId:guid}"
+@using Volo.Abp.AspNetCore.Components.Web
+@using Microsoft.AspNetCore.Authorization
+@using Blazorise
+@using Blazorise.DataGrid
+@using Kooco.Pikachu.Localization;
+@using Kooco.Pikachu.LogisticsFeeManagements;
+@using Kooco.Pikachu.EnumValues;
+@inherits PikachuComponentBase
+@using Microsoft.Extensions.Localization;
+@inject ILogisticsFeeAppService LogisticsFeeAppService
+@inject NavigationManager NavigationManager
+@inject IMessageService MessageService
+@attribute [Authorize(PikachuPermissions.LogisticsFeeManagement.Default)]
+<style>
+    /* Logistics Fee Management Custom Styles */
+
+    /* File Drop Zone Styling */
+    .file-drop-zone {
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+        .file-drop-zone:hover {
+            border-color: #007bff !important;
+            background-color: #f8f9fa;
+        }
+
+        .file-drop-zone.dragover {
+            border-color: #28a745 !important;
+            background-color: #d4edda;
+        }
+
+    /* Status Badge Enhancements */
+    .badge {
+        font-size: 0.85em;
+        padding: 0.35em 0.65em;
+    }
+
+    /* Progress Bar Customizations */
+    .progress-sm {
+        height: 0.5rem;
+    }
+
+    /* Card Hover Effects */
+    .card {
+        transition: box-shadow 0.3s ease;
+    }
+
+        .card:hover {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12);
+        }
+
+    /* Summary Cards */
+    .summary-card {
+        border-left: 4px solid #007bff;
+    }
+
+        .summary-card.success {
+            border-left-color: #28a745;
+        }
+
+        .summary-card.warning {
+            border-left-color: #ffc107;
+        }
+
+        .summary-card.danger {
+            border-left-color: #dc3545;
+        }
+
+    /* Table Row Hover Effects */
+    .table tbody tr:hover {
+        background-color: rgba(0, 123, 255, 0.05);
+    }
+
+    /* Action Button Groups */
+    .btn-group-sm > .btn {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.875rem;
+    }
+
+    /* Loading States */
+    .loading-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(255, 255, 255, 0.8);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+    }
+
+    /* Checkbox Styling */
+    .form-check-input:checked {
+        background-color: #007bff;
+        border-color: #007bff;
+    }
+
+    /* Balance Color Classes */
+    .text-balance-low {
+        color: #dc3545 !important;
+        font-weight: 600;
+    }
+
+    .text-balance-medium {
+        color: #ffc107 !important;
+        font-weight: 600;
+    }
+
+    .text-balance-high {
+        color: #28a745 !important;
+        font-weight: 600;
+    }
+
+    /* File Icon Styling */
+    .file-icon {
+        width: 24px;
+        height: 24px;
+        margin-right: 8px;
+    }
+
+    /* Breadcrumb Enhancements */
+    .breadcrumb {
+        background-color: transparent;
+        padding: 0;
+        margin-bottom: 1rem;
+    }
+
+    .breadcrumb-item + .breadcrumb-item::before {
+        content: ">";
+        color: #6c757d;
+    }
+
+    /* Modal Enhancements */
+    .modal-header {
+        border-bottom: 1px solid #dee2e6;
+        padding: 1.5rem;
+    }
+
+    .modal-body {
+        padding: 1.5rem;
+    }
+
+    .modal-footer {
+        border-top: 1px solid #dee2e6;
+        padding: 1.5rem;
+    }
+
+    /* Alert Customizations */
+    .alert {
+        border: none;
+        border-radius: 0.375rem;
+    }
+
+    .alert-success {
+        background-color: #d1f2eb;
+        color: #0f5132;
+    }
+
+    .alert-warning {
+        background-color: #fff3cd;
+        color: #664d03;
+    }
+
+    .alert-danger {
+        background-color: #f8d7da;
+        color: #721c24;
+    }
+
+    .alert-info {
+        background-color: #cff4fc;
+        color: #055160;
+    }
+
+    /* Responsive Table Wrapper */
+    .table-responsive {
+        border-radius: 0.375rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+    }
+
+    /* Custom Spinner */
+    .spinner-border-sm {
+        width: 1rem;
+        height: 1rem;
+    }
+
+    /* Form Control Focus */
+    .form-control:focus {
+        border-color: #80bdff;
+        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    }
+
+    /* Pagination Styling */
+    .pagination {
+        margin-bottom: 0;
+    }
+
+    .page-link {
+        color: #007bff;
+        border-color: #dee2e6;
+    }
+
+        .page-link:hover {
+            background-color: #e9ecef;
+            border-color: #dee2e6;
+        }
+
+    .page-item.active .page-link {
+        background-color: #007bff;
+        border-color: #007bff;
+    }
+
+    /* Search Input Styling */
+    .search-input {
+        border-radius: 2rem;
+        padding-left: 2.375rem;
+    }
+
+    .search-input-icon {
+        position: absolute;
+        left: 0.75rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #6c757d;
+    }
+
+    /* Status Indicators */
+    .status-indicator {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        display: inline-block;
+        margin-right: 0.5rem;
+    }
+
+        .status-indicator.success {
+            background-color: #28a745;
+        }
+
+        .status-indicator.warning {
+            background-color: #ffc107;
+        }
+
+        .status-indicator.danger {
+            background-color: #dc3545;
+        }
+
+        .status-indicator.info {
+            background-color: #17a2b8;
+        }
+
+    /* Utility Classes */
+    .text-truncate-2 {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .cursor-pointer {
+        cursor: pointer;
+    }
+
+   
+    .content-header {
+        background-color: #ffffff;
+        border-bottom: 1px solid #dee2e6;
+        padding: 0;
+        margin-bottom: 1.5rem;
+    }
+
+    .breadcrumb-container {
+        padding: 12px 24px 8px;
+        background-color: #ffffff;
+       /*  border-bottom: 1px solid #e9ecef; */
+    }
+
+    .breadcrumb-nav {
+        font-size: 13px;
+        color: #6c757d;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        align-items: center;
+    }
+
+    .breadcrumb-link {
+        color: #007bff;
+        text-decoration: none;
+        transition: color 0.2s ease;
+    }
+
+    .breadcrumb-link:hover {
+        color: #0056b3;
+        text-decoration: none;
+    }
+
+    .breadcrumb-separator {
+        margin: 0 8px;
+        color: #adb5bd;
+        font-size: 12px;
+    }
+
+    .breadcrumb-current {
+        color: #495057;
+        font-weight: 500;
+    }
+
+    .page-header {
+        padding: 16px 24px 20px;
+        background-color: #ffffff;
+    }
+
+    .page-title {
+        font-size: 24px;
+        font-weight: 600;
+        color: #343a40;
+        margin: 0;
+        line-height: 1.2;
+    }
+
+    
+</style>
+
+<div class="content-header">
+    <div class="breadcrumb-container">
+        <nav class="breadcrumb-nav">
+              <span class="breadcrumb-current">@L["LogisticsManagement"]</span>
+            <span class="breadcrumb-separator">></span>
+             <span class="breadcrumb-current">@L["FeeManagement"]</span>
+            <span class="breadcrumb-separator">></span>
+            <span class="breadcrumb-current">@(TenantName)</span>
+             <span class="breadcrumb-separator">></span>
+              <span class="breadcrumb-current">@(FileName)</span>
+        </nav>
+    </div>
+    <div class="page-header">
+        <h1 class="page-title">@($"{L["FeeRecords"]} - {FileName}")"</h1>
+    </div>
+</div>
+<!-- File Processing Summary -->
+<Row>
+    <Column ColumnSize="ColumnSize.Is4">
+        <Card>
+            <CardBody class="text-center">
+                <CardTitle Size="5" TextColor="TextColor.Info">@L["TotalRecords"]</CardTitle>
+                <Display Size="DisplaySize.Is4" TextColor="TextColor.Info">
+                    @TotalRecords
+                </Display>
+            </CardBody>
+        </Card>
+    </Column>
+    <Column ColumnSize="ColumnSize.Is4">
+        <Card>
+            <CardBody class="text-center">
+                <CardTitle Size="5" TextColor="TextColor.Success">@L["SuccessfulDeductions"]</CardTitle>
+                <Display Size="DisplaySize.Is4" TextColor="TextColor.Success">
+                    @SuccessfulDeductions
+                </Display>
+            </CardBody>
+        </Card>
+    </Column>
+    <Column ColumnSize="ColumnSize.Is4">
+        <Card>
+            <CardBody class="text-center">
+                <CardTitle Size="5" TextColor="TextColor.Danger">@L["FailedDeductions"]</CardTitle>
+                <Display Size="DisplaySize.Is4" TextColor="TextColor.Danger">
+                    @FailedDeductions
+                </Display>
+            </CardBody>
+        </Card>
+    </Column>
+</Row>
+
+<!-- Batch Actions -->
+@if (FailedDeductions > 0)
+{
+    <Card Margin="Margin.Is3.FromTop">
+        <CardBody>
+            <Row>
+                <Column ColumnSize="ColumnSize.Is6">
+                    <Button Color="Color.Success" 
+                            @onclick="RetrySelectedFailedRecords" 
+                            Disabled="@(!SelectedFailedRecords.Any())"
+                            Loading="IsRetryingBatch">
+                        <Icon Name="IconName.Redo" />
+                        @L["RetrySelectedFailedDeductions"]
+                        @if (SelectedFailedRecords.Any())
+                        {
+                            <Badge Color="Color.Light" Margin="Margin.Is1.FromStart">@SelectedFailedRecords.Count</Badge>
+                        }
+                    </Button>
+                </Column>
+                <Column ColumnSize="ColumnSize.Is6" class="text-end">
+                    <Button Color="Color.Secondary" 
+                            Outline 
+                            @onclick="SelectAllFailedRecords">
+                        @L["SelectAllFailed"]
+                    </Button>
+                </Column>
+            </Row>
+        </CardBody>
+    </Card>
+}
+
+<!-- Records Table -->
+<Card Margin="Margin.Is3.FromTop">
+    <CardBody>
+        <DataGrid TItem="TenantLogisticsFeeRecordDto"
+                  Data="Records"
+                  ReadData="OnDataGridReadData"
+                  TotalItems="TotalCount"
+                  ShowPager="true"
+                  PageSize="PageSize"
+                  Responsive="true"
+                  SelectionMode="DataGridSelectionMode.Multiple"
+                  @bind-SelectedRows="@SelectedRows">
+            <DataGridColumns>
+                <DataGridMultiSelectColumn TItem="TenantLogisticsFeeRecordDto" Width="50px">
+                    <DisplayTemplate>
+                        @if (context.DeductionStatus == WalletDeductionStatus.Failed)
+                        {
+                            <!-- Show checkbox only for failed records -->
+                        }
+                    </DisplayTemplate>
+                </DataGridMultiSelectColumn>
+                
+                <DataGridColumn TItem="TenantLogisticsFeeRecordDto" 
+                               Field="@nameof(TenantLogisticsFeeRecordDto.OrderNumber)" 
+                               Caption="@L["OrderNumber"]">
+                    <DisplayTemplate>
+                        <div class="d-flex align-items-center">
+                            @if (context.DeductionStatus == WalletDeductionStatus.Failed)
+                            {
+                                <Icon Name="IconName.ExclamationCircle" 
+                                      TextColor="TextColor.Danger" 
+                                      Size="IconSize.Small"
+                                      Margin="Margin.Is1.FromEnd" />
+                            }
+                            else if (context.DeductionStatus == WalletDeductionStatus.Completed)
+                            {
+                                <Icon Name="IconName.CheckCircle" 
+                                      TextColor="TextColor.Success" 
+                                      Size="IconSize.Small"
+                                      Margin="Margin.Is1.FromEnd" />
+                            }
+                            @context.OrderNumber
+                        </div>
+                    </DisplayTemplate>
+                </DataGridColumn>
+                
+                <DataGridColumn TItem="TenantLogisticsFeeRecordDto" 
+                               Field="@nameof(TenantLogisticsFeeRecordDto.LogisticFee)" 
+                               Caption="@L["LogisticFee"]">
+                    <DisplayTemplate>
+                        <strong>$@context.LogisticFee.ToString("N2")</strong>
+                    </DisplayTemplate>
+                </DataGridColumn>
+                
+                <DataGridColumn TItem="TenantLogisticsFeeRecordDto" 
+                               Field="@nameof(TenantLogisticsFeeRecordDto.DeductionStatus)" 
+                               Caption="@L["DeductionStatus"]">
+                    <DisplayTemplate>
+                        <Badge Color="@GetDeductionStatusColor(context.DeductionStatus)">
+                            @L[GetDeductionStatusText(context.DeductionStatus)]
+                        </Badge>
+                    </DisplayTemplate>
+                </DataGridColumn>
+                
+                <DataGridColumn TItem="TenantLogisticsFeeRecordDto" 
+                               Field="@nameof(TenantLogisticsFeeRecordDto.ProcessedAt)" 
+                               Caption="@L["DeductionDate"]">
+                    <DisplayTemplate>
+                       
+                            @context.ProcessedAt.ToString("yyyy-MM-dd HH:mm")
+                        
+                    </DisplayTemplate>
+                </DataGridColumn>
+                
+                <DataGridColumn TItem="TenantLogisticsFeeRecordDto" 
+                               Caption="@L["Actions"]" 
+                               Sortable="false"
+                               Width="120px">
+                    <DisplayTemplate>
+                        @if (context.DeductionStatus == WalletDeductionStatus.Failed)
+                        {
+                            <Button Color="Color.Warning" 
+                                    Size="Size.Small" 
+                                    @onclick="() => RetryIndividualRecord(context.Id)"
+                                    Loading="@IsRetryingRecord(context.Id)">
+                                <Icon Name="IconName.Redo" />
+                                @L["TryAgain"]
+                            </Button>
+                        }
+                        else if (context.DeductionStatus == WalletDeductionStatus.Completed)
+                        {
+                            <Button Color="Color.Success" 
+                                    Size="Size.Small" 
+                                    Disabled>
+                                <Icon Name="IconName.Check" />
+                                @L["Successful"]
+                            </Button>
+                        }
+                        else
+                        {
+                            <Button Color="Color.Info" 
+                                    Size="Size.Small" 
+                                    Disabled>
+                                <Icon Name="IconName.Clock" />
+                                @L["Processing"]
+                            </Button>
+                        }
+                    </DisplayTemplate>
+                </DataGridColumn>
+            </DataGridColumns>
+        </DataGrid>
+    </CardBody>
+</Card>
+
+<!-- Retry Results Modal -->
+<Modal @ref="RetryResultsModal" Size="ModalSize.Large">
+    <ModalContent Centered>
+        <ModalHeader>
+            <ModalTitle>@L["RetryResults"]</ModalTitle>
+            <CloseButton />
+        </ModalHeader>
+        <ModalBody>
+            @if (LastRetryResult != null)
+            {
+                <Alert Color="@(LastRetryResult.SuccessCount > 0 ? Color.Success : Color.Warning)" Visible>
+                    <AlertDescription>
+                        <strong>@L["RetryCompleted"]</strong><br/>
+                        @L["SuccessfulRetries"]: @LastRetryResult.SuccessCount<br/>
+                        @L["FailedRetries"]: @LastRetryResult.FailureCount
+                    </AlertDescription>
+                </Alert>
+                
+                @if (LastRetryResult.Results.Any())
+                {
+                    <Table>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHeaderCell>@L["OrderNumber"]</TableHeaderCell>
+                                <TableHeaderCell>@L["Result"]</TableHeaderCell>
+                                <TableHeaderCell>@L["Reason"]</TableHeaderCell>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            @foreach (var result in LastRetryResult.Results)
+                            {
+                                var record = Records.FirstOrDefault(r => r.Id == result.RecordId);
+                                <TableRow>
+                                    <TableRowCell>@(record?.OrderNumber ?? "Unknown")</TableRowCell>
+                                    <TableRowCell>
+                                        <Badge Color="@(result.Success ? Color.Success : Color.Danger)">
+                                            @(result.Success ? L["Success"] : L["Failed"])
+                                        </Badge>
+                                    </TableRowCell>
+                                    <TableRowCell>
+                                        @if (!string.IsNullOrEmpty(result.Reason))
+                                        {
+                                            <small class="text-muted">@result.Reason</small>
+                                        }
+                                    </TableRowCell>
+                                </TableRow>
+                            }
+                        </TableBody>
+                    </Table>
+                }
+            }
+        </ModalBody>
+        <ModalFooter>
+            <Button Color="Color.Secondary" @onclick="CloseRetryResultsModal">@L["Close"]</Button>
+        </ModalFooter>
+    </ModalContent>
+</Modal>
+
