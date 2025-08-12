@@ -1815,6 +1815,20 @@
 
     "Unknown": "未知",
     "Permission:EcPayReconciliation": "撥款金額明細",
-    "Menu:EcPayReconciliation": "撥款金額明細"
+    "Menu:EcPayReconciliation": "撥款金額明細",
+    "Email:LogisticsFee:Subject": "物流費扣款結果通知",
+    "Email:LogisticsFee:Greeting": "親愛的 {0}，",
+    "Email:LogisticsFee:ProcessingCompleted": "您的物流費處理已完成，以下為處理結果：",
+    "Email:LogisticsFee:File": "檔案名稱：{0}",
+    "Email:LogisticsFee:FileType": "檔案類型：{0}",
+    "Email:LogisticsFee:ProcessingDate": "處理時間：{0}",
+    "Email:LogisticsFee:Summary": "處理摘要：",
+    "Email:LogisticsFee:TotalRecords": "總筆數：{0}",
+    "Email:LogisticsFee:SuccessfulDeductions": "扣款成功筆數：{0}",
+    "Email:LogisticsFee:FailedDeductions": "扣款失敗筆數：{0}",
+    "Email:LogisticsFee:TotalAmount": "扣款總金額：{0}",
+    "Email:LogisticsFee:ThankYou": "感謝您使用我們的服務。",
+    "Email:LogisticsFee:Regards": "此致",
+    "Email:LogisticsFee:TeamName": "小商人電商平台團隊"
   }
 }

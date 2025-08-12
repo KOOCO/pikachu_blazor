@@ -51,6 +51,15 @@ namespace Kooco.Pikachu.LogisticsFeeManagements
                     TenantId = g.Key,
                     MaxProcessedAt = g.Max(x => x.ProcessedAt)
                 };
+           var  latestPerTenant1 =
+                (from s in queryable
+                 where !tenantId.HasValue || s.TenantId == tenantId
+                 group s by s.TenantId into g
+                 select new
+                 {
+                     TenantId = g.Key,
+                     MaxProcessedAt = g.Max(x => x.ProcessedAt)
+                 }).ToList();
 
             // 2) Join back to get the full row, then left-join wallet and tenant
             var query =

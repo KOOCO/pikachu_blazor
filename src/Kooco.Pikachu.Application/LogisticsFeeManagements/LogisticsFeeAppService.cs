@@ -74,7 +74,7 @@ namespace Kooco.Pikachu.LogisticsFeeManagements
         }
 
 
-        public async Task<FileUploadResult> UploadFileAsync(IRemoteStreamContent file, LogisticsFileType fileType)
+        public async Task<FileUploadResult> UploadFileAsync(IRemoteStreamContent file, LogisticsFileType fileType,bool isMailSend)
         {
             if (file == null || file.ContentLength == 0)
             {
@@ -109,10 +109,15 @@ namespace Kooco.Pikachu.LogisticsFeeManagements
 
             await _fileImportRepository.InsertAsync(fileImport, autoSave: true);
 
+            var arg = new LogisticsFeeProcessingJobArgs
+            {
+                BatchId = fileImport.Id,
+                IsMailSend = isMailSend
+            };
             // Queue background job for processing
             //await _backgroundJobManager.EnqueueAsync<Guid>(fileImport.Id);
             var JobId = BackgroundJob.Schedule<LogisticsFeeProcessingJob>(
-                       job => job.ExecuteAsync(fileImport.Id),
+                       job => job.ExecuteAsync(arg),
                         DateTimeOffset.Now
                        );
 
@@ -388,7 +393,7 @@ namespace Kooco.Pikachu.LogisticsFeeManagements
         public async Task<PagedResultDto<TenantLogisticsFeeFileProcessingSummaryDto>> GetTenantSummariesAsync(
             Guid? tenantId = null,
             int skipCount = 0,
-            int maxResultCount = 10)
+            int maxResultCount = 1000)
         {
             using (_dataFilter.Disable<IMultiTenant>())
             {

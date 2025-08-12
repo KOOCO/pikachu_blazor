@@ -19,7 +19,7 @@ namespace Kooco.Pikachu.Blazor.Pages.TenantManagement.TenantLogisticsFeeMangemen
 
 
         [Parameter] public Guid TenantId { get; set; }
-
+        private FilePicker FilePickerRef;
         // Properties
         private IReadOnlyList<LogisticsFeeFileImportDto> FileImports = new List<LogisticsFeeFileImportDto>();
         private int TotalCount = 0;
@@ -273,7 +273,7 @@ namespace Kooco.Pikachu.Blazor.Pages.TenantManagement.TenantLogisticsFeeMangemen
             {
                 return Color.Warning;
             }
-          
+
         }
 
         private string GetStatusText(LogisticsFeeFileImportDto item)
@@ -286,14 +286,16 @@ namespace Kooco.Pikachu.Blazor.Pages.TenantManagement.TenantLogisticsFeeMangemen
             {
                 return "BatchFailed";
             }
-            else if (item.SuccessfulRecords < item.TotalRecords) {
+            else if (item.SuccessfulRecords < item.TotalRecords)
+            {
 
                 return "PartialSuccess";
             }
-            else {
+            else
+            {
                 return "Processing";
-                    }
-             
+            }
+
         }
 
 

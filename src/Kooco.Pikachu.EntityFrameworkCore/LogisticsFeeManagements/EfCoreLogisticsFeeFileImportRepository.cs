@@ -39,6 +39,7 @@ namespace Kooco.Pikachu.LogisticsFeeManagements
                 .WhereIf(status.HasValue, x => x.BatchStatus == status.Value)
                 .WhereIf(startDate.HasValue, x => x.UploadDate >= startDate.Value)
                 .WhereIf(endDate.HasValue, x => x.UploadDate <= endDate.Value)
+                .Where(x=>x.TotalRecords>0)
                 .OrderBy(sorting.IsNullOrWhiteSpace() ? nameof(LogisticsFeeFileImport.UploadDate) + " desc" : sorting)
                 .Skip(skipCount)
                 .Take(maxResultCount)
@@ -61,6 +62,7 @@ namespace Kooco.Pikachu.LogisticsFeeManagements
                 .WhereIf(status.HasValue, x => x.BatchStatus == status.Value)
                 .WhereIf(startDate.HasValue, x => x.UploadDate >= startDate.Value)
                 .WhereIf(endDate.HasValue, x => x.UploadDate <= endDate.Value)
+                .Where(x => x.TotalRecords > 0)
                 .CountAsync(GetCancellationToken(cancellationToken));
         }
 

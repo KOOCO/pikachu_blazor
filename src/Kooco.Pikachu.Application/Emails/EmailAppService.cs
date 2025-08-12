@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Net.Mail;
 using System.Text;
 using System.Threading.Tasks;
 using Volo.Abp.BackgroundJobs;
@@ -481,8 +482,8 @@ public class EmailAppService(IOrderRepository orderRepository, IGroupBuyReposito
             {
                 if (input.NewTier == null) continue;
 
-                var subject = (lang == "en" 
-                    ? "🎉 Congratulations! You've been upgraded to" 
+                var subject = (lang == "en"
+                    ? "🎉 Congratulations! You've been upgraded to"
                     : "🎉 恭喜！您已升級至")
                     + " " + input.NewTier?.TierName;
 
@@ -620,5 +621,56 @@ public class EmailAppService(IOrderRepository orderRepository, IGroupBuyReposito
         return (order.DeliveryMethod.HasValue && cvsStoreMethods.Contains(order.DeliveryMethod.Value))
             ? order.CVSStoreOutSide
             : $"{order.City} {order.AddressDetails}";
+    }
+    public async Task SendLogisticsFeeProcessingEmailAsync(LogisticsFeeEmailModel model)
+    {
+        var subject = L["Email:LogisticsFee:Subject"];
+
+        var body = BuildEmailBody(model);
+
+        var message = new MailMessage
+        {
+            To = { model.TenantName }, // Assuming TenantName contains email, adjust as needed
+            Subject = subject,
+            Body = body,
+            IsBodyHtml = false
+        };
+
+        await emailSender.SendAsync(message);
+    }
+
+    private string BuildEmailBody(LogisticsFeeEmailModel model)
+    {
+        var sb = new StringBuilder();
+
+        // Greeting
+        sb.AppendLine(L["Email:LogisticsFee:Greeting", model.TenantName]);
+        sb.AppendLine();
+
+        // Processing completed message
+        sb.AppendLine(L["Email:LogisticsFee:ProcessingCompleted"]);
+        sb.AppendLine();
+
+        // File details
+        sb.AppendLine(L["Email:LogisticsFee:File", model.FileName]);
+        sb.AppendLine(L["Email:LogisticsFee:FileType", model.FileType]);
+        sb.AppendLine(L["Email:LogisticsFee:ProcessingDate", model.ProcessingDate.ToString("yyyy-MM-dd HH:mm:ss")]);
+        sb.AppendLine();
+
+        // Summary
+        sb.AppendLine(L["Email:LogisticsFee:Summary"]);
+        sb.AppendLine($"- {L["Email:LogisticsFee:TotalRecords", model.TotalRecords]}");
+        sb.AppendLine($"- {L["Email:LogisticsFee:SuccessfulDeductions", model.SuccessfulDeductions]}");
+        sb.AppendLine($"- {L["Email:LogisticsFee:FailedDeductions", model.FailedDeductions]}");
+        sb.AppendLine($"- {L["Email:LogisticsFee:TotalAmount", model.TotalAmount.ToString("C")]}");
+        sb.AppendLine();
+
+        // Thank you and regards
+        sb.AppendLine(L["Email:LogisticsFee:ThankYou"]);
+        sb.AppendLine();
+        sb.AppendLine(L["Email:LogisticsFee:Regards"]);
+        sb.AppendLine(L["Email:LogisticsFee:TeamName"]);
+
+        return sb.ToString();
     }
 }

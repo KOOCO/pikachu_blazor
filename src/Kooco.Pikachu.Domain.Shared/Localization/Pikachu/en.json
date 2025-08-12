@@ -1848,6 +1848,20 @@
 
     "Unknown": "Unknown",
     "Permission:EcPayReconciliation": "Payout Details",
-    "Menu:EcPayReconciliation": "Payout Details"
+    "Menu:EcPayReconciliation": "Payout Details",
+    "Email:LogisticsFee:Subject": "Logistics Fee Processing Summary",
+    "Email:LogisticsFee:Greeting": "Dear {0},",
+    "Email:LogisticsFee:ProcessingCompleted": "Your logistics fee processing has been completed with the following results:",
+    "Email:LogisticsFee:File": "File: {0}",
+    "Email:LogisticsFee:FileType": "File Type: {0}",
+    "Email:LogisticsFee:ProcessingDate": "Processing Date: {0}",
+    "Email:LogisticsFee:Summary": "Summary:",
+    "Email:LogisticsFee:TotalRecords": "Total Records: {0}",
+    "Email:LogisticsFee:SuccessfulDeductions": "Successful Deductions: {0}",
+    "Email:LogisticsFee:FailedDeductions": "Failed Deductions: {0}",
+    "Email:LogisticsFee:TotalAmount": "Total Amount Processed: {0}",
+    "Email:LogisticsFee:ThankYou": "Thank you for using our services.",
+    "Email:LogisticsFee:Regards": "Best regards,",
+    "Email:LogisticsFee:TeamName": "The ibosshops.com Team"
   }
 }

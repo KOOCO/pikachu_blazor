@@ -14,7 +14,7 @@ namespace Kooco.Pikachu.LogisticsFeeManagements
     public interface ILogisticsFeeAppService : IApplicationService
     {
         // File Import Management
-        Task<FileUploadResult> UploadFileAsync(IRemoteStreamContent file, LogisticsFileType fileType);
+        Task<FileUploadResult> UploadFileAsync(IRemoteStreamContent file, LogisticsFileType fileType, bool isMailSend);
         Task<PagedResultDto<LogisticsFeeFileImportDto>> GetFileImportsAsync(GetLogisticsFeeFileImportsInput input);
         Task<LogisticsFeeFileImportDto> GetFileImportAsync(Guid id);
         Task DeleteFileImportAsync(Guid id);
