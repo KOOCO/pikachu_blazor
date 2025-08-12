@@ -76,16 +76,4 @@
 
 @code {
     [Parameter] public bool Loading { get; set; }
-
-    protected override void OnInitialized()
-    {
-        Loading = true;
-        base.OnInitialized();
-        // Simulate loading delay
-        Task.Delay(2000).ContinueWith(_ =>
-        {
-            Loading = false;
-            InvokeAsync(StateHasChanged);
-        });
-    }
 }

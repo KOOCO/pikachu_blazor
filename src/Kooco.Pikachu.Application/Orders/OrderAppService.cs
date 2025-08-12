@@ -6,6 +6,7 @@ using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Freebies;
 using Kooco.Pikachu.Groupbuys;
 using Kooco.Pikachu.GroupBuys;
+using Kooco.Pikachu.InboxManagement;
 using Kooco.Pikachu.InventoryManagement;
 using Kooco.Pikachu.Items;
 using Kooco.Pikachu.Members;
@@ -408,6 +409,8 @@ public class OrderAppService : PikachuAppService, IOrderAppService
                     await MemberTagManager.AddExistingAsync(user.Id);
                 }
             }
+
+            await NotificationManager.OrderCreatedAsync(order.Id, order.OrderNo);
 
             return ObjectMapper.Map<Order, OrderDto>(order);
         }
@@ -3182,4 +3185,5 @@ public class OrderAppService : PikachuAppService, IOrderAppService
     public required IRepository<ManualBankTransferRecord, Guid> ManualBankTransferRecordRepository { get; init; }
     public required IOrderMessageRepository OrderMessageRepository { get; init; }
     public required IHubContext<OrderNotificationHub> HubContext { get; init; }
+    public required NotificationManager NotificationManager { get; init; }
 }

@@ -51,6 +51,15 @@ public class PikachuMenuContributor : IMenuContributor
             )
         );
 
+        context.Menu.AddItem(new ApplicationMenuItem(
+            PikachuMenus.InboxManagement,
+            displayName: l["Menu:Inbox"],
+            icon: "fas fa-bell",
+            order: 1,
+            requiredPermissionName: PikachuPermissions.Inbox.Default,
+            url: "/Inbox-Management"
+            ));
+
         var productmangment =
          new ApplicationMenuItem(
              PikachuMenus.ProductManagement,
@@ -447,15 +456,6 @@ public class PikachuMenuContributor : IMenuContributor
             ));
 
         context.Menu.AddItem(emailManagement);
-
-        context.Menu.AddItem(new ApplicationMenuItem(
-            PikachuMenus.Notifications,
-            displayName: l["Menu:Notifications"],
-            icon: "fas fa-bell",
-            order: 10,
-            requiredPermissionName: PikachuPermissions.Notifications.Default,
-            url: "/Notifications"
-            ));
 
         if (MultiTenancyConsts.IsEnabled)
         {

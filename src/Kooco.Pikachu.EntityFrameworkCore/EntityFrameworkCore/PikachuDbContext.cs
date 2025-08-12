@@ -59,6 +59,7 @@ using Kooco.Pikachu.OrderTradeNos;
 using Kooco.Pikachu.LogisticsFeeManagements;
 using System.Reflection.Emit;
 using Kooco.Pikachu.Reconciliations;
+using Kooco.Pikachu.InboxManagement;
 
 namespace Kooco.Pikachu.EntityFrameworkCore;
 
@@ -196,6 +197,8 @@ public class PikachuDbContext(DbContextOptions<PikachuDbContext> options) :
     public DbSet<TenantLogisticsFeeRecord> TenantLogisticsFeeRecord { get; set; }
 
     public DbSet<EcPayReconciliationRecord> EcPayReconciliationRecords { get; set; }
+
+    public DbSet<Notification> Notifications { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -985,6 +988,20 @@ public class PikachuDbContext(DbContextOptions<PikachuDbContext> options) :
         {
             b.ToTable(PikachuConsts.DbTablePrefix + "EcPayReconciliationRecord", PikachuConsts.DbSchema);
             b.ConfigureByConvention();
+        });
+
+        builder.Entity<Notification>(b =>
+        {
+            b.ToTable(PikachuConsts.DbTablePrefix + "Notifications", PikachuConsts.DbSchema);
+            b.ConfigureByConvention();
+
+            b.HasOne(x => x.ReadBy).WithMany().HasForeignKey(x => x.ReadById).IsRequired(false);
+            b.Property(x => x.Title).IsRequired().HasMaxLength(NotificationConsts.MaxTitleLength);
+            b.Property(x => x.Message).HasMaxLength(NotificationConsts.MaxMessageLength);
+            b.Property(x => x.TitleParamsJson).HasMaxLength(NotificationConsts.MaxParamsJsonLength);
+            b.Property(x => x.MessageParamsJson).HasMaxLength(NotificationConsts.MaxParamsJsonLength);
+            b.Property(x => x.UrlParamsJson).HasMaxLength(NotificationConsts.MaxParamsJsonLength);
+            b.Property(x => x.EntityId).HasMaxLength(NotificationConsts.MaxEntityIdLength);
         });
     }
 }

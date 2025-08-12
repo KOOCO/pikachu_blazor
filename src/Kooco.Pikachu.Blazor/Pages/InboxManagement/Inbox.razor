@@ -1,0 +1,48 @@
+﻿@page "/Inbox-Management"
+@using Kooco.Pikachu.Blazor.Pages.InboxManagement.Columns
+@using Kooco.Pikachu.InboxManagement
+<link href="css/inbox.css" rel="stylesheet" />
+@attribute [Authorize(PikachuPermissions.Inbox.Default)]
+@inherits PikachuComponentBase
+@inject INotificationAppService NotificationAppService
+
+<h3 class="text-dark">@L["Inbox"]</h3>
+<InboxStats Loading="Loading" />
+<InboxActions Loading="Loading" OnRefresh="GetNotificationsAsync" />
+
+<Table Responsive>
+    <TableHeader>
+        <TableRow>
+            <TableHeaderCell>@L["Type"]</TableHeaderCell>
+            <TableHeaderCell>@L["Description"]</TableHeaderCell>
+            <TableHeaderCell>@L["Status"]</TableHeaderCell>
+            <TableHeaderCell>@L["Time"]</TableHeaderCell>
+            <TableHeaderCell>@L["Actions"]</TableHeaderCell>
+        </TableRow>
+    </TableHeader>
+    <TableBody>
+        @foreach (var notification in Notifications ?? [])
+        {
+            <TableRow Class="@RowClass(notification)">
+                <TableRowCell>
+                    <NotificationType Notification="notification" />
+                </TableRowCell>
+                <TableRowCell>
+                    <h5>@L.WithParams(notification.Title, notification.TitleParams)</h5>
+                    <p>@L.WithParams(notification.Message, notification.MessageParams)</p>
+                </TableRowCell>
+                <TableRowCell>@(notification.IsRead ? "Read" : "Unread")</TableRowCell>
+                <TableRowCell>@notification.CreationTime</TableRowCell>
+                <TableRowCell></TableRowCell>
+            </TableRow>
+        }
+        @if (Loading)
+        {
+            <TableRow>
+                <TableRowCell ColumnSpan="5">
+                    <Spinner />
+                </TableRowCell>
+            </TableRow>
+        }
+    </TableBody>
+</Table>

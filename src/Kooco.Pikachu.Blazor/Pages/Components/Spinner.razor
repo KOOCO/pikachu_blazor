@@ -1,0 +1,22 @@
+﻿@if (Visible)
+{
+    <div class="@DisplayClass @AlignClass">
+        <span class="spinner-border text-@Color" style="width:@SizeStr; height:@SizeStr;" role="status"></span>
+    </div>
+}
+
+@code {
+    [Parameter] public int Size { get; set; } = 3;
+    [Parameter] public string Color { get; set; } = "primary";
+    [Parameter] public SpinnerAlign Align { get; set; } = SpinnerAlign.Center;
+    [Parameter] public SpinnerDisplay Display { get; set; } = SpinnerDisplay.Block;
+    [Parameter] public bool Visible { get; set; } = true;
+    [Parameter] public EventCallback<bool> VisibleChanged { get; set; }
+
+    private string AlignClass => $"text-{Align.ToString().ToLower()}";
+    private string DisplayClass => $"d-{Display.ToString().ToLower()}";
+    private string SizeStr => $"{Size}rem";
+
+    public enum SpinnerAlign { Start, Center, End }
+    public enum SpinnerDisplay { Block, InlineBlock, Inline }
+}

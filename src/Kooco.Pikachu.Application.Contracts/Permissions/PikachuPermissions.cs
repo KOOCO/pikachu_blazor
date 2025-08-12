@@ -45,7 +45,7 @@ public static class PikachuPermissions
     public const string WebsiteManagementGroup = "WebsiteManagement";
     public const string EdmManagementGroup = "EdmMangement";
 
-    public const string NotificationManagement = "NotificationManagement";
+    public const string InboxManagement = "InboxManagement";
 
     /// <summary>
     /// 
@@ -225,8 +225,8 @@ public static class PikachuPermissions
         public const string Default = OrderManagement + ".EcPayReconciliations";
     }
 
-    public static class Notifications
+    public static class Inbox
     {
-        public const string Default = NotificationManagement + ".Notifications";
+        public const string Default = InboxManagement + ".Inbox";
     }
 }

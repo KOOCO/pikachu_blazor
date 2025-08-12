@@ -1849,12 +1849,14 @@
     "Unknown": "Unknown",
     "Permission:EcPayReconciliation": "Payout Details",
     "Menu:EcPayReconciliation": "Payout Details",
-    "Permission:NotificationManagement": "Notifications",
-    "Permission:Notifications": "Notifications",
-    "Menu:Notifications": "Notifications",
+    "Permission:InboxManagement": "Inbox Management",
+    "Menu:Inbox": "Inbox",
+    "Notifications": "Notifications",
     "OrderMessages": "Order Messages",
     "BankTransfers": "Bank Transfers",
     "RefundRequests": "Refund Requests",
-    "ReturnsAndExchanges": "Returns & Exchanges"
+    "ReturnsAndExchanges": "Returns & Exchanges",
+    "Notification:Orders:CreatedTitle": "Order Created #{OrderNo}",
+    "Notification:Orders:CreatedMessage": "A new order #{OrderNo} has been created."
   }
 }

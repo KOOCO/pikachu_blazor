@@ -1,0 +1,51 @@
+﻿@inherits PikachuComponentBase
+
+<Div Class="actions-container">
+    <div class="inbox-actions">
+        <div class="inbox-filter-actions">
+            @foreach (var button in Buttons)
+            {
+                <PikachuButton Class="@ButtonClass(button)"
+                               Clicked="@(() => OnClick(button))"
+                               Disabled="Loading">
+                    @L[button]
+                </PikachuButton>
+            }
+        </div>
+        <div class="inbox-actions-right">
+            <PikachuButton Class="pk-btn-sm"
+                           IconClass="fas fa-refresh"
+                           Clicked="() => OnRefresh.InvokeAsync()"
+                           Disabled="Loading">
+                @L["Refresh"]
+            </PikachuButton>
+            <PikachuButton Class="pk-btn-sm pk-btn-primary"
+                           IconClass="fas fa-check"
+                           Disabled="Loading">
+                @L["Mark All Read"]
+            </PikachuButton>
+        </div>
+    </div>
+</Div>
+
+@code {
+    [Parameter] public bool Loading { get; set; }
+    [Parameter] public EventCallback OnRefresh { get; set; }
+
+    private string SelectedFilter { get; set; } = "All Items";
+    private List<string> Buttons { get; set; } = ["All Items", "Unread", "Urgent", "Today", "Orders", "Transfers", "Refunds", "Returns"];
+
+    string ButtonClass(string button)
+    {
+        string btnClass = "pk-btn-sm" + " ";
+        return btnClass + (SelectedFilter == button
+            ? "pk-btn-secondary"
+            : "pk-btn-outline-secondary");
+    }
+
+    void OnClick(string button)
+    {
+        if (Loading) return;
+        SelectedFilter = button;
+    }
+}

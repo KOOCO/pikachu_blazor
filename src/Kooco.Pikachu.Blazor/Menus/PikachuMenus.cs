@@ -43,6 +43,5 @@ public class PikachuMenus
     public const string TenantWalletManagement = Prefix + ".TenantWalletManagement";
     public const string LogisticsFeeManagement = Prefix + ".LogisticsFeeManagement";
 
-
-    public const string Notifications = Prefix + ".Notifications";
+    public const string InboxManagement = Prefix + ".Inbox";
 }
