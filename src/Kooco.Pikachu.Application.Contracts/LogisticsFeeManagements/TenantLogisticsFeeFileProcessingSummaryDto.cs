@@ -14,8 +14,8 @@ namespace Kooco.Pikachu.LogisticsFeeManagements
         public Guid TenantId { get; set; }
         public string TenantName { get; set; }
         public int TenantRecordCount { get; set; }
-        public int TenantSuccessfulDeductions { get; set; }
-        public int TenantFailedDeductions { get; set; }
+        public int TenantSuccessfulRecords { get; set; }
+        public int TenantFailedRecords { get; set; }
         public decimal TenantTotalAmount { get; set; }
         public DateTime ProcessedAt { get; set; }
         public Guid WalletId { get; set; }

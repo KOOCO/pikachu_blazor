@@ -9,7 +9,7 @@ namespace Kooco.Pikachu.LogisticsFeeManagements
     public class LogisticsFeeProcessingJobArgs
     {
         public Guid BatchId { get; set; }
-
+        public bool IsMailSend { get; set; }
       
     }
 }

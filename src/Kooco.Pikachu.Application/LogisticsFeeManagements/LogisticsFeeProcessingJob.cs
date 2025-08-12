@@ -20,11 +20,14 @@ using Kooco.Pikachu.OrderTransactions;
 using TenantWallet = Kooco.Pikachu.Tenants.Entities.TenantWallet;
 using Volo.Abp.Data;
 using Volo.Abp.MultiTenancy;
+using Kooco.Pikachu.Emails;
+using Hangfire.States;
+using Volo.Abp.TenantManagement;
 
 namespace Kooco.Pikachu.LogisticsFeeManagements
 {
     [BackgroundJobName("logistics_fee_processing")]
-    public class LogisticsFeeProcessingJob : AsyncBackgroundJob<Guid>, ITransientDependency
+    public class LogisticsFeeProcessingJob : AsyncBackgroundJob<LogisticsFeeProcessingJobArgs>, ITransientDependency
     {
         private readonly ILogisticsFeeFileImportRepository _fileImportRepository;
         private readonly ITenantLogisticsFeeRecordRepository _recordRepository;
@@ -37,6 +40,8 @@ namespace Kooco.Pikachu.LogisticsFeeManagements
         private readonly IUnitOfWorkManager _unitOfWorkManager;
         private readonly IRepository<TenantWallet, Guid> _tenantWalletRepository;
         private readonly IDataFilter _dataFilter;
+        private readonly IEmailAppService _emailAppService;
+        private readonly ITenantRepository _tenantRepository;
         public LogisticsFeeProcessingJob(
             ILogisticsFeeFileImportRepository fileImportRepository,
             ITenantLogisticsFeeRecordRepository recordRepository,
@@ -48,7 +53,9 @@ namespace Kooco.Pikachu.LogisticsFeeManagements
             ILogger<LogisticsFeeProcessingJob> logger,
             IUnitOfWorkManager unitOfWorkManager,
             IRepository<TenantWallet, Guid> tenantWalletRepository,
-            IDataFilter dataFilter)
+            IDataFilter dataFilter,
+            IEmailAppService emailAppService,
+            ITenantRepository tenantRepository)
         {
             _fileImportRepository = fileImportRepository;
             _recordRepository = recordRepository;
@@ -61,21 +68,23 @@ namespace Kooco.Pikachu.LogisticsFeeManagements
             _unitOfWorkManager = unitOfWorkManager;
             _tenantWalletRepository = tenantWalletRepository;
             _dataFilter = dataFilter;
+            _emailAppService = emailAppService;
+            _tenantRepository = tenantRepository;
         }
 
-        public override async Task ExecuteAsync(Guid id)
+        public override async Task ExecuteAsync(LogisticsFeeProcessingJobArgs arg)
         {
             using var uow = _unitOfWorkManager.Begin(requiresNew: true, isTransactional: true);
             using (_dataFilter.Disable<IMultiTenant>())
             {
                 try
                 {
-                    _logger.LogInformation("Starting logistics fee processing for batch: {BatchId}", id);
+                    _logger.LogInformation("Starting logistics fee processing for batch: {BatchId}", arg.BatchId);
 
-                    var fileImport = await _fileImportRepository.GetAsync(id);
+                    var fileImport = await _fileImportRepository.GetAsync(arg.BatchId);
                     if (fileImport == null)
                     {
-                        _logger.LogWarning("File import not found: {BatchId}", id);
+                        _logger.LogWarning("File import not found: {BatchId}", arg.BatchId);
                         return;
                     }
 
@@ -120,15 +129,49 @@ namespace Kooco.Pikachu.LogisticsFeeManagements
 
                     // Update file import with final statistics
                     UpdateFileImportStatistics(fileImport, tenantSummaries);
-                    fileImport.SuccessProcessing("Processing completed successfully");
+                    if (!recordsToInsert.Any(x => x.DeductionStatus == WalletDeductionStatus.Failed))
+                    {
+                        fileImport.SuccessProcessing("Processing completed successfully");
+                    }
+                    else if (!recordsToInsert.Any(x => x.DeductionStatus == WalletDeductionStatus.Completed))
+                    {
+                        fileImport.FailProcessing("Processing failed");
+
+
+                    }
+                    else
+                    {
+                        fileImport.PartialSuccessProcessing("Processing partial Completed");
+
+                    }
                     await _fileImportRepository.UpdateAsync(fileImport);
 
                     await uow.CompleteAsync();
 
-                    // Send notifications (outside of transaction)
-                    await _notificationService.SendBatchProcessingNotificationAsync(fileImport.Id);
+                    if (arg.IsMailSend)
+                    {
+                        foreach (var record in recordsToInsert.DistinctBy(x => x.TenantId))
+                        {
+                            var tenant = await _tenantRepository.GetAsync(record.TenantId.Value);
+                            await _emailAppService.SendLogisticsFeeProcessingEmailAsync(new LogisticsFeeEmailModel
+                            {
 
-                    _logger.LogInformation("Completed logistics fee processing for batch: {BatchId}", id);
+                                TenantName = tenant.Name,
+                                Email = tenant.GetProperty<string>("TenantContactEmail"),
+                                FileName = fileImport.FileName,
+                                TotalRecords = fileImport.TotalRecords,
+                                SuccessfulDeductions = fileImport.SuccessfulRecords,
+                                FailedDeductions = fileImport.FailedRecords,
+                                TotalAmount = fileImport.TotalAmount,
+                                ProcessingDate = fileImport.ProcessingCompletedAt ?? DateTime.Now,
+                                FileType = fileImport.FileType.ToString()
+                            });
+                        }
+
+
+                    }
+
+                    _logger.LogInformation("Completed logistics fee processing for batch: {BatchId}", arg.BatchId);
                 }
                 catch (Exception ex)
                 {
@@ -136,7 +179,7 @@ namespace Kooco.Pikachu.LogisticsFeeManagements
 
                     try
                     {
-                        var fileImport = await _fileImportRepository.GetAsync(id);
+                        var fileImport = await _fileImportRepository.GetAsync(arg.BatchId);
                         fileImport.FailProcessing($"Processing failed: {ex.Message}");
                         await _fileImportRepository.UpdateAsync(fileImport);
                         await uow.SaveChangesAsync();
@@ -147,7 +190,7 @@ namespace Kooco.Pikachu.LogisticsFeeManagements
                         _logger.LogError(updateEx, "Failed to update file import status after processing error");
                     }
 
-                    _logger.LogError(ex, "Error processing logistics fee batch: {BatchId}", id);
+                    _logger.LogError(ex, "Error processing logistics fee batch: {BatchId}", arg.BatchId);
                     throw;
                 }
             }
@@ -186,6 +229,12 @@ namespace Kooco.Pikachu.LogisticsFeeManagements
                 fileImport.FileType
             );
 
+            if (fileImport.FileType == EnumValues.LogisticsFileType.ECPay)
+            {
+                record.DeductionDate = parsedRecord.DeductionDate.IsNullOrEmpty() ? null :DateTime.Parse(parsedRecord.DeductionDate);
+            
+            }
+
             // Initialize tenant summary if not exists
             if (!tenantSummaries.ContainsKey(tenantId))
             {
@@ -203,35 +252,42 @@ namespace Kooco.Pikachu.LogisticsFeeManagements
             summary.TotalRecords++;
             summary.TotalAmount += parsedRecord.FeeAmount;
             var tenantWallet = (await _tenantWalletRepository.GetQueryableAsync()).Where(x => x.TenantId == summary.TenantId).FirstOrDefault();
-            // Attempt wallet deduction
-            var transaction = new CreateWalletTransactionDto
+            if (record.DeductionDate is null && fileImport.FileType==EnumValues.LogisticsFileType.ECPay)
             {
-                TenantWalletId = tenantWallet.Id,
-                TransactionAmount = parsedRecord.FeeAmount,
-                TransactionType = WalletTransactionType.LogisticsFeeDeduction,
-                TransactionNotes = $"Logistics fee deduction for order {orderMatch.OrderNumber ?? parsedRecord.MerchantTradeNo}",
-                DeductionStatus = WalletDeductionStatus.Completed,
-                TradingMethods = WalletTradingMethods.LogisticsFee
-
-
-            };
-            var deductionResult = await _walletDeductionService.AddDeductionTransactionAsync(
-                tenantWallet.Id,
-                parsedRecord.FeeAmount,
-            transaction
-            );
-
-            if (deductionResult.TransactionStatus == WalletDeductionStatus.Completed && deductionResult.Id != Guid.Empty)
-            {
-                record.MarkAsDeducted(deductionResult.Id);
-                summary.SuccessfulDeductions++;
+                record.MarkAsFailed("Missing Deduction Date in Logistic File");
+                summary.FailedDeductions++;
             }
             else
             {
-                record.MarkAsFailed("Unknown error");
-                summary.FailedDeductions++;
-            }
+                // Attempt wallet deduction
+                var transaction = new CreateWalletTransactionDto
+                {
+                    TenantWalletId = tenantWallet.Id,
+                    TransactionAmount = parsedRecord.FeeAmount,
+                    TransactionType = WalletTransactionType.LogisticsFeeDeduction,
+                    TransactionNotes = $"Logistics fee deduction for order {orderMatch.OrderNumber ?? parsedRecord.MerchantTradeNo}",
+                    DeductionStatus = WalletDeductionStatus.Completed,
+                    TradingMethods = WalletTradingMethods.LogisticsFee
 
+
+                };
+                var deductionResult = await _walletDeductionService.AddDeductionTransactionAsync(
+                    tenantWallet.Id,
+                    parsedRecord.FeeAmount,
+                transaction
+                );
+
+                if (deductionResult.TransactionStatus == WalletDeductionStatus.Completed && deductionResult.Id != Guid.Empty)
+                {
+                    record.MarkAsDeducted(deductionResult.Id);
+                    summary.SuccessfulDeductions++;
+                }
+                else
+                {
+                    record.MarkAsFailed("Unknown error");
+                    summary.FailedDeductions++;
+                }
+            }
             return record;
         }
 

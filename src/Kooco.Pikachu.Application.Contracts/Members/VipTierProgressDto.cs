@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text.Json.Serialization;
 
 namespace Kooco.Pikachu.Members;
 
@@ -21,8 +22,14 @@ public class VipTierResetConfigDto
 
 public class VipTierProgressToNextTierDto
 {
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public bool? AreBothRequired { get; set; }
+
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public int? RequiredOrders { get; set; }
     public int CurrentOrders { get; set; }
+
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public decimal? RequiredAmount { get; set; }
     public decimal CurrentAmount { get; set; }
     public DateTime? CountingSince { get; set; }

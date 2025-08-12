@@ -178,7 +178,7 @@ namespace Kooco.Pikachu.Blazor.Pages.TenantManagement.TenantLogisticsFeeMangemen
 
                     await LogisticsFeeAppService.UploadFileAsync(
                         new RemoteStreamContent(stream, SelectedFile.Name, ct, readOnlyLength: SelectedFile.Size),
-                        SelectedFileType);
+                        SelectedFileType, isMailSend: SendNotifications);
                     await MessageService.Success(L["FileUploadedSuccessfully"]);
                     await CloseImportModal();
                     await LoadData();
@@ -230,9 +230,9 @@ namespace Kooco.Pikachu.Blazor.Pages.TenantManagement.TenantLogisticsFeeMangemen
                 TenantName = summary.TenantName,
                 WalletId = summary.WalletId,
                 WalletBalance = summary.WalletBalance,
-                RecentStatus = summary.TenantSuccessfulDeductions > summary.TenantFailedDeductions ? "Success" : "Failed",
+                RecentStatus = summary.TenantSuccessfulRecords > summary.TenantFailedRecords ? "Success" : "Failed",
                 LastUpdated = summary.ProcessedAt,
-                HasFailedRecords = summary.TenantFailedDeductions > 0
+                HasFailedRecords = summary.TenantFailedRecords > 0
             };
         }
 

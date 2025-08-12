@@ -21,6 +21,7 @@ public class VipTierResetConfig
 
 public class VipTierProgressToNextTier
 {
+    public bool? AreBothRequired { get; set; }
     public int? RequiredOrders { get; set; }
     public int CurrentOrders { get; set; }
     public decimal? RequiredAmount { get; set; }

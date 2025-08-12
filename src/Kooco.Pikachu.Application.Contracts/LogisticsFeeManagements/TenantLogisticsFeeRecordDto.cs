@@ -21,5 +21,6 @@ namespace Kooco.Pikachu.LogisticsFeeManagements
         public string FailureReason { get; set; }
         public DateTime ProcessedAt { get; set; }
         public Guid? TenantWalletTransactionId { get; set; }
+        public DateTime? DeductionDate { get; set; }
     }
 }

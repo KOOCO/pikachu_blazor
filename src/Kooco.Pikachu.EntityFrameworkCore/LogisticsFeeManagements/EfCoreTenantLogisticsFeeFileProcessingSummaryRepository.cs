@@ -38,30 +38,52 @@ namespace Kooco.Pikachu.LogisticsFeeManagements
             var dbContext = await GetDbContextAsync();
             var queryable = await GetQueryableAsync();
 
-            var tenantQueryable =  dbContext.Tenants; // Injected tenant repository
+            var tenantQueryable = dbContext.Tenants; // Injected tenant repository
             var walletQueryable = dbContext.TenantWallets; // Injected wallet repository
 
+            // 1) Find latest ProcessedAt per tenant (optionally filtered by tenantId)
+            var latestPerTenant =
+                from s in queryable
+                where !tenantId.HasValue || s.TenantId == tenantId
+                group s by s.TenantId into g
+                select new
+                {
+                    TenantId = g.Key,
+                    MaxProcessedAt = g.Max(x => x.ProcessedAt)
+                };
+           var  latestPerTenant1 =
+                (from s in queryable
+                 where !tenantId.HasValue || s.TenantId == tenantId
+                 group s by s.TenantId into g
+                 select new
+                 {
+                     TenantId = g.Key,
+                     MaxProcessedAt = g.Max(x => x.ProcessedAt)
+                 }).ToList();
+
+            // 2) Join back to get the full row, then left-join wallet and tenant
             var query =
-                from summary in queryable
-                join wallet in walletQueryable on summary.TenantId equals wallet.TenantId into walletJoin
-                from wallet in walletJoin.DefaultIfEmpty()
-                join tenant in tenantQueryable on summary.TenantId equals tenant.Id into tenantJoin
-                from tenant in tenantJoin.DefaultIfEmpty()
-                where !tenantId.HasValue || summary.TenantId == tenantId
-                orderby summary.ProcessedAt descending
+                from lp in latestPerTenant
+                join s in queryable
+                    on new { lp.TenantId, lp.MaxProcessedAt }
+                    equals new { TenantId = s.TenantId, MaxProcessedAt = s.ProcessedAt }
+                join w in walletQueryable on s.TenantId equals w.TenantId into wj
+                from w in wj.DefaultIfEmpty()
+                join t in tenantQueryable on s.TenantId equals (Guid?)t.Id into tj
+                from t in tj.DefaultIfEmpty()
+                orderby s.ProcessedAt descending
                 select new TenantLogisticsFeeFileProcessingSummary
                 {
-                    TenantTotalRecords = summary.TenantTotalRecords,
-                    TenantTotalAmount = summary.TenantTotalAmount,
-                    TenantSuccessfulRecords = summary.TenantSuccessfulRecords,
-                    TenantFailedRecords = summary.TenantFailedRecords,
-                    ProcessedAt = summary.ProcessedAt,
-                    TenantBatchStatus = summary.TenantBatchStatus,
-                    TenantId=tenant.Id,
-                  
-                    WalletId = wallet != null ? wallet.Id : Guid.Empty,
-                    WalletBalance = wallet != null ? wallet.WalletBalance : 0,
-                    TenantName = tenant != null ? tenant.Name : ""
+                    TenantTotalRecords = s.TenantTotalRecords,
+                    TenantTotalAmount = s.TenantTotalAmount,
+                    TenantSuccessfulRecords = s.TenantSuccessfulRecords,
+                    TenantFailedRecords = s.TenantFailedRecords,
+                    ProcessedAt = s.ProcessedAt,
+                    TenantBatchStatus = s.TenantBatchStatus,
+                    TenantId = t != null ? t.Id : s.TenantId ?? Guid.Empty,
+                    WalletId = w != null ? w.Id : Guid.Empty,
+                    WalletBalance = w != null ? w.WalletBalance : 0,
+                    TenantName = t != null ? t.Name : ""
                 };
 
             return await query

@@ -74,7 +74,7 @@ namespace Kooco.Pikachu.LogisticsFeeManagements
         }
 
 
-        public async Task<FileUploadResult> UploadFileAsync(IRemoteStreamContent file, LogisticsFileType fileType)
+        public async Task<FileUploadResult> UploadFileAsync(IRemoteStreamContent file, LogisticsFileType fileType,bool isMailSend)
         {
             if (file == null || file.ContentLength == 0)
             {
@@ -109,10 +109,15 @@ namespace Kooco.Pikachu.LogisticsFeeManagements
 
             await _fileImportRepository.InsertAsync(fileImport, autoSave: true);
 
+            var arg = new LogisticsFeeProcessingJobArgs
+            {
+                BatchId = fileImport.Id,
+                IsMailSend = isMailSend
+            };
             // Queue background job for processing
             //await _backgroundJobManager.EnqueueAsync<Guid>(fileImport.Id);
             var JobId = BackgroundJob.Schedule<LogisticsFeeProcessingJob>(
-                       job => job.ExecuteAsync(fileImport.Id),
+                       job => job.ExecuteAsync(arg),
                         DateTimeOffset.Now
                        );
 
@@ -159,6 +164,7 @@ namespace Kooco.Pikachu.LogisticsFeeManagements
 
             // Load tenant summaries
             var summaries = await _summaryRepository.GetByFileImportIdAsync(id);
+            dto.TenantSummaries = new List<TenantLogisticsFeeFileProcessingSummaryDto>();
             dto.TenantSummaries = ObjectMapper.Map<List<TenantLogisticsFeeFileProcessingSummary>, List<TenantLogisticsFeeFileProcessingSummaryDto>>(summaries);
 
             return dto;
@@ -203,7 +209,19 @@ namespace Kooco.Pikachu.LogisticsFeeManagements
 
             return new PagedResultDto<TenantLogisticsFeeRecordDto>(totalCount, dtos);
         }
-
+        public async Task<(int, int)> GetStatusRecordCount(GetTenantLogisticsFeeRecordsInput input) {
+            var items = await _recordRepository.GetListAsync(
+                 input.SkipCount,
+                 input.MaxResultCount,
+                 input.Sorting,
+                 input.Filter,
+                 input.TenantId,
+                 input.FileImportId,
+                 input.FileType,
+                 input.Status
+             );
+            return (items.Count(x => x.DeductionStatus == WalletDeductionStatus.Completed), items.Count(x => x.DeductionStatus == WalletDeductionStatus.Failed));
+        }
         public async Task<TenantLogisticsFeeRecordDto> GetRecordAsync(Guid id)
         {
             var record = await _recordRepository.GetAsync(id);
@@ -216,7 +234,7 @@ namespace Kooco.Pikachu.LogisticsFeeManagements
             using (_dataFilter.Disable<IMultiTenant>())
             {
                 var record = await _recordRepository.GetAsync(recordId);
-
+                await _recordRepository.EnsurePropertyLoadedAsync(record, x => x.LogisticsFeeFileImport);
                 if (record.DeductionStatus == WalletDeductionStatus.Completed)
                 {
                     return new RetryRecordResult
@@ -225,6 +243,19 @@ namespace Kooco.Pikachu.LogisticsFeeManagements
                         Success = false,
                         Reason = "Record already successfully processed"
                     };
+                }
+                if (record.DeductionDate is null && record.LogisticsFeeFileImport?.FileType == LogisticsFileType.ECPay)
+                {
+                    record.MarkAsFailed("Missing Deduction Date in Logistic File");
+                    await _recordRepository.UpdateAsync(record);
+
+                    return new RetryRecordResult
+                    {
+                        RecordId = recordId,
+                        Success = false,
+                        Reason = "Deduction Date Null"
+                    };
+
                 }
                 var tenantWallet = (await _tenantWalletRepository.GetQueryableAsync()).Where(x => x.TenantId == record.TenantId).FirstOrDefault();
                 var transaction = new CreateWalletTransactionDto
@@ -296,47 +327,17 @@ namespace Kooco.Pikachu.LogisticsFeeManagements
                     });
                     continue;
                 }
-                var tenantWallet = (await _tenantWalletRepository.GetQueryableAsync()).Where(x => x.TenantId == record.TenantId).FirstOrDefault();
-                var transaction = new CreateWalletTransactionDto
+                if (record.DeductionDate is null && record.LogisticsFeeFileImport?.FileType==LogisticsFileType.ECPay)
                 {
-                    TenantWalletId = tenantWallet.Id,
-                    TransactionAmount = record.LogisticFee,
-                    TransactionType = WalletTransactionType.LogisticsFeeDeduction,
-                    TransactionNotes = $"Logistics fee deduction for order {record.OrderNumber}",
-                    DeductionStatus = WalletDeductionStatus.Pending,
-                    TradingMethods = WalletTradingMethods.LogisticsFee
-
-
-                };
-                var deductionResult = await _walletDeductionService.AddDeductionTransactionAsync(
-                    tenantWallet.Id,
-                    record.LogisticFee,
-                    transaction
-                );
-
-                // Initialize tenant notification tracking
-                if (!tenantNotifications.ContainsKey(record.TenantId.Value))
-                {
-                    tenantNotifications[record.TenantId.Value] = new BatchRetryResult();
-                }
-
-                var tenantResult = tenantNotifications[record.TenantId.Value];
-
-                if (deductionResult.TransactionStatus == WalletDeductionStatus.Completed && deductionResult.Id != Guid.Empty)
-                {
-                    record.MarkAsDeducted(deductionResult.Id);
-                    result.SuccessCount++;
-                    tenantResult.SuccessCount++;
-
-                    result.Results.Add(new RetryRecordResult
+                    // Initialize tenant notification tracking
+                    if (!tenantNotifications.ContainsKey(record.TenantId.Value))
                     {
-                        RecordId = record.Id,
-                        Success = true
-                    });
-                }
-                else
-                {
-                    record.MarkAsFailed("Retry failed");
+                        tenantNotifications[record.TenantId.Value] = new BatchRetryResult();
+                    }
+
+                    var tenantResult = tenantNotifications[record.TenantId.Value];
+
+                    record.MarkAsFailed("Missing Deduction Date in Logistic File");
                     result.FailureCount++;
                     tenantResult.FailureCount++;
 
@@ -346,10 +347,65 @@ namespace Kooco.Pikachu.LogisticsFeeManagements
                     {
                         RecordId = record.Id,
                         Success = false,
-                        Reason = ""
+                        Reason = "Missing Deduction Date in Logistic File"
                     });
                 }
+                else
+                {
+                    var tenantWallet = (await _tenantWalletRepository.GetQueryableAsync()).Where(x => x.TenantId == record.TenantId).FirstOrDefault();
+                    var transaction = new CreateWalletTransactionDto
+                    {
+                        TenantWalletId = tenantWallet.Id,
+                        TransactionAmount = record.LogisticFee,
+                        TransactionType = WalletTransactionType.LogisticsFeeDeduction,
+                        TransactionNotes = $"Logistics fee deduction for order {record.OrderNumber}",
+                        DeductionStatus = WalletDeductionStatus.Pending,
+                        TradingMethods = WalletTradingMethods.LogisticsFee
 
+
+                    };
+                    var deductionResult = await _walletDeductionService.AddDeductionTransactionAsync(
+                        tenantWallet.Id,
+                        record.LogisticFee,
+                        transaction
+                    );
+
+                    // Initialize tenant notification tracking
+                    if (!tenantNotifications.ContainsKey(record.TenantId.Value))
+                    {
+                        tenantNotifications[record.TenantId.Value] = new BatchRetryResult();
+                    }
+
+                    var tenantResult = tenantNotifications[record.TenantId.Value];
+
+                    if (deductionResult.TransactionStatus == WalletDeductionStatus.Completed && deductionResult.Id != Guid.Empty)
+                    {
+                        record.MarkAsDeducted(deductionResult.Id);
+                        result.SuccessCount++;
+                        tenantResult.SuccessCount++;
+
+                        result.Results.Add(new RetryRecordResult
+                        {
+                            RecordId = record.Id,
+                            Success = true
+                        });
+                    }
+                    else
+                    {
+                        record.MarkAsFailed("Retry failed");
+                        result.FailureCount++;
+                        tenantResult.FailureCount++;
+
+
+
+                        result.Results.Add(new RetryRecordResult
+                        {
+                            RecordId = record.Id,
+                            Success = false,
+                            Reason = ""
+                        });
+                    }
+                }
                 await _recordRepository.UpdateAsync(record);
             }
 
@@ -375,7 +431,7 @@ namespace Kooco.Pikachu.LogisticsFeeManagements
         public async Task<PagedResultDto<TenantLogisticsFeeFileProcessingSummaryDto>> GetTenantSummariesAsync(
             Guid? tenantId = null,
             int skipCount = 0,
-            int maxResultCount = 10)
+            int maxResultCount = 1000)
         {
             using (_dataFilter.Disable<IMultiTenant>())
             {

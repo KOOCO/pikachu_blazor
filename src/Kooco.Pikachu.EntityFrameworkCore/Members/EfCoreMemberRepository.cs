@@ -483,10 +483,11 @@ public class EfCoreMemberRepository(IDbContextProvider<PikachuDbContext> pikachu
         // Get only completed orders for this user
         var completedOrders = await dbContext.Orders
             .Where(o => o.UserId == memberId && o.ShippingStatus == ShippingStatus.Completed && o.CreationTime.Date >= dateFrom)
+            .Select(o => o.TotalAmount)
             .ToListAsync();
 
         var totalOrders = completedOrders.Count;
-        var totalSpent = completedOrders.Sum(o => o.TotalAmount);
+        var totalSpent = completedOrders.Sum();
 
         // Get the member's current VIP tag name
         var tagName = await dbContext.MemberTags
@@ -498,6 +499,14 @@ public class EfCoreMemberRepository(IDbContextProvider<PikachuDbContext> pikachu
         var nextTier = currentTier is null
             ? tiers.FirstOrDefault()
             : tiers.SkipWhile(t => t.Tier != currentTier.Tier).Skip(1).FirstOrDefault();
+
+        bool? areBothRequired = vipTierSettings.TierCondition != null
+                    ? vipTierSettings.TierCondition == VipTierCondition.OnlyWhenReachedBoth
+                    : null;
+        var isOrdersBased = vipTierSettings.TierCondition != null
+                    || (vipTierSettings.TierCondition == null && vipTierSettings.BasedOnCount);
+        var isAmountBased = vipTierSettings.TierCondition != null 
+            || (vipTierSettings.TierCondition == null && vipTierSettings.BasedOnAmount);
 
         return new VipTierProgressModel
         {
@@ -514,9 +523,10 @@ public class EfCoreMemberRepository(IDbContextProvider<PikachuDbContext> pikachu
             ProgressToNextLevel = nextTier != null
             ? new VipTierProgressToNextTier
             {
-                RequiredOrders = nextTier?.OrdersCount,
+                AreBothRequired = areBothRequired,
+                RequiredOrders = isOrdersBased ? nextTier?.OrdersCount : null,
                 CurrentOrders = totalOrders,
-                RequiredAmount = nextTier?.OrdersAmount,
+                RequiredAmount = isAmountBased ? nextTier?.OrdersAmount : null,
                 CurrentAmount = totalSpent,
                 CountingSince = dateFrom
             }

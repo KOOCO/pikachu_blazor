@@ -323,7 +323,9 @@
         line-height: 1.2;
     }
 
-    
+     .input-group-text span.text-muted {
+    display: none !important;
+}
 
     
 </style>
@@ -475,7 +477,7 @@
                                          Written="OnFileWritten"
                                          Progressed="OnFileProgressed">
                                     <ChildContent>
-                                        <div class="file-drop-zone text-center p-4" style="border: 2px dashed #dee2e6; border-radius: 0.375rem;">
+                                        <div class="file-drop-zone text-center p-5" style="border: 2px dashed #dee2e6; border-radius: 0.375rem;">
                                             <Icon Name="IconName.CloudUploadAlt" Size="IconSize.x2" TextColor="TextColor.Muted" />
                                             <div class="mt-2">
                                                 <strong>@L["DragDropFileHere"]</strong>
@@ -510,6 +512,7 @@
                 <Row Margin="Margin.Is3.FromTop">
                     <Column>
                         <Check TValue="bool" @bind-Checked="AutoDeduct">@L["AutoDeductFromTenantWallets"]</Check>
+                        <Span Margin="Margin.Is2.FromTop"></Span>
                         <Check TValue="bool" @bind-Checked="SendNotifications" Margin="Margin.Is2.FromTop">@L["SendEmailNotifications"]</Check>
                     </Column>
                 </Row>

@@ -71,7 +71,7 @@ namespace Kooco.Pikachu.LogisticsFeeManagements
         {
             var queryable = await GetQueryableAsync();
             return await queryable
-                .Where(x => ids.Contains(x.Id))
+                .Where(x => ids.Contains(x.Id)).Include(x=>x.LogisticsFeeFileImport)
                 .ToListAsync(GetCancellationToken(cancellationToken));
         }
 

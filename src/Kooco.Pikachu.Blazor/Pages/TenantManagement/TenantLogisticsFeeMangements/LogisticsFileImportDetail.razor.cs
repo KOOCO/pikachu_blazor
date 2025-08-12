@@ -19,7 +19,7 @@ namespace Kooco.Pikachu.Blazor.Pages.TenantManagement.TenantLogisticsFeeMangemen
 
 
         [Parameter] public Guid TenantId { get; set; }
-
+        private FilePicker FilePickerRef;
         // Properties
         private IReadOnlyList<LogisticsFeeFileImportDto> FileImports = new List<LogisticsFeeFileImportDto>();
         private int TotalCount = 0;
@@ -99,7 +99,7 @@ namespace Kooco.Pikachu.Blazor.Pages.TenantManagement.TenantLogisticsFeeMangemen
 
                 // Update summary stats
                 TotalFilesProcessed = (int)result.TotalCount;
-                FailedBatches = result.Items.Count(f => f.BatchStatus == FileProcessingStatus.BatchFailed);
+                FailedBatches = result.Items.Sum(f => f.FailedRecords);
             }
             catch (Exception ex)
             {
@@ -128,7 +128,12 @@ namespace Kooco.Pikachu.Blazor.Pages.TenantManagement.TenantLogisticsFeeMangemen
         {
             NavigationManager.NavigateTo($"/logistics-management/tenant/{TenantId}/file/{fileId}");
         }
+        private void NavigateToLogisticsFeeManagement()
+        {
+            NavigationManager.NavigateTo("/logistics-management");
 
+
+        }
         private async Task OpenImportModal()
         {
             await ImportModal.Show();
@@ -215,7 +220,7 @@ namespace Kooco.Pikachu.Blazor.Pages.TenantManagement.TenantLogisticsFeeMangemen
 
                     await LogisticsFeeAppService.UploadFileAsync(
                         new RemoteStreamContent(stream, SelectedFile.Name, ct, readOnlyLength: SelectedFile.Size),
-                        SelectedFileType);
+                        SelectedFileType, SendNotifications);
 
                     await MessageService.Success(L["FileUploadedSuccessfully"]);
                     await CloseImportModal();
@@ -249,27 +254,48 @@ namespace Kooco.Pikachu.Blazor.Pages.TenantManagement.TenantLogisticsFeeMangemen
             };
         }
 
-        private Color GetStatusColor(FileProcessingStatus status)
+        private Color GetStatusColor(LogisticsFeeFileImportDto item)
         {
-            return status switch
+            if (item.SuccessfulRecords == item.TotalRecords)
             {
-                FileProcessingStatus.BatchFailed => Color.Danger,
-                FileProcessingStatus.BatchSuccess => Color.Success,
-                FileProcessingStatus.Processing => Color.Warning,
-                _ => Color.Secondary
-            };
+                return Color.Success;
+            }
+            else if (item.FailedRecords == item.TotalRecords)
+            {
+                return Color.Danger;
+            }
+            else if (item.SuccessfulRecords < item.TotalRecords)
+            {
+
+                return Color.Info;
+            }
+            else
+            {
+                return Color.Warning;
+            }
+
         }
 
-        private string GetStatusText(FileProcessingStatus status)
+        private string GetStatusText(LogisticsFeeFileImportDto item)
         {
-            return status switch
+            if (item.SuccessfulRecords == item.TotalRecords)
             {
-                FileProcessingStatus.BatchFailed => "BatchFailed",
-                FileProcessingStatus.BatchSuccess => "BatchSuccess",
-                FileProcessingStatus.PartialSuccess => "PartialSuccess",
-                FileProcessingStatus.Processing => "Processing",
-                _ => "Unknown"
-            };
+                return "BatchSuccess";
+            }
+            else if (item.FailedRecords == item.TotalRecords)
+            {
+                return "BatchFailed";
+            }
+            else if (item.SuccessfulRecords < item.TotalRecords)
+            {
+
+                return "PartialSuccess";
+            }
+            else
+            {
+                return "Processing";
+            }
+
         }
 
 
