@@ -220,7 +220,7 @@ namespace Kooco.Pikachu.Blazor.Pages.TenantManagement.TenantLogisticsFeeMangemen
 
                     await LogisticsFeeAppService.UploadFileAsync(
                         new RemoteStreamContent(stream, SelectedFile.Name, ct, readOnlyLength: SelectedFile.Size),
-                        SelectedFileType);
+                        SelectedFileType, SendNotifications);
 
                     await MessageService.Success(L["FileUploadedSuccessfully"]);
                     await CloseImportModal();
