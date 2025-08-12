@@ -468,7 +468,7 @@
                             <Progress Value="@((int)context.SuccessRate)" 
                                      Color="@GetProgressColor(context.SuccessRate)" 
                                      Style="width: 60px; height: 8px; margin-right: 8px;" />
-                            <small>@context.SuccessRate% @(context.SuccessfulRecords+"/"+context.TotalRecords)</small>
+                            <small>@((int)context.SuccessRate)% @(context.SuccessfulRecords+"/"+context.TotalRecords)</small>
                         </div>
                     </DisplayTemplate>
                 </DataGridColumn>
@@ -555,7 +555,8 @@
                 <Row Margin="Margin.Is3.FromTop">
                     <Column>
                         <Check TValue="bool" @bind-Checked="AutoDeduct">@L["AutoDeductFromTenantWallets"]</Check>
-                        <Check TValue="bool" @bind-Checked="SendNotifications" Margin="Margin.Is2.FromTop">@L["SendEmailNotifications"]</Check>
+                        <Span Margin="Margin.Is2.FromTop"></Span>
+                        <Check TValue="bool" @bind-Checked="SendNotifications">@L["SendEmailNotifications"]</Check>
                     </Column>
                 </Row>
             </Validations>

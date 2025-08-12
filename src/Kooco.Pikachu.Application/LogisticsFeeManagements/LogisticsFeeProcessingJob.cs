@@ -229,6 +229,12 @@ namespace Kooco.Pikachu.LogisticsFeeManagements
                 fileImport.FileType
             );
 
+            if (fileImport.FileType == EnumValues.LogisticsFileType.ECPay)
+            {
+                record.DeductionDate = parsedRecord.DeductionDate.IsNullOrEmpty() ? null :DateTime.Parse(parsedRecord.DeductionDate);
+            
+            }
+
             // Initialize tenant summary if not exists
             if (!tenantSummaries.ContainsKey(tenantId))
             {
@@ -246,35 +252,42 @@ namespace Kooco.Pikachu.LogisticsFeeManagements
             summary.TotalRecords++;
             summary.TotalAmount += parsedRecord.FeeAmount;
             var tenantWallet = (await _tenantWalletRepository.GetQueryableAsync()).Where(x => x.TenantId == summary.TenantId).FirstOrDefault();
-            // Attempt wallet deduction
-            var transaction = new CreateWalletTransactionDto
+            if (record.DeductionDate is null && fileImport.FileType==EnumValues.LogisticsFileType.ECPay)
             {
-                TenantWalletId = tenantWallet.Id,
-                TransactionAmount = parsedRecord.FeeAmount,
-                TransactionType = WalletTransactionType.LogisticsFeeDeduction,
-                TransactionNotes = $"Logistics fee deduction for order {orderMatch.OrderNumber ?? parsedRecord.MerchantTradeNo}",
-                DeductionStatus = WalletDeductionStatus.Completed,
-                TradingMethods = WalletTradingMethods.LogisticsFee
-
-
-            };
-            var deductionResult = await _walletDeductionService.AddDeductionTransactionAsync(
-                tenantWallet.Id,
-                parsedRecord.FeeAmount,
-            transaction
-            );
-
-            if (deductionResult.TransactionStatus == WalletDeductionStatus.Completed && deductionResult.Id != Guid.Empty)
-            {
-                record.MarkAsDeducted(deductionResult.Id);
-                summary.SuccessfulDeductions++;
+                record.MarkAsFailed("Missing Deduction Date in Logistic File");
+                summary.FailedDeductions++;
             }
             else
             {
-                record.MarkAsFailed("Unknown error");
-                summary.FailedDeductions++;
-            }
+                // Attempt wallet deduction
+                var transaction = new CreateWalletTransactionDto
+                {
+                    TenantWalletId = tenantWallet.Id,
+                    TransactionAmount = parsedRecord.FeeAmount,
+                    TransactionType = WalletTransactionType.LogisticsFeeDeduction,
+                    TransactionNotes = $"Logistics fee deduction for order {orderMatch.OrderNumber ?? parsedRecord.MerchantTradeNo}",
+                    DeductionStatus = WalletDeductionStatus.Completed,
+                    TradingMethods = WalletTradingMethods.LogisticsFee
 
+
+                };
+                var deductionResult = await _walletDeductionService.AddDeductionTransactionAsync(
+                    tenantWallet.Id,
+                    parsedRecord.FeeAmount,
+                transaction
+                );
+
+                if (deductionResult.TransactionStatus == WalletDeductionStatus.Completed && deductionResult.Id != Guid.Empty)
+                {
+                    record.MarkAsDeducted(deductionResult.Id);
+                    summary.SuccessfulDeductions++;
+                }
+                else
+                {
+                    record.MarkAsFailed("Unknown error");
+                    summary.FailedDeductions++;
+                }
+            }
             return record;
         }
 

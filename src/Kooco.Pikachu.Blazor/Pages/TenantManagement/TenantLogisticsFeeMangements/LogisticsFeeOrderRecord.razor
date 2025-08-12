@@ -475,13 +475,26 @@
                         </Badge>
                     </DisplayTemplate>
                 </DataGridColumn>
-                
                 <DataGridColumn TItem="TenantLogisticsFeeRecordDto" 
                                Field="@nameof(TenantLogisticsFeeRecordDto.ProcessedAt)" 
-                               Caption="@L["DeductionDate"]">
+                               Caption="@L["ProcessedAt"]">
                     <DisplayTemplate>
                        
                             @context.ProcessedAt.ToString("yyyy-MM-dd HH:mm")
+                        
+                    </DisplayTemplate>
+                </DataGridColumn>
+                 <DataGridColumn TItem="TenantLogisticsFeeRecordDto" 
+                               Field="@nameof(TenantLogisticsFeeRecordDto.FailureReason)" 
+                               Caption="@L["FailureReason"]">
+                   
+                </DataGridColumn>
+                <DataGridColumn TItem="TenantLogisticsFeeRecordDto" 
+                               Field="@nameof(TenantLogisticsFeeRecordDto.DeductionDate)" 
+                               Caption="@L["DeductionDate"]">
+                    <DisplayTemplate>
+                       
+                            @context.DeductionDate?.ToString("yyyy-MM-dd HH:mm")
                         
                     </DisplayTemplate>
                 </DataGridColumn>

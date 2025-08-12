@@ -630,7 +630,7 @@ public class EmailAppService(IOrderRepository orderRepository, IGroupBuyReposito
 
         var message = new MailMessage
         {
-            To = { model.TenantName }, // Assuming TenantName contains email, adjust as needed
+            To = { model.Email }, // Assuming TenantName contains email, adjust as needed
             Subject = subject,
             Body = body,
             IsBodyHtml = false
