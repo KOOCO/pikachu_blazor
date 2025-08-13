@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Kooco.Pikachu.UserShoppingCredits;
+using System;
 using System.ComponentModel.DataAnnotations;
 using Volo.Abp.Application.Dtos;
 
@@ -15,4 +16,5 @@ public class GetMemberCreditRecordListDto : PagedAndSortedResultRequestDto
     public int? MaxRemainingCredits { get; set; }
     public int? MinAmount { get; set; }
     public int? MaxAmount { get; set; }
+    public UserShoppingCreditType? ShoppingCreditType { get; set; }
 }

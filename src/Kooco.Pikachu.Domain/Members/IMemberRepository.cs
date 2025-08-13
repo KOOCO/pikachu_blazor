@@ -1,5 +1,6 @@
 ﻿using Kooco.Pikachu.EdmManagement;
 using Kooco.Pikachu.TierManagement;
+using Kooco.Pikachu.UserShoppingCredits;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -34,14 +35,14 @@ public interface IMemberRepository : IIdentityUserRepository, IRepository<Identi
 
     Task<long> GetMemberCreditRecordCountAsync(string? filter, DateTime? usageTimeFrom, DateTime? usageTimeTo,
         DateTime? expiryTimeFrom, DateTime? expiryTimeTo, int? minRemainingCredits, int? maxRemainingCredits,
-        int? minAmount, int? maxAmount, Guid? userId);
+        int? minAmount, int? maxAmount, Guid? userId, UserShoppingCreditType? shoppingCreditType);
     Task<List<MemberCreditRecordModel>> GetMemberCreditRecordListAsync(int skipCount, int maxResultCount, string sorting, string? filter,
         DateTime? usageTimeFrom, DateTime? usageTimeTo, DateTime? expiryTimeFrom, DateTime? expiryTimeTo,
-        int? minRemainingCredits, int? maxRemainingCredits, int? minAmount, int? maxAmount, Guid? userId);
+        int? minRemainingCredits, int? maxRemainingCredits, int? minAmount, int? maxAmount, Guid? userId, UserShoppingCreditType? shoppingCreditType);
 
     Task<IQueryable<MemberCreditRecordModel>> GetMemberCreditRecordQueryableAsync(string? filter,
         DateTime? usageTimeFrom, DateTime? usageTimeTo, DateTime? expirationTimeFrom, DateTime? expirationTimeTo,
-        int? minRemainingCredits, int? maxRemainingCredits, int? minAmount, int? maxAmount, Guid? userId);
+        int? minRemainingCredits, int? maxRemainingCredits, int? minAmount, int? maxAmount, Guid? userId, UserShoppingCreditType? shoppingCreditType);
     Task<List<IdentityUser>> GetBirthdayMember();
 
     Task<List<(Guid id, string name, string email)>> GetEdmMemberNameAndEmailAsync(bool applyToAllMembers, IEnumerable<string> memberTags);
