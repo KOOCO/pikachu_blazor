@@ -152,20 +152,23 @@ namespace Kooco.Pikachu.LogisticsFeeManagements
                     {
                         foreach (var record in recordsToInsert.DistinctBy(x => x.TenantId))
                         {
-                            var tenant = await _tenantRepository.GetAsync(record.TenantId.Value);
-                            await _emailAppService.SendLogisticsFeeProcessingEmailAsync(new LogisticsFeeEmailModel
+                            if (record.TenantId != null && record.TenantId != Guid.Empty)
                             {
+                                var tenant = await _tenantRepository.GetAsync(record.TenantId.Value);
+                                await _emailAppService.SendLogisticsFeeProcessingEmailAsync(new LogisticsFeeEmailModel
+                                {
 
-                                TenantName = tenant.Name,
-                                Email = tenant.GetProperty<string>("TenantContactEmail"),
-                                FileName = fileImport.FileName,
-                                TotalRecords = fileImport.TotalRecords,
-                                SuccessfulDeductions = fileImport.SuccessfulRecords,
-                                FailedDeductions = fileImport.FailedRecords,
-                                TotalAmount = fileImport.TotalAmount,
-                                ProcessingDate = fileImport.ProcessingCompletedAt ?? DateTime.Now,
-                                FileType = fileImport.FileType.ToString()
-                            });
+                                    TenantName = tenant.Name,
+                                    Email = tenant.GetProperty<string>("TenantContactEmail"),
+                                    FileName = fileImport.OriginalFileName,
+                                    TotalRecords = fileImport.TotalRecords,
+                                    SuccessfulDeductions = fileImport.SuccessfulRecords,
+                                    FailedDeductions = fileImport.FailedRecords,
+                                    TotalAmount = fileImport.TotalAmount,
+                                    ProcessingDate = fileImport.ProcessingCompletedAt ?? DateTime.Now,
+                                    FileType = fileImport.FileType.ToString()
+                                });
+                            }
                         }
 
 
@@ -231,8 +234,8 @@ namespace Kooco.Pikachu.LogisticsFeeManagements
 
             if (fileImport.FileType == EnumValues.LogisticsFileType.ECPay)
             {
-                record.DeductionDate = parsedRecord.DeductionDate.IsNullOrEmpty() ? null :DateTime.Parse(parsedRecord.DeductionDate);
-            
+                record.DeductionDate = parsedRecord.DeductionDate.IsNullOrEmpty() ? null : DateTime.Parse(parsedRecord.DeductionDate);
+
             }
 
             // Initialize tenant summary if not exists
@@ -252,10 +255,11 @@ namespace Kooco.Pikachu.LogisticsFeeManagements
             summary.TotalRecords++;
             summary.TotalAmount += parsedRecord.FeeAmount;
             var tenantWallet = (await _tenantWalletRepository.GetQueryableAsync()).Where(x => x.TenantId == summary.TenantId).FirstOrDefault();
-            if (record.DeductionDate is null && fileImport.FileType==EnumValues.LogisticsFileType.ECPay)
+            if (record.DeductionDate is null && fileImport.FileType == EnumValues.LogisticsFileType.ECPay)
             {
-                record.MarkAsFailed("Missing Deduction Date in Logistic File");
+
                 summary.FailedDeductions++;
+                record = null;
             }
             else
             {
