@@ -22,5 +22,6 @@ namespace Kooco.Pikachu.LogisticsFeeManagements
         public DateTime ProcessedAt { get; set; }
         public Guid? TenantWalletTransactionId { get; set; }
         public DateTime? DeductionDate { get; set; }
+        public bool IsSelected { get; set; }
     }
 }
