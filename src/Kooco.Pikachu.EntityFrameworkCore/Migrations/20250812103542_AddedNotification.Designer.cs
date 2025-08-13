@@ -13,8 +13,8 @@ using Volo.Abp.EntityFrameworkCore;
 namespace Kooco.Pikachu.Migrations
 {
     [DbContext(typeof(PikachuDbContext))]
-    [Migration("20250811095903_AddedNotifications")]
-    partial class AddedNotifications
+    [Migration("20250812103542_AddedNotification")]
+    partial class AddedNotification
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -1887,6 +1887,9 @@ namespace Kooco.Pikachu.Migrations
                     b.Property<string>("MessageParamsJson")
                         .HasMaxLength(1024)
                         .HasColumnType("nvarchar(1024)");
+
+                    b.Property<DateTime>("NotificationTimeUtc")
+                        .HasColumnType("datetime2");
 
                     b.Property<Guid?>("ReadById")
                         .HasColumnType("uniqueidentifier");

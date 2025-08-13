@@ -1885,6 +1885,9 @@ namespace Kooco.Pikachu.Migrations
                         .HasMaxLength(1024)
                         .HasColumnType("nvarchar(1024)");
 
+                    b.Property<DateTime>("NotificationTimeUtc")
+                        .HasColumnType("datetime2");
+
                     b.Property<Guid?>("ReadById")
                         .HasColumnType("uniqueidentifier");
 

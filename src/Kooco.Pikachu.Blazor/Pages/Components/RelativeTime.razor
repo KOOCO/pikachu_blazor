@@ -1,0 +1,9 @@
+﻿@using Kooco.Pikachu.Services
+@inject DateTimeService DateTimeService
+
+<span>@DateTimeService.Humanize(Time, IsUtc)</span>
+
+@code {
+    [Parameter] public DateTime Time { get; set; }
+    [Parameter] public bool IsUtc { get; set; } = true;
+}

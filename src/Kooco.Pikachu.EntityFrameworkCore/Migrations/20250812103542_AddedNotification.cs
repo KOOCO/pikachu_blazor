@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Kooco.Pikachu.Migrations
 {
     /// <inheritdoc />
-    public partial class AddedNotifications : Migration
+    public partial class AddedNotification : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -28,6 +28,7 @@ namespace Kooco.Pikachu.Migrations
                     IsRead = table.Column<bool>(type: "bit", nullable: false),
                     ReadTime = table.Column<DateTime>(type: "datetime2", nullable: true),
                     ReadById = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    NotificationTimeUtc = table.Column<DateTime>(type: "datetime2", nullable: false),
                     ExtraProperties = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ConcurrencyStamp = table.Column<string>(type: "nvarchar(40)", maxLength: 40, nullable: false),
                     CreationTime = table.Column<DateTime>(type: "datetime2", nullable: false),

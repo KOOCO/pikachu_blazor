@@ -1871,6 +1871,16 @@
     "RefundRequests": "Refund Requests",
     "ReturnsAndExchanges": "Returns & Exchanges",
     "Notification:Orders:CreatedTitle": "Order Created #{OrderNo}",
-    "Notification:Orders:CreatedMessage": "A new order #{OrderNo} has been created."
+    "Notification:Orders:CreatedMessage": "A new order #{OrderNo} has been created.",
+    "RelativeTime:JustNow": "just now",
+    "RelativeTime:SecondsAgo": "{0} seconds ago",
+    "RelativeTime:MinutesAgo": "{0} minutes ago",
+    "RelativeTime:HoursAgo": "{0} hours ago",
+    "RelativeTime:DaysAgo": "{0} days ago",
+    "RelativeTime:MonthsAgo": "{0} months ago",
+    "RelativeTime:YearsAgo": "{0} years ago",
+    "Notification:View": "View",
+    "Notification:MarkRead": "Mark as Read",
+    "Notification:MarkUnread": "Mark as Unread"
   }
 }

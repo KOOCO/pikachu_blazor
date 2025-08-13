@@ -607,6 +607,20 @@
         color: white;
     }
 
+    .pk-btn-icon.primary {
+        border-radius: 5px;
+        background-color: rgba(0, 153, 255, 0.1);
+        color: #0099ff;
+    }
+
+        .pk-btn-icon.primary:hover {
+            background-color: rgba(0, 153, 255, 0.15);
+        }
+
+        .pk-btn-icon.primary:active {
+            background-color: rgba(0, 153, 255, 0.25);
+        }
+
     .pk-btn-icon.indigo {
         border-radius: 5px;
         background-color: rgb(224 231 255);
@@ -637,6 +651,34 @@
         .pk-btn-icon.danger:active {
             background-color: rgba(231, 76, 60, 0.4);
             color: #e74c3c;
+        }
+
+    .pk-btn-icon.green {
+        border-radius: 5px;
+        background-color: rgb(209 250 229);
+        color: rgb(22 163 74);
+    }
+
+        .pk-btn-icon.green:hover {
+            background-color: rgb(187 247 208);
+        }
+
+        .pk-btn-icon.green:active {
+            background-color: rgb(134 239 172);
+        }
+
+    .pk-btn-icon.amber {
+        border-radius: 5px;
+        background-color: rgb(254 243 199);
+        color: rgb(202 138 4);
+    }
+
+        .pk-btn-icon.amber:hover {
+            background-color: rgb(253 230 138);
+        }
+
+        .pk-btn-icon.amber:active {
+            background-color: rgb(252 211 77);
         }
 
 .nav-tabs .nav-link.active, .nav-tabs .nav-item.show .nav-link {

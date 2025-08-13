@@ -20,6 +20,7 @@ public class NotificationDto : CreationAuditedEntity<Guid>, IMultiTenant
     public DateTime? ReadTime { get; set; }
     public Guid? ReadById { get; set; }
     public string? ReadByName { get; set; }
+    public DateTime NotificationTimeUtc { get; set; }
     public Dictionary<string, string> TitleParams { get; set; }
     public Dictionary<string, string> MessageParams { get; set; }
     public Dictionary<string, string> UrlParams { get; set; }

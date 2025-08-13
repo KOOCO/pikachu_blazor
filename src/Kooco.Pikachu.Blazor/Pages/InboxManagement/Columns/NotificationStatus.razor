@@ -1,0 +1,7 @@
+﻿<PikachuBadge Class="@(IsRead ? "pk-badge-success" : "pk-badge-info")">
+    @(IsRead ? "Read" : "Unread")
+</PikachuBadge>
+
+@code {
+    [Parameter] public bool IsRead { get; set; }
+}

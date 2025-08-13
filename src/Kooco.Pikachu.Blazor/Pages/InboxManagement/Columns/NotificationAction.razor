@@ -1,0 +1,45 @@
+﻿@using Kooco.Pikachu.InboxManagement
+@inherits PikachuComponentBase
+
+<div class="d-flex align-items-center justify-content-between gap-1 flex-nowrap">
+    @if (Notification.EntityType != NotificationEntityType.Unknown)
+    {
+        <AntDesign.Tooltip Title="@L["Notification:View"]">
+            <a href="@Url" class="pk-btn-icon indigo" @onclick="OnViewClicked">
+                <i class="fas fa-external-link"></i>
+            </a>
+        </AntDesign.Tooltip>
+    }
+    @if (Notification.IsRead)
+    {
+        <AntDesign.Tooltip Title="@L["Notification:MarkUnread"]">
+            <a class="pk-btn-icon">
+                <i class="fas fa-envelope"></i>
+            </a>
+        </AntDesign.Tooltip>
+    }
+    else
+    {
+        <AntDesign.Tooltip Title="@L["Notification:MarkRead"]">
+            <a class="pk-btn-icon primary">
+                <i class="fas fa-envelope-open"></i>
+            </a>
+        </AntDesign.Tooltip>
+    }
+</div>
+
+@code {
+    [Parameter] public NotificationDto Notification { get; set; }
+    [Parameter] public EventCallback<NotificationDto> OnView { get; set; }
+
+    string Url => Notification.EntityType switch
+    {
+        NotificationEntityType.Order => "Orders/OrderDetails/" + Notification.UrlParams.GetValueOrDefault(NotificationParams.Orders.OrderId),
+        _ => ""
+    };
+
+    Task OnViewClicked()
+    {
+        return OnView.InvokeAsync(Notification);
+    }
+}

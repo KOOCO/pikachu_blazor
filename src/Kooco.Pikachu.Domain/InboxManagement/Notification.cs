@@ -22,6 +22,7 @@ public class Notification : FullAuditedAggregateRoot<Guid>, IMultiTenant
     public bool IsRead { get; set; }
     public DateTime? ReadTime { get; set; }
     public Guid? ReadById { get; set; }
+    public DateTime NotificationTimeUtc { get; set; }
 
     private Dictionary<string, string>? _titleParams;
     public Dictionary<string, string> TitleParams => _titleParams ??= DeserializeParams(TitleParamsJson);
@@ -63,6 +64,7 @@ public class Notification : FullAuditedAggregateRoot<Guid>, IMultiTenant
         SetMessageParams(messageParams);
         SetUrlParams(urlParams);
         SetEntity(entityType, entityId);
+        NotificationTimeUtc = DateTime.UtcNow;
     }
 
     internal void SetTitle(string title)

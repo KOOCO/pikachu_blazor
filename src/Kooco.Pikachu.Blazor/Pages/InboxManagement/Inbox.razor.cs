@@ -31,12 +31,22 @@ public partial class Inbox
         Loading = false;
     }
 
-    string RowClass(NotificationDto notification)
+    static string RowClass(NotificationDto notification)
     {
         string baseClass = "notification-row" + " ";
 
         return baseClass + (notification.IsRead
             ? "notification-read"
             : "notification-unread");
+    }
+
+    async Task MarkRead(NotificationDto notification)
+    {
+        await Task.CompletedTask;
+    }
+
+    async Task OnView(NotificationDto notification)
+    {
+        await MarkRead(notification).ConfigureAwait(false);
     }
 }

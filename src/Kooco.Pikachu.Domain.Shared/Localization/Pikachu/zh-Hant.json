@@ -1829,6 +1829,13 @@
     "Email:LogisticsFee:TotalAmount": "扣款總金額：{0}",
     "Email:LogisticsFee:ThankYou": "感謝您使用我們的服務。",
     "Email:LogisticsFee:Regards": "此致",
-    "Email:LogisticsFee:TeamName": "小商人電商平台團隊"
+    "Email:LogisticsFee:TeamName": "小商人電商平台團隊",
+    "RelativeTime:JustNow": "剛剛",
+    "RelativeTime:SecondsAgo": "{0} 秒前",
+    "RelativeTime:MinutesAgo": "{0} 分鐘前",
+    "RelativeTime:HoursAgo": "{0} 小時前",
+    "RelativeTime:DaysAgo": "{0} 天前",
+    "RelativeTime:MonthsAgo": "{0} 個月前",
+    "RelativeTime:YearsAgo": "{0} 年前"
   }
 }
