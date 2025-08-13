@@ -21,8 +21,9 @@
             </PikachuButton>
             <PikachuButton Class="pk-btn-sm pk-btn-primary"
                            IconClass="fas fa-check"
+                           Clicked="() => OnMarkAllRead.InvokeAsync()"
                            Disabled="Loading">
-                @L["Mark All Read"]
+                @L["MarkAllRead"]
             </PikachuButton>
         </div>
     </div>
@@ -31,7 +32,7 @@
 @code {
     [Parameter] public bool Loading { get; set; }
     [Parameter] public EventCallback OnRefresh { get; set; }
-
+    [Parameter] public EventCallback OnMarkAllRead { get; set; }
     private string SelectedFilter { get; set; } = "All Items";
     private List<string> Buttons { get; set; } = ["All Items", "Unread", "Urgent", "Today", "Orders", "Transfers", "Refunds", "Returns"];
 

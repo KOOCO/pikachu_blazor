@@ -13,7 +13,7 @@
     @if (Notification.IsRead)
     {
         <AntDesign.Tooltip Title="@L["Notification:MarkUnread"]">
-            <a class="pk-btn-icon">
+            <a class="pk-btn-icon" @onclick="() => ToggleIsRead(false)">
                 <i class="fas fa-envelope"></i>
             </a>
         </AntDesign.Tooltip>
@@ -21,7 +21,7 @@
     else
     {
         <AntDesign.Tooltip Title="@L["Notification:MarkRead"]">
-            <a class="pk-btn-icon primary">
+            <a class="pk-btn-icon primary" @onclick="() => ToggleIsRead(true)">
                 <i class="fas fa-envelope-open"></i>
             </a>
         </AntDesign.Tooltip>
@@ -31,6 +31,7 @@
 @code {
     [Parameter] public NotificationDto Notification { get; set; }
     [Parameter] public EventCallback<NotificationDto> OnView { get; set; }
+    [Parameter] public EventCallback<(NotificationDto Notification, bool IsRead)> OnToggleRead { get; set; }
 
     string Url => Notification.EntityType switch
     {
@@ -38,8 +39,7 @@
         _ => ""
     };
 
-    Task OnViewClicked()
-    {
-        return OnView.InvokeAsync(Notification);
-    }
+    Task OnViewClicked() => OnView.InvokeAsync(Notification);
+
+    Task ToggleIsRead(bool isRead) => OnToggleRead.InvokeAsync((Notification, isRead));
 }

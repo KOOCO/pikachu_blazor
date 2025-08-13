@@ -8,7 +8,7 @@
 
 <h3 class="text-dark">@L["Inbox"]</h3>
 <InboxStats Loading="Loading" />
-<InboxActions Loading="Loading" OnRefresh="GetNotificationsAsync" />
+<InboxActions Loading="Loading" OnRefresh="GetNotificationsAsync" OnMarkAllRead="MarkAllReadAsync" />
 
 <Table Responsive>
     <TableHeader>
@@ -40,7 +40,7 @@
                         <RelativeTime Time="@notification.NotificationTimeUtc" />
                     </TableRowCell>
                     <TableRowCell Style="width: 50px;">
-                        <NotificationAction Notification="notification" OnView="OnView" />
+                        <NotificationAction Notification="notification" OnView="OnView" OnToggleRead="OnToggleRead" />
                     </TableRowCell>
                 </TableRow>
             }

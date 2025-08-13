@@ -116,10 +116,10 @@ public class Notification : FullAuditedAggregateRoot<Guid>, IMultiTenant
         EntityId = Check.Length(entityId, nameof(entityId), maxLength: NotificationConsts.MaxEntityIdLength);
     }
 
-    void SetIsRead(bool isRead, Guid readById)
+    public void SetIsRead(bool isRead, Guid? readById)
     {
         IsRead = isRead;
-        if (isRead)
+        if (IsRead)
         {
             ReadTime = DateTime.Now;
             ReadById = readById;
