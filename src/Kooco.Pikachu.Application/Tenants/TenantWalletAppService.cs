@@ -14,6 +14,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Volo.Abp;
+using Volo.Abp.Application.Dtos;
 using Volo.Abp.Content;
 using Volo.Abp.Data;
 using Volo.Abp.Domain.Repositories;
@@ -94,6 +95,63 @@ public class TenantWalletAppService : PikachuAppService, ITenantWalletAppService
 
 
 
+        };
+    }
+    [RemoteService(false)]
+    public async Task<PagedResultDto<TenantWalletTransactionDto>> GetWalletTransactionsAsync(
+    Guid walletId,
+    int skipCount = 0,
+    int maxResultCount = 10)
+    {
+        var sixMonthsAgo = Clock.Now.AddMonths(-6);
+
+        // Get all transactions for balance calculation (ordered by creation time ascending)
+        var allTransactions = await (await _transactionRepository.GetQueryableAsync())
+            .Where(x => x.TenantWalletId == walletId && x.CreationTime >= sixMonthsAgo)
+            .OrderBy(x => x.CreationTime)
+            .ToListAsync();
+
+        // Calculate running balances for all transactions
+        decimal runningBalance = 0;
+        var allTransactionDtos = new List<TenantWalletTransactionDto>();
+
+        foreach (var tx in allTransactions)
+        {
+            var isDeposit = tx.TransactionType.ToString().ToLowerInvariant() == "deposit";
+            var amount = tx.TransactionAmount;
+
+            // Add or subtract based on TransactionType
+            if (isDeposit)
+                runningBalance += amount;
+            else
+                runningBalance -= amount;
+
+            allTransactionDtos.Add(new TenantWalletTransactionDto
+            {
+                Id = tx.Id,
+                Timestamp = tx.CreationTime,
+                TransactionNo = tx.Id.ToString(),
+                TransactionType = tx.TransactionType,
+                TransactionStatus = tx.DeductionStatus,
+                Amount = isDeposit ? amount : -amount,
+                Balance = runningBalance,
+                Note = tx.TransactionNotes
+            });
+        }
+
+        // Order by timestamp descending for display (latest first)
+        var orderedTransactions = allTransactionDtos.OrderByDescending(x => x.Timestamp).ToList();
+
+        // Apply pagination
+        var pagedTransactions = orderedTransactions
+            .Skip(skipCount)
+            .Take(maxResultCount)
+            .ToList();
+
+        return new PagedResultDto<TenantWalletTransactionDto>
+        {
+            Items = pagedTransactions,
+            TotalCount = orderedTransactions.Count
         };
     }
     [RemoteService(false)]
@@ -243,6 +301,58 @@ public class TenantWalletAppService : PikachuAppService, ITenantWalletAppService
 
         // Latest first for display
         return list.OrderByDescending(x => x.Timestamp).ToList();
+    }
+    [RemoteService(false)]
+    public async Task<PagedResultDto<TenantWalletTransactionDto>> GetWalletTransactionsByTenantIdAsync(Guid tenantId, int skipCount = 0,
+    int maxResultCount = 10)
+    {
+        var sixMonthsAgo = Clock.Now.AddMonths(-6);
+        var walletId = await (await _tenantWalletRepository.GetQueryableAsync()).Where(x => x.TenantId == tenantId).Select(x => x.Id).FirstOrDefaultAsync();
+        var transactions = await (await _transactionRepository.GetQueryableAsync())
+            .Where(x => x.TenantWalletId == walletId && x.CreationTime >= sixMonthsAgo)
+            .OrderBy(x => x.CreationTime) // Ascending for correct balance
+            .ToListAsync();
+
+        decimal runningBalance = 0;
+        var list = new List<TenantWalletTransactionDto>();
+
+        foreach (var tx in transactions)
+        {
+            var isDeposit = tx.TransactionType.ToString().ToLowerInvariant() == "deposit";
+            var amount = tx.TransactionAmount;
+
+            // Add or subtract based on TransactionType
+            if (isDeposit)
+                runningBalance += amount;
+            else
+                runningBalance -= amount;
+
+            list.Add(new TenantWalletTransactionDto
+            {
+                Id = tx.Id,
+                Timestamp = tx.CreationTime,
+                TransactionNo = tx.Id.ToString(),
+                TransactionType = tx.TransactionType,
+                TransactionStatus = tx.DeductionStatus,
+                Amount = isDeposit ? amount : -amount, // optional for display (e.g., +500 / -500)
+                Balance = runningBalance,
+                Note = tx.TransactionNotes
+            });
+        }
+
+        // Latest first for display
+        var orderedTransactions = list.OrderByDescending(x => x.Timestamp).ToList();
+        // Apply pagination
+        var pagedTransactions = orderedTransactions
+            .Skip(skipCount)
+            .Take(maxResultCount)
+            .ToList();
+
+        return new PagedResultDto<TenantWalletTransactionDto>
+        {
+            Items = pagedTransactions,
+            TotalCount = orderedTransactions.Count
+        };
     }
     public async Task<IRemoteStreamContent> ExportWalletTransactionsByTenantIdAsync(Guid tenantId, List<Guid>? selectedIds = null)
     {

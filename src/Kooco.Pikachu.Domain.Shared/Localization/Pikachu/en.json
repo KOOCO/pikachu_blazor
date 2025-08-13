@@ -1734,6 +1734,7 @@
     "ResetFrequency": "Reset Frequency",
     "WalletTransactionType:Deposit": "Manual Top-Up",
     "WalletTransactionType:Deduction": "Manual Deduction",
+    "WalletTransactionType:LogisticsFeeDeduction": "Logistic Fee Deduction",
     "WalletEmail.Greeting": "Dear {0},",
     "WalletEmail.DeductionBody": "An amount has been deducted from your wallet.",
     "WalletEmail.RechargeBody": "Your wallet has been successfully recharged.",
@@ -1862,6 +1863,7 @@
     "Email:LogisticsFee:TotalAmount": "Total Amount Processed: {0}",
     "Email:LogisticsFee:ThankYou": "Thank you for using our services.",
     "Email:LogisticsFee:Regards": "Best regards,",
-    "Email:LogisticsFee:TeamName": "The ibosshops.com Team"
+    "Email:LogisticsFee:TeamName": "The ibosshops.com Team",
+    "NoteDescription": "Order Number: {0}"
   }
 }

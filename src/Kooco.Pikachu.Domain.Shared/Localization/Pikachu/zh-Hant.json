@@ -1829,6 +1829,8 @@
     "Email:LogisticsFee:TotalAmount": "扣款總金額：{0}",
     "Email:LogisticsFee:ThankYou": "感謝您使用我們的服務。",
     "Email:LogisticsFee:Regards": "此致",
-    "Email:LogisticsFee:TeamName": "小商人電商平台團隊"
+    "Email:LogisticsFee:TeamName": "小商人電商平台團隊",
+    "WalletTransactionType:LogisticsFeeDeduction": "物流費用扣除",
+    "NoteDescription": "訂單編號: {0}"
   }
 }
