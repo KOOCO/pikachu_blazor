@@ -340,6 +340,8 @@ namespace Kooco.Pikachu.LogisticsFeeManagements
                     record.MarkAsFailed("Missing Deduction Date in Logistic File");
                     result.FailureCount++;
                     tenantResult.FailureCount++;
+                    tenantResult.FileName = record.LogisticsFeeFileImport.OriginalFileName;
+                    tenantResult.FileType = record.LogisticsFeeFileImport.FileType.ToString();
 
 
 
@@ -377,12 +379,16 @@ namespace Kooco.Pikachu.LogisticsFeeManagements
                     }
 
                     var tenantResult = tenantNotifications[record.TenantId.Value];
+                    tenantResult.FileName = record.LogisticsFeeFileImport.OriginalFileName;
+                    tenantResult.FileType = record.LogisticsFeeFileImport.FileType.ToString();
 
                     if (deductionResult.TransactionStatus == WalletDeductionStatus.Completed && deductionResult.Id != Guid.Empty)
                     {
                         record.MarkAsDeducted(deductionResult.Id);
                         result.SuccessCount++;
                         tenantResult.SuccessCount++;
+                        tenantResult.SuccessfulAmount += record.LogisticFee;
+                        
 
                         result.Results.Add(new RetryRecordResult
                         {
@@ -395,6 +401,8 @@ namespace Kooco.Pikachu.LogisticsFeeManagements
                         record.MarkAsFailed("Retry failed");
                         result.FailureCount++;
                         tenantResult.FailureCount++;
+                        tenantResult.FileName = record.LogisticsFeeFileImport.OriginalFileName;
+                        tenantResult.FileType = record.LogisticsFeeFileImport.FileType.ToString();
 
 
 

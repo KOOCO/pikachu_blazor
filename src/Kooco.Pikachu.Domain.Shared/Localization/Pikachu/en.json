@@ -1864,6 +1864,20 @@
     "Email:LogisticsFee:ThankYou": "Thank you for using our services.",
     "Email:LogisticsFee:Regards": "Best regards,",
     "Email:LogisticsFee:TeamName": "The ibosshops.com Team",
-    "NoteDescription": "Order Number: {0}"
+    "NoteDescription": "Order Number: {0}",
+    "Email:Subject:LogisticsFeeRetryProcessing": "Logistics Fee Retry Processing Summary",
+    "Email:Greeting": "Dear {0},",
+    "Email:RetryProcessingCompleted": "Your logistics fee retry processing has been completed.",
+    "Email:File": "File: {0}",
+    "Email:FileType": "File Type: {0}",
+    "Email:ProcessingDate": "Processing Date: {0}",
+    "Email:Results": "Results:",
+    "Email:SuccessfulRetries": "- Successful Retries: {0}",
+    "Email:FailedRetries": "- Failed Retries: {0}",
+    "Email:TotalAmountProcessed": "- Total Amount Processed: ${0}",
+    "Email:FailureReasons": "Failure Reasons:",
+    "Email:ThankYou": "Thank you for using our services.",
+    "Email:BestRegards": "Best regards,",
+    "Email:TeamSignature": "The ibosshops.com Team"
   }
 }
