@@ -31,7 +31,7 @@ namespace Kooco.Pikachu.LogisticsFeeManagements
         // Navigation properties
         public LogisticsFeeFileImport? LogisticsFeeFileImport { get; set; }
         public TenantWalletTransaction? TenantWalletTransaction { get; set; }
-        protected TenantLogisticsFeeRecord() { }
+        public TenantLogisticsFeeRecord() { }
 
         public TenantLogisticsFeeRecord(
             Guid id,

@@ -483,7 +483,7 @@
                                                 <strong>@L["DragDropFileHere"]</strong>
                                             </div>
                                             <div class="text-muted">@L["OrClickToBrowse"]</div>
-                                            <div class="text-muted small mt-2">
+                                            <div class="text-muted small mt-2" style="min-width: 270px !important;">
                                                 @L["SupportedFormats"]: CSV, XLSX<br/>
                                                 @L["RequiredColumns"]: @L["OrderNumber"], @L["LogisticFee"]
                                             </div>
@@ -513,7 +513,7 @@
                     <Column>
                         <Check TValue="bool" @bind-Checked="AutoDeduct">@L["AutoDeductFromTenantWallets"]</Check>
                         <Span Margin="Margin.Is2.FromTop"></Span>
-                        <Check TValue="bool" @bind-Checked="SendNotifications" Margin="Margin.Is2.FromTop">@L["SendEmailNotifications"]</Check>
+                        <Check TValue="bool" @bind-Checked="SendNotifications">@L["SendEmailNotifications"]</Check>
                     </Column>
                 </Row>
             </Validations>

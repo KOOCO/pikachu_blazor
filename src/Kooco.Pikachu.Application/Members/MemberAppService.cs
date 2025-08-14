@@ -155,11 +155,12 @@ public class MemberAppService(IObjectMapper objectMapper, IMemberRepository memb
         Check.NotDefaultOrNull<Guid>(id, nameof(id));
 
         var totalCount = await memberRepository.GetMemberCreditRecordCountAsync(input.Filter, input.UsageTimeFrom, input.UsageTimeTo,
-            input.ExpiryDateFrom, input.ExpiryDateTo, input.MinRemainingCredits, input.MaxRemainingCredits, input.MinAmount, input.MaxAmount, id);
+            input.ExpiryDateFrom, input.ExpiryDateTo, input.MinRemainingCredits, input.MaxRemainingCredits, input.MinAmount, input.MaxAmount,
+            id, input.ShoppingCreditType);
 
         var items = await memberRepository.GetMemberCreditRecordListAsync(input.SkipCount, input.MaxResultCount, input.Sorting, input.Filter,
             input.UsageTimeFrom, input.UsageTimeTo, input.ExpiryDateFrom, input.ExpiryDateTo, input.MinRemainingCredits, input.MaxRemainingCredits,
-            input.MinAmount, input.MaxAmount, id);
+            input.MinAmount, input.MaxAmount, id, input.ShoppingCreditType);
 
         var dto = new PagedResultDto<MemberCreditRecordDto>
         {

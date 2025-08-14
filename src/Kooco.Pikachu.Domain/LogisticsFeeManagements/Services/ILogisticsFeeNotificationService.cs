@@ -16,6 +16,9 @@ namespace Kooco.Pikachu.LogisticsFeeManagements.Services
     {
         public int SuccessCount { get; set; }
         public int FailureCount { get; set; }
+        public string FileName { get; set; }
+        public string FileType { get; set; }
+        public decimal SuccessfulAmount { get; set; }
         public List<string> FailureReasons { get; set; } = new();
     }
 }

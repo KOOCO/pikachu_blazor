@@ -662,7 +662,7 @@ public class EmailAppService(IOrderRepository orderRepository, IGroupBuyReposito
         sb.AppendLine($"- {L["Email:LogisticsFee:TotalRecords", model.TotalRecords]}");
         sb.AppendLine($"- {L["Email:LogisticsFee:SuccessfulDeductions", model.SuccessfulDeductions]}");
         sb.AppendLine($"- {L["Email:LogisticsFee:FailedDeductions", model.FailedDeductions]}");
-        sb.AppendLine($"- {L["Email:LogisticsFee:TotalAmount", model.TotalAmount.ToString("C")]}");
+        sb.AppendLine($"- {L["Email:LogisticsFee:TotalAmount","$ "+ model.TotalAmount.ToString()]}");
         sb.AppendLine();
 
         // Thank you and regards

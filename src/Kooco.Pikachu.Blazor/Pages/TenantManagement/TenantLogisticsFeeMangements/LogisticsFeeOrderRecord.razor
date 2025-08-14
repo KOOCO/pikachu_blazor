@@ -422,17 +422,15 @@
                   ShowPager="true"
                   PageSize="PageSize"
                   Responsive="true"
-                  SelectionMode="DataGridSelectionMode.Multiple"
+                
+                   SelectedRowChanged="RowSelectableHandler"
                   @bind-SelectedRows="@SelectedRows">
             <DataGridColumns>
-                <DataGridMultiSelectColumn TItem="TenantLogisticsFeeRecordDto" Width="50px">
-                    <DisplayTemplate>
-                        @if (context.DeductionStatus == WalletDeductionStatus.Failed)
-                        {
-                            <!-- Show checkbox only for failed records -->
-                        }
-                    </DisplayTemplate>
-                </DataGridMultiSelectColumn>
+                <DataGridColumn Caption="@L["Select"]" Width="30px">
+                                    <DisplayTemplate>
+                                        <InputCheckbox class="form-check-input"  @bind-Value="@context.IsSelected"></InputCheckbox>
+                                    </DisplayTemplate>
+                                </DataGridColumn>
                 
                 <DataGridColumn TItem="TenantLogisticsFeeRecordDto" 
                                Field="@nameof(TenantLogisticsFeeRecordDto.OrderNumber)" 
@@ -477,7 +475,7 @@
                 </DataGridColumn>
                 <DataGridColumn TItem="TenantLogisticsFeeRecordDto" 
                                Field="@nameof(TenantLogisticsFeeRecordDto.ProcessedAt)" 
-                               Caption="@L["ProcessedAt"]">
+                               Caption="@L["ProcessedDate"]">
                     <DisplayTemplate>
                        
                             @context.ProcessedAt.ToString("yyyy-MM-dd HH:mm")
@@ -487,7 +485,9 @@
                  <DataGridColumn TItem="TenantLogisticsFeeRecordDto" 
                                Field="@nameof(TenantLogisticsFeeRecordDto.FailureReason)" 
                                Caption="@L["FailureReason"]">
-                   
+                   <DisplayTemplate>
+                       @L[context.FailureReason?.ToString()??""]
+                   </DisplayTemplate>
                 </DataGridColumn>
                 <DataGridColumn TItem="TenantLogisticsFeeRecordDto" 
                                Field="@nameof(TenantLogisticsFeeRecordDto.DeductionDate)" 
@@ -510,8 +510,12 @@
                                     Size="Size.Small" 
                                     @onclick="() => RetryIndividualRecord(context.Id)"
                                     Loading="@IsRetryingRecord(context.Id)">
+                                    <div>
                                 <Icon Name="IconName.Redo" />
+                                <div>
                                 @L["TryAgain"]
+                                </div>
+                                </div>
                             </Button>
                         }
                         else if (context.DeductionStatus == WalletDeductionStatus.Completed)
@@ -519,8 +523,12 @@
                             <Button Color="Color.Success" 
                                     Size="Size.Small" 
                                     Disabled>
+                                      <div>
                                 <Icon Name="IconName.Check" />
+                                  <div>
                                 @L["Successful"]
+                                </div>
+                                </div>
                             </Button>
                         }
                         else

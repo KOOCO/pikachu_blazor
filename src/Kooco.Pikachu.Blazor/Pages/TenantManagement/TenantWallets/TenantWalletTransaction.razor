@@ -93,7 +93,8 @@
             </CardHeader>
 
             <CardBody style="padding-left:0px!important;padding-right:0px!important">
-            <DataGrid TItem="TenantWalletTransactionDto" Data="@Transactions" ShowPager="false"  @bind-SelectedRows="@SelectedTransactions" SelectionMode="DataGridSelectionMode.Multiple" >
+            <DataGrid TItem="TenantWalletTransactionDto" Data="@Transactions?.Items" PageSize="@PageSize" TotalItems="@TotalCount"
+          CurrentPage="@CurrentPage" ShowPager="true" ReadData="@OnReadData"  @bind-SelectedRows="@SelectedTransactions" SelectionMode="DataGridSelectionMode.Multiple" >
     <DataGridMultiSelectColumn TItem="TenantWalletTransactionDto" Width="30px"></DataGridMultiSelectColumn>
     <DataGridColumn Field="@nameof(TenantWalletTransactionDto.Timestamp)" Caption="@L["Timestamp"]">
         <DisplayTemplate>@context.Timestamp.ToString("M/d/yyyy h:mm tt")</DisplayTemplate>
@@ -133,7 +134,11 @@
     <DataGridColumn Field="@nameof(TenantWalletTransactionDto.Balance)" Caption="@L["Balance"]">
         <DisplayTemplate >@context.Balance.ToString("N0")</DisplayTemplate>
     </DataGridColumn>
-    <DataGridColumn Field="@nameof(TenantWalletTransactionDto.Note)" Caption="@L["Note"]" />
+    <DataGridColumn Field="@nameof(TenantWalletTransactionDto.Note)" Caption="@L["Note"]" >
+    <DisplayTemplate>
+        @SplitNotesWithRegex(context.Note)
+    </DisplayTemplate>   
+    </DataGridColumn>
 </DataGrid>
             </CardBody>
      </Card>

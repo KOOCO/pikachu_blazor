@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Kooco.Pikachu.Localization;
+using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,19 +21,22 @@ namespace Kooco.Pikachu.LogisticsFeeManagements.Services
         private readonly ITenantLogisticsFeeFileProcessingSummaryRepository _summaryRepository;
         private readonly IRepository<Tenant, Guid> _tenantRepository;
         private readonly ILogger<LogisticsFeeNotificationService> _logger;
+        private readonly IStringLocalizer<PikachuResource> _localizer;
 
         public LogisticsFeeNotificationService(
             IEmailSender emailSender,
             ILogisticsFeeFileImportRepository fileImportRepository,
             ITenantLogisticsFeeFileProcessingSummaryRepository summaryRepository,
             IRepository<Tenant, Guid> tenantRepository,
-            ILogger<LogisticsFeeNotificationService> logger)
+            ILogger<LogisticsFeeNotificationService> logger,
+            IStringLocalizer<PikachuResource> localizer)
         {
             _emailSender = emailSender;
             _fileImportRepository = fileImportRepository;
             _summaryRepository = summaryRepository;
             _tenantRepository = tenantRepository;
             _logger = logger;
+            _localizer = localizer;
         }
 
         public async Task SendBatchProcessingNotificationAsync(Guid fileImportId)
@@ -70,7 +75,7 @@ namespace Kooco.Pikachu.LogisticsFeeManagements.Services
                 }
 
                 var subject = "Logistics Fee Retry Processing Complete";
-                var body = BuildRetryNotificationBody(tenant.Name, result);
+                var body = BuildRetryNotificationBody(tenant.Name, result,result.FileName,result.FileType,DateTime.Now);
 
                 await _emailSender.SendAsync(tenant.GetProperty<string>("TenantContactEmail"), subject, body);
 
@@ -143,21 +148,40 @@ namespace Kooco.Pikachu.LogisticsFeeManagements.Services
             return sb.ToString();
         }
 
-        private string BuildRetryNotificationBody(string tenantName, BatchRetryResult result)
+        private string BuildRetryNotificationBody(
+        string tenantName,
+        BatchRetryResult result,
+        string fileName,
+        string fileType,
+        DateTime processingDate)
         {
             var sb = new StringBuilder();
-            sb.AppendLine($"Dear {tenantName},");
-            sb.AppendLine();
-            sb.AppendLine("Your logistics fee retry processing has been completed:");
-            sb.AppendLine();
-            sb.AppendLine("Results:");
-            sb.AppendLine($"- Successful Retries: {result.SuccessCount}");
-            sb.AppendLine($"- Failed Retries: {result.FailureCount}");
+
+            // Email greeting
+            sb.AppendLine(_localizer["Email:Greeting", tenantName]);
             sb.AppendLine();
 
+            // Email intro
+            sb.AppendLine(_localizer["Email:RetryProcessingCompleted"]);
+            sb.AppendLine();
+
+            // File information
+            sb.AppendLine(_localizer["Email:File", fileName]);
+            sb.AppendLine(_localizer["Email:FileType", fileType]);
+            sb.AppendLine(_localizer["Email:ProcessingDate", processingDate.ToString("yyyy-MM-dd HH:mm:ss")]);
+            sb.AppendLine();
+
+            // Results section
+            sb.AppendLine(_localizer["Email:Results"]);
+            sb.AppendLine(_localizer["Email:SuccessfulRetries", result.SuccessCount]);
+            sb.AppendLine(_localizer["Email:FailedRetries", result.FailureCount]);
+            sb.AppendLine(_localizer["Email:TotalAmountProcessed", result.SuccessfulAmount.ToString("F2") ?? "0.00"]);
+            sb.AppendLine();
+
+            // Failure reasons (if any)
             if (result.FailureReasons.Any())
             {
-                sb.AppendLine("Failure Reasons:");
+                sb.AppendLine(_localizer["Email:FailureReasons"]);
                 foreach (var reason in result.FailureReasons.Distinct())
                 {
                     sb.AppendLine($"- {reason}");
@@ -165,12 +189,20 @@ namespace Kooco.Pikachu.LogisticsFeeManagements.Services
                 sb.AppendLine();
             }
 
-            sb.AppendLine("Thank you for using our logistics fee management system.");
+            // Closing
+            sb.AppendLine(_localizer["Email:ThankYou"]);
             sb.AppendLine();
-            sb.AppendLine("Best regards,");
-            sb.AppendLine("System Administration");
+            sb.AppendLine(_localizer["Email:BestRegards"]);
+            sb.AppendLine(_localizer["Email:TeamSignature"]);
 
             return sb.ToString();
         }
+
+        public string GetRetryNotificationSubject()
+        {
+            return _localizer["Email:Subject:LogisticsFeeRetryProcessing"];
+        }
+
+      
     }
 }

@@ -5,6 +5,7 @@ using Kooco.Pikachu.Localization;
 using Kooco.Pikachu.Members.MemberTags;
 using Kooco.Pikachu.Orders;
 using Kooco.Pikachu.TierManagement;
+using Kooco.Pikachu.UserShoppingCredits;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
@@ -361,25 +362,27 @@ public class EfCoreMemberRepository(IDbContextProvider<PikachuDbContext> pikachu
 
     public async Task<long> GetMemberCreditRecordCountAsync(string? filter, DateTime? usageTimeFrom, DateTime? usageTimeTo,
         DateTime? expirationTimeFrom, DateTime? expirationTimeTo, int? minRemainingCredits, int? maxRemainingCredits,
-        int? minAmount, int? maxAmount, Guid? userId)
+        int? minAmount, int? maxAmount, Guid? userId, UserShoppingCreditType? shoppingCreditType)
     {
         var queryable = await GetMemberCreditRecordQueryableAsync(filter, usageTimeFrom, usageTimeTo, expirationTimeFrom, expirationTimeTo,
-            minRemainingCredits, maxRemainingCredits, minAmount, maxAmount, userId);
+            minRemainingCredits, maxRemainingCredits, minAmount, maxAmount, userId, shoppingCreditType);
         return await queryable.LongCountAsync();
     }
 
     public async Task<List<MemberCreditRecordModel>> GetMemberCreditRecordListAsync(int skipCount, int maxResultCount,
         string sorting, string? filter, DateTime? usageTimeFrom, DateTime? usageTimeTo, DateTime? expirationTimeFrom,
-        DateTime? expirationTimeTo, int? minRemainingCredits, int? maxRemainingCredits, int? minAmount, int? maxAmount, Guid? userId)
+        DateTime? expirationTimeTo, int? minRemainingCredits, int? maxRemainingCredits, int? minAmount, int? maxAmount, 
+        Guid? userId, UserShoppingCreditType? shoppingCreditType)
     {
         var queryable = await GetMemberCreditRecordQueryableAsync(filter, usageTimeFrom, usageTimeTo, expirationTimeFrom, expirationTimeTo,
-            minRemainingCredits, maxRemainingCredits, minAmount, maxAmount, userId);
+            minRemainingCredits, maxRemainingCredits, minAmount, maxAmount, userId, shoppingCreditType);
         return await queryable.OrderBy(sorting).PageBy(skipCount, maxResultCount).ToListAsync();
     }
 
     public async Task<IQueryable<MemberCreditRecordModel>> GetMemberCreditRecordQueryableAsync(string? filter,
         DateTime? usageTimeFrom, DateTime? usageTimeTo, DateTime? expirationTimeFrom, DateTime? expirationTimeTo,
-        int? minRemainingCredits, int? maxRemainingCredits, int? minAmount, int? maxAmount, Guid? userId)
+        int? minRemainingCredits, int? maxRemainingCredits, int? minAmount, int? maxAmount, Guid? userId,
+        UserShoppingCreditType? shoppingCreditType)
     {
         var dbContext = await GetPikachuDbContextAsync();
 
@@ -400,6 +403,7 @@ public class EfCoreMemberRepository(IDbContextProvider<PikachuDbContext> pikachu
                            .WhereIf(minAmount.HasValue, x => x.orders.CreditDeductionAmount >= minAmount)
                            .WhereIf(maxAmount.HasValue, x => x.orders.CreditDeductionAmount <= maxAmount)
                            .WhereIf(maxAmount.HasValue, x => x.orders.CreditDeductionAmount <= maxAmount)
+                           .WhereIf(shoppingCreditType.HasValue, x => x.credits.ShoppingCreditType == shoppingCreditType)
                            .WhereIf(!string.IsNullOrWhiteSpace(filter), x => x.credits.TransactionDescription != null && x.credits.TransactionDescription.Contains(filter));
 
         return memberCredits
