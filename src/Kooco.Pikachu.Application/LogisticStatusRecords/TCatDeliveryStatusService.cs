@@ -1,8 +1,10 @@
 ﻿using Kooco.Pikachu.Emails;
 using Kooco.Pikachu.EnumValues;
+using Kooco.Pikachu.Localization;
 using Kooco.Pikachu.Orders.Entities;
 using Kooco.Pikachu.Orders.Repositories;
 using Kooco.Pikachu.Orders.Services;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -23,6 +25,7 @@ public class TCatDeliveryStatusService : ITransientDependency
     private readonly OrderHistoryManager _orderHistoryManager;
     private readonly IDataFilter<IMultiTenant> _multiTenantDataFilter;
     private readonly ICurrentTenant _currentTenant;
+    private readonly IStringLocalizer<PikachuResource> L;
 
     public TCatDeliveryStatusService(
         IOrderDeliveryRepository orderDeliveryRepository,
@@ -31,7 +34,8 @@ public class TCatDeliveryStatusService : ITransientDependency
         ILogger<TCatDeliveryStatusService> logger,
         OrderHistoryManager orderHistoryManager,
         IDataFilter<IMultiTenant> multiTenantDataFilter,
-        ICurrentTenant currentTenant
+        ICurrentTenant currentTenant,
+        IStringLocalizer<PikachuResource>l
         )
     {
         _orderDeliveryRepository = orderDeliveryRepository;
@@ -41,6 +45,7 @@ public class TCatDeliveryStatusService : ITransientDependency
         _orderHistoryManager = orderHistoryManager;
         _multiTenantDataFilter = multiTenantDataFilter;
         _currentTenant = currentTenant;
+        L = l;
     }
 
     public async Task ExecuteAsync(List<LogisticStatusRecordDto> records)
@@ -137,7 +142,7 @@ public class TCatDeliveryStatusService : ITransientDependency
                             await _orderHistoryManager.AddOrderHistoryAsync(
                                 order.Id,
                                 "ShippingStatusChanged",
-                                [order.ShippingStatus, shippingStatus],
+                                [L[order.ShippingStatus.ToString()], L[shippingStatus.ToString()].ToString()],
                                 null,
                                 null
                             );
