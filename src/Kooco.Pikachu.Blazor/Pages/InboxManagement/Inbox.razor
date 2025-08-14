@@ -1,14 +1,18 @@
 ﻿@page "/Inbox-Management"
-@using Kooco.Pikachu.Blazor.Pages.InboxManagement.Columns
-@using Kooco.Pikachu.InboxManagement
 <link href="css/inbox.css" rel="stylesheet" />
+@using Kooco.Pikachu.InboxManagement
 @attribute [Authorize(PikachuPermissions.Inbox.Default)]
 @inherits PikachuComponentBase
 @inject INotificationAppService NotificationAppService
 
 <h3 class="text-dark">@L["Inbox"]</h3>
+
 <InboxStats Loading="Loading" />
-<InboxActions Loading="Loading" OnRefresh="GetNotificationsAsync" OnMarkAllRead="MarkAllReadAsync" />
+
+<InboxActions Loading="Loading"
+              OnRefresh="(filter) => GetNotificationsAsync(filter)"
+              OnMarkAllRead="MarkAllReadAsync">
+</InboxActions>
 
 <Table Responsive>
     <TableHeader>
@@ -27,20 +31,22 @@
             {
                 <TableRow Class="@RowClass(notification)">
                     <TableRowCell>
-                        <NotificationType Notification="notification" />
+                        <NotificationTypeColumn Notification="notification" />
                     </TableRowCell>
                     <TableRowCell>
                         <h5 class="notification-title">@L.WithParams(notification.Title, notification.TitleParams)</h5>
                         <p class="notification-message">@L.WithParams(notification.Message, notification.MessageParams)</p>
                     </TableRowCell>
                     <TableRowCell>
-                        <NotificationStatus IsRead="notification.IsRead" />
+                        <PikachuBadge Class="@(notification.IsRead ? "pk-badge-success" : "pk-badge-info")">
+                            @L[(notification.IsRead ? "Read" : "Unread")]
+                        </PikachuBadge>
                     </TableRowCell>
                     <TableRowCell>
                         <RelativeTime Time="@notification.NotificationTimeUtc" />
                     </TableRowCell>
                     <TableRowCell Style="width: 50px;">
-                        <NotificationAction Notification="notification" OnView="OnView" OnToggleRead="OnToggleRead" />
+                        <NotificationActionColumn Notification="notification" OnView="OnView" OnToggleRead="OnToggleRead" />
                     </TableRowCell>
                 </TableRow>
             }
@@ -49,7 +55,7 @@
         {
             <TableRow>
                 <TableRowCell ColumnSpan="5" class="text-center">
-                    <p>@L["No notifications found."]</p>
+                    <p>@L["NoNotificationsFound"]</p>
                 </TableRowCell>
             </TableRow>
         }

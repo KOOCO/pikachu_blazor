@@ -4,4 +4,5 @@ namespace Kooco.Pikachu.InboxManagement;
 
 public class GetNotificationListInput : PagedAndSortedResultRequestDto
 {
+    public NotificationFilter Filter { get; set; }
 }

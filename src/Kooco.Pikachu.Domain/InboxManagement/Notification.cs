@@ -16,7 +16,7 @@ public class Notification : FullAuditedAggregateRoot<Guid>, IMultiTenant
     public string? TitleParamsJson { get; private set; }
     public string? MessageParamsJson { get; private set; }
     public string? UrlParamsJson { get; private set; }
-    public NotificationEntityType EntityType { get; private set; }
+    public string? EntityName { get; private set; }
     public string? EntityId { get; private set; }
     public Guid? TenantId { get; set; }
     public bool IsRead { get; set; }
@@ -45,16 +45,16 @@ public class Notification : FullAuditedAggregateRoot<Guid>, IMultiTenant
         // Required by EF Core
     }
 
-    public Notification(
+    internal Notification(
         Guid id,
         NotificationType type,
         string title,
-        string? message,
-        Dictionary<string, string>? titleParams,
-        Dictionary<string, string>? messageParams,
-        Dictionary<string, string>? urlParams,
-        NotificationEntityType entityType,
-        string? entityId
+        string? message = null,
+        Dictionary<string, string>? titleParams = null,
+        Dictionary<string, string>? messageParams = null,
+        Dictionary<string, string>? urlParams = null,
+        string? entityName = null,
+        string? entityId = null
     ) : base(id)
     {
         Type = type;
@@ -63,7 +63,7 @@ public class Notification : FullAuditedAggregateRoot<Guid>, IMultiTenant
         SetTitleParams(titleParams);
         SetMessageParams(messageParams);
         SetUrlParams(urlParams);
-        SetEntity(entityType, entityId);
+        SetEntity(entityName, entityId);
         NotificationTimeUtc = DateTime.UtcNow;
     }
 
@@ -110,9 +110,9 @@ public class Notification : FullAuditedAggregateRoot<Guid>, IMultiTenant
             : null;
     }
 
-    internal void SetEntity(NotificationEntityType entityType, string? entityId)
+    internal void SetEntity(string? entityName, string? entityId)
     {
-        EntityType = entityType;
+        EntityName = Check.Length(entityName, nameof(entityName), maxLength: NotificationConsts.MaxEntityNameLength);
         EntityId = Check.Length(entityId, nameof(entityId), maxLength: NotificationConsts.MaxEntityIdLength);
     }
 

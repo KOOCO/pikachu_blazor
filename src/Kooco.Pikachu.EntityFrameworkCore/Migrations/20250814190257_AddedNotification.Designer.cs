@@ -13,7 +13,7 @@ using Volo.Abp.EntityFrameworkCore;
 namespace Kooco.Pikachu.Migrations
 {
     [DbContext(typeof(PikachuDbContext))]
-    [Migration("20250812103542_AddedNotification")]
+    [Migration("20250814190257_AddedNotification")]
     partial class AddedNotification
     {
         /// <inheritdoc />
@@ -1855,8 +1855,9 @@ namespace Kooco.Pikachu.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<int>("EntityType")
-                        .HasColumnType("int");
+                    b.Property<string>("EntityName")
+                        .HasMaxLength(1024)
+                        .HasColumnType("nvarchar(1024)");
 
                     b.Property<string>("ExtraProperties")
                         .IsRequired()
@@ -1885,8 +1886,8 @@ namespace Kooco.Pikachu.Migrations
                         .HasColumnType("nvarchar(256)");
 
                     b.Property<string>("MessageParamsJson")
-                        .HasMaxLength(1024)
-                        .HasColumnType("nvarchar(1024)");
+                        .HasMaxLength(2048)
+                        .HasColumnType("nvarchar(2048)");
 
                     b.Property<DateTime>("NotificationTimeUtc")
                         .HasColumnType("datetime2");
@@ -1907,15 +1908,15 @@ namespace Kooco.Pikachu.Migrations
                         .HasColumnType("nvarchar(256)");
 
                     b.Property<string>("TitleParamsJson")
-                        .HasMaxLength(1024)
-                        .HasColumnType("nvarchar(1024)");
+                        .HasMaxLength(2048)
+                        .HasColumnType("nvarchar(2048)");
 
                     b.Property<int>("Type")
                         .HasColumnType("int");
 
                     b.Property<string>("UrlParamsJson")
-                        .HasMaxLength(1024)
-                        .HasColumnType("nvarchar(1024)");
+                        .HasMaxLength(2048)
+                        .HasColumnType("nvarchar(2048)");
 
                     b.HasKey("Id");
 

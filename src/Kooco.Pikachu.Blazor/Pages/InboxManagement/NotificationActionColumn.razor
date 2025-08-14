@@ -1,8 +1,8 @@
 ﻿@using Kooco.Pikachu.InboxManagement
 @inherits PikachuComponentBase
 
-<div class="d-flex align-items-center justify-content-between gap-1 flex-nowrap">
-    @if (Notification.EntityType != NotificationEntityType.Unknown)
+<div class="d-flex align-items-center justify-content-center gap-1 flex-nowrap">
+    @if (!string.IsNullOrWhiteSpace(Url))
     {
         <AntDesign.Tooltip Title="@L["Notification:View"]">
             <a href="@Url" class="pk-btn-icon indigo" @onclick="OnViewClicked">
@@ -27,19 +27,3 @@
         </AntDesign.Tooltip>
     }
 </div>
-
-@code {
-    [Parameter] public NotificationDto Notification { get; set; }
-    [Parameter] public EventCallback<NotificationDto> OnView { get; set; }
-    [Parameter] public EventCallback<(NotificationDto Notification, bool IsRead)> OnToggleRead { get; set; }
-
-    string Url => Notification.EntityType switch
-    {
-        NotificationEntityType.Order => "Orders/OrderDetails/" + Notification.UrlParams.GetValueOrDefault(NotificationParams.Orders.OrderId),
-        _ => ""
-    };
-
-    Task OnViewClicked() => OnView.InvokeAsync(Notification);
-
-    Task ToggleIsRead(bool isRead) => OnToggleRead.InvokeAsync((Notification, isRead));
-}

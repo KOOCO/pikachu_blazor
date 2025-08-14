@@ -18,15 +18,17 @@ public partial class Inbox
         await GetNotificationsAsync();
     }
 
-    async Task GetNotificationsAsync()
+    async Task GetNotificationsAsync(NotificationFilter? filter = null)
     {
+        filter ??= NotificationFilter.All;
         Loading = true;
         var data = await NotificationAppService.GetListAsync(
             new GetNotificationListInput
             {
                 MaxResultCount = 10,
                 SkipCount = 0,
-                Sorting = NotificationConsts.DefaultSorting
+                Sorting = NotificationConsts.DefaultSorting,
+                Filter = filter.Value
             }, PageCancellationToken);
 
         Notifications = data.Items;

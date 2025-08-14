@@ -1,12 +1,11 @@
-﻿using ECPay.Payment.Integration;
-using Kooco.Pikachu.Campaigns;
+﻿using Kooco.Pikachu.Campaigns;
 using Kooco.Pikachu.DiscountCodes;
 using Kooco.Pikachu.Emails;
 using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Freebies;
 using Kooco.Pikachu.Groupbuys;
 using Kooco.Pikachu.GroupBuys;
-using Kooco.Pikachu.InboxManagement;
+using Kooco.Pikachu.InboxManagement.Managers;
 using Kooco.Pikachu.InventoryManagement;
 using Kooco.Pikachu.Items;
 using Kooco.Pikachu.Members;
@@ -49,7 +48,6 @@ using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Identity;
 using Volo.Abp.MultiTenancy;
 using Volo.Abp.Security.Encryption;
-using static Kooco.Pikachu.Permissions.PikachuPermissions;
 
 namespace Kooco.Pikachu.Orders;
 
@@ -410,7 +408,10 @@ public class OrderAppService : PikachuAppService, IOrderAppService
                 }
             }
 
-            await NotificationManager.OrderCreatedAsync(order.Id, order.OrderNo);
+            await NotificationManager.SafeAsync(m => 
+                m.OrderCreatedAsync(order.Id, order.OrderNo, order.PaymentMethod), 
+                $"OrderId={order.OrderId}"
+                );
 
             return ObjectMapper.Map<Order, OrderDto>(order);
         }

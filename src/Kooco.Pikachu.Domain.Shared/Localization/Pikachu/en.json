@@ -1890,6 +1890,8 @@
     "ReturnsAndExchanges": "Returns & Exchanges",
     "Notification:Orders:CreatedTitle": "Order Created #{OrderNo}",
     "Notification:Orders:CreatedMessage": "A new order #{OrderNo} has been created.",
+    "Notification:Orders:ManualTransferTitle": "Manual bank transfer verification required #{OrderNo}",
+    "Notification:Orders:ManualTransferMessage": "A new order is submitted with manual bank transfer. Needs verification before order is processed.",
     "RelativeTime:JustNow": "just now",
     "RelativeTime:SecondsAgo": "{0} seconds ago",
     "RelativeTime:MinutesAgo": "{0} minutes ago",
@@ -1898,7 +1900,16 @@
     "RelativeTime:MonthsAgo": "{0} months ago",
     "RelativeTime:YearsAgo": "{0} years ago",
     "Notification:View": "View",
-    "Notification:MarkRead": "Mark as Read",
-    "Notification:MarkUnread": "Mark as Unread"
+    "Notification:MarkRead": "Mark as read",
+    "Notification:MarkUnread": "Mark as unread",
+    "MarkAllRead": "Mark all as read",
+    "Enum:NotificationFilter.0": "All Items",
+    "Enum:NotificationFilter.1": "Unread",
+    "Enum:NotificationFilter.2": "Today",
+    "Enum:NotificationFilter.3": "Orders",
+    "Enum:NotificationFilter.4": "Refunds",
+    "Enum:NotificationFilter.5": "Returns",
+    "Enum:NotificationFilter.6": "Transfers",
+    "NoNotificationsFound": "No notifications found."
   }
 }

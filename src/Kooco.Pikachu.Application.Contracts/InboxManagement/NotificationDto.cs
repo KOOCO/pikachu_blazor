@@ -13,7 +13,7 @@ public class NotificationDto : CreationAuditedEntity<Guid>, IMultiTenant
     public string? TitleParamsJson { get; set; }
     public string? MessageParamsJson { get; set; }
     public string? UrlParamsJson { get; set; }
-    public NotificationEntityType EntityType { get; set; }
+    public string? EntityName { get; set; }
     public string? EntityId { get; set; }
     public Guid? TenantId { get; set; }
     public bool IsRead { get; set; }

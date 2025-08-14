@@ -117,12 +117,14 @@
     justify-content: space-between;
 }
 
-.inbox-filter-actions .pk-btn:not(:last-child) {
+.inbox-filter-actions .pk-btn:not(:last-child),
+.inbox-actions-right .pk-btn:not(:last-child) {
     margin-right: 10px;
 }
 
-.inbox-actions-right .pk-btn:not(:last-child) {
-    margin-right: 10px;
+.table-responsive {
+    min-height: unset;
+    max-height: 400px;
 }
 
 .b-table {

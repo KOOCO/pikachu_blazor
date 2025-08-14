@@ -1,21 +1,22 @@
-﻿@inherits PikachuComponentBase
+﻿@using Kooco.Pikachu.InboxManagement
+@inherits PikachuComponentBase
 
 <Div Class="actions-container">
     <div class="inbox-actions">
         <div class="inbox-filter-actions">
-            @foreach (var button in Buttons)
+            @foreach (var button in Enum.GetValues<NotificationFilter>())
             {
                 <PikachuButton Class="@ButtonClass(button)"
                                Clicked="@(() => OnClick(button))"
                                Disabled="Loading">
-                    @L[button]
+                    @L["Enum:NotificationFilter." + (int)button]
                 </PikachuButton>
             }
         </div>
         <div class="inbox-actions-right">
             <PikachuButton Class="pk-btn-sm"
                            IconClass="fas fa-refresh"
-                           Clicked="() => OnRefresh.InvokeAsync()"
+                           Clicked="() => OnRefresh.InvokeAsync(SelectedFilter)"
                            Disabled="Loading">
                 @L["Refresh"]
             </PikachuButton>
@@ -31,12 +32,11 @@
 
 @code {
     [Parameter] public bool Loading { get; set; }
-    [Parameter] public EventCallback OnRefresh { get; set; }
     [Parameter] public EventCallback OnMarkAllRead { get; set; }
-    private string SelectedFilter { get; set; } = "All Items";
-    private List<string> Buttons { get; set; } = ["All Items", "Unread", "Urgent", "Today", "Orders", "Transfers", "Refunds", "Returns"];
+    [Parameter] public EventCallback<NotificationFilter> OnRefresh { get; set; }
+    private NotificationFilter SelectedFilter { get; set; }
 
-    string ButtonClass(string button)
+    string ButtonClass(NotificationFilter button)
     {
         string btnClass = "pk-btn-sm" + " ";
         return btnClass + (SelectedFilter == button
@@ -44,9 +44,10 @@
             : "pk-btn-outline-secondary");
     }
 
-    void OnClick(string button)
+    async Task OnClick(NotificationFilter button)
     {
         if (Loading) return;
         SelectedFilter = button;
+        await OnRefresh.InvokeAsync(SelectedFilter);
     }
 }
