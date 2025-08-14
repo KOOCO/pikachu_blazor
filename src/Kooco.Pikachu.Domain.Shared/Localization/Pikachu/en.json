@@ -1878,6 +1878,8 @@
     "Email:FailureReasons": "Failure Reasons:",
     "Email:ThankYou": "Thank you for using our services.",
     "Email:BestRegards": "Best regards,",
-    "Email:TeamSignature": "The ibosshops.com Team"
+    "Email:TeamSignature": "The ibosshops.com Team",
+    "ProcessedDate": "Processed Date",
+    "FailureReason": "Failure Reason"
   }
 }

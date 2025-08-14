@@ -1845,6 +1845,9 @@
     "Email:FailureReasons": "失敗原因：",
     "Email:ThankYou": "感謝您使用我們的服務。",
     "Email:BestRegards": "此致",
-    "Email:TeamSignature": "小商人電商平台團隊"
+    "Email:TeamSignature": "小商人電商平台團隊",
+    "ProcessedDate": "扣款時間",
+    "FailureReason": "失敗原因",
+    "Insufficient Balance": "錢包餘額不足"
   }
 }

@@ -44,7 +44,7 @@ namespace Kooco.Pikachu.Blazor.Pages.TenantManagement.TenantLogisticsFeeMangemen
         {
             await LoadFileInfo();
             await SetBreadcrumbItemsAsync();
-            await LoadData();
+         
         }
 
         private async Task LoadFileInfo()

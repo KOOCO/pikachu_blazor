@@ -475,7 +475,7 @@
                 </DataGridColumn>
                 <DataGridColumn TItem="TenantLogisticsFeeRecordDto" 
                                Field="@nameof(TenantLogisticsFeeRecordDto.ProcessedAt)" 
-                               Caption="@L["ProcessedAt"]">
+                               Caption="@L["ProcessedDate"]">
                     <DisplayTemplate>
                        
                             @context.ProcessedAt.ToString("yyyy-MM-dd HH:mm")
@@ -485,7 +485,9 @@
                  <DataGridColumn TItem="TenantLogisticsFeeRecordDto" 
                                Field="@nameof(TenantLogisticsFeeRecordDto.FailureReason)" 
                                Caption="@L["FailureReason"]">
-                   
+                   <DisplayTemplate>
+                       @L[context.FailureReason?.ToString()??""]
+                   </DisplayTemplate>
                 </DataGridColumn>
                 <DataGridColumn TItem="TenantLogisticsFeeRecordDto" 
                                Field="@nameof(TenantLogisticsFeeRecordDto.DeductionDate)" 

@@ -190,6 +190,11 @@ namespace Kooco.Pikachu.Blazor.Pages.TenantManagement.TenantLogisticsFeeMangemen
                 finally
                 {
                     IsProcessing = false;
+                    for (int i = 0; i < 3; i++)
+                    {
+                        await Task.Delay(TimeSpan.FromSeconds(10));
+                        await LoadData();
+                    }
                 }
             }
         }
