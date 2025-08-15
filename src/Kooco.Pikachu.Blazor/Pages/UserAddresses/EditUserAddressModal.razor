@@ -32,6 +32,14 @@
                             </TextEdit>
                         </Field>
                         <Field>
+                            <FieldLabel>@L["Email"]<Span Class="text-danger"> *</Span></FieldLabel>
+                            <TextEdit @bind-Text="@EditingUserAddress.Email">
+                                <Feedback>
+                                    <ValidationError />
+                                </Feedback>
+                            </TextEdit>
+                        </Field>
+                        <Field>
                             <FieldLabel>@L["Address"]<Span Class="text-danger"> *</Span></FieldLabel>
                             <TextEdit @bind-Text="@EditingUserAddress.Address">
                                 <Feedback>
