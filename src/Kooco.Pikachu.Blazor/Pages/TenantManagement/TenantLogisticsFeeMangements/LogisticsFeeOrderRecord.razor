@@ -489,7 +489,7 @@
                        @L[context.FailureReason?.ToString()??""]
                    </DisplayTemplate>
                 </DataGridColumn>
-                <DataGridColumn TItem="TenantLogisticsFeeRecordDto" 
+               @*  <DataGridColumn TItem="TenantLogisticsFeeRecordDto" 
                                Field="@nameof(TenantLogisticsFeeRecordDto.DeductionDate)" 
                                Caption="@L["DeductionDate"]">
                     <DisplayTemplate>
@@ -497,12 +497,12 @@
                             @context.DeductionDate?.ToString("yyyy-MM-dd HH:mm")
                         
                     </DisplayTemplate>
-                </DataGridColumn>
+                </DataGridColumn> *@
                 
                 <DataGridColumn TItem="TenantLogisticsFeeRecordDto" 
                                Caption="@L["Actions"]" 
                                Sortable="false"
-                               Width="120px">
+                               >
                     <DisplayTemplate>
                         @if (context.DeductionStatus == WalletDeductionStatus.Failed)
                         {
