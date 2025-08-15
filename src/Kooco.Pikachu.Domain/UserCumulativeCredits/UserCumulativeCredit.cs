@@ -13,6 +13,8 @@ public class UserCumulativeCredit : FullAuditedEntity<Guid>, IMultiTenant
     public int TotalAmount { get; private set; }
     public int TotalDeductions { get; private set; }
     public int TotalRefunds { get; private set; }
+    [NotMapped]
+    public int CurrentCreditBalance { get; set; }
     public Guid? TenantId { get; set; }
 
     [ForeignKey(nameof(UserId))]

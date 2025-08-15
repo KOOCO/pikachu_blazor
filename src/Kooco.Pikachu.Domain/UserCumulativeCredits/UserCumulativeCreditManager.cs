@@ -1,11 +1,13 @@
-﻿using System;
+﻿using Kooco.Pikachu.UserShoppingCredits;
+using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Domain.Services;
 
 namespace Kooco.Pikachu.UserCumulativeCredits;
 
-public class UserCumulativeCreditManager(IUserCumulativeCreditRepository userCumulativeCreditRepository) : DomainService
+public class UserCumulativeCreditManager(IUserCumulativeCreditRepository userCumulativeCreditRepository,IUserShoppingCreditRepository userShoppingCreditRepository) : DomainService
 {
     public async Task<UserCumulativeCredit> CreateAsync(Guid userId, int totalAmount, int totalDeductions, int totalRefunds)
     {
@@ -71,6 +73,12 @@ public class UserCumulativeCreditManager(IUserCumulativeCreditRepository userCum
     public async Task<UserCumulativeCredit?> FirstOrDefaultByUserIdAsync(Guid userId)
     {
         var userCumulativeCredit = await userCumulativeCreditRepository.FirstOrDefaultByUserIdAsync(userId);
+        var userCredit =  (await userShoppingCreditRepository.GetQueryableAsync())
+            .Where(x => x.UserId == userId)
+            .OrderByDescending(x => x.CreationTime)
+            .FirstOrDefault();
+        if(userCumulativeCredit!=null)
+        userCumulativeCredit.CurrentCreditBalance = userCredit.CurrentRemainingCredits;
         return userCumulativeCredit;
     }
 }
