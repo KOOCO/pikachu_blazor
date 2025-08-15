@@ -36,7 +36,7 @@ public partial class NotificationManager
     public Task<Notification> ManualBankTransferConfirmedAsync(NotificationParamInput input)
     {
         return CreateOrderNotificationAsync(
-            NotificationType.Payment,
+            NotificationType.BankTransfer,
             ManualBankTransferConfirmedTitle,
             ManualBankTransferConfirmedMessage,
             input
@@ -57,7 +57,7 @@ public partial class NotificationManager
     {
         return paymentMethod == PaymentMethods.ManualBankTransfer
             ? (
-                NotificationType.Payment,
+                NotificationType.BankTransfer,
                 ManualBankTransferTitle,
                 ManualBankTransferMessage
             )

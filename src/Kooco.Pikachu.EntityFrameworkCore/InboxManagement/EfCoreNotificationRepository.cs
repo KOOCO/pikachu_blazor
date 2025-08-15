@@ -63,7 +63,8 @@ public class EfCoreNotificationRepository : EfCoreRepository<PikachuDbContext, N
         return queryable
             .WhereIf(filter == NotificationFilter.Unread, x => !x.IsRead)
             .WhereIf(filter == NotificationFilter.Today, x => x.CreationTime.Date == DateTime.Today)
-            .WhereIf(filter == NotificationFilter.Orders, x => x.Type == NotificationType.Order);
+            .WhereIf(filter == NotificationFilter.Orders, x => x.Type == NotificationType.Order)
+            .Include(q => q.ReadBy);
     }
 
     public async Task MarkAllReadAsync(Guid? userId, CancellationToken cancellationToken = default)

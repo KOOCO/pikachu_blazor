@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
+using Volo.Abp.Domain.Repositories;
 
 namespace Kooco.Pikachu.InboxManagement;
 
@@ -50,6 +51,7 @@ public class NotificationAppService : PikachuAppService, INotificationAppService
         var notification = await _notificationRepository.GetAsync(id, cancellationToken: cancellationToken);
         notification.SetIsRead(isRead, CurrentUser.Id);
         await _notificationRepository.UpdateAsync(notification, cancellationToken: cancellationToken);
+        await _notificationRepository.EnsurePropertyLoadedAsync(notification, n => n.ReadBy, cancellationToken);
         return ObjectMapper.Map<Notification, NotificationDto>(notification);
     }
 }

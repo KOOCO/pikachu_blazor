@@ -3,5 +3,8 @@
 public enum NotificationType
 {
     Order = 0,
+    BankTransfer,
+    Refund,
+    Return,
     Payment
 }

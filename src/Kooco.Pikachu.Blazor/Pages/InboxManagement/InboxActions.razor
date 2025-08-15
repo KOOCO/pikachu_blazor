@@ -7,7 +7,7 @@
             @foreach (var button in Enum.GetValues<NotificationFilter>())
             {
                 <PikachuButton Class="@ButtonClass(button)"
-                               Clicked="@(() => OnClick(button))"
+                               Clicked="@(() => FilterChange(button))"
                                Disabled="Loading">
                     @L["Enum:NotificationFilter." + (int)button]
                 </PikachuButton>
@@ -16,7 +16,7 @@
         <div class="inbox-actions-right">
             <PikachuButton Class="pk-btn-sm"
                            IconClass="fas fa-refresh"
-                           Clicked="() => OnRefresh.InvokeAsync(SelectedFilter)"
+                           Clicked="() => OnRefresh.InvokeAsync(Filter)"
                            Disabled="Loading">
                 @L["Refresh"]
             </PikachuButton>
@@ -32,22 +32,24 @@
 
 @code {
     [Parameter] public bool Loading { get; set; }
-    [Parameter] public EventCallback OnMarkAllRead { get; set; }
+    [Parameter] public NotificationFilter Filter { get; set; }
+    [Parameter] public EventCallback<NotificationFilter> FilterChanged { get; set; }
     [Parameter] public EventCallback<NotificationFilter> OnRefresh { get; set; }
-    private NotificationFilter SelectedFilter { get; set; }
+    [Parameter] public EventCallback OnMarkAllRead { get; set; }
 
     string ButtonClass(NotificationFilter button)
     {
         string btnClass = "pk-btn-sm" + " ";
-        return btnClass + (SelectedFilter == button
+        return btnClass + (Filter == button
             ? "pk-btn-secondary"
             : "pk-btn-outline-secondary");
     }
 
-    async Task OnClick(NotificationFilter button)
+    async Task FilterChange(NotificationFilter button)
     {
         if (Loading) return;
-        SelectedFilter = button;
-        await OnRefresh.InvokeAsync(SelectedFilter);
+        Filter = button;
+        await FilterChanged.InvokeAsync(Filter);
+        await OnRefresh.InvokeAsync(Filter);
     }
 }

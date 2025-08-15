@@ -11,7 +11,8 @@
     private string Icon => Notification.Type switch
     {
         NotificationType.Order => "📦",
-        NotificationType.Payment => "💳",
+        NotificationType.BankTransfer => "💳",
+        NotificationType.Payment => "💰",
         _ => ""
     };
 }

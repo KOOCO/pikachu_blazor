@@ -124,11 +124,13 @@
 
 .table-responsive {
     min-height: unset;
-    max-height: 500px;
+    max-height: 59vh;
+    margin: 0;
 }
 
 .b-table {
     border: 1px solid #e9ecef;
+    margin: 0;
 }
 
 .type-icon {

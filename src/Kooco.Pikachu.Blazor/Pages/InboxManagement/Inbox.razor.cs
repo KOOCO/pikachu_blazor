@@ -9,7 +9,8 @@ namespace Kooco.Pikachu.Blazor.Pages.InboxManagement;
 public partial class Inbox
 {
     [CascadingParameter] public CancellationToken PageCancellationToken { get; set; }
-    private IReadOnlyList<NotificationDto> Notifications { get; set; } = [];
+    private List<NotificationDto> Notifications { get; set; } = [];
+    private NotificationFilter Filter { get; set; } = NotificationFilter.All;
     private long TotalCount { get; set; }
     private bool Loading { get; set; }
 
@@ -18,22 +19,27 @@ public partial class Inbox
         await GetNotificationsAsync();
     }
 
-    async Task GetNotificationsAsync(NotificationFilter? filter = null)
+    async Task GetNotificationsAsync()
     {
-        filter ??= NotificationFilter.All;
         Loading = true;
         var data = await NotificationAppService.GetListAsync(
             new GetNotificationListInput
             {
                 MaxResultCount = 10,
-                SkipCount = 0,
+                SkipCount = Notifications?.Count ?? 0,
                 Sorting = NotificationConsts.DefaultSorting,
-                Filter = filter.Value
+                Filter = Filter
             }, PageCancellationToken);
 
-        Notifications = data.Items;
+        Notifications.AddRange([.. data.Items]);
         TotalCount = data.TotalCount;
         Loading = false;
+    }
+
+    Task OnRefreshAsync()
+    {
+        Notifications = [];
+        return GetNotificationsAsync();
     }
 
     static string RowClass(NotificationDto notification)
@@ -59,7 +65,12 @@ public partial class Inbox
         }
 
         var updatedRecord = await NotificationAppService.SetIsReadAsync(notification.Id, isRead, PageCancellationToken);
-        notification.IsRead = updatedRecord.IsRead;
+
+        var index = Notifications.FindIndex(n => n.Id == notification.Id);
+        if (index != -1)
+        {
+            Notifications[index] = updatedRecord;
+        }
     }
 
     async Task OnToggleRead((NotificationDto Notification, bool IsRead) args)

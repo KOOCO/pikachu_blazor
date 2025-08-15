@@ -10,7 +10,8 @@
 <InboxStats Loading="Loading" />
 
 <InboxActions Loading="Loading"
-              OnRefresh="(filter) => GetNotificationsAsync(filter)"
+              @bind-Filter="@Filter"
+              OnRefresh="OnRefreshAsync"
               OnMarkAllRead="MarkAllReadAsync">
 </InboxActions>
 
@@ -38,9 +39,7 @@
                         <p class="notification-message">@L.WithParams(notification.Message, notification.Parameters)</p>
                     </TableRowCell>
                     <TableRowCell Style="width: 50px;">
-                        <PikachuBadge Class="@(notification.IsRead ? "pk-badge-success" : "pk-badge-info")">
-                            @L[(notification.IsRead ? "Read" : "Unread")]
-                        </PikachuBadge>
+                        <NotificationStatus Notification="notification" Localizer="@L" />
                     </TableRowCell>
                     <TableRowCell Style="width: 150px;">
                         <RelativeTime Time="@notification.NotificationTimeUtc" />
@@ -64,6 +63,16 @@
             <TableRow>
                 <TableRowCell ColumnSpan="5">
                     <Spinner />
+                </TableRowCell>
+            </TableRow>
+        }
+        @if (!Loading && TotalCount > Notifications?.Count)
+        {
+            <TableRow>
+                <TableRowCell ColumnSpan="5" class="text-center">
+                    <button class="btn btn-link" @onclick="GetNotificationsAsync">
+                        @L["LoadMore"]
+                    </button>
                 </TableRowCell>
             </TableRow>
         }

@@ -17,7 +17,7 @@ public partial class NotificationActionColumn
 
     string Url => Notification.Type switch
     {
-        NotificationType.Order or NotificationType.Payment => OrderDetails,
+        NotificationType.Order or NotificationType.BankTransfer or NotificationType.Payment => OrderDetails,
         _ => ""
     };
 
