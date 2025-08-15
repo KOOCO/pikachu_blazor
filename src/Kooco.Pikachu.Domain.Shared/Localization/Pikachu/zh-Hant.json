@@ -1788,8 +1788,8 @@
 
     "TryAgain": "重新嘗試",
     "SelectFileSource": "選擇檔案來源",
-    "ECPayFileUpload": "ECPay 檔案上傳",
-    "TCatFileUpload": "T-Cat 檔案上傳",
+    "ECPayFileUpload": "ECPay 綠界檔案上傳",
+    "TCatFileUpload": "T-Cat 黑貓檔案上傳",
     "DragDropFileHere": "在此拖放您的檔案",
     "OrClickToBrowse": "或點擊瀏覽",
     "SupportedFormats": "支援格式",

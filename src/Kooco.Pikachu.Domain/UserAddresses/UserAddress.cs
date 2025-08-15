@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Volo.Abp;
 using Volo.Abp.Domain.Entities.Auditing;
@@ -11,6 +12,8 @@ public class UserAddress : FullAuditedEntity<Guid>, IMultiTenant
 {
     public Guid UserId { get; set; }
     public string PostalCode { get; private set; }
+    [EmailAddress]
+    public string Email { get; private set; }
     public string City { get; private set; }
     public string Address { get; private set; }
     public string RecipientName { get; private set; }
@@ -29,6 +32,7 @@ public class UserAddress : FullAuditedEntity<Guid>, IMultiTenant
         string address,
         string recipientName,
         string recipientPhoneNumber,
+        string email,
         bool isDefault
         ) : base(id)
     {
@@ -39,6 +43,8 @@ public class UserAddress : FullAuditedEntity<Guid>, IMultiTenant
         SetRecipientName(recipientName);
         SetRecipientPhoneNumber(recipientPhoneNumber);
         SetIsDefault(isDefault);
+        SetEmail(email);
+
     }
 
     internal UserAddress ChangeRecipientPhoneNumber(string recipientPhoneNumber)
@@ -57,7 +63,11 @@ public class UserAddress : FullAuditedEntity<Guid>, IMultiTenant
         SetRecipientName(recipientName);
         return this;
     }
-
+    internal UserAddress ChangeEmail(string email)
+    {
+        SetEmail(email);
+        return this;
+    }
     private void SetRecipientName(string recipientName)
     {
         RecipientName = Check.NotNullOrWhiteSpace(recipientName, nameof(recipientName), maxLength: UserAddressConsts.MaxRecipientNameLength);
@@ -84,7 +94,11 @@ public class UserAddress : FullAuditedEntity<Guid>, IMultiTenant
     {
         City = Check.NotNullOrWhiteSpace(city, nameof(city), maxLength: UserAddressConsts.MaxCityLength);
     }
-
+    private void SetEmail(string email)
+    {
+      
+        Email = email;
+    }
     internal UserAddress ChangePostalCode(string postalCode)
     {
         SetPostalCode(postalCode);

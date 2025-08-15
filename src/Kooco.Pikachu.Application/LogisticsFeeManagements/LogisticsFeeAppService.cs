@@ -308,6 +308,15 @@ namespace Kooco.Pikachu.LogisticsFeeManagements
                     {
                         file.PartialSuccessProcessing("");
                     }
+
+                    await _notificationService.SendRetryNotificationAsync(record.TenantId.Value,new BatchRetryResult {
+                    SuccessCount=1,
+                    SuccessfulAmount=record.LogisticFee,
+                    FileName=file.OriginalFileName,
+                    FileType=file.FileType.ToString(),
+                    FailureCount=0
+                    
+                    });
                     return new RetryRecordResult
                     {
                         RecordId = recordId,
@@ -327,6 +336,15 @@ namespace Kooco.Pikachu.LogisticsFeeManagements
                     {
                         file.PartialSuccessProcessing("");
                     }
+                    await _notificationService.SendRetryNotificationAsync(record.TenantId.Value, new BatchRetryResult
+                    {
+                        SuccessCount = 0,
+                        SuccessfulAmount = 0,
+                        FileName = file.OriginalFileName,
+                        FileType = file.FileType.ToString(),
+                        FailureCount = 1
+
+                    });
                     return new RetryRecordResult
                     {
                         RecordId = recordId,

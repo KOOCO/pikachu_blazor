@@ -101,18 +101,25 @@ namespace Kooco.Pikachu.Blazor.Pages.TenantManagement.TenantLogisticsFeeMangemen
                 await HandleErrorAsync(ex);
             }
         }
-        private void RowSelectableHandler(TenantLogisticsFeeRecordDto rowSeleced)
+        private bool RowSelectableHandler(RowSelectableEventArgs<TenantLogisticsFeeRecordDto>  rowSeleced)
         {
-            if (rowSeleced.DeductionStatus == WalletDeductionStatus.Failed && !rowSeleced.IsSelected)
+            if (rowSeleced.SelectReason is not DataGridSelectReason.RowClick)
             {
-                SelectedFailedRecords.Add(rowSeleced.Id);
+                if (rowSeleced.Item.DeductionStatus == WalletDeductionStatus.Failed && !rowSeleced.Item.IsSelected)
+                {
+                    rowSeleced.Item.IsSelected = true;
+                    SelectedFailedRecords.Add(rowSeleced.Item.Id);
 
-            }
-            else if (rowSeleced.DeductionStatus == WalletDeductionStatus.Failed && rowSeleced.IsSelected)
-            {
-                SelectedFailedRecords.Remove(rowSeleced.Id);
+                }
+                else if (rowSeleced.Item.DeductionStatus == WalletDeductionStatus.Failed && rowSeleced.Item.IsSelected)
+                {
+                    rowSeleced.Item.IsSelected = false;
+                    SelectedFailedRecords.Remove(rowSeleced.Item.Id);
 
+                }
+                return true;
             }
+            return false;
 
 
 

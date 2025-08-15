@@ -7,7 +7,9 @@ public class CreateUpdateUserAddressBaseDto
     [Required]
     [MaxLength(UserAddressConsts.MaxPostalCodeLength)]
     public virtual string PostalCode { get; set; }
-
+    [Required]
+    [EmailAddress]
+    public virtual string Email { get; set; }
     [Required]
     [MaxLength(UserAddressConsts.MaxCityLength)]
     public virtual string City { get; set; }

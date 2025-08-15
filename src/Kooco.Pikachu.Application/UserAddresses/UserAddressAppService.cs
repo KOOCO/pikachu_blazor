@@ -19,7 +19,7 @@ public class UserAddressAppService(UserAddressManager userAddressManager, IUserA
         Check.NotDefaultOrNull(input.UserId, nameof(input.UserId));
 
         var userAddress = await userAddressManager.CreateAsync(input.UserId.Value, input.PostalCode, input.City,
-            input.Address, input.RecipientName, input.RecipientPhoneNumber, input.IsDefault);
+            input.Address, input.RecipientName, input.RecipientPhoneNumber,input.Email, input.IsDefault);
         return ObjectMapper.Map<UserAddress, UserAddressDto>(userAddress);
     }
 
@@ -73,7 +73,7 @@ public class UserAddressAppService(UserAddressManager userAddressManager, IUserA
         var userAddress = await userAddressRepository.GetAsync(id);
 
         await userAddressManager.UpdateAsync(userAddress, input.UserId.Value, input.PostalCode, input.City,
-            input.Address, input.RecipientName, input.RecipientPhoneNumber, input.IsDefault);
+            input.Address, input.RecipientName, input.RecipientPhoneNumber,input.Email, input.IsDefault);
         return ObjectMapper.Map<UserAddress, UserAddressDto>(userAddress);
     }
 }

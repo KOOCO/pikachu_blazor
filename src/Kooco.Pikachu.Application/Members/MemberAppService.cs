@@ -211,7 +211,7 @@ public class MemberAppService(IObjectMapper objectMapper, IMemberRepository memb
         Check.NotNull(input, nameof(input));
 
         var userAddress = await userAddressManager.CreateAsync(id, input.PostalCode, input.City, input.Address, input.RecipientName,
-            input.RecipientPhoneNumber, input.IsDefault);
+            input.RecipientPhoneNumber, input.Email, input.IsDefault);
 
         return base.ObjectMapper.Map<UserAddress, UserAddressDto>(userAddress);
     }
@@ -223,7 +223,7 @@ public class MemberAppService(IObjectMapper objectMapper, IMemberRepository memb
 
         var userAddress = await userAddressManager.GetByIdAsync(addressId);
         await userAddressManager.UpdateAsync(userAddress, id, input.PostalCode, input.City, input.Address, input.RecipientName,
-            input.RecipientPhoneNumber, input.IsDefault);
+            input.RecipientPhoneNumber, input.Email, input.IsDefault);
 
         return base.ObjectMapper.Map<UserAddress, UserAddressDto>(userAddress);
     }

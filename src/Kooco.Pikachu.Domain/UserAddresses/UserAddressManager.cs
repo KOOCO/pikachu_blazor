@@ -8,7 +8,7 @@ namespace Kooco.Pikachu.UserAddresses;
 public class UserAddressManager(IUserAddressRepository userAddressRepository) : DomainService
 {
     public async Task<UserAddress> CreateAsync(Guid userId, string postalCode, string city, string address, string recipientName,
-        string recipientPhoneNumber, bool isDefault)
+        string recipientPhoneNumber,string email, bool isDefault)
     {
         Check.NotDefaultOrNull<Guid>(userId, nameof(userId));
         Check.NotNullOrWhiteSpace(postalCode, nameof(postalCode), maxLength: UserAddressConsts.MaxPostalCodeLength);
@@ -23,14 +23,14 @@ public class UserAddressManager(IUserAddressRepository userAddressRepository) : 
         }
 
         var userAddress = new UserAddress(GuidGenerator.Create(), userId, postalCode, city, address,
-            recipientName, recipientPhoneNumber, isDefault);
+            recipientName, recipientPhoneNumber,email, isDefault);
 
         await userAddressRepository.InsertAsync(userAddress);
         return userAddress;
     }
 
     public async Task<UserAddress> UpdateAsync(UserAddress userAddress, Guid userId, string postalCode, string city, string address,
-        string recipientName, string recipientPhoneNumber, bool isDefault)
+        string recipientName, string recipientPhoneNumber,string email, bool isDefault)
     {
         Check.NotNull(userAddress, nameof(UserAddress));
         Check.NotDefaultOrNull<Guid>(userId, nameof(userId));
@@ -39,7 +39,7 @@ public class UserAddressManager(IUserAddressRepository userAddressRepository) : 
         Check.NotNullOrWhiteSpace(address, nameof(address), maxLength: UserAddressConsts.MaxAddressLength);
         Check.NotNullOrWhiteSpace(recipientName, nameof(recipientName), maxLength: UserAddressConsts.MaxRecipientNameLength);
         Check.NotNullOrWhiteSpace(recipientPhoneNumber, nameof(recipientPhoneNumber), maxLength: UserAddressConsts.MaxRecipientPhoneNumberLength);
-
+        Check.NotNullOrEmpty(email, nameof(email));
         if (userId != Guid.Empty && userId != userAddress.UserId)
         {
             userAddress.UserId = userId;
@@ -50,7 +50,9 @@ public class UserAddressManager(IUserAddressRepository userAddressRepository) : 
         userAddress.ChangeAddress(address);
         userAddress.ChangeRecipientName(recipientName);
         userAddress.ChangeRecipientPhoneNumber(recipientPhoneNumber);
+        userAddress.ChangeEmail(email);
         await SetIsDefaultAsync(userAddress, isDefault);
+        
 
         await userAddressRepository.UpdateAsync(userAddress);
         return userAddress;

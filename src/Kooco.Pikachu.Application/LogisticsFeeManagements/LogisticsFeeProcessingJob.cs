@@ -163,7 +163,7 @@ namespace Kooco.Pikachu.LogisticsFeeManagements
                                     TotalRecords = fileImport.TotalRecords,
                                     SuccessfulDeductions = fileImport.SuccessfulRecords,
                                     FailedDeductions = fileImport.FailedRecords,
-                                    TotalAmount = fileImport.TotalAmount,
+                                    TotalAmount = recordsToInsert.Where(x => x.TenantId != null && x.DeductionStatus==WalletDeductionStatus.Completed).Sum(x => x.LogisticFee),
                                     ProcessingDate = fileImport.ProcessingCompletedAt ?? DateTime.Now,
                                     FileType = fileImport.FileType.ToString()
                                 });
