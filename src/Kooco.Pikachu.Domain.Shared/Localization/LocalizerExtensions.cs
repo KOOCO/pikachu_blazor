@@ -24,7 +24,7 @@ public static class LocalizerExtensions
         {
             foreach (var kv in dict)
             {
-                text = text.Replace("{" + kv.Key + "}", kv.Value ?? string.Empty);
+                text = text.Replace("{" + kv.Key + "}", localizer[kv.Value ?? string.Empty]);
             }
             return text;
         }

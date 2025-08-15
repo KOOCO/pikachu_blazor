@@ -2,7 +2,7 @@ using Kooco.Pikachu.InboxManagement;
 using Microsoft.AspNetCore.Components;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-
+using static Kooco.Pikachu.InboxManagement.NotificationParams;
 namespace Kooco.Pikachu.Blazor.Pages.InboxManagement;
 
 public partial class NotificationActionColumn
@@ -17,8 +17,10 @@ public partial class NotificationActionColumn
 
     string Url => Notification.Type switch
     {
-        NotificationType.Order or NotificationType.ManualBankTransfer 
-            => "Orders/OrderDetails/" + Notification.UrlParams.GetValueOrDefault(NotificationParams.Orders.OrderId),
+        NotificationType.Order or NotificationType.Payment => OrderDetails,
         _ => ""
     };
+
+    string OrderDetails => string.Format("Orders/OrderDetails/{0}", P(OrderId));
+    string P(string key) => Notification.Parameters.GetValueOrDefault(key) ?? string.Empty;
 }

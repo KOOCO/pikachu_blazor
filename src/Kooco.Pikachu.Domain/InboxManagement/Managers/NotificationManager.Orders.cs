@@ -3,26 +3,53 @@ using Kooco.Pikachu.Orders.Entities;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using static Kooco.Pikachu.InboxManagement.NotificationKeys.Orders;
+using static Kooco.Pikachu.InboxManagement.NotificationParams;
 
 namespace Kooco.Pikachu.InboxManagement.Managers;
 
 public partial class NotificationManager
 {
-    public async Task<Notification> OrderCreatedAsync(Guid orderId, string orderNo, PaymentMethods? paymentMethod)
+    private async Task<Notification> CreateOrderNotificationAsync(
+        NotificationType type,
+        string title,
+        string message,
+        NotificationParamInput input)
     {
-        var (type, title, message) = OrderCreateParams(paymentMethod);
-        string orderIdStr = orderId.ToString();
-        var paramDict = GetOrderParamsDict(orderIdStr, orderNo);
-
+        var dict = GetOrderParamsDict(input);
         return await CreateAsync(
             type,
             title,
             message,
-            paramDict,
-            paramDict,
-            paramDict,
+            dict,
             typeof(Order).FullName,
-            orderIdStr
+            input.OrderIdStr
+        );
+    }
+
+    public Task<Notification> OrderCreatedAsync(NotificationParamInput input, PaymentMethods? paymentMethod)
+    {
+        var (type, title, message) = OrderCreateParams(paymentMethod);
+        return CreateOrderNotificationAsync(type, title, message, input);
+    }
+
+    public Task<Notification> ManualBankTransferConfirmedAsync(NotificationParamInput input)
+    {
+        return CreateOrderNotificationAsync(
+            NotificationType.Payment,
+            ManualBankTransferConfirmedTitle,
+            ManualBankTransferConfirmedMessage,
+            input
+        );
+    }
+
+    public Task<Notification> PaymentMethodUpdatedAsync(NotificationParamInput input)
+    {
+        return CreateOrderNotificationAsync(
+            NotificationType.Payment,
+            PaymentMethodUpdatedTitle,
+            PaymentMethodUpdatedMessage,
+            input
         );
     }
 
@@ -30,23 +57,27 @@ public partial class NotificationManager
     {
         return paymentMethod == PaymentMethods.ManualBankTransfer
             ? (
-                NotificationType.Order,
-                NotificationKeys.Orders.ManualBankTransferTitle,
-                NotificationKeys.Orders.ManualBankTransferMessage
+                NotificationType.Payment,
+                ManualBankTransferTitle,
+                ManualBankTransferMessage
             )
             : (
                 NotificationType.Order,
-                NotificationKeys.Orders.CreatedTitle,
-                NotificationKeys.Orders.CreatedMessage
+                CreatedTitle,
+                CreatedMessage
             );
     }
 
-    static Dictionary<string, string> GetOrderParamsDict(string orderId, string orderNo)
+    static Dictionary<string, string> GetOrderParamsDict(NotificationParamInput input)
     {
-        return new Dictionary<string, string>
-        {
-            { NotificationParams.Orders.OrderId, orderId },
-            { NotificationParams.Orders.OrderNo, orderNo }
-        };
+        var dict = new Dictionary<string, string>();
+
+        if (!string.IsNullOrWhiteSpace(input.OrderIdStr)) dict[OrderId] = input.OrderIdStr;
+        if (!string.IsNullOrWhiteSpace(input.OrderNo)) dict[OrderNo] = input.OrderNo;
+        if (!string.IsNullOrWhiteSpace(input.UserName)) dict[UserName] = input.UserName;
+        if (input.OldPaymentMethod.HasValue) dict[OldPaymentMethod] = input.OldPaymentMethod.ToString();
+        if (input.NewPaymentMethod.HasValue) dict[NewPaymentMethod] = input.NewPaymentMethod.ToString();
+
+        return dict;
     }
 }

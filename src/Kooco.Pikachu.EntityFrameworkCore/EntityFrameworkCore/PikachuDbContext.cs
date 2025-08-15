@@ -998,9 +998,7 @@ public class PikachuDbContext(DbContextOptions<PikachuDbContext> options) :
             b.HasOne(x => x.ReadBy).WithMany().HasForeignKey(x => x.ReadById).IsRequired(false);
             b.Property(x => x.Title).IsRequired().HasMaxLength(NotificationConsts.MaxTitleLength);
             b.Property(x => x.Message).HasMaxLength(NotificationConsts.MaxMessageLength);
-            b.Property(x => x.TitleParamsJson).HasMaxLength(NotificationConsts.MaxParamsJsonLength);
-            b.Property(x => x.MessageParamsJson).HasMaxLength(NotificationConsts.MaxParamsJsonLength);
-            b.Property(x => x.UrlParamsJson).HasMaxLength(NotificationConsts.MaxParamsJsonLength);
+            b.Property(x => x.ParametersJson).HasMaxLength(NotificationConsts.MaxParamsJsonLength);
             b.Property(x => x.EntityName).HasMaxLength(NotificationConsts.MaxEntityNameLength);
             b.Property(x => x.EntityId).HasMaxLength(NotificationConsts.MaxEntityIdLength);
         });

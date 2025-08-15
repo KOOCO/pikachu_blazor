@@ -30,22 +30,22 @@
             @foreach (var notification in Notifications)
             {
                 <TableRow Class="@RowClass(notification)">
-                    <TableRowCell>
+                    <TableRowCell Style="width: 100px;">
                         <NotificationTypeColumn Notification="notification" />
                     </TableRowCell>
-                    <TableRowCell>
-                        <h5 class="notification-title">@L.WithParams(notification.Title, notification.TitleParams)</h5>
-                        <p class="notification-message">@L.WithParams(notification.Message, notification.MessageParams)</p>
+                    <TableRowCell Style="width: auto;">
+                        <h5 class="notification-title">@L.WithParams(notification.Title, notification.Parameters)</h5>
+                        <p class="notification-message">@L.WithParams(notification.Message, notification.Parameters)</p>
                     </TableRowCell>
-                    <TableRowCell>
+                    <TableRowCell Style="width: 50px;">
                         <PikachuBadge Class="@(notification.IsRead ? "pk-badge-success" : "pk-badge-info")">
                             @L[(notification.IsRead ? "Read" : "Unread")]
                         </PikachuBadge>
                     </TableRowCell>
-                    <TableRowCell>
+                    <TableRowCell Style="width: 150px;">
                         <RelativeTime Time="@notification.NotificationTimeUtc" />
                     </TableRowCell>
-                    <TableRowCell Style="width: 50px;">
+                    <TableRowCell Style="width: 100px;">
                         <NotificationActionColumn Notification="notification" OnView="OnView" OnToggleRead="OnToggleRead" />
                     </TableRowCell>
                 </TableRow>

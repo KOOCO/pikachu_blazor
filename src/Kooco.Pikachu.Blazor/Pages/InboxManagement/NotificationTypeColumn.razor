@@ -1,7 +1,7 @@
 ﻿@using Kooco.Pikachu.InboxManagement
 @using NotificationType = Kooco.Pikachu.InboxManagement.NotificationType
 
-<div>
+<div class="text-center">
     <span class="type-icon">@Icon</span>
 </div>
 
@@ -11,7 +11,7 @@
     private string Icon => Notification.Type switch
     {
         NotificationType.Order => "📦",
-        NotificationType.ManualBankTransfer => "💳",
+        NotificationType.Payment => "💳",
         _ => ""
     };
 }

@@ -24,9 +24,7 @@ public partial class NotificationManager : DomainService
         NotificationType type,
         string title,
         string? message = null,
-        Dictionary<string, string>? titleParams = null,
-        Dictionary<string, string>? messageParams = null,
-        Dictionary<string, string>? urlParams = null,
+        Dictionary<string, string>? parameters = null,
         string? entityName = null,
         string? entityId = null
         )
@@ -36,9 +34,7 @@ public partial class NotificationManager : DomainService
             type,
             title,
             message,
-            titleParams,
-            messageParams,
-            urlParams,
+            parameters,
             entityName,
             entityId
         );

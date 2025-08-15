@@ -13,9 +13,7 @@ public class Notification : FullAuditedAggregateRoot<Guid>, IMultiTenant
     public NotificationType Type { get; set; }
     public string Title { get; private set; }
     public string? Message { get; private set; }
-    public string? TitleParamsJson { get; private set; }
-    public string? MessageParamsJson { get; private set; }
-    public string? UrlParamsJson { get; private set; }
+    public string? ParametersJson { get; private set; }
     public string? EntityName { get; private set; }
     public string? EntityId { get; private set; }
     public Guid? TenantId { get; set; }
@@ -24,14 +22,8 @@ public class Notification : FullAuditedAggregateRoot<Guid>, IMultiTenant
     public Guid? ReadById { get; set; }
     public DateTime NotificationTimeUtc { get; set; }
 
-    private Dictionary<string, string>? _titleParams;
-    public Dictionary<string, string> TitleParams => _titleParams ??= DeserializeParams(TitleParamsJson);
-
-    private Dictionary<string, string>? _messageParams;
-    public Dictionary<string, string> MessageParams => _messageParams ??= DeserializeParams(MessageParamsJson);
-
-    private Dictionary<string, string>? _urlParams;
-    public Dictionary<string, string> UrlParams => _urlParams ??= DeserializeParams(UrlParamsJson);
+    private Dictionary<string, string>? _parameters;
+    public Dictionary<string, string> Parameters => _parameters ??= DeserializeParams(ParametersJson);
 
     private static Dictionary<string, string> DeserializeParams(string? json) =>
         !string.IsNullOrWhiteSpace(json)
@@ -40,19 +32,14 @@ public class Notification : FullAuditedAggregateRoot<Guid>, IMultiTenant
 
     public virtual IdentityUser ReadBy { get; set; }
 
-    private Notification()
-    {
-        // Required by EF Core
-    }
+    private Notification() { }
 
     internal Notification(
         Guid id,
         NotificationType type,
         string title,
         string? message = null,
-        Dictionary<string, string>? titleParams = null,
-        Dictionary<string, string>? messageParams = null,
-        Dictionary<string, string>? urlParams = null,
+        Dictionary<string, string>? parameters = null,
         string? entityName = null,
         string? entityId = null
     ) : base(id)
@@ -60,9 +47,7 @@ public class Notification : FullAuditedAggregateRoot<Guid>, IMultiTenant
         Type = type;
         SetTitle(title);
         SetMessage(message);
-        SetTitleParams(titleParams);
-        SetMessageParams(messageParams);
-        SetUrlParams(urlParams);
+        SetParameters(parameters);
         SetEntity(entityName, entityId);
         NotificationTimeUtc = DateTime.UtcNow;
     }
@@ -77,34 +62,12 @@ public class Notification : FullAuditedAggregateRoot<Guid>, IMultiTenant
         Message = Check.Length(message, nameof(message), maxLength: NotificationConsts.MaxMessageLength);
     }
 
-    internal void SetTitleParams(Dictionary<string, string>? titleParams)
+    internal void SetParameters(Dictionary<string, string>? parameters)
     {
-        TitleParamsJson = titleParams != null
+        ParametersJson = parameters != null
             ? Check.Length(
-                JsonSerializer.Serialize(titleParams),
-                nameof(MessageParamsJson),
-                maxLength: NotificationConsts.MaxParamsJsonLength
-            )
-            : null;
-    }
-
-    internal void SetMessageParams(Dictionary<string, string>? messageParams)
-    {
-        MessageParamsJson = messageParams != null
-            ? Check.Length(
-                JsonSerializer.Serialize(messageParams),
-                nameof(MessageParamsJson),
-                maxLength: NotificationConsts.MaxParamsJsonLength
-            )
-            : null;
-    }
-
-    internal void SetUrlParams(Dictionary<string, string>? urlParams)
-    {
-        UrlParamsJson = urlParams != null
-            ? Check.Length(
-                JsonSerializer.Serialize(urlParams),
-                nameof(MessageParamsJson),
+                JsonSerializer.Serialize(parameters),
+                nameof(Parameters),
                 maxLength: NotificationConsts.MaxParamsJsonLength
             )
             : null;

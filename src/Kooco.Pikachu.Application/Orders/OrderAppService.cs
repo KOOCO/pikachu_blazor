@@ -408,10 +408,10 @@ public class OrderAppService : PikachuAppService, IOrderAppService
                 }
             }
 
-            await NotificationManager.SafeAsync(m => 
-                m.OrderCreatedAsync(order.Id, order.OrderNo, order.PaymentMethod), 
-                $"OrderId={order.OrderId}"
-                );
+            await NotificationManager.SafeAsync(m =>
+                m.OrderCreatedAsync(NotificationParamInput.ForOrderCreated(order.Id, order.OrderNo), order.PaymentMethod),
+                $"OrderId={order.Id}"
+            );
 
             return ObjectMapper.Map<Order, OrderDto>(order);
         }
@@ -563,6 +563,16 @@ public class OrderAppService : PikachuAppService, IOrderAppService
                  CurrentUser.UserName ?? "System"
              );
 
+        await NotificationManager.SafeAsync(
+            m => m.ManualBankTransferConfirmedAsync(
+            NotificationParamInput.ForBankTransferConfirmed(
+                order.Id,
+                order.OrderNo,
+                CurrentUser.UserName
+            )),
+            $"OrderId={order.Id}"
+        );
+
         await SendEmailAsync(order.Id);
     }
 
@@ -620,6 +630,18 @@ public class OrderAppService : PikachuAppService, IOrderAppService
                                     new object[] { oldPaymentMethod, order.PaymentMethod }, // Dynamic placeholders
                                     editorUserId,
                                     editorUserName);
+
+        await NotificationManager.SafeAsync(
+            m => m.PaymentMethodUpdatedAsync(
+                NotificationParamInput.ForPaymentMethodUpdated(
+                    order.Id,
+                    order.OrderNo,
+                    oldPaymentMethod,
+                    order.PaymentMethod,
+                    CurrentUser.UserName
+                )),
+            $"OrderId={order.Id}"
+        );
 
         return ObjectMapper.Map<Order, OrderDto>(
             await OrderRepository.UpdateAsync(order)
