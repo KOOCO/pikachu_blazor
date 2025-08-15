@@ -324,6 +324,10 @@
         margin: 0;
         line-height: 1.2;
     }
+    /* Hide the select-all checkbox in the header */
+.table.b-datagrid thead th:first-child input[type="checkbox"] {
+    display: none;
+}
 
     
 </style>
@@ -422,15 +426,18 @@
                   ShowPager="true"
                   PageSize="PageSize"
                   Responsive="true"
-                
-                   SelectedRowChanged="RowSelectableHandler"
+                SelectionMode="DataGridSelectionMode.Multiple"
+                   RowSelectable="RowSelectableHandler"
                   @bind-SelectedRows="@SelectedRows">
             <DataGridColumns>
-                <DataGridColumn Caption="@L["Select"]" Width="30px">
-                                    <DisplayTemplate>
-                                        <InputCheckbox class="form-check-input"  @bind-Value="@context.IsSelected"></InputCheckbox>
-                                    </DisplayTemplate>
-                                </DataGridColumn>
+                <DataGridMultiSelectColumn   Caption="@L["Select"]" TItem="TenantLogisticsFeeRecordDto" Width="30px">
+     
+                      <MultiSelectTemplate>
+                        
+                                        <input  type="checkbox" class="form-check-input" />
+                                    </MultiSelectTemplate>
+                </DataGridMultiSelectColumn>
+             
                 
                 <DataGridColumn TItem="TenantLogisticsFeeRecordDto" 
                                Field="@nameof(TenantLogisticsFeeRecordDto.OrderNumber)" 
