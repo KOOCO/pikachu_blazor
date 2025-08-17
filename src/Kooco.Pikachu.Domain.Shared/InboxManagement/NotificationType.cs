@@ -6,5 +6,6 @@ public enum NotificationType
     BankTransfer,
     Refund,
     Return,
+    Exchange,
     Payment
 }

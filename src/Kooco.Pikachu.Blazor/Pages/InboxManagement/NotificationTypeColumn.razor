@@ -1,8 +1,10 @@
 ﻿@using Kooco.Pikachu.InboxManagement
-@using NotificationType = Kooco.Pikachu.InboxManagement.NotificationType
+@using static Kooco.Pikachu.InboxManagement.NotificationType
 
 <div class="text-center">
-    <span class="type-icon">@Icon</span>
+    <span class="type-icon @IconColor">
+        <i class="fas @Icon"></i>
+    </span>
 </div>
 
 @code {
@@ -10,9 +12,21 @@
 
     private string Icon => Notification.Type switch
     {
-        NotificationType.Order => "📦",
-        NotificationType.BankTransfer => "💳",
-        NotificationType.Payment => "💰",
-        _ => ""
+        Order => "fa-box",
+        BankTransfer => "fa-credit-card",
+        Refund => "fa-dollar",
+        Return or Exchange => "fa-refresh",
+        Payment => "fa-coins",
+        _ => "fa-circle"
+    };
+
+    private string IconColor => Notification.Type switch
+    {
+        Order => "purple",
+        BankTransfer => "green",
+        Refund => "red",
+        Return or Exchange => "orange",
+        Payment => "gold",
+        _ => string.Empty
     };
 }

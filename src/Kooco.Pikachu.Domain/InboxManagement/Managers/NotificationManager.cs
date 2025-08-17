@@ -48,16 +48,25 @@ public partial class NotificationManager : DomainService
         return notification;
     }
 
-    public async Task SafeAsync(Func<NotificationManager, Task> action, string contextMessage = null!)
+    public async Task<Notification?> CreateSafeAsync(
+            NotificationType type,
+            string title,
+            string? message = null,
+            Dictionary<string, string>? parameters = null,
+            string? entityName = null,
+            string? entityId = null,
+            string? contextMessage = null
+        )
     {
         try
         {
-            await action(this);
+            return await CreateAsync(type, title, message, parameters, entityName, entityId);
         }
         catch (Exception ex)
         {
-            _logger.LogError("Failed to save notification for {context}", contextMessage ?? string.Empty);
+            _logger.LogError(ex, "Failed to create notification for {context}", contextMessage ?? string.Empty);
             _logger.LogException(ex);
+            return null;
         }
     }
 }

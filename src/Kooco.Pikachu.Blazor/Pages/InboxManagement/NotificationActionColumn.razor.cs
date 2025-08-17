@@ -1,10 +1,12 @@
 using Kooco.Pikachu.InboxManagement;
 using Microsoft.AspNetCore.Components;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using static Kooco.Pikachu.InboxManagement.NotificationParams;
-namespace Kooco.Pikachu.Blazor.Pages.InboxManagement;
+using static Kooco.Pikachu.InboxManagement.NotificationType;
 
+namespace Kooco.Pikachu.Blazor.Pages.InboxManagement;
 public partial class NotificationActionColumn
 {
     [Parameter] public NotificationDto Notification { get; set; }
@@ -17,10 +19,14 @@ public partial class NotificationActionColumn
 
     string Url => Notification.Type switch
     {
-        NotificationType.Order or NotificationType.BankTransfer or NotificationType.Payment => OrderDetails,
+        Order or BankTransfer or Payment => OrderDetails,
+        Refund => RefundList,
+        Return or Exchange => ReturnExchangeList,
         _ => ""
     };
 
-    string OrderDetails => string.Format("Orders/OrderDetails/{0}", P(OrderId));
+    string OrderDetails => string.Format("/Orders/OrderDetails/{0}", P(OrderId));
+    static string RefundList => "/Refund";
+    static string ReturnExchangeList => "/Orders/ReturnAndExchangeOrder";
     string P(string key) => Notification.Parameters.GetValueOrDefault(key) ?? string.Empty;
 }

@@ -87,24 +87,34 @@
         font-size: 13px;
     }
 
-.stats-icon.purple {
+.stats-icon.purple,
+.type-icon.purple {
     background-color: rgba(155, 89, 182, 0.1);
     color: var(--purple-color);
 }
 
-.stats-icon.orange {
+.stats-icon.orange,
+.type-icon.orange {
     background-color: rgba(230, 126, 34, 0.1);
     color: var(--orange-color);
 }
 
-.stats-icon.green {
+.stats-icon.green,
+.type-icon.green {
     background-color: rgba(39, 174, 96, 0.1);
     color: var(--green-color);
 }
 
-.stats-icon.red {
+.stats-icon.red,
+.type-icon.red {
     background-color: rgba(230, 34, 34, 0.1);
     color: rgb(230 34 34);
+}
+
+.stats-icon.gold,
+.type-icon.gold {
+    background-color: rgba(241, 196, 15, 0.1);
+    color: #f1c40f;
 }
 
 .actions-container {
@@ -134,7 +144,15 @@
 }
 
 .type-icon {
-    font-size: 1.5rem;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: var(--radius);
+    background-color: var(--primary-light);
+    color: var(--primary-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
 }
 
 .notification-row {

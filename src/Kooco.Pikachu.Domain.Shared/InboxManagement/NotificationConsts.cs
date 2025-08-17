@@ -19,14 +19,27 @@ public static class NotificationKeys
     public static class Orders
     {
         public const string OrderPrefix = Prefix + "Orders:";
+        
         public const string CreatedTitle = OrderPrefix + "CreatedTitle";
         public const string CreatedMessage = OrderPrefix + "CreatedMessage";
+        
         public const string ManualBankTransferTitle = OrderPrefix + "ManualBankTransferTitle";
         public const string ManualBankTransferMessage = OrderPrefix + "ManualBankTransferMessage";
+        
         public const string ManualBankTransferConfirmedTitle = OrderPrefix + "ManualBankTransferConfirmedTitle";
         public const string ManualBankTransferConfirmedMessage = OrderPrefix + "ManualBankTransferConfirmedMessage";
+        
         public const string PaymentMethodUpdatedTitle = OrderPrefix + "PaymentMethodUpdatedTitle";
         public const string PaymentMethodUpdatedMessage = OrderPrefix + "PaymentMethodUpdatedMessage";
+
+        public const string OrdersMergedTitle = OrderPrefix + "OrdersMergedTitle";
+        public const string OrdersMergedMessage = OrderPrefix + "OrdersMergedMessage";
+
+        public const string OrdersSplitTitle = OrderPrefix + "OrdersSplitTitle";
+        public const string OrdersSplitMessage = OrderPrefix + "OrdersSplitMessage";
+
+        public const string RefundRequestedTitle = OrderPrefix + "RefundRequestedTitle";
+        public const string RefundRequestedMessage = OrderPrefix + "RefundRequestedMessage";
     }
 }
 

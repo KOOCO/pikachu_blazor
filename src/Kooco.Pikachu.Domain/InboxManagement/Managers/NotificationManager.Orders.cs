@@ -1,6 +1,5 @@
 ﻿using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Orders.Entities;
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using static Kooco.Pikachu.InboxManagement.NotificationKeys.Orders;
@@ -10,32 +9,35 @@ namespace Kooco.Pikachu.InboxManagement.Managers;
 
 public partial class NotificationManager
 {
-    private async Task<Notification> CreateOrderNotificationAsync(
+    private async Task<Notification?> CreateOrderNotificationSafeAsync(
         NotificationType type,
         string title,
         string message,
-        NotificationParamInput input)
+        NotificationArgs input
+        )
     {
         var dict = GetOrderParamsDict(input);
-        return await CreateAsync(
+
+        return await CreateSafeAsync(
             type,
             title,
             message,
             dict,
             typeof(Order).FullName,
-            input.OrderIdStr
+            input.OrderIdStr,
+            contextMessage: $"OrderId: {input.OrderIdStr}, OrderNo: {input.OrderNo}"
         );
     }
 
-    public Task<Notification> OrderCreatedAsync(NotificationParamInput input, PaymentMethods? paymentMethod)
+    public Task OrderCreatedAsync(NotificationArgs input, PaymentMethods? paymentMethod)
     {
         var (type, title, message) = OrderCreateParams(paymentMethod);
-        return CreateOrderNotificationAsync(type, title, message, input);
+        return CreateOrderNotificationSafeAsync(type, title, message, input);
     }
 
-    public Task<Notification> ManualBankTransferConfirmedAsync(NotificationParamInput input)
+    public Task ManualBankTransferConfirmedAsync(NotificationArgs input)
     {
-        return CreateOrderNotificationAsync(
+        return CreateOrderNotificationSafeAsync(
             NotificationType.BankTransfer,
             ManualBankTransferConfirmedTitle,
             ManualBankTransferConfirmedMessage,
@@ -43,14 +45,44 @@ public partial class NotificationManager
         );
     }
 
-    public Task<Notification> PaymentMethodUpdatedAsync(NotificationParamInput input)
+    public Task PaymentMethodUpdatedAsync(NotificationArgs input)
     {
-        return CreateOrderNotificationAsync(
+        return CreateOrderNotificationSafeAsync(
             NotificationType.Payment,
             PaymentMethodUpdatedTitle,
             PaymentMethodUpdatedMessage,
             input
         );
+    }
+
+    public Task OrdersMergedAsync(NotificationArgs input)
+    {
+        return CreateOrderNotificationSafeAsync(
+            NotificationType.Order,
+            OrdersMergedTitle,
+            OrdersMergedMessage,
+            input
+        );
+    }
+
+    public Task OrderSplitAsync(NotificationArgs input)
+    {
+        return CreateOrderNotificationSafeAsync(
+            NotificationType.Order,
+            OrdersSplitTitle,
+            OrdersSplitMessage,
+            input
+        );
+    }
+
+    public Task RefundRequestedAsync(NotificationArgs input)
+    {
+        return CreateOrderNotificationSafeAsync(
+            NotificationType.Refund,
+            RefundRequestedTitle,
+            RefundRequestedMessage,
+            input
+            );
     }
 
     static (NotificationType, string, string) OrderCreateParams(PaymentMethods? paymentMethod)
@@ -68,7 +100,7 @@ public partial class NotificationManager
             );
     }
 
-    static Dictionary<string, string> GetOrderParamsDict(NotificationParamInput input)
+    static Dictionary<string, string> GetOrderParamsDict(NotificationArgs input)
     {
         var dict = new Dictionary<string, string>();
 
