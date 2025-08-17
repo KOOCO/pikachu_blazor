@@ -1,20 +1,17 @@
-﻿using System.Threading.Tasks;
-using Kooco.Pikachu.Localization;
+﻿using Kooco.Pikachu.Localization;
 using Kooco.Pikachu.MultiTenancy;
 using Kooco.Pikachu.Orders.Interfaces;
 using Kooco.Pikachu.Permissions;
 using Kooco.Pikachu.Refunds;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using System.Threading.Tasks;
 using Volo.Abp.Authorization.Permissions;
 using Volo.Abp.Identity.Blazor;
 using Volo.Abp.SettingManagement;
 using Volo.Abp.SettingManagement.Blazor.Menus;
-using Volo.Abp.TenantManagement;
 using Volo.Abp.TenantManagement.Blazor.Navigation;
 using Volo.Abp.UI.Navigation;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Configuration;
 
 namespace Kooco.Pikachu.Blazor.Menus;
 
@@ -50,15 +47,6 @@ public class PikachuMenuContributor : IMenuContributor
                 order: 0
             )
         );
-
-        context.Menu.AddItem(new ApplicationMenuItem(
-            PikachuMenus.InboxManagement,
-            displayName: l["Menu:Inbox"],
-            icon: "fas fa-bell",
-            order: 1,
-            requiredPermissionName: PikachuPermissions.Inbox.Default,
-            url: "/Inbox-Management"
-            ));
 
         var productmangment =
          new ApplicationMenuItem(

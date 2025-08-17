@@ -1,33 +1,35 @@
 ﻿@using Kooco.Pikachu.InboxManagement
 @using Microsoft.Extensions.Localization
-@if (Notification.IsRead)
-{
-    <AntDesign.Tooltip>
-        <TitleTemplate>
+<div class="text-center">
+    @if (Notification.IsRead)
+    {
+        <AntDesign.Tooltip>
+            <TitleTemplate>
 
-            <span>
-                <i class="fas fa-user me-1"></i>
-                @Notification.ReadByName
-            </span>
-            <br />
-            <span>
-                <i class="fas fa-clock me-1"></i>
-                @Notification.ReadTime?.ToString("yyyy/MM/dd HH:mm:ss")
-            </span>
-        </TitleTemplate>
-        <ChildContent>
-            <PikachuBadge Class="@Class">
-                @StatusText
-            </PikachuBadge>
-        </ChildContent>
-    </AntDesign.Tooltip>
-}
-else
-{
-    <PikachuBadge Class="@Class">
-        @StatusText
-    </PikachuBadge>
-}
+                <span>
+                    <i class="fas fa-user me-1"></i>
+                    @Notification.ReadByName
+                </span>
+                <br />
+                <span>
+                    <i class="fas fa-clock me-1"></i>
+                    @Notification.ReadTime?.ToString("yyyy/MM/dd HH:mm:ss")
+                </span>
+            </TitleTemplate>
+            <ChildContent>
+                <PikachuBadge Class="@Class">
+                    @StatusText
+                </PikachuBadge>
+            </ChildContent>
+        </AntDesign.Tooltip>
+    }
+    else
+    {
+        <PikachuBadge Class="@Class">
+            @StatusText
+        </PikachuBadge>
+    }
+</div>
 @code {
     [Parameter] public IStringLocalizer Localizer { get; set; }
     [Parameter] public NotificationDto Notification { get; set; }

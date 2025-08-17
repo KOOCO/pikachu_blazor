@@ -19,14 +19,17 @@ public partial class Inbox
         await GetNotificationsAsync();
     }
 
-    async Task GetNotificationsAsync()
+    async Task GetNotificationsAsync(bool loadMore = false)
     {
         Loading = true;
+
+        if (!loadMore) Notifications = [];
+
         var data = await NotificationAppService.GetListAsync(
             new GetNotificationListInput
             {
                 MaxResultCount = 10,
-                SkipCount = Notifications?.Count ?? 0,
+                SkipCount = loadMore ? Notifications?.Count ?? 0 : 0,
                 Sorting = NotificationConsts.DefaultSorting,
                 Filter = Filter
             }, PageCancellationToken);
@@ -34,12 +37,6 @@ public partial class Inbox
         Notifications.AddRange([.. data.Items]);
         TotalCount = data.TotalCount;
         Loading = false;
-    }
-
-    Task OnRefreshAsync()
-    {
-        Notifications = [];
-        return GetNotificationsAsync();
     }
 
     static string RowClass(NotificationDto notification)
@@ -53,6 +50,8 @@ public partial class Inbox
 
     async Task MarkAllReadAsync()
     {
+        Notifications = [];
+        Loading = true;
         await NotificationAppService.MarkAllReadAsync(PageCancellationToken);
         await GetNotificationsAsync();
     }
@@ -63,6 +62,8 @@ public partial class Inbox
         {
             return;
         }
+
+        notification.Loading = true;
 
         var updatedRecord = await NotificationAppService.SetIsReadAsync(notification.Id, isRead, PageCancellationToken);
 

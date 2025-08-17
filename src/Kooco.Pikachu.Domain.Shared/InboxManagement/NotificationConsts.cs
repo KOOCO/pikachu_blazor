@@ -14,6 +14,8 @@ public static class NotificationConsts
 public static class NotificationKeys
 {
     public const string Prefix = "Notification:";
+    public const string UnreadCount = Prefix + "UnreadCount";
+
     public static class Orders
     {
         public const string OrderPrefix = Prefix + "Orders:";

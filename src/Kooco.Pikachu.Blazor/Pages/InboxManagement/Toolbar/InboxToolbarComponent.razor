@@ -1,0 +1,63 @@
+﻿<link href="css/inbox.css" rel="stylesheet" />
+@using Kooco.Pikachu.Blazor.Menus
+@using Kooco.Pikachu.InboxManagement
+@using Volo.Abp.AspNetCore.Components.Web.LeptonXLiteTheme.Themes.LeptonXLite.Navigation
+@using Volo.Abp.UI.Navigation
+@implements IAsyncDisposable
+@inject NavigationManager NavigationManager
+@inject INotificationRepository NotificationRepository
+@inherits PikachuComponentBase
+
+<a href="Inbox-Management" class="notification-bell @(UnreadCount > 0 ? "has-count" : "")">
+    <span>
+        <i class="fas fa-bell" aria-hidden="true"></i>
+        @if (UnreadCount > 0)
+        {
+            <span class="notification-bell-count @(UnreadCount > 99 ? "large-count" : "")">
+                @(UnreadCount > 99 ? "99+" : UnreadCount.ToString())
+            </span>
+        }
+    </span>
+</a>
+
+@code {
+    private NotificationService? _notificationService;
+    private long UnreadCount = 0;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try
+            {
+                _notificationService = new NotificationService(NotificationRepository, NavigationManager);
+                _notificationService.UnreadCountChanged += OnUnreadCountChanged;
+
+                await _notificationService.InitializeAsync();
+                UnreadCount = _notificationService.UnreadCount;
+
+                StateHasChanged();
+            }
+            catch (Exception ex)
+            {
+                // Log error or handle as needed
+                Console.WriteLine($"Failed to initialize notification service: {ex.Message}");
+            }
+        }
+    }
+
+    private async Task OnUnreadCountChanged(long count)
+    {
+        UnreadCount = count;
+        await InvokeAsync(StateHasChanged);
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_notificationService != null)
+        {
+            _notificationService.UnreadCountChanged -= OnUnreadCountChanged;
+            await _notificationService.DisposeAsync();
+        }
+    }
+}

@@ -19,4 +19,5 @@ public class NotificationDto : CreationAuditedEntity<Guid>, IMultiTenant
     public string? ReadByName { get; set; }
     public DateTime NotificationTimeUtc { get; set; }
     public Dictionary<string, string> Parameters { get; set; }
+    public bool Loading { get; set; }
 }

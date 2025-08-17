@@ -1034,3 +1034,7 @@
 .ant-select-focused:not(.ant-select-disabled).ant-select:not(.ant-select-customize-input) .ant-select-selector {
     box-shadow: none;
 }
+
+.lpx-language-selection .dropdown-toggle .lpx-icon {
+    color: var(--lpx-brand) !important;
+}

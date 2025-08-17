@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Volo.Abp.Domain.Services;
+using Volo.Abp.EventBus.Local;
 
 namespace Kooco.Pikachu.InboxManagement.Managers;
 
@@ -10,14 +11,17 @@ public partial class NotificationManager : DomainService
 {
     private readonly INotificationRepository _notificationRepository;
     private readonly ILogger<NotificationManager> _logger;
+    private readonly ILocalEventBus _localEventBus;
 
     public NotificationManager(
         INotificationRepository notificationRepository,
-        ILogger<NotificationManager> logger
+        ILogger<NotificationManager> logger,
+        ILocalEventBus localEventBus
         )
     {
         _notificationRepository = notificationRepository;
         _logger = logger;
+        _localEventBus = localEventBus;
     }
 
     public async Task<Notification> CreateAsync(
@@ -40,6 +44,7 @@ public partial class NotificationManager : DomainService
         );
 
         await _notificationRepository.InsertAsync(notification);
+        await _localEventBus.PublishAsync(new NotificationCreatedEvent(notification));
         return notification;
     }
 

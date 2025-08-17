@@ -165,3 +165,90 @@
     margin: 0;
     font-size: 0.75rem;
 }
+
+/*<---- Notification Bell Toolbar ---->*/
+.notification-bell {
+    position: relative;
+    text-decoration: none;
+    color: #495057;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+    padding-top: 3px;
+    margin-right: 6px;
+}
+
+    .notification-bell.has-count {
+        padding-top: 5px;
+        margin-right: 0;
+    }
+
+    .notification-bell:hover {
+        background-color: #f8f9fa;
+        color: #212529;
+        text-decoration: none;
+    }
+
+    .notification-bell span {
+        position: relative;
+        display: inline-block;
+    }
+
+    .notification-bell .fas.fa-bell {
+        font-size: 15px;
+        color: #6c757d;
+        transition: color 0.2s ease;
+    }
+
+    .notification-bell:hover .fas.fa-bell {
+        color: #495057;
+    }
+
+.notification-bell-count {
+    position: absolute;
+    top: -8px;
+    right: 4px;
+    background: linear-gradient(135deg, #dc3545, #c82333);
+    color: white;
+    border-radius: 10px;
+    min-width: 16px;
+    height: 16px;
+    font-size: 10px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    text-align: center;
+    border: 1px solid lightgrey;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(220, 53, 69, 0.3);
+    animation: bellCountAppear 0.5s ease-out;
+}
+
+    .notification-bell-count.large-count {
+        min-width: 20px;
+        height: 18px;
+        padding: 0 4px;
+        font-size: 9px;
+        border-radius: 9px;
+    }
+
+.notification-bell:hover .notification-bell-count {
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15), 0 1px 3px rgba(220, 53, 69, 0.4);
+}
+
+@keyframes bellCountAppear {
+    0% {
+        transform: scale(0.3);
+        opacity: 0;
+    }
+
+    60% {
+        transform: scale(1.1);
+        opacity: 0.9;
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}

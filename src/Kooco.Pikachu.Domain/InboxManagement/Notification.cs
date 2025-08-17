@@ -92,5 +92,7 @@ public class Notification : FullAuditedAggregateRoot<Guid>, IMultiTenant
             ReadTime = null;
             ReadById = null;
         }
+
+        AddLocalEvent(new NotificationReadChangedEvent(Id, IsRead));
     }
 }

@@ -11,7 +11,7 @@
 
 <InboxActions Loading="Loading"
               @bind-Filter="@Filter"
-              OnRefresh="OnRefreshAsync"
+              OnRefresh="() => GetNotificationsAsync()"
               OnMarkAllRead="MarkAllReadAsync">
 </InboxActions>
 
@@ -20,7 +20,7 @@
         <TableRow>
             <TableHeaderCell>@L["Type"]</TableHeaderCell>
             <TableHeaderCell>@L["Description"]</TableHeaderCell>
-            <TableHeaderCell>@L["Status"]</TableHeaderCell>
+            <TableHeaderCell TextAlignment="TextAlignment.Center">@L["Status"]</TableHeaderCell>
             <TableHeaderCell>@L["Time"]</TableHeaderCell>
             <TableHeaderCell>@L["Actions"]</TableHeaderCell>
         </TableRow>
@@ -34,11 +34,11 @@
                     <TableRowCell Style="width: 100px;">
                         <NotificationTypeColumn Notification="notification" />
                     </TableRowCell>
-                    <TableRowCell Style="width: auto;">
+                    <TableRowCell Style="width: auto; min-width: 250px;">
                         <h5 class="notification-title">@L.WithParams(notification.Title, notification.Parameters)</h5>
                         <p class="notification-message">@L.WithParams(notification.Message, notification.Parameters)</p>
                     </TableRowCell>
-                    <TableRowCell Style="width: 50px;">
+                    <TableRowCell Style="width: 100px;">
                         <NotificationStatus Notification="notification" Localizer="@L" />
                     </TableRowCell>
                     <TableRowCell Style="width: 150px;">
@@ -70,7 +70,7 @@
         {
             <TableRow>
                 <TableRowCell ColumnSpan="5" class="text-center">
-                    <button class="btn btn-link" @onclick="GetNotificationsAsync">
+                    <button class="btn btn-link" @onclick="() => GetNotificationsAsync(true)">
                         @L["LoadMore"]
                     </button>
                 </TableRowCell>

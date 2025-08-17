@@ -12,12 +12,13 @@ using Kooco.Pikachu.BackgroundWorkers;
 using Kooco.Pikachu.Blazor.Helpers;
 using Kooco.Pikachu.Blazor.Menus;
 using Kooco.Pikachu.Blazor.OpenIddict;
+using Kooco.Pikachu.Blazor.Pages.InboxManagement.Toolbar;
 using Kooco.Pikachu.Blazor.Pages.TenantManagement;
 using Kooco.Pikachu.EntityFrameworkCore;
 using Kooco.Pikachu.ImageCompressors;
+using Kooco.Pikachu.InboxManagement;
 using Kooco.Pikachu.Interfaces;
 using Kooco.Pikachu.Localization;
-using Kooco.Pikachu.LogisticStatusRecords;
 using Kooco.Pikachu.MultiTenancy;
 using Kooco.Pikachu.Orders;
 using Kooco.Pikachu.PaymentGateways.LinePay;
@@ -49,8 +50,8 @@ using Volo.Abp.Account.Web;
 using Volo.Abp.AspNetCore.Components.Server.LeptonXLiteTheme;
 using Volo.Abp.AspNetCore.Components.Server.LeptonXLiteTheme.Bundling;
 using Volo.Abp.AspNetCore.Components.Web.Theming.Routing;
+using Volo.Abp.AspNetCore.Components.Web.Theming.Toolbars;
 using Volo.Abp.AspNetCore.Mvc;
-using Volo.Abp.AspNetCore.Mvc.ApplicationConfigurations;
 using Volo.Abp.AspNetCore.Mvc.Localization;
 using Volo.Abp.AspNetCore.Mvc.UI.Bundling;
 using Volo.Abp.AspNetCore.Mvc.UI.Theme.LeptonXLite;
@@ -235,6 +236,11 @@ public class PikachuBlazorModule : AbpModule
         ConfigureHangfire(context, configuration);
         ConfigureLoggerService(context, configuration);
         ConfigureOptions(context);
+        
+        Configure<AbpToolbarOptions>(options =>
+        {
+            options.Contributors.Add(new InboxToolbarContributor());
+        });
 
         if (!hostingEnvironment.IsDevelopment())
         {
@@ -510,6 +516,7 @@ public class PikachuBlazorModule : AbpModule
         app.UseEndpoints(endpoints =>
         {
             endpoints.MapHub<OrderNotificationHub>("/signalr-order-notifications");
+            endpoints.MapHub<NotificationHub>("/signalr-notifications");
         });
         context.ServiceProvider
             .GetRequiredService<IBackgroundWorkerManager>()

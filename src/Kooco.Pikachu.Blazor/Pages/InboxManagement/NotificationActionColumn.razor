@@ -14,7 +14,7 @@
     {
         <AntDesign.Tooltip Title="@L["Notification:MarkUnread"]">
             <a class="pk-btn-icon" @onclick="() => ToggleIsRead(false)">
-                <i class="fas fa-envelope"></i>
+                <i class="fas @(Notification.Loading ? "fa-spinner fa-spin" : "fa-envelope")"></i>
             </a>
         </AntDesign.Tooltip>
     }
@@ -22,7 +22,7 @@
     {
         <AntDesign.Tooltip Title="@L["Notification:MarkRead"]">
             <a class="pk-btn-icon primary" @onclick="() => ToggleIsRead(true)">
-                <i class="fas fa-envelope-open"></i>
+                <i class="fas @(Notification.Loading ? "fa-spinner fa-spin" : "fa-envelope-open")"></i>
             </a>
         </AntDesign.Tooltip>
     }
