@@ -30,7 +30,7 @@
         {
             @foreach (var notification in Notifications)
             {
-                <TableRow Class="@RowClass(notification)">
+                <TableRow Class="@("notification-row " + (notification.IsRead ? "read" : "unread"))">
                     <TableRowCell Style="width: 100px;">
                         <NotificationTypeColumn Notification="notification" />
                     </TableRowCell>

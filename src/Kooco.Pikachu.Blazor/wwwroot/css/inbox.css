@@ -146,11 +146,11 @@
         box-shadow: inset 5px 0 0 var(--row-border-color, transparent);
     }
 
-.notification-unread {
+.notification-row.unread {
     --row-bg-color: #f8f9ff;
 }
 
-    .notification-unread td:first-child {
+    .notification-row.unread td:first-child {
         --row-border-color: var(--primary-color);
     }
 
