@@ -22,7 +22,10 @@ public static class NotificationKeys
         
         public const string CreatedTitle = OrderPrefix + "CreatedTitle";
         public const string CreatedMessage = OrderPrefix + "CreatedMessage";
-        
+
+        public const string UpdatedTitle = OrderPrefix + "UpdatedTitle";
+        public const string UpdatedMessage = OrderPrefix + "UpdatedMessage";
+
         public const string ManualBankTransferTitle = OrderPrefix + "ManualBankTransferTitle";
         public const string ManualBankTransferMessage = OrderPrefix + "ManualBankTransferMessage";
         
@@ -40,6 +43,36 @@ public static class NotificationKeys
 
         public const string RefundRequestedTitle = OrderPrefix + "RefundRequestedTitle";
         public const string RefundRequestedMessage = OrderPrefix + "RefundRequestedMessage";
+
+        public const string ShippingStatusUpdatedTitle = OrderPrefix + "ShippingStatusUpdatedTitle";
+        public const string ShippingStatusUpdatedMessage = OrderPrefix + "ShippingStatusUpdatedMessage";
+
+        public const string OrderStatusUpdatedTitle = OrderPrefix + "OrderStatusUpdatedTitle";
+        public const string OrderStatusUpdatedMessage = OrderPrefix + "OrderStatusUpdatedMessage";
+
+        public const string ReturnStatusUpdatedTitle = OrderPrefix + "ReturnStatusUpdatedTitle";
+        public const string ReturnStatusUpdatedMessage = OrderPrefix + "ReturnStatusUpdatedMessage";
+
+        public const string OrderItemsUpdatedTitle = OrderPrefix + "OrderItemsUpdatedTitle";
+        public const string OrderItemsUpdatedMessage = OrderPrefix + "OrderItemsUpdatedMessage";
+
+        public const string OrderCancelledTitle = OrderPrefix + "OrderCancelledTitle";
+        public const string OrderCancelledMessage = OrderPrefix + "OrderCancelledMessage";
+
+        public const string InvoiceVoidedTitle = OrderPrefix + "InvoiceVoidedTitle";
+        public const string InvoiceVoidedMessage = OrderPrefix + "InvoiceVoidedMessage";
+
+        public const string CreditNoteIssuedTitle = OrderPrefix + "CreditNoteIssuedTitle";
+        public const string CreditNoteIssuedMessage = OrderPrefix + "CreditNoteIssuedMessage";
+
+        public const string ShippingDetailsUpdatedTitle = OrderPrefix + "ShippingDetailsUpdatedTitle";
+        public const string ShippingDetailsUpdatedMessage = OrderPrefix + "ShippingDetailsUpdatedMessage";
+
+        public const string OrderCompletedTitle = OrderPrefix + "OrderCompletedTitle";
+        public const string OrderCompletedMessage = OrderPrefix + "OrderCompletedMessage";
+
+        public const string OrderClosedTitle = OrderPrefix + "OrderClosedTitle";
+        public const string OrderClosedMessage = OrderPrefix + "OrderClosedMessage";
     }
 }
 
@@ -48,6 +81,16 @@ public static class NotificationParams
     public const string OrderId = "OrderId";
     public const string OrderNo = "OrderNo";
     public const string UserName = "UserName";
-    public const string OldPaymentMethod = "OldPaymentMethod";
-    public const string NewPaymentMethod = "NewPaymentMethod";
+    
+    public const string PreviousPaymentMethod = "PreviousPaymentMethod";
+    public const string PaymentMethod = "PaymentMethod";
+    
+    public const string PreviousShippingStatus = "PreviousShippingStatus";
+    public const string ShippingStatus = "ShippingStatus";
+    
+    public const string PreviousOrderStatus = "PreviousOrderStatus";
+    public const string OrderStatus = "OrderStatus";
+
+    public const string PreviousReturnStatus = "PreviousReturnStatus";
+    public const string ReturnStatus = "ReturnStatus";
 }

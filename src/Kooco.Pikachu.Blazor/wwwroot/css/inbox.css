@@ -132,13 +132,13 @@
     margin-right: 10px;
 }
 
-.table-responsive {
+.notification-table.table-responsive {
     min-height: unset;
     max-height: 59vh;
     margin: 0;
 }
 
-.b-table {
+.notification-table .b-table {
     border: 1px solid #e9ecef;
     margin: 0;
 }

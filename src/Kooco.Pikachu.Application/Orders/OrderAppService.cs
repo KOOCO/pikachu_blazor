@@ -564,7 +564,7 @@ public class OrderAppService : PikachuAppService, IOrderAppService
              );
 
         await NotificationManager.ManualBankTransferConfirmedAsync(
-            NotificationArgs.ForBankTransferConfirmed(
+            NotificationArgs.ForOrderWithUserName(
                 order.Id,
                 order.OrderNo,
                 CurrentUser.UserName
@@ -635,9 +635,8 @@ public class OrderAppService : PikachuAppService, IOrderAppService
                 order.OrderNo,
                 oldPaymentMethod,
                 order.PaymentMethod,
-                CurrentUser.UserName
-            )
-        );
+                editorUserName
+            ));
 
         return ObjectMapper.Map<Order, OrderDto>(
             await OrderRepository.UpdateAsync(order)
@@ -879,8 +878,8 @@ public class OrderAppService : PikachuAppService, IOrderAppService
             await EmailAppService.SendMergeOrderEmailAsync(Ids, order1.Id);
 
             await NotificationManager.OrdersMergedAsync(
-                NotificationArgs.ForOrdersMergedOrSplit(
-                    order1.Id, 
+                NotificationArgs.ForOrderWithUserName(
+                    order1.Id,
                     order1.OrderNo,
                     currentUserName
                     ));
@@ -1034,7 +1033,7 @@ public class OrderAppService : PikachuAppService, IOrderAppService
             await UnitOfWorkManager.Current.SaveChangesAsync();
 
             await NotificationManager.OrderSplitAsync(
-                NotificationArgs.ForOrdersMergedOrSplit(
+                NotificationArgs.ForOrderWithUserName(
                     ord.Id,
                     ord.OrderNo,
                     currentUserName
@@ -1216,7 +1215,7 @@ public class OrderAppService : PikachuAppService, IOrderAppService
    );
 
             await NotificationManager.RefundRequestedAsync(
-                NotificationArgs.ForOrderRefund(
+                NotificationArgs.ForOrderWithUserName(
                     newOrder.Id,
                     newOrder.OrderNo,
                     currentUserName
@@ -1292,9 +1291,17 @@ public class OrderAppService : PikachuAppService, IOrderAppService
             currentUserId,
             currentUserName
         );
+
+        await NotificationManager.ShippingStatusUpdatedAsync(
+            NotificationArgs.ForShippingStatusUpdated(
+                order.Id,
+                order.OrderNo,
+                currentUserName,
+                oldStatus,
+                status
+                ));
+
         return returnResult;
-
-
     }
 
 
@@ -1375,22 +1382,28 @@ public class OrderAppService : PikachuAppService, IOrderAppService
 
             // **Log Refund Action in Order History**
             await OrderHistoryManager.AddOrderHistoryAsync(
-      ord.Id,
-      "RefundProcessed", // Localization key
-      new object[] { ((decimal)amount).ToString("C", new CultureInfo("en-US")), ord.OrderNo }, // Format currency correctly before passing
-      currentUserId,
-      currentUserName
-  );
+                  ord.Id,
+                  "RefundProcessed", // Localization key
+                  new object[] { ((decimal)amount).ToString("C", new CultureInfo("en-US")), ord.OrderNo }, // Format currency correctly before passing
+                  currentUserId,
+                  currentUserName
+            );
 
             // **Log New Refund Order Creation**
             await OrderHistoryManager.AddOrderHistoryAsync(
-       order1.Id,
-       "RefundAmountCreated", // Localization key
-       new object[] { order1.OrderNo, ((decimal)amount).ToString("C", new CultureInfo("en-US")), ord.OrderNo }, // Format currency correctly
-       currentUserId,
-       currentUserName
-   );
+                   order1.Id,
+                   "RefundAmountCreated", // Localization key
+                   new object[] { order1.OrderNo, ((decimal)amount).ToString("C", new CultureInfo("en-US")), ord.OrderNo }, // Format currency correctly
+                   currentUserId,
+                   currentUserName
+            );
 
+            await NotificationManager.RefundRequestedAsync(
+                NotificationArgs.ForOrderWithUserName(
+                    order1.Id,
+                    order1.OrderNo,
+                    currentUserName
+                ));
         }
     }
     public async Task<OrderDto> GetWithDetailsAsync(Guid id)
@@ -1856,7 +1869,12 @@ public class OrderAppService : PikachuAppService, IOrderAppService
         }
 
 
-
+        await NotificationManager.OrderUpdatedAsync(
+            NotificationArgs.ForOrderWithUserName(
+                order.Id,
+                order.OrderNo,
+                currentUserName
+            ));
 
         return ObjectMapper.Map<Order, OrderDto>(order);
     }
@@ -1932,6 +1950,15 @@ public class OrderAppService : PikachuAppService, IOrderAppService
              currentUserId,
              currentUserName
          );
+
+        await NotificationManager.ReturnStatusUpdatedAsync(
+            NotificationArgs.ForReturnStatusUpdated(
+                order.Id,
+                order.OrderNo,
+                currentUserName,
+                oldReturnStatus,
+                orderReturnStatus
+            ));
 
         if (oldShippingStatus != order.ShippingStatus)
         {
@@ -2058,9 +2085,14 @@ public class OrderAppService : PikachuAppService, IOrderAppService
         order.TotalAmount = (order.OrderItems.Sum(o => o.TotalAmount) + (decimal)order.DeliveryCost);
         await OrderRepository.UpdateAsync(order);
 
-
-
+        await NotificationManager.OrderItemsUpdatedAsync(
+            NotificationArgs.ForOrderWithUserName(
+                order.Id,
+                order.OrderNo,
+                currentUserName
+            ));
     }
+
     public async Task CancelOrderAsync(Guid id)
     {
         var order = await OrderRepository.GetWithDetailsAsync(id);
@@ -2094,6 +2126,13 @@ public class OrderAppService : PikachuAppService, IOrderAppService
              currentUserId,
              currentUserName
          );
+
+        await NotificationManager.OrderCancelledAsync(
+            NotificationArgs.ForOrderWithUserName(
+                order.Id,
+                order.OrderNo,
+                currentUserName
+            ));
     }
 
     private async Task CheckAndDeductCreditIfApplied(Order order)
@@ -2152,14 +2191,19 @@ public class OrderAppService : PikachuAppService, IOrderAppService
 
         // **Log Order History for Invoice Voiding**
         await OrderHistoryManager.AddOrderHistoryAsync(
-     order.Id,
-     "InvoiceVoided", // Localization key
-     new object[] { L[oldInvoiceStatus.ToString()].Name, reason }, // Localized invoice status & reason
-     currentUserId,
-     currentUserName
- );
+             order.Id,
+             "InvoiceVoided", // Localization key
+             new object[] { L[oldInvoiceStatus.ToString()].Name, reason }, // Localized invoice status & reason
+             currentUserId,
+             currentUserName
+        );
 
-
+        await NotificationManager.InvoiceVoidedAsync(
+            NotificationArgs.ForOrderWithUserName(
+                order.Id,
+                order.OrderNo,
+                currentUserName
+            ));
     }
     public async Task CreditNoteInvoice(Guid id, string reason)
     {
@@ -2181,12 +2225,19 @@ public class OrderAppService : PikachuAppService, IOrderAppService
 
         // **Log Order History for Credit Note Issuance**
         await OrderHistoryManager.AddOrderHistoryAsync(
-     order.Id,
-     "CreditNoteIssued", // Localization key
-     new object[] { L[oldInvoiceStatus.ToString()].Name, reason }, // Localized previous status & reason
-     currentUserId,
-     currentUserName
- );
+             order.Id,
+             "CreditNoteIssued", // Localization key
+             new object[] { L[oldInvoiceStatus.ToString()].Name, reason }, // Localized previous status & reason
+             currentUserId,
+             currentUserName
+         );
+
+        await NotificationManager.CreditNoteIssuedAsync(
+            NotificationArgs.ForOrderWithUserName(
+                order.Id,
+                order.OrderNo,
+                currentUserName
+            ));
     }
     public async Task<OrderDto> UpdateShippingDetails(Guid id, CreateOrderDto input)
     {
@@ -2237,20 +2288,27 @@ public class OrderAppService : PikachuAppService, IOrderAppService
 
         // **Log Order History for Shipping Update**
         await OrderHistoryManager.AddOrderHistoryAsync(
-     order.Id,
-     "ShippingDetailsUpdated", // Localization key
-     new object[]
-     {
-        L[oldDeliveryMethod.ToString()].Name,
-        L[order.DeliveryMethod.ToString()].Name,
-        oldShippingNumber,
-        order.ShippingNumber,
-        L[oldShippingStatus.ToString()].Name,
-        L[order.ShippingStatus.ToString()].Name
-     }, // Dynamic placeholders for localized statuses and tracking numbers
-     currentUserId,
-     currentUserName
- );
+             order.Id,
+             "ShippingDetailsUpdated", // Localization key
+             new object[]
+             {
+                L[oldDeliveryMethod.ToString()].Name,
+                L[order.DeliveryMethod.ToString()].Name,
+                oldShippingNumber,
+                order.ShippingNumber,
+                L[oldShippingStatus.ToString()].Name,
+                L[order.ShippingStatus.ToString()].Name
+             }, // Dynamic placeholders for localized statuses and tracking numbers
+             currentUserId,
+             currentUserName
+         );
+
+        await NotificationManager.ShippingDetailsUpdatedAsync(
+            NotificationArgs.ForOrderWithUserName(
+                order.Id,
+                order.OrderNo,
+                currentUserName
+            ));
 
         return ObjectMapper.Map<Order, OrderDto>(order);
     }
@@ -2300,12 +2358,21 @@ public class OrderAppService : PikachuAppService, IOrderAppService
 
         // **Log Order History for Shipping**
         await OrderHistoryManager.AddOrderHistoryAsync(
-      order.Id,
-      "OrderShipped", // Localization key
-      new object[] { L[oldShippingStatus.ToString()].Name, L[order.ShippingStatus.ToString()].Name }, // Dynamic placeholders for localized statuses
-      currentUserId,
-      currentUserName
-  );
+              order.Id,
+              "OrderShipped", // Localization key
+              new object[] { L[oldShippingStatus.ToString()].Name, L[order.ShippingStatus.ToString()].Name }, // Dynamic placeholders for localized statuses
+              currentUserId,
+              currentUserName
+          );
+
+        await NotificationManager.ShippingStatusUpdatedAsync(
+            NotificationArgs.ForShippingStatusUpdated(
+                order.Id,
+                order.OrderNo,
+                currentUserName,
+                oldShippingStatus,
+                order.ShippingStatus
+            ));
 
         return returnOrder;
         // await ElectronicInvoiceAppService.CreateInvoiceAsync(order.Id);
@@ -2362,6 +2429,15 @@ public class OrderAppService : PikachuAppService, IOrderAppService
      currentUserName
  );
 
+        await NotificationManager.ShippingStatusUpdatedAsync(
+            NotificationArgs.ForShippingStatusUpdated(
+                order.Id,
+                order.OrderNo,
+                currentUserName,
+                oldShippingStatus,
+                order.ShippingStatus
+            ));
+
         return returnOrder;
 
     }
@@ -2400,6 +2476,13 @@ public class OrderAppService : PikachuAppService, IOrderAppService
              currentUserId,
              currentUserName
          );
+
+        await NotificationManager.OrderClosedAsync(
+            NotificationArgs.ForOrderWithUserName(
+                order.Id,
+                order.OrderNo,
+                currentUserName
+            ));
 
         return ObjectMapper.Map<Order, OrderDto>(order);
     }
@@ -2481,8 +2564,14 @@ public class OrderAppService : PikachuAppService, IOrderAppService
              currentUserName
          );
 
-        return returnResult;
+        await NotificationManager.OrderCompletedAsync(
+            NotificationArgs.ForOrderWithUserName(
+                order.Id,
+                order.OrderNo,
+                currentUserName
+            ));
 
+        return returnResult;
     }
 
     private async Task SendEmailAsync(Guid id, OrderStatus? orderStatus = null)
