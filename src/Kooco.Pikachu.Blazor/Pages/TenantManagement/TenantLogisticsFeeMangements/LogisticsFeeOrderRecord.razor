@@ -419,25 +419,23 @@
 <!-- Records Table -->
 <Card Margin="Margin.Is3.FromTop">
     <CardBody>
-        <DataGrid TItem="TenantLogisticsFeeRecordDto"
+        <DataGrid  TItem="TenantLogisticsFeeRecordDto"
                   Data="Records"
                   ReadData="OnDataGridReadData"
                   TotalItems="TotalCount"
                   ShowPager="true"
                   PageSize="PageSize"
                   Responsive="true"
-                SelectionMode="DataGridSelectionMode.Multiple"
-                   RowSelectable="RowSelectableHandler"
+              
+                  
                   @bind-SelectedRows="@SelectedRows">
             <DataGridColumns>
-                <DataGridMultiSelectColumn   Caption="@L["Select"]" TItem="TenantLogisticsFeeRecordDto" Width="30px">
-     
-                      <MultiSelectTemplate>
-                        
-                                        <input  type="checkbox" class="form-check-input" />
-                                    </MultiSelectTemplate>
-                </DataGridMultiSelectColumn>
-             
+            
+                    <DataGridColumn>  
+                        <DisplayTemplate>
+                                        <Check TValue="bool" Checked="@context.IsSelected" CheckedChanged="@((e)=>RowSelectableHandler(e,context))"  class="form-check-input" />
+                       </DisplayTemplate>
+             </DataGridColumn> 
                 
                 <DataGridColumn TItem="TenantLogisticsFeeRecordDto" 
                                Field="@nameof(TenantLogisticsFeeRecordDto.OrderNumber)" 

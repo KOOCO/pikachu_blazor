@@ -44,7 +44,7 @@ namespace Kooco.Pikachu.Blazor.Pages.TenantManagement.TenantLogisticsFeeMangemen
         {
             await LoadFileInfo();
             await SetBreadcrumbItemsAsync();
-         
+
         }
 
         private async Task LoadFileInfo()
@@ -101,25 +101,23 @@ namespace Kooco.Pikachu.Blazor.Pages.TenantManagement.TenantLogisticsFeeMangemen
                 await HandleErrorAsync(ex);
             }
         }
-        private bool RowSelectableHandler(RowSelectableEventArgs<TenantLogisticsFeeRecordDto>  rowSeleced)
+        private void RowSelectableHandler(bool value, TenantLogisticsFeeRecordDto rowSeleced)
         {
-            if (rowSeleced.SelectReason is not DataGridSelectReason.RowClick)
+
+            if (rowSeleced.DeductionStatus == WalletDeductionStatus.Failed && value)
             {
-                if (rowSeleced.Item.DeductionStatus == WalletDeductionStatus.Failed && !rowSeleced.Item.IsSelected)
-                {
-                    rowSeleced.Item.IsSelected = true;
-                    SelectedFailedRecords.Add(rowSeleced.Item.Id);
+                rowSeleced.IsSelected = true;
+                SelectedFailedRecords.Add(rowSeleced.Id);
 
-                }
-                else if (rowSeleced.Item.DeductionStatus == WalletDeductionStatus.Failed && rowSeleced.Item.IsSelected)
-                {
-                    rowSeleced.Item.IsSelected = false;
-                    SelectedFailedRecords.Remove(rowSeleced.Item.Id);
-
-                }
-                return true;
             }
-            return false;
+            else if (rowSeleced.DeductionStatus == WalletDeductionStatus.Failed && !value)
+            {
+                rowSeleced.IsSelected = false;
+                SelectedFailedRecords.Remove(rowSeleced.Id);
+
+            };
+
+
 
 
 
@@ -136,6 +134,13 @@ namespace Kooco.Pikachu.Blazor.Pages.TenantManagement.TenantLogisticsFeeMangemen
         private void SelectAllFailedRecords()
         {
             var failedRecords = Records.Where(r => r.DeductionStatus == WalletDeductionStatus.Failed).ToList();
+            foreach (var item in failedRecords)
+            {
+                item.IsSelected = true;
+                RowSelectableHandler(true, item);
+
+
+            }
             SelectedFailedRecords = failedRecords.Select(r => r.Id).ToList();
             StateHasChanged();
         }

@@ -360,57 +360,31 @@ namespace Kooco.Pikachu.LogisticsFeeManagements
 
         public async Task<RetryBatchResult> RetryBatchAsync(RetryBatchInput input)
         {
-            if (input.RecordIds == null || !input.RecordIds.Any())
+            using (_dataFilter.Disable<IMultiTenant>())
             {
-                throw new UserFriendlyException("No records selected for retry");
-            }
-
-            var records = await _recordRepository.GetByIdsAsync(input.RecordIds);
-
-            var result = new RetryBatchResult();
-            var tenantNotifications = new Dictionary<Guid, BatchRetryResult>();
-            Guid fileId = records.Select(x => x.FileImportId).FirstOrDefault();
-            foreach (var record in records)
-            {
-                if (record.DeductionStatus == WalletDeductionStatus.Pending)
+                if (input.RecordIds == null || !input.RecordIds.Any())
                 {
-                    result.Results.Add(new RetryRecordResult
-                    {
-                        RecordId = record.Id,
-                        Success = false,
-                        Reason = "Already processed"
-                    });
-                    continue;
+                    throw new UserFriendlyException("No records selected for retry");
                 }
-                if (record.DeductionDate is null && record.LogisticsFeeFileImport?.FileType == LogisticsFileType.ECPay)
+
+                var records = await _recordRepository.GetByIdsAsync(input.RecordIds);
+
+                var result = new RetryBatchResult();
+                var tenantNotifications = new Dictionary<Guid, BatchRetryResult>();
+                Guid fileId = records.Select(x => x.FileImportId).FirstOrDefault();
+                foreach (var record in records)
                 {
-                    // Initialize tenant notification tracking
-                    if (!tenantNotifications.ContainsKey(record.TenantId.Value))
+                    if (record.DeductionStatus == WalletDeductionStatus.Pending)
                     {
-                        tenantNotifications[record.TenantId.Value] = new BatchRetryResult();
+                        result.Results.Add(new RetryRecordResult
+                        {
+                            RecordId = record.Id,
+                            Success = false,
+                            Reason = "Already processed"
+                        });
+                        continue;
                     }
-
-                    var tenantResult = tenantNotifications[record.TenantId.Value];
-
-                    record.MarkAsFailed("Missing Deduction Date in Logistic File");
-                    result.FailureCount++;
-                    tenantResult.FailureCount++;
-                    tenantResult.FileName = record.LogisticsFeeFileImport.OriginalFileName;
-                    tenantResult.FileType = record.LogisticsFeeFileImport.FileType.ToString();
-
-
-
-                    result.Results.Add(new RetryRecordResult
-                    {
-                        RecordId = record.Id,
-                        Success = false,
-                        Reason = "Missing Deduction Date in Logistic File"
-                    });
-                }
-                else
-                {
-                    var tenantWallet = (await _tenantWalletRepository.GetQueryableAsync()).Where(x => x.TenantId == record.TenantId).FirstOrDefault();
-                    if (tenantWallet.WalletBalance < record.LogisticFee || tenantWallet.WalletBalance == 0)
+                    if (record.DeductionDate is null && record.LogisticsFeeFileImport?.FileType == LogisticsFileType.ECPay)
                     {
                         // Initialize tenant notification tracking
                         if (!tenantNotifications.ContainsKey(record.TenantId.Value))
@@ -419,11 +393,8 @@ namespace Kooco.Pikachu.LogisticsFeeManagements
                         }
 
                         var tenantResult = tenantNotifications[record.TenantId.Value];
-                        tenantResult.FileName = record.LogisticsFeeFileImport.OriginalFileName;
-                        tenantResult.FileType = record.LogisticsFeeFileImport.FileType.ToString();
-                        record.LogisticsFeeFileImport.SuccessfulRecords += 1;
-                        await _fileImportRepository.UpdateAsync(record.LogisticsFeeFileImport);
-                        record.MarkAsFailed("Insufficient Balance");
+
+                        record.MarkAsFailed("Missing Deduction Date in Logistic File");
                         result.FailureCount++;
                         tenantResult.FailureCount++;
                         tenantResult.FileName = record.LogisticsFeeFileImport.OriginalFileName;
@@ -435,57 +406,26 @@ namespace Kooco.Pikachu.LogisticsFeeManagements
                         {
                             RecordId = record.Id,
                             Success = false,
-                            Reason = ""
+                            Reason = "Missing Deduction Date in Logistic File"
                         });
-
                     }
                     else
                     {
-                        var transaction = new CreateWalletTransactionDto
+                        var tenantWallet = (await _tenantWalletRepository.GetQueryableAsync()).Where(x => x.TenantId == record.TenantId).FirstOrDefault();
+                        if (tenantWallet.WalletBalance < record.LogisticFee || tenantWallet.WalletBalance == 0)
                         {
-                            TenantWalletId = tenantWallet.Id,
-                            TransactionAmount = record.LogisticFee,
-                            TransactionType = WalletTransactionType.LogisticsFeeDeduction,
-                            TransactionNotes = $"Logistics fee deduction for order {record.OrderNumber}",
-                            DeductionStatus = WalletDeductionStatus.Pending,
-                            TradingMethods = WalletTradingMethods.LogisticsFee
-
-
-                        };
-
-                        var deductionResult = await _walletDeductionService.AddDeductionTransactionAsync(
-                            tenantWallet.Id,
-                            record.LogisticFee,
-                            transaction
-                        );
-
-                        // Initialize tenant notification tracking
-                        if (!tenantNotifications.ContainsKey(record.TenantId.Value))
-                        {
-                            tenantNotifications[record.TenantId.Value] = new BatchRetryResult();
-                        }
-
-                        var tenantResult = tenantNotifications[record.TenantId.Value];
-                        tenantResult.FileName = record.LogisticsFeeFileImport.OriginalFileName;
-                        tenantResult.FileType = record.LogisticsFeeFileImport.FileType.ToString();
-
-                        if (deductionResult.TransactionStatus == WalletDeductionStatus.Completed && deductionResult.Id != Guid.Empty)
-                        {
-                            record.MarkAsDeducted(deductionResult.Id);
-                            result.SuccessCount++;
-                            tenantResult.SuccessCount++;
-                            tenantResult.SuccessfulAmount += record.LogisticFee;
-
-
-                            result.Results.Add(new RetryRecordResult
+                            // Initialize tenant notification tracking
+                            if (!tenantNotifications.ContainsKey(record.TenantId.Value))
                             {
-                                RecordId = record.Id,
-                                Success = true
-                            });
-                        }
-                        else
-                        {
-                            record.MarkAsFailed("Retry failed");
+                                tenantNotifications[record.TenantId.Value] = new BatchRetryResult();
+                            }
+
+                            var tenantResult = tenantNotifications[record.TenantId.Value];
+                            tenantResult.FileName = record.LogisticsFeeFileImport.OriginalFileName;
+                            tenantResult.FileType = record.LogisticsFeeFileImport.FileType.ToString();
+                            record.LogisticsFeeFileImport.SuccessfulRecords += 1;
+                            await _fileImportRepository.UpdateAsync(record.LogisticsFeeFileImport);
+                            record.MarkAsFailed("Insufficient Balance");
                             result.FailureCount++;
                             tenantResult.FailureCount++;
                             tenantResult.FileName = record.LogisticsFeeFileImport.OriginalFileName;
@@ -499,38 +439,101 @@ namespace Kooco.Pikachu.LogisticsFeeManagements
                                 Success = false,
                                 Reason = ""
                             });
+
+                        }
+                        else
+                        {
+                            var transaction = new CreateWalletTransactionDto
+                            {
+                                TenantWalletId = tenantWallet.Id,
+                                TransactionAmount = record.LogisticFee,
+                                TransactionType = WalletTransactionType.LogisticsFeeDeduction,
+                                TransactionNotes = $"Logistics fee deduction for order {record.OrderNumber}",
+                                DeductionStatus = WalletDeductionStatus.Pending,
+                                TradingMethods = WalletTradingMethods.LogisticsFee
+
+
+                            };
+
+                            var deductionResult = await _walletDeductionService.AddDeductionTransactionAsync(
+                                tenantWallet.Id,
+                                record.LogisticFee,
+                                transaction
+                            );
+
+                            // Initialize tenant notification tracking
+                            if (!tenantNotifications.ContainsKey(record.TenantId.Value))
+                            {
+                                tenantNotifications[record.TenantId.Value] = new BatchRetryResult();
+                            }
+
+                            var tenantResult = tenantNotifications[record.TenantId.Value];
+                            tenantResult.FileName = record.LogisticsFeeFileImport.OriginalFileName;
+                            tenantResult.FileType = record.LogisticsFeeFileImport.FileType.ToString();
+
+                            if (deductionResult.TransactionStatus == WalletDeductionStatus.Completed && deductionResult.Id != Guid.Empty)
+                            {
+                                record.MarkAsDeducted(deductionResult.Id);
+                                result.SuccessCount++;
+                                tenantResult.SuccessCount++;
+                                tenantResult.SuccessfulAmount += record.LogisticFee;
+
+
+                                result.Results.Add(new RetryRecordResult
+                                {
+                                    RecordId = record.Id,
+                                    Success = true
+                                });
+                            }
+                            else
+                            {
+                                record.MarkAsFailed("Retry failed");
+                                result.FailureCount++;
+                                tenantResult.FailureCount++;
+                                tenantResult.FileName = record.LogisticsFeeFileImport.OriginalFileName;
+                                tenantResult.FileType = record.LogisticsFeeFileImport.FileType.ToString();
+
+
+
+                                result.Results.Add(new RetryRecordResult
+                                {
+                                    RecordId = record.Id,
+                                    Success = false,
+                                    Reason = ""
+                                });
+                            }
                         }
                     }
-                }
-              
-                await _recordRepository.UpdateAsync(record);
-            }
 
-            // Send notifications to each affected tenant
-            foreach (var kvp in tenantNotifications)
-            {
-                try
-                {
-                    await _notificationService.SendRetryNotificationAsync(kvp.Key, kvp.Value);
+                    await _recordRepository.UpdateAsync(record);
                 }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex, "Failed to send retry notification to tenant: {TenantId}", kvp.Key);
-                }
-            }
 
-            _logger.LogInformation("Batch retry completed. Success: {SuccessCount}, Failed: {FailureCount}",
-                result.SuccessCount, result.FailureCount);
-           var file= await _fileImportRepository.GetAsync(fileId);
-            if (file.SuccessfulRecords == file.TotalRecords)
-            {
-                file.SuccessProcessing("");
+                // Send notifications to each affected tenant
+                foreach (var kvp in tenantNotifications)
+                {
+                    try
+                    {
+                        await _notificationService.SendRetryNotificationAsync(kvp.Key, kvp.Value);
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, "Failed to send retry notification to tenant: {TenantId}", kvp.Key);
+                    }
+                }
+
+                _logger.LogInformation("Batch retry completed. Success: {SuccessCount}, Failed: {FailureCount}",
+                    result.SuccessCount, result.FailureCount);
+                var file = await _fileImportRepository.GetAsync(fileId);
+                if (file.SuccessfulRecords == file.TotalRecords)
+                {
+                    file.SuccessProcessing("");
+                }
+                else if (file.SuccessfulRecords > 0)
+                {
+                    file.PartialSuccessProcessing("");
+                }
+                return result;
             }
-            else if (file.SuccessfulRecords > 0)
-            {
-                file.PartialSuccessProcessing("");
-            }
-            return result;
         }
 
         public async Task<PagedResultDto<TenantLogisticsFeeFileProcessingSummaryDto>> GetTenantSummariesAsync(
