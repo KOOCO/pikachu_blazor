@@ -1910,6 +1910,7 @@
     "Enum:NotificationFilter.4": "退款",
     "Enum:NotificationFilter.5": "退貨",
     "Enum:NotificationFilter.6": "轉帳",
-    "NoNotificationsFound": "沒有找到通知。"
+    "NoNotificationsFound": "沒有找到通知。",
+    "VipSettingsUpdated": "VIP tier settings have been successfully updated and saved."
   }
 }

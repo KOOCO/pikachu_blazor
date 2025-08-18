@@ -49,7 +49,7 @@ public partial class VipTiers
             }
             await VipTierSettingAppService.UpdateAsync(Entity);
             await ResetAsync();
-            await Notify.Success("Updated");
+            await Message.Success(L["VipSettingsUpdated"]);
         }
         catch (Exception ex)
         {

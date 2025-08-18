@@ -1942,6 +1942,7 @@
     "Enum:NotificationFilter.4": "Refunds",
     "Enum:NotificationFilter.5": "Returns",
     "Enum:NotificationFilter.6": "Transfers",
-    "NoNotificationsFound": "No notifications found."
+    "NoNotificationsFound": "No notifications found.",
+    "VipSettingsUpdated": "VIP tier settings have been successfully updated and saved."
   }
 }
