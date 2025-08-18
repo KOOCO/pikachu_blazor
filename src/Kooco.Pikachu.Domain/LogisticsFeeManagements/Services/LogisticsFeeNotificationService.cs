@@ -75,9 +75,10 @@ namespace Kooco.Pikachu.LogisticsFeeManagements.Services
                 }
 
                 var subject = "Logistics Fee Retry Processing Complete";
-                var body = BuildRetryNotificationBody(tenant.Name, result,result.FileName,result.FileType,DateTime.Now);
-
-                await _emailSender.SendAsync(tenant.GetProperty<string>("TenantContactEmail"), subject, body);
+                var body = BuildRetryNotificationBody(tenant.Name, result, result.FileName, result.FileType, DateTime.Now);
+                // Convert to HTML
+                var htmlBody = ConvertPlainTextToHtml(body);
+                await _emailSender.SendAsync(tenant.GetProperty<string>("TenantContactEmail"), subject, htmlBody);
 
                 _logger.LogInformation("Retry notification sent to tenant: {TenantId}", tenantId);
             }
@@ -197,12 +198,44 @@ namespace Kooco.Pikachu.LogisticsFeeManagements.Services
 
             return sb.ToString();
         }
+        private string ConvertPlainTextToHtml(string plainText)
+        {
+            if (string.IsNullOrEmpty(plainText))
+                return string.Empty;
 
+            // HTML encode the text to prevent XSS and handle special characters
+            var htmlEncoded = System.Web.HttpUtility.HtmlEncode(plainText);
+
+            // Replace line breaks with HTML line breaks
+            var htmlBody = htmlEncoded
+                .Replace("\r\n", "<br>")
+                .Replace("\n", "<br>")
+                .Replace("\r", "<br>");
+
+            // Wrap in HTML structure with proper styling
+            return $@"<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <style>
+        body {{ 
+            font-family: Arial, sans-serif; 
+            line-height: 1.6; 
+            margin: 20px;
+            white-space: pre-line;
+        }}
+    </style>
+</head>
+<body>
+    {htmlBody}
+</body>
+</html>";
+        }
         public string GetRetryNotificationSubject()
         {
             return _localizer["Email:Subject:LogisticsFeeRetryProcessing"];
         }
 
-      
+
     }
 }
