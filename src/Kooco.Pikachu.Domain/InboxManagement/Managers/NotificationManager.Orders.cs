@@ -125,6 +125,26 @@ public partial class NotificationManager
             );
     }
 
+    public Task ReturnRequestedAsync(NotificationArgs input)
+    {
+        return CreateOrderNotificationSafeAsync(
+            NotificationType.Return,
+            ReturnRequestedTitle,
+            ReturnRequestedMessage,
+            input
+            );
+    }
+
+    public Task ExchangeRequestedAsync(NotificationArgs input)
+    {
+        return CreateOrderNotificationSafeAsync(
+            NotificationType.Exchange,
+            ExchangeRequestedTitle,
+            ExchangeRequestedMessage,
+            input
+            );
+    }
+
     public Task ReturnStatusUpdatedAsync(NotificationArgs input)
     {
         return CreateOrderNotificationSafeAsync(

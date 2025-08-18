@@ -1,4 +1,5 @@
 ﻿using Kooco.Pikachu.EnumValues;
+using Kooco.Pikachu.InboxManagement.Managers;
 using Kooco.Pikachu.OrderItems;
 using Kooco.Pikachu.Orders;
 using Kooco.Pikachu.Orders.Entities;
@@ -21,6 +22,7 @@ public class ReturnAndExchangeAppService : PikachuAppService, IReturnAndExchange
     protected IRepository<OrderItem, Guid> OrderItemRepository { get; }
     protected OrderHistoryManager OrderHistoryManager { get; }
     protected OrderBuilder OrderBuilder { get; }
+    protected NotificationManager NotificationManager { get; }
 
     public ReturnAndExchangeAppService(
         IOrderRepository orderRepository,
@@ -28,7 +30,8 @@ public class ReturnAndExchangeAppService : PikachuAppService, IReturnAndExchange
         IOrderDeliveryRepository orderDeliveryRepository,
         IRepository<OrderItem, Guid> orderItemRepository,
         OrderHistoryManager orderHistoryManager,
-        OrderBuilder orderBuilder
+        OrderBuilder orderBuilder,
+        NotificationManager notificationManager
         )
     {
         OrderRepository = orderRepository;
@@ -37,6 +40,7 @@ public class ReturnAndExchangeAppService : PikachuAppService, IReturnAndExchange
         OrderItemRepository = orderItemRepository;
         OrderHistoryManager = orderHistoryManager;
         OrderBuilder = orderBuilder;
+        NotificationManager = notificationManager;
     }
 
     public async Task ReturnOrderAsync(Guid id)
@@ -78,12 +82,19 @@ public class ReturnAndExchangeAppService : PikachuAppService, IReturnAndExchange
              currentUserId,
              currentUserName
         );
+
+        await NotificationManager.ReturnRequestedAsync(
+            NotificationArgs.ForOrderWithUserName(
+                order.Id,
+                order.OrderNo,
+                currentUserName
+            ));
     }
 
     public async Task ExchangeOrderAsync(Guid id)
     {
         var order = await OrderRepository.GetAsync(id);
-        
+
         var oldReturnStatus = order.ReturnStatus;
         var oldOrderStatus = order.OrderStatus;
         order.ShippingStatusBeforeReturn = order.ShippingStatus;
@@ -92,7 +103,7 @@ public class ReturnAndExchangeAppService : PikachuAppService, IReturnAndExchange
         order.ShippingStatus = ShippingStatus.Exchange;
 
         await OrderRepository.UpdateAsync(order);
-        
+
         var currentUserId = CurrentUser.Id ?? Guid.Empty;
         var currentUserName = CurrentUser.UserName ?? "System";
 
@@ -119,6 +130,13 @@ public class ReturnAndExchangeAppService : PikachuAppService, IReturnAndExchange
              currentUserId,
              currentUserName
         );
+
+        await NotificationManager.ExchangeRequestedAsync(
+            NotificationArgs.ForOrderWithUserName(
+                order.Id,
+                order.OrderNo,
+                currentUserName
+            ));
     }
 
     public async Task<OrderDto> ReturnAndExchangeItemsAsync(Guid orderId, List<OrderItemDto> orderItemsInput, bool isReturn)
@@ -199,6 +217,25 @@ public class ReturnAndExchangeAppService : PikachuAppService, IReturnAndExchange
                 currentUserId,
                 currentUserName
             );
+
+            if (isReturn)
+            {
+                await NotificationManager.ReturnRequestedAsync(
+                    NotificationArgs.ForOrderWithUserName(
+                        order.Id, 
+                        order.OrderNo, 
+                        currentUserName
+                    ));
+            }
+            else
+            {
+                await NotificationManager.ExchangeRequestedAsync(
+                    NotificationArgs.ForOrderWithUserName(
+                        order.Id, 
+                        order.OrderNo, 
+                        currentUserName
+                    ));
+            }
 
             return ObjectMapper.Map<Order, OrderDto>(order);
         }

@@ -3,7 +3,7 @@
 #pragma warning disable RS0016 // Add public types and members to the declared API
 public static class NotificationConsts
 {
-    public const string DefaultSorting = "CreationTime DESC";
+    public const string DefaultSorting = "NotificationTimeUtc DESC";
     public const int MaxTitleLength = 256;
     public const int MaxMessageLength = 256;
     public const int MaxParamsJsonLength = 2048;
@@ -49,6 +49,12 @@ public static class NotificationKeys
 
         public const string OrderStatusUpdatedTitle = OrderPrefix + "OrderStatusUpdatedTitle";
         public const string OrderStatusUpdatedMessage = OrderPrefix + "OrderStatusUpdatedMessage";
+
+        public const string ReturnRequestedTitle = OrderPrefix + "ReturnRequestedTitle";
+        public const string ReturnRequestedMessage = OrderPrefix + "ReturnRequestedMessage";
+
+        public const string ExchangeRequestedTitle = OrderPrefix + "ExchangeRequestedTitle";
+        public const string ExchangeRequestedMessage = OrderPrefix + "ExchangeRequestedMessage";
 
         public const string ReturnStatusUpdatedTitle = OrderPrefix + "ReturnStatusUpdatedTitle";
         public const string ReturnStatusUpdatedMessage = OrderPrefix + "ReturnStatusUpdatedMessage";
