@@ -25,7 +25,7 @@ public partial class NotificationActionColumn
         _ => ""
     };
 
-    string OrderDetails => string.Format("/Orders/OrderDetails/{0}", P(OrderId));
+    string OrderDetails => !string.IsNullOrWhiteSpace(P(OrderId)) ? string.Format("/Orders/OrderDetails/{0}", P(OrderId)) : "/Orders";
     static string RefundList => "/Refund";
     static string ReturnExchangeList => "/Orders/ReturnAndExchangeOrder";
     string P(string key) => Notification.Parameters.GetValueOrDefault(key) ?? string.Empty;

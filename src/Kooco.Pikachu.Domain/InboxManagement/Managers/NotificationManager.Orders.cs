@@ -195,6 +195,36 @@ public partial class NotificationManager
             );
     }
 
+    public Task InactiveOrdersClosedAsync(NotificationArgs input)
+    {
+        return CreateOrderNotificationSafeAsync(
+            NotificationType.Order,
+            InactiveOrdersClosedTitle,
+            InactiveOrdersClosedMessage,
+            input
+            );
+    }
+
+    public Task PaymentProcessedAsync(NotificationArgs input)
+    {
+        return CreateOrderNotificationSafeAsync(
+            NotificationType.Payment,
+            PaymentProcessedTitle,
+            PaymentProcessedMessage,
+            input
+            );
+    }
+
+    public Task OrderExpiredAsync(NotificationArgs input)
+    {
+        return CreateOrderNotificationSafeAsync(
+           NotificationType.Order,
+           OrderExpiredTitle,
+           OrderExpiredMessage,
+           input
+           );
+    }
+
     static (NotificationType, string, string) OrderCreateParams(PaymentMethods? paymentMethod)
     {
         return paymentMethod == PaymentMethods.ManualBankTransfer
@@ -217,16 +247,17 @@ public partial class NotificationManager
         if (!string.IsNullOrWhiteSpace(input.OrderIdStr)) dict[OrderId] = input.OrderIdStr;
         if (!string.IsNullOrWhiteSpace(input.OrderNo)) dict[OrderNo] = input.OrderNo;
         if (!string.IsNullOrWhiteSpace(input.UserName)) dict[UserName] = input.UserName;
+        if (input.Count.HasValue) dict[Count] = input.Count.Value.ToString("N0");
 
         if (input.PreviousPaymentMethod.HasValue) dict[PreviousPaymentMethod] = input.PreviousPaymentMethod.ToString();
         if (input.PaymentMethod.HasValue) dict[PaymentMethod] = input.PaymentMethod.ToString();
-        
+
         if (input.PreviousShippingStatus.HasValue) dict[PreviousShippingStatus] = input.PreviousShippingStatus.ToString();
         if (input.ShippingStatus.HasValue) dict[NotificationParams.ShippingStatus] = input.ShippingStatus.ToString();
-        
+
         if (input.PreviousOrderStatus.HasValue) dict[PreviousOrderStatus] = input.PreviousOrderStatus.ToString();
         if (input.OrderStatus.HasValue) dict[NotificationParams.OrderStatus] = input.OrderStatus.ToString();
-        
+
         if (input.PreviousReturnStatus.HasValue) dict[PreviousReturnStatus] = input.PreviousReturnStatus.ToString();
         if (input.ReturnStatus.HasValue) dict[ReturnStatus] = input.ReturnStatus.ToString();
 

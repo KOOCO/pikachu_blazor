@@ -32,6 +32,7 @@
 @code {
     private NotificationService? _notificationService;
     private long UnreadCount = 0;
+    private string? SelectedClass = string.Empty;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -58,6 +59,8 @@
     private async Task OnUnreadCountChanged(long count)
     {
         UnreadCount = count;
+        var currentUri = (new Uri(NavigationManager.Uri)).PathAndQuery;
+        SelectedClass = currentUri == "/Inbox-Management" ? "selected" : "";
         await InvokeAsync(StateHasChanged);
     }
 

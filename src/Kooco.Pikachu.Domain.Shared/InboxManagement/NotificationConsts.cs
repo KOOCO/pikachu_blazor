@@ -73,6 +73,15 @@ public static class NotificationKeys
 
         public const string OrderClosedTitle = OrderPrefix + "OrderClosedTitle";
         public const string OrderClosedMessage = OrderPrefix + "OrderClosedMessage";
+
+        public const string InactiveOrdersClosedTitle = OrderPrefix + "InactiveOrdersClosedTitle";
+        public const string InactiveOrdersClosedMessage = OrderPrefix + "InactiveOrdersClosedMessage";
+
+        public const string PaymentProcessedTitle = OrderPrefix + "PaymentProcessedTitle";
+        public const string PaymentProcessedMessage = OrderPrefix + "PaymentProcessedMessage";
+
+        public const string OrderExpiredTitle = OrderPrefix + "OrderExpiredTitle";
+        public const string OrderExpiredMessage = OrderPrefix + "OrderExpiredMessage";
     }
 }
 
@@ -81,6 +90,7 @@ public static class NotificationParams
     public const string OrderId = "OrderId";
     public const string OrderNo = "OrderNo";
     public const string UserName = "UserName";
+    public const string Count = "Count";
     
     public const string PreviousPaymentMethod = "PreviousPaymentMethod";
     public const string PaymentMethod = "PaymentMethod";

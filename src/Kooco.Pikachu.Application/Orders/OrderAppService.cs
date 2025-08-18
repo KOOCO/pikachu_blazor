@@ -2796,6 +2796,15 @@ public class OrderAppService : PikachuAppService, IOrderAppService
                     currentUserName
                 );
 
+                await NotificationManager.ShippingStatusUpdatedAsync(
+                    NotificationArgs.ForShippingStatusUpdated(
+                        order.Id,
+                        order.OrderNo,
+                        currentUserName,
+                        oldShippingStatus,
+                        order.ShippingStatus
+                    ));
+
                 await SendEmailAsync(order.Id);
             }
         }
@@ -2851,6 +2860,8 @@ public class OrderAppService : PikachuAppService, IOrderAppService
                     orderHistoryList.Add(orderStatusHistory);
                 }
             }
+
+            await NotificationManager.InactiveOrdersClosedAsync(NotificationArgs.ForCount(ordersToClose?.Count ?? 0));
 
             await OrderHistoryRepository.InsertManyAsync(orderHistoryList);
         }
@@ -2910,6 +2921,13 @@ public class OrderAppService : PikachuAppService, IOrderAppService
                 var orderTransaction = new OrderTransaction(GuidGenerator.Create(), order.Id, order.OrderNo,
                     order.TotalAmount, TransactionType.Payment, TransactionStatus.Successful, PaymentChannel.EcPay);
                 await OrderTransactionManager.CreateAsync(orderTransaction);
+
+                await NotificationManager.PaymentProcessedAsync(
+                    NotificationArgs.ForOrderWithUserName(
+                        order.Id,
+                        order.OrderNo,
+                        currentUserName
+                    ));
 
                 await CreateOrderDeliveriesAsync(order);
 
@@ -3219,6 +3237,13 @@ public class OrderAppService : PikachuAppService, IOrderAppService
                     currentUserId,
                     currentUserName
                 );
+
+                await NotificationManager.OrderExpiredAsync(
+                    NotificationArgs.ForOrderWithUserName(
+                        order.Id,
+                        order.OrderNo,
+                        currentUserName
+                    ));
             }
         }
     }

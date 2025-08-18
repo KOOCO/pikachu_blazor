@@ -19,7 +19,6 @@ public partial class Inbox
 
     protected override async Task OnInitializedAsync()
     {
-        await GetNotificationsCountAsync();
         await GetNotificationsAsync();
     }
 
@@ -54,6 +53,8 @@ public partial class Inbox
 
             Notifications.AddRange([.. data.Items]);
             TotalCount = data.TotalCount;
+
+            await GetNotificationsCountAsync();
         }
         catch (Exception ex)
         {
@@ -73,7 +74,6 @@ public partial class Inbox
             Notifications = [];
             Loading = true;
             await NotificationAppService.MarkAllReadAsync(PageCancellationToken);
-            await GetNotificationsCountAsync();
             await GetNotificationsAsync();
         }
         catch (Exception ex)

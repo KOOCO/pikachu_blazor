@@ -9,13 +9,15 @@ public class NotificationArgs
     public string? OrderIdStr => OrderId?.ToString();
     public string? OrderNo { get; private set; }
     public string? UserName { get; private set; }
-    
+
+    public int? Count { get; private set; }
+
     public PaymentMethods? PreviousPaymentMethod { get; private set; }
     public PaymentMethods? PaymentMethod { get; private set; }
-    
+
     public ShippingStatus? PreviousShippingStatus { get; private set; }
     public ShippingStatus? ShippingStatus { get; private set; }
-    
+
     public OrderStatus? PreviousOrderStatus { get; private set; }
     public OrderStatus? OrderStatus { get; private set; }
 
@@ -103,4 +105,6 @@ public class NotificationArgs
             PreviousReturnStatus = previousReturnStatus,
             ReturnStatus = returnStatus
         };
+
+    public static NotificationArgs ForCount(int? count) => new() { Count = count };
 }
