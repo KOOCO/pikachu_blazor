@@ -1902,6 +1902,8 @@
     "Notification:Orders:PaymentProcessedMessage": "訂單 #{OrderNo} 的付款已由「{UserName}」處理。",
     "Notification:Orders:OrderExpiredTitle": "訂單已過期 #{OrderNo}",
     "Notification:Orders:OrderExpiredMessage": "訂單 #{OrderNo} 已由「{UserName}」標記為過期。",
+    "Notification:Orders:NewOrderMessageTitle": "已收到訂單訊息 #{OrderNo}",
+    "Notification:Orders:NewOrderMessageMessage": "您已收到一則與訂單 #{OrderNo} 相關的新訊息。",
     "RelativeTime:JustNow": "剛剛",
     "RelativeTime:SecondsAgo": "{0} 秒前",
     "RelativeTime:MinutesAgo": "{0} 分鐘前",

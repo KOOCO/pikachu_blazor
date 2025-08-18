@@ -117,6 +117,12 @@
     color: #f1c40f;
 }
 
+.stats-icon.cyan,
+.type-icon.cyan {
+    background-color: rgba(26, 188, 156, 0.1);
+    color: #1abc9c;
+}
+
 .actions-container {
     margin-bottom: 1rem;
 }

@@ -245,6 +245,16 @@ public partial class NotificationManager
            );
     }
 
+    public Task NewOrderMessageAsync(NotificationArgs input)
+    {
+        return CreateOrderNotificationSafeAsync(
+            NotificationType.OrderMessage,
+            NewOrderMessageTitle,
+            NewOrderMessageMessage,
+            input
+            );
+    }
+
     static (NotificationType, string, string) OrderCreateParams(PaymentMethods? paymentMethod)
     {
         return paymentMethod == PaymentMethods.ManualBankTransfer

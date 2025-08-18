@@ -1,4 +1,5 @@
-﻿using Kooco.Pikachu.Orders.Entities;
+﻿using Kooco.Pikachu.InboxManagement.Managers;
+using Kooco.Pikachu.Orders.Entities;
 using Kooco.Pikachu.Orders.Interfaces;
 using Kooco.Pikachu.Orders.Repositories;
 using Microsoft.AspNetCore.Authorization;
@@ -14,7 +15,12 @@ using Volo.Abp.Application.Services;
 namespace Kooco.Pikachu.Orders;
 
 [AllowAnonymous]
-public class OrderMessageAppService(IOrderMessageRepository orderMessageRepository, IHubContext<OrderNotificationHub> hubContext,IOrderRepository orderRepository) : ApplicationService, IOrderMessageAppService
+public class OrderMessageAppService(
+    IOrderMessageRepository orderMessageRepository, 
+    IHubContext<OrderNotificationHub> hubContext,
+    IOrderRepository orderRepository,
+    NotificationManager notificationManager
+    ) : ApplicationService, IOrderMessageAppService
 {
     // Retrieve an OrderMessage by ID
     public async Task<OrderMessageDto> GetAsync(Guid id)
@@ -82,6 +88,16 @@ public class OrderMessageAppService(IOrderMessageRepository orderMessageReposito
             ShippingStatus = order.ShippingStatus.ToString(),
             PaymentMethod=order.PaymentMethod.ToString()
         });
+
+        if (!orderMessage.IsMerchant)
+        {
+            await notificationManager.NewOrderMessageAsync(
+                NotificationArgs.ForOrder(
+                    order.Id,
+                    order.OrderNo
+                    ));
+        }
+
         return ObjectMapper.Map<OrderMessage, OrderMessageDto>(orderMessage);
     }
 

@@ -88,6 +88,9 @@ public static class NotificationKeys
 
         public const string OrderExpiredTitle = OrderPrefix + "OrderExpiredTitle";
         public const string OrderExpiredMessage = OrderPrefix + "OrderExpiredMessage";
+
+        public const string NewOrderMessageTitle = OrderPrefix + "NewOrderMessageTitle";
+        public const string NewOrderMessageMessage = OrderPrefix + "NewOrderMessageMessage";
     }
 }
 

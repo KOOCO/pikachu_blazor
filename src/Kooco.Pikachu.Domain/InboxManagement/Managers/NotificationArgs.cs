@@ -35,6 +35,15 @@ public class NotificationArgs
             OrderNo = orderNo
         };
 
+    public static NotificationArgs ForOrder(
+        Guid orderId,
+        string orderNo
+        ) => new()
+        {
+            OrderId = orderId,
+            OrderNo = orderNo
+        };
+
     public static NotificationArgs ForOrderWithUserName(
         Guid orderId,
         string orderNo,

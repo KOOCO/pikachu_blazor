@@ -1934,6 +1934,8 @@
     "Notification:Orders:PaymentProcessedMessage": "Payment for order #{OrderNo} has been processed by '{UserName}'.",
     "Notification:Orders:OrderExpiredTitle": "Order expired #{OrderNo}",
     "Notification:Orders:OrderExpiredMessage": "Order #{OrderNo} has been marked expired by '{UserName}'.",
+    "Notification:Orders:NewOrderMessageTitle": "Order message received #{OrderNo}",
+    "Notification:Orders:NewOrderMessageMessage": "A new message received against order #{OrderNo}.",
     "RelativeTime:JustNow": "just now",
     "RelativeTime:SecondsAgo": "{0} seconds ago",
     "RelativeTime:MinutesAgo": "{0} minutes ago",

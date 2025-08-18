@@ -19,7 +19,7 @@ public partial class NotificationActionColumn
 
     string Url => Notification.Type switch
     {
-        Order or BankTransfer or Payment => OrderDetails,
+        Order or BankTransfer or Payment or OrderMessage => OrderDetails,
         Refund => RefundList,
         Return or Exchange => ReturnExchangeList,
         _ => ""

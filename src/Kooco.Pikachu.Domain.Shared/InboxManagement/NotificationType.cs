@@ -7,5 +7,6 @@ public enum NotificationType
     Refund,
     Return,
     Exchange,
-    Payment
+    Payment,
+    OrderMessage
 }
