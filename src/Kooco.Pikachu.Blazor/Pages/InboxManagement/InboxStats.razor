@@ -1,43 +1,49 @@
-﻿@inherits PikachuComponentBase
-<div class="stats-container">
-    <div class="stats-card">
-        <div class="stats-icon purple">
-            <i class="fas fa-box"></i>
+﻿@using Kooco.Pikachu.InboxManagement
+@inherits PikachuComponentBase
+
+@if (Model != null)
+{
+    <div class="stats-container">
+        <div class="stats-card">
+            <div class="stats-icon purple">
+                <i class="fas fa-box"></i>
+            </div>
+            <div class="stats-info">
+                <h3>@Model.Orders</h3>
+                <p class="m-0">@(L["OrderMessages"])</p>
+            </div>
         </div>
-        <div class="stats-info">
-            <h3>8</h3>
-            <p class="m-0">@(L["OrderMessages"])</p>
+        <div class="stats-card">
+            <div class="stats-icon green">
+                <i class="fas fa-credit-card"></i>
+            </div>
+            <div class="stats-info">
+                <h3>@Model.BankTransfers</h3>
+                <p class="m-0">@(L["BankTransfers"])</p>
+            </div>
+        </div>
+        <div class="stats-card">
+            <div class="stats-icon orange">
+                <i class="fas fa-refresh"></i>
+            </div>
+            <div class="stats-info">
+                <h3>@Model.ReturnsAndExchanges</h3>
+                <p class="m-0">@(L["ReturnsAndExchanges"])</p>
+            </div>
+        </div>
+        <div class="stats-card">
+            <div class="stats-icon red">
+                <i class="fas fa-dollar"></i>
+            </div>
+            <div class="stats-info">
+                <h3>@Model.Refund</h3>
+                <p class="m-0">@(L["RefundRequests"])</p>
+            </div>
         </div>
     </div>
-    <div class="stats-card">
-        <div class="stats-icon green">
-            <i class="fas fa-credit-card"></i>
-        </div>
-        <div class="stats-info">
-            <h3>8</h3>
-            <p class="m-0">@(L["BankTransfers"])</p>
-        </div>
-    </div>
-    <div class="stats-card">
-        <div class="stats-icon orange">
-            <i class="fas fa-refresh"></i>
-        </div>
-        <div class="stats-info">
-            <h3>8</h3>
-            <p class="m-0">@(L["ReturnsAndExchanges"])</p>
-        </div>
-    </div>
-    <div class="stats-card">
-        <div class="stats-icon red">
-            <i class="fas fa-dollar"></i>
-        </div>
-        <div class="stats-info">
-            <h3>8</h3>
-            <p class="m-0">@(L["RefundRequests"])</p>
-        </div>
-    </div>
-</div>
+}
 
 @code {
     [Parameter] public bool Loading { get; set; }
+    [Parameter] public NotificationsCountDto Model { get; set; }
 }

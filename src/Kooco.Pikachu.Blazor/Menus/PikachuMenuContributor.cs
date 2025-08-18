@@ -1,4 +1,5 @@
-﻿using Kooco.Pikachu.Localization;
+﻿using Kooco.Pikachu.Blazor.Pages.InboxManagement.Toolbar;
+using Kooco.Pikachu.Localization;
 using Kooco.Pikachu.MultiTenancy;
 using Kooco.Pikachu.Orders.Interfaces;
 using Kooco.Pikachu.Permissions;
@@ -47,6 +48,15 @@ public class PikachuMenuContributor : IMenuContributor
                 order: 0
             )
         );
+
+        context.Menu.AddItem(new ApplicationMenuItem(
+            PikachuMenus.InboxManagement,
+            displayName: l["Menu:Inbox"],
+            icon: "fas fa-bell",
+            order: 1,
+            requiredPermissionName: PikachuPermissions.Inbox.Default,
+            url: "/Inbox-Management"
+            ).UseComponent<InboxMenuItemComponent>());
 
         var productmangment =
          new ApplicationMenuItem(

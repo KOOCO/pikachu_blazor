@@ -132,7 +132,7 @@
     margin-right: 10px;
 }
 
-.notification-table.table-responsive {
+.notification-table .table-responsive {
     min-height: unset;
     max-height: 59vh;
     margin: 0;

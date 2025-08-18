@@ -18,8 +18,16 @@ public class EfCoreNotificationRepository : EfCoreRepository<PikachuDbContext, N
     {
     }
 
+    public async Task<long> CountUnreadAsync(CancellationToken cancellationToken = default)
+    {
+        var queryable = await GetQueryableAsync();
+        return await queryable
+            .Where(q => !q.IsRead)
+            .LongCountAsync(cancellationToken);
+    }
+
     public async Task<long> LongCountAsync(
-        NotificationFilter filter = NotificationFilter.All, 
+        NotificationFilter filter = NotificationFilter.All,
         CancellationToken cancellationToken = default
         )
     {
@@ -29,9 +37,9 @@ public class EfCoreNotificationRepository : EfCoreRepository<PikachuDbContext, N
     }
 
     public async Task<List<Notification>> GetListAsync(
-        int skipCount = 0, 
-        int maxResultCount = 10, 
-        string? sorting = null, 
+        int skipCount = 0,
+        int maxResultCount = 10,
+        string? sorting = null,
         NotificationFilter filter = NotificationFilter.All,
         bool asNoTracking = false,
         CancellationToken cancellationToken = default
@@ -40,10 +48,10 @@ public class EfCoreNotificationRepository : EfCoreRepository<PikachuDbContext, N
         cancellationToken.ThrowIfCancellationRequested();
 
         var queryable = await GetFilteredQueryableAsync(filter, asNoTracking, cancellationToken);
-        
+
         return await queryable
-            .OrderBy(string.IsNullOrWhiteSpace(sorting) 
-                ? NotificationConsts.DefaultSorting 
+            .OrderBy(string.IsNullOrWhiteSpace(sorting)
+                ? NotificationConsts.DefaultSorting
                 : sorting
                 )
             .PageBy(skipCount, maxResultCount)
@@ -64,7 +72,34 @@ public class EfCoreNotificationRepository : EfCoreRepository<PikachuDbContext, N
             .WhereIf(filter == NotificationFilter.Unread, x => !x.IsRead)
             .WhereIf(filter == NotificationFilter.Today, x => x.CreationTime.Date == DateTime.Today)
             .WhereIf(filter == NotificationFilter.Orders, x => x.Type == NotificationType.Order)
+            .WhereIf(filter == NotificationFilter.Refunds, x => x.Type == NotificationType.Refund)
+            .WhereIf(filter == NotificationFilter.Returns, x => x.Type == NotificationType.Return || x.Type == NotificationType.Exchange)
+            .WhereIf(filter == NotificationFilter.Transfers, x => x.Type == NotificationType.BankTransfer)
             .Include(q => q.ReadBy);
+    }
+
+    public async Task<NotificationsCountModel> GetNotificationsCountAsync(CancellationToken cancellationToken = default)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+
+        var queryable = await GetFilteredQueryableAsync(NotificationFilter.Unread, asNoTracking: true, cancellationToken);
+
+        var grouped = await queryable
+            .GroupBy(q => q.Type)
+            .Select(g => new
+            {
+                Type = g.Key,
+                Count = g.Count()
+            })
+            .ToListAsync(cancellationToken);
+
+        return new NotificationsCountModel
+        {
+            Orders = grouped.FirstOrDefault(x => x.Type == NotificationType.Order)?.Count ?? 0,
+            BankTransfers = grouped.FirstOrDefault(x => x.Type == NotificationType.BankTransfer)?.Count ?? 0,
+            ReturnsAndExchanges = grouped.FirstOrDefault(x => x.Type == NotificationType.Return || x.Type == NotificationType.Exchange)?.Count ?? 0,
+            Refund = grouped.FirstOrDefault(x => x.Type == NotificationType.Refund)?.Count ?? 0
+        };
     }
 
     public async Task MarkAllReadAsync(Guid? userId, CancellationToken cancellationToken = default)

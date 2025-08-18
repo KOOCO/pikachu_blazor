@@ -9,6 +9,8 @@ namespace Kooco.Pikachu.InboxManagement;
 
 public interface INotificationRepository : IRepository<Notification, Guid>
 {
+    Task<long> CountUnreadAsync(CancellationToken cancellationToken = default);
+
     Task<long> LongCountAsync(
         NotificationFilter filter = NotificationFilter.All,
         CancellationToken cancellationToken = default
@@ -28,6 +30,8 @@ public interface INotificationRepository : IRepository<Notification, Guid>
         bool asNoTracking = false,
         CancellationToken cancellationToken = default
         );
+
+    Task<NotificationsCountModel> GetNotificationsCountAsync(CancellationToken cancellationToken = default);
 
     Task MarkAllReadAsync(Guid? userId, CancellationToken cancellationToken = default);
 }

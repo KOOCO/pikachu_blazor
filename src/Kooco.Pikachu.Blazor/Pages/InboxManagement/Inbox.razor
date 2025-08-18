@@ -7,7 +7,7 @@
 
 <h3 class="text-dark">@L["Inbox"]</h3>
 
-<InboxStats Loading="Loading" />
+<InboxStats Loading="Loading" Model="NotificationsCount" />
 
 <InboxActions Loading="Loading"
               @bind-Filter="@Filter"
@@ -15,66 +15,68 @@
               OnMarkAllRead="MarkAllReadAsync">
 </InboxActions>
 
-<Table Responsive Class="notification-table">
-    <TableHeader>
-        <TableRow>
-            <TableHeaderCell>@L["Type"]</TableHeaderCell>
-            <TableHeaderCell>@L["Description"]</TableHeaderCell>
-            <TableHeaderCell TextAlignment="TextAlignment.Center">@L["Status"]</TableHeaderCell>
-            <TableHeaderCell>@L["Time"]</TableHeaderCell>
-            <TableHeaderCell>@L["Actions"]</TableHeaderCell>
-        </TableRow>
-    </TableHeader>
-    <TableBody>
-        @if (Notifications?.Count > 0)
-        {
-            @foreach (var notification in Notifications)
+<Div Class="notification-table">
+    <Table Responsive>
+        <TableHeader>
+            <TableRow>
+                <TableHeaderCell>@L["Type"]</TableHeaderCell>
+                <TableHeaderCell>@L["Description"]</TableHeaderCell>
+                <TableHeaderCell TextAlignment="TextAlignment.Center">@L["Status"]</TableHeaderCell>
+                <TableHeaderCell>@L["Time"]</TableHeaderCell>
+                <TableHeaderCell>@L["Actions"]</TableHeaderCell>
+            </TableRow>
+        </TableHeader>
+        <TableBody>
+            @if (Notifications?.Count > 0)
             {
-                <TableRow Class="@("notification-row " + (notification.IsRead ? "read" : "unread"))">
-                    <TableRowCell Style="width: 100px;">
-                        <NotificationTypeColumn Notification="notification" />
-                    </TableRowCell>
-                    <TableRowCell Style="width: auto; min-width: 250px;">
-                        <h5 class="notification-title">@L.WithParams(notification.Title, notification.Parameters)</h5>
-                        <p class="notification-message">@L.WithParams(notification.Message, notification.Parameters)</p>
-                    </TableRowCell>
-                    <TableRowCell Style="width: 100px;">
-                        <NotificationStatus Notification="notification" Localizer="@L" />
-                    </TableRowCell>
-                    <TableRowCell Style="width: 150px;">
-                        <RelativeTime Time="@notification.NotificationTimeUtc" />
-                    </TableRowCell>
-                    <TableRowCell Style="width: 100px;">
-                        <NotificationActionColumn Notification="notification" OnView="OnView" OnToggleRead="OnToggleRead" />
+                @foreach (var notification in Notifications)
+                {
+                    <TableRow Class="@("notification-row " + (notification.IsRead ? "read" : "unread"))">
+                        <TableRowCell Style="width: 100px;">
+                            <NotificationTypeColumn Notification="notification" />
+                        </TableRowCell>
+                        <TableRowCell Style="width: auto; min-width: 250px;">
+                            <h5 class="notification-title">@L.WithParams(notification.Title, notification.Parameters)</h5>
+                            <p class="notification-message">@L.WithParams(notification.Message, notification.Parameters)</p>
+                        </TableRowCell>
+                        <TableRowCell Style="width: 100px;">
+                            <NotificationStatus Notification="notification" Localizer="@L" />
+                        </TableRowCell>
+                        <TableRowCell Style="width: 150px;">
+                            <RelativeTime Time="@notification.NotificationTimeUtc" />
+                        </TableRowCell>
+                        <TableRowCell Style="width: 100px;">
+                            <NotificationActionColumn Notification="notification" OnView="OnView" OnToggleRead="OnToggleRead" />
+                        </TableRowCell>
+                    </TableRow>
+                }
+            }
+            else if (!Loading)
+            {
+                <TableRow>
+                    <TableRowCell ColumnSpan="5" class="text-center">
+                        <p>@L["NoNotificationsFound"]</p>
                     </TableRowCell>
                 </TableRow>
             }
-        }
-        else if (!Loading)
-        {
-            <TableRow>
-                <TableRowCell ColumnSpan="5" class="text-center">
-                    <p>@L["NoNotificationsFound"]</p>
-                </TableRowCell>
-            </TableRow>
-        }
-        @if (Loading)
-        {
-            <TableRow>
-                <TableRowCell ColumnSpan="5">
-                    <Spinner />
-                </TableRowCell>
-            </TableRow>
-        }
-        @if (!Loading && TotalCount > Notifications?.Count)
-        {
-            <TableRow>
-                <TableRowCell ColumnSpan="5" class="text-center">
-                    <button class="btn btn-link" @onclick="() => GetNotificationsAsync(true)">
-                        @L["LoadMore"]
-                    </button>
-                </TableRowCell>
-            </TableRow>
-        }
-    </TableBody>
-</Table>
+            @if (Loading)
+            {
+                <TableRow>
+                    <TableRowCell ColumnSpan="5">
+                        <Spinner />
+                    </TableRowCell>
+                </TableRow>
+            }
+            @if (!Loading && TotalCount > Notifications?.Count)
+            {
+                <TableRow>
+                    <TableRowCell ColumnSpan="5" class="text-center">
+                        <button class="btn btn-link" @onclick="() => GetNotificationsAsync(true)">
+                            @L["LoadMore"]
+                        </button>
+                    </TableRowCell>
+                </TableRow>
+            }
+        </TableBody>
+    </Table>
+</Div>

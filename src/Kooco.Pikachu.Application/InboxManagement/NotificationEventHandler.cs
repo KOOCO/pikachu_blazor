@@ -30,7 +30,7 @@ public class NotificationEventHandler : ILocalEventHandler<NotificationCreatedEv
 
     private async Task PushUnreadCountAsync()
     {
-        var count = await _notificationRepository.LongCountAsync(NotificationFilter.Unread);
+        var count = await _notificationRepository.CountUnreadAsync();
         await _hubContext.Clients.All.SendAsync(NotificationKeys.UnreadCount, count);
     }
 }

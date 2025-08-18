@@ -45,6 +45,12 @@ public class NotificationAppService : PikachuAppService, INotificationAppService
         };
     }
 
+    public async Task<NotificationsCountDto> GetNotificationsCountAsync(CancellationToken cancellationToken = default)
+    {
+        var counts = await _notificationRepository.GetNotificationsCountAsync(cancellationToken);
+        return ObjectMapper.Map<NotificationsCountModel, NotificationsCountDto>(counts);
+    }
+
     public async Task MarkAllReadAsync(CancellationToken cancellationToken = default)
     {
         cancellationToken.ThrowIfCancellationRequested();

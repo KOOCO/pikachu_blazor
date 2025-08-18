@@ -12,13 +12,27 @@ public partial class Inbox
 {
     [CascadingParameter] public CancellationToken PageCancellationToken { get; set; }
     private List<NotificationDto> Notifications { get; set; } = [];
+    private NotificationsCountDto NotificationsCount { get; set; } = new();
     private NotificationFilter Filter { get; set; } = NotificationFilter.All;
     private long TotalCount { get; set; }
     private bool Loading { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
+        await GetNotificationsCountAsync();
         await GetNotificationsAsync();
+    }
+
+    async Task GetNotificationsCountAsync()
+    {
+        try
+        {
+            NotificationsCount = await NotificationAppService.GetNotificationsCountAsync(PageCancellationToken);
+        }
+        catch (Exception ex)
+        {
+            await HandleErrorAsync(ex);
+        }
     }
 
     async Task GetNotificationsAsync(bool loadMore = false)
@@ -59,6 +73,7 @@ public partial class Inbox
             Notifications = [];
             Loading = true;
             await NotificationAppService.MarkAllReadAsync(PageCancellationToken);
+            await GetNotificationsCountAsync();
             await GetNotificationsAsync();
         }
         catch (Exception ex)
@@ -86,6 +101,8 @@ public partial class Inbox
             {
                 Notifications[index] = updatedRecord;
             }
+
+            await GetNotificationsCountAsync();
         }
         catch (Exception ex)
         {

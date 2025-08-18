@@ -1,0 +1,127 @@
+﻿@using Kooco.Pikachu.InboxManagement
+@implements IAsyncDisposable
+@inject NavigationManager NavigationManager
+@inject INotificationRepository NotificationRepository
+@inherits PikachuComponentBase
+
+@{
+    var currentUri = (new Uri(NavigationManager.Uri)).PathAndQuery;
+    var selectedClass = currentUri == "/Inbox-Management" ? "selected" : "";
+}
+
+<a href="Inbox-Management"
+   class="lpx-menu-item-link lpx-menu-item my-2 @selectedClass"
+   id="Inbox-Management">
+
+    <span class="lpx-menu-item-icon">
+        <i class="lpx-icon fas fa-bell" aria-hidden="true"></i>
+
+        @if (UnreadCount > 0)
+        {
+            <span class="inbox-count-badge @(UnreadCount > 99 ? "large-count" : "")">
+                @(UnreadCount > 99 ? "99+" : UnreadCount.ToString())
+            </span>
+        }
+    </span>
+
+    <span class="lpx-menu-item-text hidden-in-hover-trigger">
+        @L["Menu:Inbox"]
+    </span>
+</a>
+
+@code {
+    private NotificationService? _notificationService;
+    private long UnreadCount = 0;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try
+            {
+                _notificationService = new NotificationService(NotificationRepository, NavigationManager);
+                _notificationService.UnreadCountChanged += OnUnreadCountChanged;
+
+                await _notificationService.InitializeAsync();
+                UnreadCount = _notificationService.UnreadCount;
+
+                StateHasChanged();
+            }
+            catch (Exception ex)
+            {
+                // Log error or handle as needed
+                Console.WriteLine($"Failed to initialize notification service: {ex.Message}");
+            }
+        }
+    }
+
+    private async Task OnUnreadCountChanged(long count)
+    {
+        UnreadCount = count;
+        await InvokeAsync(StateHasChanged);
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_notificationService != null)
+        {
+            _notificationService.UnreadCountChanged -= OnUnreadCountChanged;
+            await _notificationService.DisposeAsync();
+        }
+    }
+}
+
+<style>
+    .lpx-menu-item-icon {
+        position: relative;
+        display: inline-block;
+    }
+
+    .inbox-count-badge {
+        position: absolute;
+        right: 0px;
+        top: -5px;
+        border: 1px solid lightgrey;
+        background: linear-gradient(135deg, #dc3545, #c82333);
+        color: white;
+        border-radius: 10px;
+        min-width: 18px;
+        height: 18px;
+        font-size: 11px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        line-height: 1;
+        z-index: 1000;
+        box-shadow: 0 2px 6px rgba(220, 53, 69, 0.4);
+        animation: badgeAppear 0.3s ease-out;
+    }
+
+        .inbox-count-badge.large-count {
+            min-width: 24px;
+            padding: 0 4px;
+            font-size: 10px;
+        }
+
+    .lpx-menu-item-link:hover .inbox-count-badge {
+        transform: scale(1.05);
+    }
+
+    @@keyframes badgeAppear {
+        0% {
+            transform: scale(0);
+            opacity: 0;
+        }
+
+        50% {
+            transform: scale(1.2);
+            opacity: 0.8;
+        }
+
+        100% {
+            transform: scale(1);
+            opacity: 1;
+        }
+    }
+</style>

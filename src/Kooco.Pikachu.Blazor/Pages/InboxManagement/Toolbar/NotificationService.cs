@@ -39,7 +39,7 @@ public class NotificationService : IAsyncDisposable
         await _hubConnection.StartAsync();
 
         // Get initial unread count
-        _unreadCount = await _notificationRepository.LongCountAsync(NotificationFilter.Unread);
+        _unreadCount = await _notificationRepository.CountUnreadAsync();
         await NotifyUnreadCountChanged();
 
         _isInitialized = true;

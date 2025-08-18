@@ -14,6 +14,6 @@ public class NotificationHub : AbpHub
 
     public async Task<long> GetUnreadCountAsync()
     {
-        return await _notificationRepository.LongCountAsync(NotificationFilter.Unread);
+        return await _notificationRepository.CountUnreadAsync();
     }
 }
