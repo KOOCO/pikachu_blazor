@@ -47,4 +47,14 @@ public interface IMemberRepository : IIdentityUserRepository, IRepository<Identi
 
     Task<List<(Guid id, string name, string email)>> GetEdmMemberNameAndEmailAsync(bool applyToAllMembers, IEnumerable<string> memberTags);
     Task<VipTierProgressModel> GetMemberTierProgressAsync(Guid memberId);
+
+    Task<MemberMessagesWithCount> GetMemberMessagesAsync(
+        Guid memberId,
+        int skipCount = 0,
+        int maxResultCount = 0,
+        string? sorting = null,
+        bool? isRead = false,
+        Guid? orderId = null,
+        bool? isMerchant = null
+        );
 }

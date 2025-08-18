@@ -679,5 +679,11 @@ public class OrderController : AbpController, IOrderAppService
         return _ordersAppService.GetManualBankTransferRecordAsync(orderId);
     }
 
+    [HttpPatch("{orderId}/messages/status")]
+    public Task UpdatedOrderMessageStatusAsync(Guid orderId, bool isRead = true)
+    {
+        return _ordersAppService.UpdatedOrderMessageStatusAsync(orderId, isRead);
+    }
+
     #endregion
 }

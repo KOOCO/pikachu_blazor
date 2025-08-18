@@ -4,6 +4,7 @@ using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.Localization;
 using Kooco.Pikachu.Members.MemberTags;
 using Kooco.Pikachu.Orders;
+using Kooco.Pikachu.Orders.Entities;
 using Kooco.Pikachu.TierManagement;
 using Kooco.Pikachu.UserShoppingCredits;
 using Microsoft.EntityFrameworkCore;
@@ -371,7 +372,7 @@ public class EfCoreMemberRepository(IDbContextProvider<PikachuDbContext> pikachu
 
     public async Task<List<MemberCreditRecordModel>> GetMemberCreditRecordListAsync(int skipCount, int maxResultCount,
         string sorting, string? filter, DateTime? usageTimeFrom, DateTime? usageTimeTo, DateTime? expirationTimeFrom,
-        DateTime? expirationTimeTo, int? minRemainingCredits, int? maxRemainingCredits, int? minAmount, int? maxAmount, 
+        DateTime? expirationTimeTo, int? minRemainingCredits, int? maxRemainingCredits, int? minAmount, int? maxAmount,
         Guid? userId, UserShoppingCreditType? shoppingCreditType)
     {
         var queryable = await GetMemberCreditRecordQueryableAsync(filter, usageTimeFrom, usageTimeTo, expirationTimeFrom, expirationTimeTo,
@@ -509,7 +510,7 @@ public class EfCoreMemberRepository(IDbContextProvider<PikachuDbContext> pikachu
                     : null;
         var isOrdersBased = vipTierSettings.TierCondition != null
                     || (vipTierSettings.TierCondition == null && vipTierSettings.BasedOnCount);
-        var isAmountBased = vipTierSettings.TierCondition != null 
+        var isAmountBased = vipTierSettings.TierCondition != null
             || (vipTierSettings.TierCondition == null && vipTierSettings.BasedOnAmount);
 
         return new VipTierProgressModel
@@ -535,6 +536,35 @@ public class EfCoreMemberRepository(IDbContextProvider<PikachuDbContext> pikachu
                 CountingSince = dateFrom
             }
             : null
+        };
+    }
+
+    public async Task<MemberMessagesWithCount> GetMemberMessagesAsync(
+        Guid memberId,
+        int skipCount = 0,
+        int maxResultCount = 0,
+        string? sorting = null,
+        bool? isRead = false,
+        Guid? orderId = null,
+        bool? isMerchant = null
+        )
+    {
+        var dbContext = await GetPikachuDbContextAsync();
+
+        var query = dbContext.OrderMessages
+            .Where(m => m.SenderId == memberId)
+            .WhereIf(isRead.HasValue, m => m.IsRead == isRead)
+            .WhereIf(orderId.HasValue, m => m.OrderId == orderId)
+            .WhereIf(isMerchant.HasValue, m => m.IsMerchant == isMerchant);
+
+        return new MemberMessagesWithCount
+        {
+            MemberId = memberId,
+            TotalCount = await query.LongCountAsync(),
+            Messages = await query
+                .OrderBy(string.IsNullOrWhiteSpace(sorting) ? "CreationTime DESC" : sorting)
+                .PageBy(skipCount, maxResultCount)
+                .ToListAsync()
         };
     }
 }

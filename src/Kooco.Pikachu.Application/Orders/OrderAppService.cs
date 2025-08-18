@@ -3306,6 +3306,14 @@ public class OrderAppService : PikachuAppService, IOrderAppService
         }
     }
 
+    [AllowAnonymous]
+    public async Task UpdatedOrderMessageStatusAsync(Guid orderId, bool isRead = true)
+    {
+        var orderMessages = await OrderMessageRepository.GetListAsync(x => x.OrderId == orderId && x.IsRead != isRead);
+        orderMessages.ForEach(m => m.IsRead = isRead);
+        await OrderMessageRepository.UpdateManyAsync(orderMessages);
+    }
+
     public required MemberTagManager MemberTagManager { get; init; }
     public required OrderManager OrderManager { get; init; }
     public required OrderHistoryManager OrderHistoryManager { get; init; }

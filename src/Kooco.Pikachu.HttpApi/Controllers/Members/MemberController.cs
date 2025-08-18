@@ -180,7 +180,7 @@ public class MemberController(IMemberAppService memberAppService, IPikachuAccoun
         return memberAppService.GetMemberOrdersByGroupBuyAsync(groupBuyId);
     }
     [HttpGet("order/list/{memberId}/{groupBuyId}")]
-    public Task<List<MemberOrderInfoDto>> GetMemberOrdersByGroupBuyAsync(Guid memberId,Guid groupBuyId)
+    public Task<List<MemberOrderInfoDto>> GetMemberOrdersByGroupBuyAsync(Guid memberId, Guid groupBuyId)
     {
         return memberAppService.GetMemberOrdersByGroupBuyAsync(memberId, groupBuyId);
     }
@@ -201,5 +201,11 @@ public class MemberController(IMemberAppService memberAppService, IPikachuAccoun
     public Task<VipTierProgressDto> GetMemberTierProgressAsync(Guid memberId)
     {
         return memberAppService.GetMemberTierProgressAsync(memberId);
+    }
+
+    [HttpGet("{memberId}/messages")]
+    public Task<MemberMessagesWithCountDto> GetMemberMessagesAsync(Guid memberId, GetMemberMessageListDto input)
+    {
+        return memberAppService.GetMemberMessagesAsync(memberId, input);
     }
 }

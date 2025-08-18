@@ -37,4 +37,5 @@ public interface IMemberAppService : IApplicationService
     Task<List<MemberOrderInfoDto>> GetMemberOrdersByGroupBuyAsync(Guid groupBuyId);
     Task<List<MemberOrderInfoDto>> GetMemberOrdersByGroupBuyAsync(Guid memberId, Guid groupBuyId);
     Task<VipTierProgressDto> GetMemberTierProgressAsync(Guid memberId);
+    Task<MemberMessagesWithCountDto> GetMemberMessagesAsync(Guid memberId, GetMemberMessageListDto input);
 }

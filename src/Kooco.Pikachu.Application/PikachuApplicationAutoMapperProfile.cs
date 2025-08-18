@@ -453,5 +453,9 @@ public class PikachuApplicationAutoMapperProfile : Profile
         CreateMap<Notification, NotificationDto>()
             .ForMember(dest => dest.ReadByName, opt => opt.MapFrom(src => src.ReadBy.UserName));
         CreateMap<NotificationsCountModel, NotificationsCountDto>();
+
+        CreateMap<MemberMessagesWithCount, MemberMessagesWithCountDto>();
+        CreateMap<OrderMessage, MemberMessageDto>()
+            .ForMember(dest => dest.MessageId, opt => opt.MapFrom(src => src.Id));
     }
 }
