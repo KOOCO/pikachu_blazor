@@ -1923,6 +1923,10 @@
     "Enum:NotificationFilter.5": "退貨",
     "Enum:NotificationFilter.6": "轉帳",
     "NoNotificationsFound": "沒有找到通知。",
-    "VipSettingsUpdated": "VIP tier settings have been successfully updated and saved."
+    "VipSettingsUpdated": "VIP tier settings have been successfully updated and saved.",
+    "ShortCodePatternDoesnotMatch": "「簡碼格式不符合要求！僅允許字母和數字，且長度需在為4 到 12 個字元」",
+    "Pikachu:GroupBuyShortCodeCannotBeNull": "「請輸入團購簡碼」",
+    "SelfPickup": "自取",
+    "ShortCodeAlreadyExist": "簡碼已存在"
   }
 }

@@ -2864,7 +2864,7 @@ public partial class EditGroupBuy
 
                 if (check)
                 {
-                    await _uiMessageService.Warn(L["Short Code Alredy Exist"]);
+                    await _uiMessageService.Warn(L["ShortCodeAlreadyExist"]);
                     await Loading.Hide();
                     return;
                 }

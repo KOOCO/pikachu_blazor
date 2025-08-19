@@ -1955,6 +1955,7 @@
     "Enum:NotificationFilter.5": "Returns",
     "Enum:NotificationFilter.6": "Transfers",
     "NoNotificationsFound": "No notifications found.",
-    "VipSettingsUpdated": "VIP tier settings have been successfully updated and saved."
+    "VipSettingsUpdated": "VIP tier settings have been successfully updated and saved.",
+    "ShortCodeAlreadyExist": "Short Code Already Exist"
   }
 }
