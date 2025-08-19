@@ -426,7 +426,7 @@ public partial class LogisticsProviderSettings
     {
         try
         {
-            bool confirm = await _uiMessageService.Confirm(L["AreYouSureToUpdate7-11Normal?"]);
+            bool confirm = await _uiMessageService.Confirm(L["AreYouSureToUpdateTCat7-11Normal?"]);
 
             if (!confirm) return;
 
@@ -451,7 +451,7 @@ public partial class LogisticsProviderSettings
     {
         try
         {
-            bool confirm = await _uiMessageService.Confirm(L["AreYouSureToUpdate7-11Freeze?"]);
+            bool confirm = await _uiMessageService.Confirm(L["AreYouSureToUpdateTCat7-11Freeze?"]);
 
             if (!confirm) return;
 
@@ -476,7 +476,7 @@ public partial class LogisticsProviderSettings
     {
         try
         {
-            bool confirm = await _uiMessageService.Confirm(L["AreYouSureToUpdate7-11Frozen?"]);
+            bool confirm = await _uiMessageService.Confirm(L["AreYouSureToUpdateTCat7-11Frozen?"]);
 
             if (!confirm) return;
 
@@ -776,7 +776,7 @@ public partial class LogisticsProviderSettings
     {
         try
         {
-            bool confirm = await _uiMessageService.Confirm(L["Are you sure you want to update TCat?"]);
+            bool confirm = await _uiMessageService.Confirm(L["AreyousureyouwanttoupdateTCat?"]);
 
             if (!confirm) return;
 

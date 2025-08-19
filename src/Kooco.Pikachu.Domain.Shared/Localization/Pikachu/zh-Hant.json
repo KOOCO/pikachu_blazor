@@ -45,10 +45,11 @@
     "AreYouSureToCancelOrder?": "您是否確定要取消此筆訂單？",
     "AreYouSureToDeleteSelectedItem": "請確認是否要刪除已選擇商品?",
     "AreYouSureToRefundThisOrder?": "您確定要對訂單退款嗎？",
-    "AreYouSureToUpdateGreenWorld?": "您確定要更新綠界物流B2C嗎?",
-    "AreYouSureToUpdateHomeDelivery?": "您確定要更新親送嗎?",
-
-    "AreYouSureToUpdateGreenWorldC2C?": "您確定要更新綠界物流C2C嗎?",
+    "AreYouSureToUpdateGreenWorld?": "您確定要更新綠界超商B2C物流設定嗎?",
+    "AreYouSureToUpdateHomeDelivery?": "您確定要更新自行運送物流設定嗎?",
+    "AreYouSureToUpdateFamilyMart?": "您確定要更新全家B2C設定嗎?",
+    "AreYouSureToUpdate7-11?": "您確定要更新7-11 B2C設定嗎?",
+    "AreYouSureToUpdateGreenWorldC2C?": "您確定要更新綠界超商C2C物流設定嗎?",
     "AreYouSureToUpdateSortOrder": "你確定你要更新排列順序?",
     "AutoIssueTriplicateInvoice": "自動開立三聯式電子發票",
     "AutomaticEmailing": "自動發信",
@@ -1927,6 +1928,26 @@
     "ShortCodePatternDoesnotMatch": "「簡碼格式不符合要求！僅允許字母和數字，且長度需在為4 到 12 個字元」",
     "Pikachu:GroupBuyShortCodeCannotBeNull": "「請輸入團購簡碼」",
     "SelfPickup": "自取",
-    "ShortCodeAlreadyExist": "簡碼已存在"
+    "ShortCodeAlreadyExist": "簡碼已存在",
+    "AreYouSureToUpdateEcPayHomeDelivery?": "您確定要更新綠界宅配物流設定嗎?",
+    "AreYouSureToUpdatePostOffice?": "您確定要更新郵局設定嗎?",
+    "AreYouSureToUpdateBNormal?": "您確定要更新黑貓常溫設定嗎?",
+    "AreYouSureToUpdateBFreeze?": "您確定要更新黑貓冷藏設定嗎?",
+    "AreYouSureToUpdateBNFrozen?": "您確定要更新黑貓冷凍設定嗎?",
+    "AreYouSureToUpdate7-11Frozen?": "您確定要更新7-11 B2C 冷凍設定嗎?",
+    "AreYouSureToUpdateFamilyMartC2C?": "您確定要更新綠界全家C2C設定嗎?",
+    "AreYouSureToUpdate7-11C2C?": "您確定要更新綠界7-11 C2C設定嗎?",
+    "Automaticallygeneratedbythesystemaftersaving": "系統將在儲存後自動更新此欄位。",
+    "AreyousureyouwanttoupdateTCat?": "您確定要更新黑貓宅急便物流設定嗎?",
+    "AreYouSureToUpdateTCatNormal?": "您確定要更新黑貓宅配常溫設定嗎?",
+    "AreYouSureToUpdateTCatFreeze?": "您確定要更新黑貓宅配冷藏設定嗎?",
+    "AreYouSureToUpdateTCatFrozen?": "您確定要更新黑貓宅配冷凍設定嗎?",
+    "AreYouSureToUpdate7-11Normal?": "您確定要更新黑貓7-11到店常溫設定嗎?",
+    "AreYouSureToUpdate7-11Freeze?": "您確定要更新黑貓7-11到店冷藏設定嗎?",
+    "AreYouSureToUpdateTCat7-11Frozen?": "您確定要更新黑貓7-11到店冷凍設定嗎?",
+    "AreYouSureToUpdateTCat7-11Freeze?": "您確定要更新黑貓7-11到店冷藏設定嗎?",
+    "AreYouSureToUpdateTCat7-11Normal?": "您確定要更新黑貓7-11到店冷凍設定嗎?"
+
+
   }
 }
