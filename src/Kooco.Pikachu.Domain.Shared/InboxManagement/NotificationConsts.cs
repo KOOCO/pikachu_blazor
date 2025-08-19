@@ -55,6 +55,9 @@ public static class NotificationKeys
         public const string RefundRequestedTitle = OrderPrefix + "RefundRequestedTitle";
         public const string RefundRequestedMessage = OrderPrefix + "RefundRequestedMessage";
 
+        public const string RefundApprovedTitle = OrderPrefix + "RefundApprovedTitle";
+        public const string RefundApprovedMessage = OrderPrefix + "RefundApprovedMessage";
+
         public const string ShippingStatusUpdatedTitle = OrderPrefix + "ShippingStatusUpdatedTitle";
         public const string ShippingStatusUpdatedMessage = OrderPrefix + "ShippingStatusUpdatedMessage";
 

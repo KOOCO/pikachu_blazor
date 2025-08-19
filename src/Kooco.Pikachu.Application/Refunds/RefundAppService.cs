@@ -1,5 +1,6 @@
 ﻿using Kooco.Pikachu.Emails;
 using Kooco.Pikachu.EnumValues;
+using Kooco.Pikachu.InboxManagement.Managers;
 using Kooco.Pikachu.Localization;
 using Kooco.Pikachu.LogisticsProviders;
 using Kooco.Pikachu.OrderDeliveries;
@@ -48,6 +49,8 @@ public class RefundAppService : ApplicationService, IRefundAppService
     private readonly IPaymentGatewayAppService _PaymentGatewayAppService;
     private readonly IEmailSender _EmailSender;
     private readonly IEmailAppService _emailAppService;
+    private readonly NotificationManager _notificationManager;
+
     GreenWorldLogisticsCreateUpdateDto GreenWorld { get; set; }
 
     private readonly IConfiguration _Configuration;
@@ -74,7 +77,8 @@ public class RefundAppService : ApplicationService, IRefundAppService
         IUserShoppingCreditRepository userShoppingCreditRepository,
         UserShoppingCreditManager userShoppingCreditManager,
         IUserCumulativeCreditRepository userCumulativeCreditRepository,
-        IUserCumulativeCreditAppService userCumulativeCreditAppService
+        IUserCumulativeCreditAppService userCumulativeCreditAppService,
+        NotificationManager notificationManager
     )
     {
         _refundRepository = refundRepository;
@@ -93,6 +97,7 @@ public class RefundAppService : ApplicationService, IRefundAppService
         _userShoppingCreditManager = userShoppingCreditManager;
         _userCumulativeCreditRepository = userCumulativeCreditRepository;
         _userCumulativeCreditAppService = userCumulativeCreditAppService;
+        _notificationManager = notificationManager;
     }
     #endregion
 
@@ -121,6 +126,14 @@ public class RefundAppService : ApplicationService, IRefundAppService
    currentUserId,
    currentUserName
 );
+
+        await _notificationManager.RefundRequestedAsync(
+                NotificationArgs.ForOrderWithUserName(
+                    order.Id,
+                    order.OrderNo,
+                    currentUserName
+                ));
+
         await _orderRepository.UpdateAsync(order);
 
         /// ToDo: Send Refund Email Here, and also change status for order
@@ -202,6 +215,12 @@ public class RefundAppService : ApplicationService, IRefundAppService
 
         if (input is RefundReviewStatus.Success)
         {
+            await _notificationManager.RefundApprovedAsync(
+                NotificationArgs.ForOrderWithUserName(
+                    order.Id,
+                    order.OrderNo,
+                    CurrentUser?.UserName ?? "System"
+                ));
             await _emailAppService.SendRefundEmailAsync(refund.OrderId, (double)refund.Order.TotalAmount);
         }
         await _orderRepository.UpdateAsync(order);
@@ -466,7 +485,6 @@ public class RefundAppService : ApplicationService, IRefundAppService
             if (result.RtnCode is 1)
             {
                 refund.RefundReview = RefundReviewStatus.Success;
-
                 //if (!order.CustomerEmail.IsNullOrEmpty())
                 //await _emailAppService.SendRefundEmailAsync(order.Id, refundAmount);
             }

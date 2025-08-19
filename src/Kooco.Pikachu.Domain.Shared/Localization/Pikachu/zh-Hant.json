@@ -1862,52 +1862,79 @@
     "ReturnsAndExchanges": "退貨與換貨",
     "Notification:Orders:CreatedTitle": "訂單已建立 #{OrderNo}",
     "Notification:Orders:CreatedMessage": "一筆新訂單 #{OrderNo} 已建立。",
+
     "Notification:Orders:UpdatedTitle": "訂單已更新 #{OrderNo}",
     "Notification:Orders:UpdatedMessage": "訂單 #{OrderNo} 已由「{UserName}」修改。您可以在訂單歷史中查看變更。",
+
     "Notification:Orders:OrderItemsUpdatedTitle": "訂單商品已更新 #{OrderNo}",
     "Notification:Orders:OrderItemsUpdatedMessage": "訂單 #{OrderNo} 的商品已由「{UserName}」修改。您可以在訂單歷史中查看變更。",
+
     "Notification:Orders:ManualBankTransferTitle": "需要人工銀行轉帳驗證 #{OrderNo}",
     "Notification:Orders:ManualBankTransferMessage": "有一筆新訂單提交了人工銀行轉帳。在處理訂單前需要驗證。",
+
     "Notification:Orders:ManualBankTransferConfirmedTitle": "人工銀行轉帳已驗證 #{OrderNo}",
     "Notification:Orders:ManualBankTransferConfirmedMessage": "訂單 #{OrderNo} 的人工銀行轉帳已由「{UserName}」驗證。",
+
     "Notification:Orders:PaymentMethodUpdatedTitle": "付款方式已更新 #{OrderNo}",
     "Notification:Orders:PaymentMethodUpdatedMessage": "付款方式已由「{PreviousPaymentMethod}」變更為「{PaymentMethod}」，操作者：{UserName}。",
+
     "Notification:Orders:OrdersMergedTitle": "訂單已合併 #{OrderNo}",
     "Notification:Orders:OrdersMergedMessage": "訂單已合併為新訂單 #{OrderNo}，操作者：{UserName}。",
+
     "Notification:Orders:OrdersSplitTitle": "訂單已拆分 #{OrderNo}",
     "Notification:Orders:OrdersSplitMessage": "訂單 #{OrderNo} 已由「{UserName}」拆分。",
+
     "Notification:Orders:RefundRequestedTitle": "退款申請 #{OrderNo}",
     "Notification:Orders:RefundRequestedMessage": "訂單 #{OrderNo} 已由「{UserName}」申請退款。",
+
+    "Notification:Orders:RefundApprovedTitle": "退款已批准 #{OrderNo}",
+    "Notification:Orders:RefundApprovedMessage": "訂單 #{OrderNo} 的退款已由「{UserName}」批准。",
+
     "Notification:Orders:ShippingStatusUpdatedTitle": "出貨狀態已更新 #{OrderNo}",
     "Notification:Orders:ShippingStatusUpdatedMessage": "訂單 #{OrderNo} 的出貨狀態已由「{PreviousShippingStatus}」更新為「{ShippingStatus}」，操作者：{UserName}。",
+
     "Notification:Orders:OrderStatusUpdatedTitle": "訂單狀態已更新 #{OrderNo}",
     "Notification:Orders:OrderStatusUpdatedMessage": "訂單 #{OrderNo} 的狀態已由「{PreviousOrderStatus}」更新為「{OrderStatus}」，操作者：{UserName}。",
+
     "Notification:Orders:ReturnRequestedTitle": "退貨申請 #{OrderNo}",
     "Notification:Orders:ReturnRequestedMessage": "訂單 #{OrderNo} 的退貨申請，由「{UserName}」提出。",
+
     "Notification:Orders:ExchangeRequestedTitle": "換貨申請 #{OrderNo}",
     "Notification:Orders:ExchangeRequestedMessage": "訂單 #{OrderNo} 的換貨申請，由「{UserName}」提出。",
+
     "Notification:Orders:ReturnStatusUpdatedTitle": "退貨狀態已更新 #{OrderNo}",
     "Notification:Orders:ReturnStatusUpdatedMessage": "訂單 #{OrderNo} 的退貨狀態已由「{PreviousReturnStatus}」更新為「{ReturnStatus}」，操作者：{UserName}。",
+
     "Notification:Orders:OrderCancelledTitle": "訂單已取消 #{OrderNo}",
     "Notification:Orders:OrderCancelledMessage": "訂單 #{OrderNo} 已由「{UserName}」取消。",
+
     "Notification:Orders:InvoiceVoidedTitle": "發票已作廢 #{OrderNo}",
     "Notification:Orders:InvoiceVoidedMessage": "訂單 #{OrderNo} 的發票已由「{UserName}」作廢。",
+
     "Notification:Orders:CreditNoteIssuedTitle": "折讓單已開立 #{OrderNo}",
     "Notification:Orders:CreditNoteIssuedMessage": "訂單 #{OrderNo} 的折讓單已由「{UserName}」開立。",
+
     "Notification:Orders:ShippingDetailsUpdatedTitle": "出貨資料已更新 #{OrderNo}",
     "Notification:Orders:ShippingDetailsUpdatedMessage": "訂單 #{OrderNo} 的出貨資料已由「{UserName}」修改。",
+
     "Notification:Orders:OrderCompletedTitle": "訂單已完成 #{OrderNo}",
     "Notification:Orders:OrderCompletedMessage": "訂單 #{OrderNo} 已由「{UserName}」標記為完成。",
+
     "Notification:Orders:OrderClosedTitle": "訂單已結案 #{OrderNo}",
     "Notification:Orders:OrderClosedMessage": "訂單 #{OrderNo} 已由「{UserName}」標記為結案。",
+
     "Notification:Orders:InactiveOrdersClosedTitle": "訂單已關閉",
     "Notification:Orders:InactiveOrdersClosedMessage": "由於閒置，已有 {Count} 筆訂單被關閉。",
+
     "Notification:Orders:PaymentProcessedTitle": "付款已處理 #{OrderNo}",
     "Notification:Orders:PaymentProcessedMessage": "訂單 #{OrderNo} 的付款已由「{UserName}」處理。",
+
     "Notification:Orders:OrderExpiredTitle": "訂單已過期 #{OrderNo}",
     "Notification:Orders:OrderExpiredMessage": "訂單 #{OrderNo} 已由「{UserName}」標記為過期。",
+
     "Notification:Orders:NewOrderMessageTitle": "已收到訂單訊息 #{OrderNo}",
     "Notification:Orders:NewOrderMessageMessage": "您已收到一則與訂單 #{OrderNo} 相關的新訊息。",
+
     "RelativeTime:JustNow": "剛剛",
     "RelativeTime:SecondsAgo": "{0} 秒前",
     "RelativeTime:MinutesAgo": "{0} 分鐘前",

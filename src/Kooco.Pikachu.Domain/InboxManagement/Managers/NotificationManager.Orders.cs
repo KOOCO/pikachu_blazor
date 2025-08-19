@@ -105,6 +105,16 @@ public partial class NotificationManager
             );
     }
 
+    public Task RefundApprovedAsync(NotificationArgs input)
+    {
+        return CreateOrderNotificationSafeAsync(
+            NotificationType.Refund,
+            RefundApprovedTitle,
+            RefundApprovedMessage,
+            input
+            );
+    }
+
     public Task ShippingStatusUpdatedAsync(NotificationArgs input)
     {
         return CreateOrderNotificationSafeAsync(

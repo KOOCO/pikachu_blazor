@@ -1890,52 +1890,79 @@
     "ReturnsAndExchanges": "Returns & Exchanges",
     "Notification:Orders:CreatedTitle": "Order created #{OrderNo}",
     "Notification:Orders:CreatedMessage": "A new order #{OrderNo} has been created.",
+
     "Notification:Orders:UpdatedTitle": "Order updated #{OrderNo}",
     "Notification:Orders:UpdatedMessage": "Order #{OrderNo} has been modified by '{UserName}'. You may review the changes in order history.",
+
     "Notification:Orders:OrderItemsUpdatedTitle": "Order items updated #{OrderNo}",
     "Notification:Orders:OrderItemsUpdatedMessage": "Order items have been modified for #{OrderNo} by '{UserName}'. You may review the changes in the order history.",
+
     "Notification:Orders:ManualBankTransferTitle": "Manual bank transfer verification required #{OrderNo}",
     "Notification:Orders:ManualBankTransferMessage": "A new order is submitted with manual bank transfer. Needs verification before order is processed.",
+
     "Notification:Orders:ManualBankTransferConfirmedTitle": "Manual bank transfer verified #{OrderNo}",
     "Notification:Orders:ManualBankTransferConfirmedMessage": "Manual bank transfer for order #{OrderNo} has been verified by '{UserName}'.",
+
     "Notification:Orders:PaymentMethodUpdatedTitle": "Payment method updated #{OrderNo}",
     "Notification:Orders:PaymentMethodUpdatedMessage": "Payment method has been updated from '{PreviousPaymentMethod}' to '{PaymentMethod}' by '{UserName}'.",
+
     "Notification:Orders:OrdersMergedTitle": "Orders merged #{OrderNo}",
     "Notification:Orders:OrdersMergedMessage": "Orders have been merged to a new order #{OrderNo} by '{UserName}'.",
+
     "Notification:Orders:OrdersSplitTitle": "Order split #{OrderNo}",
     "Notification:Orders:OrdersSplitMessage": "Order #{OrderNo} has been split by '{UserName}'.",
+
     "Notification:Orders:RefundRequestedTitle": "Refund requested #{OrderNo}",
     "Notification:Orders:RefundRequestedMessage": "Refund for Order #{OrderNo} has been requested by '{UserName}'.",
+
+    "Notification:Orders:RefundApprovedTitle": "Refund approved #{OrderNo}",
+    "Notification:Orders:RefundApprovedMessage": "Refund for Order #{OrderNo} has been approved by '{UserName}'.",
+
     "Notification:Orders:ShippingStatusUpdatedTitle": "Shipping status updated #{OrderNo}",
     "Notification:Orders:ShippingStatusUpdatedMessage": "Shipping status for Order #{OrderNo} has been updated from '{PreviousShippingStatus}' to '{ShippingStatus}' by '{UserName}'.",
+
     "Notification:Orders:OrderStatusUpdatedTitle": "Order status updated #{OrderNo}",
     "Notification:Orders:OrderStatusUpdatedMessage": "Order status for Order #{OrderNo} has been updated from '{PreviousOrderStatus}' to '{OrderStatus}' by '{UserName}'.",
+
     "Notification:Orders:ReturnRequestedTitle": "Return requested #{OrderNo}",
     "Notification:Orders:ReturnRequestedMessage": "Return requested for order #{OrderNo} by '{UserName}'.",
+
     "Notification:Orders:ExchangeRequestedTitle": "Exchange requested #{OrderNo}",
     "Notification:Orders:ExchangeRequestedMessage": "Exchange requested for order #{OrderNo} by '{UserName}'.",
+
     "Notification:Orders:ReturnStatusUpdatedTitle": "Return status updated #{OrderNo}",
     "Notification:Orders:ReturnStatusUpdatedMessage": "Return status for order #{OrderNo} has been updated from '{PreviousReturnStatus}' to '{ReturnStatus}' by '{UserName}'.",
+
     "Notification:Orders:OrderCancelledTitle": "Order cancelled #{OrderNo}",
     "Notification:Orders:OrderCancelledMessage": "Order #{OrderNo} has been cancelled by '{UserName}'.",
+
     "Notification:Orders:InvoiceVoidedTitle": "Invoice voided #{OrderNo}",
     "Notification:Orders:InvoiceVoidedMessage": "Invoice for order #{OrderNo} has been voided by '{UserName}'.",
+
     "Notification:Orders:CreditNoteIssuedTitle": "Credit note issued #{OrderNo}",
     "Notification:Orders:CreditNoteIssuedMessage": "Credit note has been issued for order #{OrderNo} by '{UserName}'.",
+
     "Notification:Orders:ShippingDetailsUpdatedTitle": "Shipping details updated #{OrderNo}",
     "Notification:Orders:ShippingDetailsUpdatedMessage": "Shipping details for order #{OrderNo} have been modified by '{UserName}'.",
+
     "Notification:Orders:OrderCompletedTitle": "Order completed #{OrderNo}",
     "Notification:Orders:OrderCompletedMessage": "Order #{OrderNo} has been marked completed by '{UserName}'.",
+
     "Notification:Orders:OrderClosedTitle": "Order closed #{OrderNo}",
     "Notification:Orders:OrderClosedMessage": "Order #{OrderNo} has been marked closed by '{UserName}'.",
+
     "Notification:Orders:InactiveOrdersClosedTitle": "Orders closed",
     "Notification:Orders:InactiveOrdersClosedMessage": "{Count} orders have been closed due to inactivity.",
+
     "Notification:Orders:PaymentProcessedTitle": "Payment processed #{OrderNo}",
     "Notification:Orders:PaymentProcessedMessage": "Payment for order #{OrderNo} has been processed by '{UserName}'.",
+
     "Notification:Orders:OrderExpiredTitle": "Order expired #{OrderNo}",
     "Notification:Orders:OrderExpiredMessage": "Order #{OrderNo} has been marked expired by '{UserName}'.",
+
     "Notification:Orders:NewOrderMessageTitle": "Order message received #{OrderNo}",
     "Notification:Orders:NewOrderMessageMessage": "A new message received against order #{OrderNo}.",
+
     "RelativeTime:JustNow": "just now",
     "RelativeTime:SecondsAgo": "{0} seconds ago",
     "RelativeTime:MinutesAgo": "{0} minutes ago",
