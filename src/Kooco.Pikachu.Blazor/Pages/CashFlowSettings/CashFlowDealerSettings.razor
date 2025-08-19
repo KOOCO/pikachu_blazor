@@ -27,8 +27,9 @@
         <h4>@L["PaymentDeadline"]</h4>
     </CardHeader>
     <CardBody>
-        <EditForm Model="@OrderValidity" OnValidSubmit="UpdateOrderValidityAsync">
-            <DataAnnotationsValidator />
+
+        <EditForm  Model="@OrderValidity" OnValidSubmit="UpdateOrderValidityAsync">
+            <DataAnnotationsValidator  />
 
             <div class="row justify-content-center mb-2">
                 <div class="col-2 pt-2 text-end">
@@ -75,69 +76,110 @@
         <h4>@L["LinePay"]</h4>
     </CardHeader>
     <CardBody>
-        <EditForm Model="@LinePay" OnValidSubmit="UpdateLinePayAsync">
-            <DataAnnotationsValidator />
-            <div class="row justify-content-center mb-2">
-                <div class="col-2 text-end">
-                    <label class="form-label" for="l-enable-disable-switch">
-                        @L["Enable/Disable"]
-                    </label>
-                </div>
-                <div class="col-6">
-                    <Switch TValue="bool" id="l-enable-disable-switch" @bind-Checked="LinePay.IsEnabled" Disabled=IsLinePayNotExists />
-                </div>
+
+
+<Validations @ref="validations"   Mode="ValidationMode.Manual" Model="@LinePay">
+
+    <!-- Enable / Disable -->
+    <div class="row justify-content-center mb-2">
+        <div class="col-2 text-end">
+            <label class="form-label" for="l-enable-disable-switch">
+                @L["Enable/Disable"]
+            </label>
+        </div>
+        <div class="col-6">
+            <Switch TValue="bool"
+                    Id="l-enable-disable-switch"
+                    @bind-Checked="LinePay.IsEnabled"
+                    Disabled="IsLinePayNotExists" />
+        </div>
+    </div>
+
+    <!-- ChannelId (required) -->
+    <div class="row justify-content-center mb-2">
+        <div class="col-2 pt-2 text-end">
+            <label class="form-label" for="channel-id">
+                @L["ChannelId"] <span class="text-danger">*</span>
+            </label>
+        </div>
+        <div class="col-6">
+            <Validation Validator="ValidationRule.IsNotEmpty">
+                <TextEdit Id="channel-id"
+                          class="form-control"
+                          @bind-Text="LinePay.ChannelId"
+                          Placeholder="@L["EnterChannelId"]">
+                    <Feedback>
+                     
+                        <ValidationError>@L["ThisFieldIsRequired"]</ValidationError>
+                    </Feedback>
+                </TextEdit>
+            </Validation>
+        </div>
+    </div>
+
+    <!-- ChannelSecretKey (required) -->
+    <div class="row justify-content-center mb-2">
+        <div class="col-2 pt-2 text-end">
+            <label class="form-label" for="channel-secret-key">
+                @L["ChannelSecretKey"] <span class="text-danger">*</span>
+            </label>
+        </div>
+        <div class="col-6">
+            <Validation Validator="ValidationRule.IsNotEmpty">
+                <TextEdit Id="channel-secret-key"
+                          class="form-control"
+                          @bind-Text="LinePay.ChannelSecretKey"
+                          Placeholder="@L["EnterChannelSecretKey"]">
+                    <Feedback>
+                        
+                        <ValidationError>@L["ThisFieldIsRequired"]</ValidationError>
+                    </Feedback>
+                </TextEdit>
+            </Validation>
+        </div>
+    </div>
+
+    <!-- LinePointsRedemption -->
+    <div class="row justify-content-center mb-2">
+        <div class="col-2 text-end">
+            <label class="form-label" for="l-points-redemption">
+                @L["LinePointsRedemption"]
+            </label>
+        </div>
+        <div class="col-6">
+            <Switch TValue="bool"
+                    Id="l-points-redemption"
+                    @bind-Checked="LinePay.LinePointsRedemption"
+                    Disabled="IsLinePayNotExists" />
+        </div>
+    </div>
+
+    @if (IsLinePayNotExists)
+    {
+        <div class="row mt-3">
+            <div class="col-12 text-center">
+                <label class="form-label form-label-lg">
+                    <span class="text-danger">@L["PleaseFillInTheRequiredInformation"]</span>
+                </label>
             </div>
-            <div class="row justify-content-center mb-2">
-                <div class="col-2 pt-2 text-end">
-                    <label class="form-label" for="channel-id">
-                        @L["ChannelId"]
-                        <span class="text-danger"> *</span>
-                    </label>
-                </div>
-                <div class="col-6">
-                    <InputText id="channel-id" class="form-control" @bind-Value="LinePay.ChannelId"></InputText>
-                    <ValidationMessage For="@(() => LinePay.ChannelId)" />
-                </div>
-            </div>
-            <div class="row justify-content-center mb-2">
-                <div class="col-2 pt-2 text-end">
-                    <label class="form-label" for="channel-secret-key">
-                        @L["ChannelSecretKey"]
-                        <span class="text-danger"> *</span>
-                    </label>
-                </div>
-                <div class="col-6">
-                    <InputText id="channel-secret-key" class="form-control" @bind-Value="LinePay.ChannelSecretKey"></InputText>
-                    <ValidationMessage For="@(() => LinePay.ChannelSecretKey)" />
-                </div>
-            </div>
-            <div class="row justify-content-center mb-2">
-                <div class="col-2 text-end">
-                    <label class="form-label" for="channel-secret-key">
-                        @L["LinePointsRedemption"]
-                    </label>
-                </div>
-                <div class="col-6">
-                    <Switch TValue="bool" id="l-enable-disable-switch" @bind-Checked="LinePay.LinePointsRedemption" Disabled=IsLinePayNotExists />
-                </div>
-            </div>
-            @if (IsLinePayNotExists)
-            {
-                <div class="row mt-3">
-                    <div class="col-12 text-center">
-                        <label class="form-label form-label-lg"><span class="text-danger">@L["PleaseFillInTheRequiredInformation"]</span></label>
-                    </div>
-                </div>
-            }
-            <div class="row mt-3">
-                <div class="col-12 text-center">
-                    <Button Type="ButtonType.Submit" Class="btn btn-sm btn-primary">
-                        <i class="fa fa-check me-1"></i>
-                        @L["SaveChanges"]
-                    </Button>
-                </div>
-            </div>
-        </EditForm>
+        </div>
+    }
+
+    <div class="row mt-3">
+        <div class="col-12 text-center">
+            <Button Color="Color.Primary"
+                    Size="Size.Small"
+                    Clicked="OnSubmitAsync">
+                <i class="fa fa-check me-1"></i>
+                @L["SaveChanges"]
+            </Button>
+        </div>
+    </div>
+
+</Validations>
+
+
+
     </CardBody>
 </Card>
 

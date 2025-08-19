@@ -1946,7 +1946,8 @@
     "AreYouSureToUpdate7-11Freeze?": "您確定要更新黑貓7-11到店冷藏設定嗎?",
     "AreYouSureToUpdateTCat7-11Frozen?": "您確定要更新黑貓7-11到店冷凍設定嗎?",
     "AreYouSureToUpdateTCat7-11Freeze?": "您確定要更新黑貓7-11到店冷藏設定嗎?",
-    "AreYouSureToUpdateTCat7-11Normal?": "您確定要更新黑貓7-11到店冷凍設定嗎?"
+    "AreYouSureToUpdateTCat7-11Normal?": "您確定要更新黑貓7-11到店常溫設定嗎?",
+    "Validation:Required": "此欄位為必填"
 
 
   }

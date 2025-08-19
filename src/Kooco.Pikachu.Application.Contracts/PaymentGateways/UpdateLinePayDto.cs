@@ -6,10 +6,10 @@ namespace Kooco.Pikachu.PaymentGateways
     {
         public bool IsEnabled { get; set; }
 
-        [Required(ErrorMessage = "This Field Is Required")]
+        [Required(ErrorMessage = "Validation:Required")]
         public string ChannelId { get; set; }
 
-        [Required(ErrorMessage = "This Field Is Required")]
+        [Required(ErrorMessage = "Validation:Required")]
         public string ChannelSecretKey { get; set; }
 
         public bool LinePointsRedemption { get; set; }

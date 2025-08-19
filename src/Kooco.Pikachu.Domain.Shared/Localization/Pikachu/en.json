@@ -1294,7 +1294,7 @@
     "OrderClosedDueToInActivity": "Order Closed due to inactivity: {0} Status changed from '{1}' to '{2}'",
     "OrderCompletedDueToInActivity": "Order Completed due to inactivity: {0} Status changed from '{1}' to '{2}'",
     "AreYouSureToUpdatePostOffice?": "Are You Sure To Update Post Office ?",
-    "AreYouSureToUpdate7-11?": "Are You Sure To Update 7-11 ?",
+    "AreYouSureToUpdate7-11?": "Are You Sure To Update 7-11 B2C?",
     "AreYouSureToUpdate7-11C2C?": "Are You Sure To Update 7-11 C2C ?",
     "AreYouSureToUpdate7-11Frozen?": "Are You Sure To Update 7-11 B2C Frozen?",
     "AreYouSureToUpdate7-11Normal?": "Are You Sure To Update 7-11 B2C Normal ?",
@@ -1961,7 +1961,9 @@
     "AreyousureyouwanttoupdateTCat?": "Are you sure you want to update TCat?",
     "AreYouSureToUpdateTCat7-11Frozen?": "Are You Sure To Update T-Cat 7-11 Frozen ?",
     "AreYouSureToUpdateTCat7-11Freeze?": "Are You Sure To Update T-Cat 7-11 Freeze ?",
-    "AreYouSureToUpdateTCat7-11Normal?": "Are You Sure To Update T-Cat 7-11 Normal ?"
+    "AreYouSureToUpdateTCat7-11Normal?": "Are You Sure To Update T-Cat 7-11 Normal ?",
+    "Validation:Required": "This field is required"
+
 
   }
 }

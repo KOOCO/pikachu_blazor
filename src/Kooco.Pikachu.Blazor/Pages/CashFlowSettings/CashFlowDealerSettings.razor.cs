@@ -1,4 +1,5 @@
-﻿using Blazorise.LoadingIndicator;
+﻿using Blazorise;
+using Blazorise.LoadingIndicator;
 using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.PaymentGateways;
 using Microsoft.JSInterop;
@@ -13,7 +14,7 @@ public partial class CashFlowDealerSettings
 {
     #region Inject
     private UpdateLinePayDto LinePay { get; set; }
-
+    private Validations? validations;
     private bool IsLinePayNotExists = false;
 
     private bool IsChinaTrustNotExists = false;
@@ -63,7 +64,7 @@ public partial class CashFlowDealerSettings
             if (ecPay is not null) EcPay = ObjectMapper.Map<PaymentGatewayDto, UpdateEcPayDto>(ecPay);
 
             var manualBankTransfer = paymentGateways.FirstOrDefault(x => x.PaymentIntegrationType is PaymentIntegrationType.ManualBankTransfer);
-            
+
             ManualBankTransfer = ObjectMapper.Map<PaymentGatewayDto, UpdateManualBankTransferDto>(manualBankTransfer) ?? new();
 
             IsManualBankTransferNotExist = manualBankTransfer == null;
@@ -152,6 +153,14 @@ public partial class CashFlowDealerSettings
         }
     }
 
+
+    private async Task OnSubmitAsync()
+    {
+        if (validations is not null && await validations.ValidateAll())
+        {
+            await UpdateLinePayAsync();
+        }
+    }
     async Task UpdateLinePayAsync()
     {
         if (LinePay.ChannelId.IsNullOrWhiteSpace()
