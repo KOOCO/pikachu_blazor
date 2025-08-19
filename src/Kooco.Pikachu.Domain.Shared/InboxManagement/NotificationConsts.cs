@@ -17,13 +17,13 @@ public static class NotificationKeys
 {
     public const string Prefix = "Notification:";
     public const string UnreadCount = Prefix + "UnreadCount";
-    public const string TenantGroup = "Tenant:{0}";
-    public const string HostGroup = "Host";
+    public const string TenantGroup = Prefix + "Tenant:{0}";
+    public const string HostGroup = Prefix + "Host";
 
     public static string NotificationGroup(Guid? tenantId)
     {
         return tenantId.HasValue
-            ? string.Format(TenantGroup, tenantId.ToString())
+            ? string.Format(TenantGroup, tenantId?.ToString("D"))
             : HostGroup;
     }
 
@@ -57,6 +57,12 @@ public static class NotificationKeys
 
         public const string RefundApprovedTitle = OrderPrefix + "RefundApprovedTitle";
         public const string RefundApprovedMessage = OrderPrefix + "RefundApprovedMessage";
+
+        public const string RefundRejectedTitle = OrderPrefix + "RefundRejectedTitle";
+        public const string RefundRejectedMessage = OrderPrefix + "RefundRejectedMessage";
+
+        public const string RefundFailedTitle = OrderPrefix + "RefundFailedTitle";
+        public const string RefundFailedMessage = OrderPrefix + "RefundFailedMessage";
 
         public const string ShippingStatusUpdatedTitle = OrderPrefix + "ShippingStatusUpdatedTitle";
         public const string ShippingStatusUpdatedMessage = OrderPrefix + "ShippingStatusUpdatedMessage";

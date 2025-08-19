@@ -115,6 +115,26 @@ public partial class NotificationManager
             );
     }
 
+    public Task RefundRejectedAsync(NotificationArgs input)
+    {
+        return CreateOrderNotificationSafeAsync(
+            NotificationType.Refund,
+            RefundRejectedTitle,
+            RefundRejectedMessage,
+            input
+            );
+    }
+
+    public Task RefundFailedAsync(NotificationArgs input)
+    {
+        return CreateOrderNotificationSafeAsync(
+            NotificationType.Refund,
+            RefundFailedTitle,
+            RefundFailedMessage,
+            input
+            );
+    }
+
     public Task ShippingStatusUpdatedAsync(NotificationArgs input)
     {
         return CreateOrderNotificationSafeAsync(

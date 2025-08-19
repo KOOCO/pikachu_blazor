@@ -1890,6 +1890,12 @@
     "Notification:Orders:RefundApprovedTitle": "退款已批准 #{OrderNo}",
     "Notification:Orders:RefundApprovedMessage": "訂單 #{OrderNo} 的退款已由「{UserName}」批准。",
 
+    "Notification:Orders:RefundRejectedTitle": "退款被拒絕 #{OrderNo}",
+    "Notification:Orders:RefundRejectedMessage": "訂單 #{OrderNo} 的退款已被「{UserName}」拒絕。",
+
+    "Notification:Orders:RefundFailedTitle": "退款失敗 #{OrderNo}",
+    "Notification:Orders:RefundFailedMessage": "由「{UserName}」發起的訂單 #{OrderNo} 退款已失敗。",
+
     "Notification:Orders:ShippingStatusUpdatedTitle": "出貨狀態已更新 #{OrderNo}",
     "Notification:Orders:ShippingStatusUpdatedMessage": "訂單 #{OrderNo} 的出貨狀態已由「{PreviousShippingStatus}」更新為「{ShippingStatus}」，操作者：{UserName}。",
 

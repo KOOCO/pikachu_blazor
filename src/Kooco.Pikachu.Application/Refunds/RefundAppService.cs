@@ -213,14 +213,29 @@ public class RefundAppService : ApplicationService, IRefundAppService
 
         await _refundRepository.EnsurePropertyLoadedAsync(refund, r => r.Order);
 
+        var args = NotificationArgs.ForOrderWithUserName(
+            order.Id,
+            order.OrderNo,
+            CurrentUser?.UserName ?? "System"
+            );
+
+        if (refund.RefundReview is RefundReviewStatus.Fail)
+        {
+            await _notificationManager.RefundFailedAsync(args);
+        }
+
+        if (refund.RefundReview is RefundReviewStatus.ReturnedApplication)
+        {
+            await _notificationManager.RefundRejectedAsync(args);
+        }
+
+        if (refund.RefundReview is RefundReviewStatus.Success)
+        {
+            await _notificationManager.RefundApprovedAsync(args);
+        }
+
         if (input is RefundReviewStatus.Success)
         {
-            await _notificationManager.RefundApprovedAsync(
-                NotificationArgs.ForOrderWithUserName(
-                    order.Id,
-                    order.OrderNo,
-                    CurrentUser?.UserName ?? "System"
-                ));
             await _emailAppService.SendRefundEmailAsync(refund.OrderId, (double)refund.Order.TotalAmount);
         }
         await _orderRepository.UpdateAsync(order);

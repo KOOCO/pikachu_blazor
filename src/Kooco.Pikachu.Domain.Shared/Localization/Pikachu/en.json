@@ -1918,6 +1918,12 @@
     "Notification:Orders:RefundApprovedTitle": "Refund approved #{OrderNo}",
     "Notification:Orders:RefundApprovedMessage": "Refund for Order #{OrderNo} has been approved by '{UserName}'.",
 
+    "Notification:Orders:RefundRejectedTitle": "Refund rejected #{OrderNo}",
+    "Notification:Orders:RefundRejectedMessage": "Refund for Order #{OrderNo} has been rejected by '{UserName}'.",
+
+    "Notification:Orders:RefundFailedTitle": "Refund failed #{OrderNo}",
+    "Notification:Orders:RefundFailedMessage": "Refund for Order #{OrderNo} initiated by '{UserName}' has failed.",
+
     "Notification:Orders:ShippingStatusUpdatedTitle": "Shipping status updated #{OrderNo}",
     "Notification:Orders:ShippingStatusUpdatedMessage": "Shipping status for Order #{OrderNo} has been updated from '{PreviousShippingStatus}' to '{ShippingStatus}' by '{UserName}'.",
 
