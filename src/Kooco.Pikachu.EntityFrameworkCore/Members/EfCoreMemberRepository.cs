@@ -551,8 +551,13 @@ public class EfCoreMemberRepository(IDbContextProvider<PikachuDbContext> pikachu
     {
         var dbContext = await GetPikachuDbContextAsync();
 
-        var query = dbContext.OrderMessages
-            .Where(m => m.SenderId == memberId)
+        var query = dbContext.Orders
+            .Where(o => o.UserId.HasValue && o.UserId == memberId)
+            .Join(dbContext.OrderMessages,
+            o => o.Id,
+            m => m.OrderId,
+            (o, m) => new { Order = o, Message = m })
+            .Select(g => g.Message)
             .WhereIf(isRead.HasValue, m => m.IsRead == isRead)
             .WhereIf(orderId.HasValue, m => m.OrderId == orderId)
             .WhereIf(isMerchant.HasValue, m => m.IsMerchant == isMerchant);
