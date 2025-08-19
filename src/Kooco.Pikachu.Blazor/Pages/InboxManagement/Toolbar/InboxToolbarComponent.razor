@@ -8,21 +8,25 @@
 @inject INotificationRepository NotificationRepository
 @inherits PikachuComponentBase
 
-<a href="Inbox-Management" class="notification-bell @(UnreadCount > 0 ? "has-count" : "")">
-    <span>
-        <i class="fas fa-bell" aria-hidden="true"></i>
-        @if (UnreadCount > 0)
-        {
-            <span class="notification-bell-count @(UnreadCount > 99 ? "large-count" : "")">
-                @(UnreadCount > 99 ? "99+" : UnreadCount.ToString())
-            </span>
-        }
-    </span>
-</a>
+@if (IsGranted)
+{
+    <a href="Inbox-Management" class="notification-bell @(UnreadCount > 0 ? "has-count" : "")">
+        <span>
+            <i class="fas fa-bell" aria-hidden="true"></i>
+            @if (UnreadCount > 0)
+            {
+                <span class="notification-bell-count @(UnreadCount > 99 ? "large-count" : "")">
+                    @(UnreadCount > 99 ? "99+" : UnreadCount.ToString())
+                </span>
+            }
+        </span>
+    </a>
+}
 
 @code {
     private NotificationService? _notificationService;
     private long UnreadCount = 0;
+    private bool IsGranted { get; set; }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -30,13 +34,17 @@
         {
             try
             {
-                _notificationService = new NotificationService(NotificationRepository, NavigationManager);
-                _notificationService.UnreadCountChanged += OnUnreadCountChanged;
+                IsGranted = await AuthorizationService.IsGrantedAsync(PikachuPermissions.Inbox.Default);
+                if (IsGranted)
+                {
+                    _notificationService = new NotificationService(NotificationRepository, NavigationManager);
+                    _notificationService.UnreadCountChanged += OnUnreadCountChanged;
 
-                await _notificationService.InitializeAsync();
-                UnreadCount = _notificationService.UnreadCount;
+                    await _notificationService.InitializeAsync();
+                    UnreadCount = _notificationService.UnreadCount;
 
-                StateHasChanged();
+                    StateHasChanged();
+                }
             }
             catch (Exception ex)
             {

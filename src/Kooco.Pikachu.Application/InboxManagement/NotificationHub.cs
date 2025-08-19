@@ -12,6 +12,14 @@ public class NotificationHub : AbpHub
         _notificationRepository = notificationRepository;
     }
 
+    public override async Task OnConnectedAsync()
+    {
+        var group = NotificationKeys.NotificationGroup(CurrentTenant?.Id);
+        await Groups.AddToGroupAsync(Context.ConnectionId, group);
+
+        await base.OnConnectedAsync();
+    }
+
     public async Task<long> GetUnreadCountAsync()
     {
         return await _notificationRepository.CountUnreadAsync();

@@ -86,20 +86,24 @@ public class EfCoreNotificationRepository : EfCoreRepository<PikachuDbContext, N
 
         var grouped = await queryable
             .GroupBy(q => q.Type)
-            .Select(g => new
-            {
-                Type = g.Key,
-                Count = g.Count()
-            })
-            .ToListAsync(cancellationToken);
+            .Select(g => new { Type = g.Key, Count = g.Count() })
+            .ToDictionaryAsync(x => x.Type, x => x.Count, cancellationToken);
 
         return new NotificationsCountModel
         {
-            Orders = grouped.FirstOrDefault(x => x.Type == NotificationType.Order)?.Count ?? 0,
-            BankTransfers = grouped.FirstOrDefault(x => x.Type == NotificationType.BankTransfer)?.Count ?? 0,
-            ReturnsAndExchanges = grouped.FirstOrDefault(x => x.Type == NotificationType.Return || x.Type == NotificationType.Exchange)?.Count ?? 0,
-            Refund = grouped.FirstOrDefault(x => x.Type == NotificationType.Refund)?.Count ?? 0
+            Orders = GetCount(NotificationType.Order)
+                   + GetCount(NotificationType.Payment)
+                   + GetCount(NotificationType.OrderMessage),
+
+            BankTransfers = GetCount(NotificationType.BankTransfer),
+
+            ReturnsAndExchanges = GetCount(NotificationType.Return)
+                                + GetCount(NotificationType.Exchange),
+
+            Refund = GetCount(NotificationType.Refund)
         };
+
+        int GetCount(NotificationType type) => grouped.TryGetValue(type, out var count) ? count : 0;
     }
 
     public async Task MarkAllReadAsync(Guid? userId, CancellationToken cancellationToken = default)

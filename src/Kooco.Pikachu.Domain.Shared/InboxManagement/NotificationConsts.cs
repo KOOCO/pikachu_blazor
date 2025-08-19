@@ -1,4 +1,6 @@
-﻿namespace Kooco.Pikachu.InboxManagement;
+﻿using System;
+
+namespace Kooco.Pikachu.InboxManagement;
 
 #pragma warning disable RS0016 // Add public types and members to the declared API
 public static class NotificationConsts
@@ -15,11 +17,20 @@ public static class NotificationKeys
 {
     public const string Prefix = "Notification:";
     public const string UnreadCount = Prefix + "UnreadCount";
+    public const string TenantGroup = "Tenant:{0}";
+    public const string HostGroup = "Host";
+
+    public static string NotificationGroup(Guid? tenantId)
+    {
+        return tenantId.HasValue
+            ? string.Format(TenantGroup, tenantId.ToString())
+            : HostGroup;
+    }
 
     public static class Orders
     {
         public const string OrderPrefix = Prefix + "Orders:";
-        
+
         public const string CreatedTitle = OrderPrefix + "CreatedTitle";
         public const string CreatedMessage = OrderPrefix + "CreatedMessage";
 
@@ -28,10 +39,10 @@ public static class NotificationKeys
 
         public const string ManualBankTransferTitle = OrderPrefix + "ManualBankTransferTitle";
         public const string ManualBankTransferMessage = OrderPrefix + "ManualBankTransferMessage";
-        
+
         public const string ManualBankTransferConfirmedTitle = OrderPrefix + "ManualBankTransferConfirmedTitle";
         public const string ManualBankTransferConfirmedMessage = OrderPrefix + "ManualBankTransferConfirmedMessage";
-        
+
         public const string PaymentMethodUpdatedTitle = OrderPrefix + "PaymentMethodUpdatedTitle";
         public const string PaymentMethodUpdatedMessage = OrderPrefix + "PaymentMethodUpdatedMessage";
 
@@ -100,13 +111,13 @@ public static class NotificationParams
     public const string OrderNo = "OrderNo";
     public const string UserName = "UserName";
     public const string Count = "Count";
-    
+
     public const string PreviousPaymentMethod = "PreviousPaymentMethod";
     public const string PaymentMethod = "PaymentMethod";
-    
+
     public const string PreviousShippingStatus = "PreviousShippingStatus";
     public const string ShippingStatus = "ShippingStatus";
-    
+
     public const string PreviousOrderStatus = "PreviousOrderStatus";
     public const string OrderStatus = "OrderStatus";
 
