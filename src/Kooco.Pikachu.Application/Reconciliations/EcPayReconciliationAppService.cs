@@ -44,7 +44,7 @@ public class EcPayReconciliationAppService : PikachuAppService, IEcPayReconcilia
         var ecPayConfigs = await _paymentGatewayAppService.GetAllEcPayAsync(true);
         if (ecPayConfigs == null || ecPayConfigs.Count == 0)
         {
-            Logger.LogWarning("EcPay Configuration not found.");
+            Logger.LogWarning("Recociliation Job: EcPay Configuration not found.");
             return [];
         }
 
@@ -54,6 +54,9 @@ public class EcPayReconciliationAppService : PikachuAppService, IEcPayReconcilia
         {
             using (CurrentTenant.Change(ecPay.TenantId))
             {
+                Logger.LogInformation("Recociliation Job: Running for tenant id: {tenantId}", ecPay.TenantId);
+                Logger.LogInformation("Recociliation Job: Current tenant id: {tenantId} name: {name}", CurrentTenant.Id, CurrentTenant.Name);
+
                 await Task.Delay(TimeSpan.FromSeconds(70), cancellationToken); //EcPay only allows to query one file per minute
 
                 var input = new EcPayReconciliationInput
@@ -61,7 +64,7 @@ public class EcPayReconciliationAppService : PikachuAppService, IEcPayReconcilia
                     HashKey = ecPay.HashKey!,
                     HashIV = ecPay.HashIV!,
                     MerchantID = ecPay.MerchantId!,
-                    BeginDate = DateTime.Today.AddDays(-1),
+                    BeginDate = DateTime.Today.AddDays(-10),
                     EndDate = DateTime.Today.AddMilliseconds(-1)
                 };
 
@@ -69,7 +72,7 @@ public class EcPayReconciliationAppService : PikachuAppService, IEcPayReconcilia
 
                 if (records == null || records.Count == 0)
                 {
-                    Logger.LogWarning("No reconciliation records found for the specified date range for {tenantName}.", CurrentTenant.Name);
+                    Logger.LogWarning("Recociliation Job: No reconciliation records found for the specified date range for {tenantName}.", CurrentTenant.Name);
                     continue;
                 }
 
@@ -92,19 +95,19 @@ public class EcPayReconciliationAppService : PikachuAppService, IEcPayReconcilia
 
                     if (order == null)
                     {
-                        Logger.LogWarning("No order found for MerchantTradeNo: {MerchantTradeNo}", record.MerchantTradeNo);
+                        Logger.LogWarning("Recociliation Job: No order found for MerchantTradeNo: {MerchantTradeNo}", record.MerchantTradeNo);
                         continue;
                     }
 
                     if (record.PaymentStatus == null || !record.PaymentStatus.Contains("已付款"))
                     {
-                        Logger.LogInformation("Skipping merchant trade no: {merchantTradeNo} due to payment status: {paymentStatus}", record.MerchantTradeNo, record.PaymentStatus);
+                        Logger.LogInformation("Recociliation Job: Skipping merchant trade no: {merchantTradeNo} due to payment status: {paymentStatus}", record.MerchantTradeNo, record.PaymentStatus);
                         continue;
                     }
 
                     if (record.PayoutStatus == null || !record.PayoutStatus.Contains("已撥款"))
                     {
-                        Logger.LogInformation("Skipping merchant trade no: {merchantTradeNo} due to payout status: {payoutStatus}", record.MerchantTradeNo, record.PayoutStatus);
+                        Logger.LogInformation("Recociliation Job: Skipping merchant trade no: {merchantTradeNo} due to payout status: {payoutStatus}", record.MerchantTradeNo, record.PayoutStatus);
                         continue;
                     }
 

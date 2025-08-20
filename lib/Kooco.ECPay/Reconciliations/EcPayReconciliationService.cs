@@ -34,7 +34,7 @@ public class EcPayReconciliationService : IEcPayReconciliationService, ITransien
         var formData = new Dictionary<string, string>
         {
             ["MerchantID"] = input.MerchantID,
-            ["DateType"] = "2",
+            ["DateType"] = "4",
             ["BeginDate"] = input.BeginDate.ToString("yyyy-MM-dd"),
             ["EndDate"] = input.EndDate.ToString("yyyy-MM-dd"),
             ["MediaFormated"] = "1",
