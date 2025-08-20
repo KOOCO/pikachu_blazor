@@ -9,7 +9,7 @@ public static class OrderTransactionExtensions
         return paymentMethod switch
         {
             PaymentMethods.CreditCard => PaymentChannel.EcPay,
-            PaymentMethods.BankTransfer => PaymentChannel.EcPay,
+            PaymentMethods.EcPayVirtualBankTransfer => PaymentChannel.EcPay,
             PaymentMethods.LinePay => PaymentChannel.LinePay,
             PaymentMethods.CashOnDelivery => PaymentChannel.CashOnDelivery,
             _ => null

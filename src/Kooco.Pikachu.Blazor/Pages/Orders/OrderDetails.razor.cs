@@ -65,7 +65,7 @@ public partial class OrderDetails
     string? CheckoutForm { get; set; } = null;
     private readonly ITestLableAppService _testLableAppService;
     private readonly IObjectMapper _ObjectMapper;
-   
+
     private bool isDeliveryCostDisplayed = false;
     private bool isNormal = false;
     private bool isFreeze = false;
@@ -207,7 +207,7 @@ public partial class OrderDetails
         DeliveryMethod.SevenToElevenC2C,
         DeliveryMethod.FamilyMart1,
         DeliveryMethod.FamilyMartC2C,
-        
+
         DeliveryMethod.TCatDeliverySevenElevenNormal,
         DeliveryMethod.TCatDeliverySevenElevenFreeze,
         DeliveryMethod.TCatDeliverySevenElevenFrozen
@@ -1799,7 +1799,7 @@ public partial class OrderDetails
             return paymentStatus.RtnValue?.status;
         }
 
-        if (Order.PaymentMethod is PaymentMethods.BankTransfer ||
+        if (Order.PaymentMethod is PaymentMethods.EcPayVirtualBankTransfer ||
             Order.PaymentMethod is PaymentMethods.CashOnDelivery) return L["Paid"];
 
         return string.Empty;
@@ -1846,7 +1846,7 @@ public partial class OrderDetails
     {
         if (Order.PaymentMethod is PaymentMethods.CreditCard) return L["AutomaticRefund"];
 
-        if (Order.PaymentMethod is PaymentMethods.BankTransfer ||
+        if (Order.PaymentMethod is PaymentMethods.EcPayVirtualBankTransfer ||
             Order.PaymentMethod is PaymentMethods.CashOnDelivery) return L["ManualProcessing"];
 
         return string.Empty;

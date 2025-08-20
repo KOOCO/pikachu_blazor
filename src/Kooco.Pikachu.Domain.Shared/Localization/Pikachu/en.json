@@ -271,9 +271,18 @@
     "OrderStatus": "Order Status",
     "ShippingStatus": "Shipping Status",
     "CheckoutAmount": "Checkout Amount",
-    "BankTransfer": "Bank Transfer",
+    "BankTransfer": "Virtual Bank Transfer",
     "CreditCard": "Credit Card",
     "LinePay": "Line Pay",
+
+    "CreditCard3": "Credit Card 3M",
+
+    "CreditCard6": "Credit Card 6M",
+
+    "CreditCard12": "Credit Card 12M",
+
+    "CreditCard18": "Credit Card 18M",
+    "CreditCard24": "Credit Card 24M",
     "RecipientInformation": "Recipient's Information",
     "PickupTheGoodsWithoutPayment": "Pickup The Goods Without Payment",
     "AllHandOverTheGoodsWithoutPayment": "All Handover The Goods Without Payment",
@@ -1643,7 +1652,7 @@
     "EnglishName": "English Name",
     "ZHName": "ZH Name",
     "SelectMainCategory": "Select Main Category",
-    "ManualBankTransfer": "Manual Bank Transfer",
+
     "AccountName": "Account Name",
     "BankName": "Bank Name",
     "BranchName": "Branch Name",

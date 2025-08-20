@@ -57,7 +57,16 @@
     "AVAILABILITY": "上/下架",
     "AvailablePreorderQuantity": "可預訂數量",
     "AvailableStock": "可銷售庫存",
-    "BankTransfer": "銀行轉帳",
+    "BankTransfer": "虛擬帳號轉帳",
+
+    "CreditCard3": "信用卡 3期",
+
+    "CreditCard6": "信用卡 6期",
+
+    "CreditCard12": "信用卡 12期",
+
+    "CreditCard18": "信用卡 18期",
+    "CreditCard24": "信用卡 24期",
     "Before13PM": "13時前",
     "Between14To18PM": "14-18時",
     "B-Freeze": "黑貓冷藏",

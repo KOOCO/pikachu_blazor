@@ -136,7 +136,7 @@ public class OrderController : AbpController, IOrderAppService
 
         if (!string.IsNullOrEmpty(paymentMethods))
         {
-            if (order.PaymentMethod is PaymentMethods.BankTransfer)
+            if (order.PaymentMethod is PaymentMethods.EcPayVirtualBankTransfer)
             {
                 paymentMethod = PaymentMethod.ATM;
 
@@ -607,7 +607,7 @@ public class OrderController : AbpController, IOrderAppService
     }
 
     [HttpPost("update-logisticsStatus")]
-    public Task UpdateLogisticStatusAsync(string merchantTradeNo, string rtnMsg,string? allPayLogisticsID=null, int rtnCode = 0)
+    public Task UpdateLogisticStatusAsync(string merchantTradeNo, string rtnMsg, string? allPayLogisticsID = null, int rtnCode = 0)
     {
         return _ordersAppService.UpdateLogisticStatusAsync(merchantTradeNo, rtnMsg, allPayLogisticsID);
     }
