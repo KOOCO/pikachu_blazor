@@ -5,6 +5,7 @@ using Kooco.Pikachu.PaymentGateways;
 using Microsoft.JSInterop;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -15,6 +16,10 @@ public partial class CashFlowDealerSettings
     #region Inject
     private UpdateLinePayDto LinePay { get; set; }
     private Validations? validations;
+    private Validations? orderValidations;
+    private Validations? validationsChinaTrust;
+    private Validations? validationsEcPay;
+    private Validations? validationsManual;
     private bool IsLinePayNotExists = false;
 
     private bool IsChinaTrustNotExists = false;
@@ -28,6 +33,9 @@ public partial class CashFlowDealerSettings
     private UpdateEcPayDto EcPay { get; set; }
     private UpdateManualBankTransferDto ManualBankTransfer { get; set; }
     private LoadingIndicator Loading { get; set; }
+    private record FieldMeta(string Id, string Label, Func<string> Get, Action<string> Set);
+
+    private List<FieldMeta> textFields=new();
     #endregion
     #region Constructor
     public CashFlowDealerSettings()
@@ -74,6 +82,14 @@ public partial class CashFlowDealerSettings
             {
                 OrderValidity = ObjectMapper.Map<PaymentGatewayDto, UpdateOrderValidityDto>(orderValidity);
             }
+            textFields = new()
+        {
+            new("mbt-account-name",   L["AccountName"],       () => ManualBankTransfer.AccountName,   v => ManualBankTransfer.AccountName = v),
+            new("mbt-bank-name",      L["BankName"],          () => ManualBankTransfer.BankName,      v => ManualBankTransfer.BankName = v),
+            new("mbt-branch-name",    L["BranchName"],        () => ManualBankTransfer.BranchName,    v => ManualBankTransfer.BranchName = v),
+            new("mbt-bank-code",      L["BankCode"],          () => ManualBankTransfer.BankCode,      v => ManualBankTransfer.BankCode = v),
+            new("mbt-account-number", L["BankAccountNumber"], () => ManualBankTransfer.BankAccountNumber, v => ManualBankTransfer.BankAccountNumber = v),
+        };
             StateHasChanged();
         }
         catch (Exception ex)
@@ -152,6 +168,24 @@ public partial class CashFlowDealerSettings
             StateHasChanged();
         }
     }
+    // ----- Submit handlers -----
+    private async Task OnSubmitChinaTrustAsync()
+    {
+        if (validationsChinaTrust is not null && await validationsChinaTrust.ValidateAll())
+            await UpdateChinaTrustAsync();
+    }
+
+    private async Task OnSubmitEcPayAsync()
+    {
+        if (validationsEcPay is not null && await validationsEcPay.ValidateAll())
+            await UpdateEcPayAsync();
+    }
+
+    private async Task OnSubmitManualAsync()
+    {
+        if (validationsManual is not null && await validationsManual.ValidateAll())
+            await UpdateManualBankTransferAsync();
+    }
 
 
     private async Task OnSubmitAsync()
@@ -191,7 +225,21 @@ public partial class CashFlowDealerSettings
             StateHasChanged();
         }
     }
+    private async Task OnOrderSubmitAsync()
+    {
+        if (validations is not null && await orderValidations.ValidateAll())
+        {
+            await UpdateOrderValidityAsync();
+        }
+    }
 
+    // Period must be > 0
+    public static void ValidatePositiveInt(ValidatorEventArgs e)
+    {
+        var value = (int)e.Value;
+
+        e.Status = value <= 0 ? ValidationStatus.Error : ValidationStatus.Success;
+    }
     async Task UpdateOrderValidityAsync()
     {
         if (OrderValidity.Unit.IsNullOrWhiteSpace()

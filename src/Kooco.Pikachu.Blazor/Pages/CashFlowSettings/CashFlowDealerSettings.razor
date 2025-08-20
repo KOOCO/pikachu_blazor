@@ -28,47 +28,73 @@
     </CardHeader>
     <CardBody>
 
-        <EditForm  Model="@OrderValidity" OnValidSubmit="UpdateOrderValidityAsync">
-            <DataAnnotationsValidator  />
+        <Validations @ref="orderValidations"
+             Mode="ValidationMode.Manual"
+             Model="@OrderValidity">
 
-            <div class="row justify-content-center mb-2">
-                <div class="col-2 pt-2 text-end">
-                    <label class="form-label" for="channel-id">
-                        @L["OrderValidityUnit"]
-                        <span class="text-danger"> *</span>
-                    </label>
-                </div>
-                <div class="col-6">
-                    <Select TValue="string" @bind-SelectedValue="@OrderValidity.Unit">
+    <!-- Order Validity Unit -->
+    <div class="row justify-content-center mb-2">
+        <div class="col-2 pt-2 text-end">
+            <label class="form-label" for="ov-unit">
+                @L["OrderValidityUnit"] <span class="text-danger">*</span>
+            </label>
+        </div>
+        <div class="col-6">
+            <Validation  Validator="ValidationRule.IsNotEmpty">
+                <Select TValue="string"
+                        Id="ov-unit"
+                        
+                        @bind-SelectedValue="OrderValidity.Unit">
+                    <!-- Empty option to force selection -->
+                            <SelectItem Value="@((""))">@L["PleaseSelect"]</SelectItem>
+                            <SelectItem Value="@("Days")">@L["Days"]</SelectItem>
+                            <SelectItem Value="@("Hours")">@L["Hours"]</SelectItem>
+                            <SelectItem Value="@("Minutes")">@L["Minutes"]</SelectItem>
+                </Select>
 
-                        <SelectItem Value="@("Days")">@L["Days"]</SelectItem>
-                        <SelectItem Value="@("Hours")">@L["Hours"]</SelectItem>
-                        <SelectItem Value="@("Miniutes")">@L["Miniutes"]</SelectItem>
-                    </Select>
-                    @* <ValidationMessage For="@(() => OrderValidity.Period)" /> *@
-                </div>
-            </div>
-            <div class="row justify-content-center mb-2">
-                <div class="col-2 pt-2 text-end">
-                    <label class="form-label" for="channel-secret-key">
-                        @L["ValidatePeriod"]
-                        <span class="text-danger"> *</span>
-                    </label>
-                </div>
-                <div class="col-6">
-                    <InputNumber min="1" class="form-control" @bind-Value="OrderValidity.Period" TValue="int"></InputNumber>
-                    <ValidationMessage For="@(() => OrderValidity.Period)" />
-                </div>
-            </div>
-            <div class="row mt-3">
-                <div class="col-12 text-center">
-                    <Button Type="ButtonType.Submit" Class="btn btn-sm btn-primary">
-                        <i class="fa fa-check me-1"></i>
-                        @L["SaveChanges"]
-                    </Button>
-                </div>
-            </div>
-        </EditForm>
+                <Feedback>
+                   
+                    <ValidationError>@L["ThisFieldIsRequired"]</ValidationError>
+                </Feedback>
+             
+            </Validation>
+        </div>
+    </div>
+
+    <!-- Validity Period -->
+    <div class="row justify-content-center mb-2">
+        <div class="col-2 pt-2 text-end">
+            <label class="form-label" for="ov-period">
+                @L["ValidityPeriod"] <span class="text-danger">*</span>
+            </label>
+        </div>
+        <div class="col-6">
+            <Validation Validator="ValidatePositiveInt">
+                <NumericEdit TValue="int"
+                             Id="ov-period"
+                             Min="1"
+                             @bind-Value="OrderValidity.Period"
+                             Class="form-control" >
+                <Feedback>
+               
+                    <ValidationError>@L["MustBeGreaterThanZero"]</ValidationError>
+                </Feedback>
+                </NumericEdit>
+            </Validation>
+        </div>
+    </div>
+
+    <div class="row mt-3">
+        <div class="col-12 text-center">
+            <Button Color="Color.Primary"
+                    Size="Size.Small"
+                    Clicked="OnOrderSubmitAsync">
+                <i class="fa fa-check me-1"></i>
+                @L["SaveChanges"]
+            </Button>
+        </div>
+    </div>
+</Validations>
     </CardBody>
 </Card>
 <Card>
@@ -183,66 +209,92 @@
     </CardBody>
 </Card>
 
+<!-- ===================== ChinaTrust ===================== -->
 <Card>
     <CardHeader>
         <h4>@L["ChinaTrust"]</h4>
     </CardHeader>
     <CardBody>
-        <EditForm Model="@ChinaTrust" OnValidSubmit="UpdateChinaTrustAsync">
-            <DataAnnotationsValidator />
+        <Validations @ref="validationsChinaTrust" Mode="ValidationMode.Manual" Model="@ChinaTrust">
+            <!-- Enable/Disable -->
             <div class="row justify-content-center mb-2">
                 <div class="col-2 text-end">
-                    <label class="form-label" for="c-enable-disable-switch"></label>
-                    @L["Enable/Disable"]
+                    <label class="form-label" for="c-enable-disable-switch">@L["Enable/Disable"]</label>
                 </div>
                 <div class="col-6">
-                    <Switch TValue="bool" id="c-enable-disable-switch" @bind-Checked="ChinaTrust.IsEnabled"></Switch>
+                    <Switch TValue="bool" Id="c-enable-disable-switch" @bind-Checked="ChinaTrust.IsEnabled" />
                 </div>
             </div>
+
+            <!-- Code -->
             <div class="row justify-content-center mb-2">
                 <div class="col-2 pt-2 text-end">
-                    <label class="form-label" for="code"></label>
-                    @L["Code"]
-                    <span class="text-danger"> *</span>
+                    <label class="form-label" for="ct-code">@L["Code"] <span class="text-danger">*</span></label>
                 </div>
                 <div class="col-6">
-                    <InputText id="code" class="form-control" @bind-Value="ChinaTrust.Code"></InputText>
-                    <ValidationMessage For="@(() => ChinaTrust.Code)" />
+                    <Validation Validator="ValidationRule.IsNotEmpty">
+                        <TextEdit Id="ct-code" class="form-control" @bind-Text="ChinaTrust.Code" >
+                        <Feedback>
+                           
+                            <ValidationError>@L["ThisFieldIsRequired"]</ValidationError>
+                        </Feedback>
+                        </TextEdit>
+                    </Validation>
+                    
                 </div>
             </div>
+
+            <!-- MerchantId -->
             <div class="row justify-content-center mb-2">
                 <div class="col-2 pt-2 text-end">
-                    <label class="form-label" for="c-merchant-id"></label>
-                    @L["MerchantId"]
-                    <span class="text-danger"> *</span>
+                    <label class="form-label" for="ct-merchant-id">@L["MerchantId"] <span class="text-danger">*</span></label>
                 </div>
                 <div class="col-6">
-                    <InputText id="c-merchant-id" class="form-control" @bind-Value="ChinaTrust.MerchantId"></InputText>
-                    <ValidationMessage For="@(() => ChinaTrust.MerchantId)" />
+                    <Validation Validator="ValidationRule.IsNotEmpty">
+                        <TextEdit Id="ct-merchant-id" class="form-control" @bind-Text="ChinaTrust.MerchantId" >
+                        <Feedback>
+                    
+                            <ValidationError>@L["ThisFieldIsRequired"]</ValidationError>
+                        </Feedback>
+                        </TextEdit>
+                    </Validation>
                 </div>
             </div>
+
+            <!-- TerminalCode -->
             <div class="row justify-content-center mb-2">
                 <div class="col-2 pt-2 text-end">
-                    <label class="form-label" for="terminal-code"></label>
-                    @L["TerminalCode"]
-                    <span class="text-danger"> *</span>
+                    <label class="form-label" for="ct-terminal-code">@L["TerminalCode"] <span class="text-danger">*</span></label>
                 </div>
                 <div class="col-6">
-                    <InputText id="terminal-code" class="form-control" @bind-Value="ChinaTrust.TerminalCode"></InputText>
-                    <ValidationMessage For="@(() => ChinaTrust.TerminalCode)" />
+                    <Validation Validator="ValidationRule.IsNotEmpty">
+                        <TextEdit Id="ct-terminal-code" class="form-control" @bind-Text="ChinaTrust.TerminalCode" >
+                        <Feedback>
+                          
+                            <ValidationError>@L["ThisFieldIsRequired"]</ValidationError>
+                        </Feedback>
+                        </TextEdit>
+                    </Validation>
                 </div>
             </div>
+
+            <!-- CodeValue -->
             <div class="row justify-content-center mb-2">
                 <div class="col-2 pt-2 text-end">
-                    <label class="form-label" for="code-value"></label>
-                    @L["CodeValue"]
-                    <span class="text-danger"> *</span>
+                    <label class="form-label" for="ct-code-value">@L["CodeValue"] <span class="text-danger">*</span></label>
                 </div>
                 <div class="col-6">
-                    <InputText id="code-value" class="form-control" @bind-Value="ChinaTrust.CodeValue"></InputText>
-                    <ValidationMessage For="@(() => ChinaTrust.CodeValue)" />
+                    <Validation Validator="ValidationRule.IsNotEmpty">
+                        <TextEdit Id="ct-code-value" class="form-control" @bind-Text="ChinaTrust.CodeValue" >
+                        <Feedback>
+                      
+                            <ValidationError>@L["ThisFieldIsRequired"]</ValidationError>
+                        </Feedback>
+                        </TextEdit>
+                    </Validation>
                 </div>
             </div>
+
             @if (IsChinaTrustNotExists)
             {
                 <div class="row mt-3">
@@ -251,114 +303,150 @@
                     </div>
                 </div>
             }
+
             <div class="row mt-3">
                 <div class="col-12 text-center">
-                    <Button Type="ButtonType.Submit" Class="btn btn-sm btn-primary">
-                        <i class="fa fa-check me-1"></i>
-                        @L["SaveChanges"]
+                    <Button Color="Color.Primary" Size="Size.Small" Clicked="OnSubmitChinaTrustAsync">
+                        <i class="fa fa-check me-1"></i> @L["SaveChanges"]
                     </Button>
                 </div>
             </div>
-        </EditForm>
+        </Validations>
     </CardBody>
 </Card>
 
+<!-- ===================== EcPay ===================== -->
 <Card>
     <CardHeader>
         <h4>@L["EcPay"]</h4>
     </CardHeader>
     <CardBody>
-        <EditForm Model="@EcPay" OnValidSubmit="UpdateEcPayAsync">
-            <DataAnnotationsValidator />
+        <Validations @ref="validationsEcPay" Mode="ValidationMode.Manual" Model="@EcPay">
+
+            <!-- MerchantId -->
             <div class="row justify-content-center mb-2">
                 <div class="col-2 pt-2 text-end">
-                    <label class="form-label" for="g-merchant-id"></label>
-                    @L["MerchantId"]
-                    <span class="text-danger"> *</span>
+                    <label class="form-label" for="ec-merchant-id">@L["MerchantId"] <span class="text-danger">*</span></label>
                 </div>
                 <div class="col-6">
-                    <InputText id="g-merchant-id" class="form-control" @bind-Value="EcPay.MerchantId"></InputText>
-                    <ValidationMessage For="@(() => EcPay.MerchantId)" />
+                    <Validation Validator="ValidationRule.IsNotEmpty">
+                        <TextEdit Id="ec-merchant-id" class="form-control" @bind-Text="EcPay.MerchantId" >
+                        <Feedback>
+                         
+                            <ValidationError>@L["ThisFieldIsRequired"]</ValidationError>
+                        </Feedback>
+                        </TextEdit>
+                    </Validation>
                 </div>
             </div>
+
+            <!-- HashKey -->
             <div class="row justify-content-center mb-2">
                 <div class="col-2 pt-2 text-end">
-                    <label class="form-label" for="hash-key"></label>
-                    @L["HashKey"]
-                    <span class="text-danger"> *</span>
+                    <label class="form-label" for="ec-hash-key">@L["HashKey"] <span class="text-danger">*</span></label>
                 </div>
                 <div class="col-6">
-                    <InputText id="hash-key" class="form-control" @bind-Value="EcPay.HashKey"></InputText>
-                    <ValidationMessage For="@(() => EcPay.HashKey)" />
+                    <Validation Validator="ValidationRule.IsNotEmpty">
+                        <TextEdit Id="ec-hash-key" class="form-control" @bind-Text="EcPay.HashKey" >
+                        <Feedback>
+                      
+                            <ValidationError>@L["ThisFieldIsRequired"]</ValidationError>
+                        </Feedback>
+                        </TextEdit>
+                    </Validation>
                 </div>
             </div>
+
+            <!-- HashIV -->
             <div class="row justify-content-center mb-2">
                 <div class="col-2 pt-2 text-end">
-                    <label class="form-label" for="hash-iv"></label>
-                    @L["HashIV"]
-                    <span class="text-danger"> *</span>
+                    <label class="form-label" for="ec-hash-iv">@L["HashIV"] <span class="text-danger">*</span></label>
                 </div>
                 <div class="col-6">
-                    <InputText id="hash-iv" class="form-control" @bind-Value="EcPay.HashIV"></InputText>
-                    <ValidationMessage For="@(() => EcPay.HashIV)" />
+                    <Validation Validator="ValidationRule.IsNotEmpty">
+                        <TextEdit Id="ec-hash-iv" class="form-control" @bind-Text="EcPay.HashIV" >
+                        <Feedback>
+                          
+                            <ValidationError>@L["ThisFieldIsRequired"]</ValidationError>
+                        </Feedback>
+                        </TextEdit>
+                    </Validation>
                 </div>
             </div>
+
+            <!-- TradeDescription -->
             <div class="row justify-content-center mb-2">
                 <div class="col-2 pt-2 text-end">
-                    <label class="form-label" for="trade-description"></label>
-                    @L["TradeDescription"]
-                    <span class="text-danger"> *</span>
+                    <label class="form-label" for="ec-trade-desc">@L["TradeDescription"] <span class="text-danger">*</span></label>
                 </div>
                 <div class="col-6">
-                    <InputText id="trade-description" class="form-control" @bind-Value="EcPay.TradeDescription"></InputText>
-                    <ValidationMessage For="@(() => EcPay.TradeDescription)" />
+                    <Validation Validator="ValidationRule.IsNotEmpty">
+                        <TextEdit Id="ec-trade-desc" class="form-control" @bind-Text="EcPay.TradeDescription" >
+                        <Feedback>
+                           
+                            <ValidationError>@L["ThisFieldIsRequired"]</ValidationError>
+                        </Feedback>
+                        </TextEdit>
+                    </Validation>
                 </div>
             </div>
+
+            <!-- CreditCheckCode -->
             <div class="row justify-content-center mb-2">
                 <div class="col-2 pt-2 text-end">
-                    <label class="form-label" for="trade-description"></label>
-                    @L["CreditCheckCode"]
-                    <span class="text-danger"> *</span>
+                    <label class="form-label" for="ec-credit-check">@L["CreditCheckCode"] <span class="text-danger">*</span></label>
                 </div>
                 <div class="col-6">
-                    <InputText id="credit-check-code" class="form-control" @bind-Value="EcPay.CreditCheckCode"></InputText>
-                    <ValidationMessage For="@(() => EcPay.CreditCheckCode)" />
+                    <Validation Validator="ValidationRule.IsNotEmpty">
+                        <TextEdit Id="ec-credit-check" class="form-control" @bind-Text="EcPay.CreditCheckCode" >
+                        <Feedback>
+                          
+                            <ValidationError>@L["ThisFieldIsRequired"]</ValidationError>
+                        </Feedback>
+                        </TextEdit>
+                    </Validation>
                 </div>
             </div>
+
+            <!-- Credit Card toggle -->
             <div class="row justify-content-center mb-2">
                 <div class="col-2 text-end">
-                    <label class="form-label" for="g-enable-disable-switch"></label>
-                    @L["CreditCard"]
+                    <label class="form-label" for="ec-cc-enable">@L["CreditCard"]</label>
                 </div>
                 <div class="col-6">
-                    <Switch TValue="bool" id="g-enable-disable-switch" @bind-Checked="EcPay.IsCreditCardEnabled"></Switch>
+                    <Switch TValue="bool" Id="ec-cc-enable" @bind-Checked="EcPay.IsCreditCardEnabled" />
                 </div>
             </div>
+
             @if (EcPay.IsCreditCardEnabled)
             {
                 <div class="row justify-content-center mb-2">
                     <div class="col-2 text-end">
-                        <label class="form-label" for="g-enable-disable-switch"></label>
-                        @L["InstallmentPeriods"]
+                        <label class="form-label">@L["InstallmentPeriods"]</label>
                     </div>
                     <div class="col-6">
                         @foreach (var period in Constant.InstallmentPeriods)
                         {
-                            <Switch Inline TValue="bool" Checked="@EcPay.InstallmentPeriods.Contains(period)"
-                                    CheckedChanged="(e) => OnInstallmentPeriodChange(e, period)">@L["InstallmentPeriods." + period]</Switch>
+                            <Switch Inline TValue="bool"
+                                    Checked="@EcPay.InstallmentPeriods.Contains(period)"
+                                    CheckedChanged="(val) => OnInstallmentPeriodChange(val, period)">
+                                @L[$"InstallmentPeriods.{period}"]
+                            </Switch>
                         }
                     </div>
                 </div>
             }
+
+            <!-- Virtual Bank Transfer -->
             <div class="row justify-content-center mb-2">
                 <div class="col-2 text-end">
-                    <label class="form-label" for="g-enable-disable-switch"></label>
-                    @L["VirtualBankTransfer"]
+                    <label class="form-label" for="ec-vbank-enable">@L["VirtualBankTransfer"]</label>
                 </div>
                 <div class="col-6">
-                    <Switch TValue="bool" id="g-enable-disable-switch" @bind-Checked="EcPay.IsBankTransferEnabled"></Switch>
+                    <Switch TValue="bool" Id="ec-vbank-enable" @bind-Checked="EcPay.IsBankTransferEnabled" />
                 </div>
             </div>
+
             @if (IsEcPayNotExists)
             {
                 <div class="row mt-3">
@@ -367,111 +455,92 @@
                     </div>
                 </div>
             }
+
             <div class="row mt-3">
                 <div class="col-12 text-center">
-                    <Button Type="ButtonType.Submit" Class="btn btn-sm btn-primary">
-                        <i class="fa fa-check me-1"></i>
-                        @L["SaveChanges"]
+                    <Button Color="Color.Primary" Size="Size.Small" Clicked="OnSubmitEcPayAsync">
+                        <i class="fa fa-check me-1"></i> @L["SaveChanges"]
                     </Button>
                 </div>
             </div>
-        </EditForm>
+        </Validations>
     </CardBody>
 </Card>
 
+<!-- ===================== Manual Bank Transfer ===================== -->
 <Card>
     <CardHeader>
         <h4>@L["ManualBankTransfer"]</h4>
     </CardHeader>
     <CardBody>
-        <EditForm Model="@ManualBankTransfer" OnValidSubmit="UpdateManualBankTransferAsync">
-            <DataAnnotationsValidator />
+        <Validations @ref="validationsManual" Mode="ValidationMode.Manual" Model="@ManualBankTransfer">
+            <!-- Enable/Disable -->
             <div class="row justify-content-center mb-2">
                 <div class="col-2 text-end">
-                    <label class="form-label" for="c-enable-disable-switch"></label>
-                    @L["Enable/Disable"]
+                    <label class="form-label" for="mbt-enable">@L["Enable/Disable"]</label>
                 </div>
                 <div class="col-6">
-                    <Switch TValue="bool" id="c-enable-disable-switch" @bind-Checked="ManualBankTransfer.IsEnabled"></Switch>
+                    <Switch TValue="bool" Id="mbt-enable" @bind-Checked="ManualBankTransfer.IsEnabled" />
                 </div>
             </div>
+
+            @* Text required fields *@
+            @foreach (var f in textFields)
+            {
+                 <div class="row justify-content-center mb-2">
+        <div class="col-2 pt-2 text-end">
+            <label class="form-label" for="@f.Id">@f.Label <span class="text-danger">*</span></label>
+        </div>
+        <div class="col-6">
+            <Validation Validator="ValidationRule.IsNotEmpty">
+                <TextEdit Id="@f.Id"
+                          class="form-control"
+                          Text="@f.Get()"
+                          TextChanged="@(v => { f.Set(v); StateHasChanged(); })" >
+                <Feedback>
+                   
+                    <ValidationError>@L["ThisFieldIsRequired"]</ValidationError>
+                </Feedback>
+                </TextEdit>
+            </Validation>
+        </div>
+    </div>
+            }
+
+            <!-- MinimumAmountLimit -->
             <div class="row justify-content-center mb-2">
                 <div class="col-2 pt-2 text-end">
-                    <label class="form-label"></label>
-                    @L["AccountName"]
-                    <span class="text-danger"> *</span>
+                    <label class="form-label" for="mbt-min">@L["MinimumAmountLimit"] <span class="text-danger">*</span></label>
                 </div>
                 <div class="col-6">
-                    <InputText class="form-control" @bind-Value="ManualBankTransfer.AccountName"></InputText>
-                    <ValidationMessage For="@(() => ManualBankTransfer.AccountName)" />
+                    <Validation Validator="ValidatePositiveInt">
+                        <NumericEdit TValue="int?" Id="mbt-min" Min="0" @bind-Value="ManualBankTransfer.MinimumAmountLimit" Class="form-control" >
+                        <Feedback>
+                           
+                            <ValidationError>@L["ThisFieldIsRequired"]</ValidationError>
+                        </Feedback>
+                        </NumericEdit>
+                    </Validation>
                 </div>
             </div>
+
+            <!-- MaximumAmountLimit -->
             <div class="row justify-content-center mb-2">
                 <div class="col-2 pt-2 text-end">
-                    <label class="form-label"></label>
-                    @L["BankName"]
-                    <span class="text-danger"> *</span>
+                    <label class="form-label" for="mbt-max">@L["MaximumAmountLimit"] <span class="text-danger">*</span></label>
                 </div>
                 <div class="col-6">
-                    <InputText class="form-control" @bind-Value="ManualBankTransfer.BankName"></InputText>
-                    <ValidationMessage For="@(() => ManualBankTransfer.BankName)" />
+                    <Validation Validator="ValidatePositiveInt">
+                        <NumericEdit TValue="int?" Id="mbt-max" Min="0" @bind-Value="ManualBankTransfer.MaximumAmountLimit" Class="form-control" >
+                        <Feedback>
+                         
+                            <ValidationError>@L["ThisFieldIsRequired"]</ValidationError>
+                        </Feedback>
+                        </NumericEdit>
+                    </Validation>
                 </div>
             </div>
-            <div class="row justify-content-center mb-2">
-                <div class="col-2 pt-2 text-end">
-                    <label class="form-label"></label>
-                    @L["BranchName"]
-                    <span class="text-danger"> *</span>
-                </div>
-                <div class="col-6">
-                    <InputText class="form-control" @bind-Value="ManualBankTransfer.BranchName"></InputText>
-                    <ValidationMessage For="@(() => ManualBankTransfer.BranchName)" />
-                </div>
-            </div>
-            <div class="row justify-content-center mb-2">
-                <div class="col-2 pt-2 text-end">
-                    <label class="form-label"></label>
-                    @L["BankCode"]
-                    <span class="text-danger"> *</span>
-                </div>
-                <div class="col-6">
-                    <InputText class="form-control" @bind-Value="ManualBankTransfer.BankCode"></InputText>
-                    <ValidationMessage For="@(() => ManualBankTransfer.BankCode)" />
-                </div>
-            </div>
-            <div class="row justify-content-center mb-2">
-                <div class="col-2 pt-2 text-end">
-                    <label class="form-label"></label>
-                    @L["BankAccountNumber"]
-                    <span class="text-danger"> *</span>
-                </div>
-                <div class="col-6">
-                    <InputText class="form-control" @bind-Value="ManualBankTransfer.BankAccountNumber"></InputText>
-                    <ValidationMessage For="@(() => ManualBankTransfer.BankAccountNumber)" />
-                </div>
-            </div>
-            <div class="row justify-content-center mb-2">
-                <div class="col-2 pt-2 text-end">
-                    <label class="form-label"></label>
-                    @L["MinimumAmountLimit"]
-                    <span class="text-danger"> *</span>
-                </div>
-                <div class="col-6">
-                    <InputNumber class="form-control" @bind-Value="ManualBankTransfer.MinimumAmountLimit"></InputNumber>
-                    <ValidationMessage For="@(() => ManualBankTransfer.MinimumAmountLimit)" />
-                </div>
-            </div>
-            <div class="row justify-content-center mb-2">
-                <div class="col-2 pt-2 text-end">
-                    <label class="form-label"></label>
-                    @L["MaximumAmountLimit"]
-                    <span class="text-danger"> *</span>
-                </div>
-                <div class="col-6">
-                    <InputNumber class="form-control" @bind-Value="ManualBankTransfer.MaximumAmountLimit"></InputNumber>
-                    <ValidationMessage For="@(() => ManualBankTransfer.MaximumAmountLimit)" />
-                </div>
-            </div>
+
             @if (IsManualBankTransferNotExist)
             {
                 <div class="row mt-3">
@@ -480,14 +549,14 @@
                     </div>
                 </div>
             }
+
             <div class="row mt-3">
                 <div class="col-12 text-center">
-                    <Button Type="ButtonType.Submit" Class="btn btn-sm btn-primary">
-                        <i class="fa fa-check me-1"></i>
-                        @L["SaveChanges"]
+                    <Button Color="Color.Primary" Size="Size.Small" Clicked="OnSubmitManualAsync">
+                        <i class="fa fa-check me-1"></i> @L["SaveChanges"]
                     </Button>
                 </div>
             </div>
-        </EditForm>
+        </Validations>
     </CardBody>
 </Card>
