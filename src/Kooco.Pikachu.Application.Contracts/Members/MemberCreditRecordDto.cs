@@ -13,5 +13,6 @@ public class MemberCreditRecordDto
     public DateTime? ExpirationDate { get; set; }
     public decimal RemainingCredits { get; set; }
     public string? OrderNo { get; set; }
+    public Guid? OrderId { get; set; }
     public UserShoppingCreditType ShoppingCreditType { get; set; }
 }
