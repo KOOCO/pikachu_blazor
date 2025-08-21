@@ -370,6 +370,8 @@ namespace Kooco.Pikachu.LogisticsFeeManagements
                 var records = await _recordRepository.GetByIdsAsync(input.RecordIds);
 
                 var result = new RetryBatchResult();
+                int s = 0;
+                int f = 0;
                 var tenantNotifications = new Dictionary<Guid, BatchRetryResult>();
                 Guid fileId = records.Select(x => x.FileImportId).FirstOrDefault();
                 foreach (var record in records)
@@ -423,7 +425,7 @@ namespace Kooco.Pikachu.LogisticsFeeManagements
                             var tenantResult = tenantNotifications[record.TenantId.Value];
                             tenantResult.FileName = record.LogisticsFeeFileImport.OriginalFileName;
                             tenantResult.FileType = record.LogisticsFeeFileImport.FileType.ToString();
-                            record.LogisticsFeeFileImport.SuccessfulRecords += 1;
+                            record.LogisticsFeeFileImport.FailedRecords = f+1;
                             await _fileImportRepository.UpdateAsync(record.LogisticsFeeFileImport);
                             record.MarkAsFailed("Insufficient Balance");
                             result.FailureCount++;
@@ -449,7 +451,7 @@ namespace Kooco.Pikachu.LogisticsFeeManagements
                                 TransactionAmount = record.LogisticFee,
                                 TransactionType = WalletTransactionType.LogisticsFeeDeduction,
                                 TransactionNotes = $"Logistics fee deduction for order {record.OrderNumber}",
-                                DeductionStatus = WalletDeductionStatus.Pending,
+                                DeductionStatus = WalletDeductionStatus.Completed,
                                 TradingMethods = WalletTradingMethods.LogisticsFee
 
 
@@ -524,11 +526,11 @@ namespace Kooco.Pikachu.LogisticsFeeManagements
                 _logger.LogInformation("Batch retry completed. Success: {SuccessCount}, Failed: {FailureCount}",
                     result.SuccessCount, result.FailureCount);
                 var file = await _fileImportRepository.GetAsync(fileId);
-                if (file.SuccessfulRecords == file.TotalRecords)
+                if (result.SuccessCount ==( result.SuccessCount+result.FailureCount))
                 {
                     file.SuccessProcessing("");
                 }
-                else if (file.SuccessfulRecords > 0)
+                else if (result.SuccessCount > 0)
                 {
                     file.PartialSuccessProcessing("");
                 }
