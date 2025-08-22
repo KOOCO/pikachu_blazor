@@ -1885,7 +1885,7 @@
     "Notification:Orders:ManualBankTransferConfirmedMessage": "訂單 #{OrderNo} 的人工銀行轉帳已由{UserName}驗證。",
 
     "Notification:Orders:PaymentMethodUpdatedTitle": "付款方式已更新 #{OrderNo}",
-    "Notification:Orders:PaymentMethodUpdatedMessage": "付款方式已由「{PreviousPaymentMethod}」變更為「{PaymentMethod}」，操作者：{UserName}。",
+    "Notification:Orders:PaymentMethodUpdatedMessage": "付款方式已由{PreviousPaymentMethod}變更為{PaymentMethod}，操作者：{UserName}。",
 
     "Notification:Orders:OrdersMergedTitle": "訂單已合併 #{OrderNo}",
     "Notification:Orders:OrdersMergedMessage": "訂單已合併為新訂單 #{OrderNo}，操作者：{UserName}。",
@@ -1906,10 +1906,10 @@
     "Notification:Orders:RefundFailedMessage": "由{UserName}發起的訂單 #{OrderNo} 退款已失敗。",
 
     "Notification:Orders:ShippingStatusUpdatedTitle": "出貨狀態已更新 #{OrderNo}",
-    "Notification:Orders:ShippingStatusUpdatedMessage": "訂單 #{OrderNo} 的出貨狀態已由「{PreviousShippingStatus}」更新為「{ShippingStatus}」，操作者：{UserName}。",
+    "Notification:Orders:ShippingStatusUpdatedMessage": "訂單 #{OrderNo} 的出貨狀態已由{PreviousShippingStatus}更新為{ShippingStatus}，操作者：{UserName}。",
 
     "Notification:Orders:OrderStatusUpdatedTitle": "訂單狀態已更新 #{OrderNo}",
-    "Notification:Orders:OrderStatusUpdatedMessage": "訂單 #{OrderNo} 的狀態已由「{PreviousOrderStatus}」更新為「{OrderStatus}」，操作者：{UserName}。",
+    "Notification:Orders:OrderStatusUpdatedMessage": "訂單 #{OrderNo} 的狀態已由{PreviousOrderStatus}更新為{OrderStatus}，操作者：{UserName}。",
 
     "Notification:Orders:ReturnRequestedTitle": "退貨申請 #{OrderNo}",
     "Notification:Orders:ReturnRequestedMessage": "訂單 #{OrderNo} 的退貨申請，由{UserName}提出。",
@@ -1918,7 +1918,7 @@
     "Notification:Orders:ExchangeRequestedMessage": "訂單 #{OrderNo} 的換貨申請，由{UserName}提出。",
 
     "Notification:Orders:ReturnStatusUpdatedTitle": "退貨狀態已更新 #{OrderNo}",
-    "Notification:Orders:ReturnStatusUpdatedMessage": "訂單 #{OrderNo} 的退貨狀態已由「{PreviousReturnStatus}」更新為「{ReturnStatus}」，操作者：{UserName}。",
+    "Notification:Orders:ReturnStatusUpdatedMessage": "訂單 #{OrderNo} 的退貨狀態已由{PreviousReturnStatus}更新為{ReturnStatus}，操作者：{UserName}。",
 
     "Notification:Orders:OrderCancelledTitle": "訂單已取消 #{OrderNo}",
     "Notification:Orders:OrderCancelledMessage": "訂單 #{OrderNo} 已由{UserName}取消。",
@@ -1992,8 +1992,8 @@
     "AreYouSureToUpdateTCat7-11Frozen?": "您確定要更新黑貓7-11到店冷凍設定嗎?",
     "AreYouSureToUpdateTCat7-11Freeze?": "您確定要更新黑貓7-11到店冷藏設定嗎?",
     "AreYouSureToUpdateTCat7-11Normal?": "您確定要更新黑貓7-11到店常溫設定嗎?",
-    "Validation:Required": "此欄位為必填"
-
-
+    "Validation:Required": "此欄位為必填",
+    "System": "系統",
+    "Type": "類型"
   }
 }

@@ -335,22 +335,9 @@
         <Icon Name="IconName.ArrowLeft" Class="me-1"></Icon>
         @L["FileImportHistory"]
     </PikachuButton>
-<div class="content-header">
-    <div class="breadcrumb-container">
-        <nav class="breadcrumb-nav">
-              <span class="breadcrumb-current">@L["LogisticsManagement"]</span>
-            <span class="breadcrumb-separator">></span>
-             <span class="breadcrumb-current">@L["FeeManagement"]</span>
-            <span class="breadcrumb-separator">></span>
-            <span class="breadcrumb-current">@(TenantName)</span>
-             <span class="breadcrumb-separator">></span>
-              <span class="breadcrumb-current">@(FileName)</span>
-        </nav>
-    </div>
-    <div class="page-header">
-        <h1 class="page-title">@($"{L["FeeRecords"]} - {FileName}")"</h1>
-    </div>
-</div>
+<PikachuPageHeader 
+    Breadcrumbs="@(new() { L["LogisticsManagement"], L["FeeManagement"], TenantName, FileName })"
+    Title=@($"{L["FeeRecords"]} - {FileName}") />
 <!-- File Processing Summary -->
 <Row>
     <Column ColumnSize="ColumnSize.Is4">

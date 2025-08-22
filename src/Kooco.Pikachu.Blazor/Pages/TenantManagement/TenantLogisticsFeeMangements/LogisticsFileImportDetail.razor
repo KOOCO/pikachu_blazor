@@ -330,21 +330,9 @@
         <Icon Name="IconName.ArrowLeft" Class="me-1"></Icon>
         @L["LogisticsFeeManagement"]
     </PikachuButton>
-<div class="content-header">
-    <div class="breadcrumb-container">
-        <nav class="breadcrumb-nav">
-              <span class="breadcrumb-current">@L["LogisticsManagement"]</span>
-            <span class="breadcrumb-separator">></span>
-             <span class="breadcrumb-current">@L["FeeManagement"]</span>
-            <span class="breadcrumb-separator">></span>
-            <span class="breadcrumb-current">@(TenantName)</span>
-            
-        </nav>
-    </div>
-    <div class="page-header">
-        <h1 class="page-title">@($"{L["FileImportHistory"]} - {TenantName}")"</h1>
-    </div>
-</div>
+<PikachuPageHeader 
+    Breadcrumbs="@(new() { @L["LogisticsManagement"], @L["FeeManagement"], TenantName })"
+    Title=@($"{L["FileImportHistory"]} - {TenantName}") />
 <!-- Wallet Status Cards -->
 <Row>
     <Column ColumnSize="ColumnSize.Is4">

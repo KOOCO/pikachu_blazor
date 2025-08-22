@@ -1,0 +1,93 @@
+﻿@using System.Collections.Generic;
+@using Volo.Abp.AspNetCore.Components.Web;
+@using Blazorise;
+
+<style>
+     .content-header {
+        background-color: #ffffff;
+        border-bottom: 1px solid #dee2e6;
+        padding: 0;
+        margin-bottom: 1.5rem;
+    }
+
+    .breadcrumb-container {
+        padding: 12px 24px 8px;
+        background-color: #ffffff;
+       /*  border-bottom: 1px solid #e9ecef; */
+    }
+
+    .breadcrumb-nav {
+        font-size: 13px;
+        color: #6c757d;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        align-items: center;
+    }
+
+    .breadcrumb-link {
+        color: #007bff;
+        text-decoration: none;
+        transition: color 0.2s ease;
+    }
+
+    .breadcrumb-link:hover {
+        color: #0056b3;
+        text-decoration: none;
+    }
+
+    .breadcrumb-separator {
+        margin: 0 8px;
+        color: #adb5bd;
+        font-size: 12px;
+    }
+
+    .breadcrumb-current {
+        color: #495057;
+        font-weight: 500;
+    }
+
+    .page-header {
+        padding: 16px 24px 20px;
+        background-color: #ffffff;
+    }
+
+    .page-title {
+        font-size: 24px;
+        font-weight: 600;
+        color: #343a40;
+        margin: 0;
+        line-height: 1.2;
+    }
+</style>
+
+<div class="content-header">
+    <div class="breadcrumb-container">
+        <nav class="breadcrumb-nav">
+            @if (Breadcrumbs != null)
+            {
+                @foreach (var (text, isLast) in Breadcrumbs.Select((x, i) => (x, i == Breadcrumbs.Count - 1)))
+                {
+                    <span class="breadcrumb-current">@text</span>
+                    @if (!isLast)
+                    {
+                        <span class="breadcrumb-separator">></span>
+                    }
+                }
+            }
+        </nav>
+    </div>
+    <div class="page-header">
+        <h1 class="page-title">@Title</h1>
+        @if (!string.IsNullOrWhiteSpace(SubTitle))
+        {
+            <div class="page-subtitle">@SubTitle</div>
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter] public List<string> Breadcrumbs { get; set; } = new();
+    [Parameter] public string Title { get; set; } = string.Empty;
+    [Parameter] public string? SubTitle { get; set; }
+}

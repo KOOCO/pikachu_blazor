@@ -492,6 +492,14 @@ public class PikachuMenuContributor : IMenuContributor
                 )
             );
             tenantManagementMenu?.AddItem(
+              new ApplicationMenuItem(
+                  name: PikachuMenus.PlatformManagement,
+                  displayName: l["Menu:PlatformManagement"],
+                  url: "/platform-fee-settings",
+                  requiredPermissionName: PikachuPermissions.Feeds.Overview
+              )
+          );
+            tenantManagementMenu?.AddItem(
     new ApplicationMenuItem(
         name: PikachuMenus.LogisticsFeeManagement,
         displayName: l["LogisticsFeeManagement"],

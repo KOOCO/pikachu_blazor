@@ -61,6 +61,7 @@ using System.Reflection.Emit;
 using Kooco.Pikachu.Reconciliations;
 using Kooco.Pikachu.InboxManagement;
 using Kooco.Pikachu.CodTradeInfos;
+using Kooco.Pikachu.TenantDeliveryFees;
 
 namespace Kooco.Pikachu.EntityFrameworkCore;
 
@@ -201,6 +202,9 @@ public class PikachuDbContext(DbContextOptions<PikachuDbContext> options) :
     public DbSet<EcPayCodTradeInfoRecord> EcPayTradeInfoRecords { get; set; }
 
     public DbSet<Notification> Notifications { get; set; }
+    public DbSet<TenantDeliveryFee> TenantDeliveryFees { get; set; }
+
+
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -1009,6 +1013,33 @@ public class PikachuDbContext(DbContextOptions<PikachuDbContext> options) :
             b.Property(x => x.ParametersJson).HasMaxLength(NotificationConsts.MaxParamsJsonLength);
             b.Property(x => x.EntityName).HasMaxLength(NotificationConsts.MaxEntityNameLength);
             b.Property(x => x.EntityId).HasMaxLength(NotificationConsts.MaxEntityIdLength);
+        });
+
+        builder.Entity<TenantDeliveryFee>(b =>
+        {
+            b.ToTable(PikachuConsts.DbTablePrefix + "TenantDeliveryFees", PikachuConsts.DbSchema);
+
+
+            b.ConfigureByConvention();
+
+            b.Property(x => x.DeliveryProvider)
+                .HasConversion<int>()
+                .IsRequired();
+
+            b.Property(x => x.FeeKind)
+                .HasConversion<int>()
+                .IsRequired();
+
+            b.Property(x => x.PercentValue)
+                .HasPrecision(5, 2);
+
+            b.Property(x => x.FixedAmount)
+                .HasPrecision(10, 2);
+
+            // Index for better performance
+            b.HasIndex(x => new { x.TenantId, x.DeliveryProvider })
+                .IsUnique();
+
         });
     }
 }

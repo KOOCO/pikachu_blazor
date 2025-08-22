@@ -46,6 +46,7 @@ public static class PikachuPermissions
     public const string EdmManagementGroup = "EdmMangement";
 
     public const string InboxManagement = "InboxManagement";
+    public const string PlatformFeeManagement = "PlatformFeeManagement";
 
     /// <summary>
     /// 
@@ -228,5 +229,12 @@ public static class PikachuPermissions
     public static class Inbox
     {
         public const string Default = InboxManagement + ".Inbox";
+    }
+    public static class Feeds // (typo guard: keep “Fees” if you prefer)
+    {
+        public const string Default = PlatformFeeManagement + ".Default";
+        public const string View = PlatformFeeManagement + ".View";      // open page / read
+        public const string Manage = PlatformFeeManagement + ".Manage";    // upsert (create/update)
+        public const string Overview = PlatformFeeManagement + ".Overview";  // host: tenants+status list
     }
 }
