@@ -44,4 +44,5 @@ public class PikachuMenus
     public const string LogisticsFeeManagement = Prefix + ".LogisticsFeeManagement";
 
     public const string InboxManagement = Prefix + ".Inbox";
+    public const string PlatformManagement = Prefix + ".PlatformManagement";
 }

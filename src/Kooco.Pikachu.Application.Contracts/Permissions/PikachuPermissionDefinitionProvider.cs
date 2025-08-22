@@ -160,6 +160,17 @@ public class PikachuPermissionDefinitionProvider : PermissionDefinitionProvider
 
         var inboxManagementGroup = context.AddGroup(PikachuPermissions.InboxManagement, L("Permission:InboxManagement"));
         var inboxPermissions = inboxManagementGroup.AddPermission(PikachuPermissions.Inbox.Default, L("Permission:InboxManagement"));
+
+        var defaultPerm = context.AddGroup(PikachuPermissions.PlatformFeeManagement,L("Permission:PlatformFeeManagement"));
+        defaultPerm.AddPermission(PikachuPermissions.Feeds.Default, L("Permission:TenantDeliveryFees.Default"), MultiTenancySides.Host);
+        // Read the tenant’s fees / open page
+        defaultPerm.AddPermission(PikachuPermissions.Feeds.View,L("Permission:TenantDeliveryFees.View"), MultiTenancySides.Host);
+
+        // Create / Update (UpsertManyAsync)
+        defaultPerm.AddPermission(PikachuPermissions.Feeds.Manage,L("Permission:TenantDeliveryFees.Manage"),MultiTenancySides.Host);
+
+        // Host-only overview (tenants + status page/list)
+        defaultPerm.AddPermission(PikachuPermissions.Feeds.Overview,L("Permission:TenantDeliveryFees.Overview"),MultiTenancySides.Host);
     }
 
     private static LocalizableString L(string name)

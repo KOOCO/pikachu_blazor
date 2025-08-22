@@ -1,0 +1,210 @@
+﻿
+@using Blazorise
+@using System.Linq
+@using Kooco.Pikachu.Localization;
+@using Kooco.Pikachu.EnumValues;
+@using Kooco.Pikachu.TenantDeliveryFees
+@using Microsoft.AspNetCore.Components.Web;
+@inherits PikachuComponentBase
+@inject ITenantDeliveryFeeAppService FeeApp
+@inject IMessageService MessageService
+@using Microsoft.Extensions.Localization;
+@inject IStringLocalizer<PikachuResource> L;
+@inject IAuthorizationService Authorization
+@inject IMessageService MessageService
+
+
+<style>
+    .logistic-fee-container {
+        background-color: #f8f9fa;
+        border-radius: 12px;
+        padding: 24px;
+        border: 1px solid #e9ecef;
+    }
+
+    .delivery-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 16px 0;
+        min-height: 60px;
+    }
+
+    .delivery-row:not(:last-child) {
+        border-bottom: 1px solid #e9ecef;
+    }
+
+    .delivery-provider-left {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      
+    }
+
+    .delivery-provider-name {
+        font-weight: 500;
+        font-size: 15px;
+        color: #212529;
+    }
+
+    .delivery-controls-right {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    /* Blazorise Select styling */
+    .delivery-controls-right .form-select,
+    .delivery-controls-right select {
+        width: 140px !important;
+        font-size: 14px;
+        border: 1px solid #ced4da;
+        border-radius: 6px;
+        padding: 8px 12px;
+        background-color: white;
+    }
+
+   
+
+    
+
+    /* Remove any Bootstrap input styling that might interfere */
+    .delivery-controls-right input {
+        -webkit-appearance: none;
+        -moz-appearance: textfield;
+    }
+
+    .percentage-symbol {
+        color: #6c757d;
+        font-size: 14px;
+        margin-left: 8px;
+        font-weight: normal;
+    }
+
+    .delivery-options-title {
+        font-size: 16px;
+        font-weight: 400;
+        color: #212529;
+        margin-bottom: 20px;
+    }
+
+    .custom-switch {
+        transform: scale(1.1);
+    }
+
+    .action-buttons {
+        padding-top: 20px;
+        border-top: none;
+        background-color: transparent;
+    }
+
+    /* Button styling */
+    .action-buttons .btn:first-child {
+        padding: 10px 24px;
+        border: 1px solid #ced4da;
+        color: #6c757d;
+        background-color: white;
+        border-radius: 6px;
+    }
+
+    .action-buttons .btn:last-child {
+        padding: 10px 24px;
+        background-color: #0d6efd;
+        border: 1px solid #0d6efd;
+        color: white;
+        border-radius: 6px;
+    }
+</style>
+
+<Validations @ref="formValidations" Mode="ValidationMode.Manual">
+    <Card Class="mb-4 border-0">
+        <CardBody>
+            <h5 class="mb-1">@L["LogisticFeeConfiguration"]</h5>
+            <p class="text-muted mb-4">@L["LogisticFeeConfiguration_Desc"]</p>
+
+            <!-- Delivery Options Section -->
+            <div class="logistic-fee-container">
+                <div class="delivery-options-title">@L["DeliveryOptions"]</div>
+
+                @foreach (var item in Vm.Items)
+                {
+                    <Card Class="mb-4 border-0">
+                        <CardBody>
+                    <div class="delivery-row">
+                        <!-- Left side: Switch and Provider name -->
+                        <div class="delivery-provider-left">
+                            <Switch @bind-Checked="item.IsEnabled" 
+                                   Toggled="() => OnEnabledChanged(item)"
+                                   Class="custom-switch" />
+                            <span class="delivery-provider-name">@item.DeliveryProvider.ToString()</span>
+                        </div>
+                        </div>
+                         <div class="delivery-row">
+                        <!-- Right side: Fee controls -->
+                        <div class="delivery-provider-left">
+                            <!-- Fee Type Dropdown -->
+                            <Select TValue="FeeKind"
+                                   SelectedValue="item.FeeKind"
+                                   SelectedValueChanged="(e)=>OnFeeKindChanged(e,item)"
+                               
+                                   Class="fee-type-select">
+                                <SelectItem Value="FeeKind.Percentage">@L["Percentage"]</SelectItem>
+                                <SelectItem Value="FeeKind.FixedAmount">@L["FixedAmount"]</SelectItem>
+                            </Select>
+                            </div>
+                             <div class="delivery-controls-right">
+                            <!-- Value Input -->
+                            @if (item.FeeKind == FeeKind.Percentage)
+                            {
+                                <div class="d-flex align-items-center">
+                                    <Validation Validator="@(e => ValidatePercent(e, item))">
+                                        <NumericEdit TValue="decimal?"
+                                                   @bind-Value="item.PercentValue"
+                                                   Min="0" Max="100"
+                                                
+                                                   Placeholder="0.00"
+                                                   />
+                                        <ValidationError />
+                                    </Validation>
+                                    <span class="percentage-symbol">%</span>
+                                </div>
+                            }
+                            else
+                            {
+                                <Validation Validator="@(e => ValidateFixed(e, item))">
+                                    <NumericEdit TValue="decimal?"
+                                               @bind-Value="item.FixedAmount"
+                                               Min="0" 
+                                               
+                                               Placeholder="0.00"
+                                               
+                                               Style="width: 90px;" />
+                                    <ValidationError />
+                                </Validation>
+                            }
+                        </div>
+                    </div>
+                    </CardBody>
+                    </Card>
+                }
+            </div>
+        </CardBody>
+
+        <CardFooter class="d-flex justify-content-end gap-3 action-buttons">
+            <Button Color="Color.Light" 
+                   Outline 
+                   Clicked="ResetAsync"
+                   Class="btn-reset">
+                @L["Reset"]
+            </Button>
+            <Button Color="Color.Primary" 
+             Disabled="@(!CanManage)"
+                   Clicked="SaveAsync"
+                   Class="btn-save">
+                @L["SaveLogisticFeeSettings"]
+            </Button>
+        </CardFooter>
+    </Card>
+</Validations>
+
+

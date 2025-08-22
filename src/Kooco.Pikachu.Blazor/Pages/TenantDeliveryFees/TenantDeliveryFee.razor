@@ -1,18 +1,20 @@
-﻿@page "/logistics-management"
+﻿@page "/platform-fee-settings"
 @using Volo.Abp.AspNetCore.Components.Web
 @using Microsoft.AspNetCore.Authorization
 @using Blazorise
 @using Blazorise.DataGrid
 @using Kooco.Pikachu.Localization;
-@using Kooco.Pikachu.LogisticsFeeManagements;
+@using Kooco.Pikachu.TenantDeliveryFees;
 @using Kooco.Pikachu.EnumValues;
+@using Kooco.Pikachu.Permissions;
 @inherits PikachuComponentBase
 @using Microsoft.Extensions.Localization;
-@inject ILogisticsFeeAppService LogisticsFeeAppService
+@inject ITenantDeliveryFeeAppService TenantDeliveryFeeAppService
 @inject NavigationManager NavigationManager
 @inject IMessageService MessageService
 @inject IStringLocalizer<PikachuResource> L;
-@attribute [Authorize(PikachuPermissions.LogisticsFeeManagement.Default)]
+
+ @attribute [Authorize(PikachuPermissions.Feeds.Default)] 
 
 <style>
     /* Logistics Fee Management Custom Styles */
@@ -329,42 +331,31 @@
 
     
 </style>
+<PikachuPageHeader 
+    Breadcrumbs="@(new() { L["PlatformManagement"], L["FeeSettings"] })"
+    Title="@L["PlatformFeeSettings"]" />
 
-<PikachuPageHeader Breadcrumbs="@(new() { @L["LogisticsManagement"], @L["FeeManagement"] })"
-    Title="@L["LogisticsFeeManagement"]" />
 <Card>
     <CardBody>
         <Row>
-            <Column ColumnSize="ColumnSize.Is8">
+            <Column ColumnSize="ColumnSize.Is12">
                 <TextEdit 
                     @bind-Text="Filter" 
-                    Placeholder="@L["SearchTenantNameOrWalletId"]" 
+                    Placeholder="@L["SearchTenantName"]" 
                     @onkeypress="OnSearchKeyPress">
                     <Feedback>
                         <ValidationNone />
                     </Feedback>
                 </TextEdit>
             </Column>
-            <Column ColumnSize="ColumnSize.Is2">
-           <Select TValue="string?" @bind-SelectedValue="StatusFilter">
-    <SelectItem TValue="string?" Value="@null">@L["AllTenants"]</SelectItem>
-    <SelectItem TValue="string?" Value="@( "failed" )">@L["FailedPaymentsOnly"]</SelectItem>
-    <SelectItem TValue="string?" Value="@( "lowbalance" )">@L["LowBalance"]</SelectItem>
-</Select>
-            </Column>
-            <Column ColumnSize="ColumnSize.Is2">
-                <Button Color="Color.Primary" @onclick="OpenImportModal" Block>
-                    <Icon Name="IconName.FileUpload" />
-                    @L["ImportLogisticsFees"]
-                </Button>
-            </Column>
+           
         </Row>
     </CardBody>
 </Card>
 
 <Card Margin="Margin.Is3.FromTop">
     <CardBody>
-        <DataGrid TItem="TenantLogisticsFeeDto"
+        <DataGrid TItem="TenantLogisticsFeeRowDto"
                   Data="TenantList"
                   ReadData="OnDataGridReadData"
                   TotalItems="TotalCount"
@@ -372,62 +363,48 @@
                   PageSize="PageSize"
                   Responsive="true">
             <DataGridColumns>
-                <DataGridColumn TItem="TenantLogisticsFeeDto" 
-                               Field="@nameof(TenantLogisticsFeeDto.TenantName)" 
+                <DataGridColumn TItem="TenantLogisticsFeeRowDto" 
+                               Field="@nameof(TenantLogisticsFeeRowDto.TenantName)" 
                                Caption="@L["TenantName"]">
                     <DisplayTemplate>
-                        <div class="d-flex align-items-center">
-                            @if (context.HasFailedRecords)
-                            {
-                                <Icon Name="IconName.ExclamationTriangle" 
-                                      TextColor="TextColor.Warning" 
-                                      Margin="Margin.Is1.FromEnd" />
-                            }
+                        
                             @context.TenantName
-                        </div>
+                      
                     </DisplayTemplate>
                 </DataGridColumn>
                 
-                <DataGridColumn TItem="TenantLogisticsFeeDto" 
-                               Field="@nameof(TenantLogisticsFeeDto.WalletId)" 
-                               Caption="@L["WalletId"]" />
+               
                 
-                <DataGridColumn TItem="TenantLogisticsFeeDto" 
-                               Field="@nameof(TenantLogisticsFeeDto.WalletBalance)" 
-                               Caption="@L["WalletBalance"]">
+                <DataGridColumn TItem="TenantLogisticsFeeRowDto" 
+                               Field="@nameof(TenantLogisticsFeeRowDto.LogisticsFeeStatus)" 
+                               Caption="@L["LogisticsFeeStatus"]">
                     <DisplayTemplate>
-                        <span class="@GetBalanceColorClass(context.WalletBalance)">
-                            $@context.WalletBalance.ToString("N2")
-                        </span>
+                         <PikachuBadge Class="@GetStatusColor(context.LogisticsFeeStatus)">
+                            @L[GetStatusText(context.LogisticsFeeStatus)]
+                        </PikachuBadge>
                     </DisplayTemplate>
                 </DataGridColumn>
                 
-                <DataGridColumn TItem="TenantLogisticsFeeDto" 
-                               Field="@nameof(TenantLogisticsFeeDto.RecentStatus)" 
-                               Caption="@L["RecentStatus"]">
-                    <DisplayTemplate>
-                        <Badge Color="@GetStatusColor(context.RecentStatus)">
-                            @L[GetStatusText(context.RecentStatus)]
-                        </Badge>
-                    </DisplayTemplate>
-                </DataGridColumn>
+               
                 
-                <DataGridColumn TItem="TenantLogisticsFeeDto" 
-                               Field="@nameof(TenantLogisticsFeeDto.LastUpdated)" 
+                <DataGridColumn TItem="TenantLogisticsFeeRowDto" 
+                               Field="@nameof(TenantLogisticsFeeRowDto.LastModificationTime)" 
                                Caption="@L["LastUpdated"]">
                     <DisplayTemplate>
-                        @context.LastUpdated.ToString("yyyy-MM-dd HH:mm")
+                        @context.LastModificationTime?.ToString("yyyy-MM-dd HH:mm")
                     </DisplayTemplate>
                 </DataGridColumn>
                 
-                <DataGridColumn TItem="TenantLogisticsFeeDto" 
+                <DataGridColumn TItem="TenantLogisticsFeeRowDto" 
                                Caption="@L["Actions"]" 
                                Sortable="false">
                     <DisplayTemplate>
-                        <Button Color="Color.Info" 
+                        <Button
+                            Color="Color.Info" Outline
                                 Size="Size.Small" 
-                                @onclick="() => ViewTenantDetails(context.TenantId)">
-                            @L["ViewDetails"]
+                               
+                                @onclick="() => ViewTenantDetails(context.Id)">
+                            @L["Configure"]
                         </Button>
                     </DisplayTemplate>
                 </DataGridColumn>
@@ -436,84 +413,5 @@
     </CardBody>
 </Card>
 
-<!-- Import Modal -->
-<Modal @ref="ImportModal" Size="ModalSize.Large">
-    <ModalContent Centered>
-        <ModalHeader>
-            <ModalTitle>@L["ImportLogisticsFees"]</ModalTitle>
-            <CloseButton />
-        </ModalHeader>
-        <ModalBody>
-            <Validations @ref="ImportValidations" Mode="ValidationMode.Manual">
-                <Row>
-                    <Column>
-                        <Field>
-                            <FieldLabel>@L["SelectFileSource"] *</FieldLabel>
-                            <RadioGroup TValue="LogisticsFileType" @bind-CheckedValue="SelectedFileType" Name="fileType">
-                                <Radio TValue="LogisticsFileType" Value="LogisticsFileType.ECPay">@L["ECPayFileUpload"]</Radio>
-                                <Radio TValue="LogisticsFileType" Value="LogisticsFileType.TCAT">@L["TCatFileUpload"]</Radio>
-                            </RadioGroup>
-                        </Field>
-                    </Column>
-                </Row>
-                
-                <Row Margin="Margin.Is3.FromTop">
-                    <Column>
-                        <Field>
-                            <Validation Validator="ValidateFile">
-                                <FileEdit @ref="FileEditRef" 
-                                         Filter=".csv,.xlsx"
-                                         Changed="OnFileChanged"
-                                         Written="OnFileWritten"
-                                         Progressed="OnFileProgressed">
-                                    <ChildContent>
-                                        <div class="file-drop-zone text-center p-5" style="border: 2px dashed #dee2e6; border-radius: 0.375rem;">
-                                            <Icon Name="IconName.CloudUploadAlt" Size="IconSize.x2" TextColor="TextColor.Muted" />
-                                            <div class="mt-2">
-                                                <strong>@L["DragDropFileHere"]</strong>
-                                            </div>
-                                            <div class="text-muted">@L["OrClickToBrowse"]</div>
-                                            <div class="text-muted small mt-2" style="min-width: 270px !important;">
-                                                @L["SupportedFormats"]: CSV, XLSX<br/>
-                                                @L["RequiredColumns"]: @L["OrderNumber"], @L["LogisticFee"]
-                                            </div>
-                                        </div>
-                                    </ChildContent>
-                                </FileEdit>
-                                <ValidationFeedback />
-                            </Validation>
-                        </Field>
-                        
-                        @if (UploadProgress > 0)
-                        {
-                            <Progress Value="UploadProgress" Animated Striped Margin="Margin.Is2.FromTop" />
-                        }
-                        
-                        @if (!string.IsNullOrEmpty(SelectedFileName))
-                        {
-                            <Alert Color="Color.Info" Margin="Margin.Is2.FromTop">
-                                <Icon Name="IconName.File" Margin="Margin.Is1.FromEnd" />
-                                @SelectedFileName
-                            </Alert>
-                        }
-                    </Column>
-                </Row>
-                
-                <Row Margin="Margin.Is3.FromTop">
-                    <Column>
-                        <Check TValue="bool" @bind-Checked="AutoDeduct">@L["AutoDeductFromTenantWallets"]</Check>
-                        <Span Margin="Margin.Is2.FromTop"></Span>
-                        <Check TValue="bool" @bind-Checked="SendNotifications">@L["SendEmailNotifications"]</Check>
-                    </Column>
-                </Row>
-            </Validations>
-        </ModalBody>
-        <ModalFooter>
-            <Button Color="Color.Secondary" @onclick="CloseImportModal">@L["Cancel"]</Button>
-            <Button Color="Color.Primary" @onclick="ProcessUpload" Loading="IsProcessing" Disabled="@(SelectedFile == null)">
-                @L["UploadAndProcess"]
-            </Button>
-        </ModalFooter>
-    </ModalContent>
-</Modal>
+
 

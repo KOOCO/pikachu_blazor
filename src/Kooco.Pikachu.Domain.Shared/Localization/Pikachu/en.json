@@ -2004,7 +2004,30 @@
     "AreYouSureToUpdateTCat7-11Frozen?": "Are You Sure To Update T-Cat 7-11 Frozen ?",
     "AreYouSureToUpdateTCat7-11Freeze?": "Are You Sure To Update T-Cat 7-11 Freeze ?",
     "AreYouSureToUpdateTCat7-11Normal?": "Are You Sure To Update T-Cat 7-11 Normal ?",
-    "Validation:Required": "This field is required"
+    "Validation:Required": "This field is required",
+    "LogisticFeeConfiguration": "Logistic Fee Configuration",
+    "LogisticFeeConfiguration_Desc": "Configure additional fees for different delivery methods. The fee can be a percentage of the logistic cost or a fixed amount.",
+    "Save:Success": "Logistic fee settings saved successfully.",
+    "Reset:Reloaded": "Reloaded the latest values from server.",
+    "Validation:FixErrors": "Please fix the highlighted errors and try again.",
+    "Validation:PercentRequired": "Percentage is required.",
+    "Validation:PercentRange": "Percentage must be between 0 and 100.",
+    "Validation:AmountRequired": "Amount is required.",
+    "Validation:AmountMinZero": "Amount must be greater than or equal to 0.",
+    "Permission:TenantDeliveryFees": "Logistic Fee Configuration",
+    "Permission:PlatformFeeManagement": "Platform Fee Management",
+    "Permission:TenantDeliveryFees.Default": "Logistic fee access",
+    "Permission:TenantDeliveryFees.View": "View logistic fee settings",
+    "Permission:TenantDeliveryFees.Manage": "Manage logistic fee settings",
+    "Permission:TenantDeliveryFees.Overview": "Platform Fee Management",
+    "PlatformManagement": "Platform Management",
+    "FeeSettings": "Fee Settings",
+    "PlatformFeeSettings": "Platform Fee Settings",
+    "SearchTenantName": "Search Tenant Name",
+    "LogisticsFeeStatus": "Logistics Fee Status",
+    "LogisticFees": "Logistic Fees",
+    "DeliveryOptions": "Delivery Options",
+    "Menu:PlatformManagement": "Platform Management"
 
 
   }

@@ -75,4 +75,6 @@ public static class PikachuDomainErrorCodes
     public const string DuplicateTier = "Pikachu:DuplicateTier";
     public const string CampaignWithSameNameAlreadyExists = "Pikachu:CampaignWithSameNameAlreadyExists";
     public const string InvalidInventoryStock = "Pikachu:InvalidInventoryStock";
+    public const string DuplicateCombination = "TenantDeliveryFee:DuplicateCombination";
+
 }
