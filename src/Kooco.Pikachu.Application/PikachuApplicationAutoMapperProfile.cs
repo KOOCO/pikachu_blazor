@@ -69,6 +69,8 @@ using Kooco.Pikachu.Emails;
 using Kooco.Pikachu.Tenants.Requests;
 using Kooco.Pikachu.LogisticsFeeManagements;
 using Kooco.Pikachu.InboxManagement;
+using Kooco.Pikachu.CodTradeInfos;
+using Kooco.TradeInfos;
 
 namespace Kooco.Pikachu;
 
@@ -447,8 +449,13 @@ public class PikachuApplicationAutoMapperProfile : Profile
         CreateMap<TenantLogisticsFeeFileProcessingSummary, TenantLogisticsFeeFileProcessingSummaryDto>();
         CreateMap<TenantLogisticsFeeRecord, TenantLogisticsFeeRecordDto>();
 
-        CreateMap<EcPayReconciliationResponse, EcPayReconciliationRecord>();
+        CreateMap<EcPayReconciliationResponse, EcPayReconciliationRecord>().ReverseMap();
         CreateMap<EcPayReconciliationRecord, EcPayReconciliationRecordDto>().ReverseMap();
+        CreateMap<EcPayReconciliationResponse, EcPayReconciliationRecordDto>().ReverseMap();
+
+        CreateMap<EcPayTradeInfoResponse, EcPayCodTradeInfoRecord>().ReverseMap();
+        CreateMap<EcPayCodTradeInfoRecord, EcPayCodTradeInfoDto>().ReverseMap();
+        CreateMap<EcPayTradeInfoResponse, EcPayCodTradeInfoDto>().ReverseMap();
 
         CreateMap<Notification, NotificationDto>()
             .ForMember(dest => dest.ReadByName, opt => opt.MapFrom(src => src.ReadBy.UserName));

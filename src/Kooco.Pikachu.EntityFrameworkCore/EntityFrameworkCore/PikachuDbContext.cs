@@ -60,6 +60,7 @@ using Kooco.Pikachu.LogisticsFeeManagements;
 using System.Reflection.Emit;
 using Kooco.Pikachu.Reconciliations;
 using Kooco.Pikachu.InboxManagement;
+using Kooco.Pikachu.CodTradeInfos;
 
 namespace Kooco.Pikachu.EntityFrameworkCore;
 
@@ -197,6 +198,7 @@ public class PikachuDbContext(DbContextOptions<PikachuDbContext> options) :
     public DbSet<TenantLogisticsFeeRecord> TenantLogisticsFeeRecord { get; set; }
 
     public DbSet<EcPayReconciliationRecord> EcPayReconciliationRecords { get; set; }
+    public DbSet<EcPayCodTradeInfoRecord> EcPayTradeInfoRecords { get; set; }
 
     public DbSet<Notification> Notifications { get; set; }
 
@@ -987,6 +989,12 @@ public class PikachuDbContext(DbContextOptions<PikachuDbContext> options) :
         builder.Entity<EcPayReconciliationRecord>(b =>
         {
             b.ToTable(PikachuConsts.DbTablePrefix + "EcPayReconciliationRecord", PikachuConsts.DbSchema);
+            b.ConfigureByConvention();
+        });
+
+        builder.Entity<EcPayCodTradeInfoRecord>(b =>
+        {
+            b.ToTable(PikachuConsts.DbTablePrefix + "EcPayCodTradeInfoRecords", PikachuConsts.DbSchema);
             b.ConfigureByConvention();
         });
 

@@ -24,16 +24,16 @@ public class EcPayReconciliationJob : AsyncBackgroundJob<int>, ITransientDepende
 
     public override async Task ExecuteAsync(int args)
     {
-        Logger.LogInformation("Recociliation Job: Starting");
+        Logger.LogInformation("Reconciliation Job: Starting");
 
         var records = await _ecPayReconciliationAppService.QueryMediaFileAsync(_hostApplicationLifeTime.ApplicationStopping);
 
         if (records == null || records.Count == 0)
         {
-            Logger.LogWarning("Recociliation Job: No reconciliation records found for the specified date range.");
+            Logger.LogWarning("Reconciliation Job: No reconciliation records found for the specified date range.");
             return;
         }
 
-        Logger.LogInformation("Recociliation Job: Found {count} records", records.Count);
+        Logger.LogInformation("Reconciliation Job: Found {count} records", records.Count);
     }
 }
