@@ -6,7 +6,7 @@ namespace Kooco;
 
 public static class EcPayCheckMacValue
 {
-    public static string Generate(Dictionary<string, string> parameters, string hashKey, string hashIV)
+    public static string Generate(Dictionary<string, string> parameters, EcPayHttpOptions options)
     {
         var sorted = parameters
             .Where(kvp => kvp.Key != "CheckMacValue" && !string.IsNullOrEmpty(kvp.Value))
@@ -15,9 +15,9 @@ public static class EcPayCheckMacValue
 
         var toBeHashed = new StringBuilder();
         toBeHashed
-            .Append($"HashKey={hashKey}&")
+            .Append($"HashKey={options.HashKey}&")
             .Append(string.Join("&", sorted.Select(kvp => $"{kvp.Key}={kvp.Value}")))
-            .Append($"&HashIV={hashIV}");
+            .Append($"&HashIV={options.HashIV}");
 
         var urlEncoded = HttpUtility.UrlEncode(toBeHashed.ToString())
             .ToLower()

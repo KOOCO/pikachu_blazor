@@ -15,15 +15,15 @@ public sealed class EcPayReconciliationMap : ClassMap<EcPayReconciliationRespons
         Map(m => m.MID).Name("MID").Optional();
         Map(m => m.PlatformName).Name("平台名稱").Optional();
         Map(m => m.PaymentType).Name("付款方式");
-        Map(m => m.FeeRate).Name("費率(每筆)").Optional();
         Map(m => m.CreditCardAuthCode).Name("信用卡授權單號").Optional();
         Map(m => m.CreditCardLast4).Name("信用卡卡號末4碼").Optional();
-        Map(m => m.ConvenienceStoreInfo).Name("超商資訊/ATM虛擬帳號").Optional();
+        Map(m => m.ConvenienceStoreInfo).Name("超商資訊/ATM繳款帳號").Optional();
         Map(m => m.PaymentStatus).Name("付款狀態");
         Map(m => m.TransactionAmount).Name("交易金額").TypeConverter<DecimalConverter>();
-        Map(m => m.RefundDate).Name("退款日期").Optional();
-        Map(m => m.RefundAmount).Name("退款金額").TypeConverter<DecimalConverter>().Optional();
-        Map(m => m.HandlingFee).Name("交易手續費").TypeConverter<DecimalConverter>();
+        Map(m => m.FeeRate).Name("手續費率(每筆)").Optional();
+        Map(m => m.HandlingFee).Name("手續費").TypeConverter<DecimalConverter>();
+        Map(m => m.ProcessingFee).Name("處理費").TypeConverter<DecimalConverter>();
+        Map(m => m.TransactionHandlingFee).Name("交易手續費").TypeConverter<DecimalConverter>();
         Map(m => m.PlatformFee).Name("平台手續費").TypeConverter<DecimalConverter>();
         Map(m => m.NetAmount).Name("應收款項(淨額)").TypeConverter<DecimalConverter>();
         Map(m => m.PayoutStatus).Name("撥款狀態");
@@ -39,13 +39,12 @@ public sealed class EcPayReconciliationMap : ClassMap<EcPayReconciliationRespons
         Map(m => m.ReceiverAddress).Name("收件人地址").Optional();
         Map(m => m.ReceiverEmail).Name("收件人Email").Optional();
         Map(m => m.UnifiedBusinessNumber).Name("統一編號").Optional();
-        Map(m => m.ProcessingFee).Name("交易處理費").TypeConverter<DecimalConverter>();
     }
 }
 
 public class DecimalConverter : DefaultTypeConverter
 {
-    public override object ConvertFromString(string text, IReaderRow row, MemberMapData memberMapData)
+    public override object ConvertFromString(string? text, IReaderRow row, MemberMapData memberMapData)
     {
         if (string.IsNullOrWhiteSpace(text) || text == "-")
             return 0m;
@@ -59,7 +58,7 @@ public class DecimalConverter : DefaultTypeConverter
 
 public class DateTimeConverter : DefaultTypeConverter
 {
-    public override object ConvertFromString(string text, IReaderRow row, MemberMapData memberMapData)
+    public override object ConvertFromString(string? text, IReaderRow row, MemberMapData memberMapData)
     {
         if (string.IsNullOrWhiteSpace(text) || text == "-")
             return DateTime.MinValue;

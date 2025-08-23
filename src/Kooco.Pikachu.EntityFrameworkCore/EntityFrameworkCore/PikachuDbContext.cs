@@ -992,7 +992,7 @@ public class PikachuDbContext(DbContextOptions<PikachuDbContext> options) :
 
         builder.Entity<EcPayReconciliationRecord>(b =>
         {
-            b.ToTable(PikachuConsts.DbTablePrefix + "EcPayReconciliationRecord", PikachuConsts.DbSchema);
+            b.ToTable(PikachuConsts.DbTablePrefix + "EcPayReconciliationRecords", PikachuConsts.DbSchema);
             b.ConfigureByConvention();
         });
 

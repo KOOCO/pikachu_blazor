@@ -1,7 +1,7 @@
 ﻿using CsvHelper;
 using CsvHelper.Configuration;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using RestSharp;
 using System.Globalization;
 using System.Text;
@@ -12,39 +12,42 @@ namespace Kooco.Reconciliations;
 
 public class EcPayReconciliationService : IEcPayReconciliationService, ITransientDependency
 {
-    private readonly IConfiguration _configuration;
+    private readonly EcPayHttpOptions _options;
     private readonly ILogger<EcPayReconciliationService> _logger;
-    
+
     public EcPayReconciliationService(
-        IConfiguration configuration,
+        IOptions<EcPayHttpOptions> options,
         ILogger<EcPayReconciliationService> logger
         )
     {
-        _configuration = configuration;
+        _options = options.Value;
         _logger = logger;
     }
 
     public async Task<List<EcPayReconciliationResponse>> QueryMediaFileAsync(
-        EcPayReconciliationInput input,
         CancellationToken cancellationToken = default
         )
     {
-        _logger.LogInformation("Querying media file from {begin} to {end}", input.BeginDate, input.EndDate);
+        var today = DateTime.Today;
+        var beginDate = today.AddDays(-15).ToString("yyyy-MM-dd");
+        var endDate = today.ToString("yyyy-MM-dd");
+
+        _logger.LogInformation("Reconciliation Job: Querying media file from {begin} to {end}", beginDate, endDate);
 
         var formData = new Dictionary<string, string>
         {
-            ["MerchantID"] = input.MerchantID,
+            ["MerchantID"] = _options.MerchantID,
             ["DateType"] = "4",
-            ["BeginDate"] = input.BeginDate.ToString("yyyy-MM-dd"),
-            ["EndDate"] = input.EndDate.ToString("yyyy-MM-dd"),
-            ["MediaFormated"] = "1",
+            ["BeginDate"] = beginDate,
+            ["EndDate"] = endDate,
+            ["MediaFormated"] = "2",
             ["CharSet"] = "2"
         };
 
-        formData["CheckMacValue"] = EcPayCheckMacValue.Generate(formData, input.HashKey, input.HashIV);
+        formData["CheckMacValue"] = EcPayCheckMacValue.Generate(formData, _options);
 
         var client = new RestClient();
-        var request = new RestRequest(_configuration["EcPay:QueryMediaFileUrl"], Method.Post);
+        var request = new RestRequest(_options.QueryMediaFileUrl, Method.Post);
         request.AddHeader("Content-Type", "application/x-www-form-urlencoded");
 
         foreach (var pair in formData)
@@ -56,7 +59,7 @@ public class EcPayReconciliationService : IEcPayReconciliationService, ITransien
 
         if (!response.IsSuccessful || response.Content == null || response.Content.Contains("Parameter Error"))
         {
-            _logger.LogError("Failed to fetch EcPay media file. Response: {response.Content}", response.Content);
+            _logger.LogError("Reconciliation Job: Failed to fetch EcPay media file. Response: {response.Content}", response.Content);
             return [];
         }
 
@@ -71,10 +74,11 @@ public class EcPayReconciliationService : IEcPayReconciliationService, ITransien
             if (csvContent.Contains("請確認下載的IP是否與廠商後台設定相同") ||
                 csvContent.Contains("Parameter Error"))
             {
-                _logger.LogWarning("EcPay returned error message: {csvContent}", csvContent);
+                _logger.LogWarning("Reconciliation Job: EcPay returned error message: {csvContent}", csvContent);
                 return [];
             }
 
+            csvContent = csvContent.TrimStart('\uFEFF');
             csvContent = Regex.Replace(csvContent, @"=""([^""]*)""", "\"$1\""); // Remove ="value" wrappers
             csvContent = Regex.Replace(csvContent, @"=(\d+(?:\.\d+)?)", "$1"); // Remove = from =6 or =6.00
             csvContent = csvContent.Replace("=,", ","); // Remove = before empty values
@@ -108,7 +112,7 @@ public class EcPayReconciliationService : IEcPayReconciliationService, ITransien
 
             if (cleanedLines.Count <= 1)
             {
-                _logger.LogInformation("No transaction data found in EcPay response");
+                _logger.LogInformation("Reconciliation Job: No transaction data found in EcPay response");
                 return [];
             }
 
@@ -128,7 +132,7 @@ public class EcPayReconciliationService : IEcPayReconciliationService, ITransien
                 HeaderValidated = null, // Don't validate headers
                 ReadingExceptionOccurred = args =>
                 {
-                    _logger.LogWarning("CSV parsing exception: {args.Exception.Message}", args.Exception.Message);
+                    _logger.LogWarning("Reconciliation Job: CSV parsing exception: {args.Exception.Message}", args.Exception.Message);
                     return false; // Skip bad records
                 }
             };
@@ -150,7 +154,7 @@ public class EcPayReconciliationService : IEcPayReconciliationService, ITransien
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogWarning("Failed to parse CSV record: {ex.Message}", ex.Message);
+                    _logger.LogWarning("Reconciliation Job: Failed to parse CSV record: {ex.Message}", ex.Message);
                 }
             }
 
@@ -158,7 +162,8 @@ public class EcPayReconciliationService : IEcPayReconciliationService, ITransien
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error parsing EcPay reconciliation CSV");
+            _logger.LogError(ex, "Reconciliation Job: Error parsing EcPay reconciliation CSV");
+            _logger.LogException(ex);
             return [];
         }
     }
