@@ -14,6 +14,7 @@ using Kooco.Pikachu.Blazor.Menus;
 using Kooco.Pikachu.Blazor.OpenIddict;
 using Kooco.Pikachu.Blazor.Pages.InboxManagement.Toolbar;
 using Kooco.Pikachu.Blazor.Pages.TenantManagement;
+using Kooco.Pikachu.CodTradeInfos;
 using Kooco.Pikachu.EntityFrameworkCore;
 using Kooco.Pikachu.ImageCompressors;
 using Kooco.Pikachu.InboxManagement;
@@ -551,6 +552,16 @@ public class PikachuBlazorModule : AbpModule
         {
             RecurringJob.AddOrUpdate<EcPayReconciliationJob>(
                 "EcPayReconciliationDailyJob",
+                job => job.ExecuteAsync(0),
+                "0 9 * * *",
+                new RecurringJobOptions
+                {
+                    TimeZone = TaipeiTime.TaipeiTimeZone
+                }
+            );
+
+            RecurringJob.AddOrUpdate<EcPayCodTradeInfoJob>(
+                "EcPayCodTradeInfoJob",
                 job => job.ExecuteAsync(0),
                 "0 9 * * *",
                 new RecurringJobOptions

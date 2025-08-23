@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Volo.Abp.Http.Client;
 using Volo.Abp.Modularity;
 
@@ -15,5 +16,7 @@ public sealed class ECPayModule : AbpModule
             client.DefaultRequestHeaders.Accept.Clear();
             client.DefaultRequestHeaders.Accept.Add(new(HttpContentType.ApplicationJson));
         });
+
+        context.Services.AddTransient<IConfigureOptions<EcPayHttpOptions>, ConfigureEcPayHttpOptions>();
     }
 }

@@ -1,52 +1,72 @@
-﻿using Kooco.Pikachu.PaymentGateways;
+﻿using Kooco.Pikachu.Orders.Entities;
+using Kooco.Pikachu.Orders.Repositories;
 using Kooco.TradeInfos;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Volo.Abp.MultiTenancy;
 
 namespace Kooco.Pikachu.CodTradeInfos;
 
 public class EcPayCodTradeInfoAppService : PikachuAppService, IEcPayCodTradeInfoAppService
 {
     private readonly IEcPayTradeInfoService _ecPayTradeInfoService;
-    private readonly IPaymentGatewayAppService _paymentGatewayAppService;
     private readonly IEcPayCodTradeInfoRepository _ecPayCodTradeInfoRepository;
+    private readonly IOrderRepository _orderRepository;
+
     public EcPayCodTradeInfoAppService(
-        IPaymentGatewayAppService paymentGatewayAppService,
         IEcPayTradeInfoService ecPayTradeInfoService,
-        IEcPayCodTradeInfoRepository ecPayCodTradeInfoRepository
+        IEcPayCodTradeInfoRepository ecPayCodTradeInfoRepository,
+        IOrderRepository orderRepository
         )
     {
-        _paymentGatewayAppService = paymentGatewayAppService;
         _ecPayTradeInfoService = ecPayTradeInfoService;
         _ecPayCodTradeInfoRepository = ecPayCodTradeInfoRepository;
+        _orderRepository = orderRepository;
     }
 
     [AllowAnonymous]
     public async Task<List<EcPayCodTradeInfoDto>> QueryTradeInfoAsync(CancellationToken cancellationToken = default)
     {
-        var ecPayConfigs = await _paymentGatewayAppService.GetAllEcPayAsync(true);
-        if (ecPayConfigs == null || ecPayConfigs.Count == 0)
-        {
-            Logger.LogWarning("Reconciliation Job: EcPay Configuration not found.");
-            return [];
-        }
-
         List<EcPayCodTradeInfoRecord> results = [];
 
-        foreach (var ecpay in ecPayConfigs)
+        using (DataFilter.Disable<IMultiTenant>())
         {
-            var response = await _ecPayTradeInfoService.QueryTradeInfoAsync(new EcPayTradeInfoInput
+            var cutoffDate = DateTime.UtcNow.AddDays(-15).Date;
+
+            var orderInfos = await _ecPayCodTradeInfoRepository
+                .GetMerchantTradeNos(cutoffDate, cancellationToken);
+
+            var merchantTradeNos = orderInfos.Select(m => m.MerchantTradeNo).ToList();
+
+            Logger.LogInformation("COD Trade Info: Retrieved {count} trade records after cutoff date: {date} that aren't already reconciled.", merchantTradeNos.Count, cutoffDate);
+
+            var response = await _ecPayTradeInfoService.QueryTradeInfoAsync(merchantTradeNos, cancellationToken);
+
+            if (response == null || response.Count == 0)
             {
-                HashIV = "jggHhdCBky7tPFk6",
-                HashKey = "jxrMfff0dQml5Zhn",
-                MerchantID = "3087335",
-                MerchantTradeNos = ["5075BC128F0896887", "6C4A11ACE0A707537", "6C5D557CB53942756"]
-            }, cancellationToken);
+                Logger.LogInformation("COD Trade Info: No records found");
+                return [];
+            }
+
+            var responseTradeNos = response
+                .Where(r => r.CollectionAllocateDate.HasValue)
+                .Select(r => r.MerchantTradeNo);
+
+            var orderIds = orderInfos
+                .Where(m => responseTradeNos.Contains(m.MerchantTradeNo))
+                .Select(m => m.OrderId)
+                .Distinct()
+                .ToList();
+
+            var orders = await _orderRepository.GetListAsync(o => orderIds.Contains(o.Id), cancellationToken: cancellationToken);
 
             var inputRecords = new List<EcPayCodTradeInfoRecord>();
+            var ordersToUpdate = new List<Order>();
 
             foreach (var item in response)
             {
@@ -56,16 +76,36 @@ public class EcPayCodTradeInfoAppService : PikachuAppService, IEcPayCodTradeInfo
                     continue;
                 }
 
+                var orderInfo = orderInfos.FirstOrDefault(m => m.MerchantTradeNo == item.MerchantTradeNo);
+                if (orderInfo == default)
+                {
+                    Logger.LogWarning("COD Trade Info: Order Info not found for MerchantTradeNo: {MerchantTradeNo}", item.MerchantTradeNo);
+                    continue;
+                }
+                var order = orders.FirstOrDefault(o => o.Id == orderInfo.OrderId);
+                if (order == default)
+                {
+                    Logger.LogWarning("COD Trade Info: Order not found for MerchantTradeNo: {MerchantTradeNo}", item.MerchantTradeNo);
+                    continue;
+                }
+
                 var inputRecord = ObjectMapper.Map<EcPayTradeInfoResponse, EcPayCodTradeInfoRecord>(item);
-                inputRecord.TenantId = ecpay.TenantId;
-                //input.OrderId = order.Id;
-                //input.OrderNo = order.OrderNo;
+                inputRecord.TenantId = order.TenantId;
+                inputRecord.OrderId = order.Id;
+                inputRecord.OrderNo = order.OrderNo;
                 inputRecord.CreationTime = Clock.Now;
                 inputRecords.Add(inputRecord);
+
+                order.EcPayNetAmount = item.CollectionAllocateAmount;
+                ordersToUpdate.Add(order);
             }
 
-            //INSSERT into DB
             await _ecPayCodTradeInfoRepository.InsertManyAsync(inputRecords, cancellationToken: cancellationToken);
+            Logger.LogInformation("COD Trade Info: Insert {count} records into EcPayCodTradeInfoRecords", inputRecords.Count);
+
+            await _orderRepository.UpdateManyAsync(ordersToUpdate, cancellationToken: cancellationToken);
+            Logger.LogInformation("COD Trade Info: Updated {count} orders", ordersToUpdate.Count);
+            
             results.AddRange(inputRecords);
         }
 

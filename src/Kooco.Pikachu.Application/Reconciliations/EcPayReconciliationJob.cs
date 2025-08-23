@@ -31,9 +31,12 @@ public class EcPayReconciliationJob : AsyncBackgroundJob<int>, ITransientDepende
         if (records == null || records.Count == 0)
         {
             Logger.LogWarning("Reconciliation Job: No reconciliation records found for the specified date range.");
-            return;
+        }
+        else
+        {
+            Logger.LogInformation("Reconciliation Job: Found {count} records", records.Count);
         }
 
-        Logger.LogInformation("Reconciliation Job: Found {count} records", records.Count);
+        Logger.LogInformation("Reconciliation Job: Finishing...");
     }
 }

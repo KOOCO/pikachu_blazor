@@ -199,7 +199,7 @@ public class PikachuDbContext(DbContextOptions<PikachuDbContext> options) :
     public DbSet<TenantLogisticsFeeRecord> TenantLogisticsFeeRecord { get; set; }
 
     public DbSet<EcPayReconciliationRecord> EcPayReconciliationRecords { get; set; }
-    public DbSet<EcPayCodTradeInfoRecord> EcPayTradeInfoRecords { get; set; }
+    public DbSet<EcPayCodTradeInfoRecord> EcPayCodTradeInfoRecords { get; set; }
 
     public DbSet<Notification> Notifications { get; set; }
     public DbSet<TenantDeliveryFee> TenantDeliveryFees { get; set; }

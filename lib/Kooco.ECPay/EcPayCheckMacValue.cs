@@ -33,7 +33,7 @@ public static class EcPayCheckMacValue
         return Convert.ToHexString(hashBytes).ToUpperInvariant();
     }
 
-    public static string ForTradeInfo(Dictionary<string, string> parameters, string hashKey, string hashIV)
+    public static string ForTradeInfo(Dictionary<string, string> parameters, EcPayHttpOptions options)
     {
         // Remove CheckMacValue and empty values, sort keys in ASCII order (case-insensitive)
         var sorted = parameters
@@ -42,7 +42,7 @@ public static class EcPayCheckMacValue
             .ToList();
 
         // Build the raw string
-        var raw = $"HashKey={hashKey}&{string.Join("&", sorted.Select(kvp => $"{kvp.Key}={kvp.Value}"))}&HashIV={hashIV}";
+        var raw = $"HashKey={options.HashKey}&{string.Join("&", sorted.Select(kvp => $"{kvp.Key}={kvp.Value}"))}&HashIV={options.HashIV}";
 
         // URL encode and apply EcPay special rules
         var encoded = HttpUtility.UrlEncode(raw).ToLower()
@@ -55,8 +55,5 @@ public static class EcPayCheckMacValue
             .Replace("%29", ")");
 
         return encoded.ToMd5();
-        // Hash with SHA256 and return uppercase hex
-        var hashBytes = SHA256.HashData(Encoding.UTF8.GetBytes(encoded));
-        return Convert.ToHexString(hashBytes).ToUpperInvariant();
     }
 }

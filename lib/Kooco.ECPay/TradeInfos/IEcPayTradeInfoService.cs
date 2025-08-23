@@ -3,5 +3,8 @@ namespace Kooco.TradeInfos;
 
 public interface IEcPayTradeInfoService
 {
-    Task<List<EcPayTradeInfoResponse>> QueryTradeInfoAsync(EcPayTradeInfoInput input, CancellationToken cancellationToken = default);
+    Task<List<EcPayTradeInfoResponse>> QueryTradeInfoAsync(
+             List<string> merchantTradeNos,
+             CancellationToken cancellationToken = default
+         );
 }
