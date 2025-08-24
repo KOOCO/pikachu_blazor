@@ -29,14 +29,15 @@ public class EcPayReconciliationService : IEcPayReconciliationService, ITransien
         )
     {
         var today = DateTime.Today;
-        var beginDate = today.AddDays(-15).ToString("yyyy-MM-dd");
+        //TODO: Set it to -15 days after testing
+        var beginDate = today.AddDays(-25).ToString("yyyy-MM-dd");
         var endDate = today.ToString("yyyy-MM-dd");
 
         _logger.LogInformation("Reconciliation Job: Querying media file from {begin} to {end}", beginDate, endDate);
 
         var formData = new Dictionary<string, string>
         {
-            ["MerchantID"] = _options.MerchantID,
+            ["MerchantID"] = EcPayCheckMacValue.MerchantId,// _options.MerchantID,
             ["DateType"] = "4",
             ["BeginDate"] = beginDate,
             ["EndDate"] = endDate,
@@ -57,8 +58,13 @@ public class EcPayReconciliationService : IEcPayReconciliationService, ITransien
 
         var response = await client.ExecuteAsync(request, cancellationToken);
 
-        if (!response.IsSuccessful || response.Content == null || response.Content.Contains("Parameter Error"))
+        if (!response.IsSuccessful || response.Content == null || response.Content.Contains("Parameter Error")
+            || response.Content.Contains("請確認下載的IP是否與廠商後台設定相同"))
         {
+            if (response.Content != null && response.Content.Contains("請確認下載的IP是否與廠商後台設定相同"))
+            {
+                _logger.LogError("Reconciliation Job: IP Error. Failed to fetch EcPay Media File.");
+            }
             _logger.LogError("Reconciliation Job: Failed to fetch EcPay media file. Response: {response.Content}", response.Content);
             return [];
         }

@@ -6,6 +6,10 @@ namespace Kooco;
 
 public static class EcPayCheckMacValue
 {
+    //TODO: Remove hard-coded value after testing and add value to appsettings
+    public const string MerchantId = "3087335";
+    public const string HashKey = "jxrMfff0dQml5Zhn";
+    public const string HashIV = "jggHhdCBky7tPFk6";
     public static string Generate(Dictionary<string, string> parameters, EcPayHttpOptions options)
     {
         var sorted = parameters
@@ -15,9 +19,9 @@ public static class EcPayCheckMacValue
 
         var toBeHashed = new StringBuilder();
         toBeHashed
-            .Append($"HashKey={options.HashKey}&")
+            .Append($"HashKey={/*options.*/HashKey}&")
             .Append(string.Join("&", sorted.Select(kvp => $"{kvp.Key}={kvp.Value}")))
-            .Append($"&HashIV={options.HashIV}");
+            .Append($"&HashIV={/*options.*/HashIV}");
 
         var urlEncoded = HttpUtility.UrlEncode(toBeHashed.ToString())
             .ToLower()
@@ -42,7 +46,7 @@ public static class EcPayCheckMacValue
             .ToList();
 
         // Build the raw string
-        var raw = $"HashKey={options.HashKey}&{string.Join("&", sorted.Select(kvp => $"{kvp.Key}={kvp.Value}"))}&HashIV={options.HashIV}";
+        var raw = $"HashKey={/*options.*/HashKey}&{string.Join("&", sorted.Select(kvp => $"{kvp.Key}={kvp.Value}"))}&HashIV={/*options.*/HashIV}";
 
         // URL encode and apply EcPay special rules
         var encoded = HttpUtility.UrlEncode(raw).ToLower()

@@ -47,7 +47,7 @@ public class EcPayTradeInfoService : IEcPayTradeInfoService, ITransientDependenc
 
             var payload = new Dictionary<string, string>
             {
-                ["MerchantID"] = _options.MerchantID,
+                ["MerchantID"] = EcPayCheckMacValue.MerchantId, //_options.MerchantID,
                 ["MerchantTradeNo"] = tradeNo,
                 ["TimeStamp"] = timestamp
             };
