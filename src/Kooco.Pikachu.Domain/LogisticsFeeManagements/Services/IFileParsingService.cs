@@ -29,6 +29,7 @@ namespace Kooco.Pikachu.LogisticsFeeManagements.Services
         // Breakdown of fees
         public decimal ShippingFee { get; set; }
         public decimal ExtraShippingFee { get; set; }
+        public decimal AdditionalLogisticFee { get; set; }
 
         // Common fields
         public string ShippingNo { get; set; }

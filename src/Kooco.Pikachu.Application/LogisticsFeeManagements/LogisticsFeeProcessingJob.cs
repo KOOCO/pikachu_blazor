@@ -23,6 +23,8 @@ using Volo.Abp.MultiTenancy;
 using Kooco.Pikachu.Emails;
 using Hangfire.States;
 using Volo.Abp.TenantManagement;
+using Kooco.Pikachu.TenantDeliveryFees;
+using Kooco.Pikachu.EnumValues;
 
 namespace Kooco.Pikachu.LogisticsFeeManagements
 {
@@ -42,6 +44,7 @@ namespace Kooco.Pikachu.LogisticsFeeManagements
         private readonly IDataFilter _dataFilter;
         private readonly IEmailAppService _emailAppService;
         private readonly ITenantRepository _tenantRepository;
+        private readonly ITenantDeliveryFeeRepository _tenantDeliveryFeeRepository;
         public LogisticsFeeProcessingJob(
             ILogisticsFeeFileImportRepository fileImportRepository,
             ITenantLogisticsFeeRecordRepository recordRepository,
@@ -55,7 +58,8 @@ namespace Kooco.Pikachu.LogisticsFeeManagements
             IRepository<TenantWallet, Guid> tenantWalletRepository,
             IDataFilter dataFilter,
             IEmailAppService emailAppService,
-            ITenantRepository tenantRepository)
+            ITenantRepository tenantRepository,
+            ITenantDeliveryFeeRepository tenantDeliveryFeeRepository)
         {
             _fileImportRepository = fileImportRepository;
             _recordRepository = recordRepository;
@@ -70,6 +74,7 @@ namespace Kooco.Pikachu.LogisticsFeeManagements
             _dataFilter = dataFilter;
             _emailAppService = emailAppService;
             _tenantRepository = tenantRepository;
+            _tenantDeliveryFeeRepository = tenantDeliveryFeeRepository;
         }
 
         public override async Task ExecuteAsync(LogisticsFeeProcessingJobArgs arg)
@@ -163,7 +168,7 @@ namespace Kooco.Pikachu.LogisticsFeeManagements
                                     TotalRecords = fileImport.TotalRecords,
                                     SuccessfulDeductions = fileImport.SuccessfulRecords,
                                     FailedDeductions = fileImport.FailedRecords,
-                                    TotalAmount = recordsToInsert.Where(x => x.TenantId != null && x.DeductionStatus==WalletDeductionStatus.Completed).Sum(x => x.LogisticFee),
+                                    TotalAmount = recordsToInsert.Where(x => x.TenantId != null && x.DeductionStatus == WalletDeductionStatus.Completed).Sum(x => x.LogisticFee),
                                     ProcessingDate = fileImport.ProcessingCompletedAt ?? DateTime.Now,
                                     FileType = fileImport.FileType.ToString()
                                 });
@@ -214,6 +219,9 @@ namespace Kooco.Pikachu.LogisticsFeeManagements
                     Guid.Empty, // No tenant found
                     parsedRecord.MerchantTradeNo,
                     parsedRecord.FeeAmount,
+                    parsedRecord.ShippingFee,
+                    parsedRecord.ExtraShippingFee,
+                    parsedRecord.AdditionalLogisticFee,
                     fileImport.FileType
                 );
                 record1.MarkAsFailed("Order not found");
@@ -223,13 +231,41 @@ namespace Kooco.Pikachu.LogisticsFeeManagements
 
             var tenantId = orderMatch.TenantId.Value;
             var record = new TenantLogisticsFeeRecord(
-                Guid.NewGuid(),
-                fileImport.Id,
-                tenantId,
-                orderMatch.OrderNumber ?? parsedRecord.MerchantTradeNo,
-                parsedRecord.FeeAmount,
-                fileImport.FileType
-            );
+      Guid.NewGuid(),
+      fileImport.Id,
+      tenantId,
+      orderMatch.OrderNumber ?? parsedRecord.MerchantTradeNo,
+      parsedRecord.FeeAmount,
+      parsedRecord.ShippingFee,
+      parsedRecord.ExtraShippingFee,
+      parsedRecord.AdditionalLogisticFee,
+      fileImport.FileType
+  );
+            DeliveryProvider deliveryProvider = fileImport.FileType == EnumValues.LogisticsFileType.ECPay ? DeliveryProvider.ECPay : DeliveryProvider.TCat;
+
+            var tenantDeliveryFee = await _tenantDeliveryFeeRepository.GetByTenantIdAndDeliveryTypeAsync(tenantId, deliveryProvider);
+            if (tenantDeliveryFee?.IsEnabled == true)
+            {
+                decimal additionalFee = 0;
+
+                switch (tenantDeliveryFee.FeeKind)
+                {
+                    case FeeKind.FixedAmount:
+                        additionalFee = tenantDeliveryFee.FixedAmount ?? 0;
+                        break;
+
+                    case FeeKind.Percentage:
+                        if (tenantDeliveryFee.PercentValue is > 0)
+                        {
+                            additionalFee = parsedRecord.FeeAmount * tenantDeliveryFee.PercentValue.Value / 100;
+                        }
+                        break;
+                }
+
+                parsedRecord.AdditionalLogisticFee = additionalFee;
+                parsedRecord.FeeAmount += additionalFee;
+
+            }
 
             if (fileImport.FileType == EnumValues.LogisticsFileType.ECPay)
             {

@@ -54,7 +54,15 @@ namespace Kooco.Pikachu.TenantDeliveryFees
             query = query.Where(x => x.TenantId == tenantId);
             return await AsyncExecuter.ToListAsync(query, cancellationToken);
         }
-
+        public async Task<TenantDeliveryFee> GetByTenantIdAndDeliveryTypeAsync(
+           Guid tenantId,
+           DeliveryProvider deliveryProvider,
+           CancellationToken cancellationToken = default)
+        {
+            var query = await GetBaseQueryAsync();
+            query = query.Where(x => x.TenantId == tenantId && x.DeliveryProvider == deliveryProvider);
+            return await AsyncExecuter.FirstOrDefaultAsync(query, cancellationToken);
+        }
         public async Task<List<TenantDeliveryFee>> GetListAsync(
             Guid? tenantId = null,
             DeliveryProvider? deliveryProvider = null,

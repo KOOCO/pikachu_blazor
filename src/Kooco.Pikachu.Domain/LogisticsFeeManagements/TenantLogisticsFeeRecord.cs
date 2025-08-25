@@ -16,6 +16,9 @@ namespace Kooco.Pikachu.LogisticsFeeManagements
         public Guid? TenantId { get; set; }
         public string OrderNumber { get; set; }
         public decimal LogisticFee { get; set; }
+        public decimal ShippigFee { get; set; }
+        public decimal ExtraShippigFee { get; set; }
+        public decimal AdditionalLogisticFee { get; set; }
         public WalletDeductionStatus DeductionStatus { get; set; }
         public DateTime? DeductionDate { get; set; }
         public string? FailureReason { get; set; }
@@ -39,6 +42,9 @@ namespace Kooco.Pikachu.LogisticsFeeManagements
             Guid tenantId,
             string orderNumber,
             decimal logisticFee,
+            decimal shippigFee,
+            decimal extraShippigFee,
+            decimal additionalLogisticFee,
             LogisticsFileType fileType
         ) : base(id)
         {
@@ -46,6 +52,9 @@ namespace Kooco.Pikachu.LogisticsFeeManagements
             TenantId = tenantId;
             OrderNumber = orderNumber;
             LogisticFee = logisticFee;
+            ShippigFee = shippigFee;
+            ExtraShippigFee = extraShippigFee;
+            AdditionalLogisticFee = additionalLogisticFee;
             FileType = fileType;
             DeductionStatus = WalletDeductionStatus.Pending;
             ProcessedAt = DateTime.UtcNow;

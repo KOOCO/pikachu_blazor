@@ -16,7 +16,10 @@ namespace Kooco.Pikachu.TenantDeliveryFees
             Guid tenantId,
             CancellationToken cancellationToken = default
         );
-
+        Task<TenantDeliveryFee> GetByTenantIdAndDeliveryTypeAsync(
+          Guid tenantId,
+          DeliveryProvider deliveryProvider,
+          CancellationToken cancellationToken = default);
         /// <summary>
         /// Filtered + paged list. Use string sorting like "CreationTime DESC", "DeliveryProvider ASC", etc.
         /// </summary>
