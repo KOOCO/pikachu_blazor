@@ -387,39 +387,67 @@ public class EfCoreMemberRepository(IDbContextProvider<PikachuDbContext> pikachu
     {
         var dbContext = await GetPikachuDbContextAsync();
 
-        var memberCredits = (from credits in dbContext.UserShoppingCredits
-                            .Where(x => userId != null && x.UserId == userId)
-                             join orders in dbContext.Orders
-                             on credits.Id equals orders.CreditDeductionRecordId
-                             into creditsWithOrders
-                             from orders in creditsWithOrders.DefaultIfEmpty()
-                             select new { credits, orders })
-                           //.Join(dbContext.Orders, credits => credits.Id, orders => orders.CreditDeductionRecordId, (credits, orders) => new { credits, orders })
-                           .WhereIf(usageTimeFrom.HasValue, x => x.credits.CreationTime >= usageTimeFrom)
-                           .WhereIf(usageTimeTo.HasValue, x => x.credits.CreationTime <= usageTimeTo)
-                           .WhereIf(expirationTimeFrom.HasValue, x => x.credits.ExpirationDate >= expirationTimeFrom)
-                           .WhereIf(expirationTimeTo.HasValue, x => x.credits.ExpirationDate <= expirationTimeTo)
-                           .WhereIf(minRemainingCredits.HasValue, x => x.credits.CurrentRemainingCredits >= minRemainingCredits)
-                           .WhereIf(maxRemainingCredits.HasValue, x => x.credits.CurrentRemainingCredits <= maxRemainingCredits)
-                           .WhereIf(minAmount.HasValue, x => x.orders.CreditDeductionAmount >= minAmount)
-                           .WhereIf(maxAmount.HasValue, x => x.orders.CreditDeductionAmount <= maxAmount)
-                           .WhereIf(maxAmount.HasValue, x => x.orders.CreditDeductionAmount <= maxAmount)
-                           .WhereIf(shoppingCreditType.HasValue, x => x.credits.ShoppingCreditType == shoppingCreditType)
-                           .WhereIf(!string.IsNullOrWhiteSpace(filter), x => x.credits.TransactionDescription != null && x.credits.TransactionDescription.Contains(filter));
+        // base filtered credits (so the same predicate isn't duplicated later)
+        var baseCredits = dbContext.UserShoppingCredits
+            .Where(x => userId != null && x.UserId == userId);
 
-        return memberCredits
-            .Select(x => new MemberCreditRecordModel
-            {
-                Id = x.credits.Id,
-                UsageTime = x.credits.CreationTime,
-                TransactionDescription = x.credits.TransactionDescription,
-                Amount = x.credits.Amount,// x.orders != null ? x.orders.CreditDeductionAmount : 0,
-                ExpirationDate = x.credits.ExpirationDate,
-                RemainingCredits = x.credits.CurrentRemainingCredits,
-                ShoppingCreditType = x.credits.ShoppingCreditType,
-                OrderNo = x.orders.OrderNo,
-                OrderId = x.orders.Id
-            });
+        // 1) Primary LEFT JOIN: credits.Id == orders.CreditDeductionRecordId
+        var joinedOnId =
+            from c in baseCredits
+            join o in dbContext.Orders
+                on c.Id equals o.CreditDeductionRecordId into g
+            from o in g.DefaultIfEmpty()
+            select new { c, o };
+
+        // 2) Credits that did NOT match by Id
+        var noMatchCredits =
+            from j in joinedOnId
+            where j.o == null
+            select j.c;
+
+        // 3) Fallback LEFT JOIN by OrderNo (adjust the credit-side key if needed)
+        //    If your credit record stores the order number in a different field, replace c.TransactionReferenceNo accordingly.
+        //    e.g., use c.OrderNo if that exists.
+        var fallbackByOrderNo =
+            from c in noMatchCredits
+            join o in dbContext.Orders
+                on c.OrderNo equals o.OrderNo into g   // <-- change TransactionReferenceNo if your field differs
+            from o in g.DefaultIfEmpty()
+            select new { c, o };
+
+        // 4) Prefer the first join; use fallback only for those without an Id match
+        var preferredJoin =
+            (from j in joinedOnId where j.o != null select j)
+            .Concat(fallbackByOrderNo);
+
+        // 5) Now apply the rest of your filters (safe to reference x.o because both branches provide it)
+        var memberCredits = preferredJoin
+            .WhereIf(usageTimeFrom.HasValue, x => x.c.CreationTime >= usageTimeFrom)
+            .WhereIf(usageTimeTo.HasValue, x => x.c.CreationTime <= usageTimeTo)
+            .WhereIf(expirationTimeFrom.HasValue, x => x.c.ExpirationDate >= expirationTimeFrom)
+            .WhereIf(expirationTimeTo.HasValue, x => x.c.ExpirationDate <= expirationTimeTo)
+            .WhereIf(minRemainingCredits.HasValue, x => x.c.CurrentRemainingCredits >= minRemainingCredits)
+            .WhereIf(maxRemainingCredits.HasValue, x => x.c.CurrentRemainingCredits <= maxRemainingCredits)
+            .WhereIf(minAmount.HasValue, x => x.o != null && x.o.CreditDeductionAmount >= minAmount)
+            .WhereIf(maxAmount.HasValue, x => x.o != null && x.o.CreditDeductionAmount <= maxAmount)
+            .WhereIf(shoppingCreditType.HasValue, x => x.c.ShoppingCreditType == shoppingCreditType)
+            .WhereIf(!string.IsNullOrWhiteSpace(filter),
+                     x => x.c.TransactionDescription != null && x.c.TransactionDescription.Contains(filter));
+
+        // 6) Final projection
+        return memberCredits.Select(x => new MemberCreditRecordModel
+        {
+            Id = x.c.Id,
+            UsageTime = x.c.CreationTime,
+            TransactionDescription = x.c.TransactionDescription,
+            Amount = x.c.Amount,  // or x.o?.CreditDeductionAmount ?? x.c.Amount if that’s the real “usage” amount
+            ExpirationDate = x.c.ExpirationDate,
+            RemainingCredits = x.c.CurrentRemainingCredits,
+            ShoppingCreditType = x.c.ShoppingCreditType,
+            OrderNo = x.o != null ? x.o.OrderNo : null,
+            OrderId = x.o != null ? x.o.Id : (Guid?)null
+        });
+
     }
 
     public async Task<List<IdentityUser>> GetBirthdayMember()

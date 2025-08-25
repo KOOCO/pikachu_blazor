@@ -2151,6 +2151,7 @@ public class OrderAppService : PikachuAppService, IOrderAppService
                     UserId = order.UserId.Value,
                     ShoppingCreditType = UserShoppingCreditType.Deduction,
                     OrderNo = order.OrderNo
+                    
                 });
 
                 var userCumulativeCredits = await UserCumulativeCreditRepository.FirstOrDefaultAsync(x => x.UserId == order.UserId);
