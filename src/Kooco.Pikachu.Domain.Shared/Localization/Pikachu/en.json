@@ -2027,7 +2027,8 @@
     "LogisticsFeeStatus": "Logistics Fee Status",
     "LogisticFees": "Logistic Fees",
     "DeliveryOptions": "Delivery Options",
-    "Menu:PlatformManagement": "Platform Management"
+    "Menu:PlatformManagement": "Platform Management",
+    "ExchangeOrderButton": "Exchange Order"
 
 
   }

@@ -1994,6 +1994,9 @@
     "AreYouSureToUpdateTCat7-11Normal?": "您確定要更新黑貓7-11到店常溫設定嗎?",
     "Validation:Required": "此欄位為必填",
     "System": "系統",
-    "Type": "類型"
+    "Type": "類型",
+    "ExchangeOrder": "換貨",
+    "ExchangeOrderButton": "確認換貨",
+    "AreYouSureYouWantToExchangeThisOrder": "您確認要進行換貨嗎？"
   }
 }
