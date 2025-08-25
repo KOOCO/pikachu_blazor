@@ -463,8 +463,7 @@ public class PikachuApplicationAutoMapperProfile : Profile
         CreateMap<NotificationsCountModel, NotificationsCountDto>();
 
         CreateMap<MemberMessagesWithCount, MemberMessagesWithCountDto>();
-        CreateMap<OrderMessage, MemberMessageDto>()
-            .ForMember(dest => dest.MessageId, opt => opt.MapFrom(src => src.Id));
+        CreateMap<MemberMessageModel, MemberMessageDto>();
 
         CreateMap<TenantDeliveryFee, TenantDeliveryFeeDto>();
     }

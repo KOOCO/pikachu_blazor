@@ -374,6 +374,7 @@ public class MemberAppService(IObjectMapper objectMapper, IMemberRepository memb
             input.Sorting,
             input.IsRead,
             input.OrderId,
+            input.GroupBuyId,
             input.IsMerchant
             );
 

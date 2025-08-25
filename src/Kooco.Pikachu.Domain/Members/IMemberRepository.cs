@@ -55,6 +55,7 @@ public interface IMemberRepository : IIdentityUserRepository, IRepository<Identi
         string? sorting = null,
         bool? isRead = false,
         Guid? orderId = null,
+        Guid? groupBuyId = null,
         bool? isMerchant = null
         );
 }

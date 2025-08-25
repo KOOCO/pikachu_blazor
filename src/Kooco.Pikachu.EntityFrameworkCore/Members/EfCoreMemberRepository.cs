@@ -575,6 +575,7 @@ public class EfCoreMemberRepository(IDbContextProvider<PikachuDbContext> pikachu
         string? sorting = null,
         bool? isRead = false,
         Guid? orderId = null,
+        Guid? groupBuyId = null,
         bool? isMerchant = null
         )
     {
@@ -582,20 +583,31 @@ public class EfCoreMemberRepository(IDbContextProvider<PikachuDbContext> pikachu
 
         var query = dbContext.Orders
             .Where(o => o.UserId.HasValue && o.UserId == memberId)
+            .WhereIf(groupBuyId.HasValue, o => o.GroupBuyId == groupBuyId)
             .Join(dbContext.OrderMessages,
             o => o.Id,
             m => m.OrderId,
             (o, m) => new { Order = o, Message = m })
-            .Select(g => g.Message)
-            .WhereIf(isRead.HasValue, m => m.IsRead == isRead)
-            .WhereIf(orderId.HasValue, m => m.OrderId == orderId)
-            .WhereIf(isMerchant.HasValue, m => m.IsMerchant == isMerchant);
+            .WhereIf(isRead.HasValue, m => m.Message.IsRead == isRead)
+            .WhereIf(orderId.HasValue, m => m.Message.OrderId == orderId)
+            .WhereIf(isMerchant.HasValue, m => m.Message.IsMerchant == isMerchant);
 
         return new MemberMessagesWithCount
         {
             MemberId = memberId,
             TotalCount = await query.LongCountAsync(),
             Messages = await query
+                .Select(q => new MemberMessageModel
+                {
+                    OrderId = q.Message.OrderId,
+                    OrderNo = q.Order.OrderNo,
+                    MessageId = q.Message.Id,
+                    GroupBuyId = q.Order.GroupBuyId,
+                    Message = q.Message.Message,
+                    IsRead = q.Message.IsRead,
+                    IsMerchant = q.Message.IsMerchant,
+                    CreationTime = q.Message.CreationTime
+                })
                 .OrderBy(string.IsNullOrWhiteSpace(sorting) ? "CreationTime DESC" : sorting)
                 .PageBy(skipCount, maxResultCount)
                 .ToListAsync()
