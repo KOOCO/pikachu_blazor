@@ -21,19 +21,21 @@
     <Icon Name="IconName.ArrowLeft" Class="me-1"></Icon>
     @L["PlatformManagement"]
 </PikachuButton>
-<PikachuPageHeader Breadcrumbs="@(new() { L["PlatformManagement"], L["FeeSettings"],TenantName })"
+<PikachuPageHeader Breadcrumbs="@(new() { L["PlatformManagement"], L["FeeSettings"], TenantName })"
                    Title=@($"{L["PlatformFeeSettings"]} - {TenantName}") />
-                   <Card >
-    <Tabs RenderMode="TabsRenderMode.LazyLoad" SelectedTab="Logistic Fees">
-            <Items>
-                <Tab Name="Logistic Fees">@L["LogisticFees"]</Tab>
-
-            </Items>
-            <Content>
-        <TabPanel Name="Logistic Fees">
-                  <LogisticFeeConfiguration TenantId="TenantId"></LogisticFeeConfiguration> 
-                </TabPanel>
-              
-            </Content>
-        </Tabs>
+<Card>
+    <Tabs RenderMode="TabsRenderMode.LazyLoad" SelectedTab="EcPayPaymentFees">
+        <Items>
+            <Tab Name="EcPayPaymentFees">@L["EcPayPaymentFees"]</Tab>
+            <Tab Name="LogisticFees">@L["LogisticFees"]</Tab>
+        </Items>
+        <Content>
+            <TabPanel Name="EcPayPaymentFees">
+                <EcPayPaymentFeeConfigurations TenantId="TenantId"></EcPayPaymentFeeConfigurations>
+            </TabPanel>
+            <TabPanel Name="LogisticFees">
+                <LogisticFeeConfiguration TenantId="TenantId"></LogisticFeeConfiguration>
+            </TabPanel>
+        </Content>
+    </Tabs>
 </Card>

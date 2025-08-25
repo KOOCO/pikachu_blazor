@@ -2028,8 +2028,29 @@
     "LogisticFees": "Logistic Fees",
     "DeliveryOptions": "Delivery Options",
     "Menu:PlatformManagement": "Platform Management",
-    "ExchangeOrderButton": "Exchange Order"
-
-
+    "ExchangeOrderButton": "Exchange Order",
+    "EcPayPaymentFees": "ECPay Payment Fees",
+    "EcPayPaymentFeeConfiguration": "ECPay Payment Fee Configuration",
+    "EcPayPaymentFees_Desc": "Configure additional fees for different payment methods. The fee can be a percentage of the checkout total or a fixed amount.",
+    "CreditCardPaymentOptions": "Credit Card Payment Options",
+    "ProcessingFee": "Processing Fee",
+    "PercentageFee": "Percentage Fee",
+    "FixedAmount": "Fixed Amount",
+    "OneTimePayment": "One-Time Payment",
+    "3MonthInstallment": "3-Month Installment",
+    "6MonthInstallment": "6-Month Installment",
+    "12MonthInstallment": "12-Month Installment",
+    "18MonthInstallment": "18-Month Installment",
+    "24MonthInstallment": "24-Month Installment",
+    "DreamPlan30MonthInstallment": "Dream Plan 30-Month Installment",
+    "UnionPayCard": "UnionPay Card",
+    "OtherPaymentMethods": "Other Payment Methods",
+    "VirtualAccount": "Virtual Account",
+    "OnlineAtm": "Online ATM",
+    "CvsCode": "CVS Code",
+    "CvsBarcode": "CVS Barcode",
+    "SavePaymentFeeSettings": "Save Payment Fee Settings",
+    "PlatformTab:CreditCardBaseProcessingFeeTitle": "Base Processing Fee (Applied to all credit card transactions)",
+    "PlatformTab:CreditCardBaseProcessingFeeDescription": "This fee will be applied to all credit card payment methods listed below"
   }
 }

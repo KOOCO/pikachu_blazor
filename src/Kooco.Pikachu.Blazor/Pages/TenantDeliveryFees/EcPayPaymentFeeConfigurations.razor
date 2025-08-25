@@ -1,0 +1,67 @@
+﻿<link href="css/platform-fee-settings.css" rel="stylesheet" />
+@inherits PikachuComponentBase
+
+<div class="platform-tab">
+    <div class="platform-tab-header">
+        <h3 class="platform-tab-title">@L["EcPayPaymentFeeConfiguration"]</h3>
+        <p class="platform-tab-description">@L["EcPayPaymentFees_Desc"]</p>
+    </div>
+
+    @foreach (var config in Configurations)
+    {
+        <div class="platform-tab-section">
+            <div class="platform-tab-section-title">@L[config.Title]</div>
+            @foreach (var item in config.Items)
+            {
+                <div class="@(item.IsBase ? "platform-tab-section-base" : "")">
+                    @if (item.IsBase)
+                    {
+                        <div class="platform-tab-section-base-title">
+                            🏛️ @L["PlatformTab:CreditCardBaseProcessingFeeTitle"]
+                        </div>
+                        <div class="platform-tab-section-base-description">
+                            @L["PlatformTab:CreditCardBaseProcessingFeeDescription"]
+                        </div>
+                    }
+                    <div class="platform-tab-section-item">
+                        <div class="platform-tab-switch">
+                            <Switch @bind-Checked="item.IsEnabled" Class="switch" />
+                            <span class="switch-label">@L[item.Title]</span>
+                        </div>
+                        <div class="platform-tab-input-group">
+                            <div>
+                                <AntDesign.Select TItem="bool" TItemValue="bool" @bind-Value="item.IsPercentageFee">
+                                    <SelectOptions>
+                                        <AntDesign.SelectOption Value="true" Label="@L["PercentageFee"]" />
+                                        <AntDesign.SelectOption Value="false" Label="@L["FixedAmount"]" />
+                                    </SelectOptions>
+                                </AntDesign.Select>
+                            </div>
+                            <div>
+                                <AntDesign.InputGroup Class="@(item.IsPercentageFee ? "suffix" : "prefix")">
+                                    @if (!item.IsPercentageFee)
+                                    {
+                                        <span class="ant-input-group-addon">$</span>
+                                    }
+
+                                    <AntDesign.InputNumber TValue="double"
+                                                           @bind-Value="item.Amount"
+                                                           Class="no-stepper" />
+
+                                    @if (item.IsPercentageFee)
+                                    {
+                                        <span class="ant-input-group-addon">%</span>
+                                    }
+                                </AntDesign.InputGroup>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    <div class="platform-tab-footer">
+        <PikachuButton Class="pk-btn-sm pk-btn-outline-primary">@L["Reset"]</PikachuButton>
+        <PikachuButton Class="pk-btn-sm pk-btn-primary">@L["SavePaymentFeeSettings"]</PikachuButton>
+    </div>
+</div>
