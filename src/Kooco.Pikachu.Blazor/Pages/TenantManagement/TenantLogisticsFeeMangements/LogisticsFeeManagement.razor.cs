@@ -24,7 +24,7 @@ namespace Kooco.Pikachu.Blazor.Pages.TenantManagement.TenantLogisticsFeeMangemen
         private int PageSize = 10;
         private string? Filter = "";
         private string? StatusFilter = "";
-
+        private bool loading = true;
         // Modal properties
         private Modal ImportModal;
         private Validations ImportValidations;
@@ -42,7 +42,7 @@ namespace Kooco.Pikachu.Blazor.Pages.TenantManagement.TenantLogisticsFeeMangemen
 
         protected override async Task OnInitializedAsync()
         {
-            await SetBreadcrumbItemsAsync();
+
             await LoadData();
         }
 
@@ -57,15 +57,18 @@ namespace Kooco.Pikachu.Blazor.Pages.TenantManagement.TenantLogisticsFeeMangemen
         {
             try
             {
+                loading = true;
                 var result = await LogisticsFeeAppService.GetTenantSummariesAsync(
                     skipCount: (CurrentPage - 1) * PageSize,
                     maxResultCount: PageSize);
 
                 TenantList = result.Items.Select(MapToTenantDto).ToList();
                 TotalCount = (int)result.TotalCount;
+                loading = false;
             }
             catch (Exception ex)
             {
+                loading = false;
                 await HandleErrorAsync(ex);
             }
         }
@@ -170,31 +173,38 @@ namespace Kooco.Pikachu.Blazor.Pages.TenantManagement.TenantLogisticsFeeMangemen
         {
             if (await ImportValidations.ValidateAll())
             {
+                loading = true;
                 IsProcessing = true;
                 try
                 {
                     await using var stream = SelectedFile.OpenReadStream(10 * 1024 * 1024);
                     var ct = string.IsNullOrWhiteSpace(SelectedFile.Type) ? "application/octet-stream" : SelectedFile.Type;
 
-                    await LogisticsFeeAppService.UploadFileAsync(
-                        new RemoteStreamContent(stream, SelectedFile.Name, ct, readOnlyLength: SelectedFile.Size),
-                        SelectedFileType, isMailSend: SendNotifications);
+                    var result = await LogisticsFeeAppService.UploadFileAsync(
+                           new RemoteStreamContent(stream, SelectedFile.Name, ct, readOnlyLength: SelectedFile.Size),
+                           SelectedFileType, isMailSend: SendNotifications);
                     await MessageService.Success(L["FileUploadedSuccessfully"]);
                     await CloseImportModal();
+                    var arg = new LogisticsFeeProcessingJobArgs
+                    {
+                        BatchId = result.BatchId,
+                        IsMailSend = SendNotifications
+                    };
+                 
+
+                    await LogisticsFeeProcessingJob.ExecuteAsync(arg);
                     await LoadData();
                 }
                 catch (Exception ex)
                 {
+                    loading = false;
                     await HandleErrorAsync(ex);
                 }
                 finally
                 {
+
                     IsProcessing = false;
-                    for (int i = 0; i < 3; i++)
-                    {
-                        await Task.Delay(TimeSpan.FromSeconds(10));
-                        await LoadData();
-                    }
+                    loading = false;
                 }
             }
         }

@@ -9,6 +9,7 @@
 @inherits PikachuComponentBase
 @using Microsoft.Extensions.Localization;
 @inject ILogisticsFeeAppService LogisticsFeeAppService
+@inject LogisticsFeeProcessingJob LogisticsFeeProcessingJob
 @inject NavigationManager NavigationManager
 @inject IMessageService MessageService
 @inject IStringLocalizer<PikachuResource> L;
@@ -326,6 +327,44 @@
 }
     
 </style>
+  @if(loading)
+    {
+     <div class="content-header">
+    <div class="breadcrumb-container">
+        <nav class="breadcrumb-nav">
+             <SkeletonItem ColumnSize="ColumnSize.Is12" Class="mb-2" />
+        </nav>
+    </div>
+    <div class="page-header">
+          <SkeletonItem ColumnSize="ColumnSize.Is12" Class="mb-2" />
+    </div>
+</div>
+    <Card>
+        <CardBody>
+            <Row>
+                <Column ColumnSize="ColumnSize.Is10">
+                    <SkeletonItem ColumnSize="ColumnSize.Is10" Class="mb-2" />
+                </Column>
+                <Column ColumnSize="ColumnSize.Is2">
+                     <SkeletonItem ColumnSize="ColumnSize.Is4" Class="mb-2" />
+                </Column>
+            </Row>
+            
+           
+
+        </CardBody>
+
+    </Card>
+    <Card>
+        <CardBody>
+            <Skeleton Animation="SkeletonAnimation.Pulse">
+        <!-- For example, 5 horizontal bars to represent the table rows -->
+      <SkeletonTable Rows="10" Columns="5" />
+    </Skeleton>
+        </CardBody>
+    </Card>
+    }
+    <div style="@($"display: {(loading ? "none" : "block")};" )">
 <PikachuButton Clicked="NavigateToLogisticsFeeManagement">
         <Icon Name="IconName.ArrowLeft" Class="me-1"></Icon>
         @L["LogisticsFeeManagement"]
@@ -476,7 +515,7 @@
         </DataGrid>
     </CardBody>
 </Card>
-
+</div>
 <!-- Import Modal (similar to main page) -->
 <Modal @ref="ImportModal" Size="ModalSize.Large">
     <ModalContent Centered>

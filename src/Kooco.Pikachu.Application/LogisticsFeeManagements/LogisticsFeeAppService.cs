@@ -110,19 +110,19 @@ namespace Kooco.Pikachu.LogisticsFeeManagements
 
             await _fileImportRepository.InsertAsync(fileImport, autoSave: true);
 
-            var arg = new LogisticsFeeProcessingJobArgs
-            {
-                BatchId = fileImport.Id,
-                IsMailSend = isMailSend
-            };
-            // Queue background job for processing
-            //await _backgroundJobManager.EnqueueAsync<Guid>(fileImport.Id);
-            var JobId = BackgroundJob.Schedule<LogisticsFeeProcessingJob>(
-                       job => job.ExecuteAsync(arg),
-                        DateTimeOffset.Now
-                       );
+            //var arg = new LogisticsFeeProcessingJobArgs
+            //{
+            //    BatchId = fileImport.Id,
+            //    IsMailSend = isMailSend
+            //};
+            //// Queue background job for processing
+            ////await _backgroundJobManager.EnqueueAsync<Guid>(fileImport.Id);
+            ////var JobId = BackgroundJob.Schedule<LogisticsFeeProcessingJob>(
+            ////           job => job.ExecuteAsync(arg),
+            ////            DateTimeOffset.Now
+            ////           );
 
-
+            //await _logisticsFeeProcessingJob.ExecuteAsync(arg);
             _logger.LogInformation("File uploaded and queued for processing: {FileId}", fileImport.Id);
 
             return new FileUploadResult
@@ -294,7 +294,7 @@ namespace Kooco.Pikachu.LogisticsFeeManagements
                 if (deductionResult.TransactionStatus == WalletDeductionStatus.Completed && deductionResult.Id != Guid.Empty)
                 {
                     record.LogisticsFeeFileImport.SuccessfulRecords += 1;
-                   await _fileImportRepository.UpdateAsync(record.LogisticsFeeFileImport);
+                    await _fileImportRepository.UpdateAsync(record.LogisticsFeeFileImport);
                     record.MarkAsDeducted(deductionResult.Id);
                     await _recordRepository.UpdateAsync(record);
 
@@ -309,13 +309,14 @@ namespace Kooco.Pikachu.LogisticsFeeManagements
                         file.PartialSuccessProcessing("");
                     }
 
-                    await _notificationService.SendRetryNotificationAsync(record.TenantId.Value,new BatchRetryResult {
-                    SuccessCount=1,
-                    SuccessfulAmount=record.LogisticFee,
-                    FileName=file.OriginalFileName,
-                    FileType=file.FileType.ToString(),
-                    FailureCount=0
-                    
+                    await _notificationService.SendRetryNotificationAsync(record.TenantId.Value, new BatchRetryResult
+                    {
+                        SuccessCount = 1,
+                        SuccessfulAmount = record.LogisticFee,
+                        FileName = file.OriginalFileName,
+                        FileType = file.FileType.ToString(),
+                        FailureCount = 0
+
                     });
                     return new RetryRecordResult
                     {
@@ -425,7 +426,7 @@ namespace Kooco.Pikachu.LogisticsFeeManagements
                             var tenantResult = tenantNotifications[record.TenantId.Value];
                             tenantResult.FileName = record.LogisticsFeeFileImport.OriginalFileName;
                             tenantResult.FileType = record.LogisticsFeeFileImport.FileType.ToString();
-                            record.LogisticsFeeFileImport.FailedRecords = f+1;
+                            record.LogisticsFeeFileImport.FailedRecords = f + 1;
                             await _fileImportRepository.UpdateAsync(record.LogisticsFeeFileImport);
                             record.MarkAsFailed("Insufficient Balance");
                             result.FailureCount++;
@@ -526,7 +527,7 @@ namespace Kooco.Pikachu.LogisticsFeeManagements
                 _logger.LogInformation("Batch retry completed. Success: {SuccessCount}, Failed: {FailureCount}",
                     result.SuccessCount, result.FailureCount);
                 var file = await _fileImportRepository.GetAsync(fileId);
-                if (result.SuccessCount ==( result.SuccessCount+result.FailureCount))
+                if (result.SuccessCount == (result.SuccessCount + result.FailureCount))
                 {
                     file.SuccessProcessing("");
                 }

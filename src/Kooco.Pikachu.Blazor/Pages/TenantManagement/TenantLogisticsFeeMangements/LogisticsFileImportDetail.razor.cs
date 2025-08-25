@@ -28,6 +28,7 @@ namespace Kooco.Pikachu.Blazor.Pages.TenantManagement.TenantLogisticsFeeMangemen
         private string Filter = "";
         private string StatusFilter = "";
         private string TenantName = "";
+        private bool loading = true;
 
         // Summary properties
         private decimal CurrentBalance = 0;
@@ -50,7 +51,7 @@ namespace Kooco.Pikachu.Blazor.Pages.TenantManagement.TenantLogisticsFeeMangemen
 
         protected override async Task OnInitializedAsync()
         {
-            await SetBreadcrumbItemsAsync();
+          
             await LoadTenantInfo();
             await LoadData();
         }
@@ -66,6 +67,7 @@ namespace Kooco.Pikachu.Blazor.Pages.TenantManagement.TenantLogisticsFeeMangemen
         {
             try
             {
+                loading = true;
                 var summaries = (await LogisticsFeeAppService.GetTenantSummariesAsync(TenantId)).Items?.FirstOrDefault();
                 if (summaries != null)
                 {
@@ -73,9 +75,11 @@ namespace Kooco.Pikachu.Blazor.Pages.TenantManagement.TenantLogisticsFeeMangemen
                     TenantName = summary.TenantName;
                     CurrentBalance = summary.WalletBalance;
                 }
+                loading = false;
             }
             catch (Exception ex)
             {
+                loading = false;
                 await HandleErrorAsync(ex);
             }
         }
@@ -84,6 +88,7 @@ namespace Kooco.Pikachu.Blazor.Pages.TenantManagement.TenantLogisticsFeeMangemen
         {
             try
             {
+                loading = true;
                 var input = new GetLogisticsFeeFileImportsInput
                 {
                     SkipCount = (CurrentPage - 1) * PageSize,
@@ -100,9 +105,11 @@ namespace Kooco.Pikachu.Blazor.Pages.TenantManagement.TenantLogisticsFeeMangemen
                 // Update summary stats
                 TotalFilesProcessed = (int)result.TotalCount;
                 FailedBatches = result.Items.Sum(f => f.FailedRecords);
+                loading = false;
             }
             catch (Exception ex)
             {
+                loading = false;
                 await HandleErrorAsync(ex);
             }
         }
@@ -213,31 +220,37 @@ namespace Kooco.Pikachu.Blazor.Pages.TenantManagement.TenantLogisticsFeeMangemen
             if (await ImportValidations.ValidateAll())
             {
                 IsProcessing = true;
+                loading = true;
                 try
                 {
                     await using var stream = SelectedFile.OpenReadStream(10 * 1024 * 1024);
                     var ct = string.IsNullOrWhiteSpace(SelectedFile.Type) ? "application/octet-stream" : SelectedFile.Type;
 
-                    await LogisticsFeeAppService.UploadFileAsync(
+                  var result=  await LogisticsFeeAppService.UploadFileAsync(
                         new RemoteStreamContent(stream, SelectedFile.Name, ct, readOnlyLength: SelectedFile.Size),
                         SelectedFileType, SendNotifications);
 
                     await MessageService.Success(L["FileUploadedSuccessfully"]);
                     await CloseImportModal();
                     await LoadData();
+                    var arg = new LogisticsFeeProcessingJobArgs
+                    {
+                        BatchId = result.BatchId,
+                        IsMailSend = SendNotifications
+                    };
+
+
+                    await LogisticsFeeProcessingJob.ExecuteAsync(arg);
                 }
                 catch (Exception ex)
                 {
+                    loading = false;
                     await HandleErrorAsync(ex);
                 }
                 finally
                 {
                     IsProcessing = false;
-                    for (int i = 0; i < 3; i++)
-                    {
-                        await Task.Delay(TimeSpan.FromSeconds(10));
-                        await LoadData();
-                    }
+                    loading = false;
                 }
             }
         }

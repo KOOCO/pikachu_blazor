@@ -16,6 +16,9 @@ namespace Kooco.Pikachu.LogisticsFeeManagements
         public string TenantName { get; set; }
         public string OrderNumber { get; set; }
         public decimal LogisticFee { get; set; }
+        public decimal ShippigFee { get; set; }
+        public decimal ExtraShippigFee { get; set; }
+        public decimal AdditionalLogisticFee { get; set; }
         public LogisticsFileType FileType { get; set; }
         public WalletDeductionStatus DeductionStatus { get; set; }
         public string FailureReason { get; set; }

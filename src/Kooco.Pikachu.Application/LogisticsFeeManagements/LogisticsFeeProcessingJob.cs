@@ -262,8 +262,8 @@ namespace Kooco.Pikachu.LogisticsFeeManagements
                         break;
                 }
 
-                parsedRecord.AdditionalLogisticFee = additionalFee;
-                parsedRecord.FeeAmount += additionalFee;
+                record.AdditionalLogisticFee = additionalFee;
+                record.LogisticFee += additionalFee;
 
             }
 
@@ -297,8 +297,12 @@ namespace Kooco.Pikachu.LogisticsFeeManagements
             summary.TotalRecords++;
             summary.TotalAmount += parsedRecord.FeeAmount;
             var tenantWallet = (await _tenantWalletRepository.GetQueryableAsync()).Where(x => x.TenantId == summary.TenantId).FirstOrDefault();
-
-            if (parsedRecord.FeeAmount > tenantWallet.WalletBalance || tenantWallet.WalletBalance == 0)
+            if (tenantWallet==null)
+            {
+                record.MarkAsFailed("No Wallet found");
+                summary.FailedDeductions++;
+            }
+            else if (parsedRecord.FeeAmount > tenantWallet?.WalletBalance || tenantWallet?.WalletBalance == 0 )
             {
                 record.MarkAsFailed("Insufficient Balance");
                 summary.FailedDeductions++;
