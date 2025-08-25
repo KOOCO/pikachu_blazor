@@ -36,8 +36,7 @@ public class EcPayCodTradeInfoAppService : PikachuAppService, IEcPayCodTradeInfo
 
         using (DataFilter.Disable<IMultiTenant>())
         {
-            //TODO: Set it to -15 days after testing
-            var cutoffDate = DateTime.Today.AddDays(-1115);
+            var cutoffDate = DateTime.Today.AddDays(-15);
 
             var orderInfos = await _ecPayCodTradeInfoRepository
                 .GetMerchantTradeNos(cutoffDate, cancellationToken);

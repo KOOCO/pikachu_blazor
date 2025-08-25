@@ -29,15 +29,14 @@ public class EcPayReconciliationService : IEcPayReconciliationService, ITransien
         )
     {
         var today = DateTime.Today;
-        //TODO: Set it to -15 days after testing
-        var beginDate = today.AddDays(-25).ToString("yyyy-MM-dd");
+        var beginDate = today.AddDays(-15).ToString("yyyy-MM-dd");
         var endDate = today.ToString("yyyy-MM-dd");
 
         _logger.LogInformation("Reconciliation Job: Querying media file from {begin} to {end}", beginDate, endDate);
 
         var formData = new Dictionary<string, string>
         {
-            ["MerchantID"] = EcPayCheckMacValue.MerchantId,// _options.MerchantID,
+            ["MerchantID"] = _options.MerchantID,
             ["DateType"] = "4",
             ["BeginDate"] = beginDate,
             ["EndDate"] = endDate,
