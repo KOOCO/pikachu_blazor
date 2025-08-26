@@ -2005,9 +2005,8 @@
     "AreYouSureToUpdateTCat7-11Freeze?": "Are You Sure To Update T-Cat 7-11 Freeze ?",
     "AreYouSureToUpdateTCat7-11Normal?": "Are You Sure To Update T-Cat 7-11 Normal ?",
     "Validation:Required": "This field is required",
-    "LogisticFeeConfiguration": "Logistic Fee Configuration",
-    "LogisticFeeConfiguration_Desc": "Configure additional fees for different delivery methods. The fee can be a percentage of the logistic cost or a fixed amount.",
-    "Save:Success": "Logistic fee settings saved successfully.",
+
+    "Save:Success": "Logistic fee has been saved successfully.",
     "Reset:Reloaded": "Reloaded the latest values from server.",
     "Validation:FixErrors": "Please fix the highlighted errors and try again.",
     "Validation:PercentRequired": "Percentage is required.",
@@ -2020,14 +2019,17 @@
     "Permission:TenantDeliveryFees.View": "View logistic fee settings",
     "Permission:TenantDeliveryFees.Manage": "Manage logistic fee settings",
     "Permission:TenantDeliveryFees.Overview": "Platform Fee Management",
-    "PlatformManagement": "Platform Management",
+    "PlatformManagement": "Platform Fee Management",
     "FeeSettings": "Fee Settings",
     "PlatformFeeSettings": "Platform Fee Settings",
     "SearchTenantName": "Search Tenant Name",
     "LogisticsFeeStatus": "Logistics Fee Status",
     "LogisticFees": "Logistic Fees",
     "DeliveryOptions": "Delivery Options",
-    "Menu:PlatformManagement": "Platform Management",
+    "SaveLogisticFeeSettings": "Save Logistic FeeSettings",
+    "Menu:PlatformManagement": "Platform Fee Management",
+    "LogisticFeeConfiguration": "Logistic Fee Configuration",
+    "LogisticFeeConfiguration_Desc": "Configure additional fees for different delivery methods. The fee can be a percentage of the logistic cost or a fixed amount.",
     "ExchangeOrderButton": "Exchange Order",
     "EcPayPaymentFees": "ECPay Payment Fees",
     "EcPayPaymentFeeConfiguration": "ECPay Payment Fee Configuration",
@@ -2054,7 +2056,13 @@
     "PlatformTab:CreditCardBaseProcessingFeeDescription": "This fee will be applied to all credit card payment methods listed below",
     "LogisticsFeeRetryProcessingComplete": "Logistics Fee Retry Processing Complete",
     "ECPay": "ECPay",
-    "TCAT": "TCAT"
-    
+    "TCAT": "TCAT",
+    "PlatformActive": "Active",
+    "PlatformInactive": "Inactive",
+    "LastUpdatedTime": "Last Updated Time",
+
+    "Range": "{0} - {1} of {2} items"
+
+
   }
 }

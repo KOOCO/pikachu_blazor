@@ -53,8 +53,8 @@ namespace Kooco.Pikachu.Blazor.Pages.TenantDeliveryFees
                             DeliveryProvider = p,
                             IsEnabled = found?.IsEnabled ?? false,
                             FeeKind = found?.FeeKind ?? FeeKind.Percentage,
-                            PercentValue = found?.PercentValue,
-                            FixedAmount = found?.FixedAmount
+                            PercentValue = found?.PercentValue ?? 0,
+                            FixedAmount = found?.FixedAmount ?? 0
                         };
                     })
                     .ToList();
@@ -178,14 +178,16 @@ namespace Kooco.Pikachu.Blazor.Pages.TenantDeliveryFees
                 };
 
                 await FeeApp.UpsertManyAsync(input);
-                await MessageService.Success(L["Save:Success"]);
+
             }
             catch (Exception ex)
             {
+                IsSaving = false;
                 await HandleErrorAsync(ex);
             }
             finally
             {
+                await Notify.Success(L["Save:Success"]);
                 IsSaving = false;
             }
         }
@@ -196,7 +198,7 @@ namespace Kooco.Pikachu.Blazor.Pages.TenantDeliveryFees
             {
                 await LoadAsync();
                 await formValidations?.ClearAll();
-                await MessageService.Info(L["Reset:Reloaded"]);
+               // await Notify.Info(L["Reset:Reloaded"]);
             }
             catch (Exception ex)
             {
@@ -216,8 +218,8 @@ namespace Kooco.Pikachu.Blazor.Pages.TenantDeliveryFees
             public DeliveryProvider DeliveryProvider { get; set; }
             public bool IsEnabled { get; set; }
             public FeeKind FeeKind { get; set; } = FeeKind.Percentage;
-            public decimal? PercentValue { get; set; }
-            public decimal? FixedAmount { get; set; }
+            public decimal PercentValue { get; set; }
+            public decimal FixedAmount { get; set; }
         }
     }
 

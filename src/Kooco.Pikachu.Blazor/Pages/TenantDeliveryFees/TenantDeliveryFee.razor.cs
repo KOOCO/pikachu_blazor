@@ -104,8 +104,8 @@ namespace Kooco.Pikachu.Blazor.Pages.TenantDeliveryFees
         {
             return status switch
             {
-                false => "Inactive",
-                true => "Active",
+                false => "PlatformInactive",
+                true => "PlatformActive",
 
             };
         }

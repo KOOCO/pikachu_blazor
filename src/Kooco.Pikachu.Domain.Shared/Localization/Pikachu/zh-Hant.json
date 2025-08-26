@@ -2000,7 +2000,31 @@
     "AreYouSureYouWantToExchangeThisOrder": "您確認要進行換貨嗎？",
     "LogisticsFeeRetryProcessingComplete": "物流費補扣款通知",
     "ECPay": "綠界",
-    "TCAT": "黑貓"
+    "TCAT": "黑貓",
+    "PlatformManagement": "平台費管理",
+    "FeeSettings": "費用設定",
+    "PlatformFeeSettings": "平台費設定",
+    "SearchTenantName": "搜尋租戶名稱",
+    "LogisticsFeeStatus": "物流費用設定",
+    "LogisticFees": "物流費設定",
+    "DeliveryOptions": "物流選項",
+    "Menu:PlatformManagement": "平台費管理",
+    "LogisticFeeConfiguration": "物流費用設定",
+    "LogisticFeeConfiguration_Desc": "為不同配送方式設定額外費用。費用可以是物流成本的百分比，或是固定金額。",
+    "PercentageFee": "百分比",
+    "FixedAmount": "固定金額",
+    "SaveLogisticFeeSettings": "儲存物流費用設定",
+    "PlatformActive": "啟用中",
+    "PlatformInactive": "已關閉",
+    "Configure": "設定",
+    "LastUpdatedTime": "最後更新時間",
+    "PrevPage": "上一頁",
+    "NextPage": "下一頁",
+    "FirstPage": "第一頁",
+    "LastPage": "最後一頁",
+
+    "Range": "第 {0} - {1} 筆，共 {2} 筆",
+    "Save:Success": "已成功儲存物流費用設定"
 
   }
 }
