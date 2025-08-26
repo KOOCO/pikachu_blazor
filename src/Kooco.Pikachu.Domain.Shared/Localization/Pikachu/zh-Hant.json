@@ -2044,6 +2044,11 @@
     "CvsBarcode": "超商條碼",
     "SavePaymentFeeSettings": "儲存金流費用設定",
     "PlatformTab:CreditCardBaseProcessingFeeTitle": "處理費設定（適用於所有信用卡交易）",
-    "PlatformTab:CreditCardBaseProcessingFeeDescription": "此費用將套用至以下所有信用卡付款方式。"
+    "PlatformTab:CreditCardBaseProcessingFeeDescription": "此費用將套用至以下所有信用卡付款方式。",
+    "TCatPaymentFees": "黑貓金流費用設定",
+    "TCatPaymentFeeConfigurations": "黑貓金流費用設定",
+    "TCatPaymentFeeConfigurations_Desc": "設定黑貓付款方式的額外手續費。可以是結帳總額的百分比或額外固定金額。",
+    "TCatPaymentOptions": "黑貓付款選項",
+    "SaveTCatPaymentFeeSettings": "儲存黑貓金流費用設定"
   }
 }

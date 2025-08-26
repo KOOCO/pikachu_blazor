@@ -130,7 +130,18 @@
 
         .platform-tab-input-group .ant-input-group.suffix .ant-input-number {
             border-right: 0;
-            margin-right: -1px;
+        }
+
+        .platform-tab-input-group .ant-input-group .ant-input-number:focus,
+        .platform-tab-input-group .ant-input-group .ant-input-number-focused {
+            box-shadow: unset !important;
+            outline: 0;
+        }
+
+        .platform-tab-input-group .ant-input-group:has(.ant-input-number:hover) .ant-input-group-addon,
+        .platform-tab-input-group .ant-input-group:has(.ant-input-number:focus) .ant-input-group-addon,
+        .platform-tab-input-group .ant-input-group:has(.ant-input-number-focused) .ant-input-group-addon {
+            border-color: #40a9ff;
         }
 
         .platform-tab-input-group .ant-input-group.suffix .ant-input-group-addon {

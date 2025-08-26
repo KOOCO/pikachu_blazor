@@ -20,7 +20,22 @@ public class EcPayFeeConfigurationItems
 
 public class TempModels
 {
-    public static List<EcPayFeeConfiguration> Configurations =
+    public static readonly List<EcPayFeeConfiguration> TCatConfigurations =
+        [
+            new(){
+                Title= "TCatPaymentOptions",
+                Items =
+                [
+                    new(){
+                        Title="CashOnDelivery",
+                        IsEnabled = true,
+                        IsPercentageFee = true,
+                        Amount = 2
+                    }
+                ]
+            }
+        ];
+    public static readonly List<EcPayFeeConfiguration> Configurations =
         [
                 new(){
                 Title  ="CreditCardPaymentOptions",

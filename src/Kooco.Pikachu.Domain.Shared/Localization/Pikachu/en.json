@@ -2060,9 +2060,11 @@
     "PlatformActive": "Active",
     "PlatformInactive": "Inactive",
     "LastUpdatedTime": "Last Updated Time",
-
-    "Range": "{0} - {1} of {2} items"
-
-
+    "Range": "{0} - {1} of {2} items",
+    "TCatPaymentFees": "T Cat Payment Fees",
+    "TCatPaymentFeeConfigurations": "T Cat Payment Fee Configuration",
+    "TCatPaymentFeeConfigurations_Desc": "Configure additional fees for T Cat payment methods. The fee can be a percentage of the checkout total or a fixed amount.",
+    "TCatPaymentOptions": "T Cat Payment Options",
+    "SaveTCatPaymentFeeSettings": "Save T Cat Payment Fee Settings"
   }
 }
