@@ -1,4 +1,5 @@
-﻿@inherits PikachuComponentBase
+﻿@using Kooco.Pikachu.EnumValues;
+@inherits PikachuComponentBase
 
 <div class="platform-tab">
     <div class="platform-tab-header">
@@ -6,29 +7,29 @@
         <p class="platform-tab-description">@L["TCatPaymentFeeConfigurations_Desc"]</p>
     </div>
 
-    @foreach (var config in Configurations)
+    @foreach (var fee in Fees.GroupBy(f => f.FeeSubType))
     {
         <div class="platform-tab-section">
-            <div class="platform-tab-section-title">@L[config.Title]</div>
-            @foreach (var item in config.Items)
+            <div class="platform-tab-section-title">@L["Enum:PaymentFeeSubType." + (int)fee.Key]</div>
+            @foreach (var item in fee.ToList())
             {
                 <div class="platform-tab-section-item">
                     <div class="platform-tab-switch">
                         <Switch @bind-Checked="item.IsEnabled" Class="switch" />
-                        <span class="switch-label">@L[item.Title]</span>
+                        <span class="switch-label">@L["Enum:PaymentFeeMethods." + (int)item.PaymentMethod]</span>
                     </div>
                     <div class="platform-tab-input-group">
                         <div>
-                            <AntDesign.Select TItem="bool" TItemValue="bool" @bind-Value="item.IsPercentageFee">
+                            <AntDesign.Select TItem="FeeKind" TItemValue="FeeKind" @bind-Value="item.FeeKind">
                                 <SelectOptions>
-                                    <AntDesign.SelectOption Value="true" Label="@L["PercentageFee"]" />
-                                    <AntDesign.SelectOption Value="false" Label="@L["FixedAmount"]" />
+                                    <AntDesign.SelectOption Value="FeeKind.Percentage" Label="@L["PercentageFee"]" />
+                                    <AntDesign.SelectOption Value="FeeKind.FixedAmount" Label="@L["FixedAmount"]" />
                                 </SelectOptions>
                             </AntDesign.Select>
                         </div>
                         <div>
-                            <AntDesign.InputGroup Class="@(item.IsPercentageFee ? "suffix" : "prefix")">
-                                @if (!item.IsPercentageFee)
+                            <AntDesign.InputGroup Class="@(item.FeeKind == FeeKind.Percentage ? "suffix" : "prefix")">
+                                @if (item.FeeKind == FeeKind.FixedAmount)
                                 {
                                     <span class="ant-input-group-addon">$</span>
                                 }
@@ -37,7 +38,7 @@
                                                        @bind-Value="item.Amount"
                                                        Class="no-stepper" />
 
-                                @if (item.IsPercentageFee)
+                                @if (item.FeeKind == FeeKind.Percentage)
                                 {
                                     <span class="ant-input-group-addon">%</span>
                                 }
