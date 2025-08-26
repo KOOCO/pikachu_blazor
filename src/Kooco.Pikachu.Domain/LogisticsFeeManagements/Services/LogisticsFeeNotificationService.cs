@@ -74,7 +74,7 @@ namespace Kooco.Pikachu.LogisticsFeeManagements.Services
                     return;
                 }
 
-                var subject = "Logistics Fee Retry Processing Complete";
+                var subject = _localizer["LogisticsFeeRetryProcessingComplete"];
                 var body = BuildRetryNotificationBody(tenant.Name, result, result.FileName, result.FileType, DateTime.Now);
                 // Convert to HTML
                 var htmlBody = ConvertPlainTextToHtml(body);
@@ -168,7 +168,7 @@ namespace Kooco.Pikachu.LogisticsFeeManagements.Services
 
             // File information
             sb.AppendLine(_localizer["Email:File", fileName]);
-            sb.AppendLine(_localizer["Email:FileType", fileType]);
+            sb.AppendLine(_localizer["Email:FileType",_localizer[fileType]]);
             sb.AppendLine(_localizer["Email:ProcessingDate", processingDate.ToString("yyyy-MM-dd HH:mm:ss")]);
             sb.AppendLine();
 

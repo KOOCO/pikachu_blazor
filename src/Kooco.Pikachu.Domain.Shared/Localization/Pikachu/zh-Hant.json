@@ -1997,6 +1997,10 @@
     "Type": "類型",
     "ExchangeOrder": "換貨",
     "ExchangeOrderButton": "確認換貨",
-    "AreYouSureYouWantToExchangeThisOrder": "您確認要進行換貨嗎？"
+    "AreYouSureYouWantToExchangeThisOrder": "您確認要進行換貨嗎？",
+    "LogisticsFeeRetryProcessingComplete": "物流費補扣款通知",
+    "ECPay": "綠界",
+    "TCAT": "黑貓"
+
   }
 }

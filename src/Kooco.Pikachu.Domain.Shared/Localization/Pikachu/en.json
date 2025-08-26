@@ -2051,6 +2051,10 @@
     "CvsBarcode": "CVS Barcode",
     "SavePaymentFeeSettings": "Save Payment Fee Settings",
     "PlatformTab:CreditCardBaseProcessingFeeTitle": "Base Processing Fee (Applied to all credit card transactions)",
-    "PlatformTab:CreditCardBaseProcessingFeeDescription": "This fee will be applied to all credit card payment methods listed below"
+    "PlatformTab:CreditCardBaseProcessingFeeDescription": "This fee will be applied to all credit card payment methods listed below",
+    "LogisticsFeeRetryProcessingComplete": "Logistics Fee Retry Processing Complete",
+    "ECPay": "ECPay",
+    "TCAT": "TCAT"
+    
   }
 }
