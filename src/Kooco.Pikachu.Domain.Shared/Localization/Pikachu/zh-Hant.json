@@ -2022,9 +2022,28 @@
     "NextPage": "下一頁",
     "FirstPage": "第一頁",
     "LastPage": "最後一頁",
-
     "Range": "第 {0} - {1} 筆，共 {2} 筆",
-    "Save:Success": "已成功儲存物流費用設定"
-
+    "Save:Success": "已成功儲存物流費用設定",
+    "EcPayPaymentFees": "綠界金流費用設定",
+    "EcPayPaymentFeeConfiguration": "綠界金流費用設定",
+    "EcPayPaymentFees_Desc": "為不同的綠界付款方式設定額外費用。費用可以是訂單總金額的百分比，或是固定金額。",
+    "CreditCardPaymentOptions": "信用卡費用設定",
+    "ProcessingFee": "處理費",
+    "OneTimePayment": "一次付清",
+    "3MonthInstallment": "分期3期",
+    "6MonthInstallment": "分期6期",
+    "12MonthInstallment": "分期12期",
+    "18MonthInstallment": "分期18期",
+    "24MonthInstallment": "分期24期",
+    "DreamPlan30MonthInstallment": "圓夢彈性分期30期",
+    "UnionPayCard": "銀聯卡",
+    "OtherPaymentMethods": "其他付款方式",
+    "VirtualAccount": "網路ATM",
+    "OnlineAtm": "ATM櫃員機 (虛擬帳號)",
+    "CvsCode": "超商代碼",
+    "CvsBarcode": "超商條碼",
+    "SavePaymentFeeSettings": "儲存金流費用設定",
+    "PlatformTab:CreditCardBaseProcessingFeeTitle": "處理費設定（適用於所有信用卡交易）",
+    "PlatformTab:CreditCardBaseProcessingFeeDescription": "此費用將套用至以下所有信用卡付款方式。"
   }
 }
