@@ -480,6 +480,8 @@ namespace Kooco.Pikachu.LogisticsFeeManagements
                                 result.SuccessCount++;
                                 tenantResult.SuccessCount++;
                                 tenantResult.SuccessfulAmount += record.LogisticFee;
+                                record.LogisticsFeeFileImport.SuccessfulRecords += 1;
+                                record.LogisticsFeeFileImport.FailedRecords -= 1;
 
 
                                 result.Results.Add(new RetryRecordResult
@@ -527,11 +529,11 @@ namespace Kooco.Pikachu.LogisticsFeeManagements
                 _logger.LogInformation("Batch retry completed. Success: {SuccessCount}, Failed: {FailureCount}",
                     result.SuccessCount, result.FailureCount);
                 var file = await _fileImportRepository.GetAsync(fileId);
-                if (result.SuccessCount == (result.SuccessCount + result.FailureCount))
+                if (file.SuccessfulRecords == (file.SuccessfulRecords + file.FailedRecords))
                 {
                     file.SuccessProcessing("");
                 }
-                else if (result.SuccessCount > 0)
+                else if (file.SuccessfulRecords > 0)
                 {
                     file.PartialSuccessProcessing("");
                 }

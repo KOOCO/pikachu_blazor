@@ -6,6 +6,7 @@
 @using Kooco.Pikachu.Localization;
 @using Kooco.Pikachu.LogisticsFeeManagements;
 @using Kooco.Pikachu.EnumValues;
+@using System.Runtime.InteropServices;
 @inherits PikachuComponentBase
 @using Microsoft.Extensions.Localization;
 @inject ILogisticsFeeAppService LogisticsFeeAppService
@@ -460,7 +461,21 @@
                                Field="@nameof(LogisticsFeeFileImportDto.UploadDate)" 
                                Caption="@L["UploadDate"]">
                     <DisplayTemplate>
-                        @context.UploadDate.ToString("yyyy-MM-dd HH:mm")
+                      @{
+    // Cross-platform ID: Windows vs Linux/macOS
+    var tzId = RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
+        ? "Taipei Standard Time"
+        : "Asia/Taipei";
+    var tpeTz = TimeZoneInfo.FindSystemTimeZoneById(tzId);
+
+    // Treat as UTC if kind isn't set
+    var utc = context.UploadDate.Kind == DateTimeKind.Utc
+        ? context.UploadDate
+        : DateTime.SpecifyKind(context.UploadDate, DateTimeKind.Utc);
+
+    var tpe = TimeZoneInfo.ConvertTimeFromUtc(utc, tpeTz);
+}
+@tpe.ToString("yyyy-MM-dd HH:mm")
                     </DisplayTemplate>
                 </DataGridColumn>
                 
