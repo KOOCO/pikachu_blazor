@@ -2052,6 +2052,10 @@
     "TCatPaymentFeeConfigurations": "黑貓金流費用設定",
     "TCatPaymentFeeConfigurations_Desc": "設定黑貓付款方式的額外手續費。可以是結帳總額的百分比或額外固定金額。",
     "TCatPaymentOptions": "黑貓付款選項",
-    "SaveTCatPaymentFeeSettings": "儲存黑貓金流費用設定"
+    "SaveTCatPaymentFeeSettings": "儲存黑貓金流費用設定",
+    "BaseShippingFee": "基礎運費",
+    "Surcharge": "附加費用",
+    "AdditionalFee": "額外費用",
+    "TotalLogisticFee": "運費總金額"
   }
 }

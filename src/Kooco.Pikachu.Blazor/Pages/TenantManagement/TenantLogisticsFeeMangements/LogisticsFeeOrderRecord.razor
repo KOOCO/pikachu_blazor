@@ -447,10 +447,30 @@
                         </div>
                     </DisplayTemplate>
                 </DataGridColumn>
-                
+                   <DataGridColumn TItem="TenantLogisticsFeeRecordDto" 
+                               Field="@nameof(TenantLogisticsFeeRecordDto.ShippigFee)" 
+                               Caption="@L["BaseShippingFee"]">
+                    <DisplayTemplate>
+                        <strong>$@context.ShippigFee.ToString("N2")</strong>
+                    </DisplayTemplate>
+                </DataGridColumn>
+                   <DataGridColumn TItem="TenantLogisticsFeeRecordDto" 
+                               Field="@nameof(TenantLogisticsFeeRecordDto.ExtraShippigFee)" 
+                               Caption="@L["Surcharge"]">
+                    <DisplayTemplate>
+                        <strong>$@context.ExtraShippigFee.ToString("N2")</strong>
+                    </DisplayTemplate>
+                </DataGridColumn>
+                  <DataGridColumn TItem="TenantLogisticsFeeRecordDto" 
+                               Field="@nameof(TenantLogisticsFeeRecordDto.AdditionalLogisticFee)" 
+                               Caption="@L["AdditionalFee"]">
+                    <DisplayTemplate>
+                        <strong>$@context.AdditionalLogisticFee.ToString("N2")</strong>
+                    </DisplayTemplate>
+                </DataGridColumn>
                 <DataGridColumn TItem="TenantLogisticsFeeRecordDto" 
                                Field="@nameof(TenantLogisticsFeeRecordDto.LogisticFee)" 
-                               Caption="@L["LogisticFee"]">
+                               Caption="@L["TotalLogisticFee"]">
                     <DisplayTemplate>
                         <strong>$@context.LogisticFee.ToString("N2")</strong>
                     </DisplayTemplate>
