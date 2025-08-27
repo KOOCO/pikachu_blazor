@@ -1,67 +1,80 @@
 ﻿@using Kooco.Pikachu.EnumValues;
+@using Kooco.Pikachu.TenantPaymentFees
 @inherits PikachuComponentBase
+@inject ITenantPaymentFeeAppService TenantPaymentFeeAppService
 
 <div class="platform-tab">
     <div class="platform-tab-header">
         <h3 class="platform-tab-title">@L["EcPayPaymentFeeConfiguration"]</h3>
         <p class="platform-tab-description">@L["EcPayPaymentFees_Desc"]</p>
     </div>
-
-    @foreach (var fee in Fees.GroupBy(f => f.FeeSubType))
+    @if (Loading)
     {
-        <div class="platform-tab-section">
-            <div class="platform-tab-section-title">@L["Enum:PaymentFeeSubType." + (int)fee.Key]</div>
-            @foreach (var item in fee.ToList())
-            {
-                <div class="@(item.IsBaseFee ? "platform-tab-section-base" : "")">
-                    @if (item.IsBaseFee)
-                    {
-                        <div class="platform-tab-section-base-title">
-                            🏛️ @L["PlatformTab:CreditCardBaseProcessingFeeTitle"]
-                        </div>
-                        <div class="platform-tab-section-base-description">
-                            @L["PlatformTab:CreditCardBaseProcessingFeeDescription"]
-                        </div>
-                    }
-                    <div class="platform-tab-section-item">
-                        <div class="platform-tab-switch">
-                            <Switch @bind-Checked="item.IsEnabled" Class="switch" />
-                            <span class="switch-label">@L[item.IsBaseFee ? "ProcessingFee" : "Enum:PaymentFeeMethods." + (int)item.PaymentMethod]</span>
-                        </div>
-                        <div class="platform-tab-input-group">
-                            <div>
-                                <AntDesign.Select TItem="FeeKind" TItemValue="FeeKind" @bind-Value="item.FeeKind">
-                                    <SelectOptions>
-                                        <AntDesign.SelectOption Value="FeeKind.Percentage" Label="@L["PercentageFee"]" />
-                                        <AntDesign.SelectOption Value="FeeKind.FixedAmount" Label="@L["FixedAmount"]" />
-                                    </SelectOptions>
-                                </AntDesign.Select>
+        <p class="mt-3">
+            <span class="spinner">
+                <span class="spinner-border text-primary" style="height: 1.5rem; width: 1.5rem; border-width: 2px;"></span>
+            </span>
+            <span style="font-size: 1rem;">Loading...</span>
+        </p>
+    }
+    else
+    {
+        @foreach (var fee in Fees.GroupBy(f => f.FeeSubType))
+        {
+            <div class="platform-tab-section">
+                <div class="platform-tab-section-title">@L["Enum:PaymentFeeSubType." + (int)fee.Key]</div>
+                @foreach (var item in fee.ToList())
+                {
+                    <div class="@(item.IsBaseFee ? "platform-tab-section-base" : "")">
+                        @if (item.IsBaseFee)
+                        {
+                            <div class="platform-tab-section-base-title">
+                                🏛️ @L["PlatformTab:CreditCardBaseProcessingFeeTitle"]
                             </div>
-                            <div>
-                                <AntDesign.InputGroup Class="@(item.FeeKind == FeeKind.Percentage ? "suffix" : "prefix")">
-                                    @if (item.FeeKind == FeeKind.FixedAmount)
-                                    {
-                                        <span class="ant-input-group-addon">$</span>
-                                    }
+                            <div class="platform-tab-section-base-description">
+                                @L["PlatformTab:CreditCardBaseProcessingFeeDescription"]
+                            </div>
+                        }
+                        <div class="platform-tab-section-item">
+                            <div class="platform-tab-switch">
+                                <Switch @bind-Checked="item.IsEnabled" Class="switch" />
+                                <span class="switch-label">@L[item.IsBaseFee ? "ProcessingFee" : "Enum:PaymentFeeMethods." + (int)item.PaymentMethod]</span>
+                            </div>
+                            <div class="platform-tab-input-group">
+                                <div>
+                                    <AntDesign.Select TItem="FeeKind" TItemValue="FeeKind" @bind-Value="item.FeeKind">
+                                        <SelectOptions>
+                                            <AntDesign.SelectOption Value="FeeKind.Percentage" Label="@L["PercentageFee"]" />
+                                            <AntDesign.SelectOption Value="FeeKind.FixedAmount" Label="@L["FixedAmount"]" />
+                                        </SelectOptions>
+                                    </AntDesign.Select>
+                                </div>
+                                <div>
+                                    <AntDesign.InputGroup Class="@(item.FeeKind == FeeKind.Percentage ? "suffix" : "prefix")">
+                                        @if (item.FeeKind == FeeKind.FixedAmount)
+                                        {
+                                            <span class="ant-input-group-addon">$</span>
+                                        }
 
-                                    <AntDesign.InputNumber TValue="double"
-                                                           @bind-Value="item.Amount"
-                                                           Class="no-stepper" />
+                                        <AntDesign.InputNumber TValue="double"
+                                                               @bind-Value="item.Amount"
+                                                               Class="no-stepper" />
 
-                                    @if (item.FeeKind == FeeKind.Percentage)
-                                    {
-                                        <span class="ant-input-group-addon">%</span>
-                                    }
-                                </AntDesign.InputGroup>
+                                        @if (item.FeeKind == FeeKind.Percentage)
+                                        {
+                                            <span class="ant-input-group-addon">%</span>
+                                        }
+                                    </AntDesign.InputGroup>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            }
-        </div>
+                }
+            </div>
+        }
     }
     <div class="platform-tab-footer">
-        <PikachuButton Class="pk-btn-sm pk-btn-outline-primary">@L["Reset"]</PikachuButton>
-        <PikachuButton Class="pk-btn-sm pk-btn-primary">@L["SavePaymentFeeSettings"]</PikachuButton>
+        <PikachuButton Disabled="Saving" Class="pk-btn-sm pk-btn-outline-primary" Clicked="Get">@L["Reset"]</PikachuButton>
+        <PikachuButton Loading="Saving" Class="pk-btn-sm pk-btn-primary" Clicked="Update">@L["SavePaymentFeeSettings"]</PikachuButton>
     </div>
 </div>
