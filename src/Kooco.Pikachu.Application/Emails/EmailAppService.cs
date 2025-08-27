@@ -653,7 +653,7 @@ public class EmailAppService(IOrderRepository orderRepository, IGroupBuyReposito
 
         // File details
         sb.AppendLine(L["Email:LogisticsFee:File", model.FileName]);
-        sb.AppendLine(L["Email:LogisticsFee:FileType", model.FileType]);
+        sb.AppendLine(L["Email:LogisticsFee:FileType", L[model.FileType]]);
         sb.AppendLine(L["Email:LogisticsFee:ProcessingDate", model.ProcessingDate.ToString("yyyy-MM-dd HH:mm:ss")]);
         sb.AppendLine();
 
