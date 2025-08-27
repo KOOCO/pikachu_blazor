@@ -232,7 +232,7 @@ namespace Kooco.Pikachu.Blazor.Pages.TenantManagement.TenantLogisticsFeeMangemen
 
                     await MessageService.Success(L["FileUploadedSuccessfully"]);
                     await CloseImportModal();
-                    await LoadData();
+                   
                     var arg = new LogisticsFeeProcessingJobArgs
                     {
                         BatchId = result.BatchId,
@@ -249,6 +249,7 @@ namespace Kooco.Pikachu.Blazor.Pages.TenantManagement.TenantLogisticsFeeMangemen
                 }
                 finally
                 {
+                    await LoadData();
                     IsProcessing = false;
                     loading = false;
                 }
