@@ -294,6 +294,7 @@ namespace Kooco.Pikachu.LogisticsFeeManagements
                 if (deductionResult.TransactionStatus == WalletDeductionStatus.Completed && deductionResult.Id != Guid.Empty)
                 {
                     record.LogisticsFeeFileImport.SuccessfulRecords += 1;
+                    record.LogisticsFeeFileImport.FailedRecords -= 1;
                     await _fileImportRepository.UpdateAsync(record.LogisticsFeeFileImport);
                     record.MarkAsDeducted(deductionResult.Id);
                     await _recordRepository.UpdateAsync(record);
@@ -318,6 +319,10 @@ namespace Kooco.Pikachu.LogisticsFeeManagements
                         FailureCount = 0
 
                     });
+                    var tenantSummery = (await _summaryRepository.GetQueryableAsync()).FirstOrDefault(x => x.TenantId == record.TenantId && x.FileImportId == record.FileImportId);
+                    tenantSummery.TenantSuccessfulRecords += 1;
+                    tenantSummery.TenantFailedRecords -= 1;
+                    await _summaryRepository.UpdateAsync(tenantSummery);
                     return new RetryRecordResult
                     {
                         RecordId = recordId,
@@ -337,6 +342,7 @@ namespace Kooco.Pikachu.LogisticsFeeManagements
                     {
                         file.PartialSuccessProcessing("");
                     }
+                   
                     await _notificationService.SendRetryNotificationAsync(record.TenantId.Value, new BatchRetryResult
                     {
                         SuccessCount = 0,
@@ -518,6 +524,10 @@ namespace Kooco.Pikachu.LogisticsFeeManagements
                 {
                     try
                     {
+                        var tenantSummery = (await _summaryRepository.GetQueryableAsync()).FirstOrDefault(x => x.TenantId == kvp.Key && x.FileImportId == fileId);
+                        tenantSummery.TenantSuccessfulRecords += kvp.Value.SuccessCount;
+                        tenantSummery.TenantFailedRecords -= kvp.Value.SuccessCount;
+                        await _summaryRepository.UpdateAsync(tenantSummery);
                         await _notificationService.SendRetryNotificationAsync(kvp.Key, kvp.Value);
                     }
                     catch (Exception ex)
@@ -529,6 +539,7 @@ namespace Kooco.Pikachu.LogisticsFeeManagements
                 _logger.LogInformation("Batch retry completed. Success: {SuccessCount}, Failed: {FailureCount}",
                     result.SuccessCount, result.FailureCount);
                 var file = await _fileImportRepository.GetAsync(fileId);
+                
                 if (file.SuccessfulRecords == (file.SuccessfulRecords + file.FailedRecords))
                 {
                     file.SuccessProcessing("");
