@@ -12,7 +12,7 @@ public class TenantPaymentFee : FullAuditedEntity<Guid>
     public PaymentMethods PaymentMethod { get; private set; }
     public bool IsEnabled { get; set; }
     public FeeKind FeeKind { get; set; }
-    public double Amount { get; private set; }
+    public decimal Amount { get; private set; }
     public bool IsBaseFee { get; private set; }
     public Guid TenantId { get; set; }
 
@@ -25,7 +25,7 @@ public class TenantPaymentFee : FullAuditedEntity<Guid>
         PaymentMethods paymentMethod,
         bool isEnabled,
         FeeKind feeKind,
-        double amount,
+        decimal amount,
         bool isBaseFee,
         Guid tenantId
         ) : base(id)
@@ -50,7 +50,7 @@ public class TenantPaymentFee : FullAuditedEntity<Guid>
         PaymentMethod = paymentMethod;
     }
 
-    public void SetAmount(double amount)
+    public void SetAmount(decimal amount)
     {
         Amount = Check.Range(amount, nameof(Amount), 0);
     }

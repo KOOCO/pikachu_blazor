@@ -1,5 +1,8 @@
-﻿using Kooco.Pikachu.Orders.Entities;
+﻿using Kooco.Pikachu.EnumValues;
+using Kooco.Pikachu.Orders.Entities;
 using Kooco.Pikachu.Orders.Repositories;
+using Kooco.Pikachu.TenantPaymentFees;
+using Kooco.Pikachu.TenantPayouts;
 using Kooco.TradeInfos;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Logging;
@@ -17,23 +20,24 @@ public class EcPayCodTradeInfoAppService : PikachuAppService, IEcPayCodTradeInfo
     private readonly IEcPayTradeInfoService _ecPayTradeInfoService;
     private readonly IEcPayCodTradeInfoRepository _ecPayCodTradeInfoRepository;
     private readonly IOrderRepository _orderRepository;
+    private readonly TenantPayoutRecordService _tenantPayoutRecordService;
 
     public EcPayCodTradeInfoAppService(
         IEcPayTradeInfoService ecPayTradeInfoService,
         IEcPayCodTradeInfoRepository ecPayCodTradeInfoRepository,
-        IOrderRepository orderRepository
+        IOrderRepository orderRepository,
+        TenantPayoutRecordService tenantPayoutRecordService
         )
     {
         _ecPayTradeInfoService = ecPayTradeInfoService;
         _ecPayCodTradeInfoRepository = ecPayCodTradeInfoRepository;
         _orderRepository = orderRepository;
+        _tenantPayoutRecordService = tenantPayoutRecordService;
     }
 
     [AllowAnonymous]
     public async Task<List<EcPayCodTradeInfoDto>> QueryTradeInfoAsync(CancellationToken cancellationToken = default)
     {
-        List<EcPayCodTradeInfoRecord> results = [];
-
         using (DataFilter.Disable<IMultiTenant>())
         {
             var cutoffDate = DateTime.Today.AddDays(-15);
@@ -105,10 +109,12 @@ public class EcPayCodTradeInfoAppService : PikachuAppService, IEcPayCodTradeInfo
 
             await _orderRepository.UpdateManyAsync(ordersToUpdate, cancellationToken: cancellationToken);
             Logger.LogInformation("COD Trade Info: Updated {count} orders", ordersToUpdate.Count);
-            
-            results.AddRange(inputRecords);
-        }
 
-        return ObjectMapper.Map<List<EcPayCodTradeInfoRecord>, List<EcPayCodTradeInfoDto>>(results);
+            var results = ObjectMapper.Map<List<EcPayCodTradeInfoRecord>, List<EcPayCodTradeInfoDto>>(inputRecords);
+
+            await _tenantPayoutRecordService.CreateTenantCodPayouts(results, orders, PaymentFeeType.EcPay);
+
+            return results;
+        }
     }
 }

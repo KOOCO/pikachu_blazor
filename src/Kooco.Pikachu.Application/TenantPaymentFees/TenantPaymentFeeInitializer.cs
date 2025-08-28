@@ -6,11 +6,6 @@ namespace Kooco.Pikachu.TenantPaymentFees;
 
 public static class TenantPaymentFeeInitializer
 {
-    private static readonly HashSet<(PaymentFeeType, PaymentMethods)> BaseFeeMethods =
-    [
-        (PaymentFeeType.EcPay, PaymentMethods.CreditCard)
-    ];
-
     public static List<TenantPaymentFeeDto> Init()
     {
         var init = new List<TenantPaymentFeeDto>();
@@ -25,21 +20,67 @@ public static class TenantPaymentFeeInitializer
                      .Where(x => x.Key.FeeType == feeType)
                      .SelectMany(x => x.Value.Select(method => new { x.Key.FeeSubType, Method = method })))
         {
-            if (!init.Any(x => x.FeeType == feeType &&
-                               x.FeeSubType == method.FeeSubType &&
-                               x.PaymentMethod == method.Method))
+            if (method.Method == PaymentMethods.CreditCard)
             {
-                init.Add(CreateDto(feeType, method.FeeSubType, method.Method));
+                if (!init.Any(x => x.FeeType == feeType &&
+                                   x.FeeSubType == method.FeeSubType &&
+                                   x.PaymentMethod == method.Method &&
+                                   x.IsBaseFee == true))
+                {
+                    init.Add(CreateDto(feeType, method.FeeSubType, method.Method, true));
+                }
+
+                if (!init.Any(x => x.FeeType == feeType &&
+                                   x.FeeSubType == method.FeeSubType &&
+                                   x.PaymentMethod == method.Method &&
+                                   x.IsBaseFee == false))
+                {
+                    init.Add(CreateDto(feeType, method.FeeSubType, method.Method, isBaseFee: false));
+                }
+            }
+            else
+            {
+                if (!init.Any(x => x.FeeType == feeType &&
+                                   x.FeeSubType == method.FeeSubType &&
+                                   x.PaymentMethod == method.Method))
+                {
+                    init.Add(CreateDto(feeType, method.FeeSubType, method.Method));
+                }
             }
         }
 
-        return init;
+        return SortByPredefinedOrder(init, feeType);
+    }
+
+    private static List<TenantPaymentFeeDto> SortByPredefinedOrder(List<TenantPaymentFeeDto> fees, PaymentFeeType feeType)
+    {
+        var orderedResult = new List<TenantPaymentFeeDto>();
+
+        foreach (var combination in TenantPaymentFeeMap.AllowedCombinations
+                     .Where(x => x.Key.FeeType == feeType))
+        {
+            var feeSubType = combination.Key.FeeSubType;
+
+            foreach (var paymentMethod in combination.Value)
+            {
+                var matchingFees = fees.Where(f => f.FeeType == feeType &&
+                                                  f.FeeSubType == feeSubType &&
+                                                  f.PaymentMethod == paymentMethod)
+                                       .OrderBy(f => f.IsBaseFee ? 0 : 1)
+                                       .ToList();
+
+                orderedResult.AddRange(matchingFees);
+            }
+        }
+
+        return orderedResult;
     }
 
     private static TenantPaymentFeeDto CreateDto(
         PaymentFeeType feeType,
         PaymentFeeSubType feeSubType,
-        PaymentMethods paymentMethod
+        PaymentMethods paymentMethod,
+        bool isBaseFee = false
         )
     {
         return new()
@@ -49,7 +90,7 @@ public static class TenantPaymentFeeInitializer
             PaymentMethod = paymentMethod,
             FeeKind = FeeKind.Percentage,
             Amount = 0,
-            IsBaseFee = BaseFeeMethods.Contains((feeType, paymentMethod))
+            IsBaseFee = isBaseFee
         };
     }
 }

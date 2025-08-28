@@ -63,6 +63,7 @@ using Kooco.Pikachu.InboxManagement;
 using Kooco.Pikachu.CodTradeInfos;
 using Kooco.Pikachu.TenantDeliveryFees;
 using Kooco.Pikachu.TenantPaymentFees;
+using Kooco.Pikachu.TenantPayouts;
 
 namespace Kooco.Pikachu.EntityFrameworkCore;
 
@@ -205,6 +206,7 @@ public class PikachuDbContext(DbContextOptions<PikachuDbContext> options) :
     public DbSet<Notification> Notifications { get; set; }
     public DbSet<TenantDeliveryFee> TenantDeliveryFees { get; set; }
     public DbSet<TenantPaymentFee> TenantPaymentFees { get; set; }
+    public DbSet<TenantPayoutRecord> TenantPayoutRecords { get; set; }
 
 
     protected override void OnModelCreating(ModelBuilder builder)
@@ -1047,6 +1049,20 @@ public class PikachuDbContext(DbContextOptions<PikachuDbContext> options) :
         {
             b.ToTable(PikachuConsts.DbTablePrefix + "TenantPaymentFees", PikachuConsts.DbSchema);
             b.ConfigureByConvention();
+
+            b.Property(x => x.Amount).HasPrecision(10, 2);
+        });
+
+        builder.Entity<TenantPayoutRecord>(b =>
+        {
+            b.ToTable(PikachuConsts.DbTablePrefix + "TenantPayoutRecords", PikachuConsts.DbSchema);
+            b.ConfigureByConvention();
+
+            b.Property(x => x.GrossOrderAmount).HasPrecision(10, 2);
+            b.Property(x => x.HandlingFee).HasPrecision(10, 2);
+            b.Property(x => x.FeeRate).HasPrecision(10, 2);
+            b.Property(x => x.ProcessingFee).HasPrecision(10, 2);
+            b.Property(x => x.NetAmount).HasPrecision(10, 2);
         });
     }
 }

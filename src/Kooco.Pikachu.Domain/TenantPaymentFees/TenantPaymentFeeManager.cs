@@ -20,7 +20,7 @@ public class TenantPaymentFeeManager : DomainService
         PaymentMethods paymentMethod,
         bool isEnabled,
         FeeKind feeKind,
-        double amount,
+        decimal amount,
         bool isBaseFee,
         Guid tenantId
         )
@@ -61,7 +61,7 @@ public class TenantPaymentFeeManager : DomainService
         TenantPaymentFee tenantPaymentFee,
         bool isEnabled,
         FeeKind feeKind,
-        double amount
+        decimal amount
         )
     {
         Check.NotNull(tenantPaymentFee, nameof(TenantPaymentFee));

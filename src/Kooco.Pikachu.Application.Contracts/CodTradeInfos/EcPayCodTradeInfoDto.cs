@@ -1,12 +1,16 @@
 ﻿using System;
 using Volo.Abp.Application.Dtos;
-using Volo.Abp.Domain.Entities;
 using Volo.Abp.MultiTenancy;
 
 namespace Kooco.Pikachu.CodTradeInfos;
 
 public class EcPayCodTradeInfoDto : EntityDto<Guid>, IMultiTenant
 {
+    public Guid OrderId { get; set; }
+    public string OrderNo { get; set; } = string.Empty;
+    public Guid? TenantId { get; set; }
+    public DateTime CreationTime { get; set; }
+    public bool IsDeleted { get; set; }
     public decimal? ActualWeight { get; set; }
     public string AllPayLogisticsID { get; set; } = default!;
     public string BookingNote { get; set; } = default!;
@@ -31,5 +35,4 @@ public class EcPayCodTradeInfoDto : EntityDto<Guid>, IMultiTenant
     public string? ShipmentNo { get; set; }
     public DateTime? TradeDate { get; set; }
     public string CheckMacValue { get; set; } = default!;
-    public Guid? TenantId { get; set; }
 }

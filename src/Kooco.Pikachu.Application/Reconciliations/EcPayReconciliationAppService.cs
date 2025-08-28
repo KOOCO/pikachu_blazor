@@ -1,6 +1,8 @@
 ﻿using Kooco.Pikachu.Orders.Entities;
 using Kooco.Pikachu.Orders.Repositories;
 using Kooco.Pikachu.Permissions;
+using Kooco.Pikachu.TenantPaymentFees;
+using Kooco.Pikachu.TenantPayouts;
 using Kooco.Reconciliations;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
@@ -23,23 +25,24 @@ public class EcPayReconciliationAppService : PikachuAppService, IEcPayReconcilia
     private readonly IEcPayReconciliationService _reconciliationService;
     private readonly IOrderRepository _orderRepository;
     private readonly IRepository<EcPayReconciliationRecord, Guid> _reconciliationRecordRepository;
+    private readonly TenantPayoutRecordService _tenantPayoutRecordService;
 
     public EcPayReconciliationAppService(
         IEcPayReconciliationService reconciliationService,
         IOrderRepository orderRepository,
-        IRepository<EcPayReconciliationRecord, Guid> reconciliationRecordRepository
+        IRepository<EcPayReconciliationRecord, Guid> reconciliationRecordRepository,
+        TenantPayoutRecordService tenantPayoutRecordService
         )
     {
         _reconciliationService = reconciliationService;
         _orderRepository = orderRepository;
         _reconciliationRecordRepository = reconciliationRecordRepository;
+        _tenantPayoutRecordService = tenantPayoutRecordService;
     }
 
     [AllowAnonymous]
     public async Task<List<EcPayReconciliationRecordDto>> QueryMediaFileAsync(CancellationToken cancellationToken = default)
     {
-        List<EcPayReconciliationRecord> results = [];
-
         using (DataFilter.Disable<IMultiTenant>())
         {
             var records = await _reconciliationService.QueryMediaFileAsync(cancellationToken);
@@ -103,10 +106,12 @@ public class EcPayReconciliationAppService : PikachuAppService, IEcPayReconcilia
             await _orderRepository.UpdateManyAsync(ordersToUpdate, cancellationToken: cancellationToken);
             Logger.LogInformation("Reconciliation Job: Updated {count} orders", ordersToUpdate.Count);
 
-            results.AddRange(inputRecords);
-        }
+            var results = ObjectMapper.Map<List<EcPayReconciliationRecord>, List<EcPayReconciliationRecordDto>>(inputRecords);
+            
+            await _tenantPayoutRecordService.CreateTenantReconciliationPayouts(results, orders, PaymentFeeType.EcPay);
 
-        return ObjectMapper.Map<List<EcPayReconciliationRecord>, List<EcPayReconciliationRecordDto>>(results);
+            return results;
+        }
     }
 
     public async Task<PagedResultDto<EcPayReconciliationRecordDto>> GetListAsync(EcPayReconciliationRecordListInput input, CancellationToken cancellationToken = default)

@@ -11,6 +11,6 @@ public class UpdateTenantPaymentFeeDto
     public PaymentMethods PaymentMethod { get; set; }
     public bool IsEnabled { get; set; }
     public FeeKind FeeKind { get; set; }
-    public double Amount { get; set; }
+    public decimal Amount { get; set; }
     public bool IsBaseFee { get; set; }
 }
