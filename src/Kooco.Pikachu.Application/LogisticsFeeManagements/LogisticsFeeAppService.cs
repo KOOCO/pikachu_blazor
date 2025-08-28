@@ -277,7 +277,7 @@ namespace Kooco.Pikachu.LogisticsFeeManagements
                 var transaction = new CreateWalletTransactionDto
                 {
                     TenantWalletId = tenantWallet.Id,
-                    TransactionAmount = record.LogisticFee,
+                    TransactionAmount = Math.Ceiling(record.LogisticFee),
                     TransactionType = WalletTransactionType.LogisticsFeeDeduction,
                     TransactionNotes = $"Logistics fee deduction for order {record.OrderNumber}",
                     DeductionStatus = WalletDeductionStatus.Completed,
@@ -287,7 +287,7 @@ namespace Kooco.Pikachu.LogisticsFeeManagements
                 };
                 var deductionResult = await _walletDeductionService.AddDeductionTransactionAsync(
                     tenantWallet.Id,
-                    record.LogisticFee,
+                    Math.Ceiling(record.LogisticFee),
                   transaction
                 );
 
@@ -342,7 +342,7 @@ namespace Kooco.Pikachu.LogisticsFeeManagements
                     {
                         file.PartialSuccessProcessing("");
                     }
-                   
+
                     await _notificationService.SendRetryNotificationAsync(record.TenantId.Value, new BatchRetryResult
                     {
                         SuccessCount = 0,
@@ -455,7 +455,7 @@ namespace Kooco.Pikachu.LogisticsFeeManagements
                             var transaction = new CreateWalletTransactionDto
                             {
                                 TenantWalletId = tenantWallet.Id,
-                                TransactionAmount = record.LogisticFee,
+                                TransactionAmount = Math.Ceiling(record.LogisticFee),
                                 TransactionType = WalletTransactionType.LogisticsFeeDeduction,
                                 TransactionNotes = $"Logistics fee deduction for order {record.OrderNumber}",
                                 DeductionStatus = WalletDeductionStatus.Completed,
@@ -466,7 +466,7 @@ namespace Kooco.Pikachu.LogisticsFeeManagements
 
                             var deductionResult = await _walletDeductionService.AddDeductionTransactionAsync(
                                 tenantWallet.Id,
-                                record.LogisticFee,
+                                Math.Ceiling(record.LogisticFee),
                                 transaction
                             );
 
@@ -539,7 +539,7 @@ namespace Kooco.Pikachu.LogisticsFeeManagements
                 _logger.LogInformation("Batch retry completed. Success: {SuccessCount}, Failed: {FailureCount}",
                     result.SuccessCount, result.FailureCount);
                 var file = await _fileImportRepository.GetAsync(fileId);
-                
+
                 if (file.SuccessfulRecords == (file.SuccessfulRecords + file.FailedRecords))
                 {
                     file.SuccessProcessing("");

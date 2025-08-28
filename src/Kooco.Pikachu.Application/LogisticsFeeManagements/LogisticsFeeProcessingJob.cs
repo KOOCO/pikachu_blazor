@@ -262,9 +262,9 @@ namespace Kooco.Pikachu.LogisticsFeeManagements
                         break;
                 }
 
-                record.AdditionalLogisticFee = Math.Round(additionalFee, MidpointRounding.AwayFromZero) ;
-                record.LogisticFee += Math.Round(additionalFee, MidpointRounding.AwayFromZero);
-                
+                record.AdditionalLogisticFee = additionalFee;
+                record.LogisticFee += additionalFee;
+
 
             }
 
@@ -298,12 +298,12 @@ namespace Kooco.Pikachu.LogisticsFeeManagements
             summary.TotalRecords++;
             summary.TotalAmount += record.LogisticFee;
             var tenantWallet = (await _tenantWalletRepository.GetQueryableAsync()).Where(x => x.TenantId == summary.TenantId).FirstOrDefault();
-            if (tenantWallet==null)
+            if (tenantWallet == null)
             {
                 record.MarkAsFailed("No Wallet found");
                 summary.FailedDeductions++;
             }
-            else if (record.LogisticFee > tenantWallet?.WalletBalance || tenantWallet?.WalletBalance == 0 )
+            else if (record.LogisticFee > tenantWallet?.WalletBalance || tenantWallet?.WalletBalance == 0)
             {
                 record.MarkAsFailed("Insufficient Balance");
                 summary.FailedDeductions++;
@@ -314,7 +314,7 @@ namespace Kooco.Pikachu.LogisticsFeeManagements
                 var transaction = new CreateWalletTransactionDto
                 {
                     TenantWalletId = tenantWallet.Id,
-                    TransactionAmount = record.LogisticFee,
+                    TransactionAmount = Math.Ceiling(record.LogisticFee),
                     TransactionType = WalletTransactionType.LogisticsFeeDeduction,
                     TransactionNotes = $"Logistics fee deduction for order {orderMatch.OrderNumber ?? parsedRecord.MerchantTradeNo}",
                     DeductionStatus = WalletDeductionStatus.Completed,
@@ -324,7 +324,7 @@ namespace Kooco.Pikachu.LogisticsFeeManagements
                 };
                 var deductionResult = await _walletDeductionService.AddDeductionTransactionAsync(
                     tenantWallet.Id,
-                    record.LogisticFee,
+                    Math.Ceiling(record.LogisticFee),
                 transaction
                 );
 
