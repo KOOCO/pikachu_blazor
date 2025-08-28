@@ -1935,7 +1935,8 @@
 
     "Notification:Orders:ShippingStatusUpdatedTitle": "Shipping status updated #{OrderNo}",
     "Notification:Orders:ShippingStatusUpdatedMessage": "Shipping status for Order #{OrderNo} has been updated from '{PreviousShippingStatus}' to '{ShippingStatus}' by '{UserName}'.",
-
+    "ShippingStatusUpdatedTitle": "Shipping status updated ",
+    "ShippingStatusUpdated": "Shipping status for Order  has been updated from {0} to {1} ",
     "Notification:Orders:OrderStatusUpdatedTitle": "Order status updated #{OrderNo}",
     "Notification:Orders:OrderStatusUpdatedMessage": "Order status for Order #{OrderNo} has been updated from '{PreviousOrderStatus}' to '{OrderStatus}' by '{UserName}'.",
 

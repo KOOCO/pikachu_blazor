@@ -456,11 +456,11 @@ public class EfCoreMemberRepository(IDbContextProvider<PikachuDbContext> pikachu
 
         var users = await dbContext.Users.IgnoreQueryFilters().ToListAsync(); // Fetch data into memory
 
-        var nextMonth = DateTime.Now.Month == 12 ? 1 : DateTime.Now.Month + 1;
+        var nextMonth = DateTime.Now;
 
         var filteredUsers = users
             .Where(x => x.GetProperty(Constant.Birthday, null) != null &&
-                        ((DateTime)x.GetProperty(Constant.Birthday, null)).Month == nextMonth)
+                        ((DateTime)x.GetProperty(Constant.Birthday, null)).Month == nextMonth.Month && ((DateTime)x.GetProperty(Constant.Birthday, null)).Day == nextMonth.Day)
 
             .ToList();
 

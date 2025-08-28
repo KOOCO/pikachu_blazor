@@ -1907,7 +1907,8 @@
 
     "Notification:Orders:ShippingStatusUpdatedTitle": "出貨狀態已更新 #{OrderNo}",
     "Notification:Orders:ShippingStatusUpdatedMessage": "訂單 #{OrderNo} 的出貨狀態已由{PreviousShippingStatus}更新為{ShippingStatus}，操作者：{UserName}。",
-
+    "ShippingStatusUpdatedTitle": "出貨狀態已更新",
+    "ShippingStatusUpdated": "訂單 的出貨狀態已由{0}更新為{1}",
     "Notification:Orders:OrderStatusUpdatedTitle": "訂單狀態已更新 #{OrderNo}",
     "Notification:Orders:OrderStatusUpdatedMessage": "訂單 #{OrderNo} 的狀態已由{PreviousOrderStatus}更新為{OrderStatus}，操作者：{UserName}。",
 
