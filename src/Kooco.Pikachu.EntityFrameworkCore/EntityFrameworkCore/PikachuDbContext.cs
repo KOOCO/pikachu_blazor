@@ -62,6 +62,7 @@ using Kooco.Pikachu.Reconciliations;
 using Kooco.Pikachu.InboxManagement;
 using Kooco.Pikachu.CodTradeInfos;
 using Kooco.Pikachu.TenantDeliveryFees;
+using Kooco.Pikachu.TenantPaymentFees;
 
 namespace Kooco.Pikachu.EntityFrameworkCore;
 
@@ -203,7 +204,7 @@ public class PikachuDbContext(DbContextOptions<PikachuDbContext> options) :
 
     public DbSet<Notification> Notifications { get; set; }
     public DbSet<TenantDeliveryFee> TenantDeliveryFees { get; set; }
-
+    public DbSet<TenantPaymentFee> TenantPaymentFees { get; set; }
 
 
     protected override void OnModelCreating(ModelBuilder builder)
@@ -1040,6 +1041,12 @@ public class PikachuDbContext(DbContextOptions<PikachuDbContext> options) :
             b.HasIndex(x => new { x.TenantId, x.DeliveryProvider })
                 .IsUnique();
 
+        });
+
+        builder.Entity<TenantPaymentFee>(b =>
+        {
+            b.ToTable(PikachuConsts.DbTablePrefix + "TenantPaymentFees", PikachuConsts.DbSchema);
+            b.ConfigureByConvention();
         });
     }
 }

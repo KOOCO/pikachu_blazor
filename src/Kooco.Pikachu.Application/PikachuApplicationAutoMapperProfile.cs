@@ -72,6 +72,7 @@ using Kooco.Pikachu.InboxManagement;
 using Kooco.Pikachu.CodTradeInfos;
 using Kooco.TradeInfos;
 using Kooco.Pikachu.TenantDeliveryFees;
+using Kooco.Pikachu.TenantPaymentFees;
 
 namespace Kooco.Pikachu;
 
@@ -466,5 +467,9 @@ public class PikachuApplicationAutoMapperProfile : Profile
         CreateMap<MemberMessageModel, MemberMessageDto>();
 
         CreateMap<TenantDeliveryFee, TenantDeliveryFeeDto>();
+
+        CreateMap<TenantPaymentFee, TenantPaymentFeeDto>();
+        CreateMap<TenantPaymentFeeDto, UpdateTenantPaymentFeeDto>()
+            .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id == Guid.Empty ? src.Id : (Guid?)null));
     }
 }
