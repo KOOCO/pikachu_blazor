@@ -2072,6 +2072,7 @@
     "BaseShippingFee": "Base Shipping Fee",
     "Surcharge": "Surcharge",
     "AdditionalFee": "Additional Fee",
-    "TotalLogisticFee": "Total Logistic Fee"
+    "TotalLogisticFee": "Total Logistic Fee",
+    "NoFileChosen": " No file chosen"
   }
 }

@@ -88,6 +88,8 @@
                             <FilePicker @ref="FilePickerCustom"
                                         FilePickerLocalizer="(key, args) => LocalizeFilePicker(key, args)"
                                         Multiple
+                                        
+                                         Placeholder="@L["NoFileChosen"]"
                                         Changed="OnFileUploadAsync"
                                         ShowMode="FilePickerShowMode.List"
                                         Accept="@(string.Join(", ", Constant.ValidImageExtensions))">
