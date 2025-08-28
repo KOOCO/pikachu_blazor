@@ -116,7 +116,7 @@ public class OrderController : AbpController, IOrderAppService
     }
 
     [HttpGet("ecpay-proceed-to-checkout")]
-    public async Task<IActionResult> ProceedToCheckout(Guid orderId, string clientBackUrl, PaymentMethods paymentMethodsValue, string? installmentOption = null)
+    public async Task<IActionResult> ProceedToCheckout(Guid orderId, string clientBackUrl, PaymentMethods paymentMethodsValue)
     {
         OrderDto order = await _ordersAppService.GetWithDetailsAsync(orderId);
 
@@ -207,12 +207,18 @@ public class OrderController : AbpController, IOrderAppService
             oPayment.Send.CustomField4 = string.Empty;
             oPayment.Send.EncryptType = 1;
 
-            if (!string.IsNullOrWhiteSpace(installmentOption) && paymentMethodsValue == PaymentMethods.CreditCard)
+            var installmentMethodsMap = new Dictionary<PaymentMethods, string>
             {
-                if (Constant.InstallmentPeriods.Contains(installmentOption))
-                {
-                    oPayment.SendExtend.CreditInstallment = installmentOption;
-                }
+                { PaymentMethods.CreditCard3, "3" },
+                { PaymentMethods.CreditCard6, "6" },
+                { PaymentMethods.CreditCard12, "12" },
+                { PaymentMethods.CreditCard18, "18" },
+                { PaymentMethods.CreditCard24, "24" }
+            };
+
+            if (installmentMethodsMap.TryGetValue(paymentMethodsValue, out var installmentOption))
+            {
+                oPayment.SendExtend.CreditInstallment = installmentOption;
             }
 
             foreach (OrderItemDto item in order.OrderItems)
