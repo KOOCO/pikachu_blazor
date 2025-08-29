@@ -245,7 +245,7 @@ namespace Kooco.Pikachu.Blazor.Pages.TenantManagement.TenantLogisticsFeeMangemen
                 TenantName = summary.TenantName,
                 WalletId = summary.WalletId,
                 WalletBalance = summary.WalletBalance,
-                RecentStatus = summary.TenantSuccessfulRecords == summary.TenantRecordCount ? "Success" : "Failed",
+                RecentStatus = summary.TenantFailedRecords == 0 ? "Success" : "Failed",
                 LastUpdated = summary.ProcessedAt,
                 HasFailedRecords = summary.TenantFailedRecords > 0
             };

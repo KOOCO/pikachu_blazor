@@ -51,7 +51,7 @@ namespace Kooco.Pikachu.Blazor.Pages.TenantManagement.TenantLogisticsFeeMangemen
 
         protected override async Task OnInitializedAsync()
         {
-          
+
             await LoadTenantInfo();
             await LoadData();
         }
@@ -226,13 +226,13 @@ namespace Kooco.Pikachu.Blazor.Pages.TenantManagement.TenantLogisticsFeeMangemen
                     await using var stream = SelectedFile.OpenReadStream(10 * 1024 * 1024);
                     var ct = string.IsNullOrWhiteSpace(SelectedFile.Type) ? "application/octet-stream" : SelectedFile.Type;
 
-                  var result=  await LogisticsFeeAppService.UploadFileAsync(
-                        new RemoteStreamContent(stream, SelectedFile.Name, ct, readOnlyLength: SelectedFile.Size),
-                        SelectedFileType, SendNotifications);
+                    var result = await LogisticsFeeAppService.UploadFileAsync(
+                          new RemoteStreamContent(stream, SelectedFile.Name, ct, readOnlyLength: SelectedFile.Size),
+                          SelectedFileType, SendNotifications);
 
                     await MessageService.Success(L["FileUploadedSuccessfully"]);
                     await CloseImportModal();
-                   
+
                     var arg = new LogisticsFeeProcessingJobArgs
                     {
                         BatchId = result.BatchId,
@@ -249,6 +249,7 @@ namespace Kooco.Pikachu.Blazor.Pages.TenantManagement.TenantLogisticsFeeMangemen
                 }
                 finally
                 {
+                    await LoadTenantInfo();
                     await LoadData();
                     IsProcessing = false;
                     loading = false;
