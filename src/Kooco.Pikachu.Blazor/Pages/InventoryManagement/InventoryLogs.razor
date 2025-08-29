@@ -144,6 +144,18 @@
                     <h5 class="text-muted">@L["NoStockAdjustmentDescription"]</h5>
                 </Div>
             </EmptyTemplate>
+             <NextPageButtonTemplate>@L["NextPage"]</NextPageButtonTemplate>
+    <PreviousPageButtonTemplate>@L["PrevPage"]</PreviousPageButtonTemplate>
+    <LastPageButtonTemplate>@L["LastPage"]</LastPageButtonTemplate>
+    <FirstPageButtonTemplate>@L["FirstPage"]</FirstPageButtonTemplate>
+            <TotalItemsTemplate>
+                @(string.Format(
+                         L["Range"],
+                         ((CurrentPage - 1) * PageSize) + 1,
+                         (CurrentPage * PageSize > TotalCount ? TotalCount : CurrentPage * PageSize),
+                         TotalCount
+                         ))
+            </TotalItemsTemplate>
         </DataGrid>
     </CardBody>
 </Card>

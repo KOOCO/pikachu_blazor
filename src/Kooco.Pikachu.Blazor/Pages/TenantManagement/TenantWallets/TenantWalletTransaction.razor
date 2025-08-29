@@ -95,6 +95,7 @@
             <CardBody style="padding-left:0px!important;padding-right:0px!important">
             <DataGrid TItem="TenantWalletTransactionDto" Data="@Transactions?.Items" PageSize="@PageSize" TotalItems="@TotalCount"
           CurrentPage="@CurrentPage" ShowPager="true" ReadData="@OnReadData"  @bind-SelectedRows="@SelectedTransactions" SelectionMode="DataGridSelectionMode.Multiple" >
+          <DataGridColumns>
     <DataGridMultiSelectColumn TItem="TenantWalletTransactionDto" Width="30px"></DataGridMultiSelectColumn>
     <DataGridColumn Field="@nameof(TenantWalletTransactionDto.Timestamp)" Caption="@L["Timestamp"]">
         <DisplayTemplate>@context.Timestamp.ToString("M/d/yyyy h:mm tt")</DisplayTemplate>
@@ -139,6 +140,19 @@
         @SplitNotesWithRegex(context.Note)
     </DisplayTemplate>   
     </DataGridColumn>
+    </DataGridColumns>
+     <NextPageButtonTemplate>@L["NextPage"]</NextPageButtonTemplate>
+    <PreviousPageButtonTemplate>@L["PrevPage"]</PreviousPageButtonTemplate>
+    <LastPageButtonTemplate>@L["LastPage"]</LastPageButtonTemplate>
+    <FirstPageButtonTemplate>@L["FirstPage"]</FirstPageButtonTemplate>
+            <TotalItemsTemplate>
+                @(string.Format(
+                         L["Range"],
+                         ((CurrentPage - 1) * PageSize) + 1,
+                         (CurrentPage * PageSize > TotalCount ? TotalCount : CurrentPage * PageSize),
+                         TotalCount
+                         ))
+            </TotalItemsTemplate>
 </DataGrid>
             </CardBody>
      </Card>

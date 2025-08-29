@@ -545,7 +545,7 @@
     "EditMember": "編輯會員",
     "FullName": "姓名",
     "EmailAddress": "電子郵件",
-    "PhoneNumber": "手機號碼",
+    "PhoneNumber": "市內電話",
     "DefaultAddress": "預設地址",
     "EditAddress": "編輯地址",
     "Permission:UserAdresses": "會員地址",
@@ -2068,7 +2068,20 @@
     "NoStockAdjustmentDescription": "此商品尚未有任何庫存異動紀錄。",
     "SevenToEleven1": "綠界 | 7-11 B2C",
     "SevenToElevenC2C": "綠界 | 7-11 C2C",
-    "NoFileChosen": "未選擇檔案"
+    "NoFileChosen": "未選擇檔案",
+    "TimeRangeAndResetConfiguration": "時間範圍與重置設定",
+    "ValidityPeriod": "有效期間",
+    "Succeeded cash flow": "成功",
+    "Enum:TransactionType.0": "付款",
+    "Enum:TransactionType.1": "退款",
+    "Enum:TransactionType.2": "退貨",
+    "Enum:TransactionType.3": "換貨",
+    "Enum:TransactionStatus.0": "待審核",
+    "Enum:TransactionStatus.1": "成功",
+    "Enum:TransactionStatus.2": "失敗",
+    "Enum:PaymentChannel.0": "綠界",
+    "Enum:PaymentChannel.1": "Line Pay",
+    "Enum:PaymentChannel.2": "貨到付款"
 
   }
 }

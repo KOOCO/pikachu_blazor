@@ -674,7 +674,7 @@
     "EditMember": "Edit Member",
     "FullName": "Full Name",
     "EmailAddress": "Email Address",
-    "PhoneNumber": "Phone Number",
+    "PhoneNumber": "Landline Number",
     "DefaultAddress": "Default Address",
     "EditAddress": "Edit Address",
     "Permission:UserAdresses": "User Adresses",
@@ -1325,7 +1325,7 @@
     "Enum:TransactionStatus.0": "Pending",
     "Enum:TransactionStatus.1": "Successful",
     "Enum:TransactionStatus.2": "Failed",
-    "Enum:PaymentChannel.0": "Ec Pay",
+    "Enum:PaymentChannel.0": "ECPay",
     "Enum:PaymentChannel.1": "Line Pay",
     "Enum:PaymentChannel.2": "Cash on Delivery",
     "TransactionType": "Transaction Type",
@@ -2073,6 +2073,7 @@
     "Surcharge": "Surcharge",
     "AdditionalFee": "Additional Fee",
     "TotalLogisticFee": "Total Logistic Fee",
-    "NoFileChosen": " No file chosen"
+    "NoFileChosen": " No file chosen",
+    "ValidityPeriod": "Validity Period"
   }
 }
