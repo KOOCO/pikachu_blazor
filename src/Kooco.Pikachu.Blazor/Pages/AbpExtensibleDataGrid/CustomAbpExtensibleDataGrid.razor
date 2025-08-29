@@ -172,6 +172,14 @@
     <PreviousPageButtonTemplate>@L[PikachuResource.PrevPage]</PreviousPageButtonTemplate>
     <NextPageButtonTemplate>@L[PikachuResource.NextPage]</NextPageButtonTemplate>
     <LastPageButtonTemplate>@L[PikachuResource.LastPage]</LastPageButtonTemplate>
+      <TotalItemsTemplate>
+                @(string.Format(
+                         L["Range"],
+                         ((CurrentPage - 1) * PageSize) + 1,
+                         (CurrentPage * PageSize > TotalItems ? TotalItems : CurrentPage * PageSize),
+                         TotalItems
+                         ))
+            </TotalItemsTemplate>
 </DataGrid>
 
 @code {

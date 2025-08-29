@@ -420,6 +420,14 @@
                                                             <PreviousPageButtonTemplate>@L[PikachuResource.PrevPage]</PreviousPageButtonTemplate>
                                                             <NextPageButtonTemplate>@L[PikachuResource.NextPage]</NextPageButtonTemplate>
                                                             <LastPageButtonTemplate>@L[PikachuResource.LastPage]</LastPageButtonTemplate>
+                                                              <TotalItemsTemplate>
+                @(string.Format(
+                         L["Range"],
+                         ((PageIndex - 1) * Filters.MaxResultCount) + 1,
+                         (PageIndex * Filters.MaxResultCount > Total ? Total : PageIndex * Filters.MaxResultCount),
+                         Total
+                         ))
+            </TotalItemsTemplate>
                                                         </DataGrid>
         }
     </CardBody>
