@@ -101,11 +101,12 @@ namespace Kooco.Pikachu.TenantDeliveryFees
             return await AsyncExecuter.LongCountAsync(query, cancellationToken);
         }
         public async Task<(List<TenantLogisticsFeeOverviewItem> Items, long TotalCount)> GetTenantLogisticsFeeOverviewAsync(
-       string? tenantNameFilter = null,
-       string? sorting = null,
-       int skipCount = 0,
-       int maxResultCount = int.MaxValue,
-       CancellationToken cancellationToken = default)
+           string? tenantNameFilter = null,
+           string? sorting = null,
+           int skipCount = 0,
+           int maxResultCount = int.MaxValue,
+           CancellationToken cancellationToken = default
+            )
         {
             // Default sorting by Tenant.Name
             sorting ??= nameof(Tenant.Name) + " ASC";
@@ -120,7 +121,7 @@ namespace Kooco.Pikachu.TenantDeliveryFees
 
                 if (!string.IsNullOrWhiteSpace(tenantNameFilter))
                 {
-                    tenantQ = tenantQ.Where(t => t.Name.Contains(tenantNameFilter));
+                    tenantQ = tenantQ.Where(t => t.Id.ToString() == tenantNameFilter || t.Name.Contains(tenantNameFilter));
                 }
 
                 var totalCount = await tenantQ.LongCountAsync(cancellationToken);
@@ -152,16 +153,31 @@ namespace Kooco.Pikachu.TenantDeliveryFees
 
                 var feeDict = feeAgg.ToDictionary(x => x.TenantId, x => x);
 
+                var paymentFeeAgg = await ctx.TenantPaymentFees.AsNoTracking()
+                    .Where(tpf => pageTenantIds.Contains(tpf.TenantId))
+                    .GroupBy(tpf => tpf.TenantId)
+                    .Select(g => new
+                    {
+                        TenantId = g.Key,
+                        AnyEnabled = g.Any(x => x.IsEnabled),
+                        LastModified = g.Max(x => (DateTime?)(x.LastModificationTime ?? x.CreationTime))
+                    })
+                    .ToListAsync(cancellationToken);
+
+                var paymentFeeDict = paymentFeeAgg.ToDictionary(pf => pf.TenantId);
+
                 // ---- Left-join shape ----
                 var items = pageTenants.Select(t =>
                 {
                     var has = feeDict.TryGetValue(t.Id, out var agg);
+                    var hasPaymentFee = paymentFeeDict.TryGetValue(t.Id, out var paymentFeeAgg);
                     return new TenantLogisticsFeeOverviewItem
                     {
                         TenantId = t.Id,
                         TenantName = t.Name,
+                        PaymentFeeStatus = hasPaymentFee && paymentFeeAgg!.AnyEnabled,
                         LogisticsFeeStatus = has && agg!.AnyEnabled,
-                        LastModificationTime = has ? agg!.LastModified : null
+                        LastModificationTime = new[] { agg?.LastModified, paymentFeeAgg?.LastModified }.Max()
                     };
                 }).ToList();
 

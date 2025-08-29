@@ -35,11 +35,11 @@ public class TenantPaymentFeeAppService : PikachuAppService, ITenantPaymentFeeAp
         var existing = await _tenantPaymentFeeRepository
             .GetListAsync(t => t.FeeType == feeType && t.TenantId == tenantId);
 
-        var combinations = existing.ToDictionary(x => (x.FeeType, x.FeeSubType, x.PaymentMethod));
+        var combinations = existing.ToDictionary(x => (x.FeeType, x.FeeSubType, x.PaymentMethod, x.IsBaseFee));
 
         foreach (var item in filteredInput)
         {
-            if (combinations.TryGetValue((item.FeeType, item.FeeSubType, item.PaymentMethod), out var existingItem))
+            if (combinations.TryGetValue((item.FeeType, item.FeeSubType, item.PaymentMethod, item.IsBaseFee), out var existingItem))
             {
                 await _tenantPaymentFeeManager.UpdateAsync(
                     existingItem,

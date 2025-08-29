@@ -92,12 +92,14 @@ namespace Kooco.Pikachu.TenantDeliveryFees
             {
                 Id = x.TenantId,
                 TenantName = x.TenantName,
+                PaymentFeeStatus = x.PaymentFeeStatus,
                 LogisticsFeeStatus = x.LogisticsFeeStatus,
                 LastModificationTime = x.LastModificationTime
             }).ToList();
 
             return new PagedResultDto<TenantLogisticsFeeRowDto>(totalCount, dtos);
         }
+
         [Authorize(PikachuPermissions.Feeds.Manage)]
         public async Task UpsertManyAsync(UpsertTenantDeliveryFeesInput input)
         {
