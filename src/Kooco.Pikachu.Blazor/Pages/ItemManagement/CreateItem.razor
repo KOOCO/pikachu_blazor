@@ -264,7 +264,23 @@
                     @foreach (var item in Attributes)
                     {
                         <div class="input-group">
-                            <TextEdit Placeholder="@L["ItemStyleKey"]" @bind-Text="@item.Name" />
+                            <TextEdit Placeholder="@L["ItemStyleKey"]" 
+                         @onchange="@(async (ChangeEventArgs e) =>
+{
+    var value = e.Value?.ToString();
+    item.Name = value;
+
+    if (string.IsNullOrWhiteSpace(value))
+    {
+        var tags = item.ItemTags.ToList();
+        foreach (var tag in tags)
+            await OnAttributeFieldTagClose(item.Id, tag);
+            await InvokeAsync(StateHasChanged);
+    }
+
+    await InvokeAsync(StateHasChanged);
+})"
+                            @bind-Text="@item.Name" />
                             @if (Attributes?.Count > 1)
                             {
                                 <Button Class="btn btn-danger" @onclick="@(async () => await DeleteAttribute(item))"><i class="fa fa-trash"></i></Button>
@@ -277,7 +293,7 @@
                             }
 
                             <div class="input-container">
-                                <input type="text" class="tag-input" placeholder="@L["NewTag"]"
+                                <input disabled="@(item.Name.IsNullOrWhiteSpace())" type="text" class="@(item.Name.IsNullOrWhiteSpace() ? "tag-input-disabled" : "tag-input")" placeholder="@L["NewTag"]"
                                        @bind-value="item.InputTagValue"
                                        @onkeyup="@(async (e) => await HandleAttributeTagInputConfirm(item.Id, item.InputTagValue, e))"
                                        @onblur="@(async () => await HandleAttributeTagInputConfirm(item.Id, item.InputTagValue, null))" />
