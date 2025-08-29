@@ -54,7 +54,7 @@ public interface IMemberRepository : IIdentityUserRepository, IRepository<Identi
         int maxResultCount = 0,
         string? sorting = null,
         bool? isRead = false,
-        Guid? orderId = null,
+        List<Guid> orderIds = null!,
         Guid? groupBuyId = null,
         bool? isMerchant = null
         );

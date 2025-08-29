@@ -2151,7 +2151,7 @@ public class OrderAppService : PikachuAppService, IOrderAppService
                     UserId = order.UserId.Value,
                     ShoppingCreditType = UserShoppingCreditType.Deduction,
                     OrderNo = order.OrderNo
-                    
+
                 });
 
                 var userCumulativeCredits = await UserCumulativeCreditRepository.FirstOrDefaultAsync(x => x.UserId == order.UserId);
@@ -3308,9 +3308,10 @@ public class OrderAppService : PikachuAppService, IOrderAppService
     }
 
     [AllowAnonymous]
-    public async Task UpdatedOrderMessageStatusAsync(Guid orderId, bool isRead = true)
+    public async Task UpdatedOrderMessageStatusAsync(List<Guid> orderIds, bool isRead = true)
     {
-        var orderMessages = await OrderMessageRepository.GetListAsync(x => x.OrderId == orderId && x.IsRead != isRead);
+        if (orderIds is not { Count: > 0 }) return;
+        var orderMessages = await OrderMessageRepository.GetListAsync(x => orderIds.Contains(x.OrderId) && x.IsRead != isRead);
         orderMessages.ForEach(m => m.IsRead = isRead);
         await OrderMessageRepository.UpdateManyAsync(orderMessages);
     }

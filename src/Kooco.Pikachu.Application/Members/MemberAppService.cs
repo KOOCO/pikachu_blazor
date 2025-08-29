@@ -397,7 +397,7 @@ public class MemberAppService(IObjectMapper objectMapper, IMemberRepository memb
             input.MaxResultCount,
             input.Sorting,
             input.IsRead,
-            input.OrderId,
+            input.OrderIds,
             input.GroupBuyId,
             input.IsMerchant
             );

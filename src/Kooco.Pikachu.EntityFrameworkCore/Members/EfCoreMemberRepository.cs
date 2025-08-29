@@ -574,7 +574,7 @@ public class EfCoreMemberRepository(IDbContextProvider<PikachuDbContext> pikachu
         int maxResultCount = 0,
         string? sorting = null,
         bool? isRead = false,
-        Guid? orderId = null,
+        List<Guid> orderIds = null!,
         Guid? groupBuyId = null,
         bool? isMerchant = null
         )
@@ -589,7 +589,7 @@ public class EfCoreMemberRepository(IDbContextProvider<PikachuDbContext> pikachu
             m => m.OrderId,
             (o, m) => new { Order = o, Message = m })
             .WhereIf(isRead.HasValue, m => m.Message.IsRead == isRead)
-            .WhereIf(orderId.HasValue, m => m.Message.OrderId == orderId)
+            .WhereIf(orderIds is { Count: > 0 }, m => orderIds.Contains(m.Message.OrderId))
             .WhereIf(isMerchant.HasValue, m => m.Message.IsMerchant == isMerchant);
 
         return new MemberMessagesWithCount
