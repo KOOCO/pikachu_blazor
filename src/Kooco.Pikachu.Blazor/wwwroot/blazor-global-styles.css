@@ -31,7 +31,15 @@
         padding: 2px 10px 2px 30px;
         font-size: small;
     }
-
+    .input-container > .tag-input-disabled {
+        background-color: #dedede;
+        border: 1px dashed;
+        width: 100px;
+        border-radius: 5px;
+        box-sizing: border-box;
+        padding: 2px 10px 2px 30px;
+        font-size: small;
+    }
     .input-container .tag-input:focus {
         outline: none;
     }
