@@ -15,5 +15,5 @@ public class ShoppingCreditUsageSettingByGroupBuyDto : AuditedEntityDto<Guid>
     public string UsableProductsScope { get; set; }
     public int MaximumDeduction { get; set; }
     public int MinimumSpendAmount { get; set; }
-    public List<ShoppingCreditUsageSpecificProductDto> SpecificProducts { get; set; }
+    //public List<ShoppingCreditUsageSpecificProductDto> SpecificProducts { get; set; }
 }
