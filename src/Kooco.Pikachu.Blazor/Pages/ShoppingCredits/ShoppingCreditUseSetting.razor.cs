@@ -37,12 +37,12 @@ namespace Kooco.Pikachu.Blazor.Pages.ShoppingCredits
         private bool IsShippingFeesSelected { get; set; }
         public ShoppingCreditUseSetting(ItemAppService itemAppService)
         {
-           
+
             Products = [];
             Groupbuys = [];
             SelectedGroupBuy = [];
             SelectedProducts = [];
-           
+
             _itemAppService = itemAppService;
             CreateUpdateUsage = new();
             editContext = new(CreateUpdateUsage);
@@ -64,12 +64,12 @@ namespace Kooco.Pikachu.Blazor.Pages.ShoppingCredits
                 if (shoppingCreditUsage != null)
                 {
                     Id = shoppingCreditUsage.Id;
-                    CreateUpdateUsage=ObjectMapper.Map<ShoppingCreditUsageSettingDto,CreateUpdateShoppingCreditUsageSettingDto>(shoppingCreditUsage);
+                    CreateUpdateUsage = ObjectMapper.Map<ShoppingCreditUsageSettingDto, CreateUpdateShoppingCreditUsageSettingDto>(shoppingCreditUsage);
                     stagedSettings = JsonSerializer.Deserialize<List<StagedSetting>>(shoppingCreditUsage.StagedSettings);
                     CreateUpdateUsage.GroupbuyIds = shoppingCreditUsage.SpecificGroupbuys.Select(x => x.GroupbuyId).ToList();
-                    CreateUpdateUsage.ProductIds = shoppingCreditUsage.SpecificProducts.Select(x => x.ProductId).ToList();
+                    //CreateUpdateUsage.ProductIds = shoppingCreditUsage.SpecificProducts.Select(x => x.ProductId).ToList();
 
-                 
+
                     await ValidationsRef.ClearAll();
                     await InvokeAsync(StateHasChanged);
 
@@ -80,7 +80,7 @@ namespace Kooco.Pikachu.Blazor.Pages.ShoppingCredits
                     IsAddOnProductsSelected = selected.Contains("AddOnProducts");
                     IsShippingFeesSelected = selected.Contains("ShippingFees");
                 }
-               
+
                 await InvokeAsync(StateHasChanged);
                 SelectedGroupBuy = CreateUpdateUsage.GroupbuyIds;
                 SelectedProducts = CreateUpdateUsage.ProductIds;
@@ -91,8 +91,8 @@ namespace Kooco.Pikachu.Blazor.Pages.ShoppingCredits
             }
             await base.OnInitializedAsync();
         }
-         
-       
+
+
         private async Task HandleValidSubmit()
         {
             messageStore?.Clear();
@@ -106,7 +106,7 @@ namespace Kooco.Pikachu.Blazor.Pages.ShoppingCredits
             {
                 CreateUpdateUsage.GroupbuyIds = SelectedGroupBuy.ToList();
             }
-          
+
             // Custom validation logic
             if (CreateUpdateUsage.UsableProductsScope == "AllProducts")
             {
@@ -122,7 +122,7 @@ namespace Kooco.Pikachu.Blazor.Pages.ShoppingCredits
                 IsUpdating = false;
                 return;
             }
-          
+
             if (CreateUpdateUsage.GroupbuyIds.Count == 0)
             {
                 messageStore?.Add(() => CreateUpdateUsage.GroupbuyIds, "Select at least one.");
@@ -152,12 +152,12 @@ namespace Kooco.Pikachu.Blazor.Pages.ShoppingCredits
             IsUpdating = false;
         }
 
-        private  Task OnUsableGroupbuysScopeChanged(string newValue)
+        private Task OnUsableGroupbuysScopeChanged(string newValue)
         {
             CreateUpdateUsage.UsableGroupbuysScope = newValue;
             if (newValue == "SpecificGroupbuys")
             {
-                SelectedGroupBuy=[] ;
+                SelectedGroupBuy = [];
             }
 
             return Task.CompletedTask;
