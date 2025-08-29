@@ -32,13 +32,6 @@ public class PassiveUserBirthdayCheckerWorker : AsyncPeriodicBackgroundWorkerBas
     {
         var now = DateTime.Now;
 
-        // Run exactly at 3 AM (daily)
-        if (now.Hour != 3)
-        {
-            Timer.Period = CalculateNextRunInterval();
-            return;
-        }
-
         Logger.LogInformation("[BirthdayBonus] Run started at {Time}", now);
 
         // Resolve services
