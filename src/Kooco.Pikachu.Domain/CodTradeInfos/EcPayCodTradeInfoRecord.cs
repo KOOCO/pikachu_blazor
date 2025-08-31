@@ -13,6 +13,7 @@ public class EcPayCodTradeInfoRecord : Entity<Guid>, IHasCreationTime, ISoftDele
     public Guid OrderId { get; set; }
     public string OrderNo { get; set; } = string.Empty;
     public Guid? TenantId { get; set; }
+    public DateTime OrderDate { get; set; }
     public DateTime CreationTime { get; set; }
     public bool IsDeleted { get; set; }
 

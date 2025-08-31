@@ -1,0 +1,113 @@
+﻿@using Kooco.Pikachu.CodTradeInfos
+@using Kooco.Pikachu.Extensions
+
+@inherits PikachuComponentBase
+@inject ITCatCodTradeInfoAppService TCatCodTradeInfoAppService
+
+<Modal @bind-Visible="@Visible">
+    <ModalContent Size="_recordsVisible? ModalSize.ExtraLarge: ModalSize.Large">
+        <ModalHeader>
+            <ModalTitle>@L[_recordsVisible ? "Import" : "UploadFile"]</ModalTitle>
+        </ModalHeader>
+        <ModalBody>
+            @if (!_recordsVisible)
+            {
+                <Div Class="container-less-filepicker">
+                    <Field>
+                        <FilePicker @ref="_pickerRef"
+                                    Changed="@OnFileUploadAsync"
+                                    ShowMode="FilePickerShowMode.List"
+                                    Accept=".xlsx, .csv">
+                        </FilePicker>
+                        <FieldHelp>@L["OnlyXlsxCsvAccepted"]</FieldHelp>
+                    </Field>
+                </Div>
+            }
+            else
+            {
+                @if (_records.OrEmptyListIfNull().Count > 0)
+                {
+                    <div style="min-height: unset; max-height: 500px; overflow: auto;">
+                        <table class="table table-bordered">
+                            <thead class="sticky-top bg-light">
+                                <tr class="text-nowrap">
+                                    <th>#</th>
+                                    <th>@L["OrderNo"]</th>
+                                    <th>@L["OrderDate"]</th>
+                                    <th>@L["TenantId"]</th>
+                                    <th>@L["CreationTime"]</th>
+                                    <th>@L["FeeRate"]</th>
+                                    <th>@L["HandlingFee"]</th>
+                                    <th>@L["NetAmount"]</th>
+                                    <th>@L["CustomerId"]</th>
+                                    <th>@L["CollectionDate"]</th>
+                                    <th>@L["CollectionSite"]</th>
+                                    <th>@L["DeliveryCompletionDate"]</th>
+                                    <th>@L["DeliveryCompletionSite"]</th>
+                                    <th>@L["MerchantTradeNo"]</th>
+                                    <th>@L["ShippingNo"]</th>
+                                    <th>@L["ShippingFee"]</th>
+                                    <th>@L["ExtraShippingFee"]</th>
+                                    <th>@L["ExtraServiceItems"]</th>
+                                    <th>@L["CashCollected"]</th>
+                                    <th>@L["ReturnedGoods"]</th>
+                                    <th>@L["SameDayDelivery"]</th>
+                                    <th>@L["ShipmentType"]</th>
+                                    <th>@L["CODAmount"]</th>
+                                    <th>@L["PaymentMethod"]</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var record in _records)
+                                {
+                                    <tr class="text-nowrap">
+                                        <td>@(_records.IndexOf(record) + 1)</td>
+                                        <td>@record.OrderNo</td>
+                                        <td>@record.OrderDate.ToString("yyyy-MM-dd")</td>
+                                        <td>@record.TenantId</td>
+                                        <td>@record.CreationTime.ToString("yyyy-MM-dd")</td>
+                                        <td>@record.FeeRate</td>
+                                        <td>@record.HandlingFee</td>
+                                        <td>@record.NetAmount</td>
+                                        <td>@record.CustomerID</td>
+                                        <td>@record.CollectionDate?.ToString("yyyy-MM-dd")</td>
+                                        <td>@record.CollectionSite</td>
+                                        <td>@record.DeliveryCompletionDate?.ToString("yyyy-MM-dd")</td>
+                                        <td>@record.DeliveryCompletionSite</td>
+                                        <td>@record.MerchantTradeNo</td>
+                                        <td>@record.ShippingNo</td>
+                                        <td>@record.ShippingFee</td>
+                                        <td>@record.ExtraShippingFee</td>
+                                        <td>@record.ExtraServiceItems</td>
+                                        <td>@record.CashCollected</td>
+                                        <td>@record.ReturnedGoods</td>
+                                        <td>@record.SameDayDelivery</td>
+                                        <td>@record.ShipmentType</td>
+                                        <td>@record.CODAmount</td>
+                                        <td>@record.PaymentMethod</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <p class="text-center">@L["NoRecords"]</p>
+                }
+            }
+        </ModalBody>
+        <ModalFooter>
+            <PikachuButton Class="pk-btn-primary" Disabled="_importing" Clicked="CloseModal">@L["Close"]</PikachuButton>
+            @if (_recordsVisible)
+            {
+                <PikachuButton Class="pk-btn-outline-primary"
+                               Clicked="Import"
+                               Disabled="_records.OrEmptyListIfNull().Count == 0"
+                               Loading="_importing">
+                    @L["Import"]
+                </PikachuButton>
+            }
+        </ModalFooter>
+    </ModalContent>
+</Modal>

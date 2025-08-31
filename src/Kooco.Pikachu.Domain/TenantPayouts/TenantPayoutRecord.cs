@@ -8,7 +8,7 @@ namespace Kooco.Pikachu.TenantPayouts;
 
 public class TenantPayoutRecord : Entity<Guid>, IHasCreationTime, ISoftDelete
 {
-    public Guid TenantId { get; set; }
+    public Guid? TenantId { get; set; }
     public Guid OrderId { get; set; }
     public string OrderNo { get; set; }
     public PaymentMethods PaymentMethod { get; set; }
@@ -33,7 +33,7 @@ public class TenantPayoutRecord : Entity<Guid>, IHasCreationTime, ISoftDelete
         decimal feeRate,
         decimal handlingFee,
         decimal processingFee,
-        Guid tenantId
+        Guid? tenantId
         ) : base(id)
     {
         Id = id;

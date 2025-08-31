@@ -19,7 +19,6 @@ using Volo.Abp.MultiTenancy;
 
 namespace Kooco.Pikachu.Reconciliations;
 
-[Authorize(PikachuPermissions.EcPayReconciliations.Default)]
 public class EcPayReconciliationAppService : PikachuAppService, IEcPayReconciliationAppService
 {
     private readonly IEcPayReconciliationService _reconciliationService;
@@ -108,7 +107,7 @@ public class EcPayReconciliationAppService : PikachuAppService, IEcPayReconcilia
 
             var results = ObjectMapper.Map<List<EcPayReconciliationRecord>, List<EcPayReconciliationRecordDto>>(inputRecords);
             
-            await _tenantPayoutRecordService.CreateTenantReconciliationPayouts(results, orders, PaymentFeeType.EcPay);
+            await _tenantPayoutRecordService.CreateEcPayReconciliationPayouts(results, orders);
 
             return results;
         }

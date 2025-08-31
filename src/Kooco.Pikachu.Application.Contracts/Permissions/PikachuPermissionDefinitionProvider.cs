@@ -37,7 +37,7 @@ public class PikachuPermissionDefinitionProvider : PermissionDefinitionProvider
         var orderPermissions = myGroup2.AddPermission(PikachuPermissions.Orders.Default, L("Permission:Orders"));
         orderPermissions.AddChild(PikachuPermissions.Orders.AddStoreComment, L("Permission:AddStoreComments"));
         myGroup2.AddPermission(PikachuPermissions.ReturnExchangeOrder, L("Permission:ReturnExchangeOrder"));
-        myGroup2.AddPermission(PikachuPermissions.EcPayReconciliations.Default, L("Permission:EcPayReconciliation"), MultiTenancySides.Host);
+        myGroup2.AddPermission(PikachuPermissions.TenantPayouts.Default, L("Permission:TenantPayouts"), MultiTenancySides.Host);
 
 
 

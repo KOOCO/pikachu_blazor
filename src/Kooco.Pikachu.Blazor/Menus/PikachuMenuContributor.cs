@@ -518,10 +518,10 @@ public class PikachuMenuContributor : IMenuContributor
 
             tenantManagementMenu?.AddItem(
                 new ApplicationMenuItem(
-                    name: "EcPayReconciliation",
-                    displayName: l["Menu:EcPayReconciliation"],
-                    url: "/ecpay/reconciliation",
-                    requiredPermissionName: PikachuPermissions.EcPayReconciliations.Default
+                    name: "TenantPayouts",
+                    displayName: l["Menu:TenantPayouts"],
+                    url: "/tenants/payouts",
+                    requiredPermissionName: PikachuPermissions.TenantPayouts.Default
                 )
             );
         }

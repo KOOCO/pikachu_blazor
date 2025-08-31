@@ -1828,8 +1828,6 @@
     "Reason": "原因",
 
     "Unknown": "未知",
-    "Permission:EcPayReconciliation": "撥款金額明細",
-    "Menu:EcPayReconciliation": "撥款金額明細",
     "Email:LogisticsFee:Subject": "物流費扣款結果通知",
     "Email:LogisticsFee:Greeting": "親愛的 {0}，",
     "Email:LogisticsFee:ProcessingCompleted": "您的物流費處理已完成，以下為處理結果：",

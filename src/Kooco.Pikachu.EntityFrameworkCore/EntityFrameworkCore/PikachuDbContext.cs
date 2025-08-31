@@ -202,6 +202,7 @@ public class PikachuDbContext(DbContextOptions<PikachuDbContext> options) :
 
     public DbSet<EcPayReconciliationRecord> EcPayReconciliationRecords { get; set; }
     public DbSet<EcPayCodTradeInfoRecord> EcPayCodTradeInfoRecords { get; set; }
+    public DbSet<TCatCodTradeInfoRecord> TCatCodTradeInfoRecords { get; set; }
 
     public DbSet<Notification> Notifications { get; set; }
     public DbSet<TenantDeliveryFee> TenantDeliveryFees { get; set; }
@@ -1002,6 +1003,12 @@ public class PikachuDbContext(DbContextOptions<PikachuDbContext> options) :
         builder.Entity<EcPayCodTradeInfoRecord>(b =>
         {
             b.ToTable(PikachuConsts.DbTablePrefix + "EcPayCodTradeInfoRecords", PikachuConsts.DbSchema);
+            b.ConfigureByConvention();
+        });
+
+        builder.Entity<TCatCodTradeInfoRecord>(b =>
+        {
+            b.ToTable(PikachuConsts.DbTablePrefix + "TCatCodTradeInfoRecords", PikachuConsts.DbSchema);
             b.ConfigureByConvention();
         });
 

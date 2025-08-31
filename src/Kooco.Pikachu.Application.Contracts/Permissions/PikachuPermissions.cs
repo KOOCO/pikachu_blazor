@@ -221,9 +221,9 @@ public static class PikachuPermissions
         public const string Delete = Default + ".Delete";
     }
 
-    public static class EcPayReconciliations
+    public static class TenantPayouts
     {
-        public const string Default = OrderManagement + ".EcPayReconciliations";
+        public const string Default = OrderManagement + ".TenantPayouts";
     }
 
     public static class Inbox

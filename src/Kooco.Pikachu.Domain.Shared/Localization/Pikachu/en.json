@@ -1857,8 +1857,9 @@
     "Reason": "Reason",
 
     "Unknown": "Unknown",
-    "Permission:EcPayReconciliation": "Payout Details",
-    "Menu:EcPayReconciliation": "Payout Details",
+    "Permission:TenantPayouts": "Tenant Payouts",
+    "Menu:TenantPayouts": "Tenant Payouts",
+    "TenantPayouts": "Tenant Payouts",
     "Email:LogisticsFee:Subject": "Logistics Fee Processing Summary",
     "Email:LogisticsFee:Greeting": "Dear {0},",
     "Email:LogisticsFee:ProcessingCompleted": "Your logistics fee processing has been completed with the following results:",
@@ -2075,6 +2076,24 @@
     "TotalLogisticFee": "Total Logistic Fee",
     "NoFileChosen": " No file chosen",
     "ValidityPeriod": "Validity Period",
-    "PaymentFeeStatus": "Payment Fee Status"
+    "PaymentFeeStatus": "Payment Fee Status",
+    "ImportTCatFile": "Import TCat File",
+    "OnlyXlsxCsvAccepted": "Only .xlsx and .csv accepted",
+    "FeeRate": "Fee Rate",
+    "HandlingFee": "Handling Fee",
+    "NetAmount": "Net Amount",
+    "CollectionDate": "Collection Date",
+    "CollectionSite": "Collection Site",
+    "DeliveryCompletionDate": "Delivery Completion Date",
+    "DeliveryCompletionSite": "Delivery Completion Site",
+    "ShippingNo": "Shipping No",
+    "ExtraShippingFee": "Extra Shipping Fee",
+    "ExtraServiceItems": "Extra Service Items",
+    "CashCollected": "Cash Collected",
+    "ReturnedGoods": "Returned Goods",
+    "SameDayDelivery": "Same Day Delivery",
+    "ShipmentType": "Shipment Type",
+    "CodAmount": "Cod Amount",
+    "UploadFile": "Upload File"
   }
 }

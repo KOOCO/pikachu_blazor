@@ -98,6 +98,7 @@ public class EcPayCodTradeInfoAppService : PikachuAppService, IEcPayCodTradeInfo
                 inputRecord.OrderId = order.Id;
                 inputRecord.OrderNo = order.OrderNo;
                 inputRecord.CreationTime = Clock.Now;
+                inputRecord.OrderDate = order.CreationTime;
                 inputRecords.Add(inputRecord);
 
                 order.EcPayNetAmount = item.CollectionAllocateAmount;
@@ -112,7 +113,7 @@ public class EcPayCodTradeInfoAppService : PikachuAppService, IEcPayCodTradeInfo
 
             var results = ObjectMapper.Map<List<EcPayCodTradeInfoRecord>, List<EcPayCodTradeInfoDto>>(inputRecords);
 
-            await _tenantPayoutRecordService.CreateTenantCodPayouts(results, orders, PaymentFeeType.EcPay);
+            await _tenantPayoutRecordService.CreateEcPayCodPayouts(results, orders);
 
             return results;
         }
