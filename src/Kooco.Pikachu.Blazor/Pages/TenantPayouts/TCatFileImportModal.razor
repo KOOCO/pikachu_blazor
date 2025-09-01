@@ -25,6 +25,11 @@
             }
             else
             {
+                <div class="text-end mb-2">
+                    <PikachuButton Class="pk-btn-sm pk-btn-outline-primary" Clicked="ChooseAnother">
+                        @L["ChooseAnotherFile"]
+                    </PikachuButton>
+                </div>
                 @if (_records.OrEmptyListIfNull().Count > 0)
                 {
                     <div style="min-height: unset; max-height: 500px; overflow: auto;">
@@ -93,7 +98,7 @@
                 }
                 else
                 {
-                    <p class="text-center">@L["NoRecords"]</p>
+                    <p class="text-center">@L["TCatFileImport:NoRecords"]</p>
                 }
             }
         </ModalBody>

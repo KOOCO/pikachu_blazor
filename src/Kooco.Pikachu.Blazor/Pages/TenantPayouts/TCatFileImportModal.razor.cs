@@ -96,4 +96,10 @@ public partial class TCatFileImportModal
         Visible = value;
         VisibleChanged.InvokeAsync(value);
     }
+
+    void ChooseAnother()
+    {
+        _recordsVisible = false;
+        _records = [];
+    }
 }

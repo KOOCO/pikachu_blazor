@@ -1,4 +1,5 @@
 ﻿using Kooco.Pikachu.TenantPayouts;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -28,8 +29,19 @@ public class TCatCodTradeInfoAppService : PikachuAppService, ITCatCodTradeInfoAp
         await _tcatCodTradeInfoService.InsertPayoutRecordsAsync(payoutRecords);
     }
 
-    public Task<List<TCatCodTradeInfoRecordDto>> ProcessFile(string fileName, byte[] fileBytes)
+    public async Task<List<TCatCodTradeInfoRecordDto>> ProcessFile(string fileName, byte[] fileBytes)
     {
-        return _tcatCodTradeInfoService.ProcessFile(fileName, fileBytes);
+        var records = await _tcatCodTradeInfoService.ProcessFile(fileName, fileBytes);
+
+        if (records.Count == 0) return [];
+
+        var merchantTradeNos = records.Select(r => r.MerchantTradeNo).ToList();
+
+        var existingRecords = await (await _tcatCodTradeInfoRepository.GetQueryableAsync())
+            .Where(er => merchantTradeNos.Contains(er.MerchantTradeNo))
+            .Select(er => er.MerchantTradeNo)
+            .ToListAsync();
+
+        return [.. records.Where(r => !existingRecords.Contains(r.MerchantTradeNo))];
     }
 }

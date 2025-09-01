@@ -47,8 +47,8 @@ public class TCatCodTradeInfoService : ITransientDependency
                 _ => throw new ArgumentException($"Unsupported file format: {extension}")
             };
 
-            records = [.. records.Where(r => r.CollectionDate.HasValue)];
-
+            records = [.. records.Where(r => r.CollectionDate.HasValue && r.CODAmount > 0)];
+            
             if (records.Count > 0)
             {
                 return await _tenantPayoutRecordService.CreateTCatCodPayouts(records);
