@@ -330,17 +330,16 @@ public class PikachuMenuContributor : IMenuContributor
             url: "/CashFlowManagement/ElectronicInvoiceSetting",
             requiredPermissionName: PikachuPermissions.InvoiceSetting)
             );
-        if (env == "Development")
-        {
-            paymentManagement.AddItem(new ApplicationMenuItem(
-            name: "CashFlowReconciliationStatement",
-            icon: "fas fa-file-invoice",
-            displayName: l["Menu:CashFlowReconciliationStatement"],
-            //displayName: "金流對帳表",
-            url: "/CashFlowManagement/CashFlowReconciliationStatement",
-            requiredPermissionName: PikachuPermissions.CashFlowReconciliationStatement)
-            );
-        }
+
+        paymentManagement.AddItem(new ApplicationMenuItem(
+        name: "CashFlowReconciliationStatement",
+        icon: "fas fa-file-invoice",
+        displayName: l["Menu:CashFlowReconciliationStatement"],
+        //displayName: "金流對帳表",
+        url: "/CashFlowManagement/CashFlowReconciliationStatement",
+        requiredPermissionName: PikachuPermissions.CashFlowReconciliationStatement)
+        );
+
         paymentManagement.AddItem(new ApplicationMenuItem(
            name: "VoidInvoice",
            icon: "fas fa-file-invoice",
