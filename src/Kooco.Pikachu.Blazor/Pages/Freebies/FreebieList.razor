@@ -107,8 +107,8 @@
               <TotalItemsTemplate>
                 @(string.Format(
                          L["Range"],
-                         ((PageIndex - 1) * PageSize) + 1,
-                         (PageIndex * PageSize > Total ? Total : PageIndex * PageSize),
+                         ((PageIndex) * PageSize) + 1,
+                         ((PageIndex+1) * PageSize > Total ? Total : (PageIndex+1) * PageSize),
                          Total
                          ))
             </TotalItemsTemplate>

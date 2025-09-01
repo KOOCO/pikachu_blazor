@@ -1,0 +1,11 @@
+{
+  "culture": "zh-Hant",
+  "texts": {
+    "Range": "第 {0} - {1} 筆，共 {2} 筆",
+    "PrevPage": "上一頁",
+    "NextPage": "下一頁",
+    "FirstPage": "第一頁",
+    "LastPage": "最後一頁"
+  }
+
+}

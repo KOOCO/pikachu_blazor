@@ -52,6 +52,8 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
                 ItemLookup = await _itemAppService.GetAllItemsLookupAsync();
             }
             await base.OnAfterRenderAsync(firstRender);
+            getTotalItems();
+            await InvokeAsync(StateHasChanged);
         }
 
         private async Task OnDataGridReadAsync(DataGridReadDataEventArgs<ItemListDto> e)
@@ -115,7 +117,14 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
             Filters.MaxResultCount = value;
             await UpdateItemList();
         }
+        public string getTotalItems() {
 
+            return string.Format(L["Range"],
+      (PageIndex * Filters.MaxResultCount) + 1,
+      ((PageIndex + 1) * Filters.MaxResultCount > Total ? Total : (PageIndex + 1) * Filters.MaxResultCount),
+      Total
+  );
+        }
         public async Task OnItemAvaliablityChange(Guid id)
         {
             try

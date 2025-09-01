@@ -2080,6 +2080,7 @@
     "Enum:PaymentChannel.0": "綠界",
     "Enum:PaymentChannel.1": "Line Pay",
     "Enum:PaymentChannel.2": "貨到付款",
-    "PaymentFeeStatus": "金流費用設定"
+    "PaymentFeeStatus": "金流費用設定",
+    "EdmList": "電子報"
   }
 }

@@ -29,7 +29,7 @@
     </CardHeader>
     <CardBody>
         @* ************************* DATA GRID ************************* *@
-        <AbpExtensibleDataGrid TItem="IdentityRoleDto"
+        <Kooco.Pikachu.Blazor.Pages.AbpExtensibleDataGrid.CustomAbpExtensibleDataGrid TItem="IdentityRoleDto"
                                Data="@Entities"
                                ReadData="@OnDataGridReadAsync"
                                TotalItems="@TotalCount"
@@ -37,7 +37,7 @@
                                PageSize="@PageSize"
                                CurrentPage="@CurrentPage"
                                Columns="@RoleManagementTableColumns">
-        </AbpExtensibleDataGrid>
+        </Kooco.Pikachu.Blazor.Pages.AbpExtensibleDataGrid.CustomAbpExtensibleDataGrid>
     </CardBody>
 </Card>
 

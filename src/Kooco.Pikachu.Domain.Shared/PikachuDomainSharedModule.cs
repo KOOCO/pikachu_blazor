@@ -3,6 +3,7 @@ using Volo.Abp.AuditLogging;
 using Volo.Abp.BackgroundJobs;
 using Volo.Abp.FeatureManagement;
 using Volo.Abp.Identity;
+using Volo.Abp.Identity.Localization;
 using Volo.Abp.Localization;
 using Volo.Abp.Localization.ExceptionHandling;
 using Volo.Abp.Modularity;
@@ -53,6 +54,11 @@ public class PikachuDomainSharedModule : AbpModule
                 .AddBaseTypes(typeof(AbpValidationResource))
                 .AddVirtualJson("/Localization/PageLayout");
             options.DefaultResourceType = typeof(PageLayoutResource);
+            options.Resources
+              .Add<MyIdentityResource>("en")
+              .AddBaseTypes(typeof(IdentityResource))
+              .AddVirtualJson("/Localization/MyIdentity");
+            options.DefaultResourceType = typeof(MyIdentityResource);
         });
 
         Configure<AbpExceptionLocalizationOptions>(options =>

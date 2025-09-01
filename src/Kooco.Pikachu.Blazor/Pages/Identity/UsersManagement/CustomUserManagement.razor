@@ -54,7 +54,7 @@
         </Column>
 
         @* ************************* DATA GRID ************************* *@
-        <AbpExtensibleDataGrid TItem="IdentityUserDto"
+        <Kooco.Pikachu.Blazor.Pages.AbpExtensibleDataGrid.CustomAbpExtensibleDataGrid TItem="IdentityUserDto"
                                Data="Entities"
                                ReadData="OnDataGridReadAsync"
                                TotalItems="TotalCount"
@@ -62,7 +62,7 @@
                                PageSize="PageSize"
                                CurrentPage="@CurrentPage"
                                Columns="@(CustomUserManagementTableColumns)">
-        </AbpExtensibleDataGrid>
+        </Kooco.Pikachu.Blazor.Pages.AbpExtensibleDataGrid.CustomAbpExtensibleDataGrid>
     </CardBody>
 </Card>
 

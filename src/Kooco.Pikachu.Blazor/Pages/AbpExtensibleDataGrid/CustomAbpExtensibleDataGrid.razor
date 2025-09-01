@@ -9,7 +9,7 @@
 @attribute [Dependency(ReplaceServices = true)]
 @attribute [ExposeServices(typeof(AbpExtensibleDataGrid<>))]
 @inherits AbpExtensibleDataGrid<TItem>
-@inject IStringLocalizer<PikachuResource> L
+@inject IStringLocalizer<MyIdentityResource> L
 
 <DataGrid TItem="TItem"
           Data="@Data"
