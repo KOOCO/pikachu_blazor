@@ -2096,6 +2096,22 @@
     "CodAmount": "Cod Amount",
     "UploadFile": "Upload File",
     "ChooseAnotherFile": "Choose Another File",
-    "TCatFileImport:NoRecords": "No records found. Either the file is empty or the records have already been imported."
+    "TCatFileImport:NoRecords": "No records found. Either the file is empty or the records have already been imported.",
+    "PayoutFeeManagement": "Payout Fee Management",
+    "TenantManagement": "Tenant Management",
+    "SelectTenantToViewPayoutFeeDetail": "Select a tenant to view payout fee details",
+    "PaymentProviders": "Payment Providers",
+    "SelectPaymentProviderToViewPaymentDetails": "Select a payment provider to view payout details",
+    "BackToTenants": "Back to Tenants",
+    "FeeAnalysisByYear": "Fee Analysis by Year",
+    "SelectYearToViewDetailedFeeBreakdown": "Select a year to view detailed fee breakdown",
+    "BackToProviders": "Back to Providers",
+    "PayoutDetails": "Payout Details",
+    "DetailedPayoutBreakdownAndMangement": "Detailed payout breakdown and management",
+    "BackToYears": "Back to Years",
+    "CurrentYear": "Current Year",
+    "PreviousYear": "Previous Year",
+    "Archive": "Archive",
+    "PrimaryPaymentProcessingProvider": "Primary payment processing provider"
   }
 }

@@ -1,18 +1,117 @@
 ﻿@page "/tenants/payouts"
+@using Kooco.Pikachu.TenantPaymentFees
+<link href="/css/tenant-payout.css" rel="stylesheet" />
 @inherits PikachuComponentBase
 @attribute [Authorize(PikachuPermissions.TenantPayouts.Default)]
-<style>
-    .pk-btn {
-        border-radius: 0.25rem;
-        padding: 0.65rem 1.5rem;
-    }
-</style>
-<Div Class="d-flex justify-content-between align-items-center mb-2">
-    <h3 class="mb-0 text-dark">@L["Menu:TenantPayouts"]</h3>
-    <PikachuButton Class="pk-btn-outline-primary"
-                   IconClass="fas fa-cloud-download me-2"
-                   Clicked="(() => TCatImportModal?.ShowModal())">
-        @L["ImportTCatFile"]
-    </PikachuButton>
-</Div>
+
+<div class="header">
+    <div>
+        <h3>@L["PayoutFeeManagement"]</h3>
+        <p>@(string.Join(" > ", BreadcrumbItems.Select(bi => L[bi.Name])))</p>
+    </div>
+    <div>
+        <PikachuButton Class="pk-btn-outline-primary"
+                       IconClass="fas fa-cloud-download me-2"
+                       Clicked="(() => TCatImportModal?.ShowModal())">
+            @L["ImportTCatFile"]
+        </PikachuButton>
+    </div>
+</div>
+@if (!SelectedTenantId.HasValue)
+{
+    <Card>
+        <CardHeader>
+            <h4>@L["TenantManagement"]</h4>
+            <p>@L["SelectTenantToViewPayoutFeeDetail"]</p>
+        </CardHeader>
+        <CardBody>
+            <div class="list-card" @onclick="@(() => SelectTenant(Guid.NewGuid()))">
+                <div class="list-card-left">
+                    <div class="list-card-icon">
+                        @GetInitials("Acme Corporation")
+                    </div>
+                    <div class="list-card-info">
+                        <h3>Acme Corporation</h3>
+                        <div class="list-card-meta">ID: TN-001 • Active since 2023</div>
+                    </div>
+                </div>
+                <div class="list-card-stats">
+                    <p class="tenant-fee">
+                        $2,467 total fees
+                    </p>
+                    <p class="small">156 transactions this month</p>
+                </div>
+            </div>
+        </CardBody>
+    </Card>
+}
+@if (SelectedTenantId.HasValue && !SelectedFeeType.HasValue)
+{
+    <Card>
+        <CardHeader>
+            <h4>@L["PaymentProviders"]</h4>
+            <p>@L["SelectPaymentProviderToViewPaymentDetails"]</p>
+        </CardHeader>
+        <CardBody>
+            <button class="back-btn" @onclick="BackToTenants">← @L["BackToTenants"]</button>
+            <div class="list-card" @onclick="@(() => SelectFeeType(PaymentFeeType.EcPay))">
+                <div class="list-card-left">
+                    <div class="list-card-icon provider">
+                        @GetInitials("ECPay")
+                    </div>
+                    <div class="list-card-info">
+                        <div class="d-flex align-items-start justify-content-start gap-2">
+                            <h3>ECPay</h3>
+                            <PikachuBadge Class="pk-badge-success pk-badge-sm">Active</PikachuBadge>
+                        </div>
+                        <div class="list-card-meta">@L["PrimaryPaymentProcessingProvider"]</div>
+                    </div>
+                </div>
+            </div>
+        </CardBody>
+    </Card>
+}
+@if (SelectedTenantId.HasValue && SelectedFeeType.HasValue && !SelectedYear.HasValue)
+{
+    <Card>
+        <CardHeader>
+            <h4>@L["FeeAnalysisByYear"]</h4>
+            <p>@L["SelectYearToViewDetailedFeeBreakdown"]</p>
+        </CardHeader>
+        <CardBody>
+            <button class="back-btn" @onclick="BackToProviders">← @L["BackToProviders"]</button>
+            @foreach(var year in Years)
+            {
+                <div class="list-card" @onclick="@(() => SelectYear(year))">
+                    <div class="list-card-left">
+                        <div class="list-card-icon year">
+                            @year.ToString().Substring(2)
+                        </div>
+                        <div class="list-card-info">
+                            <h3>@year</h3>
+                            <div class="list-card-meta">
+                                @L[year == DateTime.Now.Year 
+                                    ? "CurrentYear" 
+                                    : (year == DateTime.Now.Year - 1 ? "PreviousYear" : "Archive")
+                                ]
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </CardBody>
+    </Card>
+}
+@if (SelectedTenantId.HasValue && SelectedFeeType.HasValue && SelectedYear.HasValue)
+{
+    <Card>
+        <CardHeader>
+            <h4>@L["PayoutDetails"]</h4>
+            <p>@L["DetailedPayoutBreakdownAndMangement"]</p>
+        </CardHeader>
+        <CardBody>
+            <button class="back-btn" @onclick="BackToYears">← @L["BackToYears"]</button>
+        </CardBody>
+    </Card>
+}
 <TCatFileImportModal @ref="TCatImportModal" OnImportCompleted="OnImportCompletedAsync" />

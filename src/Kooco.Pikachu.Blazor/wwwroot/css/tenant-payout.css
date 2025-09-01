@@ -1,0 +1,143 @@
+﻿.header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 1.5rem 2rem;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 0.35rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+}
+
+    .header h3 {
+        margin: 0;
+        margin-bottom: 0.25rem;
+    }
+
+    .header p {
+        margin: 0;
+    }
+
+    .header .pk-btn {
+        background: transparent;
+        color: white;
+        border: 1px solid white;
+        padding: 0.5rem 1rem;
+        border-radius: 0.35rem;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+
+        .header .pk-btn:hover {
+            background: white;
+            color: #764ba2;
+        }
+
+.card {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.card-header {
+    background: #f8f9fa;
+    padding: 1.5rem 2rem;
+    border-bottom: 1px solid #e9ecef;
+}
+
+    .card-header h4 {
+        margin: 0;
+        margin-bottom: 0.25rem;
+    }
+
+
+.list-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.5rem;
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+    .list-card:hover {
+        border-color: #667eea;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+.list-card-left {
+    display: flex;
+    align-items: center;
+    justify-content: start;
+}
+
+.list-card-info h3 {
+    font-size: 1.1rem;
+    margin-bottom: 0.3rem;
+    color: #2c3e50;
+    font-weight: 700;
+}
+
+.list-card-meta {
+    color: #6c757d;
+    font-size: 0.9rem;
+}
+
+.list-card-icon {
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    margin-right: 1rem;
+    font-size: 1.1rem;
+}
+
+    .list-card-icon.provider {
+        background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+    }
+
+    .list-card-icon.year {
+        background: linear-gradient(135deg, #28a745, #20c997);
+    }
+
+.list-card-stats {
+    text-align: right;
+    color: #28a745;
+    font-weight: 600;
+}
+
+    .list-card-stats .tenant-fee {
+        margin: 0;
+    }
+
+    .list-card-stats .small {
+        font-size: 0.8rem;
+        color: #6c757d;
+        display: block;
+        margin: 0;
+        margin-top: 0.2rem;
+    }
+
+.back-btn {
+    background: #6c757d;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+}
+
+.pk-badge-sm {
+    font-size: 0.65rem;
+    padding: 0.15rem 0.5rem;
+}
