@@ -5,13 +5,16 @@ using Kooco.Pikachu.UserShoppingCredits;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Volo.Abp.BackgroundWorkers;
 using Volo.Abp.Data;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.MultiTenancy;
+using Volo.Abp.TenantManagement;
 using Volo.Abp.Threading;
+using Volo.Abp.Uow;
 
 namespace Kooco.Pikachu.BackgroundWorkers;
 public class PassiveUserBirthdayCheckerWorker : AsyncPeriodicBackgroundWorkerBase
@@ -25,69 +28,112 @@ public class PassiveUserBirthdayCheckerWorker : AsyncPeriodicBackgroundWorkerBas
     ) : base(timer, serviceScopeFactory)
     {
         _currentTenant = currentTenant;
-        Timer.Period = CalculateNextRunInterval(); // schedule next 3:00 AM
+        Timer.Period = CalculateNextRunInterval();
     }
 
     protected override async Task DoWorkAsync(PeriodicBackgroundWorkerContext workerContext)
     {
         var now = DateTime.Now;
+        Logger.LogInformation("[BirthdayBonus] Multi-tenant run started at {Time}", now);
 
-        Logger.LogInformation("[BirthdayBonus] Run started at {Time}", now);
-
-        // Resolve services
         var sp = workerContext.ServiceProvider;
-        var memberRepository = sp.GetRequiredService<IMemberRepository>();
-        var userShoppingCreditAppService = sp.GetRequiredService<IUserShoppingCreditAppService>();
-        var shoppingCreditEarnSettingAppService = sp.GetRequiredService<IShoppingCreditEarnSettingAppService>();
-        var userCumulativeCreditAppService = sp.GetRequiredService<IUserCumulativeCreditAppService>();
-        var userCumulativeCreditRepository = sp.GetRequiredService<IUserCumulativeCreditRepository>();
+        var dataFilter = sp.GetRequiredService<IDataFilter>();
+        var tenantRepository = sp.GetRequiredService<ITenantRepository>();
+        var unitOfWorkManager = sp.GetRequiredService<IUnitOfWorkManager>();
 
-        // (New) We’ll need read-access to credits to enforce once-per-year
-        var userShoppingCreditRepository = sp.GetRequiredService<IUserShoppingCreditRepository>();
+        var currentMonth = now.Month;
+        int totalGrantedCount = 0;
 
+        // Get all tenants first (outside of any tenant context)
+        List<Tenant> allTenants;
+        using (dataFilter.Disable<IMultiTenant>())
+        {
+            allTenants = await tenantRepository.GetListAsync();
+        }
+
+        Logger.LogInformation("[BirthdayBonus] Processing {TenantCount} tenants", allTenants.Count);
+
+        foreach (var tenant in allTenants)
+        {
+            try
+            {
+                // Process each tenant with its own Unit of Work
+                using var uow = unitOfWorkManager.Begin(new AbpUnitOfWorkOptions
+                {
+                    IsTransactional = true
+                });
+
+                using (_currentTenant.Change(tenant.Id))
+                {
+                    Logger.LogInformation("[BirthdayBonus] Processing tenant: {TenantName} (ID: {TenantId})",
+                        tenant.Name, tenant.Id);
+
+                    var tenantGrantedCount = await ProcessSingleTenantAsync(sp, now, currentMonth, tenant);
+                    totalGrantedCount += tenantGrantedCount;
+
+                    await uow.CompleteAsync();
+
+                    Logger.LogInformation("[BirthdayBonus] Tenant {TenantName}: Granted {Count} bonuses",
+                        tenant.Name, tenantGrantedCount);
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, "[BirthdayBonus] Error processing tenant {TenantName} (ID: {TenantId})",
+                    tenant.Name, tenant.Id);
+            }
+        }
+
+        Logger.LogInformation("[BirthdayBonus] Multi-tenant run finished. Total granted: {TotalCount} bonuses for {Year}-{Month}",
+            totalGrantedCount, now.Year, currentMonth);
+
+        Timer.Period = CalculateNextRunInterval();
+    }
+
+    private async Task<int> ProcessSingleTenantAsync(IServiceProvider serviceProvider, DateTime now, int currentMonth, Tenant tenant)
+    {
+        // Resolve services within tenant context
+        var memberRepository = serviceProvider.GetRequiredService<IMemberRepository>();
+        var userShoppingCreditAppService = serviceProvider.GetRequiredService<IUserShoppingCreditAppService>();
+        var shoppingCreditEarnSettingAppService = serviceProvider.GetRequiredService<IShoppingCreditEarnSettingAppService>();
+        var userCumulativeCreditAppService = serviceProvider.GetRequiredService<IUserCumulativeCreditAppService>();
+        var userCumulativeCreditRepository = serviceProvider.GetRequiredService<IUserCumulativeCreditRepository>();
+        var userShoppingCreditRepository = serviceProvider.GetRequiredService<IUserShoppingCreditRepository>();
+
+        // Get settings for this tenant
         var settings = await shoppingCreditEarnSettingAppService.GetFirstAsync();
         if (!(settings?.BirthdayBonusEnabled ?? false))
         {
-            Logger.LogInformation("[BirthdayBonus] Disabled in settings. Skipping.");
-            Timer.Period = CalculateNextRunInterval();
-            return;
+            Logger.LogInformation("[BirthdayBonus] Birthday bonus disabled for tenant {TenantName}. Skipping.",
+                tenant.Name);
+            return 0;
         }
 
-        // Strategy change:
-        // - Every day at 3AM, award birthday bonus to members whose birthday month == current month
-        // - This catches users who register mid-month.
-        // - Enforce "once per calendar year" per member.
-        var currentMonth = now.Month;
-
-        // You likely already have a query. Otherwise, here's a repository method you can expose:
-        //   Task<List<Member>> GetMembersWithBirthdayInMonthAsync()
-        // Make sure to handle NULL birthdays at the repo level.
+        // Get members with birthdays in current month for this tenant
         var members = await memberRepository.GetBirthdayMember();
 
-        // Optional: handle Feb 29 birthdays on non-leap years (award on Feb 28)
-        // If your repo handles this, remove the filter below.
-        if (currentMonth == 2 && !DateTime.IsLeapYear(now.Year))
+        // Filter members based on current month
+        members = members.Where(m =>
         {
-            members = members.Where(m =>
-            {
-                if (m.GetProperty(Constant.Birthday, null) == null) return false;
-                var dob = (DateTime)m.GetProperty(Constant.Birthday, null);
-                return dob.Month == 2 && (dob.Day <= 28 || dob.Day == 29);
-            }).ToList();
-        }
+            if (m.GetProperty(Constant.Birthday, null) == null) return false;
+            var dob = (DateTime)m.GetProperty(Constant.Birthday, null);
 
-        int grantedCount = 0;
+            // Handle February 29 birthdays on non-leap years
+            if (currentMonth == 2 && !DateTime.IsLeapYear(now.Year))
+            {
+                return dob.Month == 2 && (dob.Day <= 28 || dob.Day == 29);
+            }
+
+            return dob.Month == currentMonth;
+        }).ToList();
+
+        int tenantGrantedCount = 0;
 
         foreach (var member in members)
         {
-            // guard
-            if (member.GetProperty(Constant.Birthday, null) == null) continue;
-
-            using (_currentTenant.Change(member.TenantId))
+            try
             {
-                // Enforce once per year:
-                // Mark “Birthday” rows by a clear discriminator. If you already store a reason/source,
-                // prefer that field. Here we check by UserId + Reason/Description + Year.
+                // Check if already granted this year for this member
                 var alreadyGranted = await userShoppingCreditRepository.AnyAsync(x =>
                     x.UserId == member.Id &&
                     x.ShoppingCreditType == UserShoppingCreditType.Grant &&
@@ -97,15 +143,15 @@ public class PassiveUserBirthdayCheckerWorker : AsyncPeriodicBackgroundWorkerBas
 
                 if (alreadyGranted)
                 {
+                    Logger.LogDebug("[BirthdayBonus] Member {MemberId} already received birthday bonus this year",
+                        member.Id);
                     continue;
                 }
 
-                // Respect usage period setting
+                // Calculate expiry date
                 DateTime? expiry = null;
                 if (!string.Equals(settings.BirthdayUsagePeriodType, "NoExpiry", StringComparison.OrdinalIgnoreCase))
                 {
-                    // If your semantics are "valid N days from grant," this is fine.
-                    // If semantics are different (e.g., end of birthday month), adjust here.
                     expiry = now.Date.AddDays(settings.BirthdayValidDays);
                 }
 
@@ -138,14 +184,19 @@ public class PassiveUserBirthdayCheckerWorker : AsyncPeriodicBackgroundWorkerBas
                     await userCumulativeCreditRepository.UpdateAsync(cum);
                 }
 
-                grantedCount++;
+                tenantGrantedCount++;
+
+                Logger.LogDebug("[BirthdayBonus] Granted birthday bonus to member {MemberId} in tenant {TenantName}",
+                    member.Id, tenant.Name);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, "[BirthdayBonus] Error processing member {MemberId} in tenant {TenantName}",
+                    member.Id, tenant.Name);
             }
         }
 
-        Logger.LogInformation("[BirthdayBonus] Finished. Granted {Count} bonuses for {Year}-{Month}.", grantedCount, now.Year, currentMonth);
-
-
-        Timer.Period = CalculateNextRunInterval();
+        return tenantGrantedCount;
     }
 
 

@@ -454,7 +454,7 @@ public class EfCoreMemberRepository(IDbContextProvider<PikachuDbContext> pikachu
     {
         var dbContext = await GetPikachuDbContextAsync();
 
-        var users = await dbContext.Users.IgnoreQueryFilters().ToListAsync(); // Fetch data into memory
+        var users = await dbContext.Users.ToListAsync(); // Fetch data into memory
 
         var nextMonth = DateTime.Now;
 
