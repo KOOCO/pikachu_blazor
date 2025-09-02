@@ -168,6 +168,7 @@ public class ReturnAndExchangeAppService : PikachuAppService, IReturnAndExchange
                     OrderManager.AddOrderItem(
                         clonedOrder,
                         item.ItemId,
+                        item.ItemDetailId,
                         item.SetItemId,
                         item.FreebieId,
                         item.ItemType,

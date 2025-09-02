@@ -172,6 +172,7 @@ public class OrderAppService : PikachuAppService, IOrderAppService
                     OrderManager.AddOrderItem(
                         order,
                         item.ItemId,
+                        item.ItemDetailId,
                         item.SetItemId,
                         item.FreebieId,
                         item.ItemType,
@@ -187,10 +188,14 @@ public class OrderAppService : PikachuAppService, IOrderAppService
 
                     using (DataFilter.Disable<IMultiTenant>())
                     {
-                        ItemDetails? details = await ItemDetailsRepository.FirstOrDefaultAsync(x => x.ItemId == item.ItemId && x.ItemName == item.SKU);
-
-                        if (details != null)
+                        if (item.ItemId.HasValue)
                         {
+                            ItemDetails? details = await ItemDetailsRepository.FirstOrDefaultAsync(x => x.ItemId == item.ItemId && x.Id == item.ItemDetailId);
+                            if (!item.ItemDetailId.HasValue || details == null)
+                            {
+                                throw new UserFriendlyException("Item detail not found", $"There is no item detail with provided id: {item.ItemDetailId}");
+                            }
+
                             await InventoryLogManager.ItemSoldAsync(order, details, item.Quantity);
                         }
 
@@ -210,13 +215,17 @@ public class OrderAppService : PikachuAppService, IOrderAppService
                                     foreach (var setItemDetail in setItem.SetItemDetails)
                                     {
                                         var totalOrderQuantity = setItemDetail.Quantity * item.Quantity;
-                                        var detail = await ItemDetailsRepository.FirstOrDefaultAsync(x => x.ItemId == setItemDetail.ItemId
-                                                    && x.Attribute1Value == setItemDetail.Attribute1Value && x.Attribute2Value == setItemDetail.Attribute2Value
-                                                    && x.Attribute3Value == setItemDetail.Attribute3Value);
-                                        if (detail != null)
+                                        var detail = await ItemDetailsRepository.FirstOrDefaultAsync(x => 
+                                                    x.ItemId == setItemDetail.ItemId
+                                                    && x.Attribute1Value == setItemDetail.Attribute1Value 
+                                                    && x.Attribute2Value == setItemDetail.Attribute2Value
+                                                    && x.Attribute3Value == setItemDetail.Attribute3Value
+                                                    );
+                                        if (detail == null)
                                         {
-                                            await InventoryLogManager.ItemSoldAsync(order, detail, totalOrderQuantity);
+                                            throw new UserFriendlyException("Item detail not found", $"There is no item detail with provided id: {item.ItemDetailId} for set item id: {setItem.Id}");
                                         }
+                                        await InventoryLogManager.ItemSoldAsync(order, detail, totalOrderQuantity);
                                     }
                                 }
                             }
@@ -497,6 +506,7 @@ public class OrderAppService : PikachuAppService, IOrderAppService
                         OrderManager.AddOrderItem(
                             order,
                             itemDetail.ItemId,
+                            itemDetail.Id,
                             null,
                             null,
                             ItemType.Item,
@@ -724,6 +734,7 @@ public class OrderAppService : PikachuAppService, IOrderAppService
                                 OrderItemsCreateDto orderItemCreate = new()
                                 {
                                     ItemId = item.ItemId,
+                                    ItemDetailId = item.ItemDetailId,
                                     SetItemId = item.SetItemId,
                                     FreebieId = item.FreebieId,
                                     ItemType = item.ItemType,
@@ -806,6 +817,7 @@ public class OrderAppService : PikachuAppService, IOrderAppService
                 OrderManager.AddOrderItem(
                     order1,
                     item.ItemId,
+                    item.ItemDetailId,
                     item.SetItemId,
                     item.FreebieId,
                     item.ItemType,
@@ -956,6 +968,7 @@ public class OrderAppService : PikachuAppService, IOrderAppService
                     OrderManager.AddOrderItem(
                         order1,
                         orderItem.ItemId,
+                        orderItem.ItemDetailId,
                         orderItem.SetItemId,
                         orderItem.FreebieId,
                         orderItem.ItemType,
@@ -1128,6 +1141,7 @@ public class OrderAppService : PikachuAppService, IOrderAppService
 
                     OrderItemsCreateDto orderItem = new();
                     orderItem.ItemId = item.ItemId;
+                    orderItem.ItemDetailId = item.ItemDetailId;
                     orderItem.SetItemId = item.SetItemId;
                     orderItem.FreebieId = item.FreebieId;
                     orderItem.ItemType = item.ItemType;
@@ -1146,6 +1160,7 @@ public class OrderAppService : PikachuAppService, IOrderAppService
                     OrderManager.AddOrderItem(
                         order1,
                         orderItem.ItemId,
+                        orderItem.ItemDetailId,
                         orderItem.SetItemId,
                         orderItem.FreebieId,
                         orderItem.ItemType,

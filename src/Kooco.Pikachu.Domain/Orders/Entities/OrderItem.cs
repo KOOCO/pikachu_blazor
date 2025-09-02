@@ -17,6 +17,8 @@ public class OrderItem : Entity<Guid>
     /// </summary>
     public Guid? ItemId { get; set; }
 
+    public Guid? ItemDetailId { get; set; }
+
     /// <summary>
     /// 商品導覽屬性
     /// </summary>
@@ -106,6 +108,7 @@ public class OrderItem : Entity<Guid>
     public OrderItem(
         Guid id,
         Guid? itemId,
+        Guid? itemDetailId,
         Guid? setItemId,
         Guid? freebieId,
         ItemType itemType,
@@ -123,6 +126,7 @@ public class OrderItem : Entity<Guid>
         ) : base(id)
     {
         ItemId = itemId;
+        ItemDetailId = itemDetailId;
         SetItemId = setItemId;
         FreebieId = freebieId;
         ItemType = itemType;

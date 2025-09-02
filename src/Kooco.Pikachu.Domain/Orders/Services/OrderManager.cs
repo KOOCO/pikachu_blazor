@@ -153,6 +153,7 @@ public class OrderManager(IOrderRepository orderRepository, IGroupBuyRepository 
     public void AddOrderItem(
         Order order,
         Guid? itemId,
+        Guid? itemDetailId,
         Guid? setItemId,
         Guid? freebieId,
         ItemType itemType,
@@ -170,6 +171,7 @@ public class OrderManager(IOrderRepository orderRepository, IGroupBuyRepository 
         order.AddOrderItem(
             GuidGenerator.Create(),
             itemId,
+            itemDetailId,
             setItemId,
             freebieId,
             itemType,

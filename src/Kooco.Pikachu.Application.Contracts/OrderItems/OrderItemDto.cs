@@ -9,6 +9,7 @@ namespace Kooco.Pikachu.OrderItems
     public class OrderItemDto : EntityDto<Guid>
     {
         public Guid? ItemId { get; set; }
+        public Guid? ItemDetailId { get; set; }
         public ItemDto? Item { get; set; }
         public Guid? SetItemId { get; set; }
         public SetItemDto? SetItem { get; set; }

@@ -11,6 +11,7 @@ public class CreateUpdateOrderItemDto
 {
     public Guid Id { get; set; }
     public Guid? ItemId { get; set; }
+    public Guid? ItemDetailId { get; set; }
     public Guid? SetItemId { get; set; }
     public Guid? FreebieId { get; set; }
     public ItemType ItemType { get; set; }

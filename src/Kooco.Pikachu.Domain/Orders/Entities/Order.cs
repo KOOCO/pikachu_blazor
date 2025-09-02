@@ -762,6 +762,7 @@ public class Order : FullAuditedAggregateRoot<Guid>, IMultiTenant
     public void AddOrderItem(
         Guid id,
         Guid? itemId,
+        Guid? itemDetailId,
         Guid? setItemId,
         Guid? freebieId,
         ItemType itemType,
@@ -778,6 +779,7 @@ public class Order : FullAuditedAggregateRoot<Guid>, IMultiTenant
         OrderItems.Add(new OrderItem(
                 id,
                 itemId,
+                itemDetailId,
                 setItemId,
                 freebieId,
                 itemType,
