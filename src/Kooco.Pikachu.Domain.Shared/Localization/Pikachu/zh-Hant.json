@@ -2089,7 +2089,13 @@
 
     "ExportCompletedSuccessfully": "匯出成功完成",
     "RecordsWillBeExported": "筆記錄將被匯出",
-    "LogisticsFees": "物流費用"
+    "LogisticsFees": "物流費用",
+    "CloseOrder": "關閉訂單",
+    "GenerateDeliveryNumber": "產生托運單號",
+    "pieces": "單",
+    "OrderCompletedDueToInActivity": "訂單因閒置自動完成：{0} 運送狀態由 '{1}' 變更為 '{2}'",
+    "OrderCompletedDueToInActivityTitle": "訂單因閒置自動完成",
+    "EcPayLogisticUpdate": "綠界物流更新"
 
   }
 }

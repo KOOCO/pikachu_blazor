@@ -1302,6 +1302,7 @@
     "OrderClosedDueToInActivityTitle": "Order Closed",
     "OrderClosedDueToInActivity": "Order Closed due to inactivity: {0} Status changed from '{1}' to '{2}'",
     "OrderCompletedDueToInActivity": "Order Completed due to inactivity: {0} Status changed from '{1}' to '{2}'",
+    "OrderCompletedDueToInActivityTitle": "Order Completed",
     "AreYouSureToUpdatePostOffice?": "Are You Sure To Update Post Office ?",
     "AreYouSureToUpdate7-11?": "Are You Sure To Update 7-11 B2C?",
     "AreYouSureToUpdate7-11C2C?": "Are You Sure To Update 7-11 C2C ?",
@@ -2117,10 +2118,12 @@
     "FileFormat": "File Format",
     "ExportOnlyFailedRecords": "Export Only Failed Records",
     "ExportInfo": "Export will include all records matching current filters.",
-   
+
     "ExportCompletedSuccessfully": "Export completed successfully",
     "RecordsWillBeExported": "records will be exported",
-    "LogisticsFees": "logistics_fees"
-  
+    "LogisticsFees": "logistics_fees",
+    "EcPayLogisticUpdate": "EcPay Logistic Update"
+
+
   }
 }

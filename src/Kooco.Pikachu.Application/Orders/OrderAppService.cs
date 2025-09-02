@@ -2664,7 +2664,7 @@ public class OrderAppService : PikachuAppService, IOrderAppService
 
         // **Get Current User (Editor)**
         var currentUserId = CurrentUser.Id ?? Guid.Empty;
-        var currentUserName = CurrentUser.UserName ?? "EcPay Logistic Update";
+        var currentUserName = CurrentUser.UserName ?? L["EcPayLogisticUpdate"];
 
         // **Log Order History for Logistic Status Update**
         await OrderHistoryManager.AddOrderHistoryAsync(
