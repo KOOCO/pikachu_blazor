@@ -40,7 +40,7 @@
             </Button>
         }
 
-        @if (OrderTransactions.Where(x => x.IsSelected).Count() != 1 || OrderTransactions.Any(x => x.IsSelected && x.Order != null && x.Order.IsVoidInvoice || x.Order.InvoiceDate==null))
+        @if (OrderTransactions.Where(x => x.IsSelected).Count() != 1 || OrderTransactions.Any(x => x.IsSelected && x.Order != null && (x.Order.IsVoidInvoice || x.Order.InvoiceDate==null)))
         {
             <Button Type="@ButtonType.Button" disabled Class="ms-1 btn btn-sm btn-primary">
                 <i class="fa fa-print"></i>
