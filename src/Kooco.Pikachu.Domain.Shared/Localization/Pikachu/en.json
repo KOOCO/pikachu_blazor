@@ -2118,12 +2118,11 @@
     "FileFormat": "File Format",
     "ExportOnlyFailedRecords": "Export Only Failed Records",
     "ExportInfo": "Export will include all records matching current filters.",
-
     "ExportCompletedSuccessfully": "Export completed successfully",
     "RecordsWillBeExported": "records will be exported",
     "LogisticsFees": "logistics_fees",
-    "EcPayLogisticUpdate": "EcPay Logistic Update"
-
-
+    "EcPayLogisticUpdate": "EcPay Logistic Update",
+    "UploadTCatFileTitleDescription": "Upload your CSV or Excel file to import payout data",
+    "VerifyTCatFileAndImport": "Verify the records and click import to save payout data"
   }
 }

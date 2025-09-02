@@ -1,14 +1,17 @@
 ﻿@using Kooco.Pikachu.CodTradeInfos
 @using Kooco.Pikachu.Extensions
 <link href="/css/tenant-payout.css" rel="stylesheet" />
-
 @inherits PikachuComponentBase
 @inject ITCatCodTradeInfoAppService TCatCodTradeInfoAppService
 
 <Modal @bind-Visible="@Visible">
     <ModalContent Size="_recordsVisible? ModalSize.ExtraLarge: ModalSize.Large">
         <ModalHeader>
-            <ModalTitle>@L[_recordsVisible ? "Import" : "UploadFile"]</ModalTitle>
+            <ModalTitle>
+                <h3>@L[_recordsVisible ? "Import" : "UploadFile"]</h3>
+                <span>@L[_recordsVisible ? "VerifyTCatFileAndImport" : "UploadTCatFileTitleDescription"]</span>
+            </ModalTitle>
+            <button class="close-btn" @onclick="CloseModal">×</button>
         </ModalHeader>
         <ModalBody>
             @if (!_recordsVisible)
@@ -26,11 +29,6 @@
             }
             else
             {
-                <div class="text-end mb-2">
-                    <PikachuButton Class="pk-btn-sm pk-btn-outline-primary" Clicked="ChooseAnother">
-                        @L["ChooseAnotherFile"]
-                    </PikachuButton>
-                </div>
                 @if (_records.OrEmptyListIfNull().Count > 0)
                 {
                     <div style="min-height: unset; max-height: 500px; overflow: auto;">
@@ -104,16 +102,17 @@
             }
         </ModalBody>
         <ModalFooter>
-            <PikachuButton Class="pk-btn-primary" Disabled="_importing" Clicked="CloseModal">@L["Close"]</PikachuButton>
             @if (_recordsVisible)
             {
-                <PikachuButton Class="pk-btn-outline-primary"
+                <button class="back-btn" @onclick="ChooseAnother">← @L["ChooseAnotherFile"]</button>
+                <PikachuButton Class="import"
                                Clicked="Import"
                                Disabled="_records.OrEmptyListIfNull().Count == 0"
                                Loading="_importing">
-                    @L["Import"]
+                    📥 @L["Import"]
                 </PikachuButton>
             }
+            <PikachuButton Class="pk-btn-outline-primary" Disabled="_importing" Clicked="CloseModal">@L["Cancel"]</PikachuButton>
         </ModalFooter>
     </ModalContent>
 </Modal>
