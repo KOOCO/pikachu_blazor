@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 using System;
 using Blazorise;
 using System.Linq;
+using Microsoft.JSInterop;
+using System.IO;
+using Volo.Abp.Content;
 
 namespace Kooco.Pikachu.Blazor.Pages.TenantManagement.TenantLogisticsFeeMangements
 {
@@ -15,7 +18,13 @@ namespace Kooco.Pikachu.Blazor.Pages.TenantManagement.TenantLogisticsFeeMangemen
 
         [Parameter] public Guid TenantId { get; set; }
         [Parameter] public Guid FileId { get; set; }
+        private Modal ExportModal;
+        private Validations ExportValidationsRef;
+        private ExportLogisticsFeeRecordsInput ExportInput = new();
+        private bool IsExporting = false;
+        private bool ExportOnlyFailedRecords = false;
 
+        [Inject] private IJSRuntime JSRuntime { get; set; }
         // Properties
         private IReadOnlyList<TenantLogisticsFeeRecordDto> Records = new List<TenantLogisticsFeeRecordDto>();
         private List<TenantLogisticsFeeRecordDto> SelectedRows = new List<TenantLogisticsFeeRecordDto>();
@@ -249,6 +258,93 @@ namespace Kooco.Pikachu.Blazor.Pages.TenantManagement.TenantLogisticsFeeMangemen
             NavigationManager.NavigateTo($"/logistics-management/tenant/{TenantId}");
 
 
+        }
+        // Export-related methods
+        private async Task ShowExportModal()
+        {
+            // Initialize export input with current page filters
+            ExportInput = new ExportLogisticsFeeRecordsInput
+            {
+                TenantId = TenantId,
+                FileImportId = FileId,
+                FileFormat = ExportFileFormat.Excel,
+                MaxResultCount = 1000, // Get all records for export
+                SkipCount = 0
+            };
+
+            ExportOnlyFailedRecords = false;
+            await ExportModal.Show();
+        }
+
+        private async Task CloseExportModal()
+        {
+            await ExportModal.Hide();
+        }
+
+        private async Task PerformExport()
+        {
+            try
+            {
+                IsExporting = true;
+                StateHasChanged();
+
+                // Set filter for failed records only if selected
+                if (ExportOnlyFailedRecords)
+                {
+                    ExportInput.Status = WalletDeductionStatus.Failed;
+                }
+
+                // Call the export service
+                var fileResult = await LogisticsFeeAppService.ExportRecordsAsFileAsync(ExportInput);
+
+                // Trigger file download
+                await DownloadFileAsync(fileResult);
+
+                await MessageService.Success(L["ExportCompletedSuccessfully"]);
+                await CloseExportModal();
+            }
+            catch (Exception ex)
+            {
+                await HandleErrorAsync(ex);
+            }
+            finally
+            {
+                IsExporting = false;
+                StateHasChanged();
+            }
+        }
+
+        private async Task DownloadFileAsync(IRemoteStreamContent fileResult)
+        {
+            // Convert stream to byte array for download
+            using var memoryStream = new MemoryStream();
+            await fileResult.GetStream().CopyToAsync(memoryStream);
+            var fileBytes = memoryStream.ToArray();
+
+            // Create a data URL for download
+            var base64 = Convert.ToBase64String(fileBytes);
+            var dataUrl = $"data:{fileResult.ContentType};base64,{base64}";
+
+            // Use JavaScript to trigger download
+            await JSRuntime.InvokeVoidAsync("downloadFile", dataUrl, fileResult.FileName);
+        }
+
+        // Initialize JavaScript helper
+        protected override async Task OnAfterRenderAsync(bool firstRender)
+        {
+            if (firstRender)
+            {
+                await JSRuntime.InvokeVoidAsync("eval", @"
+                window.downloadFile = function(dataUrl, filename) {
+                    const link = document.createElement('a');
+                    link.href = dataUrl;
+                    link.download = filename;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                };
+            ");
+            }
         }
     }
 }

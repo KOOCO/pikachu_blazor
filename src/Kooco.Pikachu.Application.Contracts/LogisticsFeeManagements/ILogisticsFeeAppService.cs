@@ -37,6 +37,8 @@ namespace Kooco.Pikachu.LogisticsFeeManagements
         Task<List<TenantLogisticsFeeRecordDto>> GetFailedRecordsAsync(Guid? fileImportId = null);
         Task<Dictionary<string, object>> GetDashboardStatsAsync();
 
+        Task<IRemoteStreamContent> ExportRecordsAsFileAsync(ExportLogisticsFeeRecordsInput input);
+
     }
 
 }

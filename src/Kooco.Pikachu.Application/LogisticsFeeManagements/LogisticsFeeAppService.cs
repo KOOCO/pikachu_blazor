@@ -30,12 +30,16 @@ using Volo.Abp.Data;
 using Volo.Abp.Content;
 using Kooco.Pikachu.Permissions;
 using static System.Net.WebRequestMethods;
+using MiniExcelLibs;
+using Volo.Abp.TenantManagement;
+using System.Globalization;
 
 namespace Kooco.Pikachu.LogisticsFeeManagements
 {
     [Authorize(PikachuPermissions.LogisticsFeeManagement.Default)]
     public class LogisticsFeeAppService : ApplicationService, ILogisticsFeeAppService
     {
+        private readonly ITenantAppService _tenantAppService;
         private readonly ILogisticsFeeFileImportRepository _fileImportRepository;
         private readonly ITenantLogisticsFeeRecordRepository _recordRepository;
         private readonly ITenantLogisticsFeeFileProcessingSummaryRepository _summaryRepository;
@@ -58,7 +62,8 @@ namespace Kooco.Pikachu.LogisticsFeeManagements
             IRepository<TenantWallet, Guid> tenantWalletRepository,
              LogisticsFileContainerManager logisticsFileContainerManager,
              LogisticsFeeProcessingJob logisticsFeeProcessingJob,
-             IDataFilter dataFilter)
+             IDataFilter dataFilter,
+             ITenantAppService tenantAppService)
         {
             _fileImportRepository = fileImportRepository;
             _recordRepository = recordRepository;
@@ -71,7 +76,7 @@ namespace Kooco.Pikachu.LogisticsFeeManagements
             _logisticsFileContainerManager = logisticsFileContainerManager;
             _logisticsFeeProcessingJob = logisticsFeeProcessingJob;
             _dataFilter = dataFilter;
-
+            _tenantAppService = tenantAppService;
         }
 
 
@@ -611,6 +616,205 @@ namespace Kooco.Pikachu.LogisticsFeeManagements
             }
 
             return stats;
+        }
+
+        public async Task<IRemoteStreamContent> ExportRecordsAsFileAsync(ExportLogisticsFeeRecordsInput input)
+        {
+            // Use your existing GetRecordsAsync method to get all records
+            input.MaxResultCount = 10000; // Set reasonable export limit
+            input.SkipCount = 0;
+
+            var result = await GetRecordsAsync(input);
+            var records = result.Items.ToList();
+
+            // Get tenant name for filename
+            var tenantName = await GetTenantNameForExportAsync(input.TenantId);
+
+            // Create headers dictionary using ABP localization (auto-detects culture)
+            var headers = GetLocalizedHeaders();
+
+            // Generate filename (culture-aware)
+            var fileName = GenerateExportFileName(tenantName, input.FileFormat);
+
+            // Create export data using same pattern as your GetListAsExcelFileAsync method
+            var exportData = records.Select(x => new Dictionary<string, object>
+    {
+        { headers["OrderNumber"], x.OrderNumber ?? "" },
+        { headers["BaseShippingFee"], "$ " + x.ShippigFee.ToString("N2") },
+        { headers["Surcharge"], "$ " + x.ExtraShippigFee.ToString("N2") },
+        { headers["AdditionalFee"], "$ " + x.AdditionalLogisticFee.ToString("N2") },
+        { headers["TotalLogisticFee"], "$ " + x.LogisticFee.ToString("N2") },
+        { headers["DeductionStatus"], GetLocalizedDeductionStatus(x.DeductionStatus) },
+        { headers["ProcessedDate"], x.ProcessedAt.ToString("yyyy-MM-dd HH:mm") },
+        { headers["FailureReason"], GetLocalizedFailureReason(x.FailureReason?.ToString()) }
+    }).ToList();
+
+            var memoryStream = new MemoryStream();
+            string contentType;
+
+            if (input.FileFormat == ExportFileFormat.Excel)
+            {
+                // Use the same SaveAsAsync method pattern you're already using
+                await memoryStream.SaveAsAsync(exportData);
+                contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+            }
+            else
+            {
+                // Generate CSV with UTF-8 BOM for proper character display
+                var csvContent = GenerateCsvContent(exportData);
+                var csvBytes = Encoding.UTF8.GetBytes(csvContent);
+
+                // Add UTF-8 BOM for proper character display in Excel
+                var bom = new byte[] { 0xEF, 0xBB, 0xBF };
+                var result1 = new byte[bom.Length + csvBytes.Length];
+                Array.Copy(bom, 0, result1, 0, bom.Length);
+                Array.Copy(csvBytes, 0, result1, bom.Length, csvBytes.Length);
+
+                await memoryStream.WriteAsync(result1, 0, result1.Length);
+                contentType = "text/csv";
+            }
+
+            memoryStream.Seek(0, SeekOrigin.Begin);
+
+            _logger.LogInformation("Export completed for tenant {TenantId}, file {FileId}, format {Format}, records count: {Count}",
+                input.TenantId, input.FileImportId, input.FileFormat, records.Count);
+
+            return new RemoteStreamContent(memoryStream, fileName, contentType);
+        }
+
+        private async Task<string> GetTenantNameForExportAsync(Guid? tenantId)
+        {
+            if (tenantId.HasValue)
+            {
+                try
+                {
+                    var tenant = await _tenantAppService.GetAsync(tenantId.Value);
+                    return SanitizeFileName(tenant.Name);
+                }
+                catch
+                {
+                    return "Unknown_Tenant";
+                }
+            }
+            return "All_Tenants";
+        }
+
+        private Dictionary<string, string> GetLocalizedHeaders()
+        {
+            var currentCulture = CultureInfo.CurrentUICulture.Name;
+            var isTraditionalChinese = currentCulture.StartsWith("zh-Hant") || currentCulture.StartsWith("zh-TW");
+
+            if (isTraditionalChinese)
+            {
+                return new Dictionary<string, string>
+        {
+            { "OrderNumber", "訂單編號" },
+            { "BaseShippingFee", "基礎運費" },
+            { "Surcharge", "附加費用" },
+            { "AdditionalFee", "額外費用" },
+            { "TotalLogisticFee", "運費總金額" },
+            { "DeductionStatus", "扣款狀態" },
+            { "ProcessedDate", "扣款時間" },
+            { "FailureReason", "失敗原因" }
+        };
+            }
+
+            return new Dictionary<string, string>
+    {
+        { "OrderNumber", "Order Number" },
+        { "BaseShippingFee", "Base Shipping Fee" },
+        { "Surcharge", "Surcharge" },
+        { "AdditionalFee", "Additional Fee" },
+        { "TotalLogisticFee", "Total Logistic Fee" },
+        { "DeductionStatus", "Deduction Status" },
+        { "ProcessedDate", "Processed Date" },
+        { "FailureReason", "Failed Reason" }
+    };
+        }
+
+        private string GenerateExportFileName(string tenantName, ExportFileFormat format)
+        {
+            var timestamp = DateTime.Now.ToString("yyyyMMdd_HHmmss");
+            var fileExtension = format == ExportFileFormat.Excel ? "xlsx" : "csv";
+
+            // Use localized filename parts
+            var fileTypeText = format == ExportFileFormat.Excel ? "Excel" : "CSV";
+            var logisticsFeeText = L["LogisticsFees"]; // "Logistics Fees" or "物流費用"
+
+            return $"{tenantName}_{logisticsFeeText}_{fileTypeText}_{timestamp}.{fileExtension}";
+        }
+
+        private string GetLocalizedDeductionStatus(WalletDeductionStatus status)
+        {
+            // Use ABP localization for status values
+            return status switch
+            {
+                WalletDeductionStatus.Completed => L["Completed"],
+                WalletDeductionStatus.Failed => L["Failed"],
+                WalletDeductionStatus.Pending => L["Pending"],
+                _ => L["Unknown"]
+            };
+        }
+
+        private string GetLocalizedFailureReason(string failureReason)
+        {
+            if (string.IsNullOrEmpty(failureReason))
+                return "";
+
+            // Use ABP localization for common failure reasons
+            return failureReason switch
+            {
+                "Insufficient Balance" => L["FailureReason.InsufficientBalance"],
+                "Missing Deduction Date in Logistic File" => L["FailureReason.MissingDeductionDate"],
+                "Retry failed" => L["FailureReason.RetryFailed"],
+                _ => failureReason // Return original if no translation available
+            };
+        }
+
+        private string GenerateCsvContent(List<Dictionary<string, object>> data)
+        {
+            if (!data.Any()) return "";
+
+            var csv = new StringBuilder();
+
+            // Add headers
+            var headers = data.First().Keys.ToArray();
+            csv.AppendLine(string.Join(",", headers.Select(EscapeCsvField)));
+
+            // Add data rows
+            foreach (var row in data)
+            {
+                var values = headers.Select(header => EscapeCsvField(row[header]?.ToString() ?? ""));
+                csv.AppendLine(string.Join(",", values));
+            }
+
+            return csv.ToString();
+        }
+
+        private string EscapeCsvField(string field)
+        {
+            if (string.IsNullOrEmpty(field))
+                return "";
+
+            // Escape quotes and wrap in quotes if necessary
+            if (field.Contains(",") || field.Contains("\"") || field.Contains("\n") || field.Contains("\r"))
+            {
+                field = field.Replace("\"", "\"\"");
+                return $"\"{field}\"";
+            }
+
+            return field;
+        }
+
+        private string SanitizeFileName(string fileName)
+        {
+            if (string.IsNullOrEmpty(fileName))
+                return "Unknown";
+
+            // Remove invalid filename characters
+            var invalidChars = Path.GetInvalidFileNameChars();
+            var sanitized = string.Join("_", fileName.Split(invalidChars, StringSplitOptions.RemoveEmptyEntries));
+            return sanitized.Length > 50 ? sanitized.Substring(0, 50) : sanitized;
         }
     }
 }

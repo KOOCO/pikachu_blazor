@@ -372,13 +372,12 @@
     </Column>
 </Row>
 
-<!-- Batch Actions -->
-@if (FailedDeductions > 0)
-{
-    <Card Margin="Margin.Is3.FromTop">
-        <CardBody>
-            <Row>
-                <Column ColumnSize="ColumnSize.Is6">
+<Card Margin="Margin.Is3.FromTop">
+    <CardBody>
+        <Row>
+            <Column ColumnSize="ColumnSize.Is6">
+                @if (FailedDeductions > 0)
+                {
                     <Button Color="Color.Success" 
                             @onclick="RetrySelectedFailedRecords" 
                             Disabled="@(!SelectedFailedRecords.Any())"
@@ -390,18 +389,29 @@
                             <Badge Color="Color.Light" Margin="Margin.Is1.FromStart">@SelectedFailedRecords.Count</Badge>
                         }
                     </Button>
-                </Column>
-                <Column ColumnSize="ColumnSize.Is6" class="text-end">
+                }
+            </Column>
+            <Column ColumnSize="ColumnSize.Is6" class="text-end">
+                <Button Color="Color.Info" 
+                        Outline 
+                        @onclick="ShowExportModal"
+                        Margin="Margin.Is1.FromEnd">
+                    <Icon Name="IconName.Download" />
+                    @L["Export"]
+                </Button>
+                
+                @if (FailedDeductions > 0)
+                {
                     <Button Color="Color.Secondary" 
                             Outline 
                             @onclick="SelectAllFailedRecords">
                         @L["SelectAllFailed"]
                     </Button>
-                </Column>
-            </Row>
-        </CardBody>
-    </Card>
-}
+                }
+            </Column>
+        </Row>
+    </CardBody>
+</Card>
 
 <!-- Records Table -->
 <Card Margin="Margin.Is3.FromTop">
@@ -628,4 +638,60 @@
         </ModalFooter>
     </ModalContent>
 </Modal>
+<Modal @ref="ExportModal" Size="ModalSize.Default">
+    <ModalContent Centered>
+        <ModalHeader>
+            <ModalTitle>@L["ExportLogisticsFeeRecords"]</ModalTitle>
+            <CloseButton />
+        </ModalHeader>
+        <ModalBody>
+            <Validations @ref="@ExportValidationsRef" Mode="ValidationMode.Manual" ValidateOnLoad="false">
+                <Row>
+                    <Column ColumnSize="ColumnSize.Is12">
+                        <Field>
+                            <FieldLabel>@L["FileFormat"]</FieldLabel>
+                            <Select TValue="ExportFileFormat" @bind-SelectedValue="@ExportInput.FileFormat">
+                                <SelectItem Value="ExportFileFormat.Csv">CSV</SelectItem>
+                                <SelectItem Value="ExportFileFormat.Excel">Excel (.xlsx)</SelectItem>
+                            </Select>
+                        </Field>
+                    </Column>
+                </Row>
 
+                @if (FailedDeductions > 0)
+                {
+                    <Row>
+                        <Column ColumnSize="ColumnSize.Is12">
+                            <Field>
+                                <Check TValue="bool" @bind-Checked="@ExportOnlyFailedRecords">
+                                    @L["ExportOnlyFailedRecords"]
+                                </Check>
+                            </Field>
+                        </Column>
+                    </Row>
+                }
+
+                <Row>
+                    <Column ColumnSize="ColumnSize.Is12">
+                        <Alert Color="Color.Info" Visible>
+                            <AlertDescription>
+                                <Icon Name="IconName.InfoCircle" Margin="Margin.Is1.FromEnd" />
+                                @L["ExportInfo"] (@TotalRecords @L["RecordsWillBeExported"])
+                            </AlertDescription>
+                        </Alert>
+                    </Column>
+                </Row>
+            </Validations>
+        </ModalBody>
+        <ModalFooter>
+            <Button Color="Color.Secondary" @onclick="CloseExportModal">@L["Cancel"]</Button>
+            <Button Color="Color.Primary" 
+                    @onclick="PerformExport"
+                    Loading="IsExporting"
+                    Disabled="IsExporting">
+                <Icon Name="IconName.Download" />
+                @L["Export"]
+            </Button>
+        </ModalFooter>
+    </ModalContent>
+</Modal>

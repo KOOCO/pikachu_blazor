@@ -2081,6 +2081,15 @@
     "Enum:PaymentChannel.1": "Line Pay",
     "Enum:PaymentChannel.2": "貨到付款",
     "PaymentFeeStatus": "金流費用設定",
-    "EdmList": "電子報"
+    "EdmList": "電子報",
+    "ExportLogisticsFeeRecords": "匯出物流費用記錄",
+    "FileFormat": "檔案格式",
+    "ExportOnlyFailedRecords": "僅匯出失敗記錄",
+    "ExportInfo": "匯出將包含符合當前篩選條件的所有記錄。",
+
+    "ExportCompletedSuccessfully": "匯出成功完成",
+    "RecordsWillBeExported": "筆記錄將被匯出",
+    "LogisticsFees": "物流費用"
+
   }
 }

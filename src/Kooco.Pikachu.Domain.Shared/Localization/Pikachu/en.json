@@ -2112,6 +2112,15 @@
     "CurrentYear": "Current Year",
     "PreviousYear": "Previous Year",
     "Archive": "Archive",
-    "PrimaryPaymentProcessingProvider": "Primary payment processing provider"
+    "PrimaryPaymentProcessingProvider": "Primary payment processing provider",
+    "ExportLogisticsFeeRecords": "Export Logistics Fee Records",
+    "FileFormat": "File Format",
+    "ExportOnlyFailedRecords": "Export Only Failed Records",
+    "ExportInfo": "Export will include all records matching current filters.",
+   
+    "ExportCompletedSuccessfully": "Export completed successfully",
+    "RecordsWillBeExported": "records will be exported",
+    "LogisticsFees": "logistics_fees"
+  
   }
 }
