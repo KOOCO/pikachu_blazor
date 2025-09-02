@@ -34,10 +34,20 @@
 
   <ItemGroup>
     <None Remove="Items\" />
+    <None Remove="Localization\MyIdentity\en.json" />
+    <None Remove="Localization\MyIdentity\zh-Hant.json" />
   </ItemGroup>
 
   <ItemGroup>
+	  <EmbeddedResource Include="Localization\MyIdentity\en.json"/>
+	  <EmbeddedResource Include="Localization\MyIdentity\zh-Hant.json"/>
     <EmbeddedResource Include="Localization\PageLayout\en.json" />
     <EmbeddedResource Include="Localization\PageLayout\zh-Hant.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Localization\MyIdentityResource.cs">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Compile>
   </ItemGroup>
 </Project>

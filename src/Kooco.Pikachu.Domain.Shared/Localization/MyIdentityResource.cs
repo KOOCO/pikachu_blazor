@@ -6,6 +6,9 @@ using Volo.Abp.Localization;
 namespace Kooco.Pikachu.Localization
 {
     [LocalizationResourceName("MyIdentity")]
-    public class MyIdentityResource;
+    public class MyIdentityResource 
+    {
+    
+    }
    
 }

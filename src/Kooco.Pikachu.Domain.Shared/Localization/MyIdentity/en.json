@@ -1,5 +1,4 @@
 {
-
   "culture": "en",
   "texts": {
     "Range": "{0} - {1} of {2} items",
@@ -7,5 +6,6 @@
     "NextPage": "Next",
     "FirstPage": "First",
     "LastPage": "Last"
+
   }
 }
