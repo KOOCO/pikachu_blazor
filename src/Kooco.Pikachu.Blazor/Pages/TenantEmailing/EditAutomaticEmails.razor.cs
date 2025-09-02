@@ -142,5 +142,12 @@ namespace Kooco.Pikachu.Blazor.Pages.TenantEmailing
             }
             return true;
         }
+        async Task OnDateChange(DateTime? startDate, DateTime? endDate)
+        {
+            Model.StartDate = startDate;
+            Model.EndDate = endDate;
+
+
+        }
     }
 }

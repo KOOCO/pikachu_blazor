@@ -76,13 +76,15 @@
                         <span class="text-danger"> *</span>
                     </div>
                     <div class="col-3">
-                        <InputDate class="form-control" @bind-Value="Model.StartDate" min="@DateTime.Now.ToString("yyyy-MM-dd")" DisplayName="Start Date"></InputDate>
+                        @* <InputDate class="form-control" @bind-Value="Model.StartDate" min="@DateTime.Now.ToString("yyyy-MM-dd")" DisplayName="Start Date"></InputDate> *@
+                        <DateEdit Date="Model.StartDate" min="@DateTime.Now" DateChanged="(e) => OnDateChange(e, Model.EndDate)" TValue="DateTime?" />
                     </div>
                     <div class="col-1 text-center">
                         <p class="fw-bold fs-large m-0" style="font-size: large; padding: 0.675rem 1.25rem">@L["To"]</p>
                     </div>
                     <div class="col-3">
-                        <InputDate class="form-control" @bind-Value="Model.EndDate" min="@DateTime.Now.ToString("yyyy-MM-dd")" DisplayName="End Date"></InputDate>
+                        @* <InputDate class="form-control" @bind-Value="Model.EndDate" min="@DateTime.Now.ToString("yyyy-MM-dd")" DisplayName="End Date"></InputDate> *@
+                        <DateEdit Date="Model.EndDate" min="@DateTime.Now" DateChanged="(e) => OnDateChange(Model.StartDate, e)" TValue="DateTime?" />
                     </div>
                 </div>
                 <div class="row">

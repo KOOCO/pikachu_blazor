@@ -187,6 +187,14 @@ namespace Kooco.Pikachu.Blazor.Pages.ItemManagement
                 Loading = false;
             }
         }
+
+        async Task OnDateChange(DateTime? startDate, DateTime? endDate)
+        {
+            Filters.MinAvailableTime = startDate;
+            Filters.MinAvailableTime = endDate;
+
+        
+        }
         public void CreateNewItem()
         {
             NavigationManager.NavigateTo("Items/New");

@@ -4,6 +4,7 @@ using Kooco.Pikachu.Items.Dtos;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
+using MudBlazor.Charts;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -131,6 +132,13 @@ namespace Kooco.Pikachu.Blazor.Pages.TenantEmailing
                 return false;
             }
             return true;
+        }
+        async Task OnDateChange(DateTime? startDate, DateTime? endDate)
+        {
+            Model.StartDate = startDate;
+            Model.EndDate = endDate;
+
+
         }
     }
 }

@@ -10,6 +10,7 @@
 @using System.ComponentModel
 @using Blazorise.Components
 @using Blazorise.LoadingIndicator;
+@using System.Globalization
 
 @inject IStringLocalizer<PikachuResource> L
 @inject NavigationManager NavigationManager
@@ -245,11 +246,13 @@
         <Div Class="row">
             <Div Class="col-3">
                 <Label Class="form-label">@L["MinAvailableTime"]</Label>
-                <InputDate class="form-control form-control-sm" @bind-Value="Filters.MinAvailableTime"></InputDate>
+                  <DateEdit Date="Filters.MinAvailableTime" DateChanged="(e) => OnDateChange(e, Filters.MaxAvailableTime)" TValue="DateTime?" />
+                @* <InputDate  @bind-Value:format="CultureInfo.CurrentCulture" class="form-control form-control-sm" @bind-Value="Filters.MinAvailableTime"></InputDate> *@
             </Div>
             <Div Class="col-3">
                 <Label Class="form-label">@L["MaxAvailableTime"]</Label>
-                <InputDate class="form-control form-control-sm" @bind-Value="Filters.MaxAvailableTime"></InputDate>
+                  <DateEdit Date="Filters.MaxAvailableTime" DateChanged="(e) => OnDateChange(Filters.MinAvailableTime, e)" TValue="DateTime?" />
+                @* <InputDate class="form-control form-control-sm" @bind-Value="Filters.MaxAvailableTime"></InputDate> *@
             </Div>
             <Div Class="col-2">
                 <Label Class="form-label">@L["FreeShipping"]</Label>
