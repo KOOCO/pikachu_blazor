@@ -2095,7 +2095,8 @@
     "pieces": "單",
     "OrderCompletedDueToInActivity": "訂單因閒置自動完成：{0} 運送狀態由 '{1}' 變更為 '{2}'",
     "OrderCompletedDueToInActivityTitle": "訂單因閒置自動完成",
-    "EcPayLogisticUpdate": "綠界物流更新"
+    "EcPayLogisticUpdate": "綠界物流更新",
+    "Complete": "訂單關閉"
 
   }
 }

@@ -2123,6 +2123,7 @@
     "LogisticsFees": "logistics_fees",
     "EcPayLogisticUpdate": "EcPay Logistic Update",
     "UploadTCatFileTitleDescription": "Upload your CSV or Excel file to import payout data",
-    "VerifyTCatFileAndImport": "Verify the records and click import to save payout data"
+    "VerifyTCatFileAndImport": "Verify the records and click import to save payout data",
+    "Complete": "Complete"
   }
 }
