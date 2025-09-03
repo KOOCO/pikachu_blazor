@@ -1537,6 +1537,10 @@ public partial class Order
     public async Task OnTabLoadDataGridReadAsync(DataGridReadDataEventArgs<OrderDto> e, string tabName)
     {
         PageIndex = e.Page - 1;
+        OrdersSelected = [];
+        NormalCount = 0;
+        FreezeCount = 0;
+        FreezeCount = 0;
 
         await LoadTabAsPerNameAsync(tabName);
 
