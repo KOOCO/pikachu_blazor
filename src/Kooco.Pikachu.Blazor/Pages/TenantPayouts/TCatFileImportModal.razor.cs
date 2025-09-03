@@ -1,13 +1,13 @@
-using Blazorise;
 using Kooco.Pikachu.Blazor.Helpers;
 using Kooco.Pikachu.CodTradeInfos;
+using Kooco.Pikachu.Extensions;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Forms;
+using Microsoft.JSInterop;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
-using Kooco.Pikachu.Extensions;
 
 namespace Kooco.Pikachu.Blazor.Pages.TenantPayouts;
 
@@ -19,36 +19,13 @@ public partial class TCatFileImportModal
 
     private List<TCatCodTradeInfoRecordDto> _records;
     private bool _recordsVisible;
-    private FilePicker? _pickerRef;
     private bool _importing;
 
-    async Task OnFileUploadAsync(FileChangedEventArgs e)
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        try
+        if (!_recordsVisible)
         {
-            var file = e.Files.FirstOrDefault();
-
-            if (file != null)
-            {
-                string ext = Path.GetExtension(file.Name);
-
-                if (ext != ".xlsx" && ext != ".csv")
-                {
-                    await Message.Error("Only .xlsx and .csv are allowed.", "Invalid Extension");
-                    return;
-                }
-
-                var bytes = await file.GetBytes();
-
-                _records = await TCatCodTradeInfoAppService.ProcessFile(file.Name, bytes);
-                _recordsVisible = true;
-                _pickerRef?.Clear();
-                await InvokeAsync(StateHasChanged);
-            }
-        }
-        catch (Exception ex)
-        {
-            await HandleErrorAsync(ex);
+            await JSRuntime.InvokeVoidAsync("initUploadAreas");
         }
     }
 
@@ -79,14 +56,12 @@ public partial class TCatFileImportModal
         VisibleChangedHandler(true);
         _recordsVisible = false;
         _records = [];
-        _pickerRef?.Clear();
         StateHasChanged();
     }
 
     public void CloseModal()
     {
         _records = [];
-        _pickerRef?.Clear();
         VisibleChangedHandler(false);
         StateHasChanged();
     }
@@ -101,5 +76,34 @@ public partial class TCatFileImportModal
     {
         _recordsVisible = false;
         _records = [];
+    }
+
+    public async Task OnFileChange(InputFileChangeEventArgs args)
+    {
+        try
+        {
+            var file = args.File;
+
+            if (file != null)
+            {
+                string ext = Path.GetExtension(file.Name);
+
+                if (ext != ".xlsx" && ext != ".csv")
+                {
+                    await Message.Error("Only .xlsx and .csv are allowed.", "Invalid Extension");
+                    return;
+                }
+
+                var bytes = await file.GetBytes();
+
+                _records = await TCatCodTradeInfoAppService.ProcessFile(file.Name, bytes);
+                _recordsVisible = true;
+                await InvokeAsync(StateHasChanged);
+            }
+        }
+        catch (Exception ex)
+        {
+            await HandleErrorAsync(ex);
+        }
     }
 }
