@@ -294,12 +294,14 @@ public class PikachuMenuContributor : IMenuContributor
             name: "ShoppingCredits",
 
             displayName: l["ShoppingCredits"],
+            icon: "fas fa-star",
             url: "/shopping-credit",
             requiredPermissionName: PikachuPermissions.ShoppingCredits.Default)
             );
         promotions.AddItem(new ApplicationMenuItem(
             name: "Campaigns",
             displayName: l["Menu:Campaigns"],
+            icon: "fas fa-bullhorn",
             url: "/Campaigns",
             requiredPermissionName: PikachuPermissions.Campaigns.Default)
             );
@@ -349,14 +351,14 @@ public class PikachuMenuContributor : IMenuContributor
            requiredPermissionName: PikachuPermissions.CashFlowReconciliationStatement)
            );
 
-        paymentManagement.AddItem(new ApplicationMenuItem(
-           name: "SalesReport",
-           icon: "fas fa-file-invoice",
-           displayName: l["Menu:SalesReport"],
-           url: "/sales-report",
-            requiredPermissionName: PikachuPermissions.SaleReport
-           ).RequireAuthenticated()
-           );
+        //paymentManagement.AddItem(new ApplicationMenuItem(
+        //   name: "SalesReport",
+        //   icon: "fas fa-file-invoice",
+        //   displayName: l["Menu:SalesReport"],
+        //   url: "/sales-report",
+        //    requiredPermissionName: PikachuPermissions.SaleReport
+        //   ).RequireAuthenticated()
+        //   );
 
         var logisticsManagment =
                 new ApplicationMenuItem(
@@ -510,6 +512,7 @@ public class PikachuMenuContributor : IMenuContributor
              new ApplicationMenuItem(
                  name: PikachuMenus.TenantWalletManagement,
                  displayName: l["Menu:TenantWalletManagement"],
+                 icon: "fas fa-wallet",
                  url: "/wallet",
                  requiredPermissionName: PikachuPermissions.TenantWalletTransactions.Default
              )
