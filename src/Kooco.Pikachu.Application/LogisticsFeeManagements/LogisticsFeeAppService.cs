@@ -634,7 +634,7 @@ namespace Kooco.Pikachu.LogisticsFeeManagements
             var headers = GetLocalizedHeaders();
 
             // Generate filename (culture-aware)
-            var fileName = GenerateExportFileName(tenantName, input.FileFormat);
+            var fileName = GenerateExportFileName(tenantName, input.FileFormat, records[0]?.FileType);
 
             // Create export data using same pattern as your GetListAsExcelFileAsync method
             var exportData = records.Select(x => new Dictionary<string, object>
@@ -732,28 +732,64 @@ namespace Kooco.Pikachu.LogisticsFeeManagements
     };
         }
 
-        private string GenerateExportFileName(string tenantName, ExportFileFormat format)
+        private string GenerateExportFileName(string tenantName, ExportFileFormat format, LogisticsFileType? logisticsFileType)
         {
-            var timestamp = DateTime.Now.ToString("yyyyMMdd_HHmmss");
-            var fileExtension = format == ExportFileFormat.Excel ? "xlsx" : "csv";
+            var currentCulture = CultureInfo.CurrentUICulture.Name;
+            var isTraditionalChinese = currentCulture.StartsWith("zh-Hant") || currentCulture.StartsWith("zh-TW");
 
-            // Use localized filename parts
-            var fileTypeText = format == ExportFileFormat.Excel ? "Excel" : "CSV";
-            var logisticsFeeText = L["LogisticsFees"]; // "Logistics Fees" or "物流費用"
 
-            return $"{tenantName}_{logisticsFeeText}_{fileTypeText}_{timestamp}.{fileExtension}";
+            if (isTraditionalChinese)
+            {
+                var timestamp = DateTime.Now.ToString("yyyyMMdd_HHmmss");
+                var fileExtension = format == ExportFileFormat.Excel ? "xlsx" : "csv";
+
+                // Use localized filename parts
+                var fileTypeText = logisticsFileType == LogisticsFileType.ECPay ? "綠界" : "黑貓";
+                var logisticsFeeText = "物流費用"; // "Logistics Fees" or "物流費用"
+
+                return $"{tenantName}_{logisticsFeeText}_{fileTypeText}_{timestamp}.{fileExtension}";
+            }
+            else
+            {
+                var timestamp = DateTime.Now.ToString("yyyyMMdd_HHmmss");
+                var fileExtension = format == ExportFileFormat.Excel ? "xlsx" : "csv";
+
+                // Use localized filename parts
+                var fileTypeText = logisticsFileType == LogisticsFileType.ECPay ? "ECPay" : "TCat";
+                var logisticsFeeText = "Logistics Fees"; // "Logistics Fees" or "物流費用"
+
+                return $"{tenantName}_{logisticsFeeText}_{fileTypeText}_{timestamp}.{fileExtension}";
+            }
         }
 
         private string GetLocalizedDeductionStatus(WalletDeductionStatus status)
         {
             // Use ABP localization for status values
-            return status switch
+            var currentCulture = CultureInfo.CurrentUICulture.Name;
+            var isTraditionalChinese = currentCulture.StartsWith("zh-Hant") || currentCulture.StartsWith("zh-TW");
+
+
+            if (isTraditionalChinese)
             {
-                WalletDeductionStatus.Completed => L["Completed"],
-                WalletDeductionStatus.Failed => L["Failed"],
-                WalletDeductionStatus.Pending => L["Pending"],
-                _ => L["Unknown"]
-            };
+                return status switch
+                {
+                    WalletDeductionStatus.Completed => "完成訂單",
+                    WalletDeductionStatus.Failed => "失敗",
+                    WalletDeductionStatus.Pending => "待審核",
+                    _ => L["Unknown"]
+                };
+            }
+            else {
+
+                return status switch
+                {
+                    WalletDeductionStatus.Completed => L["Completed"],
+                    WalletDeductionStatus.Failed => L["Failed"],
+                    WalletDeductionStatus.Pending => L["Pending"],
+                    _ => L["Unknown"]
+                };
+
+            }
         }
 
         private string GetLocalizedFailureReason(string failureReason)
