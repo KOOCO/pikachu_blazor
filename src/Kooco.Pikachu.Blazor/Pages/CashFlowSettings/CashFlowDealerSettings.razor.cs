@@ -2,6 +2,7 @@
 using Blazorise.LoadingIndicator;
 using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.PaymentGateways;
+
 using Microsoft.JSInterop;
 using System;
 using System.Collections.Generic;
@@ -27,13 +28,14 @@ public partial class CashFlowDealerSettings
     private bool IsEcPayNotExists = false;
 
     private bool IsManualBankTransferNotExist = false;
-
+ 
     private UpdateOrderValidityDto OrderValidity { get; set; }
     private UpdateChinaTrustDto ChinaTrust { get; set; }
     private UpdateEcPayDto EcPay { get; set; }
     private UpdateManualBankTransferDto ManualBankTransfer { get; set; }
     private LoadingIndicator Loading { get; set; }
     private record FieldMeta(string Id, string Label, Func<string> Get, Action<string> Set);
+
 
     private List<FieldMeta> textFields=new();
     #endregion

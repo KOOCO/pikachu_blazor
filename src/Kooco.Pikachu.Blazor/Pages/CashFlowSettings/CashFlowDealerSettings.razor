@@ -3,10 +3,11 @@
 @using Kooco.Pikachu.PaymentGateways;
 @using Microsoft.Extensions.Localization;
 @using Volo.Abp.AspNetCore.Components.Messages;
+@using Microsoft.Extensions.Configuration;
 @using Volo.Abp.ObjectMapping;
 @using Blazorise.LoadingIndicator;
 @inherits PikachuComponentBase
-
+@inject IConfiguration Configuration;
 @inject IPaymentGatewayAppService _paymentGatewayAppService;
 @inject IUiMessageService _uiMessageService;
 @inject IJSRuntime JSRuntime;
@@ -210,6 +211,8 @@
 </Card>
 
 <!-- ===================== ChinaTrust ===================== -->
+@if(Configuration["App.Environment"]!="Production")
+{
 <Card>
     <CardHeader>
         <h4>@L["ChinaTrust"]</h4>
@@ -314,7 +317,7 @@
         </Validations>
     </CardBody>
 </Card>
-
+}
 <!-- ===================== EcPay ===================== -->
 <Card>
     <CardHeader>
