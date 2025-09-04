@@ -120,12 +120,6 @@ public class InventoryLogAppService : PikachuAppService, IInventoryLogAppService
 
     private string Action(InventoryLogDto value)
     {
-        return value.ActionType switch
-        {
-            InventoryActionType.AddStock => L["StockAdded"],
-            InventoryActionType.DeductStock => L["StockDeducted"],
-            InventoryActionType.ItemSold => L["ItemSold", value.OrderNumber],
-            _ => string.Empty,
-        };
+        return value.ActionType.GetLocalizedDisplayName(L, value.OrderNumber);
     }
 }
