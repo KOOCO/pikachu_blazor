@@ -2124,6 +2124,16 @@
     "EcPayLogisticUpdate": "EcPay Logistic Update",
     "UploadTCatFileTitleDescription": "Upload your CSV or Excel file to import payout data",
     "VerifyTCatFileAndImport": "Verify the records and click import to save payout data",
-    "Complete": "Complete"
+    "Complete": "Complete",
+    "Banner": "Banner",
+    "Favicon": "Favicon",
+    "FacebookTitle": "Facebook Title",
+    "FacebookLink": "Facebook Link",
+    "InstagramTitle": "Instagram Title",
+    "InstagramLink": "Instagram Link",
+    "LineTitle": "Line Title",
+    "LineLink": "Line Link",
+    "PleaseSelect": "Please Select",
+    "Minutes": "Minutes"
   }
 }

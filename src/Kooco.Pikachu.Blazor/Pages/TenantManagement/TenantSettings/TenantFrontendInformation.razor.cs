@@ -37,7 +37,10 @@ public partial class TenantFrontendInformation
             await JSRuntime.InvokeVoidAsync("updateDropText");
         }
     }
-
+    private string LocalizeFilePicker(string key, object[] args)
+    {
+        return L[key];
+    }
     async Task OnFileUploadAsync(FileChangedEventArgs e, string type)
     {
         try

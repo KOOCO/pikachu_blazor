@@ -1041,6 +1041,7 @@
     "Enum:FooterSettingsType.2": "連結",
     "Enum:FooterSettingsType.3": "圖片",
     "Enum:FooterSettingsType.4": "公司與客戶資訊",
+    "Enum:FooterSettingsType.5": "社群媒體",
 
 
     "OnlyOneB2COrC2CCanBeEnabled711": "7-11 B2C 或 C2C 只能啟用其中一個。",
@@ -2096,7 +2097,21 @@
     "OrderCompletedDueToInActivity": "訂單因閒置自動完成：{0} 運送狀態由 '{1}' 變更為 '{2}'",
     "OrderCompletedDueToInActivityTitle": "訂單因閒置自動完成",
     "EcPayLogisticUpdate": "綠界物流更新",
-    "Complete": "訂單關閉"
+    "Complete": "訂單關閉",
+    "Banner": "橫幅圖",
+    "Favicon": "網站圖示",
+    "FacebookTitle": "Facebook 名稱/標題",
+    "FacebookLink": "Facebook 連結",
+    "InstagramTitle": "Instagram 名稱/標題",
+    "InstagramLink": "Instagram 連結",
+    "LineTitle": "Line 名稱/標題",
+    "LineLink": "Line 連結",
+    "Enum:FooterSettingsPositions.1": "左側",
+    "Enum:FooterSettingsPositions.2": "中間",
+    "Enum:FooterSettingsPositions.3": "右側",
+    "IfYouWantToModifyVisitTenantSettings": "請前往租戶設定以修改資訊。",
+    "PleaseSelect": "請選擇",
+    "Minutes": "分鐘"
 
   }
 }
