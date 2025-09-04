@@ -10,6 +10,6 @@ public class CreateUpdateItemCategoryDto
     public Guid? ProductCategoryId { get; set; }
 
     public string? ProductCategoryName { get; set; }
-
+    public string? ProductCategoryZhName { get; set; }
     public string ImageUrl { get; set; }
 }

@@ -140,7 +140,7 @@ public class ProductCategoryAppService(ProductCategoryManager productCategoryMan
     public async Task<List<KeyValueDto>> GetProductCategoryLookupAsync()
     {
         var queryable = await productCategoryRepository.GetQueryableAsync();
-        return [.. queryable.Select(x => new KeyValueDto { Id = x.Id, Name = x.Name })];
+        return [.. queryable.Select(x => new KeyValueDto { Id = x.Id, Name = x.Name,ZhName=x.ZHName })];
     }
     [AllowAnonymous]
     public async Task<List<KeyValueDto>> GetMainProductCategoryLookupAsync()

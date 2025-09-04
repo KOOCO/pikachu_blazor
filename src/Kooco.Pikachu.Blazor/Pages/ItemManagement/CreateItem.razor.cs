@@ -929,6 +929,7 @@ public partial class CreateItem
                 {
                     ProductCategoryId = productCategory.Id,
                     ProductCategoryName = productCategory.Name,
+                    ProductCategoryZhName=productCategory.ZhName,
                     ImageUrl = await ProductCategoryAppService.GetDefaultImageUrlAsync(productCategory.Id)
                 };
 

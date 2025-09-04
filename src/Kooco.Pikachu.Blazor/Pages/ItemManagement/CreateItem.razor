@@ -11,6 +11,7 @@
 @using System.ComponentModel
 @using Blazorise.Components;
 @using Blazorise.LoadingIndicator;
+@using System.Globalization;
 @inherits PikachuComponentBase
 @inject IItemAppService AppService
 @inject NavigationManager NavigationManager
@@ -531,12 +532,16 @@
                     <Autocomplete TItem="KeyValueDto"
                                   TValue="Guid?"
                                   Data="@ProductCategoryLookup"
-                                  TextField="@(( item ) => item.Name)"
+                                  TextField="@(( item ) =>(CultureInfo.CurrentCulture.Name.ToLower()).StartsWith("zh")?item.ZhName??item.Name:item.Name)"
                                   ValueField="@(( item ) => item.Id)"
                                   @bind-SelectedText="SelectedAutoCompleteText"
                                   Placeholder="@L["Search..."]"
                                   Filter="AutocompleteFilter.StartsWith"
-                                  CustomFilter="@(( item, searchValue ) => item.Name.IndexOf( searchValue, 0, StringComparison.CurrentCultureIgnoreCase ) >= 0 )"
+                                  CustomFilter="@(( item, searchValue ) => 
+                                 {
+                                     var displayText = (CultureInfo.CurrentCulture.Name.ToLower()).StartsWith("zh") ? item.ZhName??item.Name : item.Name;
+                                     return displayText?.IndexOf(searchValue, 0, StringComparison.CurrentCultureIgnoreCase) >= 0;
+                                 })"
                                   HighlightSearch
                                   Immediate="true"
                                   SelectedValueChanged="OnSelectedValueChanged"
@@ -561,7 +566,7 @@
                                     {
                                         <TableRow>
                                             <TableRowCell>
-                                                <h5 class="m-0">@itemCategory.ProductCategoryName</h5>
+                                                <h5 class="m-0">@((CultureInfo.CurrentCulture.Name.ToLower()).StartsWith("zh")?itemCategory.ProductCategoryZhName??itemCategory.ProductCategoryName:itemCategory.ProductCategoryName)</h5>
                                                 <Span Class="bg-lightgrey rounded-3" Style="padding: 1px 10px;">
                                                     <Copy Text="@itemCategory.ProductCategoryId" ShouldDisplayIcon="false"></Copy>
                                                 </Span>

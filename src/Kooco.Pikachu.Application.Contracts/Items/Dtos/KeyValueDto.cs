@@ -6,6 +6,7 @@ namespace Kooco.Pikachu.Items.Dtos
     {
         public Guid Id { get; set; }
         public string Name { get; set; }
+        public string? ZhName { get; set; }
 
         public KeyValueDto()
         {
@@ -14,11 +15,13 @@ namespace Kooco.Pikachu.Items.Dtos
 
         public KeyValueDto(
             Guid id,
-            string name
+            string name,
+            string? zhName
             )
         {
             Id = id;
             Name = name;
+            ZhName = zhName;
         }
     }
 }
