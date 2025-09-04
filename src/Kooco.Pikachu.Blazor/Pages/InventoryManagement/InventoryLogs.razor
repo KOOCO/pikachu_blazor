@@ -77,21 +77,7 @@
                                 Field="@nameof(InventoryLogDto.ActionType)"
                                 Caption="@L["Action"]">
                     <DisplayTemplate>
-                        @switch (context.ActionType)
-                        {
-                            case InventoryActionType.AddStock:
-                                @L["StockAdded"]
-                                break;
-                            case InventoryActionType.DeductStock:
-                                @L["StockDeducted"]
-                                break;
-                            case InventoryActionType.ItemSold:
-                                @L["ItemSold", context.OrderNumber]
-                                break;
-                            case InventoryActionType.AddOnProductSold:
-                                @L["AddOnProductSold", context.OrderNumber]
-                                break;
-                        }
+                        @context.ActionType.GetLocalizedDisplayName(L, context.OrderNumber)
                     </DisplayTemplate>
                 </DataGridColumn>
                 <DataGridColumn TItem="InventoryLogDto"
@@ -144,17 +130,17 @@
                     <h5 class="text-muted">@L["NoStockAdjustmentDescription"]</h5>
                 </Div>
             </EmptyTemplate>
-             <NextPageButtonTemplate>@L["NextPage"]</NextPageButtonTemplate>
-    <PreviousPageButtonTemplate>@L["PrevPage"]</PreviousPageButtonTemplate>
-    <LastPageButtonTemplate>@L["LastPage"]</LastPageButtonTemplate>
-    <FirstPageButtonTemplate>@L["FirstPage"]</FirstPageButtonTemplate>
+            <NextPageButtonTemplate>@L["NextPage"]</NextPageButtonTemplate>
+            <PreviousPageButtonTemplate>@L["PrevPage"]</PreviousPageButtonTemplate>
+            <LastPageButtonTemplate>@L["LastPage"]</LastPageButtonTemplate>
+            <FirstPageButtonTemplate>@L["FirstPage"]</FirstPageButtonTemplate>
             <TotalItemsTemplate>
                 @(string.Format(
-                         L["Range"],
-                         ((CurrentPage - 1) * PageSize) + 1,
-                         (CurrentPage * PageSize > TotalCount ? TotalCount : CurrentPage * PageSize),
-                         TotalCount
-                         ))
+                                L["Range"],
+                                ((CurrentPage - 1) * PageSize) + 1,
+                                (CurrentPage * PageSize > TotalCount ? TotalCount : CurrentPage * PageSize),
+                                TotalCount
+                                ))
             </TotalItemsTemplate>
         </DataGrid>
     </CardBody>

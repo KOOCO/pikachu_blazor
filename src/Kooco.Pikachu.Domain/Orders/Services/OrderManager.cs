@@ -150,7 +150,7 @@ public class OrderManager(IOrderRepository orderRepository, IGroupBuyRepository 
         );
     }
 
-    public void AddOrderItem(
+    public OrderItem AddOrderItem(
         Order order,
         Guid? itemId,
         Guid? itemDetailId,
@@ -168,7 +168,7 @@ public class OrderManager(IOrderRepository orderRepository, IGroupBuyRepository 
         bool isAddOnProduct = false
     )
     {
-        order.AddOrderItem(
+        return order.AddOrderItem(
             GuidGenerator.Create(),
             itemId,
             itemDetailId,

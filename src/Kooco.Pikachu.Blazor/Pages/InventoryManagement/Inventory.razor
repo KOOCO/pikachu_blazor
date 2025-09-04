@@ -60,6 +60,9 @@
                     <DataGridColumn TItem="InventoryDto"
                                     Field="@nameof(InventoryDto.ItemName)"
                                     Caption="@L["ItemName"]">
+                        <DisplayTemplate>
+                            <Div Style="min-width: 200px">@context.ItemName</Div>
+                        </DisplayTemplate>
                     </DataGridColumn>
                     <DataGridColumn TItem="InventoryDto"
                                     Field="@nameof(InventoryDto.Attributes)"
@@ -95,24 +98,25 @@
                                     Caption="@L["Edit"]"
                                     Width="30px">
                         <DisplayTemplate>
-                            <Button Class="pk-btn-icon indigo" Clicked="() => Edit(context)">
+                            <a class="pk-btn pk-btn-icon indigo"
+                               href="@($"Inventory-Management/Inventory-Logs/{context.ItemId}/{context.ItemDetailId}")">
                                 <Icon Name="IconName.Pen"></Icon>
-                            </Button>
+                            </a>
                         </DisplayTemplate>
                     </DataGridColumn>
                 </DataGridColumns>
-                 <NextPageButtonTemplate>@L["NextPage"]</NextPageButtonTemplate>
-    <PreviousPageButtonTemplate>@L["PrevPage"]</PreviousPageButtonTemplate>
-    <LastPageButtonTemplate>@L["LastPage"]</LastPageButtonTemplate>
-    <FirstPageButtonTemplate>@L["FirstPage"]</FirstPageButtonTemplate>
-            <TotalItemsTemplate>
-                @(string.Format(
-                         L["Range"],
-                         ((CurrentPage - 1) * PageSize) + 1,
-                         (CurrentPage * PageSize > TotalCount ? TotalCount : CurrentPage * PageSize),
-                         TotalCount
-                         ))
-            </TotalItemsTemplate>
+                <NextPageButtonTemplate>@L["NextPage"]</NextPageButtonTemplate>
+                <PreviousPageButtonTemplate>@L["PrevPage"]</PreviousPageButtonTemplate>
+                <LastPageButtonTemplate>@L["LastPage"]</LastPageButtonTemplate>
+                <FirstPageButtonTemplate>@L["FirstPage"]</FirstPageButtonTemplate>
+                <TotalItemsTemplate>
+                    @(string.Format(
+                                        L["Range"],
+                                        ((CurrentPage - 1) * PageSize) + 1,
+                                        (CurrentPage * PageSize > TotalCount ? TotalCount : CurrentPage * PageSize),
+                                        TotalCount
+                                        ))
+                </TotalItemsTemplate>
             </DataGrid>
         </Div>
     </CardBody>

@@ -3,6 +3,7 @@
 @using Blazorise.LoadingIndicator;
 @using Kooco.Pikachu.Blazor.Pages.LogisticsManagement
 @using Kooco.Pikachu.EnumValues;
+@using Kooco.Pikachu.InventoryManagement
 @using Kooco.Pikachu.Localization;
 @using Kooco.Pikachu.LogisticsProviders;
 @using Kooco.Pikachu.OrderDeliveries;
@@ -2360,12 +2361,20 @@
                                                                     string? firstImage = setItem.Item?.Images?.FirstOrDefault()?.ImageUrl;
                                                                 }
 
-                                                                <Div>
+                                                                <Div Display="Display.Flex">
                                                                     @if (!string.IsNullOrEmpty(firstImage))
                                                                     {
                                                                         <img src="@firstImage" class="img-fluid me-2" style="height: 50px; width: auto;" />
                                                                     }
-                                                                    @setItem.Item?.ItemName
+                                                                    <Span>
+                                                                        @setItem.Item?.ItemName
+                                                                        <br />
+                                                                        @try 
+                                                                        {
+                                                                            <Span>@InventoryLogConsts.GetAttributes(setItem)</Span>
+                                                                        }
+                                                                        catch(Exception){}
+                                                                    </Span>
                                                                 </Div>
                                                             </td>
                                                         </tr>

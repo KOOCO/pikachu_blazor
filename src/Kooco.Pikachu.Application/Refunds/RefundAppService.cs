@@ -1,6 +1,7 @@
 ﻿using Kooco.Pikachu.Emails;
 using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.InboxManagement.Managers;
+using Kooco.Pikachu.InventoryManagement;
 using Kooco.Pikachu.Localization;
 using Kooco.Pikachu.LogisticsProviders;
 using Kooco.Pikachu.OrderDeliveries;
@@ -50,6 +51,7 @@ public class RefundAppService : ApplicationService, IRefundAppService
     private readonly IEmailSender _EmailSender;
     private readonly IEmailAppService _emailAppService;
     private readonly NotificationManager _notificationManager;
+    private readonly InventoryLogManager _inventoryLogManager;
 
     GreenWorldLogisticsCreateUpdateDto GreenWorld { get; set; }
 
@@ -78,7 +80,8 @@ public class RefundAppService : ApplicationService, IRefundAppService
         UserShoppingCreditManager userShoppingCreditManager,
         IUserCumulativeCreditRepository userCumulativeCreditRepository,
         IUserCumulativeCreditAppService userCumulativeCreditAppService,
-        NotificationManager notificationManager
+        NotificationManager notificationManager,
+        InventoryLogManager inventoryLogManager
     )
     {
         _refundRepository = refundRepository;
@@ -98,6 +101,7 @@ public class RefundAppService : ApplicationService, IRefundAppService
         _userCumulativeCreditRepository = userCumulativeCreditRepository;
         _userCumulativeCreditAppService = userCumulativeCreditAppService;
         _notificationManager = notificationManager;
+        _inventoryLogManager = inventoryLogManager;
     }
     #endregion
 
@@ -231,6 +235,7 @@ public class RefundAppService : ApplicationService, IRefundAppService
 
         if (refund.RefundReview is RefundReviewStatus.Success)
         {
+            await _inventoryLogManager.ItemUnsoldAsync(order);
             await _notificationManager.RefundApprovedAsync(args);
         }
 

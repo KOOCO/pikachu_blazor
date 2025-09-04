@@ -29,6 +29,7 @@ public class InventoryLog : FullAuditedEntity<Guid>, IMultiTenant
     public string? Description { get; private set; }
     public Guid? OrderId { get; private set; }
     public string? OrderNumber { get; private set; }
+    public Guid? OrderItemId { get; private set; }
     public Guid? TenantId { get; set; }
 
     [ForeignKey(nameof(ItemId))]
@@ -39,6 +40,9 @@ public class InventoryLog : FullAuditedEntity<Guid>, IMultiTenant
 
     [ForeignKey(nameof(OrderId))]
     public virtual Order Order { get; set; }
+
+    [ForeignKey(nameof(OrderItemId))]
+    public virtual OrderItem OrderItem { get; set; }
 
     public InventoryLog(
         Guid id,
@@ -53,7 +57,8 @@ public class InventoryLog : FullAuditedEntity<Guid>, IMultiTenant
         int saleablePreOrderQuantity,
         string? description,
         Guid? orderId = null,
-        string? orderNumber = null
+        string? orderNumber = null,
+        Guid? orderItemId = null
         ) : base(id)
     {
         SetItem(itemId, itemDetailId);
@@ -62,7 +67,7 @@ public class InventoryLog : FullAuditedEntity<Guid>, IMultiTenant
         SetActionType(actionType);
         SetAmount(stockOnHand, saleableQuantity, preOrderQuantity, saleablePreOrderQuantity);
         SetDescription(description);
-        SetOrder(orderId, orderNumber);
+        SetOrder(orderId, orderNumber, orderItemId);
     }
 
     public InventoryLog SetItem(Guid itemId, Guid itemDetailId)
@@ -127,10 +132,11 @@ public class InventoryLog : FullAuditedEntity<Guid>, IMultiTenant
         return this;
     }
 
-    public InventoryLog SetOrder(Guid? orderId, string? orderNumber)
+    public InventoryLog SetOrder(Guid? orderId, string? orderNumber, Guid? orderItemId)
     {
         OrderId = orderId;
         OrderNumber = orderNumber;
+        OrderItemId = orderItemId;
         return this;
     }
 }

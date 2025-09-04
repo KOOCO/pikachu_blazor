@@ -1,8 +1,11 @@
-﻿using Kooco.Pikachu.Items;
+﻿using Kooco.Pikachu.AddOnProducts;
+using Kooco.Pikachu.Items;
 using Kooco.Pikachu.Localization;
 using Kooco.Pikachu.Orders.Entities;
 using Microsoft.Extensions.Localization;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Volo.Abp;
 using Volo.Abp.Domain.Services;
@@ -13,17 +16,20 @@ public class InventoryLogManager : DomainService
 {
     private readonly IInventoryLogRepository _inventoryLogRepository;
     private readonly IItemDetailsRepository _itemDetailsRepository;
+    private readonly ISetItemRepository _setItemRepository;
     private readonly IStringLocalizer<PikachuResource> _l;
 
     public InventoryLogManager(
         IInventoryLogRepository inventoryLogRepository,
         IItemDetailsRepository itemDetailsRepository,
-        IStringLocalizer<PikachuResource> l
+        IStringLocalizer<PikachuResource> l,
+        ISetItemRepository setItemRepository
         )
     {
         _inventoryLogRepository = inventoryLogRepository;
         _itemDetailsRepository = itemDetailsRepository;
         _l = l;
+        _setItemRepository = setItemRepository;
     }
 
     public async Task<InventoryLog> CreateAsync(
@@ -122,20 +128,16 @@ public class InventoryLogManager : DomainService
         await _itemDetailsRepository.UpdateAsync(itemDetail);
     }
 
-    public async Task<InventoryLog> ItemSoldAsync(Order order, ItemDetails itemDetail, int amount, bool isAddOnProduct = false)
+    public async Task<InventoryLog> ItemSoldAsync(Order order, OrderItem orderItem, ItemDetails itemDetail, int amount, bool isAddOnProduct = false)
     {
-        var attributes = InventoryLogConsts.GetAttributes(
-            itemDetail.Attribute1Value,
-            itemDetail.Attribute2Value,
-            itemDetail.Attribute3Value
-            );
+        var attributes = InventoryLogConsts.GetAttributes(itemDetail);
 
         var description = $"{(isAddOnProduct ? "Add-on Product Sold" : "Item Sold")}: Order #" + order.OrderNo;
 
         var itemSoldLog = CreateItemSoldLog(itemDetail, amount);
 
         var actionType = isAddOnProduct ? InventoryActionType.AddOnProductSold : InventoryActionType.ItemSold;
-        
+
         var inventoryLog = new InventoryLog(
             GuidGenerator.Create(),
             itemDetail.ItemId,
@@ -149,7 +151,8 @@ public class InventoryLogManager : DomainService
             itemSoldLog.SaleablePreOrderQuantity,
             description,
             order.Id,
-            order.OrderNo
+            order.OrderNo,
+            orderItem.Id
             );
 
         await _inventoryLogRepository.InsertAsync(inventoryLog);
@@ -194,6 +197,123 @@ public class InventoryLogManager : DomainService
         }
 
         return new ItemSoldLog(saleableQuantityLog, stockOnHandLog, saleablePreOrderQuantityLog, preOrderQuantityLog);
+    }
+
+    public async Task ItemUnsoldAsync(Order order)
+    {
+        var items = order.OrderItems;
+
+        // Collect all direct detailIds
+        var detailIds = items
+            .Where(i => i.ItemDetailId.HasValue)
+            .Select(i => i.ItemDetailId!.Value)
+            .ToList();
+
+        // Collect set item ids
+        var setItemIds = items
+            .Where(i => i.SetItemId.HasValue)
+            .Select(i => i.SetItemId!.Value)
+            .ToList();
+
+        // Pre-fetch all set item details (flattened)
+        var setItemDetailQ = (await _setItemRepository.GetQueryableAsync())
+            .Where(si => setItemIds.Contains(si.Id))
+            .SelectMany(si => si.SetItemDetails);
+
+        // Resolve all matching ItemDetails for those set item definitions
+        var setItemDetailIds = (await _itemDetailsRepository.GetQueryableAsync())
+            .Where(id => setItemDetailQ.Any(sid =>
+                sid.ItemId == id.ItemId &&
+                sid.Attribute1Value == id.Attribute1Value &&
+                sid.Attribute2Value == id.Attribute2Value &&
+                sid.Attribute3Value == id.Attribute3Value))
+            .Select(id => id.Id)
+            .ToList();
+
+
+        var setItemDetails = setItemDetailQ.ToList();
+
+        detailIds.AddRange(setItemDetailIds);
+
+        // Load all details in one go
+        var details = await _itemDetailsRepository.GetListAsync(id => detailIds.Contains(id.Id));
+        var detailsMap = details.ToDictionary(d => d.Id);
+
+        // Load logs for this order
+        var logs = await _inventoryLogRepository.GetListAsync(l => l.OrderId == order.Id);
+        var logsLookup = logs.ToLookup(l => (l.OrderItemId, l.ItemDetailId));
+
+        // Process reversals
+        foreach (var item in items)
+        {
+            // Direct item
+            if (item.ItemDetailId.HasValue)
+            {
+                detailsMap.TryGetValue(item.ItemDetailId.Value, out var detail);
+
+                if (detail != null)
+                {
+                    foreach (var originalLog in logsLookup[(item.Id, detail.Id)])
+                    {
+                        await ReverseLogAsync(order, item, detail, originalLog);
+                    }
+                }
+            }
+
+            // Set item
+            if (item.SetItemId.HasValue)
+            {
+                var thisSetItemDetails = setItemDetails.Where(sid => sid.SetItemId == item.SetItemId);
+
+                foreach (var sid in thisSetItemDetails)
+                {
+                    var detail = details.FirstOrDefault(d =>
+                        d.ItemId == sid.ItemId &&
+                        d.Attribute1Value == sid.Attribute1Value &&
+                        d.Attribute2Value == sid.Attribute2Value &&
+                        d.Attribute3Value == sid.Attribute3Value);
+
+                    if (detail != null)
+                    {
+                        foreach (var originalLog in logsLookup[(item.Id, detail.Id)])
+                        {
+                            await ReverseLogAsync(order, item, detail, originalLog);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private async Task ReverseLogAsync(Order order, OrderItem item, ItemDetails detail, InventoryLog originalLog)
+    {
+        var attributes = InventoryLogConsts.GetAttributes(detail);
+
+        var actionType = item.IsAddOnProduct
+            ? InventoryActionType.AddOnProductUnsold
+            : InventoryActionType.ItemUnsold;
+
+        var description = $"{(item.IsAddOnProduct ? "Add-on Product Unsold" : "Item Unsold")}: Order #{order.OrderNo}";
+
+        var inventoryLog = new InventoryLog(
+            GuidGenerator.Create(),
+            detail.ItemId,
+            detail.Id,
+            detail.SKU,
+            attributes,
+            actionType,
+            -originalLog.StockOnHand,
+            -originalLog.SaleableQuantity,
+            -originalLog.PreOrderQuantity,
+            -originalLog.SaleablePreOrderQuantity,
+            description,
+            order.Id,
+            order.OrderNo,
+            item.Id
+        );
+
+        await _inventoryLogRepository.InsertAsync(inventoryLog);
+        await AdjustItemDetailStockAsync(inventoryLog);
     }
 
     private record ItemSoldLog(int SaleableQuantity, int StockOnHand, int SaleablePreOrderQuantity, int PreOrderQuantity);

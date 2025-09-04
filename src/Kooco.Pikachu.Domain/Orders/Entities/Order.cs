@@ -759,7 +759,7 @@ public class Order : FullAuditedAggregateRoot<Guid>, IMultiTenant
     /// <summary>
     /// 新增訂單項目
     /// </summary>
-    public void AddOrderItem(
+    public OrderItem AddOrderItem(
         Guid id,
         Guid? itemId,
         Guid? itemDetailId,
@@ -776,7 +776,7 @@ public class Order : FullAuditedAggregateRoot<Guid>, IMultiTenant
         bool isAddOnProduct = false
         )
     {
-        OrderItems.Add(new OrderItem(
+        var orderItem = new OrderItem(
                 id,
                 itemId,
                 itemDetailId,
@@ -792,7 +792,9 @@ public class Order : FullAuditedAggregateRoot<Guid>, IMultiTenant
                 temperature,
                 temperatureCost,
                 isAddOnProduct: isAddOnProduct
-                ));
+                );
+        OrderItems.Add(orderItem);
+        return orderItem;
     }
 
     /// <summary>

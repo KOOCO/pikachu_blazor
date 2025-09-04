@@ -169,7 +169,7 @@ public class OrderAppService : PikachuAppService, IOrderAppService
 
                 foreach (CreateUpdateOrderItemDto item in input.OrderItems)
                 {
-                    OrderManager.AddOrderItem(
+                    var createdItem = OrderManager.AddOrderItem(
                         order,
                         item.ItemId,
                         item.ItemDetailId,
@@ -196,7 +196,7 @@ public class OrderAppService : PikachuAppService, IOrderAppService
                                 throw new UserFriendlyException("Item detail not found", $"There is no item detail with provided id: {item.ItemDetailId}");
                             }
 
-                            await InventoryLogManager.ItemSoldAsync(order, details, item.Quantity);
+                            await InventoryLogManager.ItemSoldAsync(order, createdItem, details, item.Quantity);
                         }
 
                         if (item.SetItemId.HasValue)
@@ -225,7 +225,7 @@ public class OrderAppService : PikachuAppService, IOrderAppService
                                         {
                                             throw new UserFriendlyException("Item detail not found", $"There is no item detail with provided id: {item.ItemDetailId} for set item id: {setItem.Id}");
                                         }
-                                        await InventoryLogManager.ItemSoldAsync(order, detail, totalOrderQuantity);
+                                        await InventoryLogManager.ItemSoldAsync(order, createdItem, detail, totalOrderQuantity);
                                     }
                                 }
                             }
@@ -503,7 +503,7 @@ public class OrderAppService : PikachuAppService, IOrderAppService
                         }
                         .Where(x => !string.IsNullOrEmpty(x)));
 
-                        OrderManager.AddOrderItem(
+                        var createdItem = OrderManager.AddOrderItem(
                             order,
                             itemDetail.ItemId,
                             itemDetail.Id,
@@ -523,6 +523,7 @@ public class OrderAppService : PikachuAppService, IOrderAppService
 
                         await InventoryLogManager.ItemSoldAsync(
                             order,
+                            createdItem,
                             itemDetail,
                             inputCampaign.Amount,
                             isAddOnProduct: true
@@ -2122,6 +2123,8 @@ public class OrderAppService : PikachuAppService, IOrderAppService
         await SendEmailAsync(order.Id, OrderStatus.Closed);
 
         await CheckAndDeductCreditIfApplied(order);
+        
+        await InventoryLogManager.ItemUnsoldAsync(order);
 
         var currentUserId = CurrentUser.Id ?? Guid.Empty;
         var currentUserName = CurrentUser.UserName ?? "System";

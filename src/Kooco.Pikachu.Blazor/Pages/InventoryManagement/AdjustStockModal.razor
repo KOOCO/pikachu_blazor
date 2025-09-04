@@ -44,10 +44,12 @@
                                         </Feedback>
                                         <ChildContent>
                                             <SelectItem TValue="InventoryActionType?" Value="(InventoryActionType?)null"></SelectItem>
-                                            @foreach (var option in ActionTypeOptions)
-                                            {
-                                                <SelectItem TValue="InventoryActionType" Value="option">@L["Enum:InventoryActionType." + (int)option]</SelectItem>
-                                            }
+                                            <SelectItem TValue="InventoryActionType" Value="InventoryActionType.AddStock">
+                                                @L["Enum:InventoryActionType." + (int)InventoryActionType.AddStock]
+                                            </SelectItem>
+                                            <SelectItem TValue="InventoryActionType" Value="InventoryActionType.DeductStock">
+                                                @L["Enum:InventoryActionType." + (int)InventoryActionType.DeductStock]
+                                            </SelectItem>
                                         </ChildContent>
                                     </Select>
                                 </Field>
