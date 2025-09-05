@@ -53,7 +53,7 @@ public class ReturnAndExchangeAppService : PikachuAppService, IReturnAndExchange
         order.ReturnStatus = OrderReturnStatus.Pending;
         order.OrderStatus = OrderStatus.Returned;
         order.ShippingStatus = ShippingStatus.Return;
-
+      
         await OrderRepository.UpdateAsync(order);
 
         var currentUserId = CurrentUser.Id ?? Guid.Empty;
@@ -158,6 +158,7 @@ public class ReturnAndExchangeAppService : PikachuAppService, IReturnAndExchange
             clonedOrder.OrderStatus = isReturn ? OrderStatus.Returned : OrderStatus.Exchange;
             clonedOrder.ShippingStatus = isReturn ? ShippingStatus.Return : ShippingStatus.Exchange;
             clonedOrder.ShippingStatusBeforeReturn = order.ShippingStatus;
+            order.OrderStatus = isReturn ? OrderStatus.Returned : OrderStatus.Exchange;
 
             List<OrderItem> deletedItem = [];
             foreach (var item in order.OrderItems)
@@ -237,7 +238,7 @@ public class ReturnAndExchangeAppService : PikachuAppService, IReturnAndExchange
                         currentUserName
                     ));
             }
-
+            await OrderRepository.UpdateAsync(order);
             return ObjectMapper.Map<Order, OrderDto>(order);
         }
     }
