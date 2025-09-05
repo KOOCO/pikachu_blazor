@@ -1833,15 +1833,16 @@
                                 <Select TValue="ShippingStatus"
                                 Class="form-select form-select-sm"
                                 SelectedValue="@Order.ShippingStatus"
+                                SelectedValueExpression="() => Order.ShippingStatus"
                                 SelectedValueChanged="@(e => ShippingStatusChanged(e))">
                                     @if (Order.ShippingStatus is not ShippingStatus.Exchange)
                                     {
-                                        <SelectItem />
+                                      
                                         @foreach (var enumValue in Enum.GetValues(typeof(ShippingStatus)))
                                         {
                                             @if (enumValue.ToString() is not "Exchange")
                                             {
-                                                <SelectItem Value="@enumValue">@L[enumValue.ToString()??""]</SelectItem>
+                                                <SelectItem  Value="@enumValue">@L[enumValue.ToString()??""]</SelectItem>
                                             }
                                         }
                                     }

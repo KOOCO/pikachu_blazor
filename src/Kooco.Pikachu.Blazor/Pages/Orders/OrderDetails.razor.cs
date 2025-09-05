@@ -3117,6 +3117,7 @@ public partial class OrderDetails
     {
         try
         {
+
             loading = true;
 
             if (selectedValue is ShippingStatus.PrepareShipment)
