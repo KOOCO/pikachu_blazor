@@ -2111,7 +2111,7 @@
     "Enum:FooterSettingsPositions.3": "右側",
     "IfYouWantToModifyVisitTenantSettings": "請前往租戶設定以修改資訊。",
     "PleaseSelect": "請選擇",
-    "Minutes": "分鐘"
-
+    "Minutes": "分鐘",
+    "AddNewMailing": "新增自動發信"
   }
 }

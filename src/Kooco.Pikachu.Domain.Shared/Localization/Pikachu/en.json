@@ -2139,6 +2139,7 @@
     "LineLink": "Line Link",
     "PleaseSelect": "Please Select",
     "Minutes": "Minutes",
-   
+    "ManualBankTransfer": "Manual Bank Transfer",
+    "AddNewMailing": "Add New Mailing"
   }
 }
