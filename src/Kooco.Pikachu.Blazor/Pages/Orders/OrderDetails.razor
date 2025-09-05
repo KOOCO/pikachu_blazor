@@ -1749,27 +1749,27 @@
             <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-2">
                 <div>
                     <PikachuButton Class="pk-btn-sm pk-btn-danger"
-                            Clicked="CancelOrder"
-                            Hidden="@IsButtonHidden("Cancel")">
+                    Clicked="CancelOrder"
+                    Hidden="@IsButtonHidden("Cancel")">
                         @L["Cancel"]
                     </PikachuButton>
                     <PikachuButton Class="pk-btn-sm pk-btn-secondary"
-                            Clicked="OpenRefundModal"
-                            Hidden="@IsButtonHidden("Refund")">
+                    Clicked="OpenRefundModal"
+                    Hidden="@IsButtonHidden("Refund")">
                         @L["ApplyRefund"]
                     </PikachuButton>
                     <PikachuButton Class="pk-btn-sm pk-btn-primary"
-                            Clicked="() => OpenReturnAndExchange(true)"
-                            Hidden="@IsButtonHidden("Return")">
+                    Clicked="() => OpenReturnAndExchange(true)"
+                    Hidden="@IsButtonHidden("Return")">
                         @L["ReturnOrder"]
                     </PikachuButton>
                     <PikachuButton Class="pk-btn-sm pk-btn-primary"
-                            Clicked="() => OpenReturnAndExchange(false)"
-                            Hidden="@IsButtonHidden("Exchange")">
+                    Clicked="() => OpenReturnAndExchange(false)"
+                    Hidden="@IsButtonHidden("Exchange")">
                         @L["ExchangeItem"]
                     </PikachuButton>
-               </div>
-               <div>
+                </div>
+                <div>
                     @if (Order.ShippingStatus == ShippingStatus.ToBeShipped)
                     {
                         <Dropdown>
@@ -1811,8 +1811,8 @@
                         }
                     }
                     <Button Type="ButtonType.Button"
-                        @onclick="NavigateToOrderShipmentDetails"
-                        Class="btn btn-sm btn-primary">
+                    @onclick="NavigateToOrderShipmentDetails"
+                    Class="btn btn-sm btn-primary">
                         <Icon Class="fa fa-print" />
                         @L["PrintOrder"]
                     </Button>
@@ -1837,7 +1837,7 @@
                                 SelectedValueChanged="@(e => ShippingStatusChanged(e))">
                                     @if (Order.ShippingStatus is not ShippingStatus.Exchange)
                                     {
-                                      
+
                                         @foreach (var enumValue in Enum.GetValues(typeof(ShippingStatus)))
                                         {
                                             @if (enumValue.ToString() is not "Exchange")
@@ -1894,7 +1894,7 @@
 
                             <Step Name="step5" Class="@((IsStepActive("step5") ? "step-active" : ""))">
                                 <Marker>
-                                     <Image Source="../images/icons/delivered icon.png"  Style="@GetStepImageStyle("step5")"  />  <!-- Delivered -->
+                                    <Image Source="../images/icons/delivered icon.png"  Style="@GetStepImageStyle("step5")"  />  <!-- Delivered -->
                                 </Marker>
                                 <Caption>
 
@@ -1903,22 +1903,29 @@
                             </Step>
                             @if(Order.Id!=Guid.Empty && IsSpecialConvenienceStoreMethod(Order.DeliveryMethod.Value))
                             {
-                              <Step Name="step6" Class="@((IsStepActive("step6") ? "step-active" : ""))">
-                                <Marker>
-                                  <Image Source="../images/icons/Picked up icon.png" Style="@GetStepImageStyle("step6")" /> 
-                                </Marker>
-                                <Caption>
+                                <Step Name="step6" Class="@((IsStepActive("step6") ? "step-active" : ""))">
+                                    <Marker>
+                                        <Image Source="../images/icons/Picked up icon.png" Style="@GetStepImageStyle("step6")" /> 
+                                    </Marker>
+                                    <Caption>
 
-                                    @L["PickedUp"]
-                                </Caption>
-                            </Step>
+                                        @L["PickedUp"]
+                                    </Caption>
+                                </Step>
                             }
                             <Step Name="step7" Class="@((IsStepActive("step7") ? "step-active" : ""))">
                                 <Marker>
-                                    <Icon style="font-size: 27px;" class="fas fa-flag-checkered" /> <!-- Closed -->
+                                    @if (Order.OrderStatus == OrderStatus.Returned || Order.OrderStatus == OrderStatus.Exchange||Order.ShippingStatus==ShippingStatus.Closed)
+                                    {
+                                         <Image Source="../images/icons/ClosedIcon.png" Style="@GetStepImageStyle("step7")" /> 
+                                    }
+                                    else
+                                    {
+                                        <Icon style="font-size: 27px;" class="fas fa-flag-checkered" /> <!-- Closed -->
+                                    }
                                 </Marker>
                                 <Caption>
-                                    @if(Order.OrderStatus==OrderStatus.Returned||Order.OrderStatus==OrderStatus.Exchange)
+                                    @if(Order.OrderStatus==OrderStatus.Returned||Order.OrderStatus==OrderStatus.Exchange||Order.ShippingStatus==ShippingStatus.Closed)
                                     {
                                     @L["Closed"]
                                     }
