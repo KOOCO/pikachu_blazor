@@ -522,7 +522,7 @@
         <Items>
    <Tab Name="All" TextSize="TextSize.Small">
     <div class="tab-with-badge">
-        <span>All</span>
+        <span>@L["All"]</span>
 
         @if (GetNotificationCountByShippingStatus("All") > 0)
         {
@@ -928,7 +928,7 @@
     <div id="detailPanel" class="detail-panel @(isDetailOpen ? "open" : "closed")">
        <Card>
         <CardHeader  style="display: flex;justify-content: space-between;">
-            <h5>Order Details - @SelectedOrder?.OrderNo</h5>
+            <h5>@L["OrderDetails"] - @SelectedOrder?.OrderNo</h5>
              <CloseButton  Clicked="ClosePanel"/>
         </CardHeader>
 
@@ -1182,7 +1182,7 @@
     <div id="detailPanel" class="detail-panel @(isDetailOpen ? "open" : "closed")">
        <Card>
         <CardHeader  style="display: flex;justify-content: space-between;">
-            <h5>Order Details - @SelectedOrder?.OrderNo</h5>
+            <h5>@L["OrderDetails"] - @SelectedOrder?.OrderNo</h5>
              <CloseButton  Clicked="ClosePanel"/>
         </CardHeader>
 
@@ -1207,19 +1207,19 @@
                                             </DisplayTemplate>
                                         </DataGridColumn>
 
-                                        <DataGridColumn Caption="@L["Delivery Method"]">
+                                        <DataGridColumn Caption="@L["DeliveryMethod"]">
                                             <DisplayTemplate>@L[SelectedOrder.DeliveryMethod.ToString()]</DisplayTemplate>
                                         </DataGridColumn>
-                                        <DataGridColumn Caption="@L["Last Updated Date"]">
+                                        <DataGridColumn Caption="@L["LastUpdatedDate"]">
                                             <DisplayTemplate>@L[SelectedOrder.LastModificationTime.ToString()]</DisplayTemplate>
                                         </DataGridColumn>
                                         <DataGridColumn Caption="@L["Editor"]">
                                             <DisplayTemplate>@L[context.Editor]</DisplayTemplate>
                                         </DataGridColumn>
-                                        <DataGridColumn Caption="@L["Delivery Status"]">
+                                        <DataGridColumn Caption="@L["DeliveryStatus"]">
                                             <DisplayTemplate>@L[SelectedOrder.ShippingStatus.ToString()]</DisplayTemplate>
                                         </DataGridColumn>
-                                        <DataGridColumn Caption="@L["Delivery Temperature"]">
+                                        <DataGridColumn Caption="@L["DeliveryTemperature"]">
                                             <DisplayTemplate>
                                                 @if (context.Items.Count > 0)
                                                 {
@@ -1498,7 +1498,7 @@
     <div id="detailPanel" class="detail-panel @(isDetailOpen ? "open" : "closed")">
        <Card>
         <CardHeader  style="display: flex;justify-content: space-between;">
-            <h5>Order Details - @SelectedOrder?.OrderNo</h5>
+            <h5>@L["OrderDetails"] - @SelectedOrder?.OrderNo</h5>
              <CloseButton  Clicked="ClosePanel"/>
         </CardHeader>
 
@@ -1519,19 +1519,19 @@
                                                         </DisplayTemplate>
                                                     </DataGridColumn>
 
-                                                    <DataGridColumn Caption="@L["Delivery Method"]">
+                                                    <DataGridColumn Caption="@L["DeliveryMethod"]">
                                                         <DisplayTemplate>@L[SelectedOrder.DeliveryMethod.ToString()]</DisplayTemplate>
                                                     </DataGridColumn>
-                                                    <DataGridColumn Caption="@L["Last Updated Date"]">
+                                                    <DataGridColumn Caption="@L["LastUpdatedDate"]">
                                                         <DisplayTemplate>@L[SelectedOrder.LastModificationTime.ToString()]</DisplayTemplate>
                                                     </DataGridColumn>
                                                     <DataGridColumn Caption="@L["Editor"]">
                                                         <DisplayTemplate>@L[context.Editor]</DisplayTemplate>
                                                     </DataGridColumn>
-                                                    <DataGridColumn Caption="@L["Delivery Status"]">
+                                                    <DataGridColumn Caption="@L["DeliveryStatus"]">
                                                         <DisplayTemplate>@L[SelectedOrder.ShippingStatus.ToString()]</DisplayTemplate>
                                                     </DataGridColumn>
-                                                    <DataGridColumn Caption="@L["Delivery Temperature"]">
+                                                    <DataGridColumn Caption="@L["DeliveryTemperature"]">
                                                         <DisplayTemplate>
                                                             @if (context.Items.Count > 0)
                                                             {
@@ -1808,7 +1808,7 @@
     <div id="detailPanel" class="detail-panel @(isDetailOpen ? "open" : "closed")">
        <Card>
         <CardHeader  style="display: flex;justify-content: space-between;">
-            <h5>Order Details - @SelectedOrder?.OrderNo</h5>
+            <h5>@L["OrderDetails"] - @SelectedOrder?.OrderNo</h5>
              <CloseButton  Clicked="ClosePanel"/>
         </CardHeader>
 
@@ -1829,19 +1829,19 @@
                                                         </DisplayTemplate>
                                                     </DataGridColumn>
 
-                                                    <DataGridColumn Caption="@L["Delivery Method"]">
+                                                    <DataGridColumn Caption="@L["DeliveryMethod"]">
                                                         <DisplayTemplate>@L[SelectedOrder.DeliveryMethod.ToString()]</DisplayTemplate>
                                                     </DataGridColumn>
-                                                    <DataGridColumn Caption="@L["Last Updated Date"]">
+                                                    <DataGridColumn Caption="@L["LastUpdatedDate"]">
                                                         <DisplayTemplate>@L[SelectedOrder.LastModificationTime.ToString()]</DisplayTemplate>
                                                     </DataGridColumn>
                                                     <DataGridColumn Caption="@L["Editor"]">
                                                         <DisplayTemplate>@L[context.Editor]</DisplayTemplate>
                                                     </DataGridColumn>
-                                                    <DataGridColumn Caption="@L["Delivery Status"]">
+                                                    <DataGridColumn Caption="@L["DeliveryStatus"]">
                                                         <DisplayTemplate>@L[SelectedOrder.ShippingStatus.ToString()]</DisplayTemplate>
                                                     </DataGridColumn>
-                                                    <DataGridColumn Caption="@L["Delivery Temperature"]">
+                                                    <DataGridColumn Caption="@L["DeliveryTemperature"]">
                                                         <DisplayTemplate>
                                                             @if (context.Items.Count > 0)
                                                             {
@@ -2118,7 +2118,7 @@
     <div id="detailPanel" class="detail-panel @(isDetailOpen ? "open" : "closed")">
        <Card>
         <CardHeader  style="display: flex;justify-content: space-between;">
-            <h5>Order Details - @SelectedOrder?.OrderNo</h5>
+            <h5>@L["OrderDetails"] - @SelectedOrder?.OrderNo</h5>
              <CloseButton  Clicked="ClosePanel"/>
         </CardHeader>
 
@@ -2139,19 +2139,19 @@
                                                         </DisplayTemplate>
                                                     </DataGridColumn>
 
-                                                    <DataGridColumn Caption="@L["Delivery Method"]">
+                                                    <DataGridColumn Caption="@L["DeliveryMethod"]">
                                                         <DisplayTemplate>@L[SelectedOrder.DeliveryMethod.ToString()]</DisplayTemplate>
                                                     </DataGridColumn>
-                                                    <DataGridColumn Caption="@L["Last Updated Date"]">
+                                                    <DataGridColumn Caption="@L["LastUpdatedDate"]">
                                                         <DisplayTemplate>@L[SelectedOrder.LastModificationTime.ToString()]</DisplayTemplate>
                                                     </DataGridColumn>
                                                     <DataGridColumn Caption="@L["Editor"]">
                                                         <DisplayTemplate>@L[context.Editor]</DisplayTemplate>
                                                     </DataGridColumn>
-                                                    <DataGridColumn Caption="@L["Delivery Status"]">
+                                                    <DataGridColumn Caption="@L["DeliveryStatus"]">
                                                         <DisplayTemplate>@L[SelectedOrder.ShippingStatus.ToString()]</DisplayTemplate>
                                                     </DataGridColumn>
-                                                    <DataGridColumn Caption="@L["Delivery Temperature"]">
+                                                    <DataGridColumn Caption="@L["DeliveryTemperature"]">
                                                         <DisplayTemplate>
                                                             @if (context.Items.Count > 0)
                                                             {
@@ -2427,7 +2427,7 @@
     <div id="detailPanel" class="detail-panel @(isDetailOpen ? "open" : "closed")">
        <Card>
         <CardHeader  style="display: flex;justify-content: space-between;">
-            <h5>Order Details - @SelectedOrder?.OrderNo</h5>
+            <h5>@L["OrderDetails"] - @SelectedOrder?.OrderNo</h5>
              <CloseButton  Clicked="ClosePanel"/>
         </CardHeader>
 
@@ -2667,7 +2667,7 @@
     <div id="detailPanel" class="detail-panel @(isDetailOpen ? "open" : "closed")">
        <Card>
         <CardHeader  style="display: flex;justify-content: space-between;">
-            <h5>Order Details - @SelectedOrder?.OrderNo</h5>
+            <h5>@L["OrderDetails"] - @SelectedOrder?.OrderNo</h5>
              <CloseButton  Clicked="ClosePanel"/>
         </CardHeader>
 
@@ -2919,7 +2919,7 @@
     <div id="detailPanel" class="detail-panel @(isDetailOpen ? "open" : "closed")">
        <Card>
         <CardHeader  style="display: flex;justify-content: space-between;">
-            <h5>Order Details - @SelectedOrder?.OrderNo</h5>
+            <h5>@L["OrderDetails"] - @SelectedOrder?.OrderNo</h5>
              <CloseButton  Clicked="ClosePanel"/>
         </CardHeader>
 
@@ -2940,19 +2940,19 @@
                                                         </DisplayTemplate>
                                                     </DataGridColumn>
 
-                                                    <DataGridColumn Caption="@L["Delivery Method"]">
+                                                    <DataGridColumn Caption="@L["DeliveryMethod"]">
                                                         <DisplayTemplate>@L[SelectedOrder.DeliveryMethod.ToString()]</DisplayTemplate>
                                                     </DataGridColumn>
-                                                    <DataGridColumn Caption="@L["Last Updated Date"]">
+                                                    <DataGridColumn Caption="@L["LastUpdatedDate"]">
                                                         <DisplayTemplate>@L[SelectedOrder.LastModificationTime.ToString()]</DisplayTemplate>
                                                     </DataGridColumn>
                                                     <DataGridColumn Caption="@L["Editor"]">
                                                         <DisplayTemplate>@L[context.Editor]</DisplayTemplate>
                                                     </DataGridColumn>
-                                                    <DataGridColumn Caption="@L["Delivery Status"]">
+                                                    <DataGridColumn Caption="@L["DeliveryStatus"]">
                                                         <DisplayTemplate>@L[SelectedOrder.ShippingStatus.ToString()]</DisplayTemplate>
                                                     </DataGridColumn>
-                                                    <DataGridColumn Caption="@L["Delivery Temperature"]">
+                                                    <DataGridColumn Caption="@L["DeliveryTemperature"]">
                                                         <DisplayTemplate>
                                                             @if (context.Items.Count > 0)
                                                             {
@@ -3241,7 +3241,7 @@
     <div id="detailPanel" class="detail-panel @(isDetailOpen ? "open" : "closed")">
        <Card>
         <CardHeader  style="display: flex;justify-content: space-between;">
-            <h5>Order Details - @SelectedOrder?.OrderNo</h5>
+            <h5>@L["OrderDetails"] - @SelectedOrder?.OrderNo</h5>
              <CloseButton  Clicked="ClosePanel"/>
         </CardHeader>
 
@@ -3262,19 +3262,19 @@
                                                         </DisplayTemplate>
                                                     </DataGridColumn>
 
-                                                    <DataGridColumn Caption="@L["Delivery Method"]">
+                                                    <DataGridColumn Caption="@L["DeliveryMethod"]">
                                                         <DisplayTemplate>@L[SelectedOrder.DeliveryMethod.ToString()]</DisplayTemplate>
                                                     </DataGridColumn>
-                                                    <DataGridColumn Caption="@L["Last Updated Date"]">
+                                                    <DataGridColumn Caption="@L["LastUpdatedDate"]">
                                                         <DisplayTemplate>@L[SelectedOrder.LastModificationTime.ToString()]</DisplayTemplate>
                                                     </DataGridColumn>
                                                     <DataGridColumn Caption="@L["Editor"]">
                                                         <DisplayTemplate>@L[context.Editor]</DisplayTemplate>
                                                     </DataGridColumn>
-                                                    <DataGridColumn Caption="@L["Delivery Status"]">
+                                                    <DataGridColumn Caption="@L["DeliveryStatus"]">
                                                         <DisplayTemplate>@L[SelectedOrder.ShippingStatus.ToString()]</DisplayTemplate>
                                                     </DataGridColumn>
-                                                    <DataGridColumn Caption="@L["Delivery Temperature"]">
+                                                    <DataGridColumn Caption="@L["DeliveryTemperature"]">
                                                         <DisplayTemplate>
                                                             @if (context.Items.Count > 0)
                                                             {
@@ -3563,7 +3563,7 @@
     <div id="detailPanel" class="detail-panel @(isDetailOpen ? "open" : "closed")">
        <Card>
         <CardHeader  style="display: flex;justify-content: space-between;">
-            <h5>Order Details - @SelectedOrder?.OrderNo</h5>
+            <h5>@L["OrderDetails"] - @SelectedOrder?.OrderNo</h5>
              <CloseButton  Clicked="ClosePanel"/>
         </CardHeader>
 
@@ -3584,19 +3584,19 @@
                                                         </DisplayTemplate>
                                                     </DataGridColumn>
 
-                                                    <DataGridColumn Caption="@L["Delivery Method"]">
+                                                    <DataGridColumn Caption="@L["DeliveryMethod"]">
                                                         <DisplayTemplate>@L[SelectedOrder.DeliveryMethod.ToString()]</DisplayTemplate>
                                                     </DataGridColumn>
-                                                    <DataGridColumn Caption="@L["Last Updated Date"]">
+                                                    <DataGridColumn Caption="@L["LastUpdatedDate"]">
                                                         <DisplayTemplate>@L[SelectedOrder.LastModificationTime.ToString()]</DisplayTemplate>
                                                     </DataGridColumn>
                                                     <DataGridColumn Caption="@L["Editor"]">
                                                         <DisplayTemplate>@L[context.Editor]</DisplayTemplate>
                                                     </DataGridColumn>
-                                                    <DataGridColumn Caption="@L["Delivery Status"]">
+                                                    <DataGridColumn Caption="@L["DeliveryStatus"]">
                                                         <DisplayTemplate>@L[SelectedOrder.ShippingStatus.ToString()]</DisplayTemplate>
                                                     </DataGridColumn>
-                                                    <DataGridColumn Caption="@L["Delivery Temperature"]">
+                                                    <DataGridColumn Caption="@L["DeliveryTemperature"]">
                                                         <DisplayTemplate>
                                                             @if (context.Items.Count > 0)
                                                             {
@@ -3884,7 +3884,7 @@
     <div id="detailPanel" class="detail-panel @(isDetailOpen ? "open" : "closed")">
        <Card>
         <CardHeader  style="display: flex;justify-content: space-between;">
-            <h5>Order Details - @SelectedOrder?.OrderNo</h5>
+            <h5>@L["OrderDetails"] - @SelectedOrder?.OrderNo</h5>
              <CloseButton  Clicked="ClosePanel"/>
         </CardHeader>
 
