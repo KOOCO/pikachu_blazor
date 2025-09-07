@@ -1,12 +1,9 @@
-using Kooco.Pikachu.Blazor.Helpers;
+using Kooco.Pikachu.Blazor.Pages.Components;
 using Kooco.Pikachu.CodTradeInfos;
 using Kooco.Pikachu.Extensions;
 using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Forms;
-using Microsoft.JSInterop;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Threading.Tasks;
 
 namespace Kooco.Pikachu.Blazor.Pages.TenantPayouts;
@@ -20,14 +17,7 @@ public partial class TCatFileImportModal
     private List<TCatCodTradeInfoRecordDto> _records;
     private bool _recordsVisible;
     private bool _importing;
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (!_recordsVisible)
-        {
-            await JSRuntime.InvokeVoidAsync("initUploadAreas");
-        }
-    }
+    private bool _processingFile;
 
     async Task Import()
     {
@@ -78,25 +68,15 @@ public partial class TCatFileImportModal
         _records = [];
     }
 
-    public async Task OnFileChange(InputFileChangeEventArgs args)
+    async Task FileInfoChanged(PikachuFileInfo fileInfo)
     {
         try
         {
-            var file = args.File;
-
-            if (file != null)
+            _records = [];
+            if (fileInfo != null)
             {
-                string ext = Path.GetExtension(file.Name);
-
-                if (ext != ".xlsx" && ext != ".csv")
-                {
-                    await Message.Error("Only .xlsx and .csv are allowed.", "Invalid Extension");
-                    return;
-                }
-
-                var bytes = await file.GetBytes();
-
-                _records = await TCatCodTradeInfoAppService.ProcessFile(file.Name, bytes);
+                _processingFile = true;
+                _records = await TCatCodTradeInfoAppService.ProcessFile(fileInfo.Name, fileInfo.FileBytes);
                 _recordsVisible = true;
                 await InvokeAsync(StateHasChanged);
             }
@@ -104,6 +84,10 @@ public partial class TCatFileImportModal
         catch (Exception ex)
         {
             await HandleErrorAsync(ex);
+        }
+        finally
+        {
+            _processingFile = false;
         }
     }
 }

@@ -3,7 +3,6 @@
 <link href="/css/tenant-payout.css" rel="stylesheet" />
 @inherits PikachuComponentBase
 @inject ITCatCodTradeInfoAppService TCatCodTradeInfoAppService
-@inject IJSRuntime JSRuntime
 
 <Modal @bind-Visible="@Visible">
     <ModalContent Size="_recordsVisible? ModalSize.ExtraLarge: ModalSize.Large">
@@ -17,16 +16,9 @@
         <ModalBody>
             @if (!_recordsVisible)
             {
-                <div class="upload-section" id="uploadSection">
-                    <div class="upload-area" id="uploadArea" onclick="document.getElementById('fileInput').click()">
-                        <div class="upload-icon">📄</div>
-                        <div class="upload-text">Drop your file here or click to browse</div>
-                        <div class="upload-subtext">Drag and drop your file anywhere in this area</div>
-                        <div class="file-types">Supported: CSV, Excel (Max 10MB)</div>
-                        <InputFile type="file" id="fileInput" class="file-input" accept=".csv,.xlsx,.xls"
-                               OnChange="OnFileChange" />
-                    </div>
-                </div>
+                <PikachuFileInput FileInfoChanged="FileInfoChanged"
+                                  FileType="PikachuFileType.ExcelCsv"
+                                  Processing="_processingFile" />
             }
             else
             {
@@ -113,7 +105,9 @@
                     📥 @L["Import"]
                 </PikachuButton>
             }
-            <PikachuButton Class="pk-btn-outline-primary" Disabled="_importing" Clicked="CloseModal">@L["Cancel"]</PikachuButton>
+            <PikachuButton Class="pk-btn-outline-primary" Disabled="_importing" Clicked="CloseModal">
+                @L["Cancel"]
+            </PikachuButton>
         </ModalFooter>
     </ModalContent>
 </Modal>

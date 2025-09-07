@@ -1,0 +1,54 @@
+﻿@inject IJSRuntime JSRuntime
+@inherits PikachuComponentBase
+
+<div class="pikachu-file-input-container @GetDisabledClass()" id="pikachuFileInputContainer_@_randomId">
+    <div class="pikachu-file-upload-area" id="pikachuFileUploadArea_@_randomId" onclick="document.getElementById('@InputId').click()">
+        @if (Processing)
+        {
+            <div class="pikachu-pulse"></div>
+        }
+        else
+        {
+            <div class="pikachu-file-upload-icon">
+                <i class="fas fa-cloud-upload"></i>
+            </div>
+            <div class="pikachu-file-upload-text">
+                <text>@L[Multiple ? "PikachuFileInput:DropFilesHere" : "PikachuFileInput:DropFileHere"]</text>
+            </div>
+            <div class="pikachu-file-input-types">
+                @L["PikachuFileInput:SupportedFiles", SupportedFiles]
+                <br />
+                @L["PikachuFileInput:MaxSize", SizeMb]
+            </div>
+        }
+        <InputFile multiple="@Multiple"
+                   type="file"
+                   id="@InputId"
+                   class="pikachu-file-input"
+                   accept="@AcceptString"
+                   disabled="@Disabled"
+                   OnChange="OnFileChange" />
+    </div>
+</div>
+@if (ErrorMessages.Any())
+{
+    <div class="pikachu-file-errors">
+        @foreach (var error in ErrorMessages)
+        {
+            <div class="pikachu-file-error">@error</div>
+        }
+    </div>
+}
+@if (FileInfos.Any())
+{
+    <div class="pikachu-selected-files">
+        @foreach (var fileInfo in FileInfos)
+        {
+            <div class="pikachu-file-item">
+                <span class="pikachu-file-name">@fileInfo.Name</span>
+                <span class="pikachu-file-size">(@FormatFileSize(fileInfo.File?.Size ?? fileInfo.FileBytes.Length))</span>
+                <button type="button" class="pikachu-file-remove" @onclick="() => RemoveFile(fileInfo)">×</button>
+            </div>
+        }
+    </div>
+}
