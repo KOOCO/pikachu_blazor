@@ -3946,9 +3946,27 @@ public partial class EditGroupBuy
             for (int i = 0; i < CollapseItem.Count; i++)
             {
                 CollapseItem[i].Index = i + 1;
+                if (CollapseItem[i].GroupBuyModuleType == GroupBuyModuleType.ProductGroupModule)
+                {
+                    CollapseItem[i].Selected = new List<ItemWithItemTypeDto>();
+
+
+                }
                 CollapseItem[i].SortOrder = i + 1;
             }
             await UpdateSortOrderAsync();
+            for (int i = 0; i < CollapseItem.Count; i++)
+            {
+              
+                if (CollapseItem[i].GroupBuyModuleType == GroupBuyModuleType.ProductGroupModule)
+                {
+                    CollapseItem[i].Selected = new List<ItemWithItemTypeDto>();
+                    await OnCollapseVisibleChanged(CollapseItem[i], true);
+                    await OnCollapseVisibleChanged(CollapseItem[i], false);
+                }
+               
+            }
+           
             StateHasChanged();
         }
     }
