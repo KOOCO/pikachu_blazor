@@ -49,7 +49,7 @@ public class InventoryLogManager : DomainService
         Check.NotDefaultOrNull<Guid>(itemId, nameof(itemId));
         Check.NotDefaultOrNull<Guid>(itemDetailId, nameof(itemDetailId));
         Check.NotNullOrWhiteSpace(sku, nameof(sku), InventoryLogConsts.MaxSkuLength);
-        Check.NotNullOrWhiteSpace(attributes, nameof(attributes), InventoryLogConsts.MaxAttributesLength);
+        //Check.NotNullOrWhiteSpace(attributes, nameof(attributes), InventoryLogConsts.MaxAttributesLength);
         Check.NotNullOrWhiteSpace(description, nameof(description), InventoryLogConsts.MaxDescriptionLength);
 
         if (actionType != InventoryActionType.AddStock)
