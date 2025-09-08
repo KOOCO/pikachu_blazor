@@ -1,4 +1,5 @@
 ﻿using Kooco.Pikachu.AddOnProducts;
+using Kooco.Pikachu.Freebies;
 using Kooco.Pikachu.Items;
 using Kooco.Pikachu.Localization;
 using Kooco.Pikachu.Orders.Entities;
@@ -18,19 +19,22 @@ public class InventoryLogManager : DomainService
     private readonly IInventoryLogRepository _inventoryLogRepository;
     private readonly IItemDetailsRepository _itemDetailsRepository;
     private readonly ISetItemRepository _setItemRepository;
+    private readonly IFreebieRepository _freebieRepository;
     private readonly IStringLocalizer<PikachuResource> _l;
 
     public InventoryLogManager(
         IInventoryLogRepository inventoryLogRepository,
         IItemDetailsRepository itemDetailsRepository,
-        IStringLocalizer<PikachuResource> l,
-        ISetItemRepository setItemRepository
+        ISetItemRepository setItemRepository,
+        IFreebieRepository freebieRepository,
+        IStringLocalizer<PikachuResource> l
         )
     {
         _inventoryLogRepository = inventoryLogRepository;
         _itemDetailsRepository = itemDetailsRepository;
-        _l = l;
         _setItemRepository = setItemRepository;
+        _freebieRepository = freebieRepository;
+        _l = l;
     }
 
     public async Task<InventoryLog> CreateAsync(
@@ -235,6 +239,13 @@ public class InventoryLogManager : DomainService
             .Select(id => id.Id)
             .ToList();
 
+        var freebieIds = items.Where(i => i.FreebieId.HasValue).Select(i => i.FreebieId!.Value).ToList();
+
+        var freebies = (await _freebieRepository.GetQueryableAsync())
+            .Where(f => freebieIds.Contains(f.Id))
+            .ToList();
+
+        var freebieMap = freebies.ToDictionary(f => f.Id);
 
         var setItemDetails = setItemDetailQ.ToList();
 
@@ -291,6 +302,15 @@ public class InventoryLogManager : DomainService
                             await ReverseLogAsync(order, item, detail, originalLog);
                         }
                     }
+                }
+            }
+
+            if (item.FreebieId.HasValue)
+            {
+                freebieMap.TryGetValue(item.FreebieId.Value, out var freebie);
+                if (freebie != null)
+                {
+                    freebie.FreebieAmount += item.Quantity;
                 }
             }
         }
@@ -386,6 +406,14 @@ public class InventoryLogManager : DomainService
                     await _inventoryLogRepository.InsertAsync(inventoryLog);
                     await AdjustItemDetailStockAsync(inventoryLog);
                 }
+            }
+        }
+        if (item.FreebieId.HasValue)
+        {
+            var freebie = await _freebieRepository.FirstOrDefaultAsync(f => f.Id == item.FreebieId);
+            if (freebie != null)
+            {
+                freebie.FreebieAmount += item.Quantity;
             }
         }
     }

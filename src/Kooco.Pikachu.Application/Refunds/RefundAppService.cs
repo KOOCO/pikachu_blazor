@@ -235,7 +235,6 @@ public class RefundAppService : ApplicationService, IRefundAppService
 
         if (refund.RefundReview is RefundReviewStatus.Success)
         {
-            await _inventoryLogManager.ItemUnsoldAsync(order);
             await _notificationManager.RefundApprovedAsync(args);
         }
 
