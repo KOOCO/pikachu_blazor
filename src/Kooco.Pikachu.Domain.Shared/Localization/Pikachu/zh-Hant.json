@@ -2118,6 +2118,7 @@
     "PikachuFileInput:SupportedFiles": "支援格式：{0}",
     "PikachuFileInput:MaxSize": "最大檔案大小：{0}MB",
     "PikachuFileInput:InvalidFileSize": "檔案「{0}」超過允許的最大大小。",
-    "PikachuFileInput:InvalidFileExtension": "檔案「{0}」的類型不符合允許的格式。"
+    "PikachuFileInput:InvalidFileExtension": "檔案「{0}」的類型不符合允許的格式。",
+    "Shipping": "運送"
   }
 }
