@@ -1176,6 +1176,7 @@ public class OrderAppService : PikachuAppService, IOrderAppService
 
                     //item.TotalAmount = item.TotalAmount - item.TotalAmount;
                     //item.ItemPrice = item.ItemPrice - item.ItemPrice;
+                    await InventoryLogManager.OrderItemUnsoldAsync(ord, item);
                     item.Quantity = item.Quantity - item.Quantity;
                 }
             }
@@ -1184,6 +1185,42 @@ public class OrderAppService : PikachuAppService, IOrderAppService
             await OrderRepository.UpdateAsync(ord);
 
             await UnitOfWorkManager.Current.SaveChangesAsync();
+
+            foreach (var item in order1.OrderItems)
+            {
+                if (item.ItemId.HasValue)
+                {
+                    ItemDetails? details = await ItemDetailsRepository.FirstOrDefaultAsync(x => x.ItemId == item.ItemId && x.Id == item.ItemDetailId);
+                    if (!item.ItemDetailId.HasValue || details == null)
+                    {
+                        throw new UserFriendlyException("Item detail not found", $"There is no item detail with provided id: {item.ItemDetailId}");
+                    }
+
+                    await InventoryLogManager.ItemSoldAsync(order1, item, details, item.Quantity, item.IsAddOnProduct);
+                }
+                if (item.SetItemId.HasValue)
+                {
+                    var setItem = await SetItemRepository.GetWithDetailsAsync(item.SetItemId.Value);
+                    if (setItem != null)
+                    {
+                        setItem.SaleableQuantity -= item.Quantity;
+
+                        foreach (var setItemDetail in setItem.SetItemDetails)
+                        {
+                            var totalOrderQuantity = setItemDetail.Quantity * item.Quantity;
+                            var detail = await ItemDetailsRepository.FirstOrDefaultAsync(x =>
+                                        x.ItemId == setItemDetail.ItemId
+                                        && x.Attribute1Value == setItemDetail.Attribute1Value
+                                        && x.Attribute2Value == setItemDetail.Attribute2Value
+                                        && x.Attribute3Value == setItemDetail.Attribute3Value
+                                        )
+                                ?? throw new UserFriendlyException("Item detail not found", $"There is no item detail with provided id: {item.ItemDetailId} for set item id: {setItem.Id}");
+                            await InventoryLogManager.ItemSoldAsync(order1, item, detail, totalOrderQuantity);
+                        }
+                    }
+                }
+            }
+
             newOrder = order1;
 
             newOrder.TotalAmount = newOrder.OrderItems.Sum(x => x.TotalAmount);
@@ -1898,6 +1935,8 @@ public class OrderAppService : PikachuAppService, IOrderAppService
     public async Task ChangeReturnStatusAsync(Guid id, OrderReturnStatus? orderReturnStatus, bool isRefund)
     {
         var order = await OrderRepository.GetAsync(id);
+        await OrderRepository.EnsureCollectionLoadedAsync(order, o => o.OrderItems);
+
         // Capture old status before updating
         var oldReturnStatus = order.ReturnStatus;
         order.ReturnStatus = orderReturnStatus;
@@ -1933,6 +1972,8 @@ public class OrderAppService : PikachuAppService, IOrderAppService
                     order.TotalAmount, TransactionType.Returned, TransactionStatus.Successful, order.PaymentMethod?.GetPaymentChannel());
                 await OrderTransactionManager.CreateAsync(orderTransaction);
             }
+
+            await InventoryLogManager.ItemUnsoldAsync(order);
         }
         if (orderReturnStatus == OrderReturnStatus.Succeeded && order.OrderStatus == OrderStatus.Exchange)
         {

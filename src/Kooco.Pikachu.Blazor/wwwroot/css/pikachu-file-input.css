@@ -1,0 +1,212 @@
+﻿.pikachu-file-input-container {
+    border: 3px dashed #667eea;
+    border-radius: 12px;
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    text-align: center;
+}
+
+    .pikachu-file-input-container::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+        transition: left 0.5s ease;
+    }
+
+    .pikachu-file-input-container:hover {
+        border-color: #5a6fd8;
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.15);
+    }
+
+        .pikachu-file-input-container:hover::before {
+            left: 100%;
+        }
+
+    .pikachu-file-input-container.dragover {
+        border-color: #4c63d2;
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.15) 0%, rgba(118, 75, 162, 0.15) 100%);
+        transform: scale(1.02);
+    }
+
+    .pikachu-file-input-container.disabled {
+        pointer-events: none;
+        opacity: 0.6;
+    }
+
+.pikachu-file-upload-area {
+    width: 100%;
+    height: 100%;
+    padding: 3rem 2rem;
+}
+
+.pikachu-file-upload-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.pikachu-pulse {
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    animation: pikachu-pulse 1.2s ease-in-out infinite;
+    margin: 0 auto;
+    box-shadow: 0 0 10px rgba(118, 75, 162, 0.6);
+}
+
+@keyframes pikachu-pulse {
+    0%, 100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+
+    50% {
+        transform: scale(1.5);
+        opacity: 0.6;
+    }
+}
+
+.pikachu-file-upload-text {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: #2c3e50;
+}
+
+.pikachu-file-input-types {
+    background: #e8f4fd;
+    color: #0056b3;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    display: inline-block;
+}
+
+.pikachu-file-input {
+    display: none;
+}
+
+.pikachu-file-errors {
+    margin-top: 10px;
+    color: #dc3545;
+    font-size: 0.8rem;
+}
+
+.pikachu-file-error {
+    margin-bottom: 4px;
+}
+
+.pikachu-file-error::before {
+    content: '- '
+}
+
+.pikachu-selected-files {
+    margin-top: 15px;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    background-color: #fff;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.pikachu-file-item {
+    display: flex;
+    align-items: center;
+    padding: 10px 15px;
+    border-bottom: 1px solid #f0f0f0;
+    transition: background-color 0.2s ease;
+}
+
+    .pikachu-file-item:last-child {
+        border-bottom: none;
+    }
+
+    .pikachu-file-item:hover {
+        background-color: #f8f9fa;
+    }
+
+.pikachu-file-name {
+    flex: 1;
+    font-weight: 500;
+    color: #333;
+    text-align: left;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.pikachu-file-size {
+    font-size: 12px;
+    color: #666;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+.pikachu-file-remove {
+    background: none;
+    border: none;
+    color: #dc3545;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    padding: 4px 6.5px;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    line-height: 1;
+    border-radius: 50%;
+}
+
+    .pikachu-file-remove:hover {
+        background-color: #dc3545;
+        color: white;
+    }
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .pikachu-file-upload-area {
+        padding: 30px 15px;
+    }
+
+    .pikachu-file-upload-icon {
+        font-size: 36px;
+        margin-bottom: 10px;
+    }
+
+    .pikachu-file-upload-text {
+        font-size: 14px;
+    }
+
+    .pikachu-file-input-types {
+        font-size: 11px;
+    }
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.pikachu-file-item {
+    animation: slideIn 0.3s ease-out;
+}

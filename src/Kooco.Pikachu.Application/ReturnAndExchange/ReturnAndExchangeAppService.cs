@@ -1,10 +1,13 @@
 ﻿using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.InboxManagement.Managers;
+using Kooco.Pikachu.InventoryManagement;
+using Kooco.Pikachu.Items;
 using Kooco.Pikachu.OrderItems;
 using Kooco.Pikachu.Orders;
 using Kooco.Pikachu.Orders.Entities;
 using Kooco.Pikachu.Orders.Repositories;
 using Kooco.Pikachu.Orders.Services;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,6 +26,9 @@ public class ReturnAndExchangeAppService : PikachuAppService, IReturnAndExchange
     protected OrderHistoryManager OrderHistoryManager { get; }
     protected OrderBuilder OrderBuilder { get; }
     protected NotificationManager NotificationManager { get; }
+    protected InventoryLogManager InventoryLogManager { get; }
+    protected IItemDetailsRepository ItemDetailsRepository { get; }
+    protected ISetItemRepository SetItemRepository { get; }
 
     public ReturnAndExchangeAppService(
         IOrderRepository orderRepository,
@@ -31,7 +37,10 @@ public class ReturnAndExchangeAppService : PikachuAppService, IReturnAndExchange
         IRepository<OrderItem, Guid> orderItemRepository,
         OrderHistoryManager orderHistoryManager,
         OrderBuilder orderBuilder,
-        NotificationManager notificationManager
+        NotificationManager notificationManager,
+        InventoryLogManager inventoryLogManager,
+        IItemDetailsRepository itemDetailsRepository,
+        ISetItemRepository setItemRepository
         )
     {
         OrderRepository = orderRepository;
@@ -41,6 +50,9 @@ public class ReturnAndExchangeAppService : PikachuAppService, IReturnAndExchange
         OrderHistoryManager = orderHistoryManager;
         OrderBuilder = orderBuilder;
         NotificationManager = notificationManager;
+        InventoryLogManager = inventoryLogManager;
+        ItemDetailsRepository = itemDetailsRepository;
+        SetItemRepository = setItemRepository;
     }
 
     public async Task ReturnOrderAsync(Guid id)
@@ -53,7 +65,7 @@ public class ReturnAndExchangeAppService : PikachuAppService, IReturnAndExchange
         order.ReturnStatus = OrderReturnStatus.Pending;
         order.OrderStatus = OrderStatus.Returned;
         order.ShippingStatus = ShippingStatus.Return;
-      
+
         await OrderRepository.UpdateAsync(order);
 
         var currentUserId = CurrentUser.Id ?? Guid.Empty;
@@ -180,19 +192,63 @@ public class ReturnAndExchangeAppService : PikachuAppService, IReturnAndExchange
                         orderItem.SelectedQuantity,
                         item.SKU,
                         item.DeliveryTemperature,
-                        item.DeliveryTemperatureCost
+                        item.DeliveryTemperatureCost,
+                        item.IsAddOnProduct
                     );
                     item.Quantity -= orderItem.SelectedQuantity;
                     item.TotalAmount = item.Quantity * item.ItemPrice;
 
                     order.TotalQuantity -= orderItem.SelectedQuantity;
                     order.TotalAmount -= orderItem.SelectedQuantity * item.ItemPrice;
+
+                    if (isReturn)
+                    {
+                        await InventoryLogManager.OrderItemUnsoldAsync(order, item); 
+                    }
                 }
             }
 
             clonedOrder.TotalAmount = clonedOrder.OrderItems.Sum(x => x.TotalAmount);
             clonedOrder.TotalQuantity = clonedOrder.OrderItems.Sum(x => x.Quantity);
             await OrderRepository.InsertAsync(clonedOrder);
+
+            if (isReturn)
+            {
+                foreach (var item in clonedOrder.OrderItems)
+                {
+                    if (item.ItemId.HasValue)
+                    {
+                        ItemDetails? details = await ItemDetailsRepository.FirstOrDefaultAsync(x => x.ItemId == item.ItemId && x.Id == item.ItemDetailId);
+                        if (!item.ItemDetailId.HasValue || details == null)
+                        {
+                            throw new UserFriendlyException("Item detail not found", $"There is no item detail with provided id: {item.ItemDetailId}");
+                        }
+
+                        await InventoryLogManager.ItemSoldAsync(clonedOrder, item, details, item.Quantity, item.IsAddOnProduct);
+                    }
+                    if (item.SetItemId.HasValue)
+                    {
+                        var setItem = await SetItemRepository.GetWithDetailsAsync(item.SetItemId.Value);
+                        if (setItem != null)
+                        {
+                            setItem.SaleableQuantity -= item.Quantity;
+
+                            foreach (var setItemDetail in setItem.SetItemDetails)
+                            {
+                                var totalOrderQuantity = setItemDetail.Quantity * item.Quantity;
+                                var detail = await ItemDetailsRepository.FirstOrDefaultAsync(x =>
+                                            x.ItemId == setItemDetail.ItemId
+                                            && x.Attribute1Value == setItemDetail.Attribute1Value
+                                            && x.Attribute2Value == setItemDetail.Attribute2Value
+                                            && x.Attribute3Value == setItemDetail.Attribute3Value
+                                            )
+                                    ?? throw new UserFriendlyException("Item detail not found", $"There is no item detail with provided id: {item.ItemDetailId} for set item id: {setItem.Id}");
+                                await InventoryLogManager.ItemSoldAsync(clonedOrder, item, detail, totalOrderQuantity);
+                            }
+                        }
+                    }
+                } 
+            }
 
             // **Get Current User (Editor)**
             var currentUserId = CurrentUser.Id ?? Guid.Empty;
@@ -224,8 +280,8 @@ public class ReturnAndExchangeAppService : PikachuAppService, IReturnAndExchange
             {
                 await NotificationManager.ReturnRequestedAsync(
                     NotificationArgs.ForOrderWithUserName(
-                        order.Id, 
-                        order.OrderNo, 
+                        order.Id,
+                        order.OrderNo,
                         currentUserName
                     ));
             }
@@ -233,8 +289,8 @@ public class ReturnAndExchangeAppService : PikachuAppService, IReturnAndExchange
             {
                 await NotificationManager.ExchangeRequestedAsync(
                     NotificationArgs.ForOrderWithUserName(
-                        order.Id, 
-                        order.OrderNo, 
+                        order.Id,
+                        order.OrderNo,
                         currentUserName
                     ));
             }

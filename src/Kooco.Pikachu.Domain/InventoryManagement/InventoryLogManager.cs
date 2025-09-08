@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Volo.Abp;
+using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Domain.Services;
 
 namespace Kooco.Pikachu.InventoryManagement;
@@ -215,6 +216,10 @@ public class InventoryLogManager : DomainService
             .Select(i => i.SetItemId!.Value)
             .ToList();
 
+        var setItems = (await _setItemRepository.GetQueryableAsync())
+            .Where(si => setItemIds.Contains(si.Id))
+            .ToList();
+
         // Pre-fetch all set item details (flattened)
         var setItemDetailQ = (await _setItemRepository.GetQueryableAsync())
             .Where(si => setItemIds.Contains(si.Id))
@@ -263,6 +268,12 @@ public class InventoryLogManager : DomainService
             // Set item
             if (item.SetItemId.HasValue)
             {
+                var setItem = setItems.FirstOrDefault(si => si.Id == item.SetItemId);
+                if (setItem != null)
+                {
+                    setItem.SaleableQuantity += item.Quantity;
+                }
+
                 var thisSetItemDetails = setItemDetails.Where(sid => sid.SetItemId == item.SetItemId);
 
                 foreach (var sid in thisSetItemDetails)
@@ -280,6 +291,100 @@ public class InventoryLogManager : DomainService
                             await ReverseLogAsync(order, item, detail, originalLog);
                         }
                     }
+                }
+            }
+        }
+    }
+
+    public async Task OrderItemUnsoldAsync(Order order, OrderItem item)
+    {
+        if (item.ItemDetailId.HasValue)
+        {
+            var detail = await _itemDetailsRepository.FirstOrDefaultAsync(d => d.Id == item.ItemDetailId);
+            var log = await _inventoryLogRepository.FirstOrDefaultAsync(l => l.OrderItemId == item.Id);
+
+            if (detail == null || log == null || detail.Id != log.ItemDetailId) return;
+
+            var unsoldAmount = item.Quantity;
+
+            int stockOnHand = unsoldAmount;
+            int saleQuantity = unsoldAmount;
+            int preOrderQuantity = log.PreOrderQuantity != 0 ? Math.Min(Math.Abs(log.PreOrderQuantity), unsoldAmount) : 0;
+            int saleablePreOrderQuantity = log.SaleablePreOrderQuantity != 0 ? Math.Min(Math.Abs(log.SaleablePreOrderQuantity), unsoldAmount) : 0;
+
+            var inventoryLog = new InventoryLog(
+                GuidGenerator.Create(),
+                detail.ItemId,
+                detail.Id,
+                detail.SKU,
+                InventoryLogConsts.GetAttributes(detail),
+                item.IsAddOnProduct ? InventoryActionType.AddOnProductUnsold : InventoryActionType.ItemUnsold,
+                stockOnHand,
+                saleQuantity,
+                preOrderQuantity,
+                saleablePreOrderQuantity,
+                item.IsAddOnProduct ? "Add-on Product" : "Item" + $" Unsold: Order# {order.OrderNo}",
+                order.Id,
+                order.OrderNo,
+                item.Id
+                );
+
+            await _inventoryLogRepository.InsertAsync(inventoryLog);
+            await AdjustItemDetailStockAsync(inventoryLog);
+        }
+        if (item.SetItemId.HasValue)
+        {
+            var setItem = await _setItemRepository.FirstOrDefaultAsync(si => si.Id == item.SetItemId);
+
+            if (setItem != null)
+            {
+                await _setItemRepository.EnsureCollectionLoadedAsync(setItem, si => si.SetItemDetails);
+                setItem.SaleableQuantity += item.Quantity;
+            }
+
+            var logs = await _inventoryLogRepository.GetListAsync(l => l.OrderItemId == item.Id);
+            var details = await _itemDetailsRepository.GetListAsync(d => logs.Select(l => l.ItemDetailId).Contains(d.Id));
+            var detailsMap = details.ToDictionary(d => d.Id);
+
+            foreach (var log in logs)
+            {
+                detailsMap.TryGetValue(log.ItemDetailId, out var detail);
+
+                if (detail != null)
+                {
+                    var setItemDetail = setItem?.SetItemDetails.FirstOrDefault(sid =>
+                        sid.ItemId == detail.ItemId &&
+                        sid.Attribute1Value == detail.Attribute1Value &&
+                        sid.Attribute2Value == detail.Attribute2Value &&
+                        sid.Attribute3Value == detail.Attribute3Value);
+
+                    if (setItemDetail == null) continue;
+
+                    var detailAmount = item.Quantity * setItemDetail.Quantity;
+                    int stockOnHand = detailAmount;
+                    int saleQuantity = detailAmount;
+                    int preOrderQuantity = log.PreOrderQuantity != 0 ? Math.Min(Math.Abs(log.PreOrderQuantity), detailAmount) : 0;
+                    int saleablePreOrderQuantity = log.SaleablePreOrderQuantity != 0 ? Math.Min(Math.Abs(log.SaleablePreOrderQuantity), detailAmount) : 0;
+
+                    var inventoryLog = new InventoryLog(
+                        GuidGenerator.Create(),
+                        detail.ItemId,
+                        detail.Id,
+                        detail.SKU,
+                        InventoryLogConsts.GetAttributes(detail),
+                        item.IsAddOnProduct ? InventoryActionType.AddOnProductUnsold : InventoryActionType.ItemUnsold,
+                        stockOnHand,
+                        saleQuantity,
+                        preOrderQuantity,
+                        saleablePreOrderQuantity,
+                        item.IsAddOnProduct ? "Add-on Product" : "Item" + $" Unsold: Order# {order.OrderNo}",
+                        order.Id,
+                        order.OrderNo,
+                        item.Id
+                        );
+
+                    await _inventoryLogRepository.InsertAsync(inventoryLog);
+                    await AdjustItemDetailStockAsync(inventoryLog);
                 }
             }
         }

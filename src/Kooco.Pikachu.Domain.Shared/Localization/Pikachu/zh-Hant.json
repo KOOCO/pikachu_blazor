@@ -2111,7 +2111,13 @@
     "Enum:FooterSettingsPositions.3": "右側",
     "IfYouWantToModifyVisitTenantSettings": "請前往租戶設定以修改資訊。",
     "PleaseSelect": "請選擇",
-    "Minutes": "分鐘"
-
+    "Minutes": "分鐘",
+    "AddNewMailing": "新增自動發信",
+    "PikachuFileInput:DropFilesHere": "拖曳檔案至此或點擊瀏覽",
+    "PikachuFileInput:DropFileHere": "拖曳檔案至此或點擊瀏覽",
+    "PikachuFileInput:SupportedFiles": "支援格式：{0}",
+    "PikachuFileInput:MaxSize": "最大檔案大小：{0}MB",
+    "PikachuFileInput:InvalidFileSize": "檔案「{0}」超過允許的最大大小。",
+    "PikachuFileInput:InvalidFileExtension": "檔案「{0}」的類型不符合允許的格式。"
   }
 }
