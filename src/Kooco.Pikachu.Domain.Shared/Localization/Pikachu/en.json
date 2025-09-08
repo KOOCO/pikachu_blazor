@@ -1614,6 +1614,7 @@
     "AdjustStockAmount": "Amount",
     "NoStockAdjustmentDescription": "No stock changes have been logged for this item yet.",
     "Pikachu:InvalidInventoryStock": "The field '{field1}' can not be greater than '{field2}'.",
+    "T-CatAbnormalStatusTitle": "Abnormal Status",
     "T-CatAbnormalStatus": "Abnormal Status detected for T-Cat Order #{0}. The status code {1} suggests {2}",
     "SelectSKU": "Select SKU",
     "ProductAmount": "Product Amount",

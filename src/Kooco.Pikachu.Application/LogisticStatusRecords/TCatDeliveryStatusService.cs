@@ -142,7 +142,7 @@ public class TCatDeliveryStatusService : ITransientDependency
                             await _orderHistoryManager.AddOrderHistoryAsync(
                                 order.Id,
                                 "ShippingStatusChanged",
-                                [L[order.ShippingStatus.ToString()], L[shippingStatus.ToString()].ToString()],
+                                [L[order.ShippingStatus.ToString()]?.Value!, L[shippingStatus.ToString()]?.Value!],
                                 null,
                                 null
                             );
