@@ -32,8 +32,8 @@ namespace Kooco.Pikachu.BackgroundWorkers
         public OrderExpirationWorker(AbpAsyncTimer timer, IServiceScopeFactory serviceScopeFactory) : base(timer, serviceScopeFactory)
         {
             // Set the period to run twice a day (12 hours = 43,200,000 milliseconds)
-            // Timer.Period = 43200000; // 12 hours in milliseconds
-            Timer.Period = 360000;
+            Timer.Period = 43200000; // 12 hours in milliseconds
+            //Timer.Period = 360000;
         }
 
         protected async override Task DoWorkAsync(PeriodicBackgroundWorkerContext workerContext)
