@@ -71,6 +71,16 @@
         box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     }
 
+    .list-card.disabled {
+        cursor: not-allowed;
+        opacity: 0.4;
+    }
+
+        .list-card.disabled .list-card-icon {
+            background: lightgrey;
+            color: #000;
+        }
+
 .list-card-left {
     display: flex;
     align-items: center;
@@ -127,6 +137,24 @@
         display: block;
         margin: 0;
         margin-top: 0.2rem;
+    }
+
+.year-list-stats {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: 30px;
+}
+
+.year-list-stats h5 {
+    margin: 0;
+}
+
+    .year-list-stats .small {
+        font-size: 0.7rem;
+        font-weight: 400;
+        color: gray;
     }
 
 .back-btn {
@@ -319,3 +347,8 @@
         transform: translateY(-1px);
         box-shadow: var(--shadow-md);
     }
+
+.export-option-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}

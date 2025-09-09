@@ -2123,6 +2123,20 @@
     "OrderClosedShippingTitle": "訂單已關閉",
     "OrderClosedShipping": "因逾期未付款，物流狀態已由「{0}」變更為「{1}」。",
     "OrderClosedStatusTitle": "訂單已關閉",
-    "OrderClosedStatus": "因逾期未付款，訂單狀態已由「{0}」變更為「{1}」。"
+    "OrderClosedStatus": "因逾期未付款，訂單狀態已由「{0}」變更為「{1}」。",
+    "PayoutManagement": "款項支付管理",
+    "TenantList": "租戶列表",
+    "PaymentProviders": "金流廠商",
+    "PayoutByYear": "年度支付記錄",
+    "PayoutDetails": "支付管理",
+    "TransferToWallet": "轉入錢包",
+    "MarkAsPaid": "標記為已支付",
+    "PayoutDetails:TransferSelectedToWallet": "轉入選取款項至錢包",
+    "PayoutDetails:MarkSelectedAsPaid": "標記選取款項為已支付",
+    "PayoutDetails:ExportOptions": "匯出資料選項",
+    "PayoutDetails:SelectedRecords": "匯出選取資料",
+    "PayoutDetails:CurrentFilter": "匯出篩選資料",
+    "PayoutDetails:AllData": "匯出所有資料",
+    "ApplyFilters": "套用篩選"
   }
 }

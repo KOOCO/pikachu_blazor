@@ -23,6 +23,9 @@ public partial class PayoutDetails
     private int CurrentPage { get; set; } = 1;
     private string CurrentSorting { get; set; }
     private int TotalCount { get; set; }
+    private bool IsAnySelected => SelectedPayoutDetail is { Count: > 0 };
+    private int SelectedCount => SelectedPayoutDetail?.Count ?? 0;
+    private string SelectedCountMarkup => IsAnySelected ? string.Format("({0})", SelectedCount) : "";
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -99,6 +102,7 @@ public class PayoutDetailDto
     public decimal FeeRate { get; set; }
     public decimal HandlingFee { get; set; }
     public decimal ProcessingFee { get; set; }
+    public decimal PlatformFee { get; set; }
     public decimal NetAmount { get; set; }
     public string Status { get; set; }
 }
@@ -119,6 +123,7 @@ public static class PayoutDetailData
                 FeeRate = 2.9m,
                 HandlingFee = 36.25m,
                 ProcessingFee = 5.00m,
+                PlatformFee = 1.00m,
                 NetAmount = 1208.75m,
                 Status = "unpaid",
             },
@@ -131,6 +136,7 @@ public static class PayoutDetailData
                 FeeRate = 2.9m,
                 HandlingFee = 25.82m,
                 ProcessingFee = 5.00m,
+                PlatformFee = 1.00m,
                 NetAmount = 859.68m,
                 Status = "paid",
             },
@@ -143,6 +149,7 @@ public static class PayoutDetailData
                 FeeRate = 2.9m,
                 HandlingFee = 60.90m,
                 ProcessingFee = 5.00m,
+                PlatformFee = 1.00m,
                 NetAmount = 2034.10m,
                 Status = "unpaid",
             },
@@ -155,6 +162,7 @@ public static class PayoutDetailData
                 FeeRate = 2.9m,
                 HandlingFee = 16.45m,
                 ProcessingFee = 5.00m,
+                PlatformFee = 1.00m,
                 NetAmount = 545.80m,
                 Status = "unpaid",
             },
@@ -167,6 +175,7 @@ public static class PayoutDetailData
                 FeeRate = 2.9m,
                 HandlingFee = 92.80m,
                 ProcessingFee = 5.00m,
+                PlatformFee = 1.00m,
                 NetAmount = 3102.20m,
                 Status = "paid",
             },
@@ -179,6 +188,7 @@ public static class PayoutDetailData
                 FeeRate = 2.9m,
                 HandlingFee = 12.93m,
                 ProcessingFee = 5.00m,
+                PlatformFee = 1.00m,
                 NetAmount = 427.82m,
                 Status = "unpaid",
             },
@@ -191,6 +201,7 @@ public static class PayoutDetailData
                 FeeRate = 2.9m,
                 HandlingFee = 54.38m,
                 ProcessingFee = 5.00m,
+                PlatformFee = 1.00m,
                 NetAmount = 1815.62m,
                 Status = "unpaid",
             },
@@ -203,6 +214,7 @@ public static class PayoutDetailData
                 FeeRate = 2.9m,
                 HandlingFee = 21.76m,
                 ProcessingFee = 5.00m,
+                PlatformFee = 1.00m,
                 NetAmount = 723.49m,
                 Status = "paid",
             }

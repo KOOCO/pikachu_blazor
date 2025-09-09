@@ -520,8 +520,8 @@ public class PikachuMenuContributor : IMenuContributor
 
             tenantManagementMenu?.AddItem(
                 new ApplicationMenuItem(
-                    name: "TenantPayouts",
-                    displayName: l["Menu:TenantPayouts"],
+                    name: "PayoutManagement",
+                    displayName: l["Menu:PayoutManagement"],
                     url: "/tenants/payouts",
                     requiredPermissionName: PikachuPermissions.TenantPayouts.Default
                 )

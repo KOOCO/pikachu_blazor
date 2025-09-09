@@ -48,13 +48,15 @@
                 <i class="fas fa-funnel-dollar"></i>
             </div>
             <div class="stats-info">
-                <p class="mb-1">@(L["PayoutDetails:SelectedFilters"])</p>
+                <p class="mb-1">
+                    @(L["PayoutDetails:SelectedRecords"]) @SelectedCountMarkup
+                </p>
                 <div>
-                    <button class="export-option-button">
+                    <button class="export-option-button" disabled="@(!IsAnySelected)">
                         <i class="fas fa-file-csv"></i>
                         @L["CSV"]
                     </button>
-                    <button class="export-option-button">
+                    <button class="export-option-button" disabled="@(!IsAnySelected)">
                         <i class="fas fa-file-excel"></i>
                         @L["Excel"]
                     </button>
@@ -141,11 +143,13 @@
 <div class="export-options-container">
     <h5 class="text-dark">@L["PayoutDetails:BatchPaymentActions"]</h5>
     <div>
-        <PikachuButton Class="pk-btn-sm pk-btn-outline-primary">
+        <PikachuButton Class="pk-btn-sm pk-btn-outline-primary" Disabled="!IsAnySelected">
             @L["PayoutDetails:TransferSelectedToWallet"]
+            @SelectedCountMarkup
         </PikachuButton>
-        <PikachuButton Class="pk-btn-sm pk-btn-outline-warning">
+        <PikachuButton Class="pk-btn-sm pk-btn-outline-warning" Disabled="!IsAnySelected">
             @L["PayoutDetails:MarkSelectedAsPaid"]
+            @SelectedCountMarkup
         </PikachuButton>
         <p class="text-muted fs-xs m-0 mt-1">
             @L["PayoutDetails:PaymentActionsOnlyAffectUnpaidRecords"]
@@ -180,7 +184,7 @@
                         Field="@nameof(PayoutDetailDto.OrderNumber)"
                         Caption="@L["OrderNumber"]">
             <DisplayTemplate>
-                <Span Class="text-nowrap">
+                <Span Class="text-nowrap fw-bold text-dark">
                     @context.OrderNumber
                 </Span>
             </DisplayTemplate>
@@ -197,7 +201,9 @@
                         Caption="@L["OrderAmount"]"
                         TextAlignment="TextAlignment.End">
             <DisplayTemplate>
-                @context.OrderAmount.ToString("N2")
+                <Span Class="text-success">
+                    @context.OrderAmount.ToString("N2")
+                </Span>
             </DisplayTemplate>
         </DataGridColumn>
         <DataGridColumn TItem="PayoutDetailDto"
@@ -213,7 +219,9 @@
                         Caption="@L["HandlingFee"]"
                         TextAlignment="TextAlignment.End">
             <DisplayTemplate>
-                @context.HandlingFee.ToString("N2")
+                <Span Class="text-danger">
+                    @context.HandlingFee.ToString("N2")
+                </Span>
             </DisplayTemplate>
         </DataGridColumn>
         <DataGridColumn TItem="PayoutDetailDto"
@@ -221,7 +229,19 @@
                         Caption="@L["ProcessingFee"]"
                         TextAlignment="TextAlignment.End">
             <DisplayTemplate>
-                @context.ProcessingFee.ToString("N2")
+                <Span Class="text-danger">
+                    @context.ProcessingFee.ToString("N2")
+                </Span>
+            </DisplayTemplate>
+        </DataGridColumn>
+        <DataGridColumn TItem="PayoutDetailDto"
+                        Field="@nameof(PayoutDetailDto.PlatformFee)"
+                        Caption="@L["PlatformFee"]"
+                        TextAlignment="TextAlignment.End">
+            <DisplayTemplate>
+                <Span Class="text-danger">
+                    @context.PlatformFee.ToString("N2")
+                </Span>
             </DisplayTemplate>
         </DataGridColumn>
         <DataGridColumn TItem="PayoutDetailDto"
@@ -229,7 +249,9 @@
                         Caption="@L["NetAmount"]"
                         TextAlignment="TextAlignment.End">
             <DisplayTemplate>
-                @context.NetAmount.ToString("N2")
+                <Span Class="text-success">
+                    @context.NetAmount.ToString("N2")
+                </Span>
             </DisplayTemplate>
         </DataGridColumn>
         <DataGridColumn TItem="PayoutDetailDto"
@@ -237,15 +259,25 @@
                         Caption="@L["Status"]"
                         TextAlignment="TextAlignment.Center">
             <DisplayTemplate>
-                @context.Status
+                @{
+                    var statusClass = context.Status == "paid" ? "pk-badge-success" : "pk-badge-warning";
+                    statusClass += " text-uppercase";
+                }
+                <PikachuBadge Class="@statusClass">
+                    @context.Status
+                </PikachuBadge>
             </DisplayTemplate>
         </DataGridColumn>
         <DataGridColumn TItem="PayoutDetailDto"
                         Caption="@L["Actions"]">
             <DisplayTemplate>
                 <Div Class="text-nowrap">
-                    <PikachuButton Class="pk-btn-sm pk-btn-icon green" IconClass="fas fa-paper-plane"></PikachuButton>
-                    <PikachuButton Class="pk-btn-sm pk-btn-icon amber" IconClass="fas fa-check-double"></PikachuButton>
+                    <Tooltip Display="Display.InlineBlock" Text="@L["TransferToWallet"]">
+                        <PikachuButton Class="pk-btn-sm pk-btn-icon green" IconClass="fas fa-paper-plane"></PikachuButton>
+                    </Tooltip>
+                    <Tooltip Display="Display.InlineBlock" Text="@L["MarkAsPaid"]">
+                        <PikachuButton Class="pk-btn-sm pk-btn-icon amber" IconClass="fas fa-check-double"></PikachuButton>
+                    </Tooltip>
                 </Div>
             </DisplayTemplate>
         </DataGridColumn>

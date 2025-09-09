@@ -6,7 +6,7 @@
 
 <div class="header">
     <div>
-        <h3>@L["PayoutFeeManagement"]</h3>
+        <h3>@L["PayoutManagement"]</h3>
         <p>@(string.Join(" > ", BreadcrumbItems.Select(bi => L[bi.Name])))</p>
     </div>
     <div>
@@ -21,7 +21,7 @@
 {
     <Card>
         <CardHeader>
-            <h4>@L["TenantManagement"]</h4>
+            <h4>@L["TenantList"]</h4>
             <p>@L["SelectTenantToViewPayoutFeeDetail"]</p>
         </CardHeader>
         <CardBody>
@@ -68,6 +68,20 @@
                     </div>
                 </div>
             </div>
+            <div class="list-card disabled">
+                <div class="list-card-left">
+                    <div class="list-card-icon">
+                        +
+                    </div>
+                    <div class="list-card-info">
+                        <div class="d-flex align-items-start justify-content-start gap-2">
+                            <h3>@L["AdditionalProviders"]</h3>
+                            <PikachuBadge Class="pk-badge-sm bg-light">@L["ComingSoon"]</PikachuBadge>
+                        </div>
+                        <div class="list-card-meta">@L["MoreProvidersWillBeAvailableSoon"]</div>
+                    </div>
+                </div>
+            </div>
         </CardBody>
     </Card>
 }
@@ -75,8 +89,8 @@
 {
     <Card>
         <CardHeader>
-            <h4>@L["FeeAnalysisByYear"]</h4>
-            <p>@L["SelectYearToViewDetailedFeeBreakdown"]</p>
+            <h4>@L["PayoutByYear"]</h4>
+            <p>@L["SelectYearToViewDetailedPayoutRecords"]</p>
         </CardHeader>
         <CardBody>
             <button class="back-btn" @onclick="BackToProviders">← @L["BackToProviders"]</button>
@@ -97,6 +111,22 @@
                             </div>
                         </div>
                     </div>
+                    <div class="list-card-stats">
+                        <div class="year-list-stats">
+                            <div class="year-list-stat-item">
+                                <h5>$4,323</h5>
+                                <p class="small">@L["TotalFees"]</p>
+                            </div>
+                            <div class="year-list-stat-item">
+                                <h5>426</h5>
+                                <p class="small">@L["Transactions"]</p>
+                            </div>
+                            <div class="year-list-stat-item">
+                                <h5>2.9%</h5>
+                                <p class="small">@L["AvgFeeRate"]</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             }
         </CardBody>
@@ -107,7 +137,7 @@
     <Card>
         <CardHeader>
             <h4>@L["PayoutDetails"]</h4>
-            <p>@L["DetailedPayoutBreakdownAndMangement"]</p>
+            <p>@L["TransactionRecordsAndPayoutManagementOperations"]</p>
         </CardHeader>
         <CardBody>
             <button class="back-btn" @onclick="BackToYears">← @L["BackToYears"]</button>
