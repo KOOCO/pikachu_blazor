@@ -2127,7 +2127,7 @@
     "RecordsWillBeExported": "records will be exported",
     "LogisticsFees": "logistics_fees",
     "EcPayLogisticUpdate": "EcPay Logistic Update",
-    "UploadTCatFileTitleDescription": "Upload your CSV or Excel file to import payout data",
+    "UploadTCatFileTitleDescription": "Upload T Cat file to update payout data",
     "VerifyTCatFileAndImport": "Verify the records and click import to save payout data",
     "Complete": "Complete",
     "Banner": "Banner",
@@ -2149,10 +2149,6 @@
     "PikachuFileInput:InvalidFileSize": "File '{0}' exceeds the allowed maximum file size.",
     "PikachuFileInput:InvalidFileExtension": "File '{0}' doesn't meet the allowed file type(s).",
     "PayoutDetails:FeeSummary": "Fee Summary - {0}",
-    "PayoutDetails:NetAmount": "Net Amount",
-    "PayoutDetails:TotalFees": "Total Fees",
-    "PayoutDetails:ProcessingFee": "Processing Fee",
-    "PayoutDetails:Transactions": "Transactions",
     "ApplyFilters": "Apply Filters",
     "PaymentType": "Payment Type",
     "PayoutDetails:SelectedFilters": "Selected Filters",
@@ -2160,7 +2156,7 @@
     "PayoutDetails:AllData": "All Data",
     "OrderAmount": "Order Amount",
     "PayoutDetails:ExportOptions": "Export Options",
-    "PayoutDetails:BatchPaymentActions": "Batch Payment Actions",
+    "PayoutDetails:BatchActions": "Batch Actions",
     "PayoutDetails:TransferSelectedToWallet": "Transfer Selected to Wallet",
     "PayoutDetails:MarkSelectedAsPaid": "Mark Selected as Paid",
     "PayoutDetails:PaymentActionsOnlyAffectUnpaidRecords": "* Payment actions only affect unpaid records",
@@ -2179,6 +2175,11 @@
     "AvgFeeRate": "Avg Fee Rate",
     "TransferToWallet": "Transfer to Wallet",
     "MarkAsPaid": "Mark as Paid",
-    "PlatformFee": "Platform Fee"
+    "PlatformFee": "Platform Fee",
+    "OrderCreationTime": "Order Creation Time",
+    "TenantPayout:Active": "Active",
+    "TenantPayoutTotalFees": "{0} total fees",
+    "NumberOfTransactionsThisMonth": "{0} transactions this month",
+    "TenantActiveSince": "Active since {0}"
   }
 }

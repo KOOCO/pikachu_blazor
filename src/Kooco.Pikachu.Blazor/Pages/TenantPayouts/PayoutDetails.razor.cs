@@ -125,7 +125,7 @@ public static class PayoutDetailData
                 ProcessingFee = 5.00m,
                 PlatformFee = 1.00m,
                 NetAmount = 1208.75m,
-                Status = "unpaid",
+                Status = "Unpaid",
             },
             new PayoutDetailDto
             {
@@ -138,7 +138,7 @@ public static class PayoutDetailData
                 ProcessingFee = 5.00m,
                 PlatformFee = 1.00m,
                 NetAmount = 859.68m,
-                Status = "paid",
+                Status = "Paid",
             },
             new PayoutDetailDto
             {
@@ -151,7 +151,7 @@ public static class PayoutDetailData
                 ProcessingFee = 5.00m,
                 PlatformFee = 1.00m,
                 NetAmount = 2034.10m,
-                Status = "unpaid",
+                Status = "Unpaid",
             },
             new PayoutDetailDto
             {
@@ -164,7 +164,7 @@ public static class PayoutDetailData
                 ProcessingFee = 5.00m,
                 PlatformFee = 1.00m,
                 NetAmount = 545.80m,
-                Status = "unpaid",
+                Status = "Unpaid",
             },
             new PayoutDetailDto
             {
@@ -177,7 +177,7 @@ public static class PayoutDetailData
                 ProcessingFee = 5.00m,
                 PlatformFee = 1.00m,
                 NetAmount = 3102.20m,
-                Status = "paid",
+                Status = "Paid",
             },
             new PayoutDetailDto
             {
@@ -190,7 +190,7 @@ public static class PayoutDetailData
                 ProcessingFee = 5.00m,
                 PlatformFee = 1.00m,
                 NetAmount = 427.82m,
-                Status = "unpaid",
+                Status = "Unpaid",
             },
             new PayoutDetailDto
             {
@@ -203,7 +203,7 @@ public static class PayoutDetailData
                 ProcessingFee = 5.00m,
                 PlatformFee = 1.00m,
                 NetAmount = 1815.62m,
-                Status = "unpaid",
+                Status = "Unpaid",
             },
             new PayoutDetailDto
             {
@@ -216,7 +216,7 @@ public static class PayoutDetailData
                 ProcessingFee = 5.00m,
                 PlatformFee = 1.00m,
                 NetAmount = 723.49m,
-                Status = "paid",
+                Status = "Paid",
             }
         ];
     }

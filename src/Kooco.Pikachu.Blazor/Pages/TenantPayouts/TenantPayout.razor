@@ -32,14 +32,14 @@
                     </div>
                     <div class="list-card-info">
                         <h3>Acme Corporation</h3>
-                        <div class="list-card-meta">ID: TN-001 • Active since 2023</div>
+                        <div class="list-card-meta">ID: TN-001 • @L["TenantActiveSince", "2023"]</div>
                     </div>
                 </div>
                 <div class="list-card-stats">
                     <p class="tenant-fee">
-                        $2,467 total fees
+                        @L["TenantPayoutTotalFees", "$2,467"]
                     </p>
-                    <p class="small">156 transactions this month</p>
+                    <p class="small">@L["NumberOfTransactionsThisMonth", "156"]</p>
                 </div>
             </div>
         </CardBody>
@@ -62,7 +62,7 @@
                     <div class="list-card-info">
                         <div class="d-flex align-items-start justify-content-start gap-2">
                             <h3>ECPay</h3>
-                            <PikachuBadge Class="pk-badge-success pk-badge-sm">Active</PikachuBadge>
+                            <PikachuBadge Class="pk-badge-success pk-badge-sm">@L["TenantPayout:Active"]</PikachuBadge>
                         </div>
                         <div class="list-card-meta">@L["PrimaryPaymentProcessingProvider"]</div>
                     </div>
@@ -94,41 +94,41 @@
         </CardHeader>
         <CardBody>
             <button class="back-btn" @onclick="BackToProviders">← @L["BackToProviders"]</button>
-            @foreach(var year in Years)
+            @foreach (var year in Years)
             {
-                <div class="list-card" @onclick="@(() => SelectYear(year))">
-                    <div class="list-card-left">
-                        <div class="list-card-icon year">
-                            @year.ToString().Substring(2)
-                        </div>
-                        <div class="list-card-info">
-                            <h3>@year</h3>
-                            <div class="list-card-meta">
-                                @L[year == DateTime.Now.Year 
-                                    ? "CurrentYear" 
-                                    : (year == DateTime.Now.Year - 1 ? "PreviousYear" : "Archive")
-                                ]
-                            </div>
-                        </div>
-                    </div>
-                    <div class="list-card-stats">
-                        <div class="year-list-stats">
-                            <div class="year-list-stat-item">
-                                <h5>$4,323</h5>
-                                <p class="small">@L["TotalFees"]</p>
-                            </div>
-                            <div class="year-list-stat-item">
-                                <h5>426</h5>
-                                <p class="small">@L["Transactions"]</p>
-                            </div>
-                            <div class="year-list-stat-item">
-                                <h5>2.9%</h5>
-                                <p class="small">@L["AvgFeeRate"]</p>
-                            </div>
-                        </div>
+        <div class="list-card" @onclick="@(() => SelectYear(year))">
+            <div class="list-card-left">
+                <div class="list-card-icon year">
+                    @year.ToString().Substring(2)
+                </div>
+                <div class="list-card-info">
+                    <h3>@year</h3>
+                    <div class="list-card-meta">
+                        @L[year == DateTime.Now.Year
+                                                ? "CurrentYear"
+                                                : (year == DateTime.Now.Year - 1 ? "PreviousYear" : "Archive")
+                                                ]
                     </div>
                 </div>
-            }
+            </div>
+            <div class="list-card-stats">
+                <div class="year-list-stats">
+                    <div class="year-list-stat-item">
+                        <h5>$4,323</h5>
+                        <p class="small">@L["TotalFees"]</p>
+                    </div>
+                    <div class="year-list-stat-item">
+                        <h5>426</h5>
+                        <p class="small">@L["Transactions"]</p>
+                    </div>
+                    <div class="year-list-stat-item">
+                        <h5>2.9%</h5>
+                        <p class="small">@L["AvgFeeRate"]</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+                }
         </CardBody>
     </Card>
 }

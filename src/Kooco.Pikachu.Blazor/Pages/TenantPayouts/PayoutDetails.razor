@@ -8,7 +8,7 @@
         </div>
         <div class="stats-info">
             <h3>$8,714.85</h3>
-            <p class="m-0">@(L["PayoutDetails:NetAmount"])</p>
+            <p class="m-0">@(L["NetAmount"])</p>
         </div>
     </div>
     <div class="stats-card">
@@ -17,7 +17,7 @@
         </div>
         <div class="stats-info">
             <h3>$285.15</h3>
-            <p class="m-0">@(L["PayoutDetails:TotalFees"])</p>
+            <p class="m-0">@(L["TotalFees"])</p>
         </div>
     </div>
     <div class="stats-card">
@@ -26,7 +26,7 @@
         </div>
         <div class="stats-info">
             <h3>$40.00</h3>
-            <p class="m-0">@(L["PayoutDetails:ProcessingFee"])</p>
+            <p class="m-0">@(L["ProcessingFee"])</p>
         </div>
     </div>
     <div class="stats-card">
@@ -35,7 +35,7 @@
         </div>
         <div class="stats-info">
             <h3>8</h3>
-            <p class="m-0">@(L["PayoutDetails:Transactions"])</p>
+            <p class="m-0">@(L["Transactions"])</p>
         </div>
     </div>
 </div>
@@ -141,7 +141,7 @@
 </div>
 
 <div class="export-options-container">
-    <h5 class="text-dark">@L["PayoutDetails:BatchPaymentActions"]</h5>
+    <h5 class="text-dark">@L["PayoutDetails:BatchActions"]</h5>
     <div>
         <PikachuButton Class="pk-btn-sm pk-btn-outline-primary" Disabled="!IsAnySelected">
             @L["PayoutDetails:TransferSelectedToWallet"]
@@ -175,7 +175,7 @@
         <DataGridCommandColumn TItem="PayoutDetailDto" />
         <DataGridColumn TItem="PayoutDetailDto"
                         Field="@nameof(PayoutDetailDto.OrderCreationDate)"
-                        Caption="@L["Created"]">
+                        Caption="@L["OrderCreationTime"]">
             <DisplayTemplate>
                 @context.OrderCreationDate.ToShortDateString()
             </DisplayTemplate>
@@ -264,7 +264,7 @@
                     statusClass += " text-uppercase";
                 }
                 <PikachuBadge Class="@statusClass">
-                    @context.Status
+                    @L[context.Status]
                 </PikachuBadge>
             </DisplayTemplate>
         </DataGridColumn>
@@ -272,12 +272,21 @@
                         Caption="@L["Actions"]">
             <DisplayTemplate>
                 <Div Class="text-nowrap">
-                    <Tooltip Display="Display.InlineBlock" Text="@L["TransferToWallet"]">
-                        <PikachuButton Class="pk-btn-sm pk-btn-icon green" IconClass="fas fa-paper-plane"></PikachuButton>
-                    </Tooltip>
-                    <Tooltip Display="Display.InlineBlock" Text="@L["MarkAsPaid"]">
-                        <PikachuButton Class="pk-btn-sm pk-btn-icon amber" IconClass="fas fa-check-double"></PikachuButton>
-                    </Tooltip>
+                    @if(context.Status == "Paid")
+                    {
+                        <Tooltip Display="Display.InlineBlock" Text="@L["TransferToWallet"]">
+                            <PikachuButton Class="pk-btn-sm pk-btn-icon green" IconClass="fas fa-paper-plane"></PikachuButton>
+                        </Tooltip>
+                        <Tooltip Display="Display.InlineBlock" Text="@L["MarkAsPaid"]">
+                            <PikachuButton Class="pk-btn-sm pk-btn-icon amber" IconClass="fas fa-check-double"></PikachuButton>
+                        </Tooltip>
+                    }
+                    else
+                    {
+                        <PikachuBadge Class="pk-badge-success">
+                            @L["Processed"]
+                        </PikachuBadge>
+                    }
                 </Div>
             </DisplayTemplate>
         </DataGridColumn>

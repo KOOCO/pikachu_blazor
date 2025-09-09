@@ -11,7 +11,7 @@ public partial class TenantPayout
     private Guid? SelectedTenantId { get; set; }
     private PaymentFeeType? SelectedFeeType { get; set; }
     private int? SelectedYear { get; set; }
-    List<BreadcrumbItem> BreadcrumbItems { get; set; } = [new(1, "Dashbord")];
+    List<BreadcrumbItem> BreadcrumbItems { get; set; } = [new(1, "Dashboard")];
     private List<int> Years { get; } = [2025, 2024, 2023];
     async Task OnImportCompletedAsync()
     {
