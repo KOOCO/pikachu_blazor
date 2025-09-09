@@ -2147,6 +2147,22 @@
     "PikachuFileInput:SupportedFiles": "Supported: {0}",
     "PikachuFileInput:MaxSize": "Max Size: {0}MB",
     "PikachuFileInput:InvalidFileSize": "File '{0}' exceeds the allowed maximum file size.",
-    "PikachuFileInput:InvalidFileExtension": "File '{0}' doesn't meet the allowed file type(s)."
+    "PikachuFileInput:InvalidFileExtension": "File '{0}' doesn't meet the allowed file type(s).",
+    "PayoutDetails:FeeSummary": "Fee Summary - {0}",
+    "PayoutDetails:NetAmount": "Net Amount",
+    "PayoutDetails:TotalFees": "Total Fees",
+    "PayoutDetails:ProcessingFee": "Processing Fee",
+    "PayoutDetails:Transactions": "Transactions",
+    "ApplyFilters": "Apply Filters",
+    "PaymentType": "Payment Type",
+    "PayoutDetails:SelectedFilters": "Selected Filters",
+    "PayoutDetails:CurrentFilter": "Current Filter",
+    "PayoutDetails:AllData": "All Data",
+    "OrderAmount": "Order Amount",
+    "PayoutDetails:ExportOptions": "Export Options",
+    "PayoutDetails:BatchPaymentActions": "Batch Payment Actions",
+    "PayoutDetails:TransferSelectedToWallet": "Transfer Selected to Wallet",
+    "PayoutDetails:MarkSelectedAsPaid": "Mark Selected as Paid",
+    "PayoutDetails:PaymentActionsOnlyAffectUnpaidRecords": "* Payment actions only affect unpaid records"
   }
 }

@@ -32,7 +32,7 @@
             color: #764ba2;
         }
 
-.pk-btn {
+.pk-btn:not(.pk-btn-icon) {
     padding: 0.5rem 1.5rem;
     border-radius: 4px;
 }
@@ -200,9 +200,9 @@
     padding-left: 1.5rem;
 }
 
-.modal-footer .back-btn {
-    margin: 0;
-}
+    .modal-footer .back-btn {
+        margin: 0;
+    }
 
 .pk-btn.import {
     background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
@@ -212,4 +212,110 @@
 
     .pk-btn.import:disabled {
         opacity: 0.5;
+    }
+
+
+/* Payout Details */
+.stats-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin-bottom: 25px;
+}
+
+.stats-card {
+    border-radius: var(--radius);
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    transition: var(--transition);
+    min-width: 250px;
+    flex: 1 0 calc(25% - 20px);
+}
+
+    .stats-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-md);
+    }
+
+.stats-icon {
+    width: 35px;
+    height: 35px;
+    border-radius: var(--radius);
+    background-color: var(--primary-light);
+    color: var(--primary-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    margin-right: 15px;
+}
+
+.stats-info {
+    flex: 1;
+}
+
+    .stats-info h3 {
+        font-size: 18px;
+        font-weight: 700;
+        margin-bottom: 5px;
+        color: #000;
+    }
+
+    .stats-info p {
+        color: var(--text-muted);
+        font-size: 13px;
+    }
+
+.stats-icon.purple {
+    background-color: rgba(155, 89, 182, 0.1);
+    color: var(--purple-color);
+}
+
+.stats-icon.orange {
+    background-color: rgba(230, 126, 34, 0.1);
+    color: var(--orange-color);
+}
+
+.stats-icon.green {
+    background-color: rgba(39, 174, 96, 0.1);
+    color: var(--green-color);
+}
+
+.stats-icon.red {
+    background-color: rgba(230, 34, 34, 0.1);
+    color: rgb(230 34 34);
+}
+
+.stats-icon.gold {
+    background-color: rgba(241, 196, 15, 0.1);
+    color: #f1c40f;
+}
+
+.stats-icon.cyan {
+    background-color: rgba(26, 188, 156, 0.1);
+    color: #1abc9c;
+}
+
+.export-options-container {
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    padding: 1rem 1.5rem;
+    border-radius: 0.7rem;
+    margin-bottom: 20px;
+}
+
+.export-option-button {
+    border: none;
+    font-size: 0.7rem;
+    background: #17a2b8;
+    color: #fff;
+    border-radius: 0.35rem;
+    padding: 0.15rem 0.5rem;
+}
+
+    .export-option-button:hover {
+        transform: translateY(-1px);
+        box-shadow: var(--shadow-md);
     }

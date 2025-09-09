@@ -1,0 +1,265 @@
+﻿@inherits PikachuComponentBase
+<h5 class="text-dark">@L["PayoutDetails:FeeSummary", Year]</h5>
+
+<div class="stats-container">
+    <div class="stats-card">
+        <div class="stats-icon purple">
+            <i class="fas fa-wallet"></i>
+        </div>
+        <div class="stats-info">
+            <h3>$8,714.85</h3>
+            <p class="m-0">@(L["PayoutDetails:NetAmount"])</p>
+        </div>
+    </div>
+    <div class="stats-card">
+        <div class="stats-icon green">
+            <i class="fas fa-file-invoice-dollar"></i>
+        </div>
+        <div class="stats-info">
+            <h3>$285.15</h3>
+            <p class="m-0">@(L["PayoutDetails:TotalFees"])</p>
+        </div>
+    </div>
+    <div class="stats-card">
+        <div class="stats-icon orange">
+            <i class="fas fa-tools"></i>
+        </div>
+        <div class="stats-info">
+            <h3>$40.00</h3>
+            <p class="m-0">@(L["PayoutDetails:ProcessingFee"])</p>
+        </div>
+    </div>
+    <div class="stats-card">
+        <div class="stats-icon red">
+            <i class="fas fa-arrow-right-arrow-left"></i>
+        </div>
+        <div class="stats-info">
+            <h3>8</h3>
+            <p class="m-0">@(L["PayoutDetails:Transactions"])</p>
+        </div>
+    </div>
+</div>
+
+<div class="export-options-container">
+    <h5 class="text-dark">@L["PayoutDetails:ExportOptions"]</h5>
+    <div class="stats-container m-0">
+        <div class="stats-card">
+            <div class="stats-icon purple">
+                <i class="fas fa-funnel-dollar"></i>
+            </div>
+            <div class="stats-info">
+                <p class="mb-1">@(L["PayoutDetails:SelectedFilters"])</p>
+                <div>
+                    <button class="export-option-button">
+                        <i class="fas fa-file-csv"></i>
+                        @L["CSV"]
+                    </button>
+                    <button class="export-option-button">
+                        <i class="fas fa-file-excel"></i>
+                        @L["Excel"]
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="stats-card">
+            <div class="stats-icon green">
+                <i class="fas fa-bullseye"></i>
+            </div>
+            <div class="stats-info">
+                <p class="mb-1">@(L["PayoutDetails:CurrentFilter"])</p>
+                <div>
+                    <button class="export-option-button">
+                        <i class="fas fa-file-csv"></i>
+                        @L["CSV"]
+                    </button>
+                    <button class="export-option-button">
+                        <i class="fas fa-file-excel"></i>
+                        @L["Excel"]
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="stats-card">
+            <div class="stats-icon orange">
+                <i class="fas fa-database"></i>
+            </div>
+            <div class="stats-info">
+                <p class="mb-1">@(L["PayoutDetails:AllData"])</p>
+                <div>
+                    <button class="export-option-button">
+                        <i class="fas fa-file-csv"></i>
+                        @L["CSV"]
+                    </button>
+                    <button class="export-option-button">
+                        <i class="fas fa-file-excel"></i>
+                        @L["Excel"]
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <div class="row row-cols-6">
+            <div class="col">
+                <div class="form-group m-0">
+                    <label class="form-label">@L["StartDate"]</label>
+                    <input type="date" class="form-control form-control-sm" />
+                </div>
+            </div>
+            <div class="col">
+                <div class="form-group m-0">
+                    <label class="form-label">@L["EndDate"]</label>
+                    <input type="date" class="form-control form-control-sm" />
+                </div>
+            </div>
+            <div class="col">
+                <div class="form-group m-0">
+                    <label class="form-label">@L["PaymentType"]</label>
+                    <input type="date" class="form-control form-control-sm" />
+                </div>
+            </div>
+            <div class="col">
+                <div class="form-group m-0">
+                    <label class="form-label">@L["OrderNumber"]</label>
+                    <input type="text" class="form-control form-control-sm" />
+                </div>
+            </div>
+            <div class="col">
+                <div class="form-group m-0 d-flex align-items-end h-100">
+                    <button class="btn btn-sm btn-primary px-3" style="border-radius: 0.3rem;">
+                        @L["ApplyFilters"]
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="export-options-container">
+    <h5 class="text-dark">@L["PayoutDetails:BatchPaymentActions"]</h5>
+    <div>
+        <PikachuButton Class="pk-btn-sm pk-btn-outline-primary">
+            @L["PayoutDetails:TransferSelectedToWallet"]
+        </PikachuButton>
+        <PikachuButton Class="pk-btn-sm pk-btn-outline-warning">
+            @L["PayoutDetails:MarkSelectedAsPaid"]
+        </PikachuButton>
+        <p class="text-muted fs-xs m-0 mt-1">
+            @L["PayoutDetails:PaymentActionsOnlyAffectUnpaidRecords"]
+        </p>
+    </div>
+</div>
+
+<DataGrid TItem="PayoutDetailDto"
+          Data="PayoutDetailList"
+          ReadData="OnDataGridReadAsync"
+          TotalItems="TotalCount"
+          ShowPager="true"
+          PageSize="PageSize"
+          CurrentPage="CurrentPage"
+          Hoverable
+          Narrow
+          Responsive
+          SelectionMode="DataGridSelectionMode.Multiple"
+          @bind-SelectedRows="SelectedPayoutDetail"
+          RowSelectable="RowSelectableHandler">
+    <DataGridColumns>
+        <DataGridMultiSelectColumn TItem="PayoutDetailDto" Width="30px"></DataGridMultiSelectColumn>
+        <DataGridCommandColumn TItem="PayoutDetailDto" />
+        <DataGridColumn TItem="PayoutDetailDto"
+                        Field="@nameof(PayoutDetailDto.OrderCreationDate)"
+                        Caption="@L["Created"]">
+            <DisplayTemplate>
+                @context.OrderCreationDate.ToShortDateString()
+            </DisplayTemplate>
+        </DataGridColumn>
+        <DataGridColumn TItem="PayoutDetailDto"
+                        Field="@nameof(PayoutDetailDto.OrderNumber)"
+                        Caption="@L["OrderNumber"]">
+            <DisplayTemplate>
+                <Span Class="text-nowrap">
+                    @context.OrderNumber
+                </Span>
+            </DisplayTemplate>
+        </DataGridColumn>
+        <DataGridColumn TItem="PayoutDetailDto"
+                        Field="@nameof(PayoutDetailDto.PaymentType)"
+                        Caption="@L["PaymentType"]">
+            <DisplayTemplate>
+                @context.PaymentType
+            </DisplayTemplate>
+        </DataGridColumn>
+        <DataGridColumn TItem="PayoutDetailDto"
+                        Field="@nameof(PayoutDetailDto.OrderAmount)"
+                        Caption="@L["OrderAmount"]"
+                        TextAlignment="TextAlignment.End">
+            <DisplayTemplate>
+                @context.OrderAmount.ToString("N2")
+            </DisplayTemplate>
+        </DataGridColumn>
+        <DataGridColumn TItem="PayoutDetailDto"
+                        Field="@nameof(PayoutDetailDto.FeeRate)"
+                        Caption="@L["FeeRate"]"
+                        TextAlignment="TextAlignment.End">
+            <DisplayTemplate>
+                @context.FeeRate.ToString("N2")%
+            </DisplayTemplate>
+        </DataGridColumn>
+        <DataGridColumn TItem="PayoutDetailDto"
+                        Field="@nameof(PayoutDetailDto.HandlingFee)"
+                        Caption="@L["HandlingFee"]"
+                        TextAlignment="TextAlignment.End">
+            <DisplayTemplate>
+                @context.HandlingFee.ToString("N2")
+            </DisplayTemplate>
+        </DataGridColumn>
+        <DataGridColumn TItem="PayoutDetailDto"
+                        Field="@nameof(PayoutDetailDto.ProcessingFee)"
+                        Caption="@L["ProcessingFee"]"
+                        TextAlignment="TextAlignment.End">
+            <DisplayTemplate>
+                @context.ProcessingFee.ToString("N2")
+            </DisplayTemplate>
+        </DataGridColumn>
+        <DataGridColumn TItem="PayoutDetailDto"
+                        Field="@nameof(PayoutDetailDto.NetAmount)"
+                        Caption="@L["NetAmount"]"
+                        TextAlignment="TextAlignment.End">
+            <DisplayTemplate>
+                @context.NetAmount.ToString("N2")
+            </DisplayTemplate>
+        </DataGridColumn>
+        <DataGridColumn TItem="PayoutDetailDto"
+                        Field="@nameof(PayoutDetailDto.Status)"
+                        Caption="@L["Status"]"
+                        TextAlignment="TextAlignment.Center">
+            <DisplayTemplate>
+                @context.Status
+            </DisplayTemplate>
+        </DataGridColumn>
+        <DataGridColumn TItem="PayoutDetailDto"
+                        Caption="@L["Actions"]">
+            <DisplayTemplate>
+                <Div Class="text-nowrap">
+                    <PikachuButton Class="pk-btn-sm pk-btn-icon green" IconClass="fas fa-paper-plane"></PikachuButton>
+                    <PikachuButton Class="pk-btn-sm pk-btn-icon amber" IconClass="fas fa-check-double"></PikachuButton>
+                </Div>
+            </DisplayTemplate>
+        </DataGridColumn>
+    </DataGridColumns>
+    <NextPageButtonTemplate>@L["NextPage"]</NextPageButtonTemplate>
+    <PreviousPageButtonTemplate>@L["PrevPage"]</PreviousPageButtonTemplate>
+    <LastPageButtonTemplate>@L["LastPage"]</LastPageButtonTemplate>
+    <FirstPageButtonTemplate>@L["FirstPage"]</FirstPageButtonTemplate>
+    <TotalItemsTemplate>
+        @(string.Format(
+                L["Range"],
+                ((CurrentPage - 1) * PageSize) + 1,
+                (CurrentPage * PageSize > TotalCount ? TotalCount : CurrentPage * PageSize),
+                TotalCount
+                ))
+    </TotalItemsTemplate>
+</DataGrid>
