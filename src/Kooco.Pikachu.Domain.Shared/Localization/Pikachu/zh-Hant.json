@@ -2094,7 +2094,7 @@
     "CloseOrder": "關閉訂單",
     "GenerateDeliveryNumber": "產生托運單號",
     "pieces": "單",
-    "OrderCompletedDueToInActivity": "訂單因閒置自動完成：{0} 運送狀態由 '{1}' 變更為 '{2}'",
+    "OrderCompletedDueToInActivity": "訂單因閒置自動完成：運狀態由 '{1}' 變更為 '{2}'",
     "OrderCompletedDueToInActivityTitle": "訂單因閒置自動完成",
     "EcPayLogisticUpdate": "綠界物流更新",
     "Complete": " 訂單完成",
@@ -2119,6 +2119,10 @@
     "PikachuFileInput:MaxSize": "最大檔案大小：{0}MB",
     "PikachuFileInput:InvalidFileSize": "檔案「{0}」超過允許的最大大小。",
     "PikachuFileInput:InvalidFileExtension": "檔案「{0}」的類型不符合允許的格式。",
-    "Shipping": "運送"
+    "Shipping": "運送",
+    "OrderClosedShippingTitle": "訂單已關閉",
+    "OrderClosedShipping": "因逾期未付款，物流狀態已由「{0}」變更為「{1}」。",
+    "OrderClosedStatusTitle": "訂單已關閉",
+    "OrderClosedStatus": "因逾期未付款，訂單狀態已由「{0}」變更為「{1}」。"
   }
 }

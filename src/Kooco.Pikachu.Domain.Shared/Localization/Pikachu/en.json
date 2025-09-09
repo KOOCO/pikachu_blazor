@@ -2163,6 +2163,11 @@
     "PayoutDetails:BatchPaymentActions": "Batch Payment Actions",
     "PayoutDetails:TransferSelectedToWallet": "Transfer Selected to Wallet",
     "PayoutDetails:MarkSelectedAsPaid": "Mark Selected as Paid",
-    "PayoutDetails:PaymentActionsOnlyAffectUnpaidRecords": "* Payment actions only affect unpaid records"
+    "PayoutDetails:PaymentActionsOnlyAffectUnpaidRecords": "* Payment actions only affect unpaid records",
+    "OrderClosedShippingTitle": "Order Closed",
+    "OrderClosedShipping": "Order closed due to overdue payment: Shipping Status changed from '{0}' to '{1}'.",
+    "OrderClosedStatusTitle": "Order Closed",
+    "OrderClosedStatus": "Order closed due to overdue payment: Order Status changed from '{0}' to '{1}'."
+
   }
 }

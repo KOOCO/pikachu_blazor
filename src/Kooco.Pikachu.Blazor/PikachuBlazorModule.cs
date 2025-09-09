@@ -114,7 +114,7 @@ public class PikachuBlazorModule : AbpModule
         context.Services.AddBlazoriseRichTextEdit();
         context.Services.AddAntDesign();
         context.Services.AddTransient<OrderDeliveryBackgroundJob>();
-    
+
         PreConfigure<OpenIddictBuilder>(builder =>
         {
             builder.AddValidation(options =>
@@ -237,7 +237,7 @@ public class PikachuBlazorModule : AbpModule
         ConfigureHangfire(context, configuration);
         ConfigureLoggerService(context, configuration);
         ConfigureOptions(context);
-        
+
         Configure<AbpToolbarOptions>(options =>
         {
             options.Contributors.Add(new InboxToolbarContributor());
@@ -277,6 +277,7 @@ public class PikachuBlazorModule : AbpModule
 
         context.Services.AddScoped<OrderStatusCheckerWorker>();
         context.Services.AddScoped<PassiveUserBirthdayCheckerWorker>();
+        context.Services.AddSingleton<OrderExpirationWorker>();
 
         context.Services.AddSingleton(typeof(IConverter), new SynchronizedConverter(new PdfTools()));
     }
@@ -466,7 +467,7 @@ public class PikachuBlazorModule : AbpModule
     {
         var env = context.GetEnvironment();
         var app = context.GetApplicationBuilder();
-        
+
         app.UseAbpRequestLocalization(options =>
         {
             options.DefaultRequestCulture = new RequestCulture("zh-Hant");
@@ -499,7 +500,7 @@ public class PikachuBlazorModule : AbpModule
         {
             app.UseMultiTenancy();
         }
-      
+
         app.UseUnitOfWork();
         app.UseAuthorization();
         app.UseSwagger();
@@ -519,14 +520,22 @@ public class PikachuBlazorModule : AbpModule
             endpoints.MapHub<OrderNotificationHub>("/signalr-order-notifications");
             endpoints.MapHub<NotificationHub>("/signalr-notifications");
         });
-        context.ServiceProvider
+        _ = context.ServiceProvider
             .GetRequiredService<IBackgroundWorkerManager>()
             .AddAsync(
              context
                  .ServiceProvider
                  .GetRequiredService<PassiveUserBirthdayCheckerWorker>()
-            );
 
+            );
+        _ = context.ServiceProvider
+            .GetRequiredService<IBackgroundWorkerManager>()
+            .AddAsync(
+             context
+                 .ServiceProvider
+                 .GetRequiredService<OrderExpirationWorker>()
+
+            );
         var backgroundJobManager = context.ServiceProvider.GetRequiredService<IBackgroundJobManager>();
         var config = context.GetConfiguration();
 
