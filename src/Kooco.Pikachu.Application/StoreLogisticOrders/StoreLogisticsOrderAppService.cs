@@ -1102,8 +1102,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
             thermosphere = thermosphereCode;
             spec = getSize();
             isCollection = tCat.Payment &&
-                           order.PaymentMethod is PaymentMethods.CashOnDelivery &&
-                           order.ShippingStatus >= ShippingStatus.PrepareShipment
+                           order.PaymentMethod is PaymentMethods.CashOnDelivery 
                 ? "Y" : "N";
 
             var totalDiscount = order.CreditDeductionAmount + (order.DiscountAmount ?? 0);
@@ -1828,7 +1827,7 @@ public class StoreLogisticsOrderAppService : ApplicationService, IStoreLogistics
         request.AddParameter("ServerReplyURL", serverReplyURL);
         request.AddParameter("ReceiverStoreID", order.StoreId);
 
-        if (order.PaymentMethod is PaymentMethods.CashOnDelivery && order.ShippingStatus is ShippingStatus.PrepareShipment)
+        if (order.PaymentMethod is PaymentMethods.CashOnDelivery)
         {
             request.AddParameter("IsCollection", "Y");
             isCollection = "Y";
