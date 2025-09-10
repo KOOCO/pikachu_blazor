@@ -23,6 +23,7 @@ using Kooco.Pikachu.LogisticsProviders;
 using Kooco.Pikachu.Orders;
 using Kooco.Pikachu.Orders.Entities;
 using Kooco.Pikachu.Orders.Repositories;
+using Kooco.Pikachu.PaymentGateways;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Microsoft.IdentityModel.Tokens;
@@ -52,6 +53,7 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
 {
     #region Inject
     private readonly IGroupBuyRepository _groupBuyRepository;
+    private readonly IPaymentGatewayAppService _paymentGatewayAppService;
     private readonly IGroupBuyItemGroupsRepository _GroupBuyItemGroupsRepository;
     private readonly GroupBuyManager _groupBuyManager;
     private readonly GroupBuyItemsPriceManager _groupBuyItemsPriceManager;
@@ -98,7 +100,8 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
         GroupBuyItemsPriceManager groupBuyItemsPriceManager,
         IGroupBuyItemsPriceAppService groupBuyItemsPriceAppService,
         IGroupBuyItemsPriceRepository groupBuyItemsPriceRepository,
-        IRepository<GroupBuyItemGroupImageModule, Guid> groupBuyItemGroupImageModuleRepository
+        IRepository<GroupBuyItemGroupImageModule, Guid> groupBuyItemGroupImageModuleRepository,
+        IPaymentGatewayAppService paymentGatewayAppService
     )
     {
         _groupBuyManager = groupBuyManager;
@@ -123,6 +126,7 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
         _groupBuyItemsPriceRepository = groupBuyItemsPriceRepository;
         _groupBuyItemsPriceAppService = groupBuyItemsPriceAppService;
         _groupBuyItemGroupImageModuleRepository = groupBuyItemGroupImageModuleRepository;
+        _paymentGatewayAppService = paymentGatewayAppService;
     }
     #endregion
 
@@ -943,9 +947,21 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
     {
         using (_dataFilter.Disable<IMultiTenant>())
         {
+            PaymentGatewayDto? orderValidity =null;
             GroupBuy item = await _groupBuyRepository.GetAsync(id);
-
-            GroupBuyDto result = ObjectMapper.Map<GroupBuy, GroupBuyDto>(item);
+            var tenantId = item.TenantId;
+            using (CurrentTenant.Change(tenantId))
+            {
+                orderValidity = (await _paymentGatewayAppService.GetAllAsync()).FirstOrDefault(x => x.PaymentIntegrationType == PaymentIntegrationType.OrderValidatePeriod);
+            
+            }
+            
+                GroupBuyDto result = ObjectMapper.Map<GroupBuy, GroupBuyDto>(item);
+            if (orderValidity is not null)
+            {
+                result.PaymentValidUnit = orderValidity.Unit;
+                result.PaymentValidPeriod = orderValidity.Period;
+            }
 
             if (result.TemplateType is not null) result.TemplateTypeName = result.TemplateType.ToString();
 

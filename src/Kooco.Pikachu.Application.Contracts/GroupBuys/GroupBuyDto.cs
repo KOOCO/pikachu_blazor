@@ -193,6 +193,8 @@ public class GroupBuyDto : EntityDto<Guid>, IHasConcurrencyStamp
     /// </summary>
     public string? NotifyMessage { get; set; }
 
+    public string? PaymentValidUnit { get; set; }     // "day" | "hour" | "minute"
+    public int? PaymentValidPeriod { get; set; } 
     /// <summary>
     /// 預設使用的發貨倉庫 Default Warehouse used for shipping
     /// </summary>
