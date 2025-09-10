@@ -475,5 +475,7 @@ public class PikachuApplicationAutoMapperProfile : Profile
 
         CreateMap<TCatCodTradeInfoRecord, TCatCodTradeInfoRecordDto>().ReverseMap();
         CreateMap<TenantPayoutRecord, TenantPayoutRecordDto>().ReverseMap();
+
+        CreateMap<TenantPayoutSummary, TenantPayoutSummaryDto>();
     }
 }

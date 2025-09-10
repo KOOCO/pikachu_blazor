@@ -1,79 +1,62 @@
 using Kooco.Pikachu.TenantPaymentFees;
-using System;
+using Kooco.Pikachu.TenantPayouts;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using static Kooco.Pikachu.Blazor.Pages.TenantPayouts.TenantPayoutUiHelper;
 
 namespace Kooco.Pikachu.Blazor.Pages.TenantPayouts;
 
 public partial class TenantPayout
 {
-    private TCatFileImportModal TCatImportModal { get; set; }
-    private Guid? SelectedTenantId { get; set; }
-    private PaymentFeeType? SelectedFeeType { get; set; }
-    private int? SelectedYear { get; set; }
-    List<BreadcrumbItem> BreadcrumbItems { get; set; } = [new(1, "Dashboard")];
-    private List<int> Years { get; } = [2025, 2024, 2023];
+    public TCatFileImportModal TCatImportModal { get; set; }
+    public TenantPayoutSummaryDto? SelectedTenant { get; set; }
+    public PaymentFeeType? SelectedFeeType { get; set; }
+    public int? SelectedYear { get; set; }
+    public List<TenantPayoutStep> Steps { get; set; } = [];
+    public TenantPayoutStep SelectedStep { get; set; } = new();
+    private IEnumerable<TenantPayoutBreadcrumb> BreadcrumbItems =>
+        GetBreadcrumbs(
+            SelectedTenant?.Name,
+            SelectedFeeType,
+            SelectedYear,
+            SelectedStep?.Step ?? 1);
+
+    protected override void OnInitialized()
+    {
+        ConfigureStepList();
+        base.OnInitialized();
+    }
+
     async Task OnImportCompletedAsync()
     {
         await Task.CompletedTask;
     }
 
-    static string GetInitials(string name)
+    async Task TenantChanged(TenantPayoutSummaryDto? tenant)
     {
-        if (string.IsNullOrWhiteSpace(name))
-            return string.Empty;
-
-        var parts = name
-            .Trim()
-            .Split(' ', StringSplitOptions.RemoveEmptyEntries);
-
-        if (parts.Length == 0)
-            return string.Empty;
-
-        var initials = parts[0][..1];
-
-        if (parts.Length > 1)
-            initials += parts[1][..1];
-
-        return initials.ToUpper();
+        SelectedTenant = tenant;
+        GoToStep(this, tenant != null ? 2 : 1);
+        await InvokeAsync(StateHasChanged);
     }
 
-    void SelectTenant(Guid tenantId)
-    {
-        SelectedTenantId = tenantId;
-        BreadcrumbItems.Add(new(2, "Acme Corporation")); //Tenant name
-    }
-
-    void SelectFeeType(PaymentFeeType feeType)
+    async Task FeeTypeChanged(PaymentFeeType? feeType)
     {
         SelectedFeeType = feeType;
-        BreadcrumbItems.Add(new(3, "ECPay")); //Provider name
+        GoToStep(this, feeType.HasValue ? 3 : 2);
+        await InvokeAsync(StateHasChanged);
     }
 
-    void SelectYear(int year)
+    async Task SelectYear(int? year)
     {
         SelectedYear = year;
-        BreadcrumbItems.Add(new(4, year.ToString()));
-        BreadcrumbItems.Add(new(5, "PayoutDetails"));
+        GoToStep(this, year.HasValue ? 4 : 3);
+        await InvokeAsync(StateHasChanged);
     }
 
-    void BackToTenants()
+    void ConfigureStepList()
     {
-        SelectedTenantId = null;
-        BreadcrumbItems.RemoveAll(bi => bi.Step > 1);
+        Steps = ConfigureSteps(this, L);
+        SelectedStep = Steps.First();
     }
-
-    void BackToProviders()
-    {
-        SelectedFeeType = null;
-        BreadcrumbItems.RemoveAll(bi => bi.Step > 2);
-    }
-
-    void BackToYears()
-    {
-        SelectedYear = null;
-        BreadcrumbItems.RemoveAll(bi => bi.Step > 3);
-    }
-
-    private record BreadcrumbItem(int Step, string Name);
 }

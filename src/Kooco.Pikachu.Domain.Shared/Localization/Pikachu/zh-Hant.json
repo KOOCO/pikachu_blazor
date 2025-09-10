@@ -2125,6 +2125,7 @@
     "OrderClosedStatusTitle": "訂單已關閉",
     "OrderClosedStatus": "因逾期未付款，訂單狀態已由「{0}」變更為「{1}」。",
     "PayoutManagement": "款項支付管理",
+    "Menu:PayoutManagement": "款項支付管理",
     "TenantList": "租戶列表",
     "PaymentProviders": "金流廠商",
     "PayoutByYear": "年度支付記錄",

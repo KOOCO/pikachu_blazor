@@ -1,4 +1,5 @@
 ﻿@page "/tenants/payouts"
+@using Kooco.Pikachu.Blazor.Pages.TenantPayouts.Steps
 @using Kooco.Pikachu.TenantPaymentFees
 <link href="/css/tenant-payout.css" rel="stylesheet" />
 @inherits PikachuComponentBase
@@ -7,7 +8,7 @@
 <div class="header">
     <div>
         <h3>@L["PayoutManagement"]</h3>
-        <p>@(string.Join(" > ", BreadcrumbItems.Select(bi => L[bi.Name])))</p>
+        <p>@string.Join(" > ", BreadcrumbItems.Select(bi => L[bi.Name]))</p>
     </div>
     <div>
         <PikachuButton Class="pk-btn-outline-primary"
@@ -17,132 +18,39 @@
         </PikachuButton>
     </div>
 </div>
-@if (!SelectedTenantId.HasValue)
-{
-    <Card>
-        <CardHeader>
-            <h4>@L["TenantList"]</h4>
-            <p>@L["SelectTenantToViewPayoutFeeDetail"]</p>
-        </CardHeader>
-        <CardBody>
-            <div class="list-card" @onclick="@(() => SelectTenant(Guid.NewGuid()))">
-                <div class="list-card-left">
-                    <div class="list-card-icon">
-                        @GetInitials("Acme Corporation")
-                    </div>
-                    <div class="list-card-info">
-                        <h3>Acme Corporation</h3>
-                        <div class="list-card-meta">ID: TN-001 • @L["TenantActiveSince", "2023"]</div>
-                    </div>
-                </div>
-                <div class="list-card-stats">
-                    <p class="tenant-fee">
-                        @L["TenantPayoutTotalFees", "$2,467"]
-                    </p>
-                    <p class="small">@L["NumberOfTransactionsThisMonth", "156"]</p>
-                </div>
-            </div>
-        </CardBody>
-    </Card>
-}
-@if (SelectedTenantId.HasValue && !SelectedFeeType.HasValue)
-{
-    <Card>
-        <CardHeader>
-            <h4>@L["PaymentProviders"]</h4>
-            <p>@L["SelectPaymentProviderToViewPaymentDetails"]</p>
-        </CardHeader>
-        <CardBody>
-            <button class="back-btn" @onclick="BackToTenants">← @L["BackToTenants"]</button>
-            <div class="list-card" @onclick="@(() => SelectFeeType(PaymentFeeType.EcPay))">
-                <div class="list-card-left">
-                    <div class="list-card-icon provider">
-                        @GetInitials("ECPay")
-                    </div>
-                    <div class="list-card-info">
-                        <div class="d-flex align-items-start justify-content-start gap-2">
-                            <h3>ECPay</h3>
-                            <PikachuBadge Class="pk-badge-success pk-badge-sm">@L["TenantPayout:Active"]</PikachuBadge>
-                        </div>
-                        <div class="list-card-meta">@L["PrimaryPaymentProcessingProvider"]</div>
-                    </div>
-                </div>
-            </div>
-            <div class="list-card disabled">
-                <div class="list-card-left">
-                    <div class="list-card-icon">
-                        +
-                    </div>
-                    <div class="list-card-info">
-                        <div class="d-flex align-items-start justify-content-start gap-2">
-                            <h3>@L["AdditionalProviders"]</h3>
-                            <PikachuBadge Class="pk-badge-sm bg-light">@L["ComingSoon"]</PikachuBadge>
-                        </div>
-                        <div class="list-card-meta">@L["MoreProvidersWillBeAvailableSoon"]</div>
-                    </div>
-                </div>
-            </div>
-        </CardBody>
-    </Card>
-}
-@if (SelectedTenantId.HasValue && SelectedFeeType.HasValue && !SelectedYear.HasValue)
-{
-    <Card>
-        <CardHeader>
-            <h4>@L["PayoutByYear"]</h4>
-            <p>@L["SelectYearToViewDetailedPayoutRecords"]</p>
-        </CardHeader>
-        <CardBody>
-            <button class="back-btn" @onclick="BackToProviders">← @L["BackToProviders"]</button>
-            @foreach (var year in Years)
-            {
-        <div class="list-card" @onclick="@(() => SelectYear(year))">
-            <div class="list-card-left">
-                <div class="list-card-icon year">
-                    @year.ToString().Substring(2)
-                </div>
-                <div class="list-card-info">
-                    <h3>@year</h3>
-                    <div class="list-card-meta">
-                        @L[year == DateTime.Now.Year
-                                                ? "CurrentYear"
-                                                : (year == DateTime.Now.Year - 1 ? "PreviousYear" : "Archive")
-                                                ]
-                    </div>
-                </div>
-            </div>
-            <div class="list-card-stats">
-                <div class="year-list-stats">
-                    <div class="year-list-stat-item">
-                        <h5>$4,323</h5>
-                        <p class="small">@L["TotalFees"]</p>
-                    </div>
-                    <div class="year-list-stat-item">
-                        <h5>426</h5>
-                        <p class="small">@L["Transactions"]</p>
-                    </div>
-                    <div class="year-list-stat-item">
-                        <h5>2.9%</h5>
-                        <p class="small">@L["AvgFeeRate"]</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-                }
-        </CardBody>
-    </Card>
-}
-@if (SelectedTenantId.HasValue && SelectedFeeType.HasValue && SelectedYear.HasValue)
-{
-    <Card>
-        <CardHeader>
-            <h4>@L["PayoutDetails"]</h4>
-            <p>@L["TransactionRecordsAndPayoutManagementOperations"]</p>
-        </CardHeader>
-        <CardBody>
-            <button class="back-btn" @onclick="BackToYears">← @L["BackToYears"]</button>
-            <PayoutDetails Year="SelectedYear" />
-        </CardBody>
-    </Card>
-}
+
+<div class="card">
+    <div class="card-header">
+        <h4>@SelectedStep.Title</h4>
+        <p>@SelectedStep.SubTitle</p>
+    </div>
+    <div class="card-body">
+        @if (SelectedStep.CanGoBack && SelectedStep.BackFunction != null)
+        {
+            <button class="back-btn" @onclick="SelectedStep.BackFunction">
+                ← @SelectedStep.BackText
+            </button>
+        }
+
+        @switch (SelectedStep.Step)
+        {
+            case 1:
+                <TenantSelectionStep TenantChanged="TenantChanged" />
+                break;
+
+            case 2:
+                <PaymentProviderSelectionStep TenantId="SelectedTenant?.TenantId" FeeTypeChanged="FeeTypeChanged" />
+                break;
+
+            case 3:
+                <PayoutYearSelectionStep YearChanged="SelectYear" />
+                break;
+
+            case 4:
+                <PayoutDetails Year="SelectedYear" />
+                break;
+        }
+    </div>
+</div>
+
 <TCatFileImportModal @ref="TCatImportModal" OnImportCompleted="OnImportCompletedAsync" />

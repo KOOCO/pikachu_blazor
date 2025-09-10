@@ -1,0 +1,52 @@
+﻿@using Kooco.Pikachu.TenantPaymentFees
+@inherits PikachuComponentBase
+
+<div class="list-card" @onclick="@(() => SelectFeeType(PaymentFeeType.EcPay))">
+    <div class="list-card-left">
+        <div class="list-card-icon provider">
+            EC
+        </div>
+        <div class="list-card-info">
+            <div class="d-flex align-items-start justify-content-start gap-2">
+                <h3>ECPay</h3>
+                <PikachuBadge Class="pk-badge-success pk-badge-sm">@L["TenantPayout:Active"]</PikachuBadge>
+            </div>
+            <div class="list-card-meta">@L["PrimaryPaymentProcessingProvider"]</div>
+        </div>
+    </div>
+</div>
+<div class="list-card disabled">
+    <div class="list-card-left">
+        <div class="list-card-icon">
+            +
+        </div>
+        <div class="list-card-info">
+            <div class="d-flex align-items-start justify-content-start gap-2">
+                <h3>@L["AdditionalProviders"]</h3>
+                <PikachuBadge Class="pk-badge-sm bg-light">@L["ComingSoon"]</PikachuBadge>
+            </div>
+            <div class="list-card-meta">@L["MoreProvidersWillBeAvailableSoon"]</div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter] public Guid? TenantId { get; set; }
+    [Parameter] public EventCallback<PaymentFeeType?> FeeTypeChanged { get; set; }
+
+    private PaymentFeeType? FeeType { get; set; }
+
+    async Task BackToTenants()
+    {
+        await SelectFeeType(null);
+    }
+
+    async Task SelectFeeType(PaymentFeeType? value)
+    {
+        if (FeeType != value)
+        {
+            FeeType = value;
+            await FeeTypeChanged.InvokeAsync(value);
+        }
+    }
+}

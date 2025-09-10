@@ -1,0 +1,55 @@
+﻿@using Kooco.Pikachu.TenantPayouts
+@using Kooco.Pikachu.Extensions
+
+@inherits PikachuComponentBase
+
+@foreach (var tenant in Tenants.OrEmptyIfNull())
+{
+    <div class="list-card" @onclick="@(() => SelectTenant(tenant))">
+        <div class="list-card-left">
+            <div class="list-card-icon">
+                @TenantPayoutUiHelper.GetInitials(tenant.Name)
+            </div>
+            <div class="list-card-info">
+                <h3>@tenant.Name</h3>
+                <div class="list-card-meta">ID: @tenant.TenantId • @L["TenantActiveSince", tenant.CreationTime.Year]</div>
+            </div>
+        </div>
+        <div class="list-card-stats">
+            <p class="tenant-fee">
+                @L["TenantPayoutTotalFees", $"${tenant.TotalFees:N2}"]
+            </p>
+            <p class="small">@L["NumberOfTransactionsThisMonth", tenant.TotalTransactions]</p>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public ITenantPayoutAppService Service { get; set; }
+    [Parameter] public EventCallback<TenantPayoutSummaryDto?> TenantChanged { get; set; }
+
+    private List<TenantPayoutSummaryDto> Tenants { get; set; } = new();
+    private TenantPayoutSummaryDto? SelectedTenant { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            Tenants = await Service.GetTenantSummariesAsync();
+            await base.OnInitializedAsync();
+        }
+        catch (Exception ex)
+        {
+            await HandleErrorAsync(ex);
+        }
+    }
+
+    private async Task SelectTenant(TenantPayoutSummaryDto? value)
+    {
+        if (SelectedTenant != value)
+        {
+            SelectedTenant = value;
+            await TenantChanged.InvokeAsync(value);
+        }
+    }
+}

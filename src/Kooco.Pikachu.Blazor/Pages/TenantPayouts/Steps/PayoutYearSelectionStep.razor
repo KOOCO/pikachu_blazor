@@ -1,0 +1,60 @@
+﻿@inherits PikachuComponentBase
+
+@foreach (var year in Years)
+{
+    <div class="list-card" @onclick="@(() => SelectYear(year))">
+        <div class="list-card-left">
+            <div class="list-card-icon year">
+                @year.ToString().Substring(2)
+            </div>
+            <div class="list-card-info">
+                <h3>@year</h3>
+                <div class="list-card-meta">
+                    @L[year == DateTime.Now.Year
+                                    ? "CurrentYear"
+                                    : (year == DateTime.Now.Year - 1 ? "PreviousYear" : "Archive")
+                                    ]
+                </div>
+            </div>
+        </div>
+        <div class="list-card-stats">
+            <div class="year-list-stats">
+                <div class="year-list-stat-item">
+                    <h5>$4,323</h5>
+                    <p class="small">@L["TotalFees"]</p>
+                </div>
+                <div class="year-list-stat-item">
+                    <h5>426</h5>
+                    <p class="small">@L["Transactions"]</p>
+                </div>
+                <div class="year-list-stat-item">
+                    <h5>2.9%</h5>
+                    <p class="small">@L["AvgFeeRate"]</p>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public EventCallback<int?> YearChanged { get; set; }
+
+    private int? SelectedYear { get; set; }
+    private List<int> Years { get; } = [2025, 2024, 2023];
+
+    async Task Back()
+    {
+        SelectedYear = null;
+        await YearChanged.InvokeAsync(SelectedYear);
+    }
+
+    async Task SelectYear(int? year)
+    {
+        if (SelectedYear != year)
+        {
+            SelectedYear = year;
+            await YearChanged.InvokeAsync(SelectedYear);
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+}
