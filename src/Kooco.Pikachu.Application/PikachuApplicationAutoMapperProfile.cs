@@ -2,7 +2,7 @@ using AutoMapper;
 using Kooco.Pikachu.AddOnProducts;
 using Kooco.Pikachu.AutomaticEmails;
 using Kooco.Pikachu.Campaigns;
-using Kooco.Pikachu.Common;
+using Kooco.Pikachu.CodTradeInfos;
 using Kooco.Pikachu.Dashboards;
 using Kooco.Pikachu.DeliveryTemperatureCosts;
 using Kooco.Pikachu.DeliveryTempratureCosts;
@@ -20,10 +20,12 @@ using Kooco.Pikachu.Groupbuys;
 using Kooco.Pikachu.GroupBuys;
 using Kooco.Pikachu.GroupPurchaseOverviews;
 using Kooco.Pikachu.Images;
+using Kooco.Pikachu.InboxManagement;
 using Kooco.Pikachu.InventoryManagement;
 using Kooco.Pikachu.Items;
 using Kooco.Pikachu.Items.Dtos;
 using Kooco.Pikachu.LoginConfigurations;
+using Kooco.Pikachu.LogisticsFeeManagements;
 using Kooco.Pikachu.LogisticsProviders;
 using Kooco.Pikachu.LogisticsSettings;
 using Kooco.Pikachu.LogisticStatusRecords;
@@ -43,8 +45,12 @@ using Kooco.Pikachu.SalesReports;
 using Kooco.Pikachu.ShopCarts;
 using Kooco.Pikachu.ShoppingCredits;
 using Kooco.Pikachu.StoreComments;
+using Kooco.Pikachu.TenantDeliveryFees;
+using Kooco.Pikachu.TenantPaymentFees;
+using Kooco.Pikachu.TenantPayouts;
 using Kooco.Pikachu.Tenants;
 using Kooco.Pikachu.Tenants.Entities;
+using Kooco.Pikachu.Tenants.Requests;
 using Kooco.Pikachu.TierManagement;
 using Kooco.Pikachu.UserAddresses;
 using Kooco.Pikachu.UserCumulativeCredits;
@@ -58,22 +64,12 @@ using Kooco.Pikachu.WebsiteManagement.TopbarSettings;
 using Kooco.Pikachu.WebsiteManagement.WebsiteBasicSettings;
 using Kooco.Pikachu.WebsiteManagement.WebsiteSettingsModules;
 using Kooco.Reconciliations;
+using Kooco.TradeInfos;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Volo.Abp.Application.Dtos;
 using Volo.Abp.AutoMapper;
 using Volo.Abp.Identity;
-using Kooco.Pikachu.InventoryManagement;
-using Kooco.Pikachu.Emails;
-using Kooco.Pikachu.Tenants.Requests;
-using Kooco.Pikachu.LogisticsFeeManagements;
-using Kooco.Pikachu.InboxManagement;
-using Kooco.Pikachu.CodTradeInfos;
-using Kooco.TradeInfos;
-using Kooco.Pikachu.TenantDeliveryFees;
-using Kooco.Pikachu.TenantPaymentFees;
-using Kooco.Pikachu.TenantPayouts;
 
 namespace Kooco.Pikachu;
 
@@ -477,5 +473,6 @@ public class PikachuApplicationAutoMapperProfile : Profile
         CreateMap<TenantPayoutRecord, TenantPayoutRecordDto>().ReverseMap();
 
         CreateMap<TenantPayoutSummary, TenantPayoutSummaryDto>();
+        CreateMap<TenantPayoutYearlySummary, TenantPayoutYearlySummaryDto>();
     }
 }

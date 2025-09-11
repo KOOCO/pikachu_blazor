@@ -69,21 +69,21 @@ public static class TenantPayoutUiHelper
         var target = component.Steps.FirstOrDefault(s => s.Step == step);
         if (target == null) return;
 
-        component.SelectedStep = target;
+        component.CurrentStep = target;
 
         switch (step)
         {
             case 1:
                 component.SelectedTenant = null;
-                component.SelectedFeeType = null;
-                component.SelectedYear = null;
+                component.FeeType = null;
+                component.Year = null;
                 break;
             case 2:
-                component.SelectedFeeType = null;
-                component.SelectedYear = null;
+                component.FeeType = null;
+                component.Year = null;
                 break;
             case 3:
-                component.SelectedYear = null;
+                component.Year = null;
                 break;
         }
     }
@@ -126,8 +126,7 @@ public static class TenantPayoutUiHelper
     public static IEnumerable<TenantPayoutBreadcrumb> GetBreadcrumbs(
         string? tenantName,
         PaymentFeeType? feeType,
-        int? year,
-        int currentStep
+        int? year
         )
     {
         var crumbs = new List<TenantPayoutBreadcrumb> { new(1, "Dashboard") };
@@ -136,7 +135,7 @@ public static class TenantPayoutUiHelper
             crumbs.Add(new(2, tenantName));
 
         if (feeType.HasValue)
-            crumbs.Add(new(3, feeType.Value.ToString()));
+            crumbs.Add(new(3, $"Enum:TenantPaymentFee.{(int)feeType.Value}"));
 
         if (year.HasValue)
         {
@@ -144,14 +143,14 @@ public static class TenantPayoutUiHelper
             crumbs.Add(new(5, "PayoutDetails"));
         }
 
-        return [.. crumbs.Where(c => c.Step <= currentStep)];
+        return crumbs;
     }
 }
 
 public class TenantPayoutStep
 {
     public int Step { get; set; }
-    public string? Title { get; set; }
+    public string Title { get; set; }
     public string? SubTitle { get; set; }
     public string? BackText { get; set; }
     public bool CanGoBack { get; set; }

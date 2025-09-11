@@ -125,6 +125,7 @@ public class TenantPayoutRecordService : ITransientDependency
                 feeRate,
                 handlingFee,
                 processingFee,
+                PaymentFeeType.EcPay,
                 tenantId
                 );
 
@@ -198,6 +199,7 @@ public class TenantPayoutRecordService : ITransientDependency
                 feeRate,
                 handlingFee,
                 processingFee,
+                PaymentFeeType.EcPay,
                 tenantId
                 );
 
@@ -296,6 +298,7 @@ public class TenantPayoutRecordService : ITransientDependency
                 feeRate,
                 handlingFee,
                 0,
+                PaymentFeeType.TCat,
                 tenantId
                 );
 

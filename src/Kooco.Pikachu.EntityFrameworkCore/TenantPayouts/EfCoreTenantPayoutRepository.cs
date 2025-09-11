@@ -1,4 +1,6 @@
 ﻿using Kooco.Pikachu.EntityFrameworkCore;
+using Kooco.Pikachu.TenantPaymentFees;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -35,5 +37,34 @@ public class EfCoreTenantPayoutRepository : EfCoreRepository<PikachuDbContext, T
                 TotalTransactions = g.payout.Count()
             })
             .OrderBy(s => s.Name)];
+    }
+
+    public async Task<List<PaymentFeeType>> GetActivePaymentProvidersAsync(Guid tenantId)
+    {
+        var dbContext = await GetDbContextAsync();
+
+        return await dbContext.TenantPaymentFees
+            .Where(f => f.TenantId == tenantId && f.IsEnabled)
+            .GroupBy(f => f.FeeType)
+            .Select(g => g.Key)
+            .ToListAsync();
+    }
+
+    public async Task<List<TenantPayoutYearlySummary>> GetTenantPayoutYearlySummariesAsync(Guid tenantId, PaymentFeeType feeType)
+    {
+        var dbContext = await GetDbContextAsync();
+
+        return await dbContext.TenantPayoutRecords
+            .Where(r => r.TenantId == tenantId && r.FeeType == feeType)
+            .GroupBy(r => r.CreationTime.Year)
+            .Select(g => new TenantPayoutYearlySummary
+            {
+                Year = g.Key,
+                TotalFees = g.Sum(r => r.NetAmount),
+                Transactions = g.Count(),
+                AvgFeeRate = g.Average(r => r.FeeRate)
+            })
+            .Distinct()
+            .ToListAsync();
     }
 }

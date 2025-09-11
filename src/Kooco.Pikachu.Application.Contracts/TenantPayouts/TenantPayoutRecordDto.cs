@@ -1,4 +1,5 @@
 ﻿using Kooco.Pikachu.EnumValues;
+using Kooco.Pikachu.TenantPaymentFees;
 using System;
 
 namespace Kooco.Pikachu.TenantPayouts;
@@ -16,6 +17,7 @@ public class TenantPayoutRecordDto
     public decimal FeeRate { get; set; }
     public decimal ProcessingFee { get; set; }
     public decimal NetAmount { get; set; }
+    public PaymentFeeType FeeType { get; set; }
     public DateTime CreationTime { get; set; }
     public bool IsDeleted { get; set; }
 }

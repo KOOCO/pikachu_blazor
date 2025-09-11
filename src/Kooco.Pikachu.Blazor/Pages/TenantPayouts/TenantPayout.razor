@@ -1,9 +1,11 @@
 ﻿@page "/tenants/payouts"
 @using Kooco.Pikachu.Blazor.Pages.TenantPayouts.Steps
 @using Kooco.Pikachu.TenantPaymentFees
+@using Kooco.Pikachu.TenantPayouts
 <link href="/css/tenant-payout.css" rel="stylesheet" />
 @inherits PikachuComponentBase
 @attribute [Authorize(PikachuPermissions.TenantPayouts.Default)]
+@inject ITenantPayoutAppService TenantPayoutAppService
 
 <div class="header">
     <div>
@@ -21,33 +23,33 @@
 
 <div class="card">
     <div class="card-header">
-        <h4>@SelectedStep.Title</h4>
-        <p>@SelectedStep.SubTitle</p>
+        <h4>@CurrentStep.Title</h4>
+        <p>@CurrentStep.SubTitle</p>
     </div>
     <div class="card-body">
-        @if (SelectedStep.CanGoBack && SelectedStep.BackFunction != null)
+        @if (CurrentStep.CanGoBack && CurrentStep.BackFunction != null)
         {
-            <button class="back-btn" @onclick="SelectedStep.BackFunction">
-                ← @SelectedStep.BackText
+            <button class="back-btn" @onclick="CurrentStep.BackFunction">
+                ← @CurrentStep.BackText
             </button>
         }
 
-        @switch (SelectedStep.Step)
+        @switch (CurrentStep.Step)
         {
             case 1:
-                <TenantSelectionStep TenantChanged="TenantChanged" />
+                <TenantSelectionStep Service="TenantPayoutAppService" TenantChanged="TenantChanged" />
                 break;
 
             case 2:
-                <PaymentProviderSelectionStep TenantId="SelectedTenant?.TenantId" FeeTypeChanged="FeeTypeChanged" />
+                <PaymentProviderSelectionStep Service="TenantPayoutAppService" TenantId="TenantId" FeeTypeChanged="FeeTypeChanged" />
                 break;
 
             case 3:
-                <PayoutYearSelectionStep YearChanged="SelectYear" />
+                <PayoutYearSelectionStep Service="TenantPayoutAppService" TenantId="TenantId" FeeType="FeeType" YearChanged="YearChanged" />
                 break;
 
             case 4:
-                <PayoutDetails Year="SelectedYear" />
+                <PayoutDetails Year="Year" />
                 break;
         }
     </div>

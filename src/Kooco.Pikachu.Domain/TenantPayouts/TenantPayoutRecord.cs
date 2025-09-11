@@ -1,4 +1,5 @@
 ﻿using Kooco.Pikachu.EnumValues;
+using Kooco.Pikachu.TenantPaymentFees;
 using System;
 using Volo.Abp;
 using Volo.Abp.Auditing;
@@ -18,6 +19,7 @@ public class TenantPayoutRecord : Entity<Guid>, IHasCreationTime, ISoftDelete
     public decimal FeeRate { get; set; }
     public decimal ProcessingFee { get; set; }
     public decimal NetAmount { get; set; }
+    public PaymentFeeType FeeType { get; set; }
     public DateTime CreationTime { get; set; }
     public bool IsDeleted { get; set; }
 
@@ -33,6 +35,7 @@ public class TenantPayoutRecord : Entity<Guid>, IHasCreationTime, ISoftDelete
         decimal feeRate,
         decimal handlingFee,
         decimal processingFee,
+        PaymentFeeType feeType,
         Guid? tenantId
         ) : base(id)
     {
@@ -43,6 +46,7 @@ public class TenantPayoutRecord : Entity<Guid>, IHasCreationTime, ISoftDelete
         FeeKind = feeKind;
         FeeRate = feeRate;
         SetNetAmount(grossOrderAmount, handlingFee, processingFee);
+        FeeType = feeType;
         TenantId = tenantId;
     }
 

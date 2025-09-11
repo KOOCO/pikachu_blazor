@@ -1,5 +1,6 @@
 using Kooco.Pikachu.TenantPaymentFees;
 using Kooco.Pikachu.TenantPayouts;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -11,16 +12,14 @@ public partial class TenantPayout
 {
     public TCatFileImportModal TCatImportModal { get; set; }
     public TenantPayoutSummaryDto? SelectedTenant { get; set; }
-    public PaymentFeeType? SelectedFeeType { get; set; }
-    public int? SelectedYear { get; set; }
+    private Guid? TenantId => SelectedTenant?.TenantId;
+    public PaymentFeeType? FeeType { get; set; }
+    public int? Year { get; set; }
     public List<TenantPayoutStep> Steps { get; set; } = [];
-    public TenantPayoutStep SelectedStep { get; set; } = new();
+    public TenantPayoutStep CurrentStep { get; set; } = new();
+
     private IEnumerable<TenantPayoutBreadcrumb> BreadcrumbItems =>
-        GetBreadcrumbs(
-            SelectedTenant?.Name,
-            SelectedFeeType,
-            SelectedYear,
-            SelectedStep?.Step ?? 1);
+        GetBreadcrumbs(SelectedTenant?.Name, FeeType, Year);
 
     protected override void OnInitialized()
     {
@@ -42,14 +41,14 @@ public partial class TenantPayout
 
     async Task FeeTypeChanged(PaymentFeeType? feeType)
     {
-        SelectedFeeType = feeType;
+        FeeType = feeType;
         GoToStep(this, feeType.HasValue ? 3 : 2);
         await InvokeAsync(StateHasChanged);
     }
 
-    async Task SelectYear(int? year)
+    async Task YearChanged(int? year)
     {
-        SelectedYear = year;
+        Year = year;
         GoToStep(this, year.HasValue ? 4 : 3);
         await InvokeAsync(StateHasChanged);
     }
@@ -57,6 +56,6 @@ public partial class TenantPayout
     void ConfigureStepList()
     {
         Steps = ConfigureSteps(this, L);
-        SelectedStep = Steps.First();
+        CurrentStep = Steps.First();
     }
 }

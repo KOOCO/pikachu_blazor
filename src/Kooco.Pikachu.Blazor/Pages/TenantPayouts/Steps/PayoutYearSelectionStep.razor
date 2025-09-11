@@ -1,46 +1,102 @@
-﻿@inherits PikachuComponentBase
+﻿@using Kooco.Pikachu.TenantPaymentFees
+@using Kooco.Pikachu.TenantPayouts
+@using Kooco.Pikachu.Extensions
 
-@foreach (var year in Years)
+@inherits PikachuComponentBase
+
+@if (Loading)
 {
-    <div class="list-card" @onclick="@(() => SelectYear(year))">
-        <div class="list-card-left">
-            <div class="list-card-icon year">
-                @year.ToString().Substring(2)
+    <p class="mt-3">
+        <span class="spinner">
+            <span class="spinner-border text-primary" style="height: 1.5rem; width: 1.5rem; border-width: 2px;"></span>
+        </span>
+        <span style="font-size: 1rem;">Loading...</span>
+    </p>
+}
+else
+{
+    @foreach (var year in Years.OrEmptyIfNull())
+    {
+        <div class="list-card" @onclick="@(() => SelectYear(year.Year))">
+            <div class="list-card-left">
+                <div class="list-card-icon year">
+                    @year.Year.ToString().Substring(2)
+                </div>
+                <div class="list-card-info">
+                    <h3>@year.Year</h3>
+                    <div class="list-card-meta">
+                        @GetYearText(year.Year)
+                    </div>
+                </div>
             </div>
-            <div class="list-card-info">
-                <h3>@year</h3>
-                <div class="list-card-meta">
-                    @L[year == DateTime.Now.Year
-                                    ? "CurrentYear"
-                                    : (year == DateTime.Now.Year - 1 ? "PreviousYear" : "Archive")
-                                    ]
+            <div class="list-card-stats">
+                <div class="year-list-stats">
+                    <div class="year-list-stat-item">
+                        <h5>$@year.TotalFees.ToString("N2")</h5>
+                        <p class="small">@L["TotalFees"]</p>
+                    </div>
+                    <div class="year-list-stat-item">
+                        <h5>@year.Transactions.ToString("N0")</h5>
+                        <p class="small">@L["Transactions"]</p>
+                    </div>
+                    <div class="year-list-stat-item">
+                        <h5>@year.AvgFeeRate.ToString("N2")%</h5>
+                        <p class="small">@L["AvgFeeRate"]</p>
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="list-card-stats">
-            <div class="year-list-stats">
-                <div class="year-list-stat-item">
-                    <h5>$4,323</h5>
-                    <p class="small">@L["TotalFees"]</p>
+    }
+
+    @if (Years == null || Years.Count == 0)
+    {
+        <div class="list-card disabled">
+            <div class="list-card-left">
+                <div class="list-card-icon">
+                    <i class="fas fa-cancel"></i>
                 </div>
-                <div class="year-list-stat-item">
-                    <h5>426</h5>
-                    <p class="small">@L["Transactions"]</p>
-                </div>
-                <div class="year-list-stat-item">
-                    <h5>2.9%</h5>
-                    <p class="small">@L["AvgFeeRate"]</p>
+                <div class="list-card-info">
+                    <div class="d-flex align-items-start justify-content-start gap-2">
+                        <h3>@L["NoPayoutData"]</h3>
+                    </div>
+                    <div class="list-card-meta">@L["NoPayoutDataDescription"]</div>
                 </div>
             </div>
         </div>
-    </div>
+    }
 }
 
 @code {
+    [Parameter] public ITenantPayoutAppService Service { get; set; }
+    [Parameter] public Guid? TenantId { get; set; }
+    [Parameter] public PaymentFeeType? FeeType { get; set; }
     [Parameter] public EventCallback<int?> YearChanged { get; set; }
 
     private int? SelectedYear { get; set; }
-    private List<int> Years { get; } = [2025, 2024, 2023];
+    private List<TenantPayoutYearlySummaryDto> Years { get; set; }
+    private bool Loading { get; set; } = true;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+            await GetData();
+    }
+
+    async Task GetData()
+    {
+        try
+        {
+            Years = TenantId.HasValue && FeeType.HasValue
+                ? await Service.GetTenantPayoutYearlySummariesAsync(TenantId.Value, FeeType.Value)
+                : [];
+        }
+        catch (Exception ex) { await HandleErrorAsync(ex); }
+        finally
+        {
+            Loading = false;
+            StateHasChanged();
+        }
+    }
 
     async Task Back()
     {
@@ -56,5 +112,14 @@
             await YearChanged.InvokeAsync(SelectedYear);
             await InvokeAsync(StateHasChanged);
         }
+    }
+
+    string GetYearText(int year)
+    {
+        string text = year == DateTime.Now.Year
+            ? "CurrentYear"
+            : (year == DateTime.Now.Year - 1 ? "PreviousYear" : "Archive");
+
+        return L[text];
     }
 }
