@@ -59,4 +59,23 @@ public static class StringExtensions
         }
         return false;
     }
+
+    public static string ToMoneyString(this decimal number, string? format = null, string? currency = null)
+    {
+        currency ??= "$";
+        format ??= "N2";
+        return currency + number.ToString(format);
+    }
+    
+    public static string ToPercentageString(this decimal number, string? format = null)
+    {
+        format ??= "N2";
+        return number.ToString(format) + "%";
+    }
+
+    public static string ToNumberString(this int number, string? format = null)
+    {
+        format ??= "N0";
+        return number.ToString(format);
+    }
 }

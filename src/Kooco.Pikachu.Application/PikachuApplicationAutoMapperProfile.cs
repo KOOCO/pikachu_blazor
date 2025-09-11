@@ -474,5 +474,6 @@ public class PikachuApplicationAutoMapperProfile : Profile
 
         CreateMap<TenantPayoutSummary, TenantPayoutSummaryDto>();
         CreateMap<TenantPayoutYearlySummary, TenantPayoutYearlySummaryDto>();
+        CreateMap<TenantPayoutDetailSummary, TenantPayoutDetailSummaryDto>();
     }
 }

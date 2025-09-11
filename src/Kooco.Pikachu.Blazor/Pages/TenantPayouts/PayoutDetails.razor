@@ -1,4 +1,8 @@
-﻿@inherits PikachuComponentBase
+﻿@using Kooco.Pikachu.EnumValues
+@using Kooco.Pikachu.Extensions
+@using Kooco.Pikachu.TenantPayouts
+
+@inherits PikachuComponentBase
 <h5 class="text-dark">@L["PayoutDetails:FeeSummary", Year]</h5>
 
 <div class="stats-container">
@@ -7,7 +11,7 @@
             <i class="fas fa-wallet"></i>
         </div>
         <div class="stats-info">
-            <h3>$8,714.85</h3>
+            <h3>@Summary.NetAmount.ToMoneyString()</h3>
             <p class="m-0">@(L["NetAmount"])</p>
         </div>
     </div>
@@ -16,7 +20,7 @@
             <i class="fas fa-file-invoice-dollar"></i>
         </div>
         <div class="stats-info">
-            <h3>$285.15</h3>
+            <h3>@Summary.TotalFees.ToMoneyString()</h3>
             <p class="m-0">@(L["TotalFees"])</p>
         </div>
     </div>
@@ -25,7 +29,7 @@
             <i class="fas fa-tools"></i>
         </div>
         <div class="stats-info">
-            <h3>$40.00</h3>
+            <h3>@Summary.ProcessingFee.ToMoneyString()</h3>
             <p class="m-0">@(L["ProcessingFee"])</p>
         </div>
     </div>
@@ -34,7 +38,7 @@
             <i class="fas fa-arrow-right-arrow-left"></i>
         </div>
         <div class="stats-info">
-            <h3>8</h3>
+            <h3>@Summary.Transactions.ToNumberString()</h3>
             <p class="m-0">@(L["Transactions"])</p>
         </div>
     </div>
@@ -104,34 +108,45 @@
 
 <div class="card">
     <div class="card-body">
-        <div class="row row-cols-6">
+        <div class="row row-cols-5">
             <div class="col">
                 <div class="form-group m-0">
                     <label class="form-label">@L["StartDate"]</label>
-                    <input type="date" class="form-control form-control-sm" />
+                    <AntDesign.DatePicker TValue="DateTime" @bind-Value="Filters.StartDate" />
                 </div>
             </div>
             <div class="col">
                 <div class="form-group m-0">
                     <label class="form-label">@L["EndDate"]</label>
-                    <input type="date" class="form-control form-control-sm" />
+                    <AntDesign.DatePicker TValue="DateTime" @bind-Value="Filters.EndDate" />
                 </div>
             </div>
             <div class="col">
                 <div class="form-group m-0">
                     <label class="form-label">@L["PaymentType"]</label>
-                    <input type="date" class="form-control form-control-sm" />
+                    <AntDesign.Select @bind-Value="@Filters.PaymentMethod"
+                                      TItemValue="PaymentMethods?"
+                                      TItem="PaymentMethods?"
+                                      DropdownMatchSelectWidth="false"
+                                      AllowClear>
+                        <SelectOptions>
+                            @foreach (PaymentMethods method in Enum.GetValues<PaymentMethods>())
+                            {
+                                <AntDesign.SelectOption TItem="PaymentMethods?" TItemValue="PaymentMethods?" Value="@method" Label="@L[method.ToString()]" />
+                            }
+                        </SelectOptions>
+                    </AntDesign.Select>
                 </div>
             </div>
             <div class="col">
                 <div class="form-group m-0">
                     <label class="form-label">@L["OrderNumber"]</label>
-                    <input type="text" class="form-control form-control-sm" />
+                    <AntDesign.Input @bind-Value="@Filters.Filter" />
                 </div>
             </div>
             <div class="col">
                 <div class="form-group m-0 d-flex align-items-end h-100">
-                    <button class="btn btn-sm btn-primary px-3" style="border-radius: 0.3rem;">
+                    <button class="btn btn-sm btn-primary px-3" style="border-radius: 0.3rem;" @onclick="GetPayoutRecordsAsync">
                         @L["ApplyFilters"]
                     </button>
                 </div>
@@ -157,7 +172,7 @@
     </div>
 </div>
 
-<DataGrid TItem="PayoutDetailDto"
+<DataGrid TItem="TenantPayoutRecordDto"
           Data="PayoutDetailList"
           ReadData="OnDataGridReadAsync"
           TotalItems="TotalCount"
@@ -171,122 +186,122 @@
           @bind-SelectedRows="SelectedPayoutDetail"
           RowSelectable="RowSelectableHandler">
     <DataGridColumns>
-        <DataGridMultiSelectColumn TItem="PayoutDetailDto" Width="30px"></DataGridMultiSelectColumn>
-        <DataGridCommandColumn TItem="PayoutDetailDto" />
-        <DataGridColumn TItem="PayoutDetailDto"
-                        Field="@nameof(PayoutDetailDto.OrderCreationDate)"
+        <DataGridMultiSelectColumn TItem="TenantPayoutRecordDto" Width="30px"></DataGridMultiSelectColumn>
+        <DataGridCommandColumn TItem="TenantPayoutRecordDto" />
+        <DataGridColumn TItem="TenantPayoutRecordDto"
+                        Field="@nameof(TenantPayoutRecordDto.OrderCreationTime)"
                         Caption="@L["OrderCreationTime"]">
             <DisplayTemplate>
-                @context.OrderCreationDate.ToShortDateString()
+                @context.OrderCreationTime.ToShortDateString()
             </DisplayTemplate>
         </DataGridColumn>
-        <DataGridColumn TItem="PayoutDetailDto"
-                        Field="@nameof(PayoutDetailDto.OrderNumber)"
+        <DataGridColumn TItem="TenantPayoutRecordDto"
+                        Field="@nameof(TenantPayoutRecordDto.OrderNo)"
                         Caption="@L["OrderNumber"]">
             <DisplayTemplate>
                 <Span Class="text-nowrap fw-bold text-dark">
-                    @context.OrderNumber
+                    @context.OrderNo
                 </Span>
             </DisplayTemplate>
         </DataGridColumn>
-        <DataGridColumn TItem="PayoutDetailDto"
-                        Field="@nameof(PayoutDetailDto.PaymentType)"
+        <DataGridColumn TItem="TenantPayoutRecordDto"
+                        Field="@nameof(TenantPayoutRecordDto.PaymentMethod)"
                         Caption="@L["PaymentType"]">
             <DisplayTemplate>
-                @context.PaymentType
+                @L[context.PaymentMethod.ToString()]
             </DisplayTemplate>
         </DataGridColumn>
-        <DataGridColumn TItem="PayoutDetailDto"
-                        Field="@nameof(PayoutDetailDto.OrderAmount)"
+        <DataGridColumn TItem="TenantPayoutRecordDto"
+                        Field="@nameof(TenantPayoutRecordDto.GrossOrderAmount)"
                         Caption="@L["OrderAmount"]"
                         TextAlignment="TextAlignment.End">
             <DisplayTemplate>
                 <Span Class="text-success">
-                    @context.OrderAmount.ToString("N2")
+                    @context.GrossOrderAmount.ToMoneyString()
                 </Span>
             </DisplayTemplate>
         </DataGridColumn>
-        <DataGridColumn TItem="PayoutDetailDto"
-                        Field="@nameof(PayoutDetailDto.FeeRate)"
+        <DataGridColumn TItem="TenantPayoutRecordDto"
+                        Field="@nameof(TenantPayoutRecordDto.FeeRate)"
                         Caption="@L["FeeRate"]"
                         TextAlignment="TextAlignment.End">
             <DisplayTemplate>
-                @context.FeeRate.ToString("N2")%
+                @context.FeeRate.ToPercentageString()
             </DisplayTemplate>
         </DataGridColumn>
-        <DataGridColumn TItem="PayoutDetailDto"
-                        Field="@nameof(PayoutDetailDto.HandlingFee)"
+        <DataGridColumn TItem="TenantPayoutRecordDto"
+                        Field="@nameof(TenantPayoutRecordDto.HandlingFee)"
                         Caption="@L["HandlingFee"]"
                         TextAlignment="TextAlignment.End">
             <DisplayTemplate>
                 <Span Class="text-danger">
-                    @context.HandlingFee.ToString("N2")
+                    @context.HandlingFee.ToMoneyString()
                 </Span>
             </DisplayTemplate>
         </DataGridColumn>
-        <DataGridColumn TItem="PayoutDetailDto"
-                        Field="@nameof(PayoutDetailDto.ProcessingFee)"
+        <DataGridColumn TItem="TenantPayoutRecordDto"
+                        Field="@nameof(TenantPayoutRecordDto.ProcessingFee)"
                         Caption="@L["ProcessingFee"]"
                         TextAlignment="TextAlignment.End">
             <DisplayTemplate>
                 <Span Class="text-danger">
-                    @context.ProcessingFee.ToString("N2")
+                    @context.ProcessingFee.ToMoneyString()
                 </Span>
             </DisplayTemplate>
         </DataGridColumn>
-        <DataGridColumn TItem="PayoutDetailDto"
-                        Field="@nameof(PayoutDetailDto.PlatformFee)"
+        <DataGridColumn TItem="TenantPayoutRecordDto"
                         Caption="@L["PlatformFee"]"
                         TextAlignment="TextAlignment.End">
             <DisplayTemplate>
                 <Span Class="text-danger">
-                    @context.PlatformFee.ToString("N2")
+                    @* @context.PlatformFee.ToString("N2") *@
+                    -
                 </Span>
             </DisplayTemplate>
         </DataGridColumn>
-        <DataGridColumn TItem="PayoutDetailDto"
-                        Field="@nameof(PayoutDetailDto.NetAmount)"
+        <DataGridColumn TItem="TenantPayoutRecordDto"
+                        Field="@nameof(TenantPayoutRecordDto.NetAmount)"
                         Caption="@L["NetAmount"]"
                         TextAlignment="TextAlignment.End">
             <DisplayTemplate>
                 <Span Class="text-success">
-                    @context.NetAmount.ToString("N2")
+                    @context.NetAmount.ToMoneyString()
                 </Span>
             </DisplayTemplate>
         </DataGridColumn>
-        <DataGridColumn TItem="PayoutDetailDto"
-                        Field="@nameof(PayoutDetailDto.Status)"
+        <DataGridColumn TItem="TenantPayoutRecordDto"
                         Caption="@L["Status"]"
                         TextAlignment="TextAlignment.Center">
             <DisplayTemplate>
-                @{
+                @* @{
                     var statusClass = context.Status == "paid" ? "pk-badge-success" : "pk-badge-warning";
                     statusClass += " text-uppercase";
                 }
                 <PikachuBadge Class="@statusClass">
                     @L[context.Status]
-                </PikachuBadge>
+                </PikachuBadge> *@
+                -
             </DisplayTemplate>
         </DataGridColumn>
-        <DataGridColumn TItem="PayoutDetailDto"
+        <DataGridColumn TItem="TenantPayoutRecordDto"
                         Caption="@L["Actions"]">
             <DisplayTemplate>
                 <Div Class="text-nowrap">
-                    @if(context.Status == "Paid")
-                    {
+                    @* @if (context.Status == "Paid")
+                    { *@
                         <Tooltip Display="Display.InlineBlock" Text="@L["TransferToWallet"]">
                             <PikachuButton Class="pk-btn-sm pk-btn-icon green" IconClass="fas fa-paper-plane"></PikachuButton>
                         </Tooltip>
                         <Tooltip Display="Display.InlineBlock" Text="@L["MarkAsPaid"]">
                             <PikachuButton Class="pk-btn-sm pk-btn-icon amber" IconClass="fas fa-check-double"></PikachuButton>
                         </Tooltip>
-                    }
+                    @* }
                     else
                     {
                         <PikachuBadge Class="pk-badge-success">
                             @L["Processed"]
                         </PikachuBadge>
-                    }
+                    } *@
                 </Div>
             </DisplayTemplate>
         </DataGridColumn>

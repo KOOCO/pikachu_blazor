@@ -23,7 +23,7 @@ else
                 </div>
                 <div class="list-card-info">
                     <h3>@tenant.Name</h3>
-                    <div class="list-card-meta">ID: @tenant.TenantId • @L["TenantActiveSince", tenant.CreationTime.Year]</div>
+                    <div class="list-card-meta">ID: @tenant.TenantId.ToString().ToUpper() • @L["TenantActiveSince", tenant.CreationTime.Year]</div>
                 </div>
             </div>
             <div class="list-card-stats">

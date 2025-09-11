@@ -22,6 +22,7 @@ public class TenantPayoutRecord : Entity<Guid>, IHasCreationTime, ISoftDelete
     public PaymentFeeType FeeType { get; set; }
     public DateTime CreationTime { get; set; }
     public bool IsDeleted { get; set; }
+    public DateTime OrderCreationTime { get; set; }
 
     private TenantPayoutRecord() { }
 
@@ -36,6 +37,7 @@ public class TenantPayoutRecord : Entity<Guid>, IHasCreationTime, ISoftDelete
         decimal handlingFee,
         decimal processingFee,
         PaymentFeeType feeType,
+        DateTime orderCreationTime,
         Guid? tenantId
         ) : base(id)
     {
@@ -47,6 +49,7 @@ public class TenantPayoutRecord : Entity<Guid>, IHasCreationTime, ISoftDelete
         FeeRate = feeRate;
         SetNetAmount(grossOrderAmount, handlingFee, processingFee);
         FeeType = feeType;
+        OrderCreationTime = orderCreationTime;
         TenantId = tenantId;
     }
 

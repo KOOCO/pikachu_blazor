@@ -19,5 +19,6 @@ public class TenantPayoutRecordDto
     public decimal NetAmount { get; set; }
     public PaymentFeeType FeeType { get; set; }
     public DateTime CreationTime { get; set; }
+    public DateTime OrderCreationTime { get; set; }
     public bool IsDeleted { get; set; }
 }

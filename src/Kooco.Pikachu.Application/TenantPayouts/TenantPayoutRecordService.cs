@@ -126,6 +126,7 @@ public class TenantPayoutRecordService : ITransientDependency
                 handlingFee,
                 processingFee,
                 PaymentFeeType.EcPay,
+                order.CreationTime,
                 tenantId
                 );
 
@@ -200,6 +201,7 @@ public class TenantPayoutRecordService : ITransientDependency
                 handlingFee,
                 processingFee,
                 PaymentFeeType.EcPay,
+                order.CreationTime,
                 tenantId
                 );
 
@@ -299,6 +301,7 @@ public class TenantPayoutRecordService : ITransientDependency
                 handlingFee,
                 0,
                 PaymentFeeType.TCat,
+                order.CreationTime,
                 tenantId
                 );
 

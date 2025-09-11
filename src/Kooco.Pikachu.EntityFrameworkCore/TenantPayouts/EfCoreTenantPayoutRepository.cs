@@ -1,9 +1,13 @@
-﻿using Kooco.Pikachu.EntityFrameworkCore;
+﻿using Kooco.Pikachu.Common;
+using Kooco.Pikachu.EntityFrameworkCore;
+using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.TenantPaymentFees;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Dynamic.Core;
+using System.Threading;
 using System.Threading.Tasks;
 using Volo.Abp.Domain.Repositories.EntityFrameworkCore;
 using Volo.Abp.EntityFrameworkCore;
@@ -66,5 +70,61 @@ public class EfCoreTenantPayoutRepository : EfCoreRepository<PikachuDbContext, T
             })
             .Distinct()
             .ToListAsync();
+    }
+
+    public async Task<TenantPayoutDetailSummary> GetTenantPayoutDetailSummaryAsync(Guid tenantId, PaymentFeeType feeType, int year)
+    {
+        var dbContext = await GetDbContextAsync();
+
+        return await dbContext.TenantPayoutRecords
+            .Where(r => r.TenantId == tenantId && r.FeeType == feeType)
+            .GroupBy(r => r.CreationTime.Year)
+            .Where(g => g.Key == year)
+            .Select(g => new TenantPayoutDetailSummary
+            {
+                NetAmount = g.Sum(r => r.NetAmount),
+                TotalFees = g.Sum(r => r.NetAmount),
+                ProcessingFee = g.Sum(r => r.ProcessingFee),
+                Transactions = g.Count()
+            })
+            .FirstOrDefaultAsync();
+    }
+
+    public async Task<PagedResultModel<TenantPayoutRecord>> GetListAsync(
+        int skipCount,
+        int maxResultCount,
+        string sorting,
+        Guid tenantId,
+        PaymentFeeType feeType,
+        DateTime startDate,
+        DateTime endDate,
+        PaymentMethods? paymentMethod = null,
+        string? filter = null,
+        CancellationToken cancellationToken = default
+        )
+    {
+        var dbContext = await GetDbContextAsync();
+
+        filter = filter?.Trim();
+        sorting = string.IsNullOrWhiteSpace(sorting) ? $"{nameof(TenantPayoutRecord.OrderCreationTime)} DESC" : sorting;
+
+        var projection = dbContext.TenantPayoutRecords
+            .Where(x => x.TenantId == tenantId && x.FeeType == feeType)
+            .Where(o => o.OrderCreationTime.Date >= startDate.Date && o.OrderCreationTime.Date <= endDate.Date)
+            .WhereIf(paymentMethod.HasValue, x => x.PaymentMethod == paymentMethod)
+            .WhereIf(!string.IsNullOrWhiteSpace(filter), x => x.OrderNo == filter || x.Id.ToString() == filter);
+
+        var totalCount = await projection.LongCountAsync(cancellationToken);
+
+        var items = await projection
+            .OrderBy(sorting)
+            .PageBy(skipCount, maxResultCount)
+            .ToListAsync(cancellationToken);
+
+        return new PagedResultModel<TenantPayoutRecord>
+        {
+            TotalCount = totalCount,
+            Items = items
+        };
     }
 }
