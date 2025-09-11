@@ -952,8 +952,10 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
             var tenantId = item.TenantId;
             using (CurrentTenant.Change(tenantId))
             {
-                orderValidity = (await _paymentGatewayAppService.GetAllAsync()).FirstOrDefault(x => x.PaymentIntegrationType == PaymentIntegrationType.OrderValidatePeriod);
-            
+                var settings = await _paymentGatewayAppService.GetAllAsync();
+                orderValidity = settings.FirstOrDefault(x => x.PaymentIntegrationType == PaymentIntegrationType.OrderValidatePeriod && x.TenantId==tenantId);
+
+
             }
             
                 GroupBuyDto result = ObjectMapper.Map<GroupBuy, GroupBuyDto>(item);
