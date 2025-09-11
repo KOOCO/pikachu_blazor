@@ -388,9 +388,10 @@ public class OrderAppService : PikachuAppService, IOrderAppService
 
             await OrderRepository.UpdateAsync(order);
             await SendEmailAsync(order.Id);
+
             var validitySettings = (await PaymentGatewayRepository.GetQueryableAsync()).Where(x => x.PaymentIntegrationType == PaymentIntegrationType.OrderValidatePeriod).FirstOrDefault();
             DateTime expirationTime = DateTime.Now.AddMinutes(10);
-            if (validitySettings is not null)
+            if (validitySettings is not null && (order.PaymentMethod!=PaymentMethods.FreeOrder && order.PaymentMethod!=PaymentMethods.ManualBankTransfer))
             {
                 if (validitySettings.Unit == "Days")
                 {
@@ -2858,6 +2859,7 @@ public class OrderAppService : PikachuAppService, IOrderAppService
         using (DataFilter.Disable<IMultiTenant>())
         {
             var ordersToClose = await OrderRepository.GetOrdersToCloseAsync();
+            ordersToClose = ordersToClose.Where(x => x.PaymentMethod != PaymentMethods.FreeOrder && x.PaymentMethod != PaymentMethods.ManualBankTransfer).ToList();
             Logger.LogInformation("{BackgroundJob}: Found {orderCount} orders that need to be closed.", nameof(CloseOrderBackgroundJob), ordersToClose.Count);
 
             List<OrderHistory> orderHistoryList = [];
