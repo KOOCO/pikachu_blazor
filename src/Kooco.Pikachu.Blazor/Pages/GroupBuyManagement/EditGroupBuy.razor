@@ -1410,6 +1410,7 @@
                                         List<GroupBuyOrderInstructionDto> orderInstructionModules = GroupBuyOrderInstructionModules.Where(x => x.ModuleNumber == module.ModuleNumber).ToList();
                                         foreach (GroupBuyOrderInstructionDto module in orderInstructionModules)
                                         {
+                                             module.Title=module.Title=="Order Instruction"?L["Order Instruction"]:module.Title=="訂購流程"?L["訂購流程"]:module.Title;
                                             <Div Class="row d-flex">
                                                 <Div Class="col-6 pb-1">
                                                     <Div Class="col-2 pb-1">

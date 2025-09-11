@@ -2180,6 +2180,7 @@
     "TenantPayout:Active": "Active",
     "TenantPayoutTotalFees": "{0} total fees",
     "NumberOfTransactionsThisMonth": "{0} transactions this month",
-    "TenantActiveSince": "Active since {0}"
+    "TenantActiveSince": "Active since {0}",
+    "訂購流程": "Order Instruction"
   }
 }
