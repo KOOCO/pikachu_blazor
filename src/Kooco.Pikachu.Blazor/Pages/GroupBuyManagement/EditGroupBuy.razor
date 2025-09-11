@@ -320,12 +320,12 @@
         <div class="row">
             <div class="col-2"></div>
             <div class="col-2">@L["AllowShipToOuterIsland"]</div>
-            <div class="col-4"> <Switch TValue="bool" @bind-Checked="@EditGroupBuyDto.AllowShipToOuterTaiwan"></Switch></div>
+            <div class="col-4"><Switch TValue="bool" @bind-Checked="AllowShipToOuterTaiwanProxy_Edit"></Switch></div>
         </div>
         <div class="row">
             <div class="col-2"></div>
             <div class="col-2">@L["AllowShipToOverSea"]</div>
-            <div class="col-4"> <Switch TValue="bool" @bind-Checked="@EditGroupBuyDto.AllowShipOversea"></Switch></div>
+            <div class="col-4"><Switch TValue="bool" @bind-Checked="AllowShipOverseaProxy_Edit"></Switch></div>
         </div>
         <div class="row">
             <div class="col-2"></div>
@@ -333,7 +333,10 @@
                 @L["ShippingMethod"] <span class="text-danger"> *</span>
             </div>
             <div class="col-8">
+                @if (HasNormalMethods_Edit())
+{
                 <label class="form-label">@L["Normal"]</label><br />
+
                 @if (EditGroupBuyDto.AllowShipToOuterTaiwan && !EditGroupBuyDto.AllowShipOversea)
                 {
                     @foreach (string item in OrderedDeliveryMethods)
@@ -401,8 +404,13 @@
                     }
                 }
                 <br />
+                }
+                                @if (HasFreezeMethods_Edit())
+{
                 <Div Class="mt-2"></Div>
+
                 <label class="form-label">@L["Freeze"]</label><br />
+
                 @if (EditGroupBuyDto.AllowShipToOuterTaiwan && !EditGroupBuyDto.AllowShipOversea)
                 {
                     @foreach (string item in OrderedDeliveryMethods)
@@ -451,8 +459,14 @@
                     }
                 }
                 <br />
+                }
+                                @if (HasFrozenMethods_Edit())
+{
                 <Div Class="mt-2"></Div>
+
                 <label class="form-label">@L["Frozen"]</label><br />
+
+
                 @if (EditGroupBuyDto.AllowShipToOuterTaiwan && !EditGroupBuyDto.AllowShipOversea)
                 {
                     @foreach (string item in OrderedDeliveryMethods)
@@ -502,6 +516,7 @@
                     }
                 }
                 <br />
+                }
                 <Div Class="mt-2"></Div>
                 <label class="form-label">@L["DeliveryTypeOthers"]</label><br />
                 @foreach (string item in OrderedDeliveryMethods)

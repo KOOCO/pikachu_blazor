@@ -172,6 +172,16 @@ public partial class CreateGroupBuy
     public MultiImageModuleItem PatnershipModule = new MultiImageModuleItem();
     private bool ShowSelfPickupInfo =>
    CreateGroupBuyDto.ShippingMethodList.Contains(nameof(DeliveryMethod.SelfPickup));
+
+    // Keep a pristine copy of the original order provided to the page
+    private List<string> _allMethodsOriginal = new();
+
+    // Snapshot to restore after disabling the filters
+    private List<string> _previousSelectionBeforeFilter = new();
+
+    // Track last toggle state to know when we enter/exit a filtered mode
+    private bool _lastOuterFlag = false;
+    private bool _lastOverseaFlag = false;
     #endregion
 
     #region Constructor
@@ -248,6 +258,15 @@ public partial class CreateGroupBuy
         TenantTripartiteDto = await _electronicInvoiceSettingAppService.FindAsync();
         PaymentGateways = await _paymentGatewayAppService.GetAllAsync();
 
+        // Take the very first snapshot of all methods shown initially
+        _allMethodsOriginal = OrderedDeliveryMethods?.ToList() ?? new List<string>();
+
+        // Also track the initial selection, in case user toggles filters immediately
+        _previousSelectionBeforeFilter = CreateGroupBuyDto.ShippingMethodList?.ToList() ?? new List<string>();
+
+        _lastOuterFlag = CreateGroupBuyDto.AllowShipToOuterTaiwan;
+        _lastOverseaFlag = CreateGroupBuyDto.AllowShipOversea;
+
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -265,6 +284,165 @@ public partial class CreateGroupBuy
             }
         }
     }
+
+    private bool AllowShipToOuterTaiwanProxy
+    {
+        get => CreateGroupBuyDto.AllowShipToOuterTaiwan;
+        set
+        {
+            if (CreateGroupBuyDto.AllowShipToOuterTaiwan == value) return;
+            CreateGroupBuyDto.AllowShipToOuterTaiwan = value;
+            ApplyShippingFilters();
+        }
+    }
+
+    private bool AllowShipOverseaProxy
+    {
+        get => CreateGroupBuyDto.AllowShipOversea;
+        set
+        {
+            if (CreateGroupBuyDto.AllowShipOversea == value) return;
+            CreateGroupBuyDto.AllowShipOversea = value;
+            ApplyShippingFilters();
+        }
+    }
+    private void ApplyShippingFilters()
+    {
+        // Determine if we are entering/leaving a filtered state
+        bool wasFiltered = _lastOuterFlag || _lastOverseaFlag;
+        bool nowFiltered = CreateGroupBuyDto.AllowShipToOuterTaiwan || CreateGroupBuyDto.AllowShipOversea;
+
+        // When entering a filtered mode for the first time, snapshot current selection
+        if (nowFiltered && !wasFiltered)
+        {
+            _previousSelectionBeforeFilter = CreateGroupBuyDto.ShippingMethodList?.ToList() ?? new List<string>();
+        }
+
+        // Start from all original methods
+        var allowed = new HashSet<string>(_allMethodsOriginal);
+
+        // --- Outlying Islands ON (your spec) ---
+        if (CreateGroupBuyDto.AllowShipToOuterTaiwan && !CreateGroupBuyDto.AllowShipOversea)
+        {
+            var bannedForOuterIslands = new[]
+            {
+            DeliveryMethod.PostOffice.ToString(),
+            DeliveryMethod.SevenToElevenFrozen.ToString(),
+            DeliveryMethod.TCatDeliverySevenElevenNormal.ToString(),
+            DeliveryMethod.TCatDeliverySevenElevenFreeze.ToString(),
+            DeliveryMethod.TCatDeliverySevenElevenFrozen.ToString()
+        };
+            allowed.ExceptWith(bannedForOuterIslands);
+        }
+
+        // --- Overseas ON (your spec) ---
+        if (CreateGroupBuyDto.AllowShipOversea)
+        {
+            var overseasOnly = new[]
+            {
+            DeliveryMethod.SelfPickup.ToString(),
+            DeliveryMethod.HomeDelivery.ToString()
+        };
+            allowed.IntersectWith(overseasOnly);
+        }
+
+        // Rebuild what is rendered: hide what is not allowed
+        OrderedDeliveryMethods = _allMethodsOriginal.Where(m => allowed.Contains(m)).ToList();
+
+        // Clear any selection that is no longer allowed
+        var toRemove = (CreateGroupBuyDto.ShippingMethodList ?? new List<string>())
+            .Where(m => !allowed.Contains(m))
+            .ToList();
+
+        foreach (var m in toRemove)
+        {
+            CreateGroupBuyDto.ShippingMethodList.Remove(m);
+            // If you rely on the DOM checkbox state, keep using your helper:
+            JSRuntime.InvokeVoidAsync("uncheckOtherCheckbox", m);
+        }
+
+        // Keep your JSON mirror in sync so API side also gets the filtered reality
+        CreateGroupBuyDto.ExcludeShippingMethod = JsonConvert.SerializeObject(CreateGroupBuyDto.ShippingMethodList);
+
+        // When exiting filtered mode, restore what the user had before
+        if (!CreateGroupBuyDto.AllowShipToOuterTaiwan && !CreateGroupBuyDto.AllowShipOversea && wasFiltered)
+        {
+            // Restore full list visibility
+            OrderedDeliveryMethods = _allMethodsOriginal.ToList();
+
+            // Restore the prior selection (only those present in master list)
+            CreateGroupBuyDto.ShippingMethodList = _previousSelectionBeforeFilter
+                .Where(m => _allMethodsOriginal.Contains(m))
+                .Distinct()
+                .ToList();
+
+            // Sync JSON mirror
+            CreateGroupBuyDto.ExcludeShippingMethod = JsonConvert.SerializeObject(CreateGroupBuyDto.ShippingMethodList);
+
+            // (Optional) If you want to visually re-check in the DOM immediately:
+            // foreach (var m in CreateGroupBuyDto.ShippingMethodList)
+            //     JSRuntime.InvokeVoidAsync("recheckCheckbox", m);
+        }
+
+        // Persist last states
+        _lastOuterFlag = CreateGroupBuyDto.AllowShipToOuterTaiwan;
+        _lastOverseaFlag = CreateGroupBuyDto.AllowShipOversea;
+
+        StateHasChanged();
+    }
+    private bool HasNormalMethods()
+    {
+        if (CreateGroupBuyDto.AllowShipToOuterTaiwan && !CreateGroupBuyDto.AllowShipOversea)
+        {
+            return OrderedDeliveryMethods.Any(item =>
+                item == nameof(DeliveryMethod.BlackCat1) ||
+                item == nameof(DeliveryMethod.TCatDeliveryNormal) ||
+                item == nameof(DeliveryMethod.SevenToElevenC2C) ||
+                item == nameof(DeliveryMethod.SevenToEleven1));
+        }
+
+        return OrderedDeliveryMethods.Any(item =>
+            item == nameof(DeliveryMethod.PostOffice) ||
+            item == nameof(DeliveryMethod.BlackCat1) ||
+            item == nameof(DeliveryMethod.TCatDeliveryNormal) ||
+            item == nameof(DeliveryMethod.SevenToEleven1) ||
+            item == nameof(DeliveryMethod.SevenToElevenC2C) ||
+            item == nameof(DeliveryMethod.FamilyMart1) ||
+            item == nameof(DeliveryMethod.FamilyMartC2C) ||
+            item == nameof(DeliveryMethod.TCatDeliverySevenElevenNormal));
+    }
+
+    private bool HasFreezeMethods()
+    {
+        if (CreateGroupBuyDto.AllowShipToOuterTaiwan && !CreateGroupBuyDto.AllowShipOversea)
+        {
+            return OrderedDeliveryMethods.Any(item =>
+                item == nameof(DeliveryMethod.BlackCatFreeze) ||
+                item == nameof(DeliveryMethod.TCatDeliveryFreeze));
+        }
+
+        return OrderedDeliveryMethods.Any(item =>
+            item == nameof(DeliveryMethod.BlackCatFreeze) ||
+            item == nameof(DeliveryMethod.TCatDeliveryFreeze) ||
+            item == nameof(DeliveryMethod.TCatDeliverySevenElevenFreeze));
+    }
+
+    private bool HasFrozenMethods()
+    {
+        if (CreateGroupBuyDto.AllowShipToOuterTaiwan && !CreateGroupBuyDto.AllowShipOversea)
+        {
+            return OrderedDeliveryMethods.Any(item =>
+                item == nameof(DeliveryMethod.BlackCatFrozen) ||
+                item == nameof(DeliveryMethod.TCatDeliveryFrozen));
+        }
+
+        return OrderedDeliveryMethods.Any(item =>
+            item == nameof(DeliveryMethod.BlackCatFrozen) ||
+            item == nameof(DeliveryMethod.TCatDeliveryFrozen) ||
+            item == nameof(DeliveryMethod.SevenToElevenFrozen) ||
+            item == nameof(DeliveryMethod.TCatDeliverySevenElevenFrozen));
+    }
+
 
     private void SelectTemplate(ChangeEventArgs e)
     {

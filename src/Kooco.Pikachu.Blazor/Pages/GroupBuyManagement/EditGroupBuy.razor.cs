@@ -159,6 +159,11 @@ public partial class EditGroupBuy
     int CarouselModuleNumber;
     private bool ShowSelfPickupInfo =>
    EditGroupBuyDto.ShippingMethodList.Contains(nameof(DeliveryMethod.SelfPickup));
+    // === Edit page filter state ===
+    private List<string> _allMethodsOriginal_Edit = new();          // pristine source list for edit page
+    private List<string> _previousSelectionBeforeFilter_Edit = new(); // snapshot to restore after disabling filters
+    private bool _lastOuterFlag_Edit = false;
+    private bool _lastOverseaFlag_Edit = false;
     #endregion
 
     private List<string> OrderedDeliveryMethods =
@@ -286,6 +291,15 @@ public partial class EditGroupBuy
             //
             PaymentGateways = await PaymentGatewayAppService.GetAllAsync();
             CheckForDisabledInstallmentOptions();
+
+            _allMethodsOriginal_Edit = OrderedDeliveryMethods?.ToList() ?? new List<string>();
+            _previousSelectionBeforeFilter_Edit = EditGroupBuyDto?.ShippingMethodList?.ToList() ?? new List<string>();
+
+            _lastOuterFlag_Edit = EditGroupBuyDto.AllowShipToOuterTaiwan;
+            _lastOverseaFlag_Edit = EditGroupBuyDto.AllowShipOversea;
+
+            // Ensure initial filter is respected if edit dto comes pre-set
+            ApplyShippingFilters_Edit();
             StateHasChanged();
             //await Loading.Hide();
         }
@@ -300,6 +314,147 @@ public partial class EditGroupBuy
             //await Loading.Hide();
         }
     }
+    private bool AllowShipToOuterTaiwanProxy_Edit
+    {
+        get => EditGroupBuyDto.AllowShipToOuterTaiwan;
+        set
+        {
+            if (EditGroupBuyDto.AllowShipToOuterTaiwan == value) return;
+            EditGroupBuyDto.AllowShipToOuterTaiwan = value;
+            ApplyShippingFilters_Edit();
+        }
+    }
+
+    private bool AllowShipOverseaProxy_Edit
+    {
+        get => EditGroupBuyDto.AllowShipOversea;
+        set
+        {
+            if (EditGroupBuyDto.AllowShipOversea == value) return;
+            EditGroupBuyDto.AllowShipOversea = value;
+            ApplyShippingFilters_Edit();
+        }
+    }
+    private void ApplyShippingFilters_Edit()
+    {
+        bool wasFiltered = _lastOuterFlag_Edit || _lastOverseaFlag_Edit;
+        bool nowFiltered = EditGroupBuyDto.AllowShipToOuterTaiwan || EditGroupBuyDto.AllowShipOversea;
+
+        if (nowFiltered && !wasFiltered)
+            _previousSelectionBeforeFilter_Edit = EditGroupBuyDto.ShippingMethodList?.ToList() ?? new List<string>();
+
+        var allowed = new HashSet<string>(_allMethodsOriginal_Edit);
+
+        // Outlying Islands ON (and NOT oversea)
+        if (EditGroupBuyDto.AllowShipToOuterTaiwan && !EditGroupBuyDto.AllowShipOversea)
+        {
+            var bannedForOuterIslands = new[]
+            {
+            DeliveryMethod.PostOffice.ToString(),
+            DeliveryMethod.SevenToElevenFrozen.ToString(),
+            DeliveryMethod.TCatDeliverySevenElevenNormal.ToString(),
+            DeliveryMethod.TCatDeliverySevenElevenFreeze.ToString(),
+            DeliveryMethod.TCatDeliverySevenElevenFrozen.ToString()
+        };
+            allowed.ExceptWith(bannedForOuterIslands);
+        }
+
+        // Overseas ON
+        if (EditGroupBuyDto.AllowShipOversea)
+        {
+            var overseasOnly = new[]
+            {
+            DeliveryMethod.SelfPickup.ToString(),
+            DeliveryMethod.HomeDelivery.ToString()
+        };
+            allowed.IntersectWith(overseasOnly);
+        }
+
+        // Update what you render
+        OrderedDeliveryMethods = _allMethodsOriginal_Edit.Where(allowed.Contains).ToList();
+
+        // Remove invalid selections from the DTO
+        var current = EditGroupBuyDto.ShippingMethodList ?? new List<string>();
+        var toRemove = current.Where(m => !allowed.Contains(m)).ToList();
+        foreach (var m in toRemove)
+            EditGroupBuyDto.ShippingMethodList.Remove(m);
+
+        // Keep JSON mirror in sync
+        EditGroupBuyDto.ExcludeShippingMethod = JsonConvert.SerializeObject(EditGroupBuyDto.ShippingMethodList);
+
+        // Restore when leaving filtered mode
+        if (!EditGroupBuyDto.AllowShipToOuterTaiwan && !EditGroupBuyDto.AllowShipOversea && wasFiltered)
+        {
+            OrderedDeliveryMethods = _allMethodsOriginal_Edit.ToList();
+
+            EditGroupBuyDto.ShippingMethodList = _previousSelectionBeforeFilter_Edit
+                .Where(m => _allMethodsOriginal_Edit.Contains(m))
+                .Distinct()
+                .ToList();
+
+            EditGroupBuyDto.ExcludeShippingMethod = JsonConvert.SerializeObject(EditGroupBuyDto.ShippingMethodList);
+        }
+
+        _lastOuterFlag_Edit = EditGroupBuyDto.AllowShipToOuterTaiwan;
+        _lastOverseaFlag_Edit = EditGroupBuyDto.AllowShipOversea;
+
+        StateHasChanged();
+    }
+    private bool HasNormalMethods_Edit()
+    {
+        if (EditGroupBuyDto.AllowShipToOuterTaiwan && !EditGroupBuyDto.AllowShipOversea)
+            return OrderedDeliveryMethods.Any(item =>
+                item == nameof(DeliveryMethod.BlackCat1) ||
+                item == nameof(DeliveryMethod.TCatDeliveryNormal) ||
+                item == nameof(DeliveryMethod.SevenToElevenC2C) ||
+                item == nameof(DeliveryMethod.SevenToEleven1));
+
+        return OrderedDeliveryMethods.Any(item =>
+            item == nameof(DeliveryMethod.PostOffice) ||
+            item == nameof(DeliveryMethod.BlackCat1) ||
+            item == nameof(DeliveryMethod.TCatDeliveryNormal) ||
+            item == nameof(DeliveryMethod.SevenToEleven1) ||
+            item == nameof(DeliveryMethod.SevenToElevenC2C) ||
+            item == nameof(DeliveryMethod.FamilyMart1) ||
+            item == nameof(DeliveryMethod.FamilyMartC2C) ||
+            item == nameof(DeliveryMethod.TCatDeliverySevenElevenNormal));
+    }
+
+    private bool HasFreezeMethods_Edit()
+    {
+        if (EditGroupBuyDto.AllowShipToOuterTaiwan && !EditGroupBuyDto.AllowShipOversea)
+            return OrderedDeliveryMethods.Any(item =>
+                item == nameof(DeliveryMethod.BlackCatFreeze) ||
+                item == nameof(DeliveryMethod.TCatDeliveryFreeze));
+
+        return OrderedDeliveryMethods.Any(item =>
+            item == nameof(DeliveryMethod.BlackCatFreeze) ||
+            item == nameof(DeliveryMethod.TCatDeliveryFreeze) ||
+            item == nameof(DeliveryMethod.TCatDeliverySevenElevenFreeze));
+    }
+
+    private bool HasFrozenMethods_Edit()
+    {
+        if (EditGroupBuyDto.AllowShipToOuterTaiwan && !EditGroupBuyDto.AllowShipOversea)
+            return OrderedDeliveryMethods.Any(item =>
+                item == nameof(DeliveryMethod.BlackCatFrozen) ||
+                item == nameof(DeliveryMethod.TCatDeliveryFrozen));
+
+        return OrderedDeliveryMethods.Any(item =>
+            item == nameof(DeliveryMethod.BlackCatFrozen) ||
+            item == nameof(DeliveryMethod.TCatDeliveryFrozen) ||
+            item == nameof(DeliveryMethod.SevenToElevenFrozen) ||
+            item == nameof(DeliveryMethod.TCatDeliverySevenElevenFrozen));
+    }
+
+    private bool HasOtherMethods_Edit()
+    {
+        return OrderedDeliveryMethods.Any(item =>
+            item == nameof(DeliveryMethod.HomeDelivery) ||
+            item == nameof(DeliveryMethod.DeliveredByStore) ||
+            item == nameof(DeliveryMethod.SelfPickup));
+    }
+
 
     void CheckForDisabledInstallmentOptions()
     {

@@ -325,12 +325,12 @@
         <div class="row">
             <div class="col-2"></div>
             <div class="col-2">@L["AllowShipToOuterIsland"]</div>
-            <div class="col-4"> <Switch TValue="bool" @bind-Checked="@CreateGroupBuyDto.AllowShipToOuterTaiwan"></Switch></div>
+            <div class="col-4"> <Switch TValue="bool" @bind-Checked="AllowShipToOuterTaiwanProxy"></Switch></div>
         </div>
         <div class="row">
             <div class="col-2"></div>
             <div class="col-2">@L["AllowShipToOverSea"]</div>
-            <div class="col-4"> <Switch TValue="bool" @bind-Checked="@CreateGroupBuyDto.AllowShipOversea"></Switch></div>
+            <div class="col-4"><Switch TValue="bool" @bind-Checked="AllowShipOverseaProxy"></Switch></div>
         </div>
         <div class="row">
             <div class="col-2"></div>
@@ -339,6 +339,8 @@
                 <span class="text-danger"> *</span>
             </div>
             <div class="col-8">
+                @if (HasNormalMethods())
+{
                 <label class="form-label">@L["Normal"]</label><br />
 
                 @if (CreateGroupBuyDto.AllowShipToOuterTaiwan && !CreateGroupBuyDto.AllowShipOversea)
@@ -404,6 +406,9 @@
                     }
                 }
                 <br />
+                }
+                @if (HasFreezeMethods())
+{
                 <Div Class="mt-2"></Div>
                 <label class="form-label">@L["Freeze"]</label><br />
                 @if (CreateGroupBuyDto.AllowShipToOuterTaiwan && !CreateGroupBuyDto.AllowShipOversea)
@@ -450,6 +455,9 @@
                     }
                 }
                 <br />
+                }
+                @if (HasFrozenMethods())
+{
                 <Div Class="mt-2"></Div>
                 <label class="form-label">@L["Frozen"]</label><br />
                 @if (CreateGroupBuyDto.AllowShipToOuterTaiwan && !CreateGroupBuyDto.AllowShipOversea)
@@ -497,6 +505,7 @@
                     }
                 }
                 <br />
+                }
                 <Div Class="mt-2"></Div>
                 <label class="form-label">@L["DeliveryTypeOthers"]</label><br />
                 @foreach (string item in OrderedDeliveryMethods)
