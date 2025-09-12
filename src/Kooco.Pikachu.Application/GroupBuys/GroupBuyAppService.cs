@@ -797,7 +797,9 @@ public class GroupBuyAppService : ApplicationService, IGroupBuyAppService
         DeliveryMethod.DeliveredByStore,
         DeliveryMethod.TCatDeliveryNormal,
         DeliveryMethod.TCatDeliveryFreeze,
-        DeliveryMethod.TCatDeliveryFrozen
+        DeliveryMethod.TCatDeliveryFrozen,
+        DeliveryMethod.FamilyMart1,
+        DeliveryMethod.FamilyMartC2C
     };
 
                 shippingMethods = shippingMethods
