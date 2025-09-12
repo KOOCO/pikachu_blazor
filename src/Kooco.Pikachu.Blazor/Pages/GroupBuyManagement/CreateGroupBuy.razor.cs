@@ -398,6 +398,8 @@ public partial class CreateGroupBuy
                 item == nameof(DeliveryMethod.BlackCat1) ||
                 item == nameof(DeliveryMethod.TCatDeliveryNormal) ||
                 item == nameof(DeliveryMethod.SevenToElevenC2C) ||
+                 item == Enum.GetName(DeliveryMethod.FamilyMart1) ||
+                            item == Enum.GetName(DeliveryMethod.FamilyMartC2C) ||
                 item == nameof(DeliveryMethod.SevenToEleven1));
         }
 
