@@ -1,0 +1,75 @@
+﻿@inherits PikachuComponentBase
+
+<div class="payout-options-container">
+    <h5 class="text-dark">@L["PayoutDetails:ExportOptions"]</h5>
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 justify-content-center g-2">
+        <div class="col">
+            <div class="payout-stats-card">
+                <div class="payout-stats-icon purple">
+                    <i class="fas fa-funnel-dollar"></i>
+                </div>
+                <div class="payout-stats-info">
+                    <p class="mb-1">
+                        @(L["PayoutDetails:SelectedRecords"]) @SelectedCountText
+                    </p>
+                    <div>
+                        <button class="export-option-button" disabled="@(!AnySelected)">
+                            <i class="fas fa-file-csv"></i>
+                            @L["CSV"]
+                        </button>
+                        <button class="export-option-button" disabled="@(!AnySelected)">
+                            <i class="fas fa-file-excel"></i>
+                            @L["Excel"]
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="payout-stats-card">
+                <div class="payout-stats-icon green">
+                    <i class="fas fa-bullseye"></i>
+                </div>
+                <div class="payout-stats-info">
+                    <p class="mb-1">@(L["PayoutDetails:CurrentFilter"])</p>
+                    <div>
+                        <button class="export-option-button" disabled="@(CurrentFilterCount == 0)">
+                            <i class="fas fa-file-csv"></i>
+                            @L["CSV"]
+                        </button>
+                        <button class="export-option-button" disabled="@(CurrentFilterCount == 0)">
+                            <i class="fas fa-file-excel"></i>
+                            @L["Excel"]
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="payout-stats-card">
+                <div class="payout-stats-icon orange">
+                    <i class="fas fa-database"></i>
+                </div>
+                <div class="payout-stats-info">
+                    <p class="mb-1">@(L["PayoutDetails:AllData"])</p>
+                    <div>
+                        <button class="export-option-button">
+                            <i class="fas fa-file-csv"></i>
+                            @L["CSV"]
+                        </button>
+                        <button class="export-option-button">
+                            <i class="fas fa-file-excel"></i>
+                            @L["Excel"]
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter] public bool AnySelected { get; set; }
+    [Parameter] public string SelectedCountText { get; set; }
+    [Parameter] public int CurrentFilterCount { get; set; }
+}

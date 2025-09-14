@@ -37,7 +37,7 @@ public class EfCoreTenantPayoutRepository : EfCoreRepository<PikachuDbContext, T
                 TenantId = g.tenant.Id,
                 Name = g.tenant.Name,
                 CreationTime = g.tenant.CreationTime,
-                TotalFees = g.payout.Sum(p => p.NetAmount),
+                TotalFees = g.payout.Sum(p => p.HandlingFee + p.ProcessingFee),
                 TotalTransactions = g.payout.Count()
             })
             .OrderBy(s => s.Name)];
@@ -64,7 +64,7 @@ public class EfCoreTenantPayoutRepository : EfCoreRepository<PikachuDbContext, T
             .Select(g => new TenantPayoutYearlySummary
             {
                 Year = g.Key,
-                TotalFees = g.Sum(r => r.NetAmount),
+                TotalFees = g.Sum(r => r.HandlingFee + r.ProcessingFee),
                 Transactions = g.Count(),
                 AvgFeeRate = g.Average(r => r.FeeRate)
             })
@@ -72,22 +72,32 @@ public class EfCoreTenantPayoutRepository : EfCoreRepository<PikachuDbContext, T
             .ToListAsync();
     }
 
-    public async Task<TenantPayoutDetailSummary> GetTenantPayoutDetailSummaryAsync(Guid tenantId, PaymentFeeType feeType, int year)
+    public async Task<TenantPayoutDetailSummary> GetTenantPayoutDetailSummaryAsync(
+        Guid tenantId, 
+        PaymentFeeType feeType, 
+        DateTime startDate,
+        DateTime endDate,
+        PaymentMethods? paymentMethod = null,
+        string? filter = null,
+        CancellationToken cancellationToken = default
+        )
     {
         var dbContext = await GetDbContextAsync();
 
         return await dbContext.TenantPayoutRecords
             .Where(r => r.TenantId == tenantId && r.FeeType == feeType)
-            .GroupBy(r => r.CreationTime.Year)
-            .Where(g => g.Key == year)
+            .WhereIf(paymentMethod.HasValue, x => x.PaymentMethod == paymentMethod)
+            .WhereIf(!string.IsNullOrWhiteSpace(filter), x => x.OrderNo == filter || x.Id.ToString() == filter)
+            .GroupBy(r => r.CreationTime.Date)
+            .Where(g => g.Key >= startDate.Date && g.Key <= endDate.Date)
             .Select(g => new TenantPayoutDetailSummary
             {
                 NetAmount = g.Sum(r => r.NetAmount),
-                TotalFees = g.Sum(r => r.NetAmount),
-                ProcessingFee = g.Sum(r => r.ProcessingFee),
+                TotalFees = g.Sum(r => r.HandlingFee + r.ProcessingFee),
+                TotalAmount = g.Sum(r => r.GrossOrderAmount),
                 Transactions = g.Count()
             })
-            .FirstOrDefaultAsync();
+            .FirstOrDefaultAsync(cancellationToken);
     }
 
     public async Task<PagedResultModel<TenantPayoutRecord>> GetListAsync(

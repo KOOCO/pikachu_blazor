@@ -1,0 +1,58 @@
+﻿@using Kooco.Pikachu.TenantPayouts
+@using Kooco.Pikachu.Extensions
+@inherits PikachuComponentBase
+
+@if (Summary != null)
+{
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-2 mb-2">
+        <div class="col">
+            <div class="payout-stats-card">
+                <div class="payout-stats-icon purple">
+                    <i class="fas fa-wallet"></i>
+                </div>
+                <div class="payout-stats-info">
+                    <h3>@Summary.NetAmount.ToMoneyString()</h3>
+                    <p class="m-0">@(L["NetAmount"])</p>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="payout-stats-card">
+                <div class="payout-stats-icon orange">
+                    <i class="fas fa-tools"></i>
+                </div>
+                <div class="payout-stats-info">
+                    <h3>@Summary.TotalAmount.ToMoneyString()</h3>
+                    <p class="m-0">@(L["TotalAmount"])</p>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="payout-stats-card">
+                <div class="payout-stats-icon green">
+                    <i class="fas fa-file-invoice-dollar"></i>
+                </div>
+                <div class="payout-stats-info">
+                    <h3>@Summary.TotalFees.ToMoneyString()</h3>
+                    <p class="m-0">@(L["TotalFees"])</p>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="payout-stats-card">
+                <div class="payout-stats-icon red">
+                    <i class="fas fa-arrow-right-arrow-left"></i>
+                </div>
+                <div class="payout-stats-info">
+                    <h3>@Summary.Transactions.ToNumberString()</h3>
+                    <p class="m-0">@(L["Transactions"])</p>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+
+@code {
+    [Parameter] public TenantPayoutDetailSummaryDto Summary { get; set; }
+}

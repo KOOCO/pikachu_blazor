@@ -20,5 +20,7 @@ public class TenantPayoutRecordDto
     public PaymentFeeType FeeType { get; set; }
     public DateTime CreationTime { get; set; }
     public DateTime OrderCreationTime { get; set; }
+    public bool IsPaid { get; set; }
+    public DateTime? PaymentDate { get; set; }
     public bool IsDeleted { get; set; }
 }

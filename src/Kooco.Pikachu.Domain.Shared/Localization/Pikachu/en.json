@@ -2185,6 +2185,8 @@
     "Enum:TenantPaymentFee.0": "ECPay",
     "Enum:TenantPaymentFee.1": "T-Cat",
     "NoPayoutData": "No Records Found",
-    "NoPayoutDataDescription": "There is no data available at the moment."
+    "NoPayoutDataDescription": "There is no data available at the moment.",
+    "PayoutDetails:Filters": "Filters",
+    "PayoutDetails:PaidOn": "Paid On: {0}"
   }
 }

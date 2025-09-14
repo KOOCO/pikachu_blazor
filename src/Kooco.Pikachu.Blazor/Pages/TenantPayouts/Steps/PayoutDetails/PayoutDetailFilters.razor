@@ -1,0 +1,135 @@
+﻿@using Kooco.Pikachu.TenantPaymentFees
+@using Kooco.Pikachu.TenantPayouts
+@using Kooco.Pikachu.EnumValues
+@inherits PikachuComponentBase
+
+@if (Filters != null)
+{
+    <div class="payout-options-container">
+        <h5 class="text-dark">@L["PayoutDetails:Filters"]</h5>
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-5">
+            <div class="col">
+                <div class="form-group m-0">
+                    <label class="form-label">@L["StartDate"]</label>
+                    <AntDesign.DatePicker TValue="DateTime" @bind-Value="Filters.StartDate"
+                                          DisabledDate="(d) => d.Year != Filters.Year && d.Date > Filters.EndDate.Date" />
+                </div>
+            </div>
+            <div class="col">
+                <div class="form-group m-0">
+                    <label class="form-label">@L["EndDate"]</label>
+                    <AntDesign.DatePicker TValue="DateTime" @bind-Value="Filters.EndDate"
+                                          DisabledDate="(d) => d.Year != Filters.Year && d.Date < Filters.StartDate.Date" />
+                </div>
+            </div>
+            <div class="col">
+                <div class="form-group m-0">
+                    <label class="form-label">@L["PaymentType"]</label>
+                    <AntDesign.Select @bind-Value="@Filters.PaymentMethod"
+                                      TItemValue="PaymentMethods?"
+                                      TItem="PaymentMethods?"
+                                      DropdownMatchSelectWidth="false"
+                                      AllowClear>
+                        <SelectOptions>
+                            @foreach (PaymentMethods method in Enum.GetValues<PaymentMethods>())
+                            {
+                                <AntDesign.SelectOption TItem="PaymentMethods?" TItemValue="PaymentMethods?" Value="@method" Label="@L[method.ToString()]" />
+                            }
+                        </SelectOptions>
+                    </AntDesign.Select>
+                </div>
+            </div>
+            <div class="col">
+                <div class="form-group m-0">
+                    <label class="form-label">@L["OrderNumber"]</label>
+                    <AntDesign.Input @bind-Value="@Filters.Filter" />
+                </div>
+            </div>
+            <div class="col">
+                <div class="form-group m-0">
+                    <label class="form-label">@L["PaymentStatus"]</label>
+                    <AntDesign.Select @bind-Value="@Filters.IsPaid"
+                                      TItemValue="bool?"
+                                      TItem="bool?"
+                                      AllowClear>
+                        <SelectOptions>
+                            <AntDesign.SelectOption TItem="bool?" TItemValue="bool?" Value="@true" Label="@L["Paid"]" />
+                            <AntDesign.SelectOption TItem="bool?" TItemValue="bool?" Value="@false" Label="@L["Unpaid"]" />
+                        </SelectOptions>
+                    </AntDesign.Select>
+                </div>
+            </div>
+
+        </div>
+        <div class="mt-2">
+            <div class="d-flex align-items-end justify-content-end flex-wrap w-100">
+                @* <button class="btn btn-sm btn-primary px-3 me-2" style="border-radius: 0.3rem;" disabled="@(Filtering || Resetting)" @onclick="ApplyFilters">
+                    @if (Filtering)
+                    {
+                        <i class="fas fa-spinner fa-spin"></i>
+                    }
+                    else
+                    {
+                        @L["ApplyFilters"]
+                    }
+                </button> *@
+                <button class="btn btn-sm btn-primary px-3 me-2" style="border-radius: 0.3rem;" @onclick="ApplyFilters">
+
+                    @L["ApplyFilters"]
+                </button>
+                <button class="btn btn-sm btn-outline-danger px-3" style="border-radius: 0.3rem;" @onclick="Reset">
+                    @L["Reset"]
+                </button>
+                @* <button class="btn btn-sm btn-outline-danger px-3" style="border-radius: 0.3rem;" disabled="@(Filtering || Resetting)" @onclick="Reset">
+                    @if (Resetting)
+                    {
+                        <i class="fas fa-spinner fa-spin"></i>
+                    }
+                    else
+                    {
+                        @L["Reset"]
+                    }
+                </button> *@
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public GetTenantPayoutRecordListDto Filters { get; set; }
+    [Parameter] public EventCallback<GetTenantPayoutRecordListDto> FiltersChanged { get; set; }
+    [Parameter] public EventCallback<GetTenantPayoutRecordListDto> OnFilter { get; set; }
+
+    [Parameter] public Guid? TenantId { get; set; }
+    [Parameter] public PaymentFeeType? FeeType { get; set; }
+    [Parameter] public int? Year { get; set; }
+
+    async Task OnParametersSetAsync()
+    {
+        if (Filters == null && TenantId.HasValue && FeeType.HasValue)
+        {
+            await Reset();
+        }
+    }
+
+    async Task ApplyFilters()
+    {
+        await FiltersChanged.InvokeAsync(Filters);
+        await OnFilter.InvokeAsync(Filters);
+    }
+
+    async Task Reset()
+    {
+        Year ??= DateTime.Now.Year;
+
+        Filters = new()
+        {
+            TenantId = TenantId!.Value,
+            FeeType = FeeType!.Value,
+            StartDate = new DateTime(Year.Value, 1, 1),
+            EndDate = new DateTime(Year.Value, 12, 31)
+        };
+
+        await ApplyFilters();
+    }
+}

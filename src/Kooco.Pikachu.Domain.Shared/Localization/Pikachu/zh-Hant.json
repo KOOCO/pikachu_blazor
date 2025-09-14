@@ -2179,6 +2179,10 @@
     "AdditionalProviders": "其他廠商",
     "TenantActiveSince": "自{0}啟用",
     "TenantPayoutTotalFees": "{0} 總費用",
-    "NumberOfTransactionsThisMonth": "{0} 筆本月交易"
+    "NumberOfTransactionsThisMonth": "{0} 筆本月交易",
+    "Enum:TenantPaymentFee.0": "綠界",
+    "Enum:TenantPaymentFee.1": "黑貓",
+    "NoPayoutData": "查無紀錄",
+    "NoPayoutDataDescription": "目前尚無資料"
   }
 }

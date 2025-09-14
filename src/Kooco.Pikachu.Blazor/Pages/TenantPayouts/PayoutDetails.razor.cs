@@ -21,14 +21,16 @@ public partial class PayoutDetails
     private GetTenantPayoutRecordListDto Filters { get; set; } = new();
     private TenantPayoutDetailSummaryDto Summary { get; set; } = new();
     private IReadOnlyList<TenantPayoutRecordDto> PayoutDetailList { get; set; } = [];
-    private List<TenantPayoutRecordDto> SelectedPayoutDetail { get; set; } = [];
+    private List<TenantPayoutRecordDto> SelectedPayoutDetails { get; set; } = [];
     private int PageSize { get; } = LimitedResultRequestDto.DefaultMaxResultCount;
     private int CurrentPage { get; set; } = 1;
     private string CurrentSorting { get; set; }
     private int TotalCount { get; set; }
-    private bool IsAnySelected => SelectedPayoutDetail is { Count: > 0 };
-    private int SelectedCount => SelectedPayoutDetail?.Count ?? 0;
-    private string SelectedCountMarkup => IsAnySelected ? string.Format("({0})", SelectedCount) : "";
+    private bool AnySelected => SelectedPayoutDetails is { Count: > 0 };
+    private int SelectedCount => SelectedPayoutDetails?.Count ?? 0;
+    private string SelectedCountText => AnySelected ? string.Format("({0})", SelectedCount) : "";
+    private bool Filtering { get; set; }
+    private bool Resetting { get; set; }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -36,23 +38,60 @@ public partial class PayoutDetails
         {
             try
             {
-                Year ??= DateTime.Now.Year;
-
-                Filters = new()
-                {
-                    TenantId = TenantId!.Value,
-                    FeeType = FeeType!.Value,
-                    StartDate = new DateTime(Year.Value, 1, 1),
-                    EndDate = new DateTime(Year.Value, 12, 31)
-                };
-
-                Summary = await Service.GetTenantPayoutDetailSummaryAsync(Filters.TenantId, Filters.FeeType, Year.Value);
+                //await ResetAsync();
                 StateHasChanged();
             }
             catch (Exception ex)
             {
                 await HandleErrorAsync(ex);
             }
+        }
+    }
+
+    async Task ApplyFiltersAsync()
+    {
+        Filtering = true;
+        StateHasChanged();
+
+        CurrentPage = 1;
+
+        await GetSummaryAsync();
+        await GetPayoutRecordsAsync();
+
+        Filtering = false;
+        StateHasChanged();
+    }
+
+    //async Task ResetAsync()
+    //{
+    //    Resetting = true;
+    //    StateHasChanged();
+
+    //    Year ??= DateTime.Now.Year;
+
+    //    Filters = new()
+    //    {
+    //        TenantId = TenantId!.Value,
+    //        FeeType = FeeType!.Value,
+    //        StartDate = new DateTime(Year.Value, 1, 1),
+    //        EndDate = new DateTime(Year.Value, 12, 31)
+    //    };
+
+    //    await GetSummaryAsync();
+    //    await GetPayoutRecordsAsync();
+    //    Resetting = false;
+    //    StateHasChanged();
+    //}
+
+    async Task GetSummaryAsync()
+    {
+        try
+        {
+            Summary = await Service.GetTenantPayoutDetailSummaryAsync(Filters);
+        }
+        catch (Exception ex)
+        {
+            await HandleErrorAsync(ex);
         }
     }
 
@@ -80,7 +119,6 @@ public partial class PayoutDetails
         }
         catch (Exception ex)
         {
-
             await HandleErrorAsync(ex);
         }
     }

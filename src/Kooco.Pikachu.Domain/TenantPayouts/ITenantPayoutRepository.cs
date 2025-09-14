@@ -14,7 +14,15 @@ public interface ITenantPayoutRepository : IRepository<TenantPayoutRecord, Guid>
     Task<List<TenantPayoutSummary>> GetTenantSummariesAsync();
     Task<List<PaymentFeeType>> GetActivePaymentProvidersAsync(Guid tenantId);
     Task<List<TenantPayoutYearlySummary>> GetTenantPayoutYearlySummariesAsync(Guid tenantId, PaymentFeeType feeType);
-    Task<TenantPayoutDetailSummary> GetTenantPayoutDetailSummaryAsync(Guid tenantId, PaymentFeeType feeType, int year);
+    Task<TenantPayoutDetailSummary> GetTenantPayoutDetailSummaryAsync(
+        Guid tenantId,
+        PaymentFeeType feeType,
+        DateTime startDate,
+        DateTime endDate,
+        PaymentMethods? paymentMethod = null,
+        string? filter = null,
+        CancellationToken cancellationToken = default
+        );
     Task<PagedResultModel<TenantPayoutRecord>> GetListAsync(
         int skipCount,
         int maxResultCount,

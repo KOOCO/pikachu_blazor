@@ -32,9 +32,16 @@ public class TenantPayoutAppService : PikachuAppService, ITenantPayoutAppService
         return ObjectMapper.Map<List<TenantPayoutYearlySummary>, List<TenantPayoutYearlySummaryDto>>(summaries);
     }
 
-    public async Task<TenantPayoutDetailSummaryDto> GetTenantPayoutDetailSummaryAsync(Guid tenantId, PaymentFeeType feeType, int year)
+    public async Task<TenantPayoutDetailSummaryDto> GetTenantPayoutDetailSummaryAsync(GetTenantPayoutRecordListDto input)
     {
-        var summary = await _tenantPayoutRepository.GetTenantPayoutDetailSummaryAsync(tenantId, feeType, year);
+        var summary = await _tenantPayoutRepository.GetTenantPayoutDetailSummaryAsync(
+            input.TenantId,
+            input.FeeType,
+            input.StartDate,
+            input.EndDate,
+            input.PaymentMethod,
+            input.Filter
+            );
         return ObjectMapper.Map<TenantPayoutDetailSummary, TenantPayoutDetailSummaryDto>(summary);
     }
 
