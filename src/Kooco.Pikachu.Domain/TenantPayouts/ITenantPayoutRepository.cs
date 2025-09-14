@@ -11,9 +11,9 @@ namespace Kooco.Pikachu.TenantPayouts;
 
 public interface ITenantPayoutRepository : IRepository<TenantPayoutRecord, Guid>
 {
-    Task<List<TenantPayoutSummary>> GetTenantSummariesAsync();
-    Task<List<PaymentFeeType>> GetActivePaymentProvidersAsync(Guid tenantId);
-    Task<List<TenantPayoutYearlySummary>> GetTenantPayoutYearlySummariesAsync(Guid tenantId, PaymentFeeType feeType);
+    Task<List<TenantPayoutSummary>> GetTenantSummariesAsync(CancellationToken cancellationToken = default);
+    Task<List<PaymentFeeType>> GetActivePaymentProvidersAsync(Guid tenantId, CancellationToken cancellationToken = default);
+    Task<List<TenantPayoutYearlySummary>> GetTenantPayoutYearlySummariesAsync(Guid tenantId, PaymentFeeType feeType, CancellationToken cancellationToken = default);
     Task<TenantPayoutDetailSummary> GetTenantPayoutDetailSummaryAsync(
         Guid tenantId,
         PaymentFeeType feeType,
@@ -21,6 +21,7 @@ public interface ITenantPayoutRepository : IRepository<TenantPayoutRecord, Guid>
         DateTime endDate,
         PaymentMethods? paymentMethod = null,
         string? filter = null,
+        bool? isPaid = null,
         CancellationToken cancellationToken = default
         );
     Task<PagedResultModel<TenantPayoutRecord>> GetListAsync(
@@ -33,6 +34,9 @@ public interface ITenantPayoutRepository : IRepository<TenantPayoutRecord, Guid>
         DateTime endDate,
         PaymentMethods? paymentMethod = null,
         string? filter = null,
+        bool? isPaid = null,
         CancellationToken cancellationToken = default
         );
+
+    Task MarkAsPaidAsync(List<Guid> ids, CancellationToken cancellationToken = default);
 }

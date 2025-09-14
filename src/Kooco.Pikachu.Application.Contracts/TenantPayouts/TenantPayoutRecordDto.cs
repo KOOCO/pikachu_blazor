@@ -21,6 +21,8 @@ public class TenantPayoutRecordDto
     public DateTime CreationTime { get; set; }
     public DateTime OrderCreationTime { get; set; }
     public bool IsPaid { get; set; }
-    public DateTime? PaymentDate { get; set; }
+    public DateTime? PaidTime { get; set; }
     public bool IsDeleted { get; set; }
+
+    public bool MarkingPaid { get; set; }
 }

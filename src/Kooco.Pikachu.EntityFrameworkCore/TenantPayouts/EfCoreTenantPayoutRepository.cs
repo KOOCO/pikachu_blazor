@@ -22,11 +22,11 @@ public class EfCoreTenantPayoutRepository : EfCoreRepository<PikachuDbContext, T
     {
     }
 
-    public async Task<List<TenantPayoutSummary>> GetTenantSummariesAsync()
+    public async Task<List<TenantPayoutSummary>> GetTenantSummariesAsync(CancellationToken cancellationToken = default)
     {
         var dbContext = await GetDbContextAsync();
 
-        return [.. dbContext.Tenants
+        return await dbContext.Tenants
             .GroupJoin(
                 dbContext.TenantPayoutRecords,
                 tenant => tenant.Id,
@@ -40,10 +40,11 @@ public class EfCoreTenantPayoutRepository : EfCoreRepository<PikachuDbContext, T
                 TotalFees = g.payout.Sum(p => p.HandlingFee + p.ProcessingFee),
                 TotalTransactions = g.payout.Count()
             })
-            .OrderBy(s => s.Name)];
+            .OrderBy(s => s.Name)
+            .ToListAsync(cancellationToken);
     }
 
-    public async Task<List<PaymentFeeType>> GetActivePaymentProvidersAsync(Guid tenantId)
+    public async Task<List<PaymentFeeType>> GetActivePaymentProvidersAsync(Guid tenantId, CancellationToken cancellationToken = default)
     {
         var dbContext = await GetDbContextAsync();
 
@@ -51,16 +52,16 @@ public class EfCoreTenantPayoutRepository : EfCoreRepository<PikachuDbContext, T
             .Where(f => f.TenantId == tenantId && f.IsEnabled)
             .GroupBy(f => f.FeeType)
             .Select(g => g.Key)
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
     }
 
-    public async Task<List<TenantPayoutYearlySummary>> GetTenantPayoutYearlySummariesAsync(Guid tenantId, PaymentFeeType feeType)
+    public async Task<List<TenantPayoutYearlySummary>> GetTenantPayoutYearlySummariesAsync(Guid tenantId, PaymentFeeType feeType, CancellationToken cancellationToken = default)
     {
         var dbContext = await GetDbContextAsync();
 
         return await dbContext.TenantPayoutRecords
             .Where(r => r.TenantId == tenantId && r.FeeType == feeType)
-            .GroupBy(r => r.CreationTime.Year)
+            .GroupBy(r => r.OrderCreationTime.Year)
             .Select(g => new TenantPayoutYearlySummary
             {
                 Year = g.Key,
@@ -69,7 +70,7 @@ public class EfCoreTenantPayoutRepository : EfCoreRepository<PikachuDbContext, T
                 AvgFeeRate = g.Average(r => r.FeeRate)
             })
             .Distinct()
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
     }
 
     public async Task<TenantPayoutDetailSummary> GetTenantPayoutDetailSummaryAsync(
@@ -79,6 +80,7 @@ public class EfCoreTenantPayoutRepository : EfCoreRepository<PikachuDbContext, T
         DateTime endDate,
         PaymentMethods? paymentMethod = null,
         string? filter = null,
+        bool? isPaid = null,
         CancellationToken cancellationToken = default
         )
     {
@@ -87,8 +89,9 @@ public class EfCoreTenantPayoutRepository : EfCoreRepository<PikachuDbContext, T
         return await dbContext.TenantPayoutRecords
             .Where(r => r.TenantId == tenantId && r.FeeType == feeType)
             .WhereIf(paymentMethod.HasValue, x => x.PaymentMethod == paymentMethod)
+            .WhereIf(isPaid.HasValue, x => x.IsPaid == isPaid)
             .WhereIf(!string.IsNullOrWhiteSpace(filter), x => x.OrderNo == filter || x.Id.ToString() == filter)
-            .GroupBy(r => r.CreationTime.Date)
+            .GroupBy(r => r.OrderCreationTime.Date)
             .Where(g => g.Key >= startDate.Date && g.Key <= endDate.Date)
             .Select(g => new TenantPayoutDetailSummary
             {
@@ -110,6 +113,7 @@ public class EfCoreTenantPayoutRepository : EfCoreRepository<PikachuDbContext, T
         DateTime endDate,
         PaymentMethods? paymentMethod = null,
         string? filter = null,
+        bool? isPaid = null,
         CancellationToken cancellationToken = default
         )
     {
@@ -121,6 +125,7 @@ public class EfCoreTenantPayoutRepository : EfCoreRepository<PikachuDbContext, T
         var projection = dbContext.TenantPayoutRecords
             .Where(x => x.TenantId == tenantId && x.FeeType == feeType)
             .Where(o => o.OrderCreationTime.Date >= startDate.Date && o.OrderCreationTime.Date <= endDate.Date)
+            .WhereIf(isPaid.HasValue, x => x.IsPaid == isPaid)
             .WhereIf(paymentMethod.HasValue, x => x.PaymentMethod == paymentMethod)
             .WhereIf(!string.IsNullOrWhiteSpace(filter), x => x.OrderNo == filter || x.Id.ToString() == filter);
 
@@ -136,5 +141,18 @@ public class EfCoreTenantPayoutRepository : EfCoreRepository<PikachuDbContext, T
             TotalCount = totalCount,
             Items = items
         };
+    }
+
+    public async Task MarkAsPaidAsync(List<Guid> ids, CancellationToken cancellationToken = default)
+    {
+        var q = await GetQueryableAsync();
+
+        await q
+            .Where(r => ids.Contains(r.Id) && !r.IsPaid)
+            .ExecuteUpdateAsync(r => 
+                r.SetProperty(p => p.IsPaid, true)
+                .SetProperty(p => p.PaidTime, DateTime.Now),
+                cancellationToken
+                );
     }
 }

@@ -54,7 +54,7 @@ else
 }
 
 @code {
-    [Parameter] public ITenantPayoutAppService Service { get; set; }
+    [CascadingParameter] public TenantPayoutContext Context { get; set; } = default!;
     [Parameter] public EventCallback<TenantPayoutSummaryDto?> TenantChanged { get; set; }
 
     private List<TenantPayoutSummaryDto> Tenants { get; set; } = new();
@@ -71,7 +71,7 @@ else
     {
         try
         {
-            Tenants = await Service.GetTenantSummariesAsync();
+            Tenants = await Context.Service.GetTenantSummariesAsync();
         }
         catch (Exception ex) { await HandleErrorAsync(ex); }
         finally

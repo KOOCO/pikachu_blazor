@@ -33,25 +33,26 @@
                 ← @CurrentStep.BackText
             </button>
         }
+        <CascadingValue Value="Context">
+            @switch (CurrentStep.Step)
+            {
+                case 1:
+                    <TenantSelectionStep TenantChanged="TenantChanged" />
+                    break;
 
-        @switch (CurrentStep.Step)
-        {
-            case 1:
-                <TenantSelectionStep Service="TenantPayoutAppService" TenantChanged="TenantChanged" />
-                break;
+                case 2:
+                    <PaymentProviderSelectionStep FeeTypeChanged="FeeTypeChanged" />
+                    break;
 
-            case 2:
-                <PaymentProviderSelectionStep Service="TenantPayoutAppService" TenantId="TenantId" FeeTypeChanged="FeeTypeChanged" />
-                break;
+                case 3:
+                    <PayoutYearSelectionStep YearChanged="YearChanged" />
+                    break;
 
-            case 3:
-                <PayoutYearSelectionStep Service="TenantPayoutAppService" TenantId="TenantId" FeeType="FeeType" YearChanged="YearChanged" />
-                break;
-
-            case 4:
-                <PayoutDetails Service="TenantPayoutAppService" TenantId="TenantId" FeeType="FeeType" Year="Year" />
-                break;
-        }
+                case 4:
+                    <PayoutDetails />
+                    break;
+            }
+        </CascadingValue>
     </div>
 </div>
 

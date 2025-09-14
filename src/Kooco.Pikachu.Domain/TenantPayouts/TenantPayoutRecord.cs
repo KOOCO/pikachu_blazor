@@ -21,6 +21,8 @@ public class TenantPayoutRecord : Entity<Guid>, IHasCreationTime, ISoftDelete
     public decimal NetAmount { get; set; }
     public PaymentFeeType FeeType { get; set; }
     public DateTime CreationTime { get; set; }
+    public bool IsPaid { get; set; }
+    public DateTime? PaidTime { get; set; }
     public bool IsDeleted { get; set; }
     public DateTime OrderCreationTime { get; set; }
 

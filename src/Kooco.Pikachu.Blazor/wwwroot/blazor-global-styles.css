@@ -1046,3 +1046,8 @@
 .lpx-language-selection .dropdown-toggle .lpx-icon {
     color: var(--lpx-brand) !important;
 }
+
+.error-message {
+    font-size: smaller;
+    color: crimson;
+}

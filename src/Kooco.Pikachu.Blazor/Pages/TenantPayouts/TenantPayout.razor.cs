@@ -11,18 +11,16 @@ namespace Kooco.Pikachu.Blazor.Pages.TenantPayouts;
 public partial class TenantPayout
 {
     public TCatFileImportModal TCatImportModal { get; set; }
-    public TenantPayoutSummaryDto? SelectedTenant { get; set; }
-    private Guid? TenantId => SelectedTenant?.TenantId;
-    public PaymentFeeType? FeeType { get; set; }
-    public int? Year { get; set; }
     public List<TenantPayoutStep> Steps { get; set; } = [];
     public TenantPayoutStep CurrentStep { get; set; } = new();
+    public TenantPayoutContext Context { get; set; } = new();
 
     private IEnumerable<TenantPayoutBreadcrumb> BreadcrumbItems =>
-        GetBreadcrumbs(SelectedTenant?.Name, FeeType, Year);
+        GetBreadcrumbs(Context.TenantName, Context.FeeType, Context.Year);
 
     protected override void OnInitialized()
     {
+        Context = new() { Service = TenantPayoutAppService };
         ConfigureStepList();
         base.OnInitialized();
     }
@@ -34,21 +32,22 @@ public partial class TenantPayout
 
     async Task TenantChanged(TenantPayoutSummaryDto? tenant)
     {
-        SelectedTenant = tenant;
+        Context.TenantId = tenant?.TenantId;
+        Context.TenantName = tenant?.Name;
         GoToStep(this, tenant != null ? 2 : 1);
         await InvokeAsync(StateHasChanged);
     }
 
     async Task FeeTypeChanged(PaymentFeeType? feeType)
     {
-        FeeType = feeType;
+        Context.FeeType = feeType;
         GoToStep(this, feeType.HasValue ? 3 : 2);
         await InvokeAsync(StateHasChanged);
     }
 
     async Task YearChanged(int? year)
     {
-        Year = year;
+        Context.Year = year;
         GoToStep(this, year.HasValue ? 4 : 3);
         await InvokeAsync(StateHasChanged);
     }

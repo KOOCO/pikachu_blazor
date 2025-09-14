@@ -1,6 +1,5 @@
 using Blazorise;
 using Blazorise.DataGrid;
-using Kooco.Pikachu.TenantPaymentFees;
 using Kooco.Pikachu.TenantPayouts;
 using Microsoft.AspNetCore.Components;
 using System;
@@ -13,12 +12,8 @@ namespace Kooco.Pikachu.Blazor.Pages.TenantPayouts;
 
 public partial class PayoutDetails
 {
-    [Parameter] public ITenantPayoutAppService Service { get; set; }
-    [Parameter] public Guid? TenantId { get; set; }
-    [Parameter] public PaymentFeeType? FeeType { get; set; }
-    [Parameter] public int? Year { get; set; }
-
-    private GetTenantPayoutRecordListDto Filters { get; set; } = new();
+    [CascadingParameter] public TenantPayoutContext Context { get; set; } = default!;
+    private GetTenantPayoutRecordListDto Filters { get; set; }
     private TenantPayoutDetailSummaryDto Summary { get; set; } = new();
     private IReadOnlyList<TenantPayoutRecordDto> PayoutDetailList { get; set; } = [];
     private List<TenantPayoutRecordDto> SelectedPayoutDetails { get; set; } = [];
@@ -29,65 +24,35 @@ public partial class PayoutDetails
     private bool AnySelected => SelectedPayoutDetails is { Count: > 0 };
     private int SelectedCount => SelectedPayoutDetails?.Count ?? 0;
     private string SelectedCountText => AnySelected ? string.Format("({0})", SelectedCount) : "";
-    private bool Filtering { get; set; }
-    private bool Resetting { get; set; }
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            try
-            {
-                //await ResetAsync();
-                StateHasChanged();
-            }
-            catch (Exception ex)
-            {
-                await HandleErrorAsync(ex);
-            }
-        }
-    }
 
     async Task ApplyFiltersAsync()
     {
-        Filtering = true;
-        StateHasChanged();
+        if (Filters?.StartDate.Year != Context.Year || Filters?.EndDate.Year != Context.Year)
+        {
+            return;
+        }
 
         CurrentPage = 1;
 
-        await GetSummaryAsync();
-        await GetPayoutRecordsAsync();
+        await LoadData();
 
-        Filtering = false;
-        StateHasChanged();
+        Context.Filtering = false;
+        Context.Resetting = false;
+        await InvokeAsync(StateHasChanged);
     }
 
-    //async Task ResetAsync()
-    //{
-    //    Resetting = true;
-    //    StateHasChanged();
-
-    //    Year ??= DateTime.Now.Year;
-
-    //    Filters = new()
-    //    {
-    //        TenantId = TenantId!.Value,
-    //        FeeType = FeeType!.Value,
-    //        StartDate = new DateTime(Year.Value, 1, 1),
-    //        EndDate = new DateTime(Year.Value, 12, 31)
-    //    };
-
-    //    await GetSummaryAsync();
-    //    await GetPayoutRecordsAsync();
-    //    Resetting = false;
-    //    StateHasChanged();
-    //}
+    async Task LoadData()
+    {
+        SelectedPayoutDetails = [];
+        await GetSummaryAsync();
+        await GetPayoutRecordsAsync();
+    }
 
     async Task GetSummaryAsync()
     {
         try
         {
-            Summary = await Service.GetTenantPayoutDetailSummaryAsync(Filters);
+            Summary = await Context.Service.GetTenantPayoutDetailSummaryAsync(Filters);
         }
         catch (Exception ex)
         {
@@ -99,7 +64,7 @@ public partial class PayoutDetails
     {
         try
         {
-            var result = await Service.GetListAsync(
+            var result = await Context.Service.GetListAsync(
                 new GetTenantPayoutRecordListDto
                 {
                     MaxResultCount = PageSize,
@@ -113,7 +78,7 @@ public partial class PayoutDetails
                     PaymentMethod = Filters.PaymentMethod
                 }
             );
-            
+
             TotalCount = (int)result.TotalCount;
             PayoutDetailList = result.Items;
         }
@@ -138,4 +103,28 @@ public partial class PayoutDetails
 
     private static bool RowSelectableHandler(RowSelectableEventArgs<TenantPayoutRecordDto> rowSelectableEventArgs)
         => rowSelectableEventArgs.SelectReason is not DataGridSelectReason.RowClick;
+
+    async Task MarkAsPaidAsync(TenantPayoutRecordDto record)
+    {
+        await MarkAsPaidAsync([record]);
+    }
+
+    async Task MarkAsPaidAsync(List<TenantPayoutRecordDto> records)
+    {
+        try
+        {
+            var ids = records.Select(r => r.Id).ToList();
+            records.ForEach(r => r.MarkingPaid = true);
+            await InvokeAsync(StateHasChanged);
+            await Context.Service.MarkAsPaidAsync(ids);
+            await LoadData();
+        }
+        catch (Exception ex)
+        {
+            records.ForEach(r => r.MarkingPaid = false);
+            await HandleErrorAsync(ex);
+        }
+
+        await InvokeAsync(StateHasChanged);
+    }
 }

@@ -2187,6 +2187,7 @@
     "NoPayoutData": "No Records Found",
     "NoPayoutDataDescription": "There is no data available at the moment.",
     "PayoutDetails:Filters": "Filters",
-    "PayoutDetails:PaidOn": "Paid On: {0}"
+    "PayoutDetails:PaidOn": "Paid On: {0}",
+    "PayoutDetails:InvalidFilterYear": "The {0} must be from {1}"
   }
 }

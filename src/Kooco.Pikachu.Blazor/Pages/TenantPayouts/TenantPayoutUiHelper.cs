@@ -74,16 +74,16 @@ public static class TenantPayoutUiHelper
         switch (step)
         {
             case 1:
-                component.SelectedTenant = null;
-                component.FeeType = null;
-                component.Year = null;
+                component.Context.TenantId = null;
+                component.Context.FeeType = null;
+                component.Context.Year = null;
                 break;
             case 2:
-                component.FeeType = null;
-                component.Year = null;
+                component.Context.FeeType = null;
+                component.Context.Year = null;
                 break;
             case 3:
-                component.Year = null;
+                component.Context.Year = null;
                 break;
         }
     }

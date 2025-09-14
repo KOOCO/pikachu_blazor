@@ -71,8 +71,7 @@ else
 }
 
 @code {
-    [Parameter] public ITenantPayoutAppService Service { get; set; }
-    [Parameter] public Guid? TenantId { get; set; }
+    [CascadingParameter] public TenantPayoutContext Context { get; set; } = default!;
     [Parameter] public EventCallback<PaymentFeeType?> FeeTypeChanged { get; set; }
 
     private PaymentFeeType? FeeType { get; set; }
@@ -89,8 +88,8 @@ else
     {
         try
         {
-            ActiveFeeTypes = TenantId.HasValue
-                ? await Service.GetActivePaymentProvidersAsync(TenantId.Value)
+            ActiveFeeTypes = Context.TenantId.HasValue
+                ? await Context.Service.GetActivePaymentProvidersAsync(Context.TenantId.Value)
                 : [];
         }
         catch (Exception ex) { await HandleErrorAsync(ex); }

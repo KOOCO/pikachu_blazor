@@ -3,11 +3,15 @@
 <div class="payout-options-container">
     <h5 class="text-dark">@L["PayoutDetails:BatchActions"]</h5>
     <div class="payout-batch-actions">
-        <PikachuButton Class="pk-btn-sm pk-btn-outline-primary" Disabled="!AnySelected">
+        <PikachuButton Class="pk-btn-sm pk-btn-outline-primary"
+                       Disabled="!AnySelected"
+                       Clicked="Transfer">
             @L["PayoutDetails:TransferSelectedToWallet"]
             @SelectedCountText
         </PikachuButton>
-        <PikachuButton Class="pk-btn-sm pk-btn-outline-warning" Disabled="!AnySelected">
+        <PikachuButton Class="pk-btn-sm pk-btn-outline-warning"
+                       Disabled="!AnySelected"
+                       Clicked="MarkPaid">
             @L["PayoutDetails:MarkSelectedAsPaid"]
             @SelectedCountText
         </PikachuButton>
@@ -20,4 +24,22 @@
 @code {
     [Parameter] public bool AnySelected { get; set; }
     [Parameter] public string SelectedCountText { get; set; }
+    [Parameter] public EventCallback OnPaid { get; set; }
+    [Parameter] public EventCallback OnTransfer { get; set; }
+
+    async Task MarkPaid()
+    {
+        if (AnySelected)
+        {
+            await OnPaid.InvokeAsync();
+        }
+    }
+
+    async Task Transfer()
+    {
+        if (AnySelected)
+        {
+            await OnTransfer.InvokeAsync();
+        }
+    }
 }

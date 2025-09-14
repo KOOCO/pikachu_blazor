@@ -13,6 +13,10 @@
                     <label class="form-label">@L["StartDate"]</label>
                     <AntDesign.DatePicker TValue="DateTime" @bind-Value="Filters.StartDate"
                                           DisabledDate="(d) => d.Year != Filters.Year && d.Date > Filters.EndDate.Date" />
+                    @if (InvalidStartDate)
+                    {
+                        <span class="error-message">@L["PayoutDetails:InvalidFilterYear", L["StartDate"], Context.Year]</span>
+                    }
                 </div>
             </div>
             <div class="col">
@@ -20,6 +24,10 @@
                     <label class="form-label">@L["EndDate"]</label>
                     <AntDesign.DatePicker TValue="DateTime" @bind-Value="Filters.EndDate"
                                           DisabledDate="(d) => d.Year != Filters.Year && d.Date < Filters.StartDate.Date" />
+                    @if (InvalidEndDate)
+                    {
+                        <span class="error-message">@L["PayoutDetails:InvalidFilterYear", L["EndDate"], Context.Year]</span>
+                    }
                 </div>
             </div>
             <div class="col">
@@ -63,8 +71,11 @@
         </div>
         <div class="mt-2">
             <div class="d-flex align-items-end justify-content-end flex-wrap w-100">
-                @* <button class="btn btn-sm btn-primary px-3 me-2" style="border-radius: 0.3rem;" disabled="@(Filtering || Resetting)" @onclick="ApplyFilters">
-                    @if (Filtering)
+                <button class="btn btn-sm btn-primary px-3 me-2"
+                        style="border-radius: 0.3rem;"
+                        disabled="@Loading"
+                        @onclick="ApplyFilters">
+                    @if (Context.Filtering)
                     {
                         <i class="fas fa-spinner fa-spin"></i>
                     }
@@ -72,16 +83,12 @@
                     {
                         @L["ApplyFilters"]
                     }
-                </button> *@
-                <button class="btn btn-sm btn-primary px-3 me-2" style="border-radius: 0.3rem;" @onclick="ApplyFilters">
-
-                    @L["ApplyFilters"]
                 </button>
-                <button class="btn btn-sm btn-outline-danger px-3" style="border-radius: 0.3rem;" @onclick="Reset">
-                    @L["Reset"]
-                </button>
-                @* <button class="btn btn-sm btn-outline-danger px-3" style="border-radius: 0.3rem;" disabled="@(Filtering || Resetting)" @onclick="Reset">
-                    @if (Resetting)
+                <button class="btn btn-sm btn-outline-danger px-3"
+                        style="border-radius: 0.3rem;"
+                        disabled="@Loading"
+                        @onclick="Reset">
+                    @if (Context.Resetting)
                     {
                         <i class="fas fa-spinner fa-spin"></i>
                     }
@@ -89,24 +96,25 @@
                     {
                         @L["Reset"]
                     }
-                </button> *@
+                </button>
             </div>
         </div>
     </div>
 }
 
 @code {
+    [CascadingParameter] public TenantPayoutContext Context { get; set; }
     [Parameter] public GetTenantPayoutRecordListDto Filters { get; set; }
     [Parameter] public EventCallback<GetTenantPayoutRecordListDto> FiltersChanged { get; set; }
     [Parameter] public EventCallback<GetTenantPayoutRecordListDto> OnFilter { get; set; }
 
-    [Parameter] public Guid? TenantId { get; set; }
-    [Parameter] public PaymentFeeType? FeeType { get; set; }
-    [Parameter] public int? Year { get; set; }
+    private bool Loading => Context?.Filtering == true || Context?.Resetting == true;
+    private bool InvalidStartDate => Filters?.StartDate.Year != Context.Year;
+    private bool InvalidEndDate => Filters?.EndDate.Year != Context.Year;
 
-    async Task OnParametersSetAsync()
+    protected override async Task OnParametersSetAsync()
     {
-        if (Filters == null && TenantId.HasValue && FeeType.HasValue)
+        if (Filters == null && Context != null)
         {
             await Reset();
         }
@@ -114,22 +122,31 @@
 
     async Task ApplyFilters()
     {
+        if (InvalidStartDate || InvalidEndDate) return;
+
+        Context.Filtering = true;
+        await InvokeAsync(StateHasChanged);
+
         await FiltersChanged.InvokeAsync(Filters);
         await OnFilter.InvokeAsync(Filters);
     }
 
     async Task Reset()
     {
-        Year ??= DateTime.Now.Year;
+        Context.Resetting = true;
+        await InvokeAsync(StateHasChanged);
+
+        Context.Year ??= DateTime.Now.Year;
 
         Filters = new()
         {
-            TenantId = TenantId!.Value,
-            FeeType = FeeType!.Value,
-            StartDate = new DateTime(Year.Value, 1, 1),
-            EndDate = new DateTime(Year.Value, 12, 31)
+            TenantId = Context.TenantId!.Value,
+            FeeType = Context.FeeType!.Value,
+            StartDate = new DateTime(Context.Year.Value, 1, 1),
+            EndDate = new DateTime(Context.Year.Value, 12, 31)
         };
 
-        await ApplyFilters();
+        await FiltersChanged.InvokeAsync(Filters);
+        await OnFilter.InvokeAsync(Filters);
     }
 }

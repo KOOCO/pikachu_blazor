@@ -67,9 +67,7 @@ else
 }
 
 @code {
-    [Parameter] public ITenantPayoutAppService Service { get; set; }
-    [Parameter] public Guid? TenantId { get; set; }
-    [Parameter] public PaymentFeeType? FeeType { get; set; }
+    [CascadingParameter] public TenantPayoutContext Context { get; set; } = default!;
     [Parameter] public EventCallback<int?> YearChanged { get; set; }
 
     private int? SelectedYear { get; set; }
@@ -86,8 +84,8 @@ else
     {
         try
         {
-            Years = TenantId.HasValue && FeeType.HasValue
-                ? await Service.GetTenantPayoutYearlySummariesAsync(TenantId.Value, FeeType.Value)
+            Years = Context.TenantId.HasValue && Context.FeeType.HasValue
+                ? await Context.Service.GetTenantPayoutYearlySummariesAsync(Context.TenantId.Value, Context.FeeType.Value)
                 : [];
         }
         catch (Exception ex) { await HandleErrorAsync(ex); }

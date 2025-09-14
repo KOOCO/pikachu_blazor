@@ -1,6 +1,7 @@
 ﻿using Kooco.Pikachu.TenantPaymentFees;
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Volo.Abp.Application.Dtos;
 
@@ -15,24 +16,24 @@ public class TenantPayoutAppService : PikachuAppService, ITenantPayoutAppService
         _tenantPayoutRepository = tenantPayoutRepository;
     }
 
-    public async Task<List<TenantPayoutSummaryDto>> GetTenantSummariesAsync()
+    public async Task<List<TenantPayoutSummaryDto>> GetTenantSummariesAsync(CancellationToken cancellationToken = default)
     {
-        var summaries = await _tenantPayoutRepository.GetTenantSummariesAsync();
+        var summaries = await _tenantPayoutRepository.GetTenantSummariesAsync(cancellationToken);
         return ObjectMapper.Map<List<TenantPayoutSummary>, List<TenantPayoutSummaryDto>>(summaries);
     }
 
-    public Task<List<PaymentFeeType>> GetActivePaymentProvidersAsync(Guid tenantId)
+    public Task<List<PaymentFeeType>> GetActivePaymentProvidersAsync(Guid tenantId, CancellationToken cancellationToken = default)
     {
-        return _tenantPayoutRepository.GetActivePaymentProvidersAsync(tenantId);
+        return _tenantPayoutRepository.GetActivePaymentProvidersAsync(tenantId, cancellationToken);
     }
 
-    public async Task<List<TenantPayoutYearlySummaryDto>> GetTenantPayoutYearlySummariesAsync(Guid tenantId, PaymentFeeType feeType)
+    public async Task<List<TenantPayoutYearlySummaryDto>> GetTenantPayoutYearlySummariesAsync(Guid tenantId, PaymentFeeType feeType, CancellationToken cancellationToken = default)
     {
-        var summaries = await _tenantPayoutRepository.GetTenantPayoutYearlySummariesAsync(tenantId, feeType);
+        var summaries = await _tenantPayoutRepository.GetTenantPayoutYearlySummariesAsync(tenantId, feeType, cancellationToken);
         return ObjectMapper.Map<List<TenantPayoutYearlySummary>, List<TenantPayoutYearlySummaryDto>>(summaries);
     }
 
-    public async Task<TenantPayoutDetailSummaryDto> GetTenantPayoutDetailSummaryAsync(GetTenantPayoutRecordListDto input)
+    public async Task<TenantPayoutDetailSummaryDto> GetTenantPayoutDetailSummaryAsync(GetTenantPayoutRecordListDto input, CancellationToken cancellationToken = default)
     {
         var summary = await _tenantPayoutRepository.GetTenantPayoutDetailSummaryAsync(
             input.TenantId,
@@ -40,12 +41,14 @@ public class TenantPayoutAppService : PikachuAppService, ITenantPayoutAppService
             input.StartDate,
             input.EndDate,
             input.PaymentMethod,
-            input.Filter
+            input.Filter,
+            input.IsPaid,
+            cancellationToken
             );
         return ObjectMapper.Map<TenantPayoutDetailSummary, TenantPayoutDetailSummaryDto>(summary);
     }
 
-    public async Task<PagedResultDto<TenantPayoutRecordDto>> GetListAsync(GetTenantPayoutRecordListDto input)
+    public async Task<PagedResultDto<TenantPayoutRecordDto>> GetListAsync(GetTenantPayoutRecordListDto input, CancellationToken cancellationToken = default)
     {
         var result = await _tenantPayoutRepository.GetListAsync(
             input.SkipCount,
@@ -56,7 +59,9 @@ public class TenantPayoutAppService : PikachuAppService, ITenantPayoutAppService
             input.StartDate,
             input.EndDate,
             input.PaymentMethod,
-            input.Filter
+            input.Filter,
+            input.IsPaid,
+            cancellationToken
             );
 
         return new PagedResultDto<TenantPayoutRecordDto>
@@ -64,5 +69,10 @@ public class TenantPayoutAppService : PikachuAppService, ITenantPayoutAppService
             TotalCount = result.TotalCount,
             Items = ObjectMapper.Map<List<TenantPayoutRecord>, List<TenantPayoutRecordDto>>(result.Items)
         };
+    }
+
+    public Task MarkAsPaidAsync(List<Guid> ids, CancellationToken cancellationToken = default)
+    {
+        return _tenantPayoutRepository.MarkAsPaidAsync(ids, cancellationToken);
     }
 }

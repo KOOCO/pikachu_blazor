@@ -4,12 +4,14 @@
 @using Kooco.Pikachu.TenantPayouts
 
 @inherits PikachuComponentBase
-<h5 class="text-dark">@L["PayoutDetails:FeeSummary", Year]</h5>
+<h5 class="text-dark">@L["PayoutDetails:FeeSummary", Context.Year]</h5>
 
 <PayoutDetailSummary Summary="Summary" />
 <PayoutExportOptions AnySelected="AnySelected" SelectedCountText="@SelectedCountText" CurrentFilterCount="TotalCount" />
-<PayoutDetailFilters @bind-Filters="Filters" OnFilter="ApplyFiltersAsync" Year="Year" TenantId="TenantId" FeeType="FeeType" />
-<PayoutBatchActions AnySelected="AnySelected" SelectedCountText="@SelectedCountText" />
+<PayoutDetailFilters @bind-Filters="Filters" OnFilter="ApplyFiltersAsync" />
+<PayoutBatchActions AnySelected="AnySelected"
+                    SelectedCountText="@SelectedCountText"
+                    OnPaid="() => MarkAsPaidAsync(SelectedPayoutDetails)" />
 
 <DataGrid TItem="TenantPayoutRecordDto"
           Data="PayoutDetailList"
@@ -104,7 +106,7 @@
             <DisplayTemplate>
                 @if (context.IsPaid)
                 {
-                    <Tooltip Text="@L["PayoutDetails:PaidOn", context.PaymentDate?.ToShortDateString() ?? ""]">
+                    <Tooltip Text="@L["PayoutDetails:PaidOn", context.PaidTime?.ToShortDateString() ?? ""]">
                         <PikachuBadge Class="pk-badge-success">
                             @L["Paid"]
                         </PikachuBadge>
@@ -134,7 +136,10 @@
                             <PikachuButton Class="pk-btn-sm pk-btn-icon green" IconClass="fas fa-paper-plane"></PikachuButton>
                         </Tooltip>
                         <Tooltip Display="Display.InlineBlock" Text="@L["MarkAsPaid"]">
-                            <PikachuButton Class="pk-btn-sm pk-btn-icon amber" IconClass="fas fa-check-double"></PikachuButton>
+                            <PikachuButton Class="pk-btn-sm pk-btn-icon amber"
+                                           Clicked="() => MarkAsPaidAsync(context)">
+                                <i class="fas @(context.MarkingPaid ? "fa-spinner fa-spin" : "fa-check-double")"></i>
+                            </PikachuButton>
                         </Tooltip>
                     }
                 </Div>
