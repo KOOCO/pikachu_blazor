@@ -249,7 +249,7 @@ namespace Kooco.Pikachu.BackgroundWorkers
                 NotificationArgs.ForOrderWithUserName(
                     order.Id,
                     order.OrderNo,
-                    "Close Order Job"
+                    l["CloseOrderJob"]
                 ));
         }
 

@@ -1252,7 +1252,7 @@
                                                 <Div class="col-10 pt-2 pb-4">
                                                     <select class="form-select form-select"
                                                     @onchange=@((e) => OnStyleCarouselChange(e, carouselImages, carouselImages.GroupBy(g => g.ModuleNumber).FirstOrDefault().Key!.Value))>
-                                                        <option>Select Style</option>
+                                                        <option>@L["SelectStyle"]</option>
                                                         @foreach (object? enumValue in Enum.GetValues(typeof(StyleForCarouselImages)))
                                                         {
                                                             if (enumValue is not null && carouselImages.Any(a => a.CarouselStyle == (StyleForCarouselImages)enumValue))
@@ -1353,6 +1353,7 @@
                                                     <Div Class="@((!module.Image.IsNullOrEmpty() ? "has-images" : "") + " container-less-filepicker filepicker-sm")">
                                                         <Field>
                                                             <FilePicker @ref="GroupPurchaseOverviewFilePickers[GroupPurchaseOverviewModules.IndexOf(module)]"
+                                                            FilePickerLocalizer="(key, args) => LocalizeFilePicker(key, args)"
                                                             Changed="@(async (e) => await OnImageUploadAsync(e,
                                                                                                                      module,
                                                                                                                      GroupPurchaseOverviewFilePickers[GroupPurchaseOverviewModules.IndexOf(module)]))"
@@ -1609,6 +1610,7 @@
                                                                 <Field>
                                                                     <FilePicker @ref="ProductRankingCarouselPickers[ProductRankingCarouselModules.IndexOf(productModule)]"
                                                                                 Disabled="productModule.Images.Count >= 5"
+                                                                                 FilePickerLocalizer="(key, args) => LocalizeFilePicker(key, args)"
                                                                                 Multiple
                                                                                 Changed="@(async (e) => await OnImageModuleUploadAsync(e,
                                                                                                                                    productModule.Images,
@@ -1680,7 +1682,7 @@
                                                 <TextEdit @bind-Text="module.Title" />
                                             </Div>
                                             <Div Class="col-2 pb-1">
-                                                <Label>@L["CustomTextModule"]</Label>
+                                                <Label>@L["Description"]</Label>
                                             </Div>
                                             <Div Class="col-12 pb-1">
                                                 <TinyMCEEditor @bind-Value="@module.Text"
@@ -1743,6 +1745,7 @@
                                                         <FilePicker @ref="imageModule.FilePicker"
                                                                     Disabled="imageModule.Images.Count >= 5"
                                                                     Multiple
+                                                                    FilePickerLocalizer="(key, args) => LocalizeFilePicker(key, args)"
                                                                     ShowMode="FilePickerShowMode.List"
                                                                     Accept="@(string.Join(", ", Constant.ValidImageExtensions))"
                                                                     Changed="(e) => OnPartnershipImageUploadAsync(e, imageModule)"

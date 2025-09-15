@@ -1538,6 +1538,7 @@
     "Youcannotsplittheorder": "您無法拆分此訂單，因為商品項目與數量與原始訂單相同。",
     "Pikachu:ItemDescriptionIsRequired": "Pikachu：必須填寫商品描述",
     "CloseOrderJob": "關閉訂單作業",
+    "CloseOrderJobTitle": "關閉訂單作業",
     "OrderClosedDueToInActivityTitle": "訂單因閒置已關閉",
     "OrderClosedDueToInActivity": "訂單因閒置已關閉：{0} 狀態已從 '{1}' 變更為 '{2}'",
     "ImportItems": "匯入商品",
@@ -2183,6 +2184,10 @@
     "Enum:TenantPaymentFee.0": "綠界",
     "Enum:TenantPaymentFee.1": "黑貓",
     "NoPayoutData": "查無紀錄",
-    "NoPayoutDataDescription": "目前尚無資料"
+    "NoPayoutDataDescription": "目前尚無資料",
+    "EnterItemStyleDescription": "輸入商品規格敘述",
+    "Row": "排",
+    "Style": "圖片樣式"
+
   }
 }

@@ -1299,6 +1299,7 @@
     "Youcannotsplittheorder": "You cannot split the order as the items and quantities match the original order.",
     "Pikachu:ItemDescriptionIsRequired": "Item description is required",
     "CloseOrderJob": "Close Order Job",
+    "CloseOrderJobTitle": "Close Order Job",
     "OrderClosedDueToInActivityTitle": "Order Closed",
     "OrderClosedDueToInActivity": "Order Closed due to inactivity: {0} Status changed from '{1}' to '{2}'",
     "OrderCompletedDueToInActivity": "Order Completed due to inactivity: {0} Status changed from '{1}' to '{2}'",
@@ -2188,6 +2189,7 @@
     "NoPayoutDataDescription": "There is no data available at the moment.",
     "PayoutDetails:Filters": "Filters",
     "PayoutDetails:PaidOn": "Paid On: {0}",
-    "PayoutDetails:InvalidFilterYear": "The {0} must be from {1}"
+    "PayoutDetails:InvalidFilterYear": "The {0} must be from {1}",
+    "Style": "Style"
   }
 }
