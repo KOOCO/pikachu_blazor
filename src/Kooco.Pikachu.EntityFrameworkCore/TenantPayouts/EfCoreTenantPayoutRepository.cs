@@ -1,8 +1,10 @@
-﻿using Kooco.Pikachu.Common;
+﻿using JetBrains.Annotations;
+using Kooco.Pikachu.Common;
 using Kooco.Pikachu.EntityFrameworkCore;
 using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.TenantPaymentFees;
 using Microsoft.EntityFrameworkCore;
+using Polly;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,11 +24,18 @@ public class EfCoreTenantPayoutRepository : EfCoreRepository<PikachuDbContext, T
     {
     }
 
-    public async Task<List<TenantPayoutSummary>> GetTenantSummariesAsync(CancellationToken cancellationToken = default)
+    public async Task<PagedResultModel<TenantPayoutSummary>> GetTenantSummariesAsync(
+        int skipCount,
+        int maxResultCount,
+        string? sorting,
+        string? filter,
+        CancellationToken cancellationToken = default
+        )
     {
         var dbContext = await GetDbContextAsync();
+        filter = filter?.Trim();
 
-        return await dbContext.Tenants
+        var summaries = dbContext.Tenants
             .GroupJoin(
                 dbContext.TenantPayoutRecords,
                 tenant => tenant.Id,
@@ -41,7 +50,15 @@ public class EfCoreTenantPayoutRepository : EfCoreRepository<PikachuDbContext, T
                 TotalTransactions = g.payout.Count()
             })
             .OrderBy(s => s.Name)
-            .ToListAsync(cancellationToken);
+            .WhereIf(!string.IsNullOrWhiteSpace(filter), x => x.TenantId.ToString() == filter || x.Name.Contains(filter));
+
+        return new PagedResultModel<TenantPayoutSummary>
+        {
+            TotalCount = await summaries.LongCountAsync(cancellationToken),
+            Items = await summaries
+                .PageBy(skipCount, maxResultCount)
+                .ToListAsync(cancellationToken)
+        };
     }
 
     public async Task<List<PaymentFeeType>> GetActivePaymentProvidersAsync(Guid tenantId, CancellationToken cancellationToken = default)
@@ -74,8 +91,8 @@ public class EfCoreTenantPayoutRepository : EfCoreRepository<PikachuDbContext, T
     }
 
     public async Task<TenantPayoutDetailSummary> GetTenantPayoutDetailSummaryAsync(
-        Guid tenantId, 
-        PaymentFeeType feeType, 
+        Guid tenantId,
+        PaymentFeeType feeType,
         DateTime startDate,
         DateTime endDate,
         PaymentMethods? paymentMethod = null,
@@ -84,23 +101,23 @@ public class EfCoreTenantPayoutRepository : EfCoreRepository<PikachuDbContext, T
         CancellationToken cancellationToken = default
         )
     {
-        var dbContext = await GetDbContextAsync();
+        var q = await GetFilteredQueryableAsync(
+            tenantId,
+            feeType,
+            startDate,
+            endDate,
+            paymentMethod,
+            filter,
+            isPaid
+            );
 
-        return await dbContext.TenantPayoutRecords
-            .Where(r => r.TenantId == tenantId && r.FeeType == feeType)
-            .WhereIf(paymentMethod.HasValue, x => x.PaymentMethod == paymentMethod)
-            .WhereIf(isPaid.HasValue, x => x.IsPaid == isPaid)
-            .WhereIf(!string.IsNullOrWhiteSpace(filter), x => x.OrderNo == filter || x.Id.ToString() == filter)
-            .GroupBy(r => r.OrderCreationTime.Date)
-            .Where(g => g.Key >= startDate.Date && g.Key <= endDate.Date)
-            .Select(g => new TenantPayoutDetailSummary
-            {
-                NetAmount = g.Sum(r => r.NetAmount),
-                TotalFees = g.Sum(r => r.HandlingFee + r.ProcessingFee),
-                TotalAmount = g.Sum(r => r.GrossOrderAmount),
-                Transactions = g.Count()
-            })
-            .FirstOrDefaultAsync(cancellationToken);
+        return new TenantPayoutDetailSummary
+        {
+            NetAmount = await q.SumAsync(r => r.NetAmount, cancellationToken),
+            TotalFees = await q.SumAsync(r => r.HandlingFee + r.ProcessingFee, cancellationToken),
+            TotalAmount = await q.SumAsync(r => r.GrossOrderAmount, cancellationToken),
+            Transactions = await q.CountAsync(cancellationToken)
+        };
     }
 
     public async Task<PagedResultModel<TenantPayoutRecord>> GetListAsync(
@@ -117,22 +134,20 @@ public class EfCoreTenantPayoutRepository : EfCoreRepository<PikachuDbContext, T
         CancellationToken cancellationToken = default
         )
     {
-        var dbContext = await GetDbContextAsync();
+        var q = await GetFilteredQueryableAsync(
+            tenantId,
+            feeType,
+            startDate,
+            endDate,
+            paymentMethod,
+            filter,
+            isPaid
+            );
 
-        filter = filter?.Trim();
-        sorting = string.IsNullOrWhiteSpace(sorting) ? $"{nameof(TenantPayoutRecord.OrderCreationTime)} DESC" : sorting;
+        var totalCount = await q.LongCountAsync(cancellationToken);
 
-        var projection = dbContext.TenantPayoutRecords
-            .Where(x => x.TenantId == tenantId && x.FeeType == feeType)
-            .Where(o => o.OrderCreationTime.Date >= startDate.Date && o.OrderCreationTime.Date <= endDate.Date)
-            .WhereIf(isPaid.HasValue, x => x.IsPaid == isPaid)
-            .WhereIf(paymentMethod.HasValue, x => x.PaymentMethod == paymentMethod)
-            .WhereIf(!string.IsNullOrWhiteSpace(filter), x => x.OrderNo == filter || x.Id.ToString() == filter);
-
-        var totalCount = await projection.LongCountAsync(cancellationToken);
-
-        var items = await projection
-            .OrderBy(sorting)
+        var items = await q
+            .OrderBy(!string.IsNullOrWhiteSpace(sorting) ? sorting : "CreationTime DESC")
             .PageBy(skipCount, maxResultCount)
             .ToListAsync(cancellationToken);
 
@@ -143,13 +158,37 @@ public class EfCoreTenantPayoutRepository : EfCoreRepository<PikachuDbContext, T
         };
     }
 
+    public async Task<IQueryable<TenantPayoutRecord>> GetFilteredQueryableAsync(
+        Guid tenantId,
+        PaymentFeeType feeType,
+        DateTime startDate,
+        DateTime endDate,
+        PaymentMethods? paymentMethod = null,
+        string? filter = null,
+        bool? isPaid = null
+        )
+    {
+        var q = await GetQueryableAsync();
+
+        filter = filter?.Trim();
+
+        q = q
+            .Where(x => x.TenantId == tenantId && x.FeeType == feeType)
+            .Where(o => o.OrderCreationTime.Date >= startDate.Date && o.OrderCreationTime.Date <= endDate.Date)
+            .WhereIf(isPaid.HasValue, x => x.IsPaid == isPaid)
+            .WhereIf(paymentMethod.HasValue, x => x.PaymentMethod == paymentMethod)
+            .WhereIf(!string.IsNullOrWhiteSpace(filter), x => x.OrderNo == filter || x.Id.ToString() == filter);
+
+        return q;
+    }
+
     public async Task MarkAsPaidAsync(List<Guid> ids, CancellationToken cancellationToken = default)
     {
         var q = await GetQueryableAsync();
 
         await q
             .Where(r => ids.Contains(r.Id) && !r.IsPaid)
-            .ExecuteUpdateAsync(r => 
+            .ExecuteUpdateAsync(r =>
                 r.SetProperty(p => p.IsPaid, true)
                 .SetProperty(p => p.PaidTime, DateTime.Now),
                 cancellationToken

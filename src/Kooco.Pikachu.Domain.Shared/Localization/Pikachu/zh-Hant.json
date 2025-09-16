@@ -2186,10 +2186,13 @@
     "NoPayoutData": "查無紀錄",
     "NoPayoutDataDescription": "目前尚無資料",
     "EnterItemStyleDescription": "輸入商品規格敘述",
-    "Row.1": "第一排",
+    "Row": "排",
+    "Style": "圖片樣式",
+    "PayoutDetails:PaidOn": "付款於",
+    "PaidOn": "付款於",
+    "Processed": "已處理",
     "Row.2": "第二排",
     "Row.3": "第三排",
-    "Style": "圖片樣式"
-
+    "Records": "記錄"
   }
 }

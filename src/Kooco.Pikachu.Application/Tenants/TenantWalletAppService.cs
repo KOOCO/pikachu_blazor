@@ -118,10 +118,11 @@ public class TenantWalletAppService : PikachuAppService, ITenantWalletAppService
         foreach (var tx in allTransactions)
         {
             var isDeposit = tx.TransactionType.ToString().ToLowerInvariant() == "deposit";
+            var isPayout = tx.TransactionType.ToString().ToLowerInvariant() == "payout";
             var amount = tx.TransactionAmount;
 
             // Add or subtract based on TransactionType
-            if (isDeposit)
+            if (isDeposit || isPayout)
                 runningBalance += amount;
             else
                 runningBalance -= amount;
@@ -133,7 +134,7 @@ public class TenantWalletAppService : PikachuAppService, ITenantWalletAppService
                 TransactionNo = tx.Id.ToString(),
                 TransactionType = tx.TransactionType,
                 TransactionStatus = tx.DeductionStatus,
-                Amount = isDeposit ? amount : -amount,
+                Amount = isDeposit || isPayout ? amount : -amount,
                 Balance = runningBalance,
                 Note = tx.TransactionNotes
             });

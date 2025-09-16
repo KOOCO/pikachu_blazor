@@ -27,7 +27,8 @@ public partial class TenantPayout
 
     async Task OnImportCompletedAsync()
     {
-        await Task.CompletedTask;
+        GoToStep(this, 1);
+        await InvokeAsync(StateHasChanged);
     }
 
     async Task TenantChanged(TenantPayoutSummaryDto? tenant)

@@ -66,4 +66,10 @@ public class TenantPayoutRecord : Entity<Guid>, IHasCreationTime, ISoftDelete
         ProcessingFee = processingFee;
         NetAmount = GrossOrderAmount - HandlingFee - ProcessingFee;
     }
+
+    public void SetPaid(bool isPaid, DateTime? paidTime = null)
+    {
+        IsPaid = isPaid;
+        PaidTime = isPaid ? paidTime ?? DateTime.Now : null;
+    }
 }

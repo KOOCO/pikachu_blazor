@@ -1751,6 +1751,7 @@
     "WalletTransactionType:Deposit": "Manual Top-Up",
     "WalletTransactionType:Deduction": "Manual Deduction",
     "WalletTransactionType:LogisticsFeeDeduction": "Logistic Fee Deduction",
+    "WalletTransactionType:Payout": "Payout",
     "WalletEmail.Greeting": "Dear {0},",
     "WalletEmail.DeductionBody": "An amount has been deducted from your wallet.",
     "WalletEmail.RechargeBody": "Your wallet has been successfully recharged.",
@@ -2193,6 +2194,8 @@
     "Style": "Style",
     "Row.1": "Row 1",
     "Row.2": "Row 2",
-    "Row.3": "Row 3"
+    "Row.3": "Row 3",
+    "PaidOn": "Paid On",
+    "SomeRecordsWereNotPaidDueToMissingWallet": "Some of the records were not marked paid due to missing tenant wallet."
   }
 }

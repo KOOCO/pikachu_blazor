@@ -25,4 +25,5 @@ public class TenantPayoutRecordDto
     public bool IsDeleted { get; set; }
 
     public bool MarkingPaid { get; set; }
+    public bool Transferring { get; set; }
 }

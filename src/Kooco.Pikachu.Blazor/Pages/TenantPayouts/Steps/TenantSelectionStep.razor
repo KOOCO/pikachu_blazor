@@ -14,6 +14,20 @@
 }
 else
 {
+    <div class="d-flex align-items-start gap-3 w-100 mb-3">
+        <div class="input-group flex-1">
+            <input type="search" class="form-control" @bind-value="Filters.Filter" @onkeydown="OnKeyDown" style="border-radius: 0.5rem 0 0 0.5rem;" />
+            <button class="btn btn-primary" @onclick="Search" style="border-radius: 0 0.5rem 0.5rem 0;">
+                <i class="fas fa-search"></i>
+            </button>
+        </div>
+        <button class="btn btn-outline-primary text-nowrap" @onclick="Refresh">
+            <i class="fas fa-refresh"></i>
+            @L["Refresh"]
+        </button>
+    </div>
+
+
     @foreach (var tenant in Tenants.OrEmptyIfNull())
     {
         <div class="list-card" @onclick="@(() => SelectTenant(tenant))">
@@ -51,42 +65,11 @@ else
             </div>
         </div>
     }
-}
-
-@code {
-    [CascadingParameter] public TenantPayoutContext Context { get; set; } = default!;
-    [Parameter] public EventCallback<TenantPayoutSummaryDto?> TenantChanged { get; set; }
-
-    private List<TenantPayoutSummaryDto> Tenants { get; set; } = new();
-    private TenantPayoutSummaryDto? Tenant { get; set; }
-    private bool Loading { get; set; } = true;
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    else
     {
-        if (firstRender)
-            await GetData();
-    }
-
-    async Task GetData()
-    {
-        try
-        {
-            Tenants = await Context.Service.GetTenantSummariesAsync();
-        }
-        catch (Exception ex) { await HandleErrorAsync(ex); }
-        finally
-        {
-            Loading = false;
-            StateHasChanged();
-        }
-    }
-
-    private async Task SelectTenant(TenantPayoutSummaryDto? value)
-    {
-        if (Tenant != value)
-        {
-            Tenant = value;
-            await TenantChanged.InvokeAsync(value);
-        }
+        <div class="d-flex align-items-center justify-content-between  w-100 flex-nowrap">
+            <span>@TotalCount @L["Records"]</span>
+            <AntDesign.Pagination Current="CurrentPage" Total="TotalCount" HideOnSinglePage OnChange="OnPageChange" PageSize="PageSize" />
+        </div>
     }
 }

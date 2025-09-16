@@ -1,6 +1,7 @@
 ﻿using Kooco.Pikachu.EnumValues;
 using Kooco.Pikachu.TenantPaymentFees;
 using System;
+using System.Collections.Generic;
 using Volo.Abp.Application.Dtos;
 
 namespace Kooco.Pikachu.TenantPayouts;
@@ -15,4 +16,5 @@ public class GetTenantPayoutRecordListDto : PagedAndSortedResultRequestDto
     public DateTime EndDate { get; set; }
     public PaymentMethods? PaymentMethod { get; set; }
     public bool? IsPaid { get; set; }
+    public bool ExportCurrent { get; set; }
 }

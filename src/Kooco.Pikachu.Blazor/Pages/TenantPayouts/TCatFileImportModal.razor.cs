@@ -28,6 +28,7 @@ public partial class TCatFileImportModal
                 _importing = true;
                 await TCatCodTradeInfoAppService.ImportAsync(_records);
                 CloseModal();
+                await OnImportCompleted.InvokeAsync();
             }
             catch (Exception ex)
             {

@@ -13,11 +13,15 @@
                         @(L["PayoutDetails:SelectedRecords"]) @SelectedCountText
                     </p>
                     <div>
-                        <button class="export-option-button" disabled="@(!AnySelected)">
+                        <button class="export-option-button"
+                                disabled="@(!AnySelected || Context.Exporting)"
+                                @onclick="() => ExportAsync(Csv, true, false)">
                             <i class="fas fa-file-csv"></i>
                             @L["CSV"]
                         </button>
-                        <button class="export-option-button" disabled="@(!AnySelected)">
+                        <button class="export-option-button"
+                                disabled="@(!AnySelected || Context.Exporting)"
+                                @onclick="() => ExportAsync(Excel, true, false)">
                             <i class="fas fa-file-excel"></i>
                             @L["Excel"]
                         </button>
@@ -33,11 +37,15 @@
                 <div class="payout-stats-info">
                     <p class="mb-1">@(L["PayoutDetails:CurrentFilter"])</p>
                     <div>
-                        <button class="export-option-button" disabled="@(CurrentFilterCount == 0)">
+                        <button class="export-option-button"
+                                disabled="@(CurrentFilterCount == 0 || Context.Exporting)"
+                                @onclick="() => ExportAsync(Csv, false, true)">
                             <i class="fas fa-file-csv"></i>
                             @L["CSV"]
                         </button>
-                        <button class="export-option-button" disabled="@(CurrentFilterCount == 0)">
+                        <button class="export-option-button"
+                                disabled="@(CurrentFilterCount == 0 || Context.Exporting)"
+                                @onclick="() => ExportAsync(Excel, false, true)">
                             <i class="fas fa-file-excel"></i>
                             @L["Excel"]
                         </button>
@@ -53,11 +61,15 @@
                 <div class="payout-stats-info">
                     <p class="mb-1">@(L["PayoutDetails:AllData"])</p>
                     <div>
-                        <button class="export-option-button">
+                        <button class="export-option-button"
+                                disabled="@Context.Exporting"
+                                @onclick="() => ExportAsync(Csv, false, false)">
                             <i class="fas fa-file-csv"></i>
                             @L["CSV"]
                         </button>
-                        <button class="export-option-button">
+                        <button class="export-option-button"
+                                disabled="@Context.Exporting"
+                                @onclick="() => ExportAsync(Excel, false, false)">
                             <i class="fas fa-file-excel"></i>
                             @L["Excel"]
                         </button>
@@ -69,7 +81,29 @@
 </div>
 
 @code {
+    [CascadingParameter] public TenantPayoutContext Context { get; set; }
     [Parameter] public bool AnySelected { get; set; }
     [Parameter] public string SelectedCountText { get; set; }
     [Parameter] public int CurrentFilterCount { get; set; }
+    [Parameter] public EventCallback<PayoutExportOptionsArgs> OnExport { get; set; }
+
+    public const string Excel = "Excel";
+    public const string Csv = "Csv";
+
+    async Task ExportAsync(string exportType, bool exportSelected, bool exportCurrent)
+    {
+        if (exportSelected && !AnySelected) return;
+        if (exportCurrent && CurrentFilterCount == 0) return;
+
+        Context.Exporting = true;
+
+        await InvokeAsync(StateHasChanged);
+
+        await OnExport.InvokeAsync(new PayoutExportOptionsArgs
+        {
+            ExportType = exportType,
+            ExportSelected = exportSelected,
+            ExportCurrent = exportCurrent
+        });
+    }
 }

@@ -1,5 +1,7 @@
 using Blazorise;
 using Blazorise.DataGrid;
+using Kooco.Pikachu.Blazor.Helpers;
+using Kooco.Pikachu.Blazor.Pages.TenantPayouts.Steps.PayoutDetails;
 using Kooco.Pikachu.TenantPayouts;
 using Microsoft.AspNetCore.Components;
 using System;
@@ -125,6 +127,81 @@ public partial class PayoutDetails
             await HandleErrorAsync(ex);
         }
 
+        await InvokeAsync(StateHasChanged);
+    }
+
+    async Task TransferToWalletAsync(TenantPayoutRecordDto record)
+    {
+        await TransferToWalletAsync([record]);
+    }
+
+    async Task TransferToWalletAsync(List<TenantPayoutRecordDto> records)
+    {
+        try
+        {
+            var ids = records.Select(r => r.Id).ToList();
+            records.ForEach(r => r.Transferring = true);
+            await InvokeAsync(StateHasChanged);
+            var result = await Context.Service.TransferToWalletAsync(ids);
+            if (result == -1)
+            {
+                await Message.Warn(L["SomeRecordsWereNotPaidDueToMissingWallet"]);
+            }
+            await LoadData();
+        }
+        catch (Exception ex)
+        {
+            records.ForEach(r => r.Transferring = false);
+            await HandleErrorAsync(ex);
+        }
+
+        await InvokeAsync(StateHasChanged);
+    }
+
+    async Task ExportAsync(PayoutExportOptionsArgs args)
+    {
+        try
+        {
+            Filters.ExportCurrent = args.ExportCurrent;
+            var bytes = await Context.Service.ExportAsync(Filters, args.ExportType, SelectedPayoutDetails);
+
+            if (bytes != null)
+            {
+                string fileName = $"{L["PayoutDetails"]}_";
+                if (SelectedPayoutDetails is { Count: > 0 })
+                {
+                    fileName += $"{DateTime.Now:yyyy_MM_dd_HH_mm_ss}";
+                }
+                else
+                {
+                    if (Filters.ExportCurrent)
+                    {
+                        fileName += $"{Filters.StartDate:yyyy_MM_dd}_To_{Filters.EndDate:yyyy_MM_dd}";
+                    }
+                    else
+                    {
+                        fileName += $"{new DateTime(Filters.Year, 1, 1):yyyy_MM_dd}_To_{new DateTime(Filters.Year, 12, 31):yyyy_MM_dd}";
+                    }
+                }
+
+                if (args.ExportType == PayoutExportOptions.Excel)
+                {
+                    fileName += ".xlsx";
+                    await ExcelDownloadHelper.DownloadExcelAsync(bytes, fileName);
+                }
+                if (args.ExportType == PayoutExportOptions.Csv)
+                {
+                    fileName += ".csv";
+                    await ExcelDownloadHelper.DownloadCsvAsync(bytes, fileName);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            await HandleErrorAsync(ex);
+        }
+
+        Context.Exporting = false;
         await InvokeAsync(StateHasChanged);
     }
 }

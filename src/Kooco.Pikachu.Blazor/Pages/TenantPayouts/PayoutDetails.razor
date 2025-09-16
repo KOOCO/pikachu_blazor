@@ -2,16 +2,20 @@
 @using Kooco.Pikachu.EnumValues
 @using Kooco.Pikachu.Extensions
 @using Kooco.Pikachu.TenantPayouts
-
+@inject ExcelDownloadHelper ExcelDownloadHelper
 @inherits PikachuComponentBase
 <h5 class="text-dark">@L["PayoutDetails:FeeSummary", Context.Year]</h5>
 
 <PayoutDetailSummary Summary="Summary" />
-<PayoutExportOptions AnySelected="AnySelected" SelectedCountText="@SelectedCountText" CurrentFilterCount="TotalCount" />
+<PayoutExportOptions AnySelected="AnySelected"
+                     SelectedCountText="@SelectedCountText"
+                     CurrentFilterCount="TotalCount"
+                     OnExport="ExportAsync" />
 <PayoutDetailFilters @bind-Filters="Filters" OnFilter="ApplyFiltersAsync" />
 <PayoutBatchActions AnySelected="AnySelected"
                     SelectedCountText="@SelectedCountText"
-                    OnPaid="() => MarkAsPaidAsync(SelectedPayoutDetails)" />
+                    OnPaid="() => MarkAsPaidAsync(SelectedPayoutDetails)"
+                    OnTransfer="() => TransferToWalletAsync(SelectedPayoutDetails)" />
 
 <DataGrid TItem="TenantPayoutRecordDto"
           Data="PayoutDetailList"
@@ -133,7 +137,10 @@
                     else
                     {
                         <Tooltip Display="Display.InlineBlock" Text="@L["TransferToWallet"]">
-                            <PikachuButton Class="pk-btn-sm pk-btn-icon green" IconClass="fas fa-paper-plane"></PikachuButton>
+                            <PikachuButton Class="pk-btn-sm pk-btn-icon green"
+                                           Clicked="() => TransferToWalletAsync(context)">
+                                <i class="fas @(context.Transferring ? "fa-spinner fa-spin" : "fa-paper-plane")"></i>
+                            </PikachuButton>
                         </Tooltip>
                         <Tooltip Display="Display.InlineBlock" Text="@L["MarkAsPaid"]">
                             <PikachuButton Class="pk-btn-sm pk-btn-icon amber"

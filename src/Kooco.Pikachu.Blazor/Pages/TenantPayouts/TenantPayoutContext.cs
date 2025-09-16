@@ -12,6 +12,8 @@ public class TenantPayoutContext
     public PaymentFeeType? FeeType { get; set; }
     public int? Year { get; set; }
 
+    // For showing loading on buttons
+    public bool Exporting { get; set; }
     public bool Filtering { get; set; }
     public bool Resetting { get; set; }
 }

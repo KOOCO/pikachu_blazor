@@ -3,5 +3,6 @@ public enum WalletTransactionType
 {
     Deposit,
     Deduction,
-    LogisticsFeeDeduction
+    LogisticsFeeDeduction,
+    Payout
 }
