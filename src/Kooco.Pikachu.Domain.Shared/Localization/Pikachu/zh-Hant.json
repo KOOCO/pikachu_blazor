@@ -2186,7 +2186,9 @@
     "NoPayoutData": "查無紀錄",
     "NoPayoutDataDescription": "目前尚無資料",
     "EnterItemStyleDescription": "輸入商品規格敘述",
-    "Row": "排",
+    "Row.1": "第一排",
+    "Row.2": "第二排",
+    "Row.3": "第三排",
     "Style": "圖片樣式"
 
   }
