@@ -564,7 +564,7 @@ public partial class EditGroupBuy
                 EditGroupBuyDto.BackgroundColor = "#FFFFFF";
                 EditGroupBuyDto.SecondaryBackgroundColor = "#C9D6BD";
                 EditGroupBuyDto.AlertColor = "#FF902A";
-                EditGroupBuyDto.BlockColor = "#EFF4EB";
+                EditGroupBuyDto.BlockColor = "#FFFFFF";
                 break;
 
             case ColorScheme.TropicalSunset:
@@ -573,7 +573,7 @@ public partial class EditGroupBuy
                 EditGroupBuyDto.BackgroundColor = "#FFFFFF";
                 EditGroupBuyDto.SecondaryBackgroundColor = "#E5D19A";
                 EditGroupBuyDto.AlertColor = "#FF902A";
-                EditGroupBuyDto.BlockColor = "#EFF4EB";
+                EditGroupBuyDto.BlockColor = "#FFFFFF";
                 break;
 
             case ColorScheme.DeepSeaNight:
@@ -582,7 +582,7 @@ public partial class EditGroupBuy
                 EditGroupBuyDto.BackgroundColor = "#FFFFFF";
                 EditGroupBuyDto.SecondaryBackgroundColor = "#DCD6D0";
                 EditGroupBuyDto.AlertColor = "#A1E82D";
-                EditGroupBuyDto.BlockColor = "#EFF4EB";
+                EditGroupBuyDto.BlockColor = "#FFFFFF";
                 break;
 
             case ColorScheme.SweetApricotCream:
@@ -591,7 +591,7 @@ public partial class EditGroupBuy
                 EditGroupBuyDto.BackgroundColor = "#FFFFFF";
                 EditGroupBuyDto.SecondaryBackgroundColor = "#DCBFC3";
                 EditGroupBuyDto.AlertColor = "#FFC123";
-                EditGroupBuyDto.BlockColor = "#EFF4EB";
+                EditGroupBuyDto.BlockColor = "#FFFFFF";
                 break;
 
             case ColorScheme.DesertDawn:
@@ -600,7 +600,7 @@ public partial class EditGroupBuy
                 EditGroupBuyDto.BackgroundColor = "#FFFFFF";
                 EditGroupBuyDto.SecondaryBackgroundColor = "#EBC7AD";
                 EditGroupBuyDto.AlertColor = "#FF902A";
-                EditGroupBuyDto.BlockColor = "#EFF4EB";
+                EditGroupBuyDto.BlockColor = "#FFFFFF";
                 break;
 
             default:
