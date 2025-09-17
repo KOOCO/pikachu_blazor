@@ -162,7 +162,7 @@ public class TenantWalletRepository(IDbContextProvider<PikachuDbContext> dbConte
                 .AsNoTracking()
                 .Where(w =>
                     w.TenantWalletId == walletId &&
-                    w.TransactionType == WalletTransactionType.Deposit &&
+                    (w.TransactionType == WalletTransactionType.Deposit || w.TransactionType == WalletTransactionType.Payout) &&
                     w.DeductionStatus == WalletDeductionStatus.Completed)
                 .SumAsync(x => x.TransactionAmount, cancellationToken: ct);
         }
@@ -191,7 +191,7 @@ public class TenantWalletRepository(IDbContextProvider<PikachuDbContext> dbConte
                 .AsNoTracking()
                 .Where(w =>
                     w.TenantWalletId == walletId &&
-                    w.TransactionType == WalletTransactionType.Deposit &&
+                    (w.TransactionType == WalletTransactionType.Deposit || w.TransactionType == WalletTransactionType.Payout) &&
                     w.DeductionStatus == WalletDeductionStatus.Completed)
                 .SumAsync(x => x.TransactionAmount, cancellationToken: ct);
         }
