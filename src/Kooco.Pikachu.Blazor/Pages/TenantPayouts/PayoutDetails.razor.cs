@@ -77,7 +77,8 @@ public partial class PayoutDetails
                     FeeType = Filters.FeeType,
                     StartDate = Filters.StartDate,
                     EndDate = Filters.EndDate,
-                    PaymentMethod = Filters.PaymentMethod
+                    PaymentMethod = Filters.PaymentMethod,
+                    IsPaid = Filters.IsPaid
                 }
             );
 

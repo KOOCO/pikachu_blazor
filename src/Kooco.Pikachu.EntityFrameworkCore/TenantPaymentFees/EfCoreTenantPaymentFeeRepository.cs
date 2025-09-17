@@ -18,10 +18,11 @@ namespace Kooco.Pikachu.TenantPaymentFees
         }
 
         public async Task<TenantPaymentFee?> FindAsync(
-            Guid tenantId, 
-            PaymentFeeType feeType, 
-            PaymentFeeSubType feeSubType, 
-            PaymentMethods paymentMethod
+            Guid tenantId,
+            PaymentFeeType feeType,
+            PaymentFeeSubType feeSubType,
+            PaymentMethods paymentMethod,
+            bool isBaseFee
             )
         {
             if (tenantId == Guid.Empty)
@@ -33,7 +34,8 @@ namespace Kooco.Pikachu.TenantPaymentFees
 
             return queryable
                 .Where(t => t.TenantId == tenantId && t.FeeType == feeType
-                && t.FeeSubType == feeSubType && t.PaymentMethod == paymentMethod)
+                && t.FeeSubType == feeSubType && t.PaymentMethod == paymentMethod
+                && t.IsBaseFee == isBaseFee)
                 .FirstOrDefault();
         }
     }

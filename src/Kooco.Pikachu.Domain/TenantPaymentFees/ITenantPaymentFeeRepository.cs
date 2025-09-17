@@ -7,5 +7,11 @@ namespace Kooco.Pikachu.TenantPaymentFees;
 
 public interface ITenantPaymentFeeRepository : IRepository<TenantPaymentFee, Guid>
 {
-    Task<TenantPaymentFee?> FindAsync(Guid tenantId, PaymentFeeType feeType, PaymentFeeSubType feeSubType, PaymentMethods paymentMethod);
+    Task<TenantPaymentFee?> FindAsync(
+        Guid tenantId,
+        PaymentFeeType feeType,
+        PaymentFeeSubType feeSubType,
+        PaymentMethods paymentMethod,
+        bool isBaseFee
+        );
 }

@@ -32,7 +32,8 @@ public class TenantPaymentFeeManager : DomainService
                 tenantId,
                 feeType,
                 feeSubType,
-                paymentMethod
+                paymentMethod,
+                isBaseFee
             );
 
         if (existing != null)
