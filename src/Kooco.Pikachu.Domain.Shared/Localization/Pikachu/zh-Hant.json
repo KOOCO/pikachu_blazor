@@ -1717,6 +1717,7 @@
     "TransactionNo": "交易序號",
     "WalletTransactionType:Deposit": "手動加值",
     "WalletTransactionType:Deduction": "手動扣款",
+    "WalletTransactionType:Payout": "款項撥入",
     "WalletEmail.Greeting": "親愛的 {0}，",
     "WalletEmail.DeductionBody": "您的錢包已扣除一筆金額。",
     "WalletEmail.RechargeBody": "您的錢包已成功加值。",
