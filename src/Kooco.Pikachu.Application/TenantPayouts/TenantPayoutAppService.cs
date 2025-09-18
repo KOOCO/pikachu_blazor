@@ -26,14 +26,16 @@ public class TenantPayoutAppService : PikachuAppService, ITenantPayoutAppService
 {
     private readonly ITenantPayoutRepository _tenantPayoutRepository;
     private readonly IRepository<TenantWallet, Guid> _tenantWalletRepository;
-
+    private readonly IRepository<TenantWalletTransaction, Guid> _transactionRepository;
     public TenantPayoutAppService(
         ITenantPayoutRepository tenantPayoutRepository,
-        IRepository<TenantWallet, Guid> tenantWalletRepository
+        IRepository<TenantWallet, Guid> tenantWalletRepository,
+        IRepository<TenantWalletTransaction, Guid> transactionRepository
         )
     {
         _tenantPayoutRepository = tenantPayoutRepository;
         _tenantWalletRepository = tenantWalletRepository;
+        _transactionRepository = transactionRepository;
     }
 
     public async Task<PagedResultDto<TenantPayoutSummaryDto>> GetTenantSummariesAsync(GetTenantSummariesDto input, CancellationToken cancellationToken = default)
@@ -118,7 +120,8 @@ public class TenantPayoutAppService : PikachuAppService, ITenantPayoutAppService
 
             var tenantIds = payoutRecords.Select(r => r.TenantId).Distinct().ToList();
 
-            var tenantWallets = await _tenantWalletRepository.GetListAsync(w => w.TenantId.HasValue && tenantIds.Contains(w.TenantId.Value), cancellationToken: cancellationToken);
+            var tenantWallets = await _tenantWalletRepository
+                .GetListAsync(w => w.TenantId.HasValue && tenantIds.Contains(w.TenantId.Value), cancellationToken: cancellationToken);
             var walletMap = tenantWallets.ToDictionary(w => w.TenantId.Value);
 
             foreach (var record in payoutRecords)
@@ -129,9 +132,8 @@ public class TenantPayoutAppService : PikachuAppService, ITenantPayoutAppService
                     var floorAmount = Math.Floor(record.NetAmount);
 
                     tenantWallet.WalletBalance += floorAmount;
-                    tenantWallet.TenantWalletTransactions ??= [];
                     
-                    tenantWallet.TenantWalletTransactions.Add(new TenantWalletTransaction
+                    var transaction = new TenantWalletTransaction(GuidGenerator.Create())
                     {
                         DeductionStatus = WalletDeductionStatus.Completed,
                         TradingMethods = WalletTradingMethods.SystemInput,
@@ -139,8 +141,9 @@ public class TenantPayoutAppService : PikachuAppService, ITenantPayoutAppService
                         TransactionAmount = floorAmount,
                         TransactionNotes = $"Logistics fee deduction for order {record.OrderNo}",
                         TenantWalletId = tenantWallet.Id
-                    });
+                    };
 
+                    await _transactionRepository.InsertAsync(transaction, cancellationToken: cancellationToken);
                     record.SetPaid(true);
                 }
                 else

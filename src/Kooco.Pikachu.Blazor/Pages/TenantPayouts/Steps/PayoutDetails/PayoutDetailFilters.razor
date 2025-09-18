@@ -11,8 +11,7 @@
             <div class="col">
                 <div class="form-group m-0">
                     <label class="form-label">@L["StartDate"]</label>
-                    <AntDesign.DatePicker TValue="DateTime" @bind-Value="Filters.StartDate"
-                                          DisabledDate="(d) => d.Year != Filters.Year && d.Date > Filters.EndDate.Date" />
+                    <DatePicker TValue="DateTime" @bind-Date="Filters.StartDate" Size="Size.Small" EnabledDates="EnabledDates" />
                     @if (InvalidStartDate)
                     {
                         <span class="error-message">@L["PayoutDetails:InvalidFilterYear", L["StartDate"], Context.Year]</span>
@@ -22,8 +21,7 @@
             <div class="col">
                 <div class="form-group m-0">
                     <label class="form-label">@L["EndDate"]</label>
-                    <AntDesign.DatePicker TValue="DateTime" @bind-Value="Filters.EndDate"
-                                          DisabledDate="(d) => d.Year != Filters.Year && d.Date < Filters.StartDate.Date" />
+                    <DatePicker TValue="DateTime" @bind-Date="Filters.EndDate" Size="Size.Small" EnabledDates="EnabledDates" />
                     @if (InvalidEndDate)
                     {
                         <span class="error-message">@L["PayoutDetails:InvalidFilterYear", L["EndDate"], Context.Year]</span>
@@ -111,6 +109,7 @@
     private bool Loading => Context?.Filtering == true || Context?.Resetting == true;
     private bool InvalidStartDate => Filters?.StartDate.Year != Context.Year;
     private bool InvalidEndDate => Filters?.EndDate.Year != Context.Year;
+    private IEnumerable<DateTime> EnabledDates { get; set; }
 
     protected override async Task OnParametersSetAsync()
     {
@@ -146,6 +145,10 @@
             StartDate = new DateTime(Context.Year.Value, 1, 1),
             EndDate = new DateTime(Context.Year.Value, 12, 31)
         };
+
+        EnabledDates = Enumerable.Range(0, (Filters.EndDate - Filters.StartDate).Days + 1)
+            .Select(offset => Filters.StartDate.AddDays(offset))
+            .ToArray();
 
         await FiltersChanged.InvokeAsync(Filters);
         await OnFilter.InvokeAsync(Filters);

@@ -18,4 +18,11 @@ public sealed class TenantWalletTransaction : FullAuditedEntity<Guid>
     public Guid TenantWalletId { get; set; }
     public TenantWallet? TenantWallet { get; set; }
     public ICollection<TenantLogisticsFeeRecord>? TenantLogisticsFeeRecords { get; set; }
+
+    public TenantWalletTransaction()
+    {
+
+    }
+
+    public TenantWalletTransaction(Guid id) : base(id) { }
 }
