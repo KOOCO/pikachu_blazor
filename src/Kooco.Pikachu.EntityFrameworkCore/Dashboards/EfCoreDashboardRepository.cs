@@ -105,7 +105,8 @@ public class EfCoreDashboardRepository(IDbContextProvider<PikachuDbContext> dbCo
             {
                 TotalAmount = g.Sum(o => (int)o.TotalAmount),
                 Label = groupBuyNames.Where(gbn => gbn.Id == g.Key).FirstOrDefault()?.GroupBuyName
-            });
+            })
+            .Where(dd => dd.TotalAmount > 0 && dd.Label != null);
 
         var donut = new DashboardDonutChartModel
         {

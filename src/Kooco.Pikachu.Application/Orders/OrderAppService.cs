@@ -904,8 +904,6 @@ public class OrderAppService : PikachuAppService, IOrderAppService
 
     public async Task<OrderDto> SplitOrderAsync(List<Guid> OrderItemIds, Guid OrderId)
     {
-        Order newOrder = new();
-
         Order ord = await OrderRepository.GetWithDetailsAsync(OrderId);
 
         decimal TotalAmount = ord.TotalAmount; int TotalQuantity = ord.TotalQuantity;
@@ -917,100 +915,99 @@ public class OrderAppService : PikachuAppService, IOrderAppService
             groupBuy = await GroupBuyRepository.GetAsync(ord.GroupBuyId);
         }
 
-        List<OrderItemsCreateDto> orderItems = [];
-        Guid splitOrderId = Guid.Empty;
+        var splitOrderItems = ord.OrderItems.Where(x => OrderItemIds.Contains(x.Id)).ToList();
+        var existingLogs = await InventoryLogRepository.GetListAsync(x => x.OrderItemId.HasValue && OrderItemIds.Contains(x.OrderItemId.Value));
+
+        Order splitOrder = await OrderManager.CreateAsync(
+            ord.GroupBuyId,
+            ord.IsIndividual,
+            ord.CustomerName,
+            ord.CustomerPhone,
+            ord.CustomerEmail,
+            ord.PaymentMethod,
+            ord.InvoiceType,
+            ord.InvoiceNumber,
+            ord.CarrierId,
+            ord.UniformNumber,
+            ord.TaxTitle,
+            ord.IsAsSameBuyer,
+            ord.RecipientName,
+            ord.RecipientPhone,
+            ord.RecipientEmail,
+            ord.DeliveryMethod,
+            ord.PostalCode,
+            ord.City,
+            ord.District,
+            ord.Road,
+            ord.AddressDetails,
+            ord.Remarks,
+            ord.ReceivingTime,
+            splitOrderItems.Sum(s => s.Quantity),
+            splitOrderItems.Sum(s => s.TotalAmount),
+            ord.ReturnStatus,
+            OrderType.NewSplit,
+            ord.Id
+        );
+
+        splitOrder.ShippingStatus = ord.ShippingStatus;
+        await OrderRepository.InsertAsync(splitOrder);
+
         using (CurrentTenant.Change(groupBuy?.TenantId))
         {
             foreach (OrderItem item in ord.OrderItems)
             {
                 if (OrderItemIds.Any(a => a == item.Id))
                 {
-                    OrderItemsCreateDto orderItem = new();
-
-                    orderItem = ObjectMapper.Map<OrderItem, OrderItemsCreateDto>(item);
+                    var log = existingLogs.FirstOrDefault(l => l.OrderItemId == item.Id);
 
                     TotalAmount -= item.TotalAmount;
                     TotalQuantity -= item.Quantity;
 
                     await OrderItemRepository.DeleteAsync(item.Id);
 
-                    Order order1 = await OrderManager.CreateAsync(
-                        ord.GroupBuyId,
-                        ord.IsIndividual,
-                        ord.CustomerName,
-                        ord.CustomerPhone,
-                        ord.CustomerEmail,
-                        ord.PaymentMethod,
-                        ord.InvoiceType,
-                        ord.InvoiceNumber,
-                        ord.CarrierId,
-                        ord.UniformNumber,
-                        ord.TaxTitle,
-                        ord.IsAsSameBuyer,
-                        ord.RecipientName,
-                        ord.RecipientPhone,
-                        ord.RecipientEmail,
-                        ord.DeliveryMethod,
-                        ord.PostalCode,
-                        ord.City,
-                        ord.District,
-                        ord.Road,
-                        ord.AddressDetails,
-                        ord.Remarks,
-                        ord.ReceivingTime,
-                        orderItem.Quantity,
-                        orderItem.TotalAmount,
-                        ord.ReturnStatus,
-                        OrderType.NewSplit,
-                        ord.Id
-                    );
-                    splitOrderId = order1.Id;
-                    order1.ShippingStatus = ord.ShippingStatus;
-
-                    OrderManager.AddOrderItem(
-                        order1,
-                        orderItem.ItemId,
-                        orderItem.ItemDetailId,
-                        orderItem.SetItemId,
-                        orderItem.FreebieId,
-                        orderItem.ItemType,
-                        order1.Id,
-                        orderItem.Spec,
-                        orderItem.ItemPrice,
-                        orderItem.TotalAmount,
-                        orderItem.Quantity,
-                        orderItem.SKU,
-                        orderItem.DeliveryTemperature,
-                        orderItem.DeliveryTemperatureCost
+                    var orderItem = OrderManager.AddOrderItem(
+                        splitOrder,
+                        item.ItemId,
+                        item.ItemDetailId,
+                        item.SetItemId,
+                        item.FreebieId,
+                        item.ItemType,
+                        item.Id,
+                        item.Spec,
+                        item.ItemPrice,
+                        item.TotalAmount,
+                        item.Quantity,
+                        item.SKU,
+                        item.DeliveryTemperature,
+                        item.DeliveryTemperatureCost
                     );
 
-                    await OrderRepository.InsertAsync(order1);
-                    await UnitOfWorkManager.Current.SaveChangesAsync();
-
-                    newOrder = order1;
-
-                    OrderItem? orderItem1 = newOrder.OrderItems.FirstOrDefault();
-
-                    if (order1.ShippingStatus is ShippingStatus.PrepareShipment)
+                    if (log != null)
                     {
-                        OrderDelivery oD = new(Guid.NewGuid(), order1.DeliveryMethod.Value, DeliveryStatus.Processing, null, string.Empty, order1.Id);
+                        log.SetOrder(splitOrder.Id, splitOrder.OrderNo, orderItem.Id);
+                        await InventoryLogRepository.UpdateAsync(log);
+                    }
+
+                    if (splitOrder.ShippingStatus is ShippingStatus.PrepareShipment)
+                    {
+                        OrderDelivery oD = new(Guid.NewGuid(), splitOrder.DeliveryMethod.Value, DeliveryStatus.Processing, null, string.Empty, splitOrder.Id);
 
                         oD = await OrderDeliveryRepository.InsertAsync(oD);
 
-                        order1.UpdateOrderItem(
-                            [.. order1.OrderItems.Where(w => w.DeliveryTemperature == orderItem1?.DeliveryTemperature)],
+                        splitOrder.UpdateOrderItem(
+                            [.. splitOrder.OrderItems.Where(w => w.DeliveryTemperature == orderItem?.DeliveryTemperature)],
                             oD.Id
                         );
 
-                        await OrderRepository.UpdateAsync(order1);
+                        await OrderRepository.UpdateAsync(splitOrder);
                     }
                 }
 
             }
             if (ord.OrderItems.Count <= 0)
             {
-                newOrder.TotalAmount += TotalAmount;
-                await OrderRepository.UpdateAsync(newOrder);
+                splitOrder.TotalAmount += TotalAmount;
+                await OrderRepository.UpdateAsync(splitOrder);
                 ord.TotalAmount = 0;
                 ord.TotalQuantity = 0;
             }
@@ -1027,25 +1024,25 @@ public class OrderAppService : PikachuAppService, IOrderAppService
             var currentUserId = CurrentUser.Id ?? Guid.Empty;
             var currentUserName = CurrentUser.UserName ?? "System";
 
+            await UnitOfWorkManager.Current.SaveChangesAsync();
+
             // **Log Order History for Split Order**
             await OrderHistoryManager.AddOrderHistoryAsync(
-     splitOrderId,
-     "OrderSplit", // Localization key
-     new object[] { ord.OrderNo, newOrder.OrderNo }, // Dynamic placeholders
-     currentUserId,
-     currentUserName
- );
+                 splitOrder.Id,
+                 "OrderSplit", // Localization key
+                 new object[] { ord.OrderNo, splitOrder.OrderNo }, // Dynamic placeholders
+                 currentUserId,
+                 currentUserName
+            );
 
             // **Log Update to Original Order**
             await OrderHistoryManager.AddOrderHistoryAsync(
                 ord.Id,
                 "OrderSplitFrom",
-                new object[] { ord.OrderNo, newOrder.OrderNo },
+                new object[] { ord.OrderNo, splitOrder.OrderNo },
                 currentUserId,
                 currentUserName
             );
-
-            await UnitOfWorkManager.Current.SaveChangesAsync();
 
             await NotificationManager.OrderSplitAsync(
                 NotificationArgs.ForOrderWithUserName(
@@ -1054,7 +1051,7 @@ public class OrderAppService : PikachuAppService, IOrderAppService
                     currentUserName
                     ));
 
-            await EmailAppService.SendSplitOrderEmailAsync(OrderId, splitOrderId);
+            await EmailAppService.SendSplitOrderEmailAsync(OrderId, splitOrder.Id);
 
             return ObjectMapper.Map<Order, OrderDto>(ord);
         }
@@ -3371,6 +3368,7 @@ public class OrderAppService : PikachuAppService, IOrderAppService
     public required ITenantTripartiteRepository TenantTripartiteRepository { get; init; }
     public required ICampaignRepository CampaignRepository { get; init; }
     public required InventoryLogManager InventoryLogManager { get; init; }
+    public required IInventoryLogRepository InventoryLogRepository { get; init; }
     public required IOrderTradeNoRepository OrderTradeNoRepository { get; init; }
     public required IRepository<ManualBankTransferRecord, Guid> ManualBankTransferRecordRepository { get; init; }
     public required IOrderMessageRepository OrderMessageRepository { get; init; }
