@@ -597,9 +597,9 @@ public class EmailAppService(IOrderRepository orderRepository, IGroupBuyReposito
             body = body
                 .Replace("{{TenantName}}", tenant.Name)
                 .Replace("{{PayoutDate}}", DateTime.Now.ToLongDateString())
-                .Replace("{{TransationCount}}", transactions.ToString())
-                .Replace("{{Amount}}", amount.ToString())
-                .Replace("{{CurrentBalance}}", balance.ToString());
+                .Replace("{{TransactionCount}}", transactions.ToString("N0"))
+                .Replace("{{Amount}}", amount.ToString("N2"))
+                .Replace("{{CurrentBalance}}", balance.ToString("N2"));
 
             await SendAsync(contactEmail, subject, body);
         }
