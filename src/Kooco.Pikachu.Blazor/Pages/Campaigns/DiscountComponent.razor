@@ -4,7 +4,7 @@
 @using Volo.Abp.AspNetCore.Components.Web
 @inherits PikachuComponentBase
 <Divider></Divider>
-<Validation MessageLocalizer="@LH.Localize">
+@* <Validation MessageLocalizer="@LH.Localize">
     <Field>
         <FieldLabel required>@L["DiscountCode"]</FieldLabel>
         <RadioGroup Orientation="Orientation.Vertical" TValue="bool?" Name="DiscountCode" @bind-CheckedValue="@Entity.Discount.IsDiscountCodeRequired">
@@ -29,7 +29,7 @@
             </Validation>
         }
     </Field>
-</Validation>
+</Validation> *@
 <Row>
     <Column ColumnSize="ColumnSize.Is6">
         <Validation MessageLocalizer="@LH.Localize">
@@ -43,7 +43,7 @@
             </Field>
         </Validation>
     </Column>
-    <Column ColumnSize="ColumnSize.Is6">
+  @*   <Column ColumnSize="ColumnSize.Is6">
         <Validation MessageLocalizer="@LH.Localize">
             <Field>
                 <FieldLabel required>@L["MaximumUsePerPerson"]</FieldLabel>
@@ -54,7 +54,7 @@
                 </NumericEdit>
             </Field>
         </Validation>
-    </Column>
+    </Column> *@
 </Row>
 <Divider></Divider>
 <Validation MessageLocalizer="@LH.Localize">

@@ -5,10 +5,10 @@ namespace Kooco.Pikachu.Campaigns;
 
 public class CreateCampaignDiscountDto
 {
-    public bool? IsDiscountCodeRequired { get; set; }
+    public bool IsDiscountCodeRequired { get; set; } = false;
     public string? DiscountCode { get; set; }
     public int? AvailableQuantity { get; set; }
-    public int? MaximumUsePerPerson { get; set; }
+    public int? MaximumUsePerPerson { get; set; } = 0;
     public DiscountMethod? DiscountMethod { get; set; }
     public int MinimumSpendAmount { get; set; }
     public bool? ApplyToAllShippingMethods { get; set; }

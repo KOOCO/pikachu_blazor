@@ -1086,8 +1086,8 @@
     "SelectDeliveryMethod": "選擇物流方式",
     "Return&Exchange": "退換貨列表",
     "Filters": "篩選器",
-    "Active": "上架中",
-    "Inactive": "已下架",
+    "Active": "啟用中",
+    "Inactive": "停用中",
     "Used": "已使用",
     "UnUsed": "未使用",
     "Period": "單位",
@@ -2194,6 +2194,8 @@
     "Processed": "已處理",
     "Row.2": "第二排",
     "Row.3": "第三排",
-    "Records": "記錄"
+    "Records": "記錄",
+    "OnlyAvailableTitle": "有效活動",
+    "OnlyAvailable": "有效"
   }
 }

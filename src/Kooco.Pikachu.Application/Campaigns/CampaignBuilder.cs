@@ -88,10 +88,10 @@ public class CampaignBuilder
     {
         manager.AddCampaignDiscount(
             campaign,
-            Require(discount.IsDiscountCodeRequired, nameof(discount.IsDiscountCodeRequired)),
+            discount.IsDiscountCodeRequired,
             discount.DiscountCode,
             Require(discount.AvailableQuantity, nameof(discount.AvailableQuantity)),
-            Require(discount.MaximumUsePerPerson, nameof(discount.MaximumUsePerPerson)),
+            discount.MaximumUsePerPerson.Value,
             Require(discount.DiscountMethod, nameof(discount.DiscountMethod)),
             discount.MinimumSpendAmount,
             discount.ApplyToAllShippingMethods,
