@@ -143,11 +143,14 @@ public partial class PayoutDetails
             var ids = records.Select(r => r.Id).ToList();
             records.ForEach(r => r.Transferring = true);
             await InvokeAsync(StateHasChanged);
-            var result = await Context.Service.TransferToWalletAsync(ids);
+            
+            var result = await Context.Service.TransferToWalletAsync(Filters.TenantId, ids);
+            
             if (result == -1)
             {
                 await Message.Warn(L["SomeRecordsWereNotPaidDueToMissingWallet"]);
             }
+
             await LoadData();
         }
         catch (Exception ex)

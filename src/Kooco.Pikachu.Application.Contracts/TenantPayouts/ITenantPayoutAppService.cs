@@ -16,6 +16,6 @@ public interface ITenantPayoutAppService : IApplicationService
     Task<TenantPayoutDetailSummaryDto> GetTenantPayoutDetailSummaryAsync(GetTenantPayoutRecordListDto input, CancellationToken cancellationToken = default);
     Task<PagedResultDto<TenantPayoutRecordDto>> GetListAsync(GetTenantPayoutRecordListDto input, CancellationToken cancellationToken = default);
     Task MarkAsPaidAsync(List<Guid> ids, CancellationToken cancellationToken = default);
-    Task<int> TransferToWalletAsync(List<Guid> ids, CancellationToken cancellationToken = default);
+    Task<int> TransferToWalletAsync(Guid tenantId, List<Guid> ids, CancellationToken cancellationToken = default);
     Task<byte[]> ExportAsync(GetTenantPayoutRecordListDto input, string exportType, List<TenantPayoutRecordDto> selected = null!);
 }
