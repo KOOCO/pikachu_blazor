@@ -2197,6 +2197,7 @@
     "Row.2": "Row 2",
     "Row.3": "Row 3",
     "PaidOn": "Paid On",
-    "SomeRecordsWereNotPaidDueToMissingWallet": "Some of the records were not marked paid due to missing tenant wallet."
+    "SomeRecordsWereNotPaidDueToMissingWallet": "Some of the records were not marked paid due to missing tenant wallet.",
+    "Budget": "Budget"
   }
 }
