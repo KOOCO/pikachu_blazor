@@ -22,12 +22,13 @@ using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Emailing;
 using Volo.Abp.Identity;
 using Volo.Abp.Localization;
+using Volo.Abp.TenantManagement;
 
 namespace Kooco.Pikachu.Emails;
 
 public class EmailAppService(IOrderRepository orderRepository, IGroupBuyRepository groupBuyRepository,
     ITenantSettingsAppService tenantSettingsAppService, IEmailSender emailSender, IBackgroundJobManager backgroundJobManager,
-    IConfiguration configuration, IdentityUserManager userManager) : PikachuAppService, IEmailAppService
+    IConfiguration configuration, IdentityUserManager userManager, IRepository<Tenant, Guid> tenantRepository) : PikachuAppService, IEmailAppService
 {
     public async Task SendLogisticsEmailAsync(Guid orderId, string? deliveryNo = "", DeliveryMethod? deliveryMethod = null)
     {
@@ -577,6 +578,33 @@ public class EmailAppService(IOrderRepository orderRepository, IGroupBuyReposito
         }
     }
 
+    public async Task SendWalletTransferEmailAsync(Guid? tenantId, decimal amount, int transactions, decimal balance)
+    {
+        var tenant = await tenantRepository.FirstOrDefaultAsync(t => t.Id == tenantId);
+        if (tenant == null) return;
+
+        var contactEmail = tenant.GetProperty<string>(Constant.TenantContactEmail);
+        if (string.IsNullOrWhiteSpace(contactEmail)) return;
+
+        using (CultureHelper.Use(CultureInfo.GetCultureInfo("zh-Hant")))
+        {
+            string lang = CultureInfo.CurrentCulture.TwoLetterISOLanguageName;
+
+            string subject = lang == "zh" ? "款項撥入確認" : "Payout Deposit Confirmation";
+
+            string body = File.ReadAllText($"wwwroot/EmailTemplates/tenant_payout_{lang}.html");
+
+            body = body
+                .Replace("{{TenantName}}", tenant.Name)
+                .Replace("{{PayoutDate}}", DateTime.Now.ToLongDateString())
+                .Replace("{{TransactionCount}}", transactions.ToString("N0"))
+                .Replace("{{Amount}}", amount.ToString("N2"))
+                .Replace("{{CurrentBalance}}", balance.ToString("N2"));
+
+            await SendAsync(contactEmail, subject, body);
+        }
+    }
+
     private async Task SendAsync(string email, string subject, string body)
     {
         try
@@ -662,7 +690,7 @@ public class EmailAppService(IOrderRepository orderRepository, IGroupBuyReposito
         sb.AppendLine($"- {L["Email:LogisticsFee:TotalRecords", model.TotalRecords]}");
         sb.AppendLine($"- {L["Email:LogisticsFee:SuccessfulDeductions", model.SuccessfulDeductions]}");
         sb.AppendLine($"- {L["Email:LogisticsFee:FailedDeductions", model.FailedDeductions]}");
-        sb.AppendLine($"- {L["Email:LogisticsFee:TotalAmount","$ "+ model.TotalAmount.ToString()]}");
+        sb.AppendLine($"- {L["Email:LogisticsFee:TotalAmount", "$ " + model.TotalAmount.ToString()]}");
         sb.AppendLine();
 
         // Thank you and regards

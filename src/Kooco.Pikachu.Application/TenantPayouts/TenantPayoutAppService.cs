@@ -1,4 +1,5 @@
 ﻿using CsvHelper;
+using Kooco.Pikachu.Emails;
 using Kooco.Pikachu.Extensions;
 using Kooco.Pikachu.Permissions;
 using Kooco.Pikachu.TenantManagement;
@@ -27,15 +28,19 @@ public class TenantPayoutAppService : PikachuAppService, ITenantPayoutAppService
     private readonly ITenantPayoutRepository _tenantPayoutRepository;
     private readonly IRepository<TenantWallet, Guid> _tenantWalletRepository;
     private readonly IRepository<TenantWalletTransaction, Guid> _transactionRepository;
+    private readonly IEmailAppService _emailAppService;
+
     public TenantPayoutAppService(
         ITenantPayoutRepository tenantPayoutRepository,
         IRepository<TenantWallet, Guid> tenantWalletRepository,
-        IRepository<TenantWalletTransaction, Guid> transactionRepository
+        IRepository<TenantWalletTransaction, Guid> transactionRepository,
+        IEmailAppService emailAppService
         )
     {
         _tenantPayoutRepository = tenantPayoutRepository;
         _tenantWalletRepository = tenantWalletRepository;
         _transactionRepository = transactionRepository;
+        _emailAppService = emailAppService;
     }
 
     public async Task<PagedResultDto<TenantPayoutSummaryDto>> GetTenantSummariesAsync(GetTenantSummariesDto input, CancellationToken cancellationToken = default)
@@ -110,49 +115,48 @@ public class TenantPayoutAppService : PikachuAppService, ITenantPayoutAppService
         return _tenantPayoutRepository.MarkAsPaidAsync(ids, cancellationToken);
     }
 
-    public async Task<int> TransferToWalletAsync(List<Guid> ids, CancellationToken cancellationToken = default)
+    public async Task<int> TransferToWalletAsync(Guid tenantId, List<Guid> ids, CancellationToken cancellationToken = default)
     {
         using (DataFilter.Disable<IMultiTenant>())
         {
-            int result = 0;
+            decimal totalAmount = 0;
+            int transactions = 0;
 
-            var payoutRecords = await _tenantPayoutRepository.GetListAsync(r => !r.IsPaid && ids.Contains(r.Id), cancellationToken: cancellationToken);
+            var payoutRecords = await _tenantPayoutRepository.GetListAsync(r => r.TenantId == tenantId && !r.IsPaid && ids.Contains(r.Id), cancellationToken: cancellationToken);
 
-            var tenantIds = payoutRecords.Select(r => r.TenantId).Distinct().ToList();
+            var tenantWallet = await _tenantWalletRepository
+                .FirstOrDefaultAsync(w => w.TenantId == tenantId, cancellationToken: cancellationToken);
 
-            var tenantWallets = await _tenantWalletRepository
-                .GetListAsync(w => w.TenantId.HasValue && tenantIds.Contains(w.TenantId.Value), cancellationToken: cancellationToken);
-            var walletMap = tenantWallets.ToDictionary(w => w.TenantId.Value);
+            if (tenantWallet == null)
+            {
+                return -1;
+            }
 
             foreach (var record in payoutRecords)
             {
-                walletMap.TryGetValue(record.TenantId.Value, out var tenantWallet);
-                if (tenantWallet != null)
-                {
-                    var floorAmount = Math.Floor(record.NetAmount);
+                var floorAmount = Math.Floor(record.NetAmount);
+                tenantWallet.WalletBalance += floorAmount;
 
-                    tenantWallet.WalletBalance += floorAmount;
-                    
-                    var transaction = new TenantWalletTransaction(GuidGenerator.Create())
-                    {
-                        DeductionStatus = WalletDeductionStatus.Completed,
-                        TradingMethods = WalletTradingMethods.SystemInput,
-                        TransactionType = WalletTransactionType.Payout,
-                        TransactionAmount = floorAmount,
-                        TransactionNotes = $"Logistics fee deduction for order {record.OrderNo}",
-                        TenantWalletId = tenantWallet.Id
-                    };
+                totalAmount += floorAmount;
+                transactions++;
 
-                    await _transactionRepository.InsertAsync(transaction, cancellationToken: cancellationToken);
-                    record.SetPaid(true);
-                }
-                else
+                var transaction = new TenantWalletTransaction(GuidGenerator.Create())
                 {
-                    result = -1;
-                }
+                    DeductionStatus = WalletDeductionStatus.Completed,
+                    TradingMethods = WalletTradingMethods.SystemInput,
+                    TransactionType = WalletTransactionType.Payout,
+                    TransactionAmount = floorAmount,
+                    TransactionNotes = $"Logistics fee deduction for order {record.OrderNo}",
+                    TenantWalletId = tenantWallet.Id
+                };
+
+                await _transactionRepository.InsertAsync(transaction, cancellationToken: cancellationToken);
+                record.SetPaid(true);
             }
 
-            return result; 
+            await _emailAppService.SendWalletTransferEmailAsync(tenantId, totalAmount, transactions, tenantWallet.WalletBalance);
+
+            return 1;
         }
     }
 
