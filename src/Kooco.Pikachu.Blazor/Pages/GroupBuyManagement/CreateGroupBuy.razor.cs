@@ -1092,7 +1092,7 @@ public partial class CreateGroupBuy
         {
             if (e.Files.Length > 1)
             {
-                await _uiMessageService.Error("Select Only 1 Logo Upload");
+                await _uiMessageService.Error(L["SelectOnly1LogoUpload"]);
                 await LogoPickerCustom.Clear();
                 return;
             }
@@ -1192,7 +1192,7 @@ public partial class CreateGroupBuy
                     logoBlobName = newFileName;
                     CreateGroupBuyDto.LogoURL = url;
                     await InvokeAsync(StateHasChanged);
-                    await _uiMessageService.Success("Logo uploaded successfully!");
+                    await _uiMessageService.Success(L["Logouploadedsuccessfully!"]);
                 }
                 finally
                 {
@@ -1220,12 +1220,12 @@ public partial class CreateGroupBuy
                 logoBlobName = newFileName;
                 CreateGroupBuyDto.LogoURL = url;
 
-                await _uiMessageService.Success("Logo uploaded successfully!");
+                await _uiMessageService.Success(L["Logouploadedsuccessfully!"]);
             }
         }
         catch (Exception ex)
         {
-            await _uiMessageService.Error("Something went wrong during cropping/upload.");
+            await _uiMessageService.Error(L["Somethingwentwrongduringcropping/upload."]);
             Console.WriteLine(ex);
         }
         finally
@@ -1369,7 +1369,7 @@ public partial class CreateGroupBuy
 
         if (e.Files.Length > 1)
         {
-            await _uiMessageService.Error("Select Only 1 Banner to Upload");
+            await _uiMessageService.Error(L["SelectOnly1BannertoUpload"]);
             await LogoPickerCustom.Clear();
             return;
         }
@@ -1530,7 +1530,7 @@ public partial class CreateGroupBuy
     {
         if (e.Files.Length > 1)
         {
-            await _uiMessageService.Error("Select Only 1 Logo Upload");
+            await _uiMessageService.Error(L["SelectOnly1LogoUpload"]);
             await BannerPickerCustom.Clear();
             return;
         }
@@ -2484,7 +2484,7 @@ public partial class CreateGroupBuy
         }
         catch (Exception ex)
         {
-            await _uiMessageService.Error("Something went wrong during cropping/upload.");
+            await _uiMessageService.Error(L["Somethingwentwrongduringcropping/upload."]);
             Console.WriteLine(ex);
         }
         finally
@@ -2686,7 +2686,7 @@ public partial class CreateGroupBuy
         }
         catch (Exception ex)
         {
-            await _uiMessageService.Error("Something went wrong during cropping/upload.");
+            await _uiMessageService.Error(L["Somethingwentwrongduringcropping/upload."]);
             Console.WriteLine(ex);
         }
         finally
@@ -2781,21 +2781,21 @@ public partial class CreateGroupBuy
             {
                 if (CreateGroupBuyDto.SelfPickupZipCode.IsNullOrWhiteSpace())
                 {
-                    await _uiMessageService.Warn("Zip Code is required for Self Pickup.");
+                    await _uiMessageService.Warn(L["ZipCodeisrequiredforSelfPickup"]);
                     await Loading.Hide();
                     return;
                 }
 
                 if (CreateGroupBuyDto.SelfPickupCity.IsNullOrWhiteSpace())
                 {
-                    await _uiMessageService.Warn("City is required for Self Pickup.");
+                    await _uiMessageService.Warn(L["CityisrequiredforSelfPickup"]);
                     await Loading.Hide();
                     return;
                 }
 
                 if (CreateGroupBuyDto.SelfPickupAddress.IsNullOrWhiteSpace())
                 {
-                    await _uiMessageService.Warn("Address is required for Self Pickup.");
+                    await _uiMessageService.Warn(L["AddressisrequiredforSelfPickup"]);
                     await Loading.Hide();
                     return;
                 }

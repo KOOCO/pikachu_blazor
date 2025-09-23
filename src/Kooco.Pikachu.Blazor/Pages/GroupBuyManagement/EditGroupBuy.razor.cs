@@ -1569,7 +1569,7 @@ public partial class EditGroupBuy
 
             if (e.Files.Length > 1)
             {
-                await _uiMessageService.Error("Cannot add more 1 image.");
+                await _uiMessageService.Error(L["Cannotaddmore1image"]);
 
                 await filePicker.Clear();
 
@@ -1634,7 +1634,7 @@ public partial class EditGroupBuy
 
             if (e.Files.Length > 1)
             {
-                await _uiMessageService.Error("Cannot add more 1 image.");
+                await _uiMessageService.Error(L["Cannotaddmore1image"]);
 
                 await filePicker.Clear();
 
@@ -1749,7 +1749,7 @@ public partial class EditGroupBuy
     {
         if (e.Files.Length > 1)
         {
-            await _uiMessageService.Error("Select Only 1 Logo Upload");
+            await _uiMessageService.Error(L["SelectOnly1LogoUpload"]);
             await LogoPickerCustom.Clear();
             return;
         }
@@ -1846,7 +1846,7 @@ public partial class EditGroupBuy
                     logoBlobName = newFileName;
                     EditGroupBuyDto.LogoURL = url;
                     await InvokeAsync(StateHasChanged);
-                    await _uiMessageService.Success("Logo uploaded successfully!");
+                    await _uiMessageService.Success(L["Logouploadedsuccessfully!"]);
                 }
                 finally
                 {
@@ -1874,12 +1874,12 @@ public partial class EditGroupBuy
                 EditGroupBuyDto.LogoURL = url;
 
 
-                await _uiMessageService.Success("Logo uploaded successfully!");
+                await _uiMessageService.Success(L["Logouploadedsuccessfully!"]);
             }
         }
         catch (Exception ex)
         {
-            await _uiMessageService.Error("Something went wrong during cropping/upload.");
+            await _uiMessageService.Error(L["Somethingwentwrongduringcropping/upload."]);
             Console.WriteLine(ex);
         }
         finally
@@ -2347,7 +2347,7 @@ public partial class EditGroupBuy
 
         if (e.Files.Length > 1)
         {
-            await _uiMessageService.Error("Select Only 1 Banner to Upload");
+            await _uiMessageService.Error(L["SelectOnly1BannertoUpload"]);
             await bannerPicker.Clear();
             return;
         }
@@ -2445,7 +2445,7 @@ public partial class EditGroupBuy
     {
         if (e.Files.Length > 1)
         {
-            await _uiMessageService.Error("Select Only 1 Logo Upload");
+            await _uiMessageService.Error(L["SelectOnly1LogoUpload"]);
             await BannerPickerCustom.Clear();
             return;
         }
@@ -3040,21 +3040,21 @@ public partial class EditGroupBuy
             {
                 if (EditGroupBuyDto.SelfPickupZipCode.IsNullOrWhiteSpace())
                 {
-                    await _uiMessageService.Warn("Zip Code is required for Self Pickup.");
+                    await _uiMessageService.Warn(L["ZipCodeisrequiredforSelfPickup"]);
                     await Loading.Hide();
                     return;
                 }
 
                 if (EditGroupBuyDto.SelfPickupCity.IsNullOrWhiteSpace())
                 {
-                    await _uiMessageService.Warn("City is required for Self Pickup.");
+                    await _uiMessageService.Warn(L["CityisrequiredforSelfPickup"]);
                     await Loading.Hide();
                     return;
                 }
 
                 if (EditGroupBuyDto.SelfPickupAddress.IsNullOrWhiteSpace())
                 {
-                    await _uiMessageService.Warn("Address is required for Self Pickup.");
+                    await _uiMessageService.Warn(L["AddressisrequiredforSelfPickup"]);
                     await Loading.Hide();
                     return;
                 }
@@ -3711,7 +3711,7 @@ public partial class EditGroupBuy
                         catch (Exception exp)
                         {
                             await Loading.Hide();
-                            await _uiMessageService.Error("Some thing happend wrong Product module is not Save.Please add Product Price and attribute again and save it.");
+                            await _uiMessageService.Error(L["SomethinghappendwrongProductmoduleisnotSave"]);
 
                             return;
 
@@ -4114,16 +4114,16 @@ public partial class EditGroupBuy
             await UpdateSortOrderAsync();
             for (int i = 0; i < CollapseItem.Count; i++)
             {
-              
+
                 if (CollapseItem[i].GroupBuyModuleType == GroupBuyModuleType.ProductGroupModule)
                 {
                     CollapseItem[i].Selected = new List<ItemWithItemTypeDto>();
                     await OnCollapseVisibleChanged(CollapseItem[i], true);
                     await OnCollapseVisibleChanged(CollapseItem[i], false);
                 }
-               
+
             }
-           
+
             StateHasChanged();
         }
     }

@@ -2198,6 +2198,29 @@
     "Row.3": "Row 3",
     "PaidOn": "Paid On",
     "SomeRecordsWereNotPaidDueToMissingWallet": "Some of the records were not marked paid due to missing tenant wallet.",
-    "Budget": "Budget"
+    "Budget": "Budget",
+    "ZipCodeisrequiredforSelfPickup": "Zip Code is required for Self Pickup.",
+    "CityisrequiredforSelfPickup": "City is required for Self Pickup.",
+    "AddressisrequiredforSelfPickup": "Address is required for Self Pickup.",
+    "Cannotaddmore1image": "Cannot add more 1 image",
+    "SelectOnly1LogoUpload": "Select Only 1 Logo Upload",
+    "Logouploadedsuccessfully!": "Logo uploaded successfully!",
+    "Somethingwentwrongduringcropping/upload.": "Something went wrong during cropping/upload.",
+    "SelectOnly1BannertoUpload": "Select Only 1 Banner to Upload",
+    "SomethinghappendwrongProductmoduleisnotSave": "Some thing happend wrong Product module is not Save.Please add Product Price and attribute again and save it.",
+    "SizeCannotbeempty": "Size Cannot be empty",
+    "PaymentMethodCannotbeempty": "Payment Method Cannot be empty.",
+    "PleaseEnterAmount": "Please Enter Amount",
+    "Enteramountisgreaterthanorderamount": "Enter amount is greater than order amount",
+    "ThefieldProductCategoryisrequired": "The field Product Category is required.",
+    "ThefieldArticlePageHtmlisrequired": "The field Article Page Html is required.",
+    "ThefieldArticlePageTitleisrequired": "The field Article Page Title is required.",
+    "ThefieldTitleisrequiredinGroupPurchaseOverviewModule": "The field Title is required in Group Purchase Overview Module.",
+    "ThefieldSubTitleisrequiredinGroupPurchaseOverviewModule": "The field Sub Title is required in Group Purchase Overview Module.",
+    "CODPaymentMethod": "COD Payment Method"
+
+
+
+
   }
 }

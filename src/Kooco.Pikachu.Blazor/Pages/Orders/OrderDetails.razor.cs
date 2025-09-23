@@ -1878,7 +1878,7 @@ public partial class OrderDetails
 
                 if (orderItemIds.Count < 1)
                 {
-                    await _uiMessageService.Error("Please Select Order Item");
+                    await _uiMessageService.Error(L["PleaseSelectOrderItem"]);
 
                     loading = false;
 
@@ -1910,7 +1910,7 @@ public partial class OrderDetails
 
                 if (refunds.Amount is 0)
                 {
-                    await _uiMessageService.Error("Please Enter Amount");
+                    await _uiMessageService.Error(L["PleaseEnterAmount"]);
 
                     loading = false;
 
@@ -1919,7 +1919,7 @@ public partial class OrderDetails
 
                 if (refunds.Amount > (double)Order.TotalAmount)
                 {
-                    await _uiMessageService.Error("Enter amount is greater than order amount");
+                    await _uiMessageService.Error(L["Enteramountisgreaterthanorderamount"]);
 
                     loading = false;
 

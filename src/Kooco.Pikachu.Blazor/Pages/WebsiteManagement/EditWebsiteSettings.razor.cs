@@ -395,7 +395,7 @@ public partial class EditWebsiteSettings
         {
             if (!EditingEntity.ProductCategoryId.HasValue)
             {
-                await Message.Error("The field Product Category is required.");
+                await Message.Error(L["ThefieldProductCategoryisrequired"]);
                 return false;
             }
         }
@@ -405,7 +405,7 @@ public partial class EditWebsiteSettings
             var articleHtml = await ArticlePageHtml?.GetHTML();
             if (articleHtml.IsEmptyOrDefaultQuillHtml())
             {
-                await Message.Error("The field Article Page Html is required.");
+                await Message.Error(L["ThefieldArticlePageHtmlisrequired"]);
                 return false;
             }
             EditingEntity.ArticleHtml = articleHtml;
@@ -415,7 +415,7 @@ public partial class EditWebsiteSettings
         {
             if (CollapseItem.Count == 0)
             {
-                await Message.Error("The field Page Type Module is required.");
+                await Message.Error(L["ThefieldPageTypeModuleisrequired"]);
                 return false;
             }
             if (CollapseItem.Any(a => a.IsWarnedForInCompatible))
@@ -429,13 +429,13 @@ public partial class EditWebsiteSettings
                 {
                     if (groupBuyOrderInstruction.Title.IsNullOrEmpty())
                     {
-                        await Message.Error("The field Title is required in Group Purchase Overview Module.");
+                        await Message.Error(L["ThefieldTitleisrequiredinGroupPurchaseOverviewModule"]);
                         return false;
                     }
 
                     if (groupBuyOrderInstruction.Image.IsNullOrEmpty())
                     {
-                        await Message.Error("The field Image is required in Group Purchase Overview Module.");
+                        await Message.Error(L["ThefieldTitleisrequiredinGroupPurchaseOverviewModule"]);
                         return false;
                     }
                 }
@@ -446,13 +446,13 @@ public partial class EditWebsiteSettings
                 {
                     if (productRankingCarouselModule.Title.IsNullOrEmpty())
                     {
-                        await Message.Error("The field Title is required in Group Purchase Overview Module.");
+                        await Message.Error(L["ThefieldTitleisrequiredinGroupPurchaseOverviewModule"]);
                         return false;
                     }
 
                     if (productRankingCarouselModule.SubTitle.IsNullOrEmpty())
                     {
-                        await Message.Error("The field SubTitle is required in Group Purchase Overview Module.");
+                        await Message.Error(L["ThefieldSubTitleisrequiredinGroupPurchaseOverviewModule"]);
                         return false;
                     }
                 }
@@ -1063,7 +1063,7 @@ public partial class EditWebsiteSettings
 
         if (e.Files.Length > 1)
         {
-            await UiNotificationService.Error("Select Only 1 Banner to Upload");
+            await UiNotificationService.Error(L["SelectOnly1BannertoUpload"]);
             await LogoPickerCustom.Clear();
             return;
         }
@@ -1282,7 +1282,7 @@ public partial class EditWebsiteSettings
 
                 return;
             }
-            
+
             var file = e.Files.First();
 
             string newFileName = Path.ChangeExtension(

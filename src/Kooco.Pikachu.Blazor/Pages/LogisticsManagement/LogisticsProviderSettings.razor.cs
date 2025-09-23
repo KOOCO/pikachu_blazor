@@ -560,7 +560,7 @@ public partial class LogisticsProviderSettings
 
             if (BNormal.Size is 0)
             {
-                await _uiMessageService.Error("Size Cannot be empty.");
+                await _uiMessageService.Error(L["SizeCannotbeempty"]);
 
                 await Loading.Hide();
 
@@ -592,7 +592,7 @@ public partial class LogisticsProviderSettings
 
             if (TCatNormal.Size is 0)
             {
-                await _uiMessageService.Error("Size Cannot be empty.");
+                await _uiMessageService.Error(L["SizeCannotbeempty"]);
 
                 await Loading.Hide();
 
@@ -601,7 +601,7 @@ public partial class LogisticsProviderSettings
 
             if (TCatNormal.Payment && TCatNormal.TCatPaymentMethod is 0)
             {
-                await _uiMessageService.Error("Payment Method Cannot be empty.");
+                await _uiMessageService.Error(L["PaymentMethodCannotbeempty"]);
 
                 await Loading.Hide();
 
@@ -635,7 +635,7 @@ public partial class LogisticsProviderSettings
 
             if (TCatFreeze.Size is 0)
             {
-                await _uiMessageService.Error("Size Cannot be empty.");
+                await _uiMessageService.Error(L["SizeCannotbeempty"]);
 
                 await Loading.Hide();
 
@@ -644,7 +644,7 @@ public partial class LogisticsProviderSettings
 
             if (TCatFreeze.Payment && TCatFreeze.TCatPaymentMethod is 0)
             {
-                await _uiMessageService.Error("Payment Method Cannot be empty.");
+                await _uiMessageService.Error(L["PaymentMethodCannotbeempty"]);
 
                 await Loading.Hide();
 
@@ -678,7 +678,7 @@ public partial class LogisticsProviderSettings
 
             if (TCatFrozen.Size is 0)
             {
-                await _uiMessageService.Error("Size Cannot be empty.");
+                await _uiMessageService.Error(L["SizeCannotbeempty"]);
 
                 await Loading.Hide();
 
@@ -687,7 +687,7 @@ public partial class LogisticsProviderSettings
 
             if (TCatFrozen.Payment && TCatFrozen.TCatPaymentMethod is 0)
             {
-                await _uiMessageService.Error("Payment Method Cannot be empty.");
+                await _uiMessageService.Error(L["PaymentMethodCannotbeempty"]);
 
                 await Loading.Hide();
 
@@ -720,7 +720,7 @@ public partial class LogisticsProviderSettings
 
             if (BFreeze.Size is 0)
             {
-                await _uiMessageService.Error("Size Cannot be empty.");
+                await _uiMessageService.Error(L["SizeCannotbeempty"]);
 
                 await Loading.Hide();
 
@@ -751,7 +751,7 @@ public partial class LogisticsProviderSettings
 
             if (BFrozen.Size is 0)
             {
-                await _uiMessageService.Error("Size Cannot be empty.");
+                await _uiMessageService.Error(L["SizeCannotbeempty"]);
 
                 await Loading.Hide();
 
