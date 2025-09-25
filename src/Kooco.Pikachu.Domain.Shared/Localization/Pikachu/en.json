@@ -2217,7 +2217,10 @@
     "ThefieldArticlePageTitleisrequired": "The field Article Page Title is required.",
     "ThefieldTitleisrequiredinGroupPurchaseOverviewModule": "The field Title is required in Group Purchase Overview Module.",
     "ThefieldSubTitleisrequiredinGroupPurchaseOverviewModule": "The field Sub Title is required in Group Purchase Overview Module.",
-    "CODPaymentMethod": "COD Payment Method"
+    "CODPaymentMethod": "COD Payment Method",
+    "TransactionStatus.Completed": "Complete",
+    "TransactionStatus.Pending": "Pending",
+    "TransactionStatus.Failed": "Failed"
 
 
 

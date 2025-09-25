@@ -53,15 +53,15 @@
         <DisplayTemplate>
             @if (context.TransactionStatus == WalletDeductionStatus.Completed)
             {
-                <Badge Color="Color.Success">@L[context.TransactionStatus.ToString()]</Badge>
+                <Badge Color="Color.Success">@L["TransactionStatus."+context.TransactionStatus.ToString()]</Badge>
             }
             else if (context.TransactionStatus == WalletDeductionStatus.Pending)
             {
-                <Badge Color="Color.Warning">@L[context.TransactionStatus.ToString()]</Badge>
+                    <Badge Color="Color.Warning">@L["TransactionStatus." + context.TransactionStatus.ToString()]</Badge>
             }
             else
             {
-                <Badge Color="Color.Danger">@L[context.TransactionStatus.ToString()]</Badge>
+                    <Badge Color="Color.Danger">@L["TransactionStatus." + context.TransactionStatus.ToString()]</Badge>
             }
         </DisplayTemplate>
     </DataGridColumn>

@@ -2230,7 +2230,10 @@
     "ThefieldTitleisrequiredinGroupPurchaseOverviewModule": "團購總覽模組必須填寫標題。",
     "ThefieldSubTitleisrequiredinGroupPurchaseOverviewModule": "團購總覽模組必須填寫副標題。",
     "FooterSettingsUpdated": "底部欄已成功更新！",
-    "CODPaymentMethod": "代收款方式"
+    "CODPaymentMethod": "代收款方式",
+    "TransactionStatus.Complete": "訂單完成",
+    "TransactionStatus.Pending": "待審核",
+    "TransactionStatus.Failed": "交易成功"
 
 
   }
