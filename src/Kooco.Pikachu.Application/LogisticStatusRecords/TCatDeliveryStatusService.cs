@@ -132,13 +132,28 @@ public class TCatDeliveryStatusService : ITransientDependency
                         DeliveryStatus.Shipped => ShippingStatus.Shipped,
                         DeliveryStatus.Delivered => ShippingStatus.Delivered,
                         DeliveryStatus.PickedUp => ShippingStatus.PickedUp,
+                        DeliveryStatus.Returned=>ShippingStatus.Return,
+                        DeliveryStatus.ReturnComplete=>ShippingStatus.Closed,
                         _ => order.ShippingStatus
                     };
 
-                    if (shippingStatus != order.ShippingStatus)
-                    {
+                 
                         using (_currentTenant.Change(order.TenantId))
                         {
+                        if (shippingStatus != order.ShippingStatus)
+                        {
+                            if (order.ShippingStatus == ShippingStatus.Closed)
+                            {
+                                await _orderHistoryManager.AddOrderHistoryAsync(
+                                  order.Id,
+                                  "OrderStatusChanged",
+                                  [L[order.OrderStatus.ToString()]?.Value!, L[shippingStatus.ToString()]?.Value!],
+                                  null,
+                                  null
+                              );
+                                order.OrderStatus = OrderStatus.Closed;
+                            }
+
                             await _orderHistoryManager.AddOrderHistoryAsync(
                                 order.Id,
                                 "ShippingStatusChanged",
@@ -189,7 +204,8 @@ public class TCatDeliveryStatusService : ITransientDependency
                 ["00219"] = DeliveryStatus.Shipped,
                 ["00003"] = DeliveryStatus.Delivered,
                 ["00017"] = DeliveryStatus.Returned,
-                ["00301"] = DeliveryStatus.Returned
+                ["00301"] = DeliveryStatus.Returned,
+                ["00399"] = DeliveryStatus.ReturnComplete
             },
             [DeliveryMethod.TCatDeliverySevenElevenNormal] = new()
             {
@@ -200,7 +216,8 @@ public class TCatDeliveryStatusService : ITransientDependency
                 ["208"] = DeliveryStatus.Delivered,
                 ["00003"] = DeliveryStatus.PickedUp,
                 ["00017"] = DeliveryStatus.Returned,
-                ["00301"] = DeliveryStatus.Returned
+                ["00301"] = DeliveryStatus.Returned,
+                ["00399"] = DeliveryStatus.ReturnComplete
             },
             [DeliveryMethod.TCatDeliveryFreeze] = new()
             {
@@ -214,7 +231,8 @@ public class TCatDeliveryStatusService : ITransientDependency
                 ["00219"] = DeliveryStatus.Shipped,
                 ["00003"] = DeliveryStatus.Delivered,
                 ["00017"] = DeliveryStatus.Returned,
-                ["00301"] = DeliveryStatus.Returned
+                ["00301"] = DeliveryStatus.Returned,
+                ["00399"] = DeliveryStatus.ReturnComplete
             },
             [DeliveryMethod.TCatDeliverySevenElevenFreeze] = new()
             {
@@ -225,7 +243,8 @@ public class TCatDeliveryStatusService : ITransientDependency
                 ["208"] = DeliveryStatus.Delivered,
                 ["00003"] = DeliveryStatus.PickedUp,
                 ["00017"] = DeliveryStatus.Returned,
-                ["00301"] = DeliveryStatus.Returned
+                ["00301"] = DeliveryStatus.Returned,
+                ["00399"] = DeliveryStatus.ReturnComplete
             },
             [DeliveryMethod.TCatDeliveryFrozen] = new()
             {
@@ -239,7 +258,8 @@ public class TCatDeliveryStatusService : ITransientDependency
                 ["00219"] = DeliveryStatus.Shipped,
                 ["00003"] = DeliveryStatus.Delivered,
                 ["00017"] = DeliveryStatus.Returned,
-                ["00301"] = DeliveryStatus.Returned
+                ["00301"] = DeliveryStatus.Returned,
+                ["00399"] = DeliveryStatus.ReturnComplete
             },
             [DeliveryMethod.TCatDeliverySevenElevenFrozen] = new()
             {
@@ -250,7 +270,8 @@ public class TCatDeliveryStatusService : ITransientDependency
                 ["208"] = DeliveryStatus.Delivered,
                 ["00003"] = DeliveryStatus.PickedUp,
                 ["00017"] = DeliveryStatus.Returned,
-                ["00301"] = DeliveryStatus.Returned
+                ["00301"] = DeliveryStatus.Returned,
+                ["00399"] = DeliveryStatus.ReturnComplete
             }
         };
 

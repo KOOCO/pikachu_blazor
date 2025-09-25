@@ -2748,6 +2748,19 @@ public class OrderAppService : PikachuAppService, IOrderAppService
                 { DeliveryMethod.PostOffice, new[] { 3307 } },
 
             };
+            var closedCodes = new Dictionary<DeliveryMethod, int[]>
+            {
+                { DeliveryMethod.SevenToEleven1, new[] { 2070 } },
+                { DeliveryMethod.SevenToElevenC2C, new[] { 2070 } },
+                { DeliveryMethod.SevenToElevenFrozen, new[] { 2070 } },
+                { DeliveryMethod.FamilyMart1, new[] { 3023 } },
+                { DeliveryMethod.FamilyMartC2C, new[] { 3023 } },
+                { DeliveryMethod.PostOffice, new[] { 3304 } },
+                 { DeliveryMethod.BlackCat1, new[] { 5008 } },
+                { DeliveryMethod.BlackCatFreeze, new[] { 5008 } },
+                { DeliveryMethod.BlackCatFrozen, new[] { 5008 } }
+
+            };
 
             var returnedCodes = new Dictionary<DeliveryMethod, int[]>
             {
@@ -2782,6 +2795,10 @@ public class OrderAppService : PikachuAppService, IOrderAppService
             {
                 updatedDeliveryStatus = DeliveryStatus.PickedUp;
             }
+            else if (closedCodes.TryGetValue(deliveryMethod, out var closedRtnCodes) && closedRtnCodes.Contains(rtnCode))
+            {
+                updatedDeliveryStatus = DeliveryStatus.ReturnComplete;
+            }
             else if (returnedCodes.TryGetValue(deliveryMethod, out var returnedRtnCodes) && returnedRtnCodes.Contains(rtnCode))
             {
                 updatedDeliveryStatus = DeliveryStatus.Returned;
@@ -2810,6 +2827,17 @@ public class OrderAppService : PikachuAppService, IOrderAppService
             }
             if (order.ShippingStatus != oldShippingStatus)
             {
+                if (order.ShippingStatus == ShippingStatus.Closed)
+                {
+                    await OrderHistoryManager.AddOrderHistoryAsync(
+                  order.Id,
+                  "OrderStatusUpdated", // Localization key
+                  new object[] { L[order.OrderStatus.ToString()].Name, L[order.ShippingStatus.ToString()].Name },
+                  currentUserId,
+                  currentUserName
+              );
+                    order.OrderStatus = OrderStatus.Closed;
+                }
                 await OrderHistoryManager.AddOrderHistoryAsync(
                     order.Id,
                     "ShippingStatusUpdated", // Localization key
@@ -2846,6 +2874,7 @@ public class OrderAppService : PikachuAppService, IOrderAppService
             DeliveryStatus.Delivered => ShippingStatus.Delivered,
             DeliveryStatus.PickedUp => ShippingStatus.PickedUp,
             DeliveryStatus.Returned => ShippingStatus.Return,
+            DeliveryStatus.ReturnComplete=>ShippingStatus.Closed,
             _ => ShippingStatus.PrepareShipment
         };
     }
