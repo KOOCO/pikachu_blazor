@@ -103,6 +103,8 @@ public class TenantPayoutRecordService : ITransientDependency
                     handlingFee = amount;
                 }
 
+                handlingFee = Math.Max(handlingFee, result.HandlingFee);
+
                 if (isCreditCardMethod)
                 {
                     combinations.TryGetValue((tenantId, PaymentMethods.CreditCard, true), out var baseFeeSetting);
@@ -188,6 +190,8 @@ public class TenantPayoutRecordService : ITransientDependency
                     feeRate = 0m;
                     handlingFee = amount;
                 }
+
+                handlingFee = Math.Max(handlingFee, result.HandlingCharge);
             }
 
             var payout = new TenantPayoutRecord(
