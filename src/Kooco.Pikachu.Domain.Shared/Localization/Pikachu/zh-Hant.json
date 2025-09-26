@@ -1176,7 +1176,7 @@
     "MemberTagWithSameNameAlreadyExists": "已有相同名稱的會員標籤存在。",
     "RegistrationDate": "註冊日期",
     "AddTag": "新增標籤",
-    "CurrentBalance": "購物金餘額",
+    "CurrentBalance": "錢包餘額",
     "TotalEarned": "已獲得購物金",
     "TotalDeduction": "已扣除購物金",
     "Search": "搜尋",
@@ -1777,7 +1777,7 @@
     "CurrentWalletStatus": "目前錢包狀態",
 
     "TotalFilesProcessed": "已處理檔案總數",
-    "FailedBatches": "失敗的批次",
+    "FailedBatches": "扣款失敗檔案總數",
     "SearchFileName": "搜尋檔案名稱...",
     "AllFiles": "所有檔案",
     "SuccessfulOnly": "僅顯示成功",
