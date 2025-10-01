@@ -1041,10 +1041,10 @@ public class PikachuDbContext(DbContextOptions<PikachuDbContext> options) :
                 .IsRequired();
 
             b.Property(x => x.PercentValue)
-                .HasPrecision(5, 2);
+                .HasPrecision(7, 4);
 
             b.Property(x => x.FixedAmount)
-                .HasPrecision(10, 2);
+                .HasPrecision(10, 4);
 
             // Index for better performance
             b.HasIndex(x => new { x.TenantId, x.DeliveryProvider })
@@ -1057,7 +1057,7 @@ public class PikachuDbContext(DbContextOptions<PikachuDbContext> options) :
             b.ToTable(PikachuConsts.DbTablePrefix + "TenantPaymentFees", PikachuConsts.DbSchema);
             b.ConfigureByConvention();
 
-            b.Property(x => x.Amount).HasPrecision(10, 2);
+            b.Property(x => x.Amount).HasPrecision(10, 4);
         });
 
         builder.Entity<TenantPayoutRecord>(b =>
@@ -1065,11 +1065,11 @@ public class PikachuDbContext(DbContextOptions<PikachuDbContext> options) :
             b.ToTable(PikachuConsts.DbTablePrefix + "TenantPayoutRecords", PikachuConsts.DbSchema);
             b.ConfigureByConvention();
 
-            b.Property(x => x.GrossOrderAmount).HasPrecision(10, 2);
-            b.Property(x => x.HandlingFee).HasPrecision(10, 2);
-            b.Property(x => x.FeeRate).HasPrecision(10, 2);
-            b.Property(x => x.ProcessingFee).HasPrecision(10, 2);
-            b.Property(x => x.NetAmount).HasPrecision(10, 2);
+            b.Property(x => x.GrossOrderAmount).HasPrecision(10, 4);
+            b.Property(x => x.HandlingFee).HasPrecision(10, 4);
+            b.Property(x => x.FeeRate).HasPrecision(10, 4);
+            b.Property(x => x.ProcessingFee).HasPrecision(10, 4);
+            b.Property(x => x.NetAmount).HasPrecision(10, 4);
         });
     }
 }
