@@ -65,11 +65,13 @@ public class EfCoreTenantPayoutRepository : EfCoreRepository<PikachuDbContext, T
     {
         var dbContext = await GetDbContextAsync();
 
-        return await dbContext.TenantPaymentFees
-            .Where(f => f.TenantId == tenantId && f.IsEnabled)
-            .GroupBy(f => f.FeeType)
-            .Select(g => g.Key)
+        var feeTypes = await dbContext.TenantPayoutRecords
+            .Where(r => r.TenantId == tenantId)
+            .Select(r => r.FeeType)
+            .Distinct()
             .ToListAsync(cancellationToken);
+        
+        return feeTypes;
     }
 
     public async Task<List<TenantPayoutYearlySummary>> GetTenantPayoutYearlySummariesAsync(Guid tenantId, PaymentFeeType feeType, CancellationToken cancellationToken = default)
