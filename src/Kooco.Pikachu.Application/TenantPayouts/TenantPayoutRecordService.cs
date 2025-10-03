@@ -171,7 +171,7 @@ public class TenantPayoutRecordService : ITransientDependency
 
             var totalAmount = order.TotalAmount;
 
-            var (feeRate, handlingFee, processingFee) = (result.CollectionChargeFee, result.HandlingCharge, 0m);
+            var (feeRate, handlingFee, processingFee) = (0.53m, result.CollectionChargeFee, 0m);
 
             combinations.TryGetValue((tenantId, paymentMethod, false), out var tenantCombination);
 
@@ -191,7 +191,7 @@ public class TenantPayoutRecordService : ITransientDependency
                     handlingFee = amount;
                 }
 
-                handlingFee = Math.Max(handlingFee, result.HandlingCharge);
+                handlingFee = Math.Max(handlingFee, result.CollectionChargeFee);
             }
 
             var payout = new TenantPayoutRecord(
