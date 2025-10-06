@@ -155,7 +155,7 @@
     "EmailSettings": "郵件設定",
     "Enable/Disable": "開啟/關閉",
     "EnableDragDrop": "開啟拖曳",
-    "EndDate": "結束時間",
+    "EndDate": "結束日期",
     "EnterItemName": "輸入商品名稱",
     "EnterprisePurchase": "企業採購",
     "Enum:TenantStatus.0": "正常",
@@ -2145,7 +2145,7 @@
     "ApplyFilters": "套用篩選",
     "OrderCreationTime": "訂單建立時間",
     "OrderAmount": "訂單金額",
-    "FeeRate": "手續費率",
+    "FeeRate": "手續費費率",
     "HandlingFee": "手續費",
     "PlatformFee": "平台費",
     "NetAmount": "撥款淨額",
@@ -2171,7 +2171,7 @@
     "ChooseAnotherFile": "選擇其他檔案",
     "TotalFees": "總費用",
     "Transactions": "交易",
-    "PaymentType": "支付類型",
+    "PaymentType": "付款方式",
     "PayoutDetails:PaymentActionsOnlyAffectUnpaidRecords": "* 支付操作僅影響未付款記錄",
     "ImportTCatFile": "匯入 T Cat 檔案",
     "PayoutDetails:FeeSummary": "費用摘要 - {0}",
@@ -2233,8 +2233,7 @@
     "CODPaymentMethod": "代收款方式",
     "TransactionStatus.Completed": "交易成功",
     "TransactionStatus.Pending": "待審核",
-    "TransactionStatus.Failed": "交易成功"
-
-
+    "TransactionStatus.Failed": "交易成功",
+    "PayoutDetails:Filters": "篩選"
   }
 }
