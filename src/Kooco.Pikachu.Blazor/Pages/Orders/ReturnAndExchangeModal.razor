@@ -2,6 +2,7 @@
 @using Kooco.Pikachu.OrderItems
 @using Kooco.Pikachu.Orders.Interfaces
 @using Kooco.Pikachu.ReturnAndExchange
+@using Kooco.Pikachu.Items.Dtos
 @inherits PikachuComponentBase
 @inject IReturnAndExchangeAppService ReturnAndExchangeAppService
 @inject NavigationManager NavigationManager
@@ -13,113 +14,221 @@
             <CloseButton />
         </ModalHeader>
         <ModalBody>
-            <Div Class="row">
-                <Div Class="col-6">
-                    <Label>
-                        @L["PaymentStatus"]: @(PaymentStatus)
-                    </Label>
-                </Div>
-            </Div>
-
-            <Div>
-                <Field>
-                    <RadioGroup Orientation="Orientation.Vertical"
-                                TValue="bool"
-                                @bind-CheckedValue="IsWholeOrder">
-                        <Radio Value="true">@L["WholeOrder"]</Radio>
-                        <Radio Value="false">@L["SelectItems"]</Radio>
-                    </RadioGroup>
-                </Field>
-            </Div>
-            @if (!IsWholeOrder)
+            @if (!ChooseReplacement)
             {
+                <Div Class="row">
+                    <Div Class="col-6">
+                        <Label>
+                            @L["PaymentStatus"]: @(PaymentStatus)
+                        </Label>
+                    </Div>
+                </Div>
+
                 <Div>
-                    <Table Bordered Striped>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHeaderCell ColumnSpan="2"></TableHeaderCell>
-                                <TableHeaderCell>@L["Quantity"]</TableHeaderCell>
-                                <TableHeaderCell>@L["UnitPrice"]</TableHeaderCell>
-                                <TableHeaderCell>@L["Subtotal"]</TableHeaderCell>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            @if (Order?.OrderItems != null)
-                            {
-                                @foreach (var item in Order.OrderItems)
+                    <Field>
+                        <RadioGroup Orientation="Orientation.Vertical"
+                                    TValue="bool"
+                                    @bind-CheckedValue="IsWholeOrder">
+                            <Radio Value="true">@L["WholeOrder"]</Radio>
+                            <Radio Value="false">@L["SelectItems"]</Radio>
+                        </RadioGroup>
+                    </Field>
+                </Div>
+                @if (!IsWholeOrder)
+                {
+                    <Div Class="overflow-auto">
+                        <Table Bordered Striped>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHeaderCell></TableHeaderCell>
+                                    <TableHeaderCell>@L["Item"]</TableHeaderCell>
+                                    <TableHeaderCell>@L["Quantity"]</TableHeaderCell>
+                                    <TableHeaderCell>@L["UnitPrice"]</TableHeaderCell>
+                                    <TableHeaderCell>@L["Subtotal"]</TableHeaderCell>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                @if (Order?.OrderItems != null)
                                 {
+                                    @foreach (var item in Order.OrderItems)
+                                    {
+                                        <TableRow>
+                                            <TableRowCell>
+                                                <Check TValue="bool" @bind-Checked="item.IsSelected" Disabled="item.Quantity <= 0 ||  (!IsReturn && (item.ItemType == ItemType.Freebie || item.IsAddOnProduct))" />
+                                            </TableRowCell>
+                                            <TableRowCell>
+                                                <div class="d-flex align-items-start">
+                                                    @* Left: Image *@
+                                                    <div class="me-2">
+                                                        @if (!string.IsNullOrEmpty(ItemImage(item)))
+                                                        {
+                                                            <img src="@ItemImage(item)" style="height: auto; width: 60px;" />
+                                                        }
+                                                    </div>
+
+                                                    @* Right: Text stacked *@
+                                                    <div class="d-flex flex-column text-dark">
+                                                        <div class="text-dark fw-bold">@ItemName(item)</div>
+                                                        <div class="fs-xs">@item.Spec</div>
+                                                    </div>
+                                                </div>
+                                            </TableRowCell>
+                                            <TableRowCell Style="max-width: 150px;">
+                                                @if (item.IsSelected)
+                                                {
+                                                    <NumericEdit TValue="int" @bind-Value="item.SelectedQuantity" Min="1" Max="item.Quantity" Style="max-width: 130px;" Size="Size.Small" />
+                                                }
+                                                else
+                                                {
+                                                    @item.Quantity
+                                                }
+                                            </TableRowCell>
+                                            <TableRowCell>
+                                                <span>$@item.ItemPrice.ToString("N2")</span>
+                                            </TableRowCell>
+                                            <TableRowCell>
+                                                <span>$@item.TotalAmount.ToString("N2")</span>
+                                            </TableRowCell>
+                                        </TableRow>
+                                    }
                                     <TableRow>
-                                        <TableRowCell>
-                                            @if (item.Quantity > 0)
-                                            {
-                                                <Check TValue="bool" @bind-Checked="item.IsSelected" />
-                                            }
-                                            else
-                                            {
-                                                <Check TValue="bool" Disabled @bind-Checked="item.IsSelected" />
-                                            }
+                                        <TableRowCell ColumnSpan="4" TextAlignment="TextAlignment.End" TextWeight="TextWeight.Bold" TextColor="TextColor.Dark">@L["TotalAmount"]</TableRowCell>
+                                        <TableRowCell TextWeight="TextWeight.Bold" TextColor="TextColor.Dark">
+                                            $@Order.OrderItems.Where(x => x.IsSelected == true).Sum(x => x.ItemPrice * x.SelectedQuantity).ToString("N2")
                                         </TableRowCell>
-                                        <TableRowCell>
-                                            @if (item.ItemType == ItemType.Item)
-                                            {
-                                                var firstImage = item.Item?.Images?.FirstOrDefault()?.ImageUrl;
-                                                @if (!string.IsNullOrEmpty(firstImage))
-                                                {
-                                                    <img src="@firstImage" class="img-fluid me-2" style="height: 50px; width: auto;" />
-                                                }
-                                                @item.Item?.ItemName
-                                            }
-
-                                            @if (item.ItemType == ItemType.SetItem)
-                                            {
-                                                var firstImage = item.SetItem?.Images?.FirstOrDefault()?.ImageUrl;
-                                                @if (!string.IsNullOrEmpty(firstImage))
-                                                {
-                                                    <img src="@firstImage" class="img-fluid me-2" style="height: 50px; width: auto;" />
-                                                }
-                                                @item.SetItem?.SetItemName
-                                            }
-
-                                            @if (item.ItemType == ItemType.Freebie)
-                                            {
-                                                var firstImage = item.Freebie?.Images?.FirstOrDefault()?.ImageUrl;
-                                                @if (!string.IsNullOrEmpty(firstImage))
-                                                {
-                                                    <img src="@firstImage" class="img-fluid me-2" style="height: 50px; width: auto;" />
-                                                }
-                                                @item.Freebie?.ItemName
-                                            }
-                                        </TableRowCell>
-                                        <TableRowCell Style="max-width: 150px;">
-                                            @if (item.IsSelected)
-                                            {
-                                                <NumericEdit TValue="int" @bind-Value="item.SelectedQuantity" Min="1" Max="item.Quantity" Style="max-width: 150px;" />
-                                            }
-                                            else
-                                            {
-                                                @item.Quantity
-                                            }
-                                        </TableRowCell>
-                                        <TableRowCell><span>$@item.ItemPrice.ToString("N2")</span></TableRowCell>
-                                        <TableRowCell>$@item.TotalAmount.ToString("N2")</TableRowCell>
                                     </TableRow>
                                 }
-                                <TableRow>
-                                    <TableRowCell ColumnSpan="4" TextAlignment="TextAlignment.End" TextWeight="TextWeight.Bold" TextColor="TextColor.Dark">@L["TotalAmount"]</TableRowCell>
-                                    <TableRowCell TextWeight="TextWeight.Bold" TextColor="TextColor.Dark">
-                                        $@Order.OrderItems.Where(x => x.IsSelected == true).Sum(x => x.ItemPrice * x.SelectedQuantity).ToString("N2")
-                                    </TableRowCell>
-                                </TableRow>
-                            }
-                        </TableBody>
-                    </Table>
-                </Div>
+                            </TableBody>
+                        </Table>
+                    </Div>
+                }
             }
 
+            @if (ChooseReplacement)
+            {
+                <Div>
+                    <h5 class="text-dark">@L["Replacements"]</h5>
+                    <Div Class="overflow-auto">
+                        <Table Bordered Striped>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHeaderCell>@L["Item"]</TableHeaderCell>
+                                    <TableHeaderCell>@L["ReplacementItem"]</TableHeaderCell>
+                                    <TableHeaderCell>@L["Quantity"]</TableHeaderCell>
+                                    <TableHeaderCell>@L["UnitPrice"]</TableHeaderCell>
+                                    <TableHeaderCell>@L["Subtotal"]</TableHeaderCell>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                @if (Order?.OrderItems != null)
+                                {
+                                    @foreach (var item in ReplacementItems)
+                                    {
+                                        <TableRow>
+                                            <TableRowCell>
+                                                <div class="d-flex align-items-start">
+                                                    @* Left: Image *@
+                                                    <div class="me-2">
+                                                        @if (!string.IsNullOrEmpty(item.Image))
+                                                        {
+                                                            <img src="@item.Image" style="height: auto; width: 60px;" />
+                                                        }
+                                                    </div>
+
+                                                    @* Right: Text stacked *@
+                                                    <div class="d-flex flex-column text-dark">
+                                                        <div class="text-dark fw-bold">@item.Name</div>
+                                                        <div class="fs-xs">@item.Spec</div>
+                                                        <div class="fs-xs">@L["SelectedQuantity"]: @item.SelectedQuantity</div>
+                                                    </div>
+                                                </div>
+                                            </TableRowCell>
+                                            <TableRowCell>
+                                                <AntDesign.Select TItem="ItemWithItemTypeDto"
+                                                                  TItemValue="ItemWithItemTypeDto"
+                                                                  EnableSearch
+                                                                  AllowClear
+                                                                  @bind-Value="item.Item"
+                                                                  OnSelectedItemChanged="((e) => OnItemChanged(e, item))"
+                                                                  Style="max-width: 230px;">
+                                                    <SelectOptions>
+                                                        @foreach (var option in ItemOptions)
+                                                        {
+                                                            <AntDesign.SelectOption TItem="ItemWithItemTypeDto"
+                                                                                    TItemValue="ItemWithItemTypeDto"
+                                                                                    Value="@option"
+                                                                                    Label="@option.Name" />
+                                                        }
+                                                    </SelectOptions>
+                                                </AntDesign.Select>
+
+                                                @if (item.Item?.ItemType == ItemType.Item)
+                                                {
+                                                    ItemDetails.TryGetValue(item.Item.Id, out var details);
+                                                    <div class="mt-2"></div>
+                                                    <AntDesign.Select TItem="ItemDetailWithItemTypeDto"
+                                                                      TItemValue="ItemDetailWithItemTypeDto"
+                                                                      EnableSearch
+                                                                      AllowClear
+                                                                      @bind-Value="item.Detail"
+                                                                      OnSelectedItemChanged="((e) => OnDetailChanged(e, item))"
+                                                                      Style="max-width: 230px;">
+                                                        <SelectOptions>
+                                                            @foreach (var option in details ?? [])
+                                                            {
+                                                                <AntDesign.SelectOption TItem="ItemDetailWithItemTypeDto"
+                                                                                        TItemValue="ItemDetailWithItemTypeDto"
+                                                                                        Value="@option"
+                                                                                        Label="@option.Sku" />
+                                                            }
+                                                        </SelectOptions>
+                                                    </AntDesign.Select>
+                                                }
+                                            </TableRowCell>
+                                            <TableRowCell Style="max-width: 150px;">
+                                                <small>@L["Available"]: @((item.Pricing?.AvailableQuantity ?? 0).ToString("N0"))</small>
+                                                <NumericEdit TValue="int" @bind-Value="item.ReplacementQuantity" Min="1" Max="@((int)(item.Pricing?.AvailableQuantity ?? 0))" Style="max-width: 130px;" Size="Size.Small" />
+                                            </TableRowCell> 
+                                            <TableRowCell>
+                                                <span class="text-decoration-line-through fs-xs">$@item.ItemPrice.ToString("N2")</span>
+                                                <NumericEdit TValue="decimal" @bind-Value="item.ReplacementPrice" Min="0" Style="max-width: 130px;" Size="Size.Small" />
+                                            </TableRowCell>
+                                            <TableRowCell>
+                                                <span class="text-decoration-line-through fs-xs">$@((item.ItemPrice * item.SelectedQuantity).ToString("N2"))</span>
+                                                <span class="d-block">$@((item.ReplacementPrice * item.ReplacementQuantity).ToString("N2"))</span>
+                                            </TableRowCell>
+                                        </TableRow>
+                                    }
+                                    <TableRow>
+                                        <TableRowCell ColumnSpan="4" TextAlignment="TextAlignment.End" TextWeight="TextWeight.Bold" TextColor="TextColor.Dark">@L["TotalAmount"]</TableRowCell>
+                                        <TableRowCell TextWeight="TextWeight.Bold" TextColor="TextColor.Dark">
+                                            $@(ReplacementItems.Sum(ri => ri.ReplacementPrice * ri.ReplacementQuantity).ToString("N2"))
+                                        </TableRowCell>
+                                    </TableRow>
+                                }
+                            </TableBody>
+                        </Table>
+                    </Div>
+                </Div>
+            }
         </ModalBody>
         <ModalFooter>
             <Button Color="Color.Secondary" Clicked="@Hide">@L["Cancel"]</Button>
-            <Button Color="Color.Danger" Clicked="@OnSubmit">@L[IsReturn ? "ReturnOrder" : "ExchangeOrderButton"]</Button>
+            @if (ChooseReplacement)
+            {
+                <button class="btn btn-outline-primary" @onclick="@(() => ChooseReplacement = false)">
+                    <i class="fas fa-arrow-left"></i>
+                    @L["Back"]
+                </button>
+            }
+            @if (IsWholeOrder || IsReturn || ChooseReplacement)
+            {
+                <Button Class="btn-outline-danger" Clicked="@OnSubmit">@L[IsReturn ? "ReturnOrder" : "ExchangeOrderButton"]</Button>
+            }
+            else
+            {
+                <Button Class="btn-outline-primary" Disabled="@ChooseReplacementDisabled()" Clicked="@ReplaceItems">@L["ChooseReplacement"]</Button>
+            }
         </ModalFooter>
     </ModalContent>
 </Modal>

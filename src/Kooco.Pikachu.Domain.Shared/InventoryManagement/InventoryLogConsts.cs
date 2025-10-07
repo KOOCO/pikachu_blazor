@@ -24,6 +24,13 @@ public static class InventoryLogConsts
         return string.Join(" / ", values.Where(v => !string.IsNullOrEmpty(v)));
     }
 
+    public static string GetAttributes(List<string> attributes)
+    {
+        return
+            string.Join(" / ", (attributes ?? []).Where(attr => !string.IsNullOrEmpty(attr)))
+            ?? "";
+    }
+
     public static string GetAttributes(string? attribute1, string? attribute2, string? attribute3)
     {
         return

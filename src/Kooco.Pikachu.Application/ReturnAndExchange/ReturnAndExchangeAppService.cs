@@ -2,12 +2,12 @@
 using Kooco.Pikachu.InboxManagement.Managers;
 using Kooco.Pikachu.InventoryManagement;
 using Kooco.Pikachu.Items;
+using Kooco.Pikachu.Items.Dtos;
 using Kooco.Pikachu.OrderItems;
 using Kooco.Pikachu.Orders;
 using Kooco.Pikachu.Orders.Entities;
 using Kooco.Pikachu.Orders.Repositories;
 using Kooco.Pikachu.Orders.Services;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -151,12 +151,21 @@ public class ReturnAndExchangeAppService : PikachuAppService, IReturnAndExchange
             ));
     }
 
-    public async Task<OrderDto> ReturnAndExchangeItemsAsync(Guid orderId, List<OrderItemDto> orderItemsInput, bool isReturn)
+    public async Task<OrderDto> ReturnAndExchangeItemsAsync(
+        Guid orderId,
+        List<OrderItemDto> orderItemsInput,
+        bool isReturn,
+        List<ReplacementItemDto> replacementItems
+        )
     {
         orderItemsInput = orderItemsInput?.Where(x => x.IsSelected && x.SelectedQuantity > 0).ToList() ?? [];
         if (orderItemsInput.IsNullOrEmpty())
         {
             throw new UserFriendlyException("No items selected for return or exchange.");
+        }
+        if (!isReturn && replacementItems.IsNullOrEmpty())
+        {
+            throw new UserFriendlyException("No replacement items selected for exchange.");
         }
 
         var order = await OrderRepository.GetWithDetailsAsync(orderId);
@@ -167,8 +176,8 @@ public class ReturnAndExchangeAppService : PikachuAppService, IReturnAndExchange
         {
             var clonedOrder = await OrderBuilder.CloneAsync(order);
             clonedOrder.ReturnStatus = OrderReturnStatus.Pending;
-            clonedOrder.OrderStatus = isReturn ? OrderStatus.Returned : OrderStatus.Exchange;
-            clonedOrder.ShippingStatus = isReturn ? ShippingStatus.Return : ShippingStatus.Exchange;
+            clonedOrder.OrderStatus = OrderStatus.Returned;//isReturn ? OrderStatus.Returned : OrderStatus.Exchange;
+            clonedOrder.ShippingStatus = ShippingStatus.Return;// isReturn ? ShippingStatus.Return : ShippingStatus.Exchange;
             clonedOrder.ShippingStatusBeforeReturn = order.ShippingStatus;
 
             List<OrderItem> deletedItem = [];
@@ -200,10 +209,10 @@ public class ReturnAndExchangeAppService : PikachuAppService, IReturnAndExchange
                     order.TotalQuantity -= orderItem.SelectedQuantity;
                     order.TotalAmount -= orderItem.SelectedQuantity * item.ItemPrice;
 
-                    if (isReturn)
-                    {
-                        await InventoryLogManager.OrderItemUnsoldAsync(order, item); 
-                    }
+                    //if (isReturn)
+                    //{
+                        await InventoryLogManager.OrderItemUnsoldAsync(order, item, orderItem.SelectedQuantity);
+                    //}
                 }
             }
 
@@ -211,8 +220,8 @@ public class ReturnAndExchangeAppService : PikachuAppService, IReturnAndExchange
             clonedOrder.TotalQuantity = clonedOrder.OrderItems.Sum(x => x.Quantity);
             await OrderRepository.InsertAsync(clonedOrder);
 
-            if (isReturn)
-            {
+            //if (isReturn)
+            //{
                 foreach (var item in clonedOrder.OrderItems)
                 {
                     if (item.ItemId.HasValue)
@@ -246,7 +255,102 @@ public class ReturnAndExchangeAppService : PikachuAppService, IReturnAndExchange
                             }
                         }
                     }
-                } 
+                }
+            //}
+
+            if (!isReturn)
+            {
+                var exchangeOrder = await OrderBuilder.CloneAsync(order);
+                exchangeOrder.ReturnStatus = OrderReturnStatus.Pending;
+                exchangeOrder.OrderStatus = OrderStatus.Exchange;//isReturn ? OrderStatus.Returned : OrderStatus.Exchange;
+                exchangeOrder.ShippingStatus = ShippingStatus.Exchange;// isReturn ? ShippingStatus.Return : ShippingStatus.Exchange;
+                exchangeOrder.ShippingStatusBeforeReturn = order.ShippingStatus;
+
+                //List<OrderItem> deletedItem = [];
+                foreach (var item in replacementItems)
+                {
+                    if (item.Item == null || (item.Item.ItemType == ItemType.Item && item.Detail == null))
+                    {
+                        throw new UserFriendlyException("Please select a replacement item.");
+                    }
+
+                    Guid? itemId = item.Item.ItemType == ItemType.Item ? item.Item.Id : null;
+                    Guid? setItemId = item.Item.ItemType == ItemType.SetItem ? item.Item.Id : null;
+                    Guid? freebieId = item.Item.ItemType == ItemType.Freebie ? item.Item.Id : null;
+                    //var price = item.Item.ItemType == ItemType.Item ? item.Detail.Pricing.Price : item.Pricing.Price;
+                    //var orderItem = orderItemsInput.FirstOrDefault(x => x.Id == item.Id);
+                    //if (orderItem != null)
+                    //{
+                        var orderItem = OrderManager.AddOrderItem(
+                            exchangeOrder,
+                            itemId,
+                            item.Detail?.ItemDetailId,
+                            setItemId,
+                            freebieId,
+                            item.Item.ItemType,
+                            exchangeOrder.Id,
+                            InventoryLogConsts.GetAttributes(item.Detail?.Attributes),
+                            item.ReplacementPrice,
+                            item.ReplacementQuantity * item.ReplacementPrice,
+                            item.ReplacementQuantity,
+                            item.Detail?.Sku,
+                            item.Item.Temperature ?? ItemStorageTemperature.Normal,
+                            0,//item.DeliveryTemperatureCost,
+                            false//item.IsAddOnProduct
+                        );
+                        //item.Quantity -= orderItem.SelectedQuantity;
+                        //item.TotalAmount = item.Quantity * item.ItemPrice;
+
+                        //order.TotalQuantity -= orderItem.SelectedQuantity;
+                        //order.TotalAmount -= orderItem.SelectedQuantity * item.ItemPrice;
+
+                        //if (isReturn)
+                        //{
+                        //await InventoryLogManager.ItemSoldAsync(order, orderItem, );
+                        //}
+                    //}
+                }
+
+                exchangeOrder.TotalAmount = exchangeOrder.OrderItems.Sum(x => x.TotalAmount);
+                exchangeOrder.TotalQuantity = exchangeOrder.OrderItems.Sum(x => x.Quantity);
+                await OrderRepository.InsertAsync(exchangeOrder);
+
+                //if (isReturn)
+                //{
+                foreach (var item in exchangeOrder.OrderItems)
+                {
+                    if (item.ItemId.HasValue)
+                    {
+                        ItemDetails? details = await ItemDetailsRepository.FirstOrDefaultAsync(x => x.ItemId == item.ItemId && x.Id == item.ItemDetailId);
+                        if (!item.ItemDetailId.HasValue || details == null)
+                        {
+                            throw new UserFriendlyException("Item detail not found", $"There is no item detail with provided id: {item.ItemDetailId}");
+                        }
+
+                        await InventoryLogManager.ItemSoldAsync(clonedOrder, item, details, item.Quantity, item.IsAddOnProduct);
+                    }
+                    if (item.SetItemId.HasValue)
+                    {
+                        var setItem = await SetItemRepository.GetWithDetailsAsync(item.SetItemId.Value);
+                        if (setItem != null)
+                        {
+                            setItem.SaleableQuantity -= item.Quantity;
+
+                            foreach (var setItemDetail in setItem.SetItemDetails)
+                            {
+                                var totalOrderQuantity = setItemDetail.Quantity * item.Quantity;
+                                var detail = await ItemDetailsRepository.FirstOrDefaultAsync(x =>
+                                            x.ItemId == setItemDetail.ItemId
+                                            && x.Attribute1Value == setItemDetail.Attribute1Value
+                                            && x.Attribute2Value == setItemDetail.Attribute2Value
+                                            && x.Attribute3Value == setItemDetail.Attribute3Value
+                                            )
+                                    ?? throw new UserFriendlyException("Item detail not found", $"There is no item detail with provided id: {item.ItemDetailId} for set item id: {setItem.Id}");
+                                await InventoryLogManager.ItemSoldAsync(clonedOrder, item, detail, totalOrderQuantity);
+                            }
+                        }
+                    }
+                }
             }
 
             // **Get Current User (Editor)**
@@ -296,5 +400,23 @@ public class ReturnAndExchangeAppService : PikachuAppService, IReturnAndExchange
             await OrderRepository.UpdateAsync(order);
             return ObjectMapper.Map<Order, OrderDto>(order);
         }
+    }
+
+    public async Task<List<ItemWithItemTypeDto>> GetGroupBuyItemsAsync(Guid groupBuyId)
+    {
+        var items = await OrderRepository.GetGroupBuyItemsAsync(groupBuyId);
+        return ObjectMapper.Map<List<ItemWithItemType>, List<ItemWithItemTypeDto>>(items);
+    }
+
+    public async Task<List<ItemDetailWithItemTypeDto>> GetItemDetailsAsync(Guid groupBuyId, ItemWithItemTypeDto input)
+    {
+        var details = await OrderRepository.GetItemDetailsAsync(groupBuyId, ObjectMapper.Map<ItemWithItemTypeDto, ItemWithItemType>(input));
+        return ObjectMapper.Map<List<ItemDetailWithItemType>, List<ItemDetailWithItemTypeDto>>(details);
+    }
+
+    public async Task<ItemPricingDto> GetSetItemPricingAsync(Guid groupBuyId, Guid setItemId)
+    {
+        var pricing = await OrderRepository.GetSetItemPricingAsync(groupBuyId, setItemId);
+        return ObjectMapper.Map<SetItemPricing, ItemPricingDto>(pricing);
     }
 }

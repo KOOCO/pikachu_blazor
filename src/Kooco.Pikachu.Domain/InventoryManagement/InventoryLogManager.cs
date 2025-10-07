@@ -316,7 +316,7 @@ public class InventoryLogManager : DomainService
         }
     }
 
-    public async Task OrderItemUnsoldAsync(Order order, OrderItem item)
+    public async Task OrderItemUnsoldAsync(Order order, OrderItem item, int unsold)
     {
         if (item.ItemDetailId.HasValue)
         {
@@ -325,12 +325,12 @@ public class InventoryLogManager : DomainService
 
             if (detail == null || log == null || detail.Id != log.ItemDetailId) return;
 
-            var unsoldAmount = item.Quantity;
+            //var unsoldAmount = item.Quantity;
 
-            int stockOnHand = unsoldAmount;
-            int saleQuantity = unsoldAmount;
-            int preOrderQuantity = log.PreOrderQuantity != 0 ? Math.Min(Math.Abs(log.PreOrderQuantity), unsoldAmount) : 0;
-            int saleablePreOrderQuantity = log.SaleablePreOrderQuantity != 0 ? Math.Min(Math.Abs(log.SaleablePreOrderQuantity), unsoldAmount) : 0;
+            int stockOnHand = unsold;
+            int saleQuantity = unsold;
+            int preOrderQuantity = log.PreOrderQuantity != 0 ? Math.Min(Math.Abs(log.PreOrderQuantity), unsold) : 0;
+            int saleablePreOrderQuantity = log.SaleablePreOrderQuantity != 0 ? Math.Min(Math.Abs(log.SaleablePreOrderQuantity), unsold) : 0;
 
             var inventoryLog = new InventoryLog(
                 GuidGenerator.Create(),
@@ -359,7 +359,7 @@ public class InventoryLogManager : DomainService
             if (setItem != null)
             {
                 await _setItemRepository.EnsureCollectionLoadedAsync(setItem, si => si.SetItemDetails);
-                setItem.SaleableQuantity += item.Quantity;
+                setItem.SaleableQuantity += unsold;
             }
 
             var logs = await _inventoryLogRepository.GetListAsync(l => l.OrderItemId == item.Id);
@@ -380,7 +380,7 @@ public class InventoryLogManager : DomainService
 
                     if (setItemDetail == null) continue;
 
-                    var detailAmount = item.Quantity * setItemDetail.Quantity;
+                    var detailAmount = unsold * setItemDetail.Quantity;
                     int stockOnHand = detailAmount;
                     int saleQuantity = detailAmount;
                     int preOrderQuantity = log.PreOrderQuantity != 0 ? Math.Min(Math.Abs(log.PreOrderQuantity), detailAmount) : 0;

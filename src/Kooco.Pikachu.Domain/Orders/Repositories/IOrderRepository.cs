@@ -1,5 +1,6 @@
 ﻿using Kooco.Pikachu.Campaigns;
 using Kooco.Pikachu.EnumValues;
+using Kooco.Pikachu.Items;
 using Kooco.Pikachu.Members;
 using Kooco.Pikachu.Orders.Entities;
 using System;
@@ -89,4 +90,7 @@ public interface IOrderRepository : IRepository<Order, Guid>
         );
 
     Task<List<(int AppliedAmount, Campaign Campaign)>> CheckForAppliedCreditsAsync(Guid id);
+    Task<List<ItemWithItemType>> GetGroupBuyItemsAsync(Guid groupBuyId);
+    Task<List<ItemDetailWithItemType>> GetItemDetailsAsync(Guid groupBuyId, ItemWithItemType input);
+    Task<SetItemPricing> GetSetItemPricingAsync(Guid groupBuyId, Guid setItemId);
 }

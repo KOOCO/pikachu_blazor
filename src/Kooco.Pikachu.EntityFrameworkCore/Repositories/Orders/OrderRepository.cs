@@ -7,6 +7,7 @@ using Kooco.Pikachu.Members;
 using Kooco.Pikachu.Orders;
 using Kooco.Pikachu.Orders.Entities;
 using Kooco.Pikachu.Orders.Repositories;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using System;
@@ -14,6 +15,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
+using Volo.Abp;
 using Volo.Abp.Data;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Domain.Repositories.EntityFrameworkCore;
@@ -127,14 +129,14 @@ public class OrderRepository(IDbContextProvider<PikachuDbContext> dbContextProvi
         }).ToListAsync();
     }
     public async Task<List<Order>> GetAllListAsync(
-        int skipCount, 
-        int maxResultCount, 
-        string? sorting, 
-        string? filter, 
-        Guid? groupBuyId, 
-        List<Guid> orderId, 
-        DateTime? startDate = null, 
-        DateTime? endDate = null, 
+        int skipCount,
+        int maxResultCount,
+        string? sorting,
+        string? filter,
+        Guid? groupBuyId,
+        List<Guid> orderId,
+        DateTime? startDate = null,
+        DateTime? endDate = null,
         OrderStatus? orderStatus = null,
         DateTime? completionTimeFrom = null,
         DateTime? completionTimeTo = null,
@@ -142,12 +144,12 @@ public class OrderRepository(IDbContextProvider<PikachuDbContext> dbContextProvi
         )
     {
         return await ApplyFiltersNew(
-            await GetQueryableAsync(), 
-            filter, 
-            groupBuyId, 
-            orderId, 
-            startDate, 
-            endDate, 
+            await GetQueryableAsync(),
+            filter,
+            groupBuyId,
+            orderId,
+            startDate,
+            endDate,
             orderStatus,
             shippingStatus,
             completionTimeFrom,
@@ -167,14 +169,14 @@ public class OrderRepository(IDbContextProvider<PikachuDbContext> dbContextProvi
     }
 
     public async Task<GroupBuyReportModelWithCount> GetReportListAsync(
-        int skipCount, 
-        int maxResultCount, 
-        string? sorting, 
-        string? filter, 
-        Guid? groupBuyId, 
-        List<Guid> orderId, 
-        DateTime? startDate = null, 
-        DateTime? endDate = null, 
+        int skipCount,
+        int maxResultCount,
+        string? sorting,
+        string? filter,
+        Guid? groupBuyId,
+        List<Guid> orderId,
+        DateTime? startDate = null,
+        DateTime? endDate = null,
         OrderStatus? orderStatus = null,
         ShippingStatus? shippingStatus = null,
         DateTime? completionTimeFrom = null,
@@ -373,7 +375,7 @@ public class OrderRepository(IDbContextProvider<PikachuDbContext> dbContextProvi
             .WhereIf(endDate.HasValue, x => x.CreationTime.Date <= endDate.Value.Date)
             .WhereIf(orderStatus.HasValue, x => x.OrderStatus == orderStatus)
             .WhereIf(shippingStatus.HasValue, w => w.ShippingStatus == shippingStatus);
-            //.Where(x => x.IsRefunded == false);
+        //.Where(x => x.IsRefunded == false);
         //.Where(x => x.OrderType != OrderType.MargeToNew);
 
         return queryable;
@@ -491,7 +493,7 @@ public class OrderRepository(IDbContextProvider<PikachuDbContext> dbContextProvi
             var json = order.GetProperty("Logistics_MerchantTradeNos")?.ToString();
             if (string.IsNullOrWhiteSpace(json))
             {
-                continue; 
+                continue;
             }
 
             Dictionary<string, string>? dictionary = null;
@@ -590,7 +592,7 @@ public class OrderRepository(IDbContextProvider<PikachuDbContext> dbContextProvi
     }
     public async Task<long> ReturnOrderNotificationCountAsync()
     {
-        return await ApplyReturnFilters((await GetQueryableAsync()).Include(o => o.GroupBuy), null, null, null).Where(x => (x.OrderStatus == OrderStatus.Returned || x.OrderStatus == OrderStatus.Exchange) && (x.ReturnStatus == OrderReturnStatus.Pending||x.ReturnStatus==OrderReturnStatus.Processing)).CountAsync();
+        return await ApplyReturnFilters((await GetQueryableAsync()).Include(o => o.GroupBuy), null, null, null).Where(x => (x.OrderStatus == OrderStatus.Returned || x.OrderStatus == OrderStatus.Exchange) && (x.ReturnStatus == OrderReturnStatus.Pending || x.ReturnStatus == OrderReturnStatus.Processing)).CountAsync();
     }
 
     public async Task<List<Order>> GetReturnListAsync(int skipCount, int maxResultCount, string? sorting, string? filter, Guid? groupBuyId)
@@ -695,5 +697,109 @@ public class OrderRepository(IDbContextProvider<PikachuDbContext> dbContextProvi
             .ToList();
 
         return appliedCredits.Select(x => (x.AppliedCampaign.Amount, x.Campaign)).ToList();
+    }
+
+    public async Task<List<ItemWithItemType>> GetGroupBuyItemsAsync(Guid groupBuyId)
+    {
+        var ctx = await GetDbContextAsync();
+
+        var query = await ctx.GroupBuys
+            .AsNoTracking()
+            .Where(g => g.Id == groupBuyId)
+            .Include(g => g.ItemGroups)
+            .ThenInclude(g => g.ItemGroupDetails)
+            .SelectMany(g => g.ItemGroups.SelectMany(ig => ig.ItemGroupDetails))
+            .Select(igd => new { igd.ItemId, igd.ItemDetailId, igd.SetItemId, igd.ItemType })
+            .ToListAsync();
+
+        var itemIds = query.Where(q => q.ItemId.HasValue).Select(q => q.ItemId!.Value).Distinct().ToList();
+        var setItemIds = query.Where(q => q.SetItemId.HasValue).Select(q => q.SetItemId!.Value).Distinct().ToList();
+
+        var items = await ctx.Items
+            .AsNoTracking()
+            .Where(i => itemIds.Contains(i.Id))
+            .Select(i => new ItemWithItemType
+            {
+                Id = i.Id,
+                Name = i.ItemName,
+                ItemType = ItemType.Item,
+                Temperature = i.ItemStorageTemperature
+            }).ToListAsync();
+
+        var setItems = await ctx.SetItems
+            .AsNoTracking()
+            .Where(si => setItemIds.Contains(si.Id))
+            .Select(si => new ItemWithItemType
+            {
+                Id = si.Id,
+                Name = si.SetItemName,
+                ItemType = ItemType.SetItem,
+                Temperature = si.ItemStorageTemperature
+            }).ToListAsync();
+
+        return [.. items.Concat(setItems).OrderBy(x => x.Name)];
+    }
+
+    public async Task<List<ItemDetailWithItemType>> GetItemDetailsAsync(Guid groupBuyId, ItemWithItemType input)
+    {
+        if (input.ItemType != ItemType.Item)
+        {
+            throw new UserFriendlyException("Please provide a valid item");
+        }
+
+        var ctx = await GetDbContextAsync();
+
+        var detailIds = await ctx.GroupBuys
+            .AsNoTracking()
+            .Where(gb => gb.Id == groupBuyId)
+            .Include(gb => gb.ItemGroups)
+            .ThenInclude(ig => ig.ItemGroupDetails)
+            .SelectMany(gb => gb.ItemGroups.SelectMany(ig => ig.ItemGroupDetails))
+            .Where(igd => igd.ItemId == input.Id && igd.ItemDetailId != null)
+            .Select(igd => igd.ItemDetailId!.Value)
+            .ToListAsync();
+
+        var details = await ctx.ItemDetails
+            .AsNoTracking()
+            .Where(id => detailIds.Contains(id.Id))
+            .GroupJoin(ctx.GroupBuyItemsPriceses.Where(gbip => gbip.GroupBuyId == groupBuyId),
+                id => id.Id,
+                gbip => gbip.ItemDetailId,
+                (id, gbip) => new { Detail = id, Price = gbip.FirstOrDefault() }
+            )
+            .Where(g => g.Detail != null)
+            .Select(g => new ItemDetailWithItemType
+            {
+                ItemDetailId = g.Detail.Id,
+                Sku = g.Detail.SKU,
+                Attributes = new List<string> { g.Detail.Attribute1Value, g.Detail.Attribute2Value, g.Detail.Attribute3Value },
+                Pricing = new()
+                {
+                    Price = g.Price != null ? g.Price.GroupBuyPrice : 0,
+                    Available = g.Detail.SaleableQuantity
+                }
+            }).ToListAsync();
+
+        return details;
+    }
+
+    public async Task<SetItemPricing> GetSetItemPricingAsync(Guid groupBuyId, Guid setItemId)
+    {
+        var ctx = await GetDbContextAsync();
+
+        var pricing = await ctx.SetItems
+                .AsNoTracking()
+                .Where(si => si.Id == setItemId)
+                .GroupJoin(ctx.GroupBuyItemsPriceses.Where(gbip => gbip.GroupBuyId == groupBuyId),
+                    si => si.Id,
+                    gbip => gbip.SetItemId,
+                    (si, gbip) => new { SetItem = si, Price = gbip.FirstOrDefault() }
+                ).Select(g => new SetItemPricing
+                {
+                    Price = g.Price != null ? g.Price.GroupBuyPrice : 0,
+                    Available = g.SetItem != null ? g.SetItem.SaleableQuantity : 0
+                }).FirstOrDefaultAsync();
+
+        return pricing ?? new();
     }
 }
