@@ -85,6 +85,11 @@ public partial class ReturnAndExchangeModal
                 await Message.Error(L["PleaseSelectReplacementItems"]);
                 return;
             }
+            if (ReplacementItems.Any(ri => ri.ItemPrice < 0))
+            {
+                await Message.Error(L["PleaseSelectReplacementItems"]);
+                return;
+            }
         }
 
         var confirmed = await Message.Confirm(L["AreYouSureYouWantToExchangeThisOrder"]);
@@ -125,7 +130,7 @@ public partial class ReturnAndExchangeModal
         }
         else
         {
-            await ReturnAndExchangeAppService.ReturnAndExchangeItemsAsync(Order.Id, selectedItems, IsReturn, ReplacementItems);
+            await ReturnAndExchangeAppService.ReturnAndExchangeItemsAsync(Order.Id, selectedItems, IsReturn, []);
         }
 
         await Hide();

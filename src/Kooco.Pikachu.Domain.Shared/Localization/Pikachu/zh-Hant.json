@@ -2234,6 +2234,11 @@
     "TransactionStatus.Completed": "交易成功",
     "TransactionStatus.Pending": "待審核",
     "TransactionStatus.Failed": "交易成功",
-    "PayoutDetails:Filters": "篩選"
+    "PayoutDetails:Filters": "篩選",
+    "ReplacementItem": "更換商品",
+    "ChooseReplacement": "選擇更換項目",
+    "SelectedQuantity": "已選擇數量",
+    "PleaseSelectReplacementItems": "請選擇更換商品，並確認更換數量大於 0 且更換金額不為負數",
+    "Available": "可用"
   }
 }

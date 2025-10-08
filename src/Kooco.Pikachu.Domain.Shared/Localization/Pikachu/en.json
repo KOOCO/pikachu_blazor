@@ -2224,6 +2224,6 @@
     "ReplacementItem": "Replacement Item",
     "ChooseReplacement": "Choose Replacement",
     "SelectedQuantity": "Selected Quantity",
-    "PleaseSelectReplacementItems": "Please select replacement items and verify replacement quantity is greater than 0"
+    "PleaseSelectReplacementItems": "Please select replacement items and verify replacement quantity is greater than 0 and replacement amount is not in negative"
   }
 }
