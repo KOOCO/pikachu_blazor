@@ -12,6 +12,7 @@ namespace Kooco.Pikachu.UserCumulativeCredits;
 public class UserCumulativeCreditAppService(UserCumulativeCreditManager userCumulativeCreditManager,
     IUserCumulativeCreditRepository userCumulativeCreditRepository) : PikachuAppService, IUserCumulativeCreditAppService
 {
+   
     public async Task<UserCumulativeCreditDto> CreateAsync(CreateUserCumulativeCreditDto input)
     {
         Check.NotNull(input, nameof(input));

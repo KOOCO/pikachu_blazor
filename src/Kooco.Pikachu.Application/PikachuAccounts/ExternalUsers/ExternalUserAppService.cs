@@ -26,8 +26,9 @@ public class ExternalUserAppService : PikachuAppService, IExternalUserAppService
 
     public async Task<GoogleUserDto?> GetGoogleUserDetailsAsync(string accessToken)
     {
-        var client = new RestClient("https://www.googleapis.com/oauth2/v3");
-        var request = new RestRequest("userinfo", Method.Get);
+        var client = new RestClient("https://www.googleapis.com/oauth2/v3/userinfo");
+        var request = new RestRequest();
+        request.Method = Method.Get;
         request.AddParameter("access_token", accessToken);
 
         var response = await client.ExecuteAsync(request);

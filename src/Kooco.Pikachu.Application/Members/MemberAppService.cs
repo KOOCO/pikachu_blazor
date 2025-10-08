@@ -363,7 +363,9 @@ public class MemberAppService(IObjectMapper objectMapper, IMemberRepository memb
                 var userCumulativeCredit = await userCumulativeCreditRepository.FirstOrDefaultAsync(x => x.UserId == identityUser.Id);
                 if (userCumulativeCredit is null)
                 {
-                    await userCumulativeCreditAppService.CreateAsync(new CreateUserCumulativeCreditDto { TotalAmount = shoppingCredit.BirthdayEarnedPoints, TotalDeductions = 0, TotalRefunds = 0, UserId = identityUser.Id });
+                   await userCumulativeCreditManager.CreateAsync(identityUser.Id,
+           shoppingCredit.BirthdayEarnedPoints, 0, 0);
+                    
                 }
                 else
                 {
