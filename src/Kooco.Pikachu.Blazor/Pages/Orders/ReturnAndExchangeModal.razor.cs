@@ -135,7 +135,7 @@ public partial class ReturnAndExchangeModal
     async Task OnItemChanged(ItemWithItemTypeDto input, ReplacementItemDto item)
     {
         item.Detail = null;
-        item.Pricing = null;
+        item.Pricing = new();
         item.ReplacementPrice = 0;
 
         if (input == null)
@@ -152,19 +152,19 @@ public partial class ReturnAndExchangeModal
         {
             var pricing = await ReturnAndExchangeAppService.GetSetItemPricingAsync(Order.GroupBuyId, input.Id);
             item.Pricing = pricing;
-            item.ReplacementPrice = (decimal)(pricing?.Price ?? 0);
+            item.ReplacementPrice = (decimal)pricing.Price;
         }
     }
 
     static void OnDetailChanged(ItemDetailWithItemTypeDto input, ReplacementItemDto item)
     {
-        item.Pricing = null; 
+        item.Pricing = new(); 
         item.ReplacementPrice = 0;
         
         if (input == null) return;
 
-        item.Pricing = item.Detail?.Pricing;
-        item.ReplacementPrice = (decimal)(item.Pricing?.Price ?? 0);
+        item.Pricing = item.Detail?.Pricing ?? new();
+        item.ReplacementPrice = (decimal)item.Pricing.Price;
     }
 
     static string ItemImage(OrderItemDto item)

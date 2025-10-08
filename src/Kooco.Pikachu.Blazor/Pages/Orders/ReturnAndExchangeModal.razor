@@ -186,7 +186,7 @@
                                                 }
                                             </TableRowCell>
                                             <TableRowCell Style="max-width: 150px;">
-                                                <small>@L["Available"]: @((item.Pricing?.AvailableQuantity ?? 0).ToString("N0"))</small>
+                                                <span class="fs-xs">@L["Available"]: @((item.Pricing?.AvailableQuantity ?? 0).ToString("N0"))</span>
                                                 <NumericEdit TValue="int" @bind-Value="item.ReplacementQuantity" Min="1" Max="@((int)(item.Pricing?.AvailableQuantity ?? 0))" Style="max-width: 130px;" Size="Size.Small" />
                                             </TableRowCell> 
                                             <TableRowCell>

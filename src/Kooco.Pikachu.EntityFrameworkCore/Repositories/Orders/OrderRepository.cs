@@ -749,23 +749,13 @@ public class OrderRepository(IDbContextProvider<PikachuDbContext> dbContextProvi
 
         var ctx = await GetDbContextAsync();
 
-        var detailIds = await ctx.GroupBuys
-            .AsNoTracking()
-            .Where(gb => gb.Id == groupBuyId)
-            .Include(gb => gb.ItemGroups)
-            .ThenInclude(ig => ig.ItemGroupDetails)
-            .SelectMany(gb => gb.ItemGroups.SelectMany(ig => ig.ItemGroupDetails))
-            .Where(igd => igd.ItemId == input.Id && igd.ItemDetailId != null)
-            .Select(igd => igd.ItemDetailId!.Value)
-            .ToListAsync();
-
         var details = await ctx.ItemDetails
             .AsNoTracking()
-            .Where(id => detailIds.Contains(id.Id))
-            .GroupJoin(ctx.GroupBuyItemsPriceses.Where(gbip => gbip.GroupBuyId == groupBuyId),
+            .Where(id => id.ItemId == input.Id)
+            .Join(ctx.GroupBuyItemsPriceses.Where(gbip => gbip.GroupBuyId == groupBuyId),
                 id => id.Id,
                 gbip => gbip.ItemDetailId,
-                (id, gbip) => new { Detail = id, Price = gbip.FirstOrDefault() }
+                (id, gbip) => new { Detail = id, Price = gbip }
             )
             .Where(g => g.Detail != null)
             .Select(g => new ItemDetailWithItemType
@@ -775,7 +765,7 @@ public class OrderRepository(IDbContextProvider<PikachuDbContext> dbContextProvi
                 Attributes = new List<string> { g.Detail.Attribute1Value, g.Detail.Attribute2Value, g.Detail.Attribute3Value },
                 Pricing = new()
                 {
-                    Price = g.Price != null ? g.Price.GroupBuyPrice : 0,
+                    Price = g.Price.GroupBuyPrice,
                     Available = g.Detail.SaleableQuantity
                 }
             }).ToListAsync();
@@ -790,14 +780,14 @@ public class OrderRepository(IDbContextProvider<PikachuDbContext> dbContextProvi
         var pricing = await ctx.SetItems
                 .AsNoTracking()
                 .Where(si => si.Id == setItemId)
-                .GroupJoin(ctx.GroupBuyItemsPriceses.Where(gbip => gbip.GroupBuyId == groupBuyId),
+                .Join(ctx.GroupBuyItemsPriceses.Where(gbip => gbip.GroupBuyId == groupBuyId),
                     si => si.Id,
                     gbip => gbip.SetItemId,
-                    (si, gbip) => new { SetItem = si, Price = gbip.FirstOrDefault() }
+                    (si, gbip) => new { SetItem = si, Price = gbip }
                 ).Select(g => new SetItemPricing
                 {
-                    Price = g.Price != null ? g.Price.GroupBuyPrice : 0,
-                    Available = g.SetItem != null ? g.SetItem.SaleableQuantity : 0
+                    Price = g.Price.GroupBuyPrice,
+                    Available = g.SetItem.SaleableQuantity
                 }).FirstOrDefaultAsync();
 
         return pricing ?? new();
