@@ -97,6 +97,7 @@ public class PassiveUserBirthdayCheckerWorker : AsyncPeriodicBackgroundWorkerBas
         var userShoppingCreditAppService = serviceProvider.GetRequiredService<IUserShoppingCreditAppService>();
         var shoppingCreditEarnSettingAppService = serviceProvider.GetRequiredService<IShoppingCreditEarnSettingAppService>();
         var userCumulativeCreditAppService = serviceProvider.GetRequiredService<IUserCumulativeCreditAppService>();
+        var userCumulativeManager = serviceProvider.GetRequiredService<UserCumulativeCreditManager>();
         var userCumulativeCreditRepository = serviceProvider.GetRequiredService<IUserCumulativeCreditRepository>();
         var userShoppingCreditRepository = serviceProvider.GetRequiredService<IUserShoppingCreditRepository>();
 
@@ -170,13 +171,13 @@ public class PassiveUserBirthdayCheckerWorker : AsyncPeriodicBackgroundWorkerBas
                 var cum = await userCumulativeCreditRepository.FirstOrDefaultAsync(x => x.UserId == member.Id);
                 if (cum is null)
                 {
-                    await userCumulativeCreditAppService.CreateAsync(new CreateUserCumulativeCreditDto
-                    {
-                        UserId = member.Id,
-                        TotalAmount = settings.BirthdayEarnedPoints,
-                        TotalDeductions = 0,
-                        TotalRefunds = 0
-                    });
+                    await userCumulativeManager.CreateAsync(
+                    
+                        member.Id,
+                        settings.BirthdayEarnedPoints,
+                        0,
+                        0
+                    );
                 }
                 else
                 {
