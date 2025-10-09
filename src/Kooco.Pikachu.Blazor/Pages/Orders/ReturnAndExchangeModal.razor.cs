@@ -19,6 +19,7 @@ public partial class ReturnAndExchangeModal
     private bool IsReturn { get; set; }
     private bool IsWholeOrder { get; set; } = true;
     private bool ChooseReplacement { get; set; }
+    private bool AlertVisible { get; set; }
     private Modal Modal { get; set; }
     private List<ItemWithItemTypeDto> ItemOptions { get; set; } = [];
     private Dictionary<Guid, List<ItemDetailWithItemTypeDto>> ItemDetails { get; set; } = [];
@@ -158,18 +159,39 @@ public partial class ReturnAndExchangeModal
             var pricing = await ReturnAndExchangeAppService.GetSetItemPricingAsync(Order.GroupBuyId, input.Id);
             item.Pricing = pricing;
             item.ReplacementPrice = (decimal)pricing.Price;
+
+            if (item.Pricing.Available <= 0)
+            {
+                item.Item = null!;
+                await ShowAlert();
+            }
         }
     }
 
-    static void OnDetailChanged(ItemDetailWithItemTypeDto input, ReplacementItemDto item)
+    async Task OnDetailChanged(ItemDetailWithItemTypeDto input, ReplacementItemDto item)
     {
-        item.Pricing = new(); 
+        item.Pricing = new();
         item.ReplacementPrice = 0;
-        
+
         if (input == null) return;
 
         item.Pricing = item.Detail?.Pricing ?? new();
         item.ReplacementPrice = (decimal)item.Pricing.Price;
+
+        if (item.Pricing.Available <= 0)
+        {
+            item.Detail = null!;
+            await ShowAlert();
+        }
+    }
+
+    async Task ShowAlert()
+    {
+        AlertVisible = true;
+        await InvokeAsync(StateHasChanged);
+        await Task.Delay(TimeSpan.FromSeconds(2));
+        AlertVisible = false;
+        await InvokeAsync(StateHasChanged);
     }
 
     static string ItemImage(OrderItemDto item)

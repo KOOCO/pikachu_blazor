@@ -2226,6 +2226,7 @@
     "SelectedQuantity": "Selected Quantity",
     "PleaseSelectReplacementItems": "Please select replacement items and verify replacement quantity is greater than 0 and replacement amount is not in negative",
     "LogisticsOrderNumber": "Logistics Order Number",
-    "ShipmentNumber": "Shipment Number"
+    "ShipmentNumber": "Shipment Number",
+    "ThisItemIsNotAvailable": "The selected item is not available."
   }
 }

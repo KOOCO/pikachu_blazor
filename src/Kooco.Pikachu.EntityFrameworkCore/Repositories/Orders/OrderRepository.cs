@@ -766,7 +766,7 @@ public class OrderRepository(IDbContextProvider<PikachuDbContext> dbContextProvi
                 Pricing = new()
                 {
                     Price = g.Price.GroupBuyPrice,
-                    Available = g.Detail.SaleableQuantity
+                    Available = g.Detail.SaleableQuantity + g.Detail.SaleablePreOrderQuantity
                 }
             }).ToListAsync();
 

@@ -7,6 +7,12 @@
 @inject IReturnAndExchangeAppService ReturnAndExchangeAppService
 @inject NavigationManager NavigationManager
 
+<style>
+    .alert.alert-danger {
+        padding: 15px 10px;
+        border-radius: 5px;
+    }
+</style>
 <Modal @ref="Modal">
     <ModalContent IsCentered="true" Size="ModalSize.ExtraLarge">
         <ModalHeader>
@@ -54,7 +60,7 @@
                                     {
                                         <TableRow>
                                             <TableRowCell>
-                                                <Check TValue="bool" @bind-Checked="item.IsSelected" Disabled="item.Quantity <= 0 ||  (!IsReturn && (item.ItemType == ItemType.Freebie || item.IsAddOnProduct))" />
+                                                <Check TValue="bool" @bind-Checked="item.IsSelected" Disabled="item.Quantity <= 0 || (!IsReturn && (item.ItemType == ItemType.Freebie || item.IsAddOnProduct))" />
                                             </TableRowCell>
                                             <TableRowCell>
                                                 <div class="d-flex align-items-start">
@@ -107,6 +113,11 @@
             @if (ChooseReplacement)
             {
                 <Div>
+                    <Alert Color="Color.Danger" TextColor="TextColor.Danger" @bind-Visible="AlertVisible" Dismisable="false">
+                        <AlertDescription>
+                            @L["ThisItemIsNotAvailable"]
+                        </AlertDescription>
+                    </Alert>
                     <h5 class="text-dark">@L["Replacements"]</h5>
                     <Div Class="overflow-auto">
                         <Table Bordered Striped>
@@ -188,7 +199,7 @@
                                             <TableRowCell Style="max-width: 150px;">
                                                 <span class="fs-xs">@L["Available"]: @((item.Pricing?.AvailableQuantity ?? 0).ToString("N0"))</span>
                                                 <NumericEdit TValue="int" @bind-Value="item.ReplacementQuantity" Min="1" Max="@((int)(item.Pricing?.AvailableQuantity ?? 0))" Style="max-width: 130px;" Size="Size.Small" />
-                                            </TableRowCell> 
+                                            </TableRowCell>
                                             <TableRowCell>
                                                 <span class="text-decoration-line-through fs-xs">$@item.ItemPrice.ToString("N2")</span>
                                                 <NumericEdit TValue="decimal" @bind-Value="item.ReplacementPrice" Min="0" Style="max-width: 130px;" Size="Size.Small" />
