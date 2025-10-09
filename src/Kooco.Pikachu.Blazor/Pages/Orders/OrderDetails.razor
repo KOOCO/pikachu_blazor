@@ -2518,7 +2518,7 @@
                     Class=" rm-table-min-height">
                         <DataGridColumns>
                             <DataGridCommandColumn />
-                            <DataGridColumn Field="@nameof(OrderDeliveryDto.DeliveryNo)" Caption="@L["DeliveryNo"]">
+                            <DataGridColumn Field="@nameof(OrderDeliveryDto.DeliveryNo)" Caption="@L["ShipmentNumber"]">
                                 <DisplayTemplate>
                                     @{
                                         var isExpanded = ExpandedRows.Contains(context.Id);
@@ -2575,7 +2575,7 @@
                                     }
                                 </DisplayTemplate>
                             </DataGridColumn>
-                            <DataGridColumn Caption="@L["AllPayLogisticsID"]">
+                            <DataGridColumn Caption="@L["LogisticsOrderNumber"]">
                                 <DisplayTemplate>
                                     @context.AllPayLogisticsID
                                 </DisplayTemplate>

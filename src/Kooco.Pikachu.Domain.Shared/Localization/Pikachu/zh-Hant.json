@@ -1064,8 +1064,8 @@
     "ECPay|FamilyMart1": "綠界 | 全家 B2C",
     "ECPay|FamilyMartC2C": "綠界 | 全家 C2C",
     "HualienAndTaitungShippingFee": "花東地區運費",
-    "HolidaySurcharge": "繁盛期加給",
-    "HolidaySurchargeTimeRange": "假日附加費時間範圍",
+    "HolidaySurcharge": "繁盛期加給費用",
+    "HolidaySurchargeTimeRange": "繁盛期時間範圍",
     "FamilyMartB2C": "全家 B2C",
     "7-11B2C": "7-11 B2C",
     "7-11 frozen B2C": "7-11 冷凍 B2C",
@@ -2239,6 +2239,8 @@
     "ChooseReplacement": "選擇更換項目",
     "SelectedQuantity": "已選擇數量",
     "PleaseSelectReplacementItems": "請選擇更換商品，並確認更換數量大於 0 且更換金額不為負數",
-    "Available": "可用"
+    "Available": "可用",
+    "LogisticsOrderNumber": "物流訂單編號",
+    "ShipmentNumber": "托運單號"
   }
 }
