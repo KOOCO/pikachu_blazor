@@ -160,7 +160,8 @@ public class ReturnAndExchangeAppService : PikachuAppService, IReturnAndExchange
         Guid orderId,
         List<OrderItemDto> orderItemsInput,
         bool isReturn,
-        List<ReplacementItemDto> replacementItems
+        List<ReplacementItemDto> replacementItems,
+        decimal deliveryCost = 0
         )
     {
         orderItemsInput = orderItemsInput?.Where(x => x.IsSelected && x.SelectedQuantity > 0).ToList() ?? [];
@@ -260,12 +261,13 @@ public class ReturnAndExchangeAppService : PikachuAppService, IReturnAndExchange
             if (!isReturn)
             {
                 exchangeOrder = await OrderBuilder.CloneAsync(order);
+                exchangeOrder.PaymentMethod = PaymentMethods.CashOnDelivery;
+                exchangeOrder.DeliveryMethod = DeliveryMethod.HomeDelivery;
                 exchangeOrder.ReturnStatus = OrderReturnStatus.Pending;
                 exchangeOrder.OrderStatus = OrderStatus.Exchange;
                 exchangeOrder.ShippingStatus = ShippingStatus.Exchange;
                 exchangeOrder.ShippingStatusBeforeReturn = order.ShippingStatus;
-
-                var deliveryCostMap = (await DeliveryTemperatureCostRepository.GetListAsync()).ToDictionary(d => (d.Temperature, d.LogisticProvider, d.DeliveryMethod));
+                exchangeOrder.DeliveryCost = deliveryCost;
 
                 foreach (var item in replacementItems)
                 {
@@ -284,7 +286,6 @@ public class ReturnAndExchangeAppService : PikachuAppService, IReturnAndExchange
 
                     var temp = item.Item.Temperature ?? ItemStorageTemperature.Normal;
                     var logisticProvider = exchangeOrder.DeliveryMethod.GetLogisticsProvider();
-                    deliveryCostMap.TryGetValue((temp, logisticProvider, exchangeOrder.DeliveryMethod), out var cost);
 
                     var orderItem = OrderManager.AddOrderItem(
                         exchangeOrder,
@@ -300,12 +301,12 @@ public class ReturnAndExchangeAppService : PikachuAppService, IReturnAndExchange
                         item.ReplacementQuantity,
                         item.Detail?.Sku,
                         item.Item.Temperature ?? ItemStorageTemperature.Normal,
-                        cost?.Cost ?? 0,//item.DeliveryTemperatureCost,
+                        0,
                         false
                     );
                 }
 
-                exchangeOrder.TotalAmount = exchangeOrder.OrderItems.Sum(x => x.TotalAmount);
+                exchangeOrder.TotalAmount = exchangeOrder.OrderItems.Sum(x => x.TotalAmount) + deliveryCost;
                 exchangeOrder.TotalQuantity = exchangeOrder.OrderItems.Sum(x => x.Quantity);
                 await OrderRepository.InsertAsync(exchangeOrder);
 

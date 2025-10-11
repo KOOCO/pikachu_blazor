@@ -16,7 +16,8 @@ public interface IReturnAndExchangeAppService : IApplicationService
         Guid orderId, 
         List<OrderItemDto> orderItemsInput, 
         bool isReturn,
-        List<ReplacementItemDto> replacementItems
+        List<ReplacementItemDto> replacementItems,
+        decimal deliveryCost = 0
         );
     Task<List<ItemWithItemTypeDto>> GetGroupBuyItemsAsync(Guid groupBuyId);
     Task<List<ItemDetailWithItemTypeDto>> GetItemDetailsAsync(Guid groupBuyId, ItemWithItemTypeDto input);

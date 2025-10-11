@@ -24,6 +24,7 @@ public partial class ReturnAndExchangeModal
     private List<ItemWithItemTypeDto> ItemOptions { get; set; } = [];
     private Dictionary<Guid, List<ItemDetailWithItemTypeDto>> ItemDetails { get; set; } = [];
     private List<ReplacementItemDto> ReplacementItems { get; set; } = [];
+    private decimal DeliveryCost { get; set; }
 
     public async Task Show(bool isReturn)
     {
@@ -91,6 +92,11 @@ public partial class ReturnAndExchangeModal
                 await Message.Error(L["PleaseSelectReplacementItems"]);
                 return;
             }
+            if (DeliveryCost < 0)
+            {
+                await Message.Error(L["TheFieldMustBeGreaterOrEqualTo", L[nameof(DeliveryCost)], 0]);
+                return;
+            }
         }
 
         var confirmed = await Message.Confirm(L["AreYouSureYouWantToExchangeThisOrder"]);
@@ -104,7 +110,13 @@ public partial class ReturnAndExchangeModal
         }
         else
         {
-            await ReturnAndExchangeAppService.ReturnAndExchangeItemsAsync(Order.Id, selectedItems, IsReturn, ReplacementItems);
+            await ReturnAndExchangeAppService.ReturnAndExchangeItemsAsync(
+                Order.Id, 
+                selectedItems, 
+                IsReturn, 
+                ReplacementItems,
+                DeliveryCost
+                );
         }
 
         await Hide();
