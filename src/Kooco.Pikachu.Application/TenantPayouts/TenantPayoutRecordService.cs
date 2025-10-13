@@ -78,7 +78,7 @@ public class TenantPayoutRecordService : ITransientDependency
 
             var minimumHandlingFees = GetMinimumHandlingFee(paymentMethod);
 
-            var totalAmount = order.TotalAmount;
+            var totalAmount = CreditCardOptions.Contains(paymentMethod) ? order.TotalAmount : result.TransactionAmount;
 
             var feeRate = decimal.TryParse(result.FeeRate?.Trim('%'), out var rate) ? rate : 0;
 
@@ -123,7 +123,7 @@ public class TenantPayoutRecordService : ITransientDependency
                 result.OrderNo,
                 paymentMethod,
                 tenantCombination?.FeeKind,
-                order.TotalAmount,
+                totalAmount,
                 feeRate,
                 handlingFee,
                 processingFee,
@@ -169,7 +169,7 @@ public class TenantPayoutRecordService : ITransientDependency
 
             var minimumHandlingFees = GetMinimumHandlingFee(paymentMethod);
 
-            var totalAmount = order.TotalAmount;
+            var totalAmount = result.CollectionAmount;
 
             var (feeRate, handlingFee, processingFee) = (0.53m, result.CollectionChargeFee, 0m);
 
@@ -200,7 +200,7 @@ public class TenantPayoutRecordService : ITransientDependency
                 result.OrderNo,
                 paymentMethod,
                 tenantCombination?.FeeKind,
-                order.TotalAmount,
+                totalAmount,
                 feeRate,
                 handlingFee,
                 processingFee,
@@ -267,7 +267,7 @@ public class TenantPayoutRecordService : ITransientDependency
 
             var minimumHandlingFees = GetMinimumHandlingFee(paymentMethod);
 
-            var totalAmount = order.TotalAmount;
+            var totalAmount = result.CODAmount ?? 0;
 
             var (feeRate, handlingFee) = (0m, 0m);
 
@@ -300,7 +300,7 @@ public class TenantPayoutRecordService : ITransientDependency
                 result.OrderNo,
                 paymentMethod,
                 tenantCombination?.FeeKind,
-                order.TotalAmount,
+                totalAmount,
                 feeRate,
                 handlingFee,
                 0,
