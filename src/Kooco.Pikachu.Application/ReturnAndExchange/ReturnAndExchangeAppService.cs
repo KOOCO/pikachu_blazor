@@ -268,6 +268,7 @@ public class ReturnAndExchangeAppService : PikachuAppService, IReturnAndExchange
                 exchangeOrder.ShippingStatus = ShippingStatus.Exchange;
                 exchangeOrder.ShippingStatusBeforeReturn = order.ShippingStatus;
                 exchangeOrder.DeliveryCost = deliveryCost;
+                exchangeOrder.IsExchange = true;
 
                 foreach (var item in replacementItems)
                 {

@@ -119,5 +119,6 @@ public class OrderDto : FullAuditedEntityDto<Guid>
     public int? DiscountAmount { get; set; }
     public decimal cashback_amount { get; set; }
     public bool ParentRowExpanded { get; set; }
+    public bool IsExchange { get; set; }
     public ICollection<AppliedCampaignDto> AppliedCampaigns { get; set; } = [];
 }

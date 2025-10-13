@@ -378,7 +378,7 @@
                                             <tr>
                                                 <td colspan="2">
                                                     <Div Width="Width.Max100">
-                                                        <select class="form-select form-select" @onchange=ChangeStore>
+                                                        <select class="form-select form-select" @onchange=ChangeStore disabled="@Order.IsExchange">
                                                             <option value="homeDelivery">@L["OrderDetailsHomeDelivery"]</option>
                                                             <option value="convenienceStore">@L["ConvenienceStore"]</option>
                                                         </select>
@@ -3032,7 +3032,7 @@
                 <div class="row my-2">
                     <label class="form-label">@L["ShippingMethod"]</label>
                     <div class="col-12">
-                        <InputSelect class="form-select" @bind-Value="@shipments.ShippingMethod">
+                        <InputSelect class="form-select" @bind-Value="@shipments.ShippingMethod" disabled="@Order.IsExchange">
                             @foreach (DeliveryMethod option in Enum.GetValues(typeof(DeliveryMethod)))
                             {
                                 <option value="@option">

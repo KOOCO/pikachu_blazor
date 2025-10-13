@@ -603,6 +603,7 @@ public class Order : FullAuditedAggregateRoot<Guid>, IMultiTenant
     public byte[] RowVersion { get; set; } // Concurrency token
 
     public ShippingStatus? ShippingStatusBeforeReturn { get; set; }
+    public bool IsExchange { get; set; }
     /// <summary>
     /// 訂單交易列表
     /// </summary>
