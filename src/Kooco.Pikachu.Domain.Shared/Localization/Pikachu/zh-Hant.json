@@ -1653,7 +1653,7 @@
     "CompletionFrom": "訂單完成起始日期",
     "CompletionTo": "訂單完成結束日期",
     "Last5DigitsOfBankAccount": "銀行帳號末5碼",
-    "PaymentAmount": "付款金額",
+    "PaymentAmount": "收款金額",
     "ReceivedTime": "入帳時間",
     "ConfirmPayment": "確認收款",
     "ConfirmationTime": "確認時間",
