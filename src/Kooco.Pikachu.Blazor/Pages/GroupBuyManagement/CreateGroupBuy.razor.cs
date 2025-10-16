@@ -661,7 +661,7 @@ public partial class CreateGroupBuy
         }
         else if (deliveryMethod is DeliveryMethod.TCatDeliveryFreeze)
         {
-            var data = LogisticsProviders.Where(w => w.LogisticProvider is LogisticProviders.TCat711Freeze).FirstOrDefault();
+            var data = LogisticsProviders.Where(w => w.LogisticProvider is LogisticProviders.TCatFreeze).FirstOrDefault();
             if (data == null || (data.Freight < 0 || data.OuterIslandFreight < 0 || data.Size <= 0 || data.TCatPaymentMethod == null || data.TCatPaymentMethod <= 0))
             {
                 return true;
@@ -675,7 +675,7 @@ public partial class CreateGroupBuy
         }
         else if (deliveryMethod is DeliveryMethod.TCatDeliveryFrozen)
         {
-            var data = LogisticsProviders.Where(w => w.LogisticProvider is LogisticProviders.TCat711Frozen).FirstOrDefault();
+            var data = LogisticsProviders.Where(w => w.LogisticProvider is LogisticProviders.TCatFrozen).FirstOrDefault();
             if (data == null || (data.Freight < 0 || data.OuterIslandFreight < 0 || data.Size <= 0 || data.TCatPaymentMethod == null || data.TCatPaymentMethod <= 0))
             {
                 return true;
@@ -723,15 +723,17 @@ public partial class CreateGroupBuy
         { DeliveryMethod.FamilyMartC2C, LogisticProviders.FamilyMartC2C },
         { DeliveryMethod.SevenToElevenC2C, LogisticProviders.SevenToElevenC2C },
         { DeliveryMethod.TCatDeliveryNormal, LogisticProviders.TCatNormal },
-        { DeliveryMethod.TCatDeliveryFreeze, LogisticProviders.TCat711Freeze },
+        { DeliveryMethod.TCatDeliveryFreeze, LogisticProviders.TCatFreeze },
         { DeliveryMethod.TCatDeliveryFrozen, LogisticProviders.TCatFrozen },
         { DeliveryMethod.TCatDeliverySevenElevenNormal, LogisticProviders.TCat711Normal },
         { DeliveryMethod.TCatDeliverySevenElevenFreeze, LogisticProviders.TCat711Freeze },
         { DeliveryMethod.TCatDeliverySevenElevenFrozen, LogisticProviders.TCat711Frozen }
     };
 
-        return providerMapping.TryGetValue(deliveryMethod, out var provider) &&
+       var result=providerMapping.TryGetValue(deliveryMethod, out var provider) &&
                LogisticsProviders.FirstOrDefault(w => w.LogisticProvider == provider)?.IsEnabled == true;
+        return result;
+        
     }
 
     public bool isPaymentMethodEnabled()
