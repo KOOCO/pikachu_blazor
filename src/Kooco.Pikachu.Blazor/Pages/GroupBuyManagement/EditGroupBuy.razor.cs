@@ -644,7 +644,7 @@ public partial class EditGroupBuy
         { DeliveryMethod.FamilyMartC2C, LogisticProviders.FamilyMartC2C },
         { DeliveryMethod.SevenToElevenC2C, LogisticProviders.SevenToElevenC2C },
         { DeliveryMethod.TCatDeliveryNormal, LogisticProviders.TCatNormal },
-        { DeliveryMethod.TCatDeliveryFreeze, LogisticProviders.TCat711Freeze },
+        { DeliveryMethod.TCatDeliveryFreeze, LogisticProviders.TCatFreeze },
         { DeliveryMethod.TCatDeliveryFrozen, LogisticProviders.TCatFrozen },
         { DeliveryMethod.TCatDeliverySevenElevenNormal, LogisticProviders.TCat711Normal },
         { DeliveryMethod.TCatDeliverySevenElevenFreeze, LogisticProviders.TCat711Freeze },
